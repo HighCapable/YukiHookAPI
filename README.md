@@ -6,11 +6,17 @@
 <br/>
 🔥 An efficient Kotlin version of the Xposed Hook API.
 <br/>
+
 # Introduce
+
 - 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
-- 名称取自 <a href='https://www.bilibili.com/bangumi/play/ss5016/?from=search&seid=313229405371562533&spm_id_from=333.337.0.0'>《ももくり》女主 栗原 雪(Yuki)</a>
+- 名称取自 <a href='https://www.bilibili.com/bangumi/play/ss5016/?from=search&seid=313229405371562533&spm_id_from=333.337.0.0'>
+  《ももくり》女主 栗原 雪(Yuki)</a>
+
 # Get Startted
+
 - 敬请期待...
+
 # License
 
 - [MIT](https://choosealicense.com/licenses/mit)
