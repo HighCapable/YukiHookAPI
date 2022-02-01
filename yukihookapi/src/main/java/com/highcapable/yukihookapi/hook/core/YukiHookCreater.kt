@@ -25,39 +25,145 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+
 package com.highcapable.yukihookapi.hook.core
 
+import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.param.HookParam
 import com.highcapable.yukihookapi.param.PackageParam
-import java.lang.reflect.Constructor
-import java.lang.reflect.Method
+import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XC_MethodReplacement
+import de.robv.android.xposed.XposedBridge
+import java.lang.reflect.Member
 
-class YukiHookCreater(private val param: PackageParam) {
+/**
+ * YukiHook 核心类实现方法
+ * 这是一个 API 对接类 - 实现原生对接 [XposedBridge]
+ * @param instance 需要传入 [PackageParam] 实现方法调用
+ * @param hookClass 要 Hook 的 [Class]
+ */
+class YukiHookCreater(private val instance: PackageParam, val hookClass: Class<*>) {
 
-    var grabMethod: Method? = null
-    var grabConstructor: Constructor<*>? = null
+    /** @call Base Field */
+    private var beforeHookCallback: (HookParam.() -> Unit)? = null
 
+    /** @call Base Field */
+    private var afterHookCallback: (HookParam.() -> Unit)? = null
+
+    /** @call Base Field */
+    private var replaceHookCallback: (HookParam.() -> Any?)? = null
+
+    /** 是否为替换模式 */
+    private var isReplaceMode = false
+
+    /** 设置要 Hook 的方法、构造类 */
+    var grabMember: Member? = null
+
+    /**
+     * 在方法执行完成前 Hook
+     * 不可与 [replaceAny] [replaceVoid] [replaceTo] 同时使用
+     * @param initiate [HookParam] 方法体
+     */
     fun beforeHook(initiate: HookParam.() -> Unit) {
-
+        isReplaceMode = false
+        beforeHookCallback = initiate
     }
 
+    /**
+     * 在方法执行完成后 Hook
+     * 不可与 [replaceAny] [replaceVoid] [replaceTo] 同时使用
+     * @param initiate [HookParam] 方法体
+     */
     fun afterHook(initiate: HookParam.() -> Unit) {
-
+        isReplaceMode = false
+        afterHookCallback = initiate
     }
 
-    fun replaceHook(initiate: HookParam.() -> Any?) {
-
+    /**
+     * 替换此方法内容 - 给出返回值
+     * 不可与 [beforeHook] [afterHook] 同时使用
+     * @param initiate [HookParam] 方法体
+     */
+    fun replaceAny(initiate: HookParam.() -> Any?) {
+        isReplaceMode = true
+        replaceHookCallback = initiate
     }
 
+    /**
+     * 替换此方法内容 - 没有返回值 (Void)
+     * 不可与 [beforeHook] [afterHook] 同时使用
+     * @param initiate [HookParam] 方法体
+     */
+    fun replaceVoid(initiate: HookParam.() -> Unit) {
+        isReplaceMode = true
+        replaceHookCallback = initiate
+    }
+
+    /**
+     * 替换方法返回值
+     * 不可与 [beforeHook] [afterHook] 同时使用
+     * @param any 要替换为的返回值对象
+     */
     fun replaceTo(any: Any?) {
-
+        isReplaceMode = true
+        replaceHookCallback = { any }
     }
 
+    /**
+     * 替换方法返回值为 true
+     * 确保替换方法的返回对象为 [Boolean]
+     * 不可与 [beforeHook] [afterHook] 同时使用
+     */
+    fun replaceToTrue() {
+        isReplaceMode = true
+        replaceHookCallback = { true }
+    }
+
+    /**
+     * 替换方法返回值为 false
+     * 确保替换方法的返回对象为 [Boolean]
+     * 不可与 [beforeHook] [afterHook] 同时使用
+     */
+    fun replaceToFalse() {
+        isReplaceMode = true
+        replaceHookCallback = { false }
+    }
+
+    /**
+     * 拦截此方法
+     * 不可与 [beforeHook] [afterHook] 同时使用
+     */
     fun intercept() {
-
+        isReplaceMode = true
+        replaceHookCallback = { null }
     }
 
+    /**
+     * Hook 执行入口 - 不可在外部调用
+     * @throws IllegalStateException 如果必要参数没有被设置
+     */
+    @DoNotUseMethod
     fun hook() {
+        if (grabMember == null) error("Target hook method cannot be null")
+        if (isReplaceMode)
+            XposedBridge.hookMethod(grabMember, object : XC_MethodReplacement() {
+                override fun replaceHookedMethod(param: MethodHookParam?): Any? {
+                    if (param == null) return null
+                    return replaceHookCallback?.invoke(HookParam(param))
+                }
+            })
+        else
+            XposedBridge.hookMethod(grabMember, object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam?) {
+                    if (param == null) return
+                    beforeHookCallback?.invoke(HookParam(param))
+                }
 
+                override fun afterHookedMethod(param: MethodHookParam?) {
+                    if (param == null) return
+                    afterHookCallback?.invoke(HookParam(param))
+                }
+            })
     }
 }

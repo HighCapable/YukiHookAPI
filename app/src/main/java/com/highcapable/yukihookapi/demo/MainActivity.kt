@@ -28,35 +28,21 @@
 package com.highcapable.yukihookapi.demo
 
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.highcapable.yukihookapi.hook.YukiHook
-import com.highcapable.yukihookapi.hook.factory.yukiHook
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        YukiHook.encase {
-            optApp(name = "android") {
-                classOf(name = "a.b.c").hook {
-
-                }
-                classOf(name = "a.b.c").hook {
-
-                }
-            }
-            optApp(name = "bndroid") {
-                classOf(name = "a.b.c").hook {
-
-                }
-                classOf(name = "a.b.c").hook {
-
-                }
-            }
-        }
-        yukiHook {
-
-        }
+        // for test
+        AlertDialog.Builder(this)
+            .setMessage(hello())
+            .setPositiveButton("OK", null)
+            .show()
     }
+
+    // for test
+    private fun hello() = "正常显示的一行文字"
 }

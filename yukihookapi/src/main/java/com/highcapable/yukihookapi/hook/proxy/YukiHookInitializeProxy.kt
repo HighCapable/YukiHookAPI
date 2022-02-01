@@ -27,14 +27,22 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.factory
+package com.highcapable.yukihookapi.hook.proxy
 
+import androidx.annotation.Keep
 import com.highcapable.yukihookapi.hook.YukiHook
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
-import com.highcapable.yukihookapi.param.PackageParam
 
 /**
- * 在 [YukiHookInitializeProxy] 中装载 [YukiHook]
- * @param initiate Hook 方法体
+ * YukiHook 的 Xposed 装载 API 调用接口
+ * 自动调用 [onHook] 完成 Hook 开始操作
  */
-fun YukiHookInitializeProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook.encase(initiate)
+@Keep
+interface YukiHookInitializeProxy {
+
+    /**
+     * 作为模块装载调用入口方法 - Xposed API
+     * 请在此方法中调用 [YukiHook.encase]
+     */
+    @Keep
+    fun onHook()
+}

@@ -31,7 +31,7 @@ android {
 
 dependencies {
     // Used 82 API Version
-    compileOnly fileTree(include: ['api-82.jar'], dir: 'libs')
+    compileOnly 'de.robv.android.xposed:api:82'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

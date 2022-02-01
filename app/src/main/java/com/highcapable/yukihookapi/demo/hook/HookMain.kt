@@ -25,16 +25,31 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused")
+package com.highcapable.yukihookapi.demo.hook
 
-package com.highcapable.yukihookapi.hook.factory
-
-import com.highcapable.yukihookapi.hook.YukiHook
+import android.app.Activity
+import android.widget.Toast
+import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
-import com.highcapable.yukihookapi.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.ActivityClass
+import com.highcapable.yukihookapi.hook.type.BundleClass
 
-/**
- * 在 [YukiHookInitializeProxy] 中装载 [YukiHook]
- * @param initiate Hook 方法体
- */
-fun YukiHookInitializeProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook.encase(initiate)
+class HookMain : YukiHookInitializeProxy {
+
+    override fun onHook() = encase {
+        optApp(name = "com.highcapable.yukihookapi.demo") {
+            classOf(name = "$packageName.MainActivity").hook {
+                grabMember = hookClass.methodOf(name = "hello")
+                replaceTo(any = "这是一段 Hook 的文字内容")
+            }
+        }
+        optApp(name = "com.android.browser") {
+            ActivityClass.hook {
+                grabMember = hookClass.methodOf(name = "onCreate", BundleClass)
+                afterHook {
+                    Toast.makeText(thisAny as Activity, "Hook Success", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+}

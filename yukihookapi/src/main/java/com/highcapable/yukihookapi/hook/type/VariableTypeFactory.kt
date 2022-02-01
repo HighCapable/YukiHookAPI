@@ -27,14 +27,72 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.factory
+package com.highcapable.yukihookapi.hook.type
 
-import com.highcapable.yukihookapi.hook.YukiHook
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
-import com.highcapable.yukihookapi.param.PackageParam
+import java.io.Serializable
 
 /**
- * 在 [YukiHookInitializeProxy] 中装载 [YukiHook]
- * @param initiate Hook 方法体
+ * 获得 [Any] 类型
+ * @return [Class]
  */
-fun YukiHookInitializeProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook.encase(initiate)
+val AnyType get() = Any::class.java
+
+/**
+ * 获得 [Boolean] 类型
+ * @return [Class]
+ */
+val BooleanType get() = Boolean::class.javaPrimitiveType
+
+/**
+ * 获得 [Int] 类型
+ * @return [Class]
+ */
+val IntType get() = Int::class.javaPrimitiveType
+
+/**
+ * 获得 [Long] 类型
+ * @return [Class]
+ */
+val LongType get() = Long::class.javaPrimitiveType
+
+/**
+ * 获得 [Short] 类型
+ * @return [Class]
+ */
+val ShortType get() = Short::class.javaPrimitiveType
+
+/**
+ * 获得 [Float] 类型
+ * @return [Class]
+ */
+val FloatType get() = Float::class.javaPrimitiveType
+
+/**
+ * 获得 [Double] 类型
+ * @return [Class]
+ */
+val DoubleType get() = Double::class.javaPrimitiveType
+
+/**
+ * 获得 [String] 类型
+ * @return [Class]
+ */
+val StringType get() = String::class.java
+
+/**
+ * 获得 [Char] 类型
+ * @return [Class]
+ */
+val CharType get() = Char::class.java
+
+/**
+ * 获得 [CharSequence] 类型
+ * @return [Class]
+ */
+val CharSequenceType get() = CharSequence::class.java
+
+/**
+ * 获得 [Serializable] 类型
+ * @return [Class]
+ */
+val SerializableClass get() = Serializable::class.java

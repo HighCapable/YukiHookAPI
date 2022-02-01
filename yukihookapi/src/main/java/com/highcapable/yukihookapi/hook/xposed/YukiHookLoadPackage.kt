@@ -25,8 +25,11 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package com.highcapable.yukihookapi.hook.xposed
 
+import android.util.Log
 import androidx.annotation.Keep
 import com.highcapable.yukihookapi.hook.YukiHook
 import com.highcapable.yukihookapi.param.PackageParam
@@ -35,14 +38,30 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
  * 接管 Xposed 的 [IXposedHookLoadPackage] 入口
- * 你可以使用 [YukiHook] 来监听模块开始装载
+ * 你可以使用 [YukiHook.encase] 来监听模块开始装载
  */
 @Keep
 class YukiHookLoadPackage : IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
         if (lpparam == null) return
+        try {
+            /** 执行入口方法 */
+            Class.forName(hookEntryClassName()).apply {
+                getDeclaredMethod("onHook").apply { isAccessible = true }
+                    .invoke(getDeclaredConstructor().apply { isAccessible = true }.newInstance())
+            }
+        } catch (e: Throwable) {
+            Log.e("YukiHookAPI", "Try to load ${hookEntryClassName()} Failed", e)
+        }
         /** 设置装载回调 */
         YukiHook.packageParamCallback?.invoke(PackageParam(lpparam))
     }
+
+    /**
+     * 获得目标装载类名 - AOP
+     * @return [String] 目标装载类名
+     */
+    @Keep
+    private fun hookEntryClassName() = "com.highcapable.yukihookapi.demo.hook.HookMain"
 }

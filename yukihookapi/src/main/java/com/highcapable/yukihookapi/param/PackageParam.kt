@@ -25,13 +25,15 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "EXPERIMENTAL_API_USAGE")
 
 package com.highcapable.yukihookapi.param
 
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import java.lang.reflect.Constructor
+import java.lang.reflect.Method
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
@@ -96,9 +98,28 @@ class PackageParam(
     fun classOf(name: String): Class<*> = appClassLoader.loadClass(name)
 
     /**
+     * 查找目标方法
+     * @param name 方法名
+     * @param params 方法参数 - 没有可空
+     * @return [Method]
+     * @throws NoSuchMethodError 如果找不到方法会报错
+     */
+    fun Class<*>.methodOf(name: String, vararg params: Class<*>): Method =
+        getDeclaredMethod(name, *params).apply { isAccessible = true }
+
+    /**
+     * 查找目标构造类
+     * @param params 方法参数 - 没有可空
+     * @return [Constructor]
+     * @throws NoSuchMethodError 如果找不到方法会报错
+     */
+    fun Class<*>.constructorOf(vararg params: Class<*>): Constructor<*> =
+        getDeclaredConstructor(*params).apply { isAccessible = true }
+
+    /**
      * Hook 方法、构造类
      * @param initiate 方法体
      */
     fun Class<*>.hook(initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(param = this@PackageParam).apply(initiate).hook()
+        YukiHookCreater(instance = this@PackageParam, hookClass = this).apply(initiate).hook()
 }

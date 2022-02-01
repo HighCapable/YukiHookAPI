@@ -27,14 +27,54 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.factory
+package com.highcapable.yukihookapi.hook.type
 
-import com.highcapable.yukihookapi.hook.YukiHook
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
-import com.highcapable.yukihookapi.param.PackageParam
+import android.app.Activity
+import android.app.Application
+import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.res.Resources
+import android.os.Bundle
 
 /**
- * 在 [YukiHookInitializeProxy] 中装载 [YukiHook]
- * @param initiate Hook 方法体
+ * 获得 [Context] 类型
+ * @return [Class]
  */
-fun YukiHookInitializeProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook.encase(initiate)
+val ContextClass get() = Context::class.java
+
+/**
+ * 获得 [Activity] 类型
+ * @return [Class]
+ */
+val ActivityClass get() = Activity::class.java
+
+/**
+ * 获得 [Service] 类型
+ * @return [Class]
+ */
+val ServiceClass get() = Service::class.java
+
+/**
+ * 获得 [BroadcastReceiver] 类型
+ * @return [Class]
+ */
+val BroadcastReceiverClass get() = BroadcastReceiver::class.java
+
+/**
+ * 获得 [Bundle] 类型
+ * @return [Class]
+ */
+val BundleClass get() = Bundle::class.java
+
+/**
+ * 获得 [Resources] 类型
+ * @return [Class]
+ */
+val ResourcesClass get() = Resources::class.java
+
+/**
+ * 获得 [Application] 类型
+ * @return [Class]
+ */
+val ApplicationClass get() = Application::class.java

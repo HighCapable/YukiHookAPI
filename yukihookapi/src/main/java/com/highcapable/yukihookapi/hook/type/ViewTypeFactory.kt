@@ -27,14 +27,56 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.factory
+package com.highcapable.yukihookapi.hook.type
 
-import com.highcapable.yukihookapi.hook.YukiHook
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
-import com.highcapable.yukihookapi.param.PackageParam
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 
 /**
- * 在 [YukiHookInitializeProxy] 中装载 [YukiHook]
- * @param initiate Hook 方法体
+ * 获得 [View] 类型
+ * @return [Class]
  */
-fun YukiHookInitializeProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook.encase(initiate)
+val ViewClass get() = View::class.java
+
+/**
+ * 获得 [ViewGroup] 类型
+ * @return [Class]
+ */
+val ViewGroupClass get() = ViewGroup::class.java
+
+/**
+ * 获得 [TextView] 类型
+ * @return [Class]
+ */
+val TextViewClass get() = TextView::class.java
+
+/**
+ * 获得 [ImageView] 类型
+ * @return [Class]
+ */
+val ImageViewClass get() = ImageView::class.java
+
+/**
+ * 获得 [EditText] 类型
+ * @return [Class]
+ */
+val EditTextClass get() = EditText::class.java
+
+/**
+ * 获得 [Button] 类型
+ * @return [Class]
+ */
+val ButtonClass get() = Button::class.java
+
+/**
+ * 获得 [CheckBox] 类型
+ * @return [Class]
+ */
+val CheckBoxClass get() = CheckBox::class.java
+
+/**
+ * 获得 [CompoundButton] 类型
+ * @return [Class]
+ */
+val CompoundButtonClass get() = CompoundButton::class.java

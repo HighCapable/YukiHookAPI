@@ -25,11 +25,12 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused", "EXPERIMENTAL_API_USAGE")
 
 package com.highcapable.yukihookapi.hook
 
 import android.content.pm.ApplicationInfo
+import com.highcapable.yukihookapi.annotation.DoNotUseField
 import com.highcapable.yukihookapi.hook.YukiHook.encase
 import com.highcapable.yukihookapi.param.CustomParam
 import com.highcapable.yukihookapi.param.PackageParam
@@ -42,20 +43,14 @@ import com.highcapable.yukihookapi.param.PackageParam
 object YukiHook {
 
     /** Xposed Hook API 方法体回调 */
+    @DoNotUseField
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
 
-    /** YukiHook 的 API 只能装载一次 */
-    private var isLoaded = false
-
     /**
-     * 自身作为模块装载调用入口方法 - Xposed API
-     * ⚠️ 注意：只能装载一次
+     * 作为模块装载调用入口方法 - Xposed API
      * @param initiate Hook 方法体
-     * @throws IllegalStateException 重复调用会抛出异常
      */
     fun encase(initiate: PackageParam.() -> Unit) {
-        if (isLoaded) error("YukiHook API already loaded")
-        isLoaded = true
         packageParamCallback = initiate
     }
 
