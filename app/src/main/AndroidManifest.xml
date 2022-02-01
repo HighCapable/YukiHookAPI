@@ -10,6 +10,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YukiHookAPI">
 
+        <!-- 是否是xposed模块 -->
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+
+        <!-- 模块描述 -->
+        <meta-data
+            android:name="xposeddescription"
+            android:value="YukiHook Xposed Module Test" />
+
+        <!-- 最低xposed版本号 -->
+        <meta-data
+            android:name="xposedminversion"
+            android:value="82" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
