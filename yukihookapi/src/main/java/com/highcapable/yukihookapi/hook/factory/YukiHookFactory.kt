@@ -29,7 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
-import com.highcapable.yukihookapi.hook.YukiHook
+import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
 import com.highcapable.yukihookapi.param.PackageParam
 

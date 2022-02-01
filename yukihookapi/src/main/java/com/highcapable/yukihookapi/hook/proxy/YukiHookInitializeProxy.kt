@@ -30,7 +30,7 @@
 package com.highcapable.yukihookapi.hook.proxy
 
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.hook.YukiHook
+import com.highcapable.yukihookapi.YukiHook
 
 /**
  * YukiHook 的 Xposed 装载 API 调用接口

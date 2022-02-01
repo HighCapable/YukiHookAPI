@@ -31,7 +31,7 @@ package com.highcapable.yukihookapi.hook.xposed
 
 import android.util.Log
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.hook.YukiHook
+import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.param.PackageParam
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage

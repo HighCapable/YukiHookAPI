@@ -27,11 +27,11 @@
  */
 @file:Suppress("MemberVisibilityCanBePrivate", "unused", "EXPERIMENTAL_API_USAGE")
 
-package com.highcapable.yukihookapi.hook
+package com.highcapable.yukihookapi
 
 import android.content.pm.ApplicationInfo
+import com.highcapable.yukihookapi.YukiHook.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseField
-import com.highcapable.yukihookapi.hook.YukiHook.encase
 import com.highcapable.yukihookapi.param.CustomParam
 import com.highcapable.yukihookapi.param.PackageParam
 
