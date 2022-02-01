@@ -25,22 +25,14 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-package com.highcapable.yukihookapi.hook.init
+package com.highcapable.yukihookapi.param
 
-import androidx.annotation.Keep
-import com.highcapable.yukihookapi.hook.helper.YukiHookHelper
-import de.robv.android.xposed.IXposedHookLoadPackage
-import de.robv.android.xposed.callbacks.XC_LoadPackage
+import android.content.pm.ApplicationInfo
 
 /**
- * 接管 Xposed 的 [IXposedHookLoadPackage] 入口
- * 你可以使用 [YukiHookHelper] 来监听模块开始装载
+ * 自定义 [PackageParam] 的装载入口置换类
+ * @param appClassLoader APP [ClassLoader]
+ * @param appInfo APP [ApplicationInfo]
+ * @param packageName 包名
  */
-@Keep
-class YukiHookLoadPackage : IXposedHookLoadPackage {
-
-    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
-        if (lpparam == null) return
-
-    }
-}
+class CustomParam(var appClassLoader: ClassLoader, var appInfo: ApplicationInfo, var packageName: String)

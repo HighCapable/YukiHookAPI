@@ -25,28 +25,51 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-package com.highcapable.yukihookapi.hook.helper
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
+package com.highcapable.yukihookapi.hook
+
+import android.content.pm.ApplicationInfo
+import com.highcapable.yukihookapi.hook.YukiHook.encase
+import com.highcapable.yukihookapi.param.CustomParam
 import com.highcapable.yukihookapi.param.PackageParam
 
 /**
  * YukiHook 的装载 API 调用类
- * 可以实现作为模块装载和 Hook 自身 APP 两种方式
+ * 可以实现作为模块装载和自定义 Hook 装载两种方式
+ * 模块装载方式已经自动对接 Xposed API - 可直接调用 [encase] 完成操作
  */
-object YukiHookHelper {
+object YukiHook {
+
+    /** Xposed Hook API 方法体回调 */
+    internal var packageParamCallback: (PackageParam.() -> Unit)? = null
+
+    /** YukiHook 的 API 只能装载一次 */
+    private var isLoaded = false
 
     /**
-     * 自身作为模块装载调用入口方法
+     * 自身作为模块装载调用入口方法 - Xposed API
+     * ⚠️ 注意：只能装载一次
      * @param initiate Hook 方法体
+     * @throws IllegalStateException 重复调用会抛出异常
      */
-    fun onHookApp(initiate: PackageParam.() -> Unit) {
-
+    fun encase(initiate: PackageParam.() -> Unit) {
+        if (isLoaded) error("YukiHook API already loaded")
+        isLoaded = true
+        packageParamCallback = initiate
     }
 
     /**
-     * 作为侵入式 Hook 自身装载调用入口方法
-     * 正在开发敬请期待。
+     * 自定义 Hook 方法装载入口
+     * @param classLoader [ClassLoader]
+     * @param packageName 包名
+     * @param appInfo [ApplicationInfo]
      * @param initiate Hook 方法体
      */
-    fun onHookSelf(initiate: PackageParam.() -> Unit) {}
+    fun encase(
+        classLoader: ClassLoader,
+        packageName: String,
+        appInfo: ApplicationInfo,
+        initiate: PackageParam.() -> Unit
+    ) = initiate.invoke(PackageParam(customInstance = CustomParam(classLoader, appInfo, packageName)))
 }

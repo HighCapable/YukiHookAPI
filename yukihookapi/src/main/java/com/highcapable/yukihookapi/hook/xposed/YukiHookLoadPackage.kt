@@ -25,8 +25,24 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-package com.highcapable.yukihookapi.hook.factory
+package com.highcapable.yukihookapi.hook.xposed
 
-import com.highcapable.yukihookapi.hook.YukiHookCreater
+import androidx.annotation.Keep
+import com.highcapable.yukihookapi.hook.YukiHook
+import com.highcapable.yukihookapi.param.PackageParam
+import de.robv.android.xposed.IXposedHookLoadPackage
+import de.robv.android.xposed.callbacks.XC_LoadPackage
 
-fun Class<*>.hook(it: YukiHookCreater.() -> Unit) = YukiHookCreater().apply(it).hook()
+/**
+ * 接管 Xposed 的 [IXposedHookLoadPackage] 入口
+ * 你可以使用 [YukiHook] 来监听模块开始装载
+ */
+@Keep
+class YukiHookLoadPackage : IXposedHookLoadPackage {
+
+    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
+        if (lpparam == null) return
+        /** 设置装载回调 */
+        YukiHook.packageParamCallback?.invoke(PackageParam(lpparam))
+    }
+}

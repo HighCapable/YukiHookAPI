@@ -1,6 +1,6 @@
 package com.highcapable.yukihookapi.demo
 
-import com.highcapable.yukihookapi.hook.init.YukiHookLoadPackage
+import com.highcapable.yukihookapi.hook.xposed.YukiHookLoadPackage
 
 class Yuu : YukiHookLoadPackage() {
 

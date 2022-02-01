@@ -23,40 +23,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/1/29.
+ * This file is Created by fankes on 2022/2/2.
  */
-package com.highcapable.yukihookapi.demo
+@file:Suppress("unused")
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+package com.highcapable.yukihookapi.hook.factory
+
+import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.YukiHook
-import com.highcapable.yukihookapi.hook.factory.yukiHook
+import com.highcapable.yukihookapi.param.PackageParam
 
-class MainActivity : AppCompatActivity() {
+/**
+ * Lambda 方式装载 [YukiHook]
+ * @param initiate Hook 方法体
+ */
+fun yukiHook(initiate: PackageParam.() -> Unit) = YukiHook.encase(initiate)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        YukiHook.encase {
-            optApp(name = "android") {
-                classOf(name = "a.b.c").hook {
-
-                }
-                classOf(name = "a.b.c").hook {
-
-                }
-            }
-            optApp(name = "bndroid") {
-                classOf(name = "a.b.c").hook {
-
-                }
-                classOf(name = "a.b.c").hook {
-
-                }
-            }
-        }
-        yukiHook {
-
-        }
-    }
-}
+/**
+ * Lambda 方式装载 [YukiHook]
+ * 自定义 Hook 方法装载入口
+ * @param classLoader [ClassLoader]
+ * @param packageName 包名
+ * @param appInfo [ApplicationInfo]
+ * @param initiate Hook 方法体
+ */
+fun yukiHook(
+    classLoader: ClassLoader,
+    packageName: String,
+    appInfo: ApplicationInfo,
+    initiate: PackageParam.() -> Unit
+) = YukiHook.encase(classLoader, packageName, appInfo, initiate)

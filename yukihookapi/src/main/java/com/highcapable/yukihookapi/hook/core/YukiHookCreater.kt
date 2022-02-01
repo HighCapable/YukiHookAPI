@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-package com.highcapable.yukihookapi.hook
+package com.highcapable.yukihookapi.hook.core
 
 import com.highcapable.yukihookapi.param.HookParam
 import com.highcapable.yukihookapi.param.PackageParam
