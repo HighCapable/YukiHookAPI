@@ -37,15 +37,15 @@ import com.highcapable.yukihookapi.hook.type.BundleClass
 class HookMain : YukiHookInitializeProxy {
 
     override fun onHook() = encase {
-        optApp(name = "com.highcapable.yukihookapi.demo") {
-            classOf(name = "$packageName.MainActivity").hook {
-                grabMember = hookClass.methodOf(name = "hello")
+        loadApp(name = "com.highcapable.yukihookapi.demo") {
+            loadClass(name = "$packageName.MainActivity").hook {
+                grabMember = hookClass.loadMethod(name = "hello")
                 replaceTo(any = "这是一段 Hook 的文字内容")
             }
         }
-        optApp(name = "com.android.browser") {
+        loadApp(name = "com.android.browser") {
             ActivityClass.hook {
-                grabMember = hookClass.methodOf(name = "onCreate", BundleClass)
+                grabMember = hookClass.loadMethod(name = "onCreate", BundleClass)
                 afterHook {
                     Toast.makeText(thisAny as Activity, "Hook Success", Toast.LENGTH_SHORT).show()
                 }

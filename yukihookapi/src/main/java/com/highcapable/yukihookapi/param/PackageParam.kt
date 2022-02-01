@@ -81,11 +81,11 @@ class PackageParam(
     val isFirstApplication get() = instance?.isFirstApplication ?: true
 
     /**
-     * Hook 指定包名的 APP
+     * 装载并 Hook 指定包名的 APP
      * @param name 包名
      * @param initiate 方法体
      */
-    fun optApp(name: String, initiate: PackageParam.() -> Unit) {
+    fun loadApp(name: String, initiate: PackageParam.() -> Unit) {
         if (packageName == name) initiate(this)
     }
 
@@ -95,7 +95,7 @@ class PackageParam(
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到类会报错
      */
-    fun classOf(name: String): Class<*> = appClassLoader.loadClass(name)
+    fun loadClass(name: String): Class<*> = appClassLoader.loadClass(name)
 
     /**
      * 查找目标方法
@@ -104,7 +104,7 @@ class PackageParam(
      * @return [Method]
      * @throws NoSuchMethodError 如果找不到方法会报错
      */
-    fun Class<*>.methodOf(name: String, vararg params: Class<*>): Method =
+    fun Class<*>.loadMethod(name: String, vararg params: Class<*>): Method =
         getDeclaredMethod(name, *params).apply { isAccessible = true }
 
     /**
@@ -113,7 +113,7 @@ class PackageParam(
      * @return [Constructor]
      * @throws NoSuchMethodError 如果找不到方法会报错
      */
-    fun Class<*>.constructorOf(vararg params: Class<*>): Constructor<*> =
+    fun Class<*>.loadConstructor(vararg params: Class<*>): Constructor<*> =
         getDeclaredConstructor(*params).apply { isAccessible = true }
 
     /**
