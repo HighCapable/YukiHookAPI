@@ -29,12 +29,45 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
-import com.highcapable.yukihookapi.YukiHook
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
 import com.highcapable.yukihookapi.param.PackageParam
 
 /**
- * 在 [YukiHookInitializeProxy] 中装载 [YukiHook]
+ * 在 [YukiHookInitializeProxy] 中装载 [YukiHookAPI]
+ * @param moduleName 模块包名 - 不填将无法实现监听模块激活状态
  * @param initiate Hook 方法体
  */
-fun YukiHookInitializeProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook.encase(initiate)
+fun YukiHookInitializeProxy.encase(moduleName: String = "", initiate: PackageParam.() -> Unit) =
+    YukiHookAPI.encase(moduleName, initiate)
+
+/**
+ * 判断模块是否在太极、无极中激活
+ * @return [Boolean] 是否激活
+ */
+val Context.isTaichiModuleActive: Boolean
+    get() {
+        var isModuleActive = false
+        runCatching {
+            var result: Bundle? = null
+            Uri.parse("content://me.weishu.exposed.CP/").also { uri ->
+                runCatching {
+                    result = contentResolver.call(uri, "active", null, null)
+                }.onFailure {
+                    // TaiChi is killed, try invoke
+                    runCatching {
+                        startActivity(Intent("me.weishu.exp.ACTION_ACTIVE").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+                    }.onFailure { return false }
+                }
+                if (result == null)
+                    result = contentResolver.call(Uri.parse("content://me.weishu.exposed.CP/"), "active", null, null)
+                if (result == null) return false
+            }
+            isModuleActive = result?.getBoolean("active", false) == true
+        }
+        return isModuleActive
+    }

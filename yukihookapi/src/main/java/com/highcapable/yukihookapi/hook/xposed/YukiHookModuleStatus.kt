@@ -23,20 +23,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/2.
+ * This file is Created by fankes on 2022/2/3.
  */
-package com.highcapable.yukihookapi.param
+package com.highcapable.yukihookapi.hook.xposed
 
-import android.content.pm.ApplicationInfo
+import android.util.Log
+import androidx.annotation.Keep
+import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.isActive
 
 /**
- * 自定义 [PackageParam] 的装载入口置换类
- * @param appClassLoader APP [ClassLoader]
- * @param appInfo APP [ApplicationInfo]
- * @param packageName 包名
+ * 这是一个 Xposed 模块 Hook 状态类
+ *
+ * 我们需要监听自己的模块是否被激活 - 可直接调用这个类的 [isActive] 方法
  */
-class CustomParam(
-    var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo,
-    var packageName: String
-)
+@Keep
+object YukiHookModuleStatus {
+
+    /**
+     * 此方法经过 Hook 后返回 true 即模块已激活
+     * @return [Boolean]
+     */
+    @Keep
+    fun isActive(): Boolean {
+        Log.d(YukiHookAPI.TAG, "hook this method got active status")
+        return false
+    }
+}

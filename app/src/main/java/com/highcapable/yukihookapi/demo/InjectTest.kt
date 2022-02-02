@@ -23,20 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/2.
+ * This file is Created by fankes on 2022/2/3.
  */
-package com.highcapable.yukihookapi.param
+package com.highcapable.yukihookapi.demo
 
-import android.content.pm.ApplicationInfo
+// for test
+class InjectTest(private val string: String) {
 
-/**
- * 自定义 [PackageParam] 的装载入口置换类
- * @param appClassLoader APP [ClassLoader]
- * @param appInfo APP [ApplicationInfo]
- * @param packageName 包名
- */
-class CustomParam(
-    var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo,
-    var packageName: String
-)
+    // for test
+    fun getString() = string
+}

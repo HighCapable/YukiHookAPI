@@ -31,35 +31,54 @@ package com.highcapable.yukihookapi.hook.xposed
 
 import android.util.Log
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
+import com.highcapable.yukihookapi.hook.type.BooleanType
 import com.highcapable.yukihookapi.param.PackageParam
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
  * 接管 Xposed 的 [IXposedHookLoadPackage] 入口
- * 你可以使用 [YukiHook.encase] 来监听模块开始装载
+ *
+ * 你可以使用 [YukiHookAPI.encase] 或在 [YukiHookInitializeProxy] 中监听模块开始装载
+ *
+ * 需要标识 Hook 入口的类 - 请声明注释 [InjectYukiHookWithXposed]
  */
 @Keep
 class YukiHookLoadPackage : IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
         if (lpparam == null) return
-        try {
+        runCatching {
             /** 执行入口方法 */
             Class.forName(hookEntryClassName()).apply {
                 getDeclaredMethod("onHook").apply { isAccessible = true }
                     .invoke(getDeclaredConstructor().apply { isAccessible = true }.newInstance())
             }
-        } catch (e: Throwable) {
-            Log.e("YukiHookAPI", "Try to load ${hookEntryClassName()} Failed", e)
+        }.onFailure {
+            Log.e(YukiHookAPI.TAG, "Try to load ${hookEntryClassName()} Failed", it)
         }
-        /** 设置装载回调 */
-        YukiHook.packageParamCallback?.invoke(PackageParam(lpparam))
+        /** 装载 APP Hook 实体类 */
+        PackageParam(lpparam).apply {
+            /** Hook 模块激活状态 */
+            loadApp(name = YukiHookAPI.modulePackageName) {
+                YukiHookModuleStatus::class.java.hook {
+                    injectMethod {
+                        name = "isActive"
+                        returnType = BooleanType
+                        replaceToTrue()
+                    }.onFailure { _, t -> Log.e(YukiHookAPI.TAG, "Try to Hook ModuleStatus Failed", t) }
+                }
+            }
+            /** 设置装载回调 */
+            YukiHookAPI.packageParamCallback?.invoke(this)
+        }
     }
 
     /**
-     * 获得目标装载类名 - AOP
+     * 获得目标装载类名 - 通过 APT 自动设置 TODO 待实现
      * @return [String] 目标装载类名
      */
     @Keep

@@ -25,29 +25,68 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.demo.hook
 
-import android.app.Activity
+import android.app.AlertDialog
 import android.widget.Toast
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.demo.InjectTest
+import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
 import com.highcapable.yukihookapi.hook.type.ActivityClass
 import com.highcapable.yukihookapi.hook.type.BundleClass
+import com.highcapable.yukihookapi.hook.type.StringType
 
+@InjectYukiHookWithXposed
 class HookMain : YukiHookInitializeProxy {
 
-    override fun onHook() = encase {
-        loadApp(name = "com.highcapable.yukihookapi.demo") {
-            loadClass(name = "$packageName.MainActivity").hook {
-                grabMember = hookClass.loadMethod(name = "hello")
-                replaceTo(any = "这是一段 Hook 的文字内容")
+    private val moduleName = "com.highcapable.yukihookapi.demo"
+
+    override fun onHook() = encase(moduleName) {
+        loadApp(name = moduleName) {
+            MainActivity::class.java.hook {
+                injectMethod {
+                    name = "test"
+                    returnType = StringType
+                    replaceTo("这段文字已被 Hook 成功")
+                }
+                injectMethod {
+                    name = "test"
+                    param(StringType)
+                    returnType = StringType
+                    beforeHook { args().set("方法参数已被 Hook 成功") }
+                }
+            }
+            InjectTest::class.java.hook {
+                injectConstructor {
+                    param(StringType)
+                    beforeHook { args().set("构造方法已被 Hook 成功") }
+                }
+            }
+            findClass(name = "$packageName.InjectTestName").hook {
+                injectConstructor {
+                    param(StringType)
+                    beforeHook { args().set("构造方法已被 Hook 成功 [2]") }
+                }
             }
         }
         loadApp(name = "com.android.browser") {
             ActivityClass.hook {
-                grabMember = hookClass.loadMethod(name = "onCreate", BundleClass)
-                afterHook {
-                    Toast.makeText(thisAny as Activity, "Hook Success", Toast.LENGTH_SHORT).show()
+                injectMethod {
+                    name = "onCreate"
+                    param(BundleClass)
+                    afterHook {
+                        AlertDialog.Builder(instance())
+                            .setCancelable(false)
+                            .setTitle("测试 Hook")
+                            .setMessage("Hook 已成功")
+                            .setPositiveButton("OK") { _, _ ->
+                                Toast.makeText(instance(), "Hook Success", Toast.LENGTH_SHORT).show()
+                            }.show()
+                    }
                 }
             }
         }

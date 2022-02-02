@@ -30,17 +30,26 @@
 package com.highcapable.yukihookapi
 
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.YukiHook.encase
+import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseField
 import com.highcapable.yukihookapi.param.CustomParam
 import com.highcapable.yukihookapi.param.PackageParam
 
 /**
  * YukiHook 的装载 API 调用类
+ *
  * 可以实现作为模块装载和自定义 Hook 装载两种方式
+ *
  * 模块装载方式已经自动对接 Xposed API - 可直接调用 [encase] 完成操作
  */
-object YukiHook {
+object YukiHookAPI {
+
+    /** 全局标识 */
+    const val TAG = "YukiHookAPI"
+
+    /** Xposed Hook API 绑定的模块包名 */
+    @DoNotUseField
+    internal var modulePackageName = ""
 
     /** Xposed Hook API 方法体回调 */
     @DoNotUseField
@@ -48,9 +57,11 @@ object YukiHook {
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
+     * @param moduleName 模块包名 - 不填将无法实现监听模块激活状态
      * @param initiate Hook 方法体
      */
-    fun encase(initiate: PackageParam.() -> Unit) {
+    fun encase(moduleName: String = "", initiate: PackageParam.() -> Unit) {
+        modulePackageName = moduleName
         packageParamCallback = initiate
     }
 
@@ -66,5 +77,5 @@ object YukiHook {
         packageName: String,
         appInfo: ApplicationInfo,
         initiate: PackageParam.() -> Unit
-    ) = initiate.invoke(PackageParam(customInstance = CustomParam(classLoader, appInfo, packageName)))
+    ) = initiate.invoke(PackageParam(customParam = CustomParam(classLoader, appInfo, packageName)))
 }

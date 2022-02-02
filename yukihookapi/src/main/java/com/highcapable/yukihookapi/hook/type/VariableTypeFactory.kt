@@ -38,6 +38,12 @@ import java.io.Serializable
 val AnyType get() = Any::class.java
 
 /**
+ * 获得 [Unit] 类型
+ * @return [Class]
+ */
+val UnitType get() = Unit::class.javaPrimitiveType
+
+/**
  * 获得 [Boolean] 类型
  * @return [Class]
  */

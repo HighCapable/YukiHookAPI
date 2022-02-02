@@ -30,19 +30,38 @@
 package com.highcapable.yukihookapi.hook.proxy
 
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.factory.encase
 
 /**
  * YukiHook 的 Xposed 装载 API 调用接口
- * 自动调用 [onHook] 完成 Hook 开始操作
+ *
+ * Hook 开始时将自动调用 [onHook] 方法
+ *
+ * 请在 [onHook] 中调用 [YukiHookAPI.encase] 或直接调用 [encase]
+ *
+ * 可写作如下形式：
+ *
+ * override fun onHook() = YukiHookAPI.encase(moduleName = "模块包名") {
+ *
+ * // Your code here.
+ *
+ * }
+ *
+ * 还可写作如下形式：
+ *
+ * override fun onHook() = encase(moduleName = "模块包名") {
+ *
+ * // Your code here.
+ *
+ * }
+ *
+ * 详情请参考 https://github.com/fankes/YukiHookAPI/wiki
  */
 @Keep
 interface YukiHookInitializeProxy {
 
-    /**
-     * 作为模块装载调用入口方法 - Xposed API
-     * 请在此方法中调用 [YukiHook.encase]
-     */
+    /** 模块装载调用入口方法 - Xposed API */
     @Keep
     fun onHook()
 }

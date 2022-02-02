@@ -32,53 +32,57 @@ package com.highcapable.yukihookapi.param
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import java.lang.reflect.Constructor
-import java.lang.reflect.Method
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
- * 如果是侵入式 Hook 自身 APP 可将参数 [instance] 置空获得当前类的 [ClassLoader]
- * @param instance 对接 Xposed API 的 [XC_LoadPackage.LoadPackageParam] - 默认空
- * @param customInstance 自定义装载类 - 默认空
+ *
+ * 如果你想将 YukiHook 作为 Hook API 使用 - 你可自定义 [customParam]
+ *
+ * ⚠️ 特别注意如果 [baseParam] 和 [customParam] 都为空将发生问题
+ * @param baseParam 对接 Xposed API 的 [XC_LoadPackage.LoadPackageParam] - 默认空
+ * @param customParam 自定义装载类 - 默认空
  */
 class PackageParam(
-    private val instance: XC_LoadPackage.LoadPackageParam? = null,
-    private val customInstance: CustomParam? = null
+    private val baseParam: XC_LoadPackage.LoadPackageParam? = null,
+    private val customParam: CustomParam? = null
 ) {
 
     /**
      * 获取当前 APP 的 [ClassLoader]
      * @return [ClassLoader]
-     * @throws IllegalStateException 如果 ClassLoader 是空的
+     * @throws IllegalStateException 如果 [ClassLoader] 是空的
      */
     val appClassLoader
-        get() = instance?.classLoader ?: customInstance?.appClassLoader ?: javaClass.classLoader
+        get() = baseParam?.classLoader ?: customParam?.appClassLoader ?: javaClass.classLoader
         ?: error("PackageParam ClassLoader is null")
 
     /**
      * 获取当前 APP 的 [ApplicationInfo]
      * @return [ApplicationInfo]
      */
-    val appInfo get() = instance?.appInfo ?: customInstance?.appInfo ?: ApplicationInfo()
+    val appInfo get() = baseParam?.appInfo ?: customParam?.appInfo ?: ApplicationInfo()
 
     /**
      * 获取当前 APP 的进程名称
-     * 默认的进程名称是 [packageName]
+     *
+     * 默认的进程名称是 [packageName] 如果自定义了 [customParam] 将返回包名
      * @return [String]
      */
-    val processName get() = instance?.processName ?: ""
+    val processName get() = baseParam?.processName ?: customParam?.packageName ?: ""
 
     /**
      * 获取当前 APP 的包名
      * @return [String]
      */
-    val packageName get() = instance?.packageName ?: customInstance?.packageName ?: ""
+    val packageName get() = baseParam?.packageName ?: customParam?.packageName ?: ""
 
     /**
      * 获取当前 APP 是否为第一个 Application
+     *
+     * 若自定义了 [customParam] 将永远返回 true
      * @return [Boolean]
      */
-    val isFirstApplication get() = instance?.isFirstApplication ?: true
+    val isFirstApplication get() = baseParam?.isFirstApplication ?: true
 
     /**
      * 装载并 Hook 指定包名的 APP
@@ -90,36 +94,26 @@ class PackageParam(
     }
 
     /**
-     * 通过字符串装载 [Class]
+     * 将目标 [Class] 绑定到 [appClassLoader]
+     *
+     * ⚠️ 请注意未绑定到 [appClassLoader] 的 [Class] 不能被装载 - 调用 [hook] 方法会自动绑定
+     * @return [Class]
+     * @throws NoClassDefFoundError 如果找不到类会报错
+     */
+    fun Class<*>.bind(): Class<*> = appClassLoader.loadClass(name)
+
+    /**
+     * 通过 [appClassLoader] 查询并装载 [Class]
      * @param name 类名
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到类会报错
      */
-    fun loadClass(name: String): Class<*> = appClassLoader.loadClass(name)
-
-    /**
-     * 查找目标方法
-     * @param name 方法名
-     * @param params 方法参数 - 没有可空
-     * @return [Method]
-     * @throws NoSuchMethodError 如果找不到方法会报错
-     */
-    fun Class<*>.loadMethod(name: String, vararg params: Class<*>): Method =
-        getDeclaredMethod(name, *params).apply { isAccessible = true }
-
-    /**
-     * 查找目标构造类
-     * @param params 方法参数 - 没有可空
-     * @return [Constructor]
-     * @throws NoSuchMethodError 如果找不到方法会报错
-     */
-    fun Class<*>.loadConstructor(vararg params: Class<*>): Constructor<*> =
-        getDeclaredConstructor(*params).apply { isAccessible = true }
+    fun findClass(name: String): Class<*> = appClassLoader.loadClass(name)
 
     /**
      * Hook 方法、构造类
      * @param initiate 方法体
      */
     fun Class<*>.hook(initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(instance = this@PackageParam, hookClass = this).apply(initiate).hook()
+        YukiHookCreater(packageParam = this@PackageParam, hookClass = bind()).apply(initiate).hook()
 }

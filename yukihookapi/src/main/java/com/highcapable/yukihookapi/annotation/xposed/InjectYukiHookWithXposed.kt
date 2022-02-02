@@ -23,20 +23,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/2.
+ * This file is Created by fankes on 2022/2/3.
  */
-package com.highcapable.yukihookapi.param
+package com.highcapable.yukihookapi.annotation.xposed
 
-import android.content.pm.ApplicationInfo
+import androidx.annotation.Keep
+import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
+import com.highcapable.yukihookapi.hook.xposed.YukiHookLoadPackage
 
 /**
- * 自定义 [PackageParam] 的装载入口置换类
- * @param appClassLoader APP [ClassLoader]
- * @param appInfo APP [ApplicationInfo]
- * @param packageName 包名
+ * 标识注入 YukiHook 的类
+ *
+ * 此类将使用 [YukiHookLoadPackage] 自动调用 XposedInit
+ *
+ * 你可以将被注释的类继承于 [YukiHookInitializeProxy] 接口实现 [YukiHookInitializeProxy.onHook] 方法
+ *
+ * 只能拥有一个 Hook 入口 - 多个入口将以首个得到的入口为准
  */
-class CustomParam(
-    var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo,
-    var packageName: String
-)
+@Target(AnnotationTarget.CLASS)
+@Keep
+annotation class InjectYukiHookWithXposed

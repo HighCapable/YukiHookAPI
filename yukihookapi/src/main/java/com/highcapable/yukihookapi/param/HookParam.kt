@@ -35,86 +35,105 @@ import java.lang.reflect.Method
 
 /**
  * Hook 方法、构造类的目标对象实现类
- * @param instance 对接 Xposed API 的 [XC_MethodHook.MethodHookParam]
+ * @param baseParam 对接 Xposed API 的 [XC_MethodHook.MethodHookParam]
  */
-class HookParam(private val instance: XC_MethodHook.MethodHookParam) {
+class HookParam(private val baseParam: XC_MethodHook.MethodHookParam) {
 
     /**
-     * 获取 Hook 方法的参数对象数组
+     * 获取当前 [method] or [constructor] 的参数对象数组
      * @return [Array]
      */
-    val args get() = instance.args ?: arrayOf(0)
+    val args get() = baseParam.args ?: arrayOf(0)
 
     /**
-     * 获取 Hook 方法的参数对象数组第一位
+     * 获取当前 [method] or [constructor] 的参数对象数组第一位
      * @return [Array]
      * @throws IllegalStateException 如果数组为空或对象为空
      */
     val firstArgs get() = args[0] ?: error("HookParam args[0] with a non-null object")
 
     /**
-     * 获取 Hook 方法的参数对象数组最后一位
+     * 获取当前 [method] or [constructor] 的参数对象数组最后一位
      * @return [Array]
      * @throws IllegalStateException 如果数组为空或对象为空
      */
     val lastArgs get() = args[args.lastIndex] ?: error("HookParam args[lastIndex] with a non-null object")
 
     /**
-     * 获取 Hook 实例的 Class
-     * @return [Class]
-     */
-    val thisClass get() = instance.thisObject.javaClass
-
-    /**
-     * 获取 Hook 实例的对象
+     * 获取当前 Hook 实例的对象
      * @return [Any]
      * @throws IllegalStateException 如果对象为空
      */
-    val thisAny get() = instance.thisObject ?: error("HookParam must with a non-null object")
+    val instance get() = baseParam.thisObject ?: error("HookParam must with a non-null object")
 
     /**
-     * 获取 Hook 当前普通方法
+     * 获取当前 Hook 实例的类对象
+     * @return [Class]
+     */
+    val instanceClass get() = instance.javaClass
+
+    /**
+     * 获取当前 Hook 的方法
      * @return [Method]
      * @throws IllegalStateException 如果方法为空或方法类型不是 [Method]
      */
-    val method get() = instance.method as? Method? ?: error("Current hook method type is wrong or null")
+    val method get() = baseParam.method as? Method? ?: error("Current hook method type is wrong or null")
 
     /**
-     * 获取 Hook 当前构造方法
+     * 获取当前 Hook 的构造方法
      * @return [Constructor]
      * @throws IllegalStateException 如果方法为空或方法类型不是 [Constructor]
      */
-    val constructor get() = instance.method as? Constructor<*>? ?: error("Current hook constructor type is wrong or null")
+    val constructor get() = baseParam.method as? Constructor<*>? ?: error("Current hook constructor type is wrong or null")
 
     /**
-     * 获取、设置 Hook 方法的返回值
+     * 获取、设置当前 [method] or [constructor] 的返回值
      * @return [Any] or null
      */
     var result: Any?
-        get() = instance.result
+        get() = baseParam.result
         set(value) {
-            instance.result = value
+            baseParam.result = value
         }
 
     /**
-     * 获取 Hook 实例的对象 [T]
-     * @return [Any]
+     * 获取当前 Hook 实例的对象 [T]
+     * @return [T]
      * @throws IllegalStateException 如果对象为空或对象类型不是 [T]
      */
-    inline fun <reified T> thisAny() = thisAny as? T? ?: error("HookParam object cannot cast to ${T::class.java.name}")
+    inline fun <reified T> instance() = instance as? T? ?: error("HookParam object cannot cast to ${T::class.java.name}")
 
     /**
-     * 获取 Hook 方法的参数实例化对象类
+     * 获取当前 [method] or [constructor] 的参数实例化对象类
      * @param index 参数对象数组下标 - 默认是 0
      * @return [Array]
      */
     fun args(index: Int = 0) = ArgsModifyer(index)
 
     /**
-     * 拦截整个方法体
+     * 设置 [result] 返回值为 true
+     *
+     * 请确保返回值类型为 [Boolean]
+     */
+    fun resultTrue() {
+        result = true
+    }
+
+    /**
+     * 设置 [result] 返回值为 false
+     *
+     * 请确保返回值类型为 [Boolean]
+     */
+    fun resultFalse() {
+        result = false
+    }
+
+    /**
+     * 设置返回值为 null
+     *
      * 此方法将强制设置方法体的 [result] 为 null
      */
-    fun intercept() {
+    fun resultNull() {
         result = null
     }
 
@@ -132,24 +151,27 @@ class HookParam(private val instance: XC_MethodHook.MethodHookParam) {
         fun <T> set(any: T?) {
             if (args.isEmpty()) error("HookParam method args is empty,mabe not has args")
             if (index > args.lastIndex) error("HookParam method args index out of bounds,max is ${args.lastIndex}")
-            instance.args[index] = any
+            baseParam.args[index] = any
         }
 
         /**
          * 设置方法参数的实例对象为 null
+         *
          * 此方法可以将任何被 Hook 的目标对象设置为空
          */
         fun setNull() = set(null)
 
         /**
          * 设置方法参数的实例对象为 true
-         * 请确保目标对象的类型是 [Boolean] 不然会出错
+         *
+         * 请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setTrue() = set(true)
 
         /**
          * 设置方法参数的实例对象为 false
-         * 请确保目标对象的类型是 [Boolean] 不然会出错
+         *
+         * 请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setFalse() = set(false)
     }

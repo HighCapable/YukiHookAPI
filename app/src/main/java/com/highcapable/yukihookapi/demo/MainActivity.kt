@@ -25,11 +25,14 @@
  *
  * This file is Created by fankes on 2022/1/29.
  */
+@file:Suppress("SameParameterValue")
+
 package com.highcapable.yukihookapi.demo
 
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,11 +41,30 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // for test
         AlertDialog.Builder(this)
-            .setMessage(hello())
-            .setPositiveButton("OK", null)
-            .show()
+            .setTitle("Hook 方法返回值测试")
+            .setMessage(test() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+            .setPositiveButton("下一个") { _, _ ->
+                AlertDialog.Builder(this)
+                    .setTitle("Hook 方法参数测试")
+                    .setMessage(test("这是没有更改的文字") + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+                    .setPositiveButton("下一个") { _, _ ->
+                        AlertDialog.Builder(this)
+                            .setTitle("Hook 构造方法测试(stub)")
+                            .setMessage(InjectTest("文字未更改").getString() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+                            .setPositiveButton("下一个") { _, _ ->
+                                AlertDialog.Builder(this)
+                                    .setTitle("Hook 构造方法测试(名称)")
+                                    .setMessage(InjectTestName("文字没更改").getString() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+                                    .setPositiveButton("完成", null)
+                                    .show()
+                            }.show()
+                    }.show()
+            }.show()
     }
 
     // for test
-    private fun hello() = "正常显示的一行文字"
+    private fun test() = "正常显示的一行文字"
+
+    // for test
+    private fun test(string: String) = string
 }
