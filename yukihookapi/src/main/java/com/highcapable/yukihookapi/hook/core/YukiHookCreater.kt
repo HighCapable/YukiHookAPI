@@ -113,6 +113,13 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         var returnType: Class<*>? = null
 
         /**
+         * 手动指定方法
+         *
+         * 你可以调用 [hookClass] 来手动查询要 Hook 的方法
+         */
+        var specify: Member? = null
+
+        /**
          * 方法参数
          * @param param 参数数组
          */
@@ -217,7 +224,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @throws NoSuchMethodError 如果找不到方法
          */
         private val hookMember: Member by lazy {
-            when {
+            specify ?: when {
                 name.isBlank() && !isConstructor -> error("Method name cannot be empty")
                 isConstructor ->
                     if (params != null)
@@ -295,7 +302,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             Log.e(YukiHookAPI.TAG, "Try to hook $hookClass[$hookMember] got an Exception", throwable)
         }
 
-        override fun toString() = "$name$returnType$params$isConstructor$hookMember$hookClass#YukiHook"
+        override fun toString() = "$name$returnType$params$isConstructor$hookMember$hookClass$specify#YukiHook"
 
         /**
          * 监听 Hook 结果实现类

@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.hook.factory.encase
+import com.highcapable.yukihookapi.hook.factory.findMethod
 import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
 import com.highcapable.yukihookapi.hook.type.ActivityClass
 import com.highcapable.yukihookapi.hook.type.BundleClass
@@ -86,6 +87,12 @@ class HookMain : YukiHookInitializeProxy {
                             .setPositiveButton("OK") { _, _ ->
                                 Toast.makeText(instance(), "Hook Success", Toast.LENGTH_SHORT).show()
                             }.show()
+                    }
+                }
+                injectMethod {
+                    specify = hookClass.findMethod(name = "onStart")
+                    afterHook {
+                        Toast.makeText(instance(), "手动 Hook", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
