@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.param
 
 import android.content.pm.ApplicationInfo
+import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -89,6 +90,7 @@ open class PackageParam(
      * 赋值并克隆另一个 [PackageParam]
      * @param another 另一个 [PackageParam]
      */
+    @DoNotUseMethod
     internal fun baseAssignInstance(another: PackageParam) {
         this.baseParam = another.baseParam
         this.customParam = another.customParam
