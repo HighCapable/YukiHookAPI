@@ -57,7 +57,7 @@ object YukiHookAPI {
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
-     * @param moduleName 模块包名 - 不填将无法实现监听模块激活状态
+     * @param moduleName 模块包名 - 填入当前的 BuildConfig.APPLICATION_ID
      * @param initiate Hook 方法体
      */
     fun encase(moduleName: String = "", initiate: PackageParam.() -> Unit) {

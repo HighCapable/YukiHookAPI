@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.param.PackageParam
 
 /**
  * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
- * @param moduleName 模块包名 - 不填将无法实现监听模块激活状态
+ * @param moduleName 模块包名 - 填入当前的 BuildConfig.APPLICATION_ID
  * @param initiate Hook 方法体
  */
 fun YukiHookXposedInitProxy.encase(moduleName: String = "", initiate: PackageParam.() -> Unit) =
