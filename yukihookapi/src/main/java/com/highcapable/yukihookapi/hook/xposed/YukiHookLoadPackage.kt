@@ -86,5 +86,5 @@ class YukiHookLoadPackage : IXposedHookLoadPackage {
      * @return [String] 目标装载类名
      */
     @Keep
-    private fun hookEntryClassName() = "com.highcapable.yukihookapi.demo.hook.HookMain"
+    private fun hookEntryClassName() = "com.highcapable.yukihookapi.demo.hook.inject.MainInjecter"
 }

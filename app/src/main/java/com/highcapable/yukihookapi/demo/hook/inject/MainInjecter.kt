@@ -50,7 +50,7 @@ class MainInjecter : YukiHookXposedInitProxy {
 
     override fun onHook() {
         // 方案 1
-        encase(BuildConfig.APPLICATION_ID, MainHooker(), SecondHooker())
+        // encase(BuildConfig.APPLICATION_ID, MainHooker(), SecondHooker())
         // 方案 2
         encase(BuildConfig.APPLICATION_ID) {
             loadApp(name = BuildConfig.APPLICATION_ID) {
