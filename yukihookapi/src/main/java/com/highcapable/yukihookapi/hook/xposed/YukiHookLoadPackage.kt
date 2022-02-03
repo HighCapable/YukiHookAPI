@@ -33,7 +33,7 @@ import android.util.Log
 import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
+import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.type.BooleanType
 import com.highcapable.yukihookapi.param.PackageParam
 import de.robv.android.xposed.IXposedHookLoadPackage
@@ -42,7 +42,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 /**
  * 接管 Xposed 的 [IXposedHookLoadPackage] 入口
  *
- * 你可以使用 [YukiHookAPI.encase] 或在 [YukiHookInitializeProxy] 中监听模块开始装载
+ * 你可以使用 [YukiHookAPI.encase] 或在 [YukiHookXposedInitProxy] 中监听模块开始装载
  *
  * 需要标识 Hook 入口的类 - 请声明注释 [InjectYukiHookWithXposed]
  */

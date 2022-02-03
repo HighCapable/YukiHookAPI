@@ -34,15 +34,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
+import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.param.PackageParam
 
 /**
- * 在 [YukiHookInitializeProxy] 中装载 [YukiHookAPI]
+ * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
  * @param moduleName 模块包名 - 不填将无法实现监听模块激活状态
  * @param initiate Hook 方法体
  */
-fun YukiHookInitializeProxy.encase(moduleName: String = "", initiate: PackageParam.() -> Unit) =
+fun YukiHookXposedInitProxy.encase(moduleName: String = "", initiate: PackageParam.() -> Unit) =
     YukiHookAPI.encase(moduleName, initiate)
 
 /**

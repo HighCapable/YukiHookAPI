@@ -59,7 +59,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
  * 详情请参考 https://github.com/fankes/YukiHookAPI/wiki
  */
 @Keep
-interface YukiHookInitializeProxy {
+interface YukiHookXposedInitProxy {
 
     /** 模块装载调用入口方法 - Xposed API */
     @Keep

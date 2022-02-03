@@ -106,7 +106,7 @@ class HookParam(private val baseParam: XC_MethodHook.MethodHookParam) {
     /**
      * 获取当前 [method] or [constructor] 的参数实例化对象类
      * @param index 参数对象数组下标 - 默认是 0
-     * @return [Array]
+     * @return [ArgsModifyer]
      */
     fun args(index: Int = 0) = ArgsModifyer(index)
 

@@ -28,7 +28,7 @@
 package com.highcapable.yukihookapi.annotation.xposed
 
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
+import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.xposed.YukiHookLoadPackage
 
 /**
@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookLoadPackage
  *
  * 此类将使用 [YukiHookLoadPackage] 自动调用 XposedInit
  *
- * 你可以将被注释的类继承于 [YukiHookInitializeProxy] 接口实现 [YukiHookInitializeProxy.onHook] 方法
+ * 你可以将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法
  *
  * 只能拥有一个 Hook 入口 - 多个入口将以首个得到的入口为准
  */

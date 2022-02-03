@@ -36,13 +36,13 @@ import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.factory.findMethod
-import com.highcapable.yukihookapi.hook.proxy.YukiHookInitializeProxy
+import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.type.ActivityClass
 import com.highcapable.yukihookapi.hook.type.BundleClass
 import com.highcapable.yukihookapi.hook.type.StringType
 
 @InjectYukiHookWithXposed
-class HookMain : YukiHookInitializeProxy {
+class HookMain : YukiHookXposedInitProxy {
 
     private val moduleName = "com.highcapable.yukihookapi.demo"
 
