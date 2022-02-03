@@ -42,7 +42,7 @@ import de.robv.android.xposed.XposedBridge
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookAPI.TAG]
  * @param msg 日志打印的内容
  */
-fun loggerD(tag: String = YukiHookAPI.TAG, msg: String) {
+fun loggerD(tag: String = YukiHookAPI.TAG, msg: String) = runCatching {
     Log.d(tag, msg)
     XposedBridge.log("[$tag][D]--> $msg")
 }
@@ -56,7 +56,7 @@ fun loggerD(tag: String = YukiHookAPI.TAG, msg: String) {
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookAPI.TAG]
  * @param msg 日志打印的内容
  */
-fun loggerI(tag: String = YukiHookAPI.TAG, msg: String) {
+fun loggerI(tag: String = YukiHookAPI.TAG, msg: String) = runCatching {
     Log.i(tag, msg)
     XposedBridge.log("[$tag][I]--> $msg")
 }
@@ -70,7 +70,7 @@ fun loggerI(tag: String = YukiHookAPI.TAG, msg: String) {
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookAPI.TAG]
  * @param msg 日志打印的内容
  */
-fun loggerW(tag: String = YukiHookAPI.TAG, msg: String) {
+fun loggerW(tag: String = YukiHookAPI.TAG, msg: String) = runCatching {
     Log.w(tag, msg)
     XposedBridge.log("[$tag][W]--> $msg")
 }
@@ -85,7 +85,7 @@ fun loggerW(tag: String = YukiHookAPI.TAG, msg: String) {
  * @param msg 日志打印的内容
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
  */
-fun loggerE(tag: String = YukiHookAPI.TAG, msg: String, e: Throwable? = null) {
+fun loggerE(tag: String = YukiHookAPI.TAG, msg: String, e: Throwable? = null) = runCatching {
     Log.e(tag, msg, e)
     XposedBridge.log("[$tag][E]--> $msg")
     e?.also { XposedBridge.log(it) }
