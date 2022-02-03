@@ -32,6 +32,9 @@ package com.highcapable.yukihookapi.hook.xposed
 import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.hook.factory.clazz
+import com.highcapable.yukihookapi.hook.factory.findConstructor
+import com.highcapable.yukihookapi.hook.factory.findMethod
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.type.BooleanType
@@ -53,9 +56,8 @@ class YukiHookLoadPackage : IXposedHookLoadPackage {
         if (lpparam == null) return
         runCatching {
             /** 执行入口方法 */
-            Class.forName(hookEntryClassName()).apply {
-                getDeclaredMethod("onHook").apply { isAccessible = true }
-                    .invoke(getDeclaredConstructor().apply { isAccessible = true }.newInstance())
+            hookEntryClassName().clazz.apply {
+                findMethod(name = "onHook")?.invoke(findConstructor()?.newInstance())
             }
         }.onFailure {
             loggerE(msg = "Try to load ${hookEntryClassName()} Failed", e = it)
