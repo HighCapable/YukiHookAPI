@@ -27,6 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.entity
 
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.param.PackageParam
 
@@ -39,7 +40,7 @@ import com.highcapable.yukihookapi.param.PackageParam
  *
  * 你可以在 [YukiHookXposedInitProxy] 的 [YukiHookXposedInitProxy.onHook] 中实现如下用法
  *
- * 调用 [PackageParam.loadApp] loadApp(name = "包名", hooker = CustomHooker())
+ * 调用 [YukiHookAPI.encase] encase(moduleName = "模块包名", MainHooker(), SecondHooker(), ThirdHooker() ...)
  *
  * 调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
  *
