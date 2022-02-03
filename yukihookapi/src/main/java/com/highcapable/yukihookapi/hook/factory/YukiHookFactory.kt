@@ -34,6 +34,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.param.PackageParam
 
@@ -44,6 +45,15 @@ import com.highcapable.yukihookapi.param.PackageParam
  */
 fun YukiHookXposedInitProxy.encase(moduleName: String = "", initiate: PackageParam.() -> Unit) =
     YukiHookAPI.encase(moduleName, initiate)
+
+/**
+ * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
+ * @param moduleName 模块包名 - 填入当前的 BuildConfig.APPLICATION_ID
+ * @param hooker Hook 子类数组 - 必填不能为空
+ * @throws IllegalStateException 如果 [hooker] 是空的
+ */
+fun YukiHookXposedInitProxy.encase(moduleName: String = "", vararg hooker: YukiBaseHooker) =
+    YukiHookAPI.encase(moduleName, *hooker)
 
 /**
  * 判断模块是否在太极、无极中激活

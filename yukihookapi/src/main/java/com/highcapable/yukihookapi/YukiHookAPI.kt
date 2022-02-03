@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseField
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.param.CustomParam
 import com.highcapable.yukihookapi.param.PackageParam
 
@@ -63,6 +64,21 @@ object YukiHookAPI {
     fun encase(moduleName: String = "", initiate: PackageParam.() -> Unit) {
         modulePackageName = moduleName
         packageParamCallback = initiate
+    }
+
+    /**
+     * 作为模块装载调用入口方法 - Xposed API
+     * @param moduleName 模块包名 - 填入当前的 BuildConfig.APPLICATION_ID
+     * @param hooker Hook 子类数组 - 必填不能为空
+     * @throws IllegalStateException 如果 [hooker] 是空的
+     */
+    fun encase(moduleName: String = "", vararg hooker: YukiBaseHooker) {
+        modulePackageName = moduleName
+        packageParamCallback = {
+            if (hooker.isNotEmpty())
+                hooker.forEach { it.assignInstance(packageParam = this) }
+            else error("Hooker is empty")
+        }
     }
 
     /**

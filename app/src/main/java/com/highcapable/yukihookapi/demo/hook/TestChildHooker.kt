@@ -23,42 +23,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/3.
+ * This file is Created by fankes on 2022/2/4.
  */
 package com.highcapable.yukihookapi.demo.hook
 
-import android.app.AlertDialog
-import android.widget.Toast
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.findMethod
-import com.highcapable.yukihookapi.hook.type.ActivityClass
-import com.highcapable.yukihookapi.hook.type.BundleClass
+import com.highcapable.yukihookapi.hook.type.StringType
 
 // for test
-class ThirdHooker : YukiBaseHooker() {
+class TestChildHooker : YukiBaseHooker() {
 
     override fun onHook() =
-        ActivityClass.hook {
+        findClass(name = "$packageName.InjectTestName").hook {
             injectMember {
-                method {
-                    name = "onCreate"
-                    param(BundleClass)
-                }
-                afterHook {
-                    AlertDialog.Builder(instance())
-                        .setCancelable(false)
-                        .setTitle("测试 Hook")
-                        .setMessage("Hook 已成功")
-                        .setPositiveButton("OK") { _, _ ->
-                            Toast.makeText(instance(), "Hook Success", Toast.LENGTH_SHORT).show()
-                        }.show()
-                }
-            }
-            injectMember {
-                member = hookClass.findMethod(name = "onStart")
-                afterHook {
-                    Toast.makeText(instance(), "手动 Hook", Toast.LENGTH_SHORT).show()
-                }
+                constructor { param(StringType) }
+                beforeHook { args().set("构造方法已被 Hook 成功 [2]") }
             }
         }
 }

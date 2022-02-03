@@ -44,8 +44,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  * @param customParam 自定义装载类 - 默认空
  */
 open class PackageParam(
-    private val baseParam: XC_LoadPackage.LoadPackageParam? = null,
-    private val customParam: CustomParam? = null
+    private var baseParam: XC_LoadPackage.LoadPackageParam? = null,
+    private var customParam: CustomParam? = null
 ) {
 
     /**
@@ -86,6 +86,15 @@ open class PackageParam(
     val isFirstApplication get() = baseParam?.isFirstApplication ?: true
 
     /**
+     * 赋值并克隆另一个 [PackageParam]
+     * @param another 另一个 [PackageParam]
+     */
+    internal fun baseAssignInstance(another: PackageParam) {
+        this.baseParam = another.baseParam
+        this.customParam = another.customParam
+    }
+
+    /**
      * 装载并 Hook 指定包名的 APP
      * @param name 包名
      * @param initiate 方法体
@@ -95,19 +104,12 @@ open class PackageParam(
     }
 
     /**
-     * 装载并 Hook 指定包名的 APP
-     * @param name 包名
-     * @param hooker Hook 子类
-     */
-    fun loadApp(name: String, hooker: YukiBaseHooker) {
-        if (packageName == name) hooker.onHook()
-    }
-
-    /**
      * 装载 Hook 子类
+     *
+     * 你可以在 Hooker 中继续装载 Hooker
      * @param hooker Hook 子类
      */
-    fun loadHooker(hooker: YukiBaseHooker) = hooker.onHook()
+    fun loadHooker(hooker: YukiBaseHooker) = hooker.assignInstance(packageParam = this)
 
     /**
      * 将目标 [Class] 绑定到 [appClassLoader]

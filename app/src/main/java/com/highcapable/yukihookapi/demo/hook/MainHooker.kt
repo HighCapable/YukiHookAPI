@@ -29,21 +29,16 @@
 
 package com.highcapable.yukihookapi.demo.hook
 
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo.BuildConfig
 import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
-import com.highcapable.yukihookapi.hook.factory.encase
-import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.type.StringType
 
-@InjectYukiHookWithXposed
-class MainHooker : YukiHookXposedInitProxy {
+class MainHooker : YukiBaseHooker() {
 
-    private val moduleName = BuildConfig.APPLICATION_ID
-
-    override fun onHook() = encase(moduleName) {
-        loadApp(name = moduleName) {
+    override fun onHook() =
+        loadApp(name = BuildConfig.APPLICATION_ID) {
             MainActivity::class.java.hook {
                 injectMember {
                     method {
@@ -67,8 +62,6 @@ class MainHooker : YukiHookXposedInitProxy {
                     beforeHook { args().set("构造方法已被 Hook 成功") }
                 }
             }
-            loadHooker(hooker = SecondHooker())
+            loadHooker(hooker = TestChildHooker())
         }
-        loadApp(name = "com.android.browser", hooker = ThirdHooker())
-    }
 }

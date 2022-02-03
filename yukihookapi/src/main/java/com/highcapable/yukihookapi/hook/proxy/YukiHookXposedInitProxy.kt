@@ -64,6 +64,14 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * ....
  *
+ * 若你喜欢分类创建 Hooker - 还可以这样写：
+ *
+ * ......
+ *
+ * override fun onHook() = encase(moduleName = "模块包名", MainHooker(), SecondHooker(), ThirdHooker() ...)
+ *
+ * ......
+ *
  * 详情请参考 https://github.com/fankes/YukiHookAPI/wiki
  */
 @Keep

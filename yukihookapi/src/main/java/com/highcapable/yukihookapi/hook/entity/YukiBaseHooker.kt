@@ -65,6 +65,15 @@ import com.highcapable.yukihookapi.param.PackageParam
  */
 abstract class YukiBaseHooker : PackageParam() {
 
+    /**
+     * 赋值并克隆一个 [PackageParam]
+     * @param packageParam 需要使用的 [PackageParam]
+     */
+    internal fun assignInstance(packageParam: PackageParam) {
+        baseAssignInstance(packageParam)
+        onHook()
+    }
+
     /** 子类 Hook 开始 */
     abstract fun onHook()
 }
