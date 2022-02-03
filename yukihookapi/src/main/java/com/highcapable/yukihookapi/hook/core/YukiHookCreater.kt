@@ -30,17 +30,17 @@
 package com.highcapable.yukihookapi.hook.core
 
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
+import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
+import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.log.loggerE
-import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
 import com.highcapable.yukihookapi.param.HookParam
 import com.highcapable.yukihookapi.param.PackageParam
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
-import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
-import java.lang.reflect.Method
 
 /**
  * YukiHook 核心类实现方法
@@ -122,7 +122,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          */
         fun method(initiate: MethodFinder.() -> Unit) {
             runCatching {
-                member = MethodFinder().apply(initiate).find()
+                member = MethodFinder(hookClass).apply(initiate).find()
             }.onFailure {
                 isStopHookMode = true
                 onNoSuchMemberCallback?.invoke(it)
@@ -139,7 +139,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit) {
             runCatching {
-                member = ConstructorFinder().apply(initiate).find()
+                member = ConstructorFinder(hookClass).apply(initiate).find()
             }.onFailure {
                 isStopHookMode = true
                 onNoSuchMemberCallback?.invoke(it)
@@ -155,13 +155,13 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          */
         fun HookParam.field(initiate: FieldFinder.() -> Unit) =
             try {
-                FieldFinder().apply(initiate).find()
+                FieldFinder(hookClass).apply(initiate).find()
             } catch (e: Throwable) {
                 isStopHookMode = true
                 onNoSuchMemberCallback?.invoke(e)
                 onFailureCallback?.invoke(e)
                 if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(e)
-                FieldFinder().Result()
+                FieldFinder(hookClass).Result()
             }
 
         /**
@@ -334,135 +334,6 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             loggerE(msg = "Try to hook $hookClass[$member] got an Exception", e = throwable)
 
         override fun toString() = "$member#YukiHook"
-
-        /**
-         * [Field] 查找类
-         *
-         * 可通过指定类型查找指定变量
-         */
-        inner class FieldFinder {
-
-            /** 当前找到的 [Field] */
-            private var fieldInstance: Field? = null
-
-            /** 变量名 */
-            var name = ""
-
-            /** 变量类型 */
-            var type: Class<*>? = null
-
-            /**
-             * 得到变量处理结果
-             * @return [Result]
-             * @throws NoSuchFieldError 如果找不到变量
-             */
-            @DoNotUseMethod
-            fun find(): Result {
-                fieldInstance = when {
-                    name.isBlank() -> error("Field name cannot be empty")
-                    else -> ReflectionUtils.findFieldIfExists(hookClass, type?.name, name)
-                }
-                return Result()
-            }
-
-            /**
-             * Field 查找结果实现类
-             *
-             * 可在这里处理找到的 [fieldInstance]
-             */
-            inner class Result {
-
-                /**
-                 * 设置变量实例
-                 * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-                 * @param any 设置的实例内容
-                 */
-                fun set(instance: Any? = null, any: Any?) = fieldInstance?.set(instance, any)
-
-                /**
-                 * 得到变量实例
-                 * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-                 * @return [Field] or null
-                 */
-                fun <T> get(instance: Any? = null) = fieldInstance?.get(instance) as? T?
-
-                /**
-                 * 得到变量本身
-                 * @return [Field] or null
-                 */
-                fun find() = fieldInstance
-            }
-        }
-
-        /**
-         * [Method] 查找类
-         *
-         * 可通过指定类型查找指定方法
-         */
-        inner class MethodFinder {
-
-            /** 方法参数 */
-            private var params: Array<out Class<*>>? = null
-
-            /** 方法名 */
-            var name = ""
-
-            /** 方法返回值 */
-            var returnType: Class<*>? = null
-
-            /**
-             * 方法参数
-             * @param param 参数数组
-             */
-            fun param(vararg param: Class<*>) {
-                params = param
-            }
-
-            /**
-             * 得到方法 - 不能在外部调用
-             * @return [Method]
-             * @throws NoSuchMethodError 如果找不到方法
-             */
-            @DoNotUseMethod
-            fun find(): Method =
-                when {
-                    name.isBlank() -> error("Method name cannot be empty")
-                    else ->
-                        if (params != null)
-                            ReflectionUtils.findMethodBestMatch(hookClass, returnType, name, *params!!)
-                        else ReflectionUtils.findMethodNoParam(hookClass, returnType, name)
-                }
-        }
-
-        /**
-         * [Constructor] 查找类
-         *
-         * 可通过指定类型查找指定构造类
-         */
-        inner class ConstructorFinder {
-
-            /** 方法参数 */
-            private var params: Array<out Class<*>>? = null
-
-            /**
-             * 方法参数
-             * @param param 参数数组
-             */
-            fun param(vararg param: Class<*>) {
-                params = param
-            }
-
-            /**
-             * 得到构造类 - 不能在外部调用
-             * @return [Constructor]
-             * @throws NoSuchMethodError 如果找不到构造类
-             */
-            @DoNotUseMethod
-            fun find(): Constructor<*> =
-                if (params != null)
-                    ReflectionUtils.findConstructorExact(hookClass, *params!!)
-                else ReflectionUtils.findConstructorExact(hookClass)
-        }
 
         /**
          * 监听 Hook 结果实现类
