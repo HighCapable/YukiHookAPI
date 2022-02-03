@@ -70,7 +70,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
     @DoNotUseMethod
     fun hook() {
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
-        hookMembers.forEach { (_, hooker) -> hooker.findAndHook() }
+        hookMembers.forEach { (_, hooker) -> hooker.hook() }
     }
 
     /**
@@ -227,7 +227,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @throws IllegalStateException 如果必要参数没有被设置
          */
         @DoNotUseMethod
-        fun findAndHook() =
+        fun hook() =
             member?.also { member ->
                 runCatching {
                     if (isReplaceHookMode)
