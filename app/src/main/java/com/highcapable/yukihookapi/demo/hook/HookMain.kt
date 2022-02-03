@@ -49,36 +49,42 @@ class HookMain : YukiHookXposedInitProxy {
     override fun onHook() = encase(moduleName) {
         loadApp(name = moduleName) {
             MainActivity::class.java.hook {
-                injectMethod {
-                    name = "test"
-                    returnType = StringType
+                injectMember {
+                    method {
+                        name = "test"
+                        returnType = StringType
+                    }
                     replaceTo("这段文字已被 Hook 成功")
                 }
-                injectMethod {
-                    name = "test"
-                    param(StringType)
-                    returnType = StringType
+                injectMember {
+                    method {
+                        name = "test"
+                        param(StringType)
+                        returnType = StringType
+                    }
                     beforeHook { args().set("方法参数已被 Hook 成功") }
                 }
             }
             InjectTest::class.java.hook {
-                injectConstructor {
-                    param(StringType)
+                injectMember {
+                    constructor { param(StringType) }
                     beforeHook { args().set("构造方法已被 Hook 成功") }
                 }
             }
             findClass(name = "$packageName.InjectTestName").hook {
-                injectConstructor {
-                    param(StringType)
+                injectMember {
+                    constructor { param(StringType) }
                     beforeHook { args().set("构造方法已被 Hook 成功 [2]") }
                 }
             }
         }
         loadApp(name = "com.android.browser") {
             ActivityClass.hook {
-                injectMethod {
-                    name = "onCreate"
-                    param(BundleClass)
+                injectMember {
+                    method {
+                        name = "onCreate"
+                        param(BundleClass)
+                    }
                     afterHook {
                         AlertDialog.Builder(instance())
                             .setCancelable(false)
@@ -89,8 +95,8 @@ class HookMain : YukiHookXposedInitProxy {
                             }.show()
                     }
                 }
-                injectMethod {
-                    specify = hookClass.findMethod(name = "onStart")
+                injectMember {
+                    member = hookClass.findMethod(name = "onStart")
                     afterHook {
                         Toast.makeText(instance(), "手动 Hook", Toast.LENGTH_SHORT).show()
                     }
