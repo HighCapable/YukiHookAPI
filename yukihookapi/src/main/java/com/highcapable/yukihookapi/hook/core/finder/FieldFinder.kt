@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "UNCHECKED_CAST")
+@file:Suppress("unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 
 package com.highcapable.yukihookapi.hook.core.finder
 
@@ -51,7 +51,7 @@ class FieldFinder(private val hookClass: Class<*>) {
     var type: Class<*>? = null
 
     /**
-     * 得到变量处理结果
+     * 得到变量处理结果 - 不能在外部调用
      * @return [Result]
      * @throws NoSuchFieldError 如果找不到变量
      */
@@ -76,19 +76,19 @@ class FieldFinder(private val hookClass: Class<*>) {
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
          * @param any 设置的实例内容
          */
-        fun set(instance: Any? = null, any: Any?) = fieldInstance?.set(instance, any)
+        fun set(instance: Any? = null, any: Any?) = give()?.set(instance, any)
 
         /**
          * 得到变量实例
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [Field] or null
          */
-        fun <T> get(instance: Any? = null) = fieldInstance?.get(instance) as? T?
+        fun <T> get(instance: Any? = null) = give()?.get(instance) as? T?
 
         /**
          * 得到变量本身
          * @return [Field] or null
          */
-        fun find() = fieldInstance
+        fun give() = fieldInstance
     }
 }
