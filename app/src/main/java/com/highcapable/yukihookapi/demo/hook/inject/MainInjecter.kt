@@ -29,20 +29,12 @@
 
 package com.highcapable.yukihookapi.demo.hook.inject
 
-import android.app.AlertDialog
-import android.widget.Toast
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo.BuildConfig
-import com.highcapable.yukihookapi.demo.InjectTest
-import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.demo.hook.MainHooker
 import com.highcapable.yukihookapi.demo.hook.SecondHooker
 import com.highcapable.yukihookapi.hook.factory.encase
-import com.highcapable.yukihookapi.hook.factory.findMethod
 import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
-import com.highcapable.yukihookapi.hook.type.ActivityClass
-import com.highcapable.yukihookapi.hook.type.BundleClass
-import com.highcapable.yukihookapi.hook.type.StringType
 
 // for test
 @InjectYukiHookWithXposed
@@ -50,65 +42,65 @@ class MainInjecter : YukiHookXposedInitProxy {
 
     override fun onHook() {
         // 方案 1
-        // encase(BuildConfig.APPLICATION_ID, MainHooker(), SecondHooker())
+        encase(BuildConfig.APPLICATION_ID, MainHooker(), SecondHooker())
         // 方案 2
-        encase(BuildConfig.APPLICATION_ID) {
-            loadApp(name = BuildConfig.APPLICATION_ID) {
-                MainActivity::class.java.hook {
-                    injectMember {
-                        method {
-                            name = "test"
-                            returnType = StringType
-                        }
-                        replaceTo("这段文字已被 Hook 成功")
-                    }
-                    injectMember {
-                        method {
-                            name = "test"
-                            param(StringType)
-                            returnType = StringType
-                        }
-                        beforeHook { args().set("方法参数已被 Hook 成功") }
-                    }
-                }
-                InjectTest::class.java.hook {
-                    injectMember {
-                        constructor { param(StringType) }
-                        beforeHook { args().set("构造方法已被 Hook 成功") }
-                    }
-                }
-                findClass(name = "$packageName.InjectTestName").hook {
-                    injectMember {
-                        constructor { param(StringType) }
-                        beforeHook { args().set("构造方法已被 Hook 成功 [2]") }
-                    }
-                }
-            }
-            loadApp(name = "com.android.browser") {
-                ActivityClass.hook {
-                    injectMember {
-                        method {
-                            name = "onCreate"
-                            param(BundleClass)
-                        }
-                        afterHook {
-                            AlertDialog.Builder(instance())
-                                .setCancelable(false)
-                                .setTitle("测试 Hook")
-                                .setMessage("Hook 已成功")
-                                .setPositiveButton("OK") { _, _ ->
-                                    Toast.makeText(instance(), "Hook Success", Toast.LENGTH_SHORT).show()
-                                }.show()
-                        }
-                    }
-                    injectMember {
-                        member = hookClass.findMethod(name = "onStart")
-                        afterHook {
-                            Toast.makeText(instance(), "手动 Hook", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
-        }
+//        encase(BuildConfig.APPLICATION_ID) {
+//            loadApp(name = BuildConfig.APPLICATION_ID) {
+//                MainActivity::class.java.hook {
+//                    injectMember {
+//                        method {
+//                            name = "test"
+//                            returnType = StringType
+//                        }
+//                        replaceTo("这段文字已被 Hook 成功")
+//                    }
+//                    injectMember {
+//                        method {
+//                            name = "test"
+//                            param(StringType)
+//                            returnType = StringType
+//                        }
+//                        beforeHook { args().set("方法参数已被 Hook 成功") }
+//                    }
+//                }
+//                InjectTest::class.java.hook {
+//                    injectMember {
+//                        constructor { param(StringType) }
+//                        beforeHook { args().set("构造方法已被 Hook 成功") }
+//                    }
+//                }
+//                findClass(name = "$packageName.InjectTestName").hook {
+//                    injectMember {
+//                        constructor { param(StringType) }
+//                        beforeHook { args().set("构造方法已被 Hook 成功 [2]") }
+//                    }
+//                }
+//            }
+//            loadApp(name = "com.android.browser") {
+//                ActivityClass.hook {
+//                    injectMember {
+//                        method {
+//                            name = "onCreate"
+//                            param(BundleClass)
+//                        }
+//                        afterHook {
+//                            AlertDialog.Builder(instance())
+//                                .setCancelable(false)
+//                                .setTitle("测试 Hook")
+//                                .setMessage("Hook 已成功")
+//                                .setPositiveButton("OK") { _, _ ->
+//                                    Toast.makeText(instance(), "Hook Success", Toast.LENGTH_SHORT).show()
+//                                }.show()
+//                        }
+//                    }
+//                    injectMember {
+//                        member = hookClass.findMethod(name = "onStart")
+//                        afterHook {
+//                            Toast.makeText(instance(), "手动 Hook", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
