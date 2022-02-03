@@ -70,7 +70,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
     @DoNotUseMethod
     fun hook() {
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
-        hookMembers.forEach { (_, hooker) -> hooker.hook() }
+        hookMembers.forEach { (_, member) -> member.hook() }
     }
 
     /**
