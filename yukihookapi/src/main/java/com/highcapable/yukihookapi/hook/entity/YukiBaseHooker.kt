@@ -41,6 +41,8 @@ import com.highcapable.yukihookapi.param.PackageParam
  *
  * 调用 [PackageParam.loadApp] loadApp(name = "包名", hooker = 继承于此类的自定义 Hooker)
  *
+ * 调用 [PackageParam.loadHooker] loadHooker(hooker = 继承于此类的自定义 Hooker)
+ *
  * 详情请参考 https://github.com/fankes/YukiHookAPI/wiki
  */
 abstract class YukiBaseHooker : PackageParam() {
