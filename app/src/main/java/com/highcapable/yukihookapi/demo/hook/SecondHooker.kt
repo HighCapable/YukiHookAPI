@@ -31,7 +31,7 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.type.StringType
 
 // for test
-class HookSecond : YukiBaseHooker() {
+class SecondHooker : YukiBaseHooker() {
 
     override fun onHook() =
         findClass(name = "$packageName.InjectTestName").hook {

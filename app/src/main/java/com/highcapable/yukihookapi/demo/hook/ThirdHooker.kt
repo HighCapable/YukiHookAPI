@@ -35,7 +35,7 @@ import com.highcapable.yukihookapi.hook.type.ActivityClass
 import com.highcapable.yukihookapi.hook.type.BundleClass
 
 // for test
-class HookThird : YukiBaseHooker() {
+class ThirdHooker : YukiBaseHooker() {
 
     override fun onHook() =
         ActivityClass.hook {

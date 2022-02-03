@@ -38,7 +38,7 @@ import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.type.StringType
 
 @InjectYukiHookWithXposed
-class HookMain : YukiHookXposedInitProxy {
+class MainHooker : YukiHookXposedInitProxy {
 
     private val moduleName = BuildConfig.APPLICATION_ID
 
@@ -67,8 +67,8 @@ class HookMain : YukiHookXposedInitProxy {
                     beforeHook { args().set("构造方法已被 Hook 成功") }
                 }
             }
-            loadHooker(hooker = HookSecond())
+            loadHooker(hooker = SecondHooker())
         }
-        loadApp(name = "com.android.browser", hooker = HookThird())
+        loadApp(name = "com.android.browser", hooker = ThirdHooker())
     }
 }
