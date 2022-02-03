@@ -81,7 +81,7 @@ class FieldFinder(private val hookClass: Class<*>) {
         /**
          * 得到变量实例
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Field] or null
+         * @return [T] or null
          */
         fun <T> get(instance: Any? = null) = give()?.get(instance) as? T?
 
