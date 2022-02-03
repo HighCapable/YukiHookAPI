@@ -95,6 +95,9 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
 
+        /** 是否停止 Hook */
+        private var isStopHookMode = false
+
         /**
          * 手动指定要 Hook 的方法、构造类
          *
@@ -107,10 +110,14 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          *
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
-         * @throws NoSuchMethodError 找不到方法时
          */
         fun method(initiate: MethodFinder.() -> Unit) {
-            member = MethodFinder().apply(initiate).find()
+            runCatching {
+                member = MethodFinder().apply(initiate).find()
+            }.onFailure {
+                isStopHookMode = true
+                onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
+            }
         }
 
         /**
@@ -118,10 +125,14 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          *
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
-         * @throws NoSuchMethodError 找不到构造类时
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit) {
-            member = ConstructorFinder().apply(initiate).find()
+            runCatching {
+                member = ConstructorFinder().apply(initiate).find()
+            }.onFailure {
+                isStopHookMode = true
+                onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
+            }
         }
 
         /**
@@ -227,7 +238,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @throws IllegalStateException 如果必要参数没有被设置
          */
         @DoNotUseMethod
-        fun hook() =
+        fun hook() {
+            if (isStopHookMode) return
             member?.also { member ->
                 runCatching {
                     if (isReplaceHookMode)
@@ -272,6 +284,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                     onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
                 }
             } ?: error("Hook Member cannot be null")
+        }
 
         /**
          * Hook 失败但未设置 [onFailureCallback] 将默认输出失败信息
