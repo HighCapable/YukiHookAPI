@@ -29,9 +29,8 @@
 
 package com.highcapable.yukihookapi.hook.core
 
-import android.util.Log
-import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
 import com.highcapable.yukihookapi.param.HookParam
 import com.highcapable.yukihookapi.param.PackageParam
@@ -290,9 +289,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * Hook 失败但未设置 [onFailureCallback] 将默认输出失败信息
          * @param throwable 异常信息
          */
-        private fun onHookFailure(throwable: Throwable) {
-            Log.e(YukiHookAPI.TAG, "Try to hook $hookClass[$member] got an Exception", throwable)
-        }
+        private fun onHookFailure(throwable: Throwable) =
+            loggerE(msg = "Try to hook $hookClass[$member] got an Exception", e = throwable)
 
         override fun toString() = "$member#YukiHook"
 

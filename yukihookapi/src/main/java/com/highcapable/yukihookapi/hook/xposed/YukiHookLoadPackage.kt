@@ -29,10 +29,10 @@
 
 package com.highcapable.yukihookapi.hook.xposed
 
-import android.util.Log
 import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.type.BooleanType
 import com.highcapable.yukihookapi.param.PackageParam
@@ -58,7 +58,7 @@ class YukiHookLoadPackage : IXposedHookLoadPackage {
                     .invoke(getDeclaredConstructor().apply { isAccessible = true }.newInstance())
             }
         }.onFailure {
-            Log.e(YukiHookAPI.TAG, "Try to load ${hookEntryClassName()} Failed", it)
+            loggerE(msg = "Try to load ${hookEntryClassName()} Failed", e = it)
         }
         /** 装载 APP Hook 实体类 */
         PackageParam(lpparam).apply {
@@ -71,7 +71,7 @@ class YukiHookLoadPackage : IXposedHookLoadPackage {
                             returnType = BooleanType
                         }
                         replaceToTrue()
-                    }.onFailure { _, t -> Log.e(YukiHookAPI.TAG, "Try to Hook ModuleStatus Failed", t) }
+                    }.onFailure { _, t -> loggerE(msg = "Try to Hook ModuleStatus Failed", e = t) }
                 }
             }
             /** 设置装载回调 */

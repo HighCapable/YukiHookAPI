@@ -27,9 +27,8 @@
  */
 package com.highcapable.yukihookapi.hook.xposed
 
-import android.util.Log
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.log.loggerI
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.isActive
 
 /**
@@ -46,7 +45,7 @@ object YukiHookModuleStatus {
      */
     @Keep
     fun isActive(): Boolean {
-        Log.d(YukiHookAPI.TAG, "hook this method got active status")
+        loggerI(msg = "This Module is not actived")
         return false
     }
 }
