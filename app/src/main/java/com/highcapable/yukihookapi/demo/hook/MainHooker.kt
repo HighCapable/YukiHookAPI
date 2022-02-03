@@ -33,6 +33,7 @@ import com.highcapable.yukihookapi.demo.BuildConfig
 import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.type.BundleClass
 import com.highcapable.yukihookapi.hook.type.StringType
 
 class MainHooker : YukiBaseHooker() {
@@ -40,6 +41,18 @@ class MainHooker : YukiBaseHooker() {
     override fun onHook() =
         loadApp(name = BuildConfig.APPLICATION_ID) {
             MainActivity::class.java.hook {
+                injectMember {
+                    method {
+                        name = "onCreate"
+                        param(BundleClass)
+                        beforeHook {
+                            field {
+                                name = "a"
+                                type = StringType
+                            }.set(instance, "这段文字被修改成功了")
+                        }
+                    }
+                }
                 injectMember {
                     method {
                         name = "test"

@@ -36,13 +36,15 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 
 class MainActivity : AppCompatActivity() {
 
+    private var a = "没更改的变量"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // for test
         AlertDialog.Builder(this)
             .setTitle("Hook 方法返回值测试")
-            .setMessage(test() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+            .setMessage(test() + "\n变量：$a\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
             .setPositiveButton("下一个") { _, _ ->
                 AlertDialog.Builder(this)
                     .setTitle("Hook 方法参数测试")

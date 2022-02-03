@@ -153,7 +153,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param initiate 方法体
          * @return [FieldFinder.Result]
          */
-        fun field(initiate: FieldFinder.() -> Unit) =
+        fun HookParam.field(initiate: FieldFinder.() -> Unit) =
             try {
                 FieldFinder().apply(initiate).find()
             } catch (e: Throwable) {
@@ -161,7 +161,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                 onNoSuchMemberCallback?.invoke(e)
                 onFailureCallback?.invoke(e)
                 if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(e)
-                null
+                FieldFinder().Result()
             }
 
         /**
@@ -371,6 +371,13 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
              * 可在这里处理找到的 [fieldInstance]
              */
             inner class Result {
+
+                /**
+                 * 设置变量实例
+                 * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+                 * @param any 设置的实例内容
+                 */
+                fun set(instance: Any? = null, any: Any?) = fieldInstance?.set(instance, any)
 
                 /**
                  * 得到变量实例

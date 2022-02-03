@@ -55,6 +55,18 @@ class MainInjecter : YukiHookXposedInitProxy {
                 MainActivity::class.java.hook {
                     injectMember {
                         method {
+                            name = "onCreate"
+                            param(BundleClass)
+                            beforeHook {
+                                field {
+                                    name = "a"
+                                    type = StringType
+                                }.set(instance, "这段文字被修改成功了")
+                            }
+                        }
+                    }
+                    injectMember {
+                        method {
                             name = "test"
                             returnType = StringType
                         }
