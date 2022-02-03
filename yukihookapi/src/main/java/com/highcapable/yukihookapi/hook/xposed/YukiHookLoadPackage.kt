@@ -65,9 +65,11 @@ class YukiHookLoadPackage : IXposedHookLoadPackage {
             /** Hook 模块激活状态 */
             loadApp(name = YukiHookAPI.modulePackageName) {
                 YukiHookModuleStatus::class.java.hook {
-                    injectMethod {
-                        name = "isActive"
-                        returnType = BooleanType
+                    injectMember {
+                        method {
+                            name = "isActive"
+                            returnType = BooleanType
+                        }
                         replaceToTrue()
                     }.onFailure { _, t -> Log.e(YukiHookAPI.TAG, "Try to Hook ModuleStatus Failed", t) }
                 }
