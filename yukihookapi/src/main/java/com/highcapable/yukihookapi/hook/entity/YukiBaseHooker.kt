@@ -33,6 +33,10 @@ import com.highcapable.yukihookapi.param.PackageParam
 /**
  * YukiHook 的子类实现
  *
+ * 也许你的 Module 中存在多个 Hooker - 继承此类可以方便帮你管理每个 Hooker
+ *
+ * 你可以继续继承此类进行自定义 Hooker 相关参数
+ *
  * 你可以在 [YukiHookXposedInitProxy] 的 [YukiHookXposedInitProxy.onHook] 中实现如下用法
  *
  * 调用 [PackageParam.loadApp] loadApp(name = "包名", hooker = 继承于此类的自定义 Hooker)
