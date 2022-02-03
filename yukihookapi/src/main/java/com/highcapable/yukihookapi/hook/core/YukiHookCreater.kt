@@ -38,7 +38,9 @@ import com.highcapable.yukihookapi.param.PackageParam
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
+import java.lang.reflect.Constructor
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * YukiHook 核心类实现方法
@@ -53,20 +55,11 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
     private var hookMembers = HashMap<String, MemberHookCreater>()
 
     /**
-     * 注入要 Hook 的方法
+     * 注入要 Hook 的方法、构造类
      * @param initiate 方法体
      */
-    fun injectMethod(initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(isConstructor = false).apply(initiate).apply {
-            hookMembers[toString()] = this
-        }.create()
-
-    /**
-     * 注入要 Hook 的构造类
-     * @param initiate 方法体
-     */
-    fun injectConstructor(initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(isConstructor = true).apply(initiate).apply {
+    fun injectMember(initiate: MemberHookCreater.() -> Unit) =
+        MemberHookCreater().apply(initiate).apply {
             hookMembers[toString()] = this
         }.create()
 
@@ -84,47 +77,51 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
      * 智能全局方法、构造类查找类实现方法
      *
      * 处理需要 Hook 的方法
-     * @param isConstructor 是否为构造方法
      */
-    inner class MemberHookCreater(private val isConstructor: Boolean) {
+    inner class MemberHookCreater {
 
-        /** @call Base Field */
+        /** [beforeHook] 回调 */
         private var beforeHookCallback: (HookParam.() -> Unit)? = null
 
-        /** @call Base Field */
+        /** [afterHook] 回调 */
         private var afterHookCallback: (HookParam.() -> Unit)? = null
 
-        /** @call Base Field */
+        /** [replaceAny]、[replaceUnit]、[replaceTo] 等回调 */
         private var replaceHookCallback: (HookParam.() -> Any?)? = null
 
-        /** @call Base Field */
+        /** [onFailure] 回调 */
         private var onFailureCallback: ((HookParam?, Throwable) -> Unit)? = null
 
-        /** 是否为替换模式 */
-        private var isReplaceMode = false
-
-        /** 方法参数 */
-        private var params: Array<out Class<*>>? = null
-
-        /** 方法名 */
-        var name = ""
-
-        /** 方法返回值 */
-        var returnType: Class<*>? = null
+        /** 是否为替换 Hook 模式 */
+        private var isReplaceHookMode = false
 
         /**
-         * 手动指定方法
+         * 手动指定要 Hook 的方法、构造类
          *
          * 你可以调用 [hookClass] 来手动查询要 Hook 的方法
          */
-        var specify: Member? = null
+        var member: Member? = null
 
         /**
-         * 方法参数
-         * @param param 参数数组
+         * 查找需要 Hook 的方法
+         *
+         * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
+         * @param initiate 方法体
+         * @throws NoSuchMethodError 找不到方法时
          */
-        fun param(vararg param: Class<*>) {
-            params = param
+        fun method(initiate: MethodFinder.() -> Unit) {
+            member = MethodFinder().apply(initiate).find()
+        }
+
+        /**
+         * 查找需要 Hook 的构造类
+         *
+         * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
+         * @param initiate 方法体
+         * @throws NoSuchMethodError 找不到构造类时
+         */
+        fun constructor(initiate: ConstructorFinder.() -> Unit) {
+            member = ConstructorFinder().apply(initiate).find()
         }
 
         /**
@@ -134,7 +131,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param initiate [HookParam] 方法体
          */
         fun beforeHook(initiate: HookParam.() -> Unit) {
-            isReplaceMode = false
+            isReplaceHookMode = false
             beforeHookCallback = initiate
         }
 
@@ -145,7 +142,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param initiate [HookParam] 方法体
          */
         fun afterHook(initiate: HookParam.() -> Unit) {
-            isReplaceMode = false
+            isReplaceHookMode = false
             afterHookCallback = initiate
         }
 
@@ -156,7 +153,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param initiate [HookParam] 方法体
          */
         fun replaceAny(initiate: HookParam.() -> Any?) {
-            isReplaceMode = true
+            isReplaceHookMode = true
             replaceHookCallback = initiate
         }
 
@@ -167,7 +164,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param initiate [HookParam] 方法体
          */
         fun replaceUnit(initiate: HookParam.() -> Unit) {
-            isReplaceMode = true
+            isReplaceHookMode = true
             replaceHookCallback = initiate
         }
 
@@ -178,7 +175,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param any 要替换为的返回值对象
          */
         fun replaceTo(any: Any?) {
-            isReplaceMode = true
+            isReplaceHookMode = true
             replaceHookCallback = { any }
         }
 
@@ -190,7 +187,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * 不可与 [beforeHook]、[afterHook] 同时使用
          */
         fun replaceToTrue() {
-            isReplaceMode = true
+            isReplaceHookMode = true
             replaceHookCallback = { true }
         }
 
@@ -202,7 +199,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * 不可与 [beforeHook]、[afterHook] 同时使用
          */
         fun replaceToFalse() {
-            isReplaceMode = true
+            isReplaceHookMode = true
             replaceHookCallback = { false }
         }
 
@@ -214,27 +211,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * 不可与 [beforeHook]、[afterHook] 同时使用
          */
         fun intercept() {
-            isReplaceMode = true
+            isReplaceHookMode = true
             replaceHookCallback = { null }
-        }
-
-        /**
-         * 得到需要 Hook 的方法
-         * @return [Member]
-         * @throws NoSuchMethodError 如果找不到方法
-         */
-        private val hookMember: Member by lazy {
-            specify ?: when {
-                name.isBlank() && !isConstructor -> error("Method name cannot be empty")
-                isConstructor ->
-                    if (params != null)
-                        ReflectionUtils.findConstructorExact(hookClass, *params!!)
-                    else ReflectionUtils.findConstructorExact(hookClass)
-                else ->
-                    if (params != null)
-                        ReflectionUtils.findMethodBestMatch(hookClass, returnType, name, *params!!)
-                    else ReflectionUtils.findMethodNoParam(hookClass, returnType, name)
-            }
         }
 
         /**
@@ -249,60 +227,131 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @throws IllegalStateException 如果必要参数没有被设置
          */
         @DoNotUseMethod
-        fun findAndHook() = runCatching {
-            hookMember.also { member ->
-                if (isReplaceMode)
-                    XposedBridge.hookMethod(member, object : XC_MethodReplacement() {
-                        override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
-                            if (baseParam == null) return null
-                            return HookParam(baseParam).let { param ->
-                                try {
-                                    replaceHookCallback?.invoke(param)
-                                } catch (e: Throwable) {
-                                    onFailureCallback?.invoke(param, e) ?: onHookFailure(e)
-                                    null
+        fun findAndHook() =
+            member?.also { member ->
+                runCatching {
+                    if (isReplaceHookMode)
+                        XposedBridge.hookMethod(member, object : XC_MethodReplacement() {
+                            override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
+                                if (baseParam == null) return null
+                                return HookParam(baseParam).let { param ->
+                                    try {
+                                        replaceHookCallback?.invoke(param)
+                                    } catch (e: Throwable) {
+                                        onFailureCallback?.invoke(param, e) ?: onHookFailure(e)
+                                        null
+                                    }
                                 }
                             }
-                        }
-                    })
-                else
-                    XposedBridge.hookMethod(member, object : XC_MethodHook() {
-                        override fun beforeHookedMethod(baseParam: MethodHookParam?) {
-                            if (baseParam == null) return
-                            HookParam(baseParam).also { param ->
-                                runCatching {
-                                    beforeHookCallback?.invoke(param)
-                                }.onFailure {
-                                    onFailureCallback?.invoke(param, it) ?: onHookFailure(it)
+                        })
+                    else
+                        XposedBridge.hookMethod(member, object : XC_MethodHook() {
+                            override fun beforeHookedMethod(baseParam: MethodHookParam?) {
+                                if (baseParam == null) return
+                                HookParam(baseParam).also { param ->
+                                    runCatching {
+                                        beforeHookCallback?.invoke(param)
+                                    }.onFailure {
+                                        onFailureCallback?.invoke(param, it) ?: onHookFailure(it)
+                                    }
                                 }
                             }
-                        }
 
-                        override fun afterHookedMethod(baseParam: MethodHookParam?) {
-                            if (baseParam == null) return
-                            HookParam(baseParam).also { param ->
-                                runCatching {
-                                    afterHookCallback?.invoke(param)
-                                }.onFailure {
-                                    onFailureCallback?.invoke(param, it) ?: onHookFailure(it)
+                            override fun afterHookedMethod(baseParam: MethodHookParam?) {
+                                if (baseParam == null) return
+                                HookParam(baseParam).also { param ->
+                                    runCatching {
+                                        afterHookCallback?.invoke(param)
+                                    }.onFailure {
+                                        onFailureCallback?.invoke(param, it) ?: onHookFailure(it)
+                                    }
                                 }
                             }
-                        }
-                    })
-            }
-        }.onFailure {
-            onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
-        }
+                        })
+                }.onFailure {
+                    onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
+                }
+            } ?: error("Hook Member cannot be null")
 
         /**
          * Hook 失败但未设置 [onFailureCallback] 将默认输出失败信息
          * @param throwable 异常信息
          */
         private fun onHookFailure(throwable: Throwable) {
-            Log.e(YukiHookAPI.TAG, "Try to hook $hookClass[$hookMember] got an Exception", throwable)
+            Log.e(YukiHookAPI.TAG, "Try to hook $hookClass[$member] got an Exception", throwable)
         }
 
-        override fun toString() = "$name$returnType$params$isConstructor$hookMember$hookClass$specify#YukiHook"
+        override fun toString() = "$member#YukiHook"
+
+        /**
+         * [Method] 查找类
+         *
+         * 可通过指定类型查找指定方法
+         */
+        inner class MethodFinder {
+
+            /** 方法参数 */
+            private var params: Array<out Class<*>>? = null
+
+            /** 方法名 */
+            var name = ""
+
+            /** 方法返回值 */
+            var returnType: Class<*>? = null
+
+            /**
+             * 方法参数
+             * @param param 参数数组
+             */
+            fun param(vararg param: Class<*>) {
+                params = param
+            }
+
+            /**
+             * 得到方法 - 不能在外部调用
+             * @return [Method]
+             * @throws NoSuchMethodError 如果找不到方法
+             */
+            @DoNotUseMethod
+            fun find(): Method =
+                when {
+                    name.isBlank() -> error("Method name cannot be empty")
+                    else ->
+                        if (params != null)
+                            ReflectionUtils.findMethodBestMatch(hookClass, returnType, name, *params!!)
+                        else ReflectionUtils.findMethodNoParam(hookClass, returnType, name)
+                }
+        }
+
+        /**
+         * [Constructor] 查找类
+         *
+         * 可通过指定类型查找指定构造类
+         */
+        inner class ConstructorFinder {
+
+            /** 方法参数 */
+            private var params: Array<out Class<*>>? = null
+
+            /**
+             * 方法参数
+             * @param param 参数数组
+             */
+            fun param(vararg param: Class<*>) {
+                params = param
+            }
+
+            /**
+             * 得到构造类 - 不能在外部调用
+             * @return [Constructor]
+             * @throws NoSuchMethodError 如果找不到构造类
+             */
+            @DoNotUseMethod
+            fun find(): Constructor<*> =
+                if (params != null)
+                    ReflectionUtils.findConstructorExact(hookClass, *params!!)
+                else ReflectionUtils.findConstructorExact(hookClass)
+        }
 
         /**
          * 监听 Hook 结果实现类
