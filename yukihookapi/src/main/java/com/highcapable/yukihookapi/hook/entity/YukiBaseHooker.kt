@@ -39,9 +39,27 @@ import com.highcapable.yukihookapi.param.PackageParam
  *
  * 你可以在 [YukiHookXposedInitProxy] 的 [YukiHookXposedInitProxy.onHook] 中实现如下用法
  *
- * 调用 [PackageParam.loadApp] loadApp(name = "包名", hooker = 继承于此类的自定义 Hooker)
+ * 调用 [PackageParam.loadApp] loadApp(name = "包名", hooker = CustomHooker())
  *
- * 调用 [PackageParam.loadHooker] loadHooker(hooker = 继承于此类的自定义 Hooker)
+ * 调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
+ *
+ * ....
+ *
+ * 继承类参考示例：
+ *
+ * ....
+ *
+ * class CustomHooker : YukiBaseHooker() {
+ *
+ * ....override fun onHook() {
+ *
+ * ........// Your code here.
+ *
+ * ....}
+ *
+ * }
+ *
+ * ....
  *
  * 详情请参考 https://github.com/fankes/YukiHookAPI/wiki
  */

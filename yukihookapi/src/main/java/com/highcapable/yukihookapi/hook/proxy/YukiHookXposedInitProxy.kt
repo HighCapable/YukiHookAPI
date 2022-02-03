@@ -42,19 +42,27 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * 可写作如下形式：
  *
+ * ....
+ *
  * override fun onHook() = YukiHookAPI.encase(moduleName = "模块包名") {
  *
- * // Your code here.
+ * ....// Your code here.
  *
  * }
+ *
+ * ....
  *
  * 还可写作如下形式：
  *
+ * ....
+ *
  * override fun onHook() = encase(moduleName = "模块包名") {
  *
- * // Your code here.
+ * ....// Your code here.
  *
  * }
+ *
+ * ....
  *
  * 详情请参考 https://github.com/fankes/YukiHookAPI/wiki
  */
