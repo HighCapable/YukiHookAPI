@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.param
 
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
@@ -42,7 +43,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  * @param baseParam 对接 Xposed API 的 [XC_LoadPackage.LoadPackageParam] - 默认空
  * @param customParam 自定义装载类 - 默认空
  */
-class PackageParam(
+open class PackageParam(
     private val baseParam: XC_LoadPackage.LoadPackageParam? = null,
     private val customParam: CustomParam? = null
 ) {
@@ -92,6 +93,21 @@ class PackageParam(
     fun loadApp(name: String, initiate: PackageParam.() -> Unit) {
         if (packageName == name) initiate(this)
     }
+
+    /**
+     * 装载并 Hook 指定包名的 APP
+     * @param name 包名
+     * @param hooker Hook 子类
+     */
+    fun loadApp(name: String, hooker: YukiBaseHooker) {
+        if (packageName == name) hooker.onHook()
+    }
+
+    /**
+     * 装载 Hook 子类
+     * @param hooker Hook 子类
+     */
+    fun loadHooker(hooker: YukiBaseHooker) = hooker.onHook()
 
     /**
      * 将目标 [Class] 绑定到 [appClassLoader]
