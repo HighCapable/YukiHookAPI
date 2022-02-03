@@ -73,7 +73,7 @@ class YukiHookLoadPackage : IXposedHookLoadPackage {
                             returnType = BooleanType
                         }
                         replaceToTrue()
-                    }.onFailure { _, t -> loggerE(msg = "Try to Hook ModuleStatus Failed", e = t) }
+                    }.onAllFailure { loggerE(msg = "Try to Hook ModuleStatus Failed", e = it) }
                 }
             }
             /** 设置装载回调 */

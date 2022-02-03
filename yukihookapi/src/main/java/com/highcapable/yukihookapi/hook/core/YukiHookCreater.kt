@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("MemberVisibilityCanBePrivate", "unused", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused", "EXPERIMENTAL_API_USAGE", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.core
 
@@ -38,6 +38,7 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Constructor
+import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 
@@ -88,8 +89,17 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /** [replaceAny]、[replaceUnit]、[replaceTo] 等回调 */
         private var replaceHookCallback: (HookParam.() -> Any?)? = null
 
-        /** [onFailure] 回调 */
-        private var onFailureCallback: ((HookParam?, Throwable) -> Unit)? = null
+        /** Hook 过程中出现错误回调 */
+        private var onConductFailureCallback: ((HookParam, Throwable) -> Unit)? = null
+
+        /** Hook 开始时出现错误回调 */
+        private var onHookingFailureCallback: ((Throwable) -> Unit)? = null
+
+        /** 当找不到方法、变量时错误回调 */
+        private var onNoSuchMemberCallback: ((Throwable) -> Unit)? = null
+
+        /** 全部错误回调 */
+        private var onFailureCallback: ((Throwable) -> Unit)? = null
 
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
@@ -115,7 +125,9 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                 member = MethodFinder().apply(initiate).find()
             }.onFailure {
                 isStopHookMode = true
-                onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
+                onNoSuchMemberCallback?.invoke(it)
+                onFailureCallback?.invoke(it)
+                if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(it)
             }
         }
 
@@ -130,9 +142,27 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                 member = ConstructorFinder().apply(initiate).find()
             }.onFailure {
                 isStopHookMode = true
-                onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
+                onNoSuchMemberCallback?.invoke(it)
+                onFailureCallback?.invoke(it)
+                if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(it)
             }
         }
+
+        /**
+         * 查找 [Field]
+         * @param initiate 方法体
+         * @return [FieldFinder.Result]
+         */
+        fun field(initiate: FieldFinder.() -> Unit) =
+            try {
+                FieldFinder().apply(initiate).find()
+            } catch (e: Throwable) {
+                isStopHookMode = true
+                onNoSuchMemberCallback?.invoke(e)
+                onFailureCallback?.invoke(e)
+                if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(e)
+                null
+            }
 
         /**
          * 在方法执行完成前 Hook
@@ -227,10 +257,10 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
 
         /**
          * Hook 创建入口 - 不可在外部调用
-         * @return [MemberHookResult]
+         * @return [Result]
          */
         @DoNotUseMethod
-        fun create() = MemberHookResult()
+        fun create() = Result()
 
         /**
          * Hook 执行入口 - 不可在外部调用
@@ -249,7 +279,10 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                     try {
                                         replaceHookCallback?.invoke(param)
                                     } catch (e: Throwable) {
-                                        onFailureCallback?.invoke(param, e) ?: onHookFailure(e)
+                                        onConductFailureCallback?.invoke(param, e)
+                                        onFailureCallback?.invoke(e)
+                                        if (onConductFailureCallback == null && onFailureCallback == null)
+                                            onHookFailureMsg(e)
                                         null
                                     }
                                 }
@@ -263,7 +296,10 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                     runCatching {
                                         beforeHookCallback?.invoke(param)
                                     }.onFailure {
-                                        onFailureCallback?.invoke(param, it) ?: onHookFailure(it)
+                                        onConductFailureCallback?.invoke(param, it)
+                                        onFailureCallback?.invoke(it)
+                                        if (onConductFailureCallback == null && onFailureCallback == null)
+                                            onHookFailureMsg(it)
                                     }
                                 }
                             }
@@ -274,13 +310,18 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                     runCatching {
                                         afterHookCallback?.invoke(param)
                                     }.onFailure {
-                                        onFailureCallback?.invoke(param, it) ?: onHookFailure(it)
+                                        onConductFailureCallback?.invoke(param, it)
+                                        onFailureCallback?.invoke(it)
+                                        if (onConductFailureCallback == null && onFailureCallback == null)
+                                            onHookFailureMsg(it)
                                     }
                                 }
                             }
                         })
                 }.onFailure {
-                    onFailureCallback?.invoke(null, it) ?: onHookFailure(it)
+                    onHookingFailureCallback?.invoke(it)
+                    onFailureCallback?.invoke(it)
+                    if (onHookingFailureCallback == null && onFailureCallback == null) onHookFailureMsg(it)
                 }
             } ?: error("Hook Member cannot be null")
         }
@@ -289,10 +330,62 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * Hook 失败但未设置 [onFailureCallback] 将默认输出失败信息
          * @param throwable 异常信息
          */
-        private fun onHookFailure(throwable: Throwable) =
+        private fun onHookFailureMsg(throwable: Throwable) =
             loggerE(msg = "Try to hook $hookClass[$member] got an Exception", e = throwable)
 
         override fun toString() = "$member#YukiHook"
+
+        /**
+         * [Field] 查找类
+         *
+         * 可通过指定类型查找指定变量
+         */
+        inner class FieldFinder {
+
+            /** 当前找到的 [Field] */
+            private var fieldInstance: Field? = null
+
+            /** 变量名 */
+            var name = ""
+
+            /** 变量类型 */
+            var type: Class<*>? = null
+
+            /**
+             * 得到变量处理结果
+             * @return [Result]
+             * @throws NoSuchFieldError 如果找不到变量
+             */
+            @DoNotUseMethod
+            fun find(): Result {
+                fieldInstance = when {
+                    name.isBlank() -> error("Field name cannot be empty")
+                    else -> ReflectionUtils.findFieldIfExists(hookClass, type?.name, name)
+                }
+                return Result()
+            }
+
+            /**
+             * Field 查找结果实现类
+             *
+             * 可在这里处理找到的 [fieldInstance]
+             */
+            inner class Result {
+
+                /**
+                 * 得到变量实例
+                 * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+                 * @return [Field] or null
+                 */
+                fun <T> get(instance: Any? = null) = fieldInstance?.get(instance) as? T?
+
+                /**
+                 * 得到变量本身
+                 * @return [Field] or null
+                 */
+                fun find() = fieldInstance
+            }
+        }
 
         /**
          * [Method] 查找类
@@ -367,16 +460,55 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /**
          * 监听 Hook 结果实现类
          *
-         * 可在这里处理失败事件
+         * 可在这里处理失败事件监听
          */
-        inner class MemberHookResult {
+        inner class Result {
 
             /**
-             * 监听 Hook 过程发生错误的回调方法
-             * @param initiate 回调错误 - ([HookParam] 当前 Hook 实例 or null,[Throwable] 异常)
+             * 创建监听失败事件方法体
+             * @param initiate 方法体
+             * @return [Result] 可继续向下监听
              */
-            fun onFailure(initiate: (HookParam?, Throwable) -> Unit) {
+            fun failures(initiate: Result.() -> Unit) = Result().apply(initiate)
+
+            /**
+             * 监听 Hook 进行过程中发生错误的回调方法
+             * @param initiate 回调错误 - ([HookParam] 当前 Hook 实例,[Throwable] 异常)
+             * @return [Result] 可继续向下监听
+             */
+            fun onConductFailure(initiate: (HookParam, Throwable) -> Unit): Result {
+                onConductFailureCallback = initiate
+                return this
+            }
+
+            /**
+             * 监听 Hook 开始时发生错误的回调方法
+             * @param initiate 回调错误 - ([Throwable] 异常)
+             * @return [Result] 可继续向下监听
+             */
+            fun onHookingFailure(initiate: (Throwable) -> Unit): Result {
+                onHookingFailureCallback = initiate
+                return this
+            }
+
+            /**
+             * 监听 Hook 过程发生找不到方法、变量错误的回调方法
+             * @param initiate 回调错误 - ([Throwable] 异常)
+             * @return [Result] 可继续向下监听
+             */
+            fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result {
+                onNoSuchMemberCallback = initiate
+                return this
+            }
+
+            /**
+             * 监听全部 Hook 过程发生错误的回调方法
+             * @param initiate 回调错误 - ([Throwable] 异常)
+             * @return [Result] 可继续向下监听
+             */
+            fun onAllFailure(initiate: (Throwable) -> Unit): Result {
                 onFailureCallback = initiate
+                return this
             }
         }
     }

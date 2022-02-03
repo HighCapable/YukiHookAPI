@@ -104,6 +104,11 @@ class MainInjecter : YukiHookXposedInitProxy {
                         afterHook {
                             Toast.makeText(instance(), "手动 Hook", Toast.LENGTH_SHORT).show()
                         }
+                    }.failures {
+                        onConductFailure { _, _ -> }
+                        onHookingFailure {}
+                        onNoSuchMemberFailure {}
+                        onAllFailure {}
                     }
                 }
             }
