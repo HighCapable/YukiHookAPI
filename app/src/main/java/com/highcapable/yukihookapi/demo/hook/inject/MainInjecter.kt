@@ -35,6 +35,8 @@ import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo.BuildConfig
 import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
+import com.highcapable.yukihookapi.demo.hook.MainHooker
+import com.highcapable.yukihookapi.demo.hook.SecondHooker
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.factory.findMethod
 import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
@@ -48,7 +50,7 @@ class MainInjecter : YukiHookXposedInitProxy {
 
     override fun onHook() {
         // 方案 1
-        // encase(BuildConfig.APPLICATION_ID, MainHooker(), SecondHooker())
+        encase(MainHooker(), SecondHooker())
         // 方案 2
         encase(BuildConfig.APPLICATION_ID) {
             loadApp(name = BuildConfig.APPLICATION_ID) {

@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.type.BundleClass
 import com.highcapable.yukihookapi.hook.type.StringType
 
+// for test
 class MainHooker : YukiBaseHooker() {
 
     override fun onHook() =

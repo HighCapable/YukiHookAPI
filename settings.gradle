@@ -1,3 +1,4 @@
 rootProject.name = "YukiHookAPI"
 include ':app'
 include ':yukihookapi'
+include ':yukihookapi-ksp-xposed'
