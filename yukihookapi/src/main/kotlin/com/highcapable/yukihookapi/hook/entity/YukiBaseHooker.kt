@@ -63,7 +63,7 @@ import com.highcapable.yukihookapi.param.PackageParam
  *
  * ....
  *
- * 详情请参考 https://github.com/fankes/YukiHookAPI/wiki
+ * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
  */
 abstract class YukiBaseHooker : PackageParam() {
 
