@@ -126,7 +126,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         assFile.mkdirs()
                     }
                     File("${assFile.absolutePath}${File.separator}xposed_init")
-                        .writeText(text = "$packageName.${className}$xposedClassShortName")
+                        .writeText(text = "$packageName.$className$xposedClassShortName")
                 }
             }.onFailure {
                 logger.error(message = "Inject XposedAssets Failed! $it")
