@@ -347,7 +347,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
              * @param initiate 方法体
              * @return [Result] 可继续向下监听
              */
-            fun failures(initiate: Result.() -> Unit) = Result().apply(initiate)
+            fun failures(initiate: Result.() -> Unit) = apply(initiate)
 
             /**
              * 监听 Hook 进行过程中发生错误的回调方法
