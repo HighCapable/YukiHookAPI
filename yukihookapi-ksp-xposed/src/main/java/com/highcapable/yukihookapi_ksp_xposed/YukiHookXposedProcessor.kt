@@ -59,7 +59,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         private val KSClassDeclaration.superName
             get() = try {
                 superTypes.last().element.toString()
-            } catch (_: Exception) {
+            } catch (_: Throwable) {
                 ""
             }
 
