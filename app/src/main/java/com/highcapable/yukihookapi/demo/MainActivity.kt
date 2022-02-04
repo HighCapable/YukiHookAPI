@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.demo
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("下一个") { _, _ ->
                 AlertDialog.Builder(this)
                     .setTitle("Hook 方法参数测试")
-                    .setMessage(test("这是没有更改的文字") + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+                    .setMessage(test("这是没有更改的文字") + "\n${a(content = "这是原文")}\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
                     .setPositiveButton("下一个") { _, _ ->
                         AlertDialog.Builder(this)
                             .setTitle("Hook 构造方法测试(stub)")
@@ -57,12 +58,18 @@ class MainActivity : AppCompatActivity() {
                                 AlertDialog.Builder(this)
                                     .setTitle("Hook 构造方法测试(名称)")
                                     .setMessage(InjectTestName("文字没更改").getString() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
-                                    .setPositiveButton("完成", null)
+                                    .setPositiveButton("完成") { _, _ -> toast() }
                                     .show()
                             }.show()
                     }.show()
             }.show()
     }
+
+    // for test
+    private fun toast() = Toast.makeText(this, "我弹出来了，没有 Hook", Toast.LENGTH_SHORT).show()
+
+    // for test
+    private fun a(content1: String = "前缀", content: String) = "$content1${content}_后面加了一段文字"
 
     // for test
     private fun test() = "正常显示的一行文字"

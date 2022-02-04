@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.type.BundleClass
 import com.highcapable.yukihookapi.hook.type.StringType
+import com.highcapable.yukihookapi.hook.type.UnitType
 
 // for test
 class MainHooker : YukiBaseHooker() {
@@ -52,6 +53,24 @@ class MainHooker : YukiBaseHooker() {
                             name = "a"
                             type = StringType
                         }.set(instance, "这段文字被修改成功了")
+                    }
+                }
+                injectMember {
+                    method {
+                        name = "toast"
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+                injectMember {
+                    method {
+                        name = "a"
+                        param(StringType, StringType)
+                        returnType = StringType
+                    }
+                    beforeHook {
+                        args(index = 0).set("改了前面的")
+                        args(index = 1).set("改了后面的")
                     }
                 }
                 injectMember {

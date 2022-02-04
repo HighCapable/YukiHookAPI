@@ -29,13 +29,16 @@
 
 package com.highcapable.yukihookapi.hook.core
 
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.log.loggerI
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.utils.runBlocking
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
@@ -120,7 +123,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          */
-        fun method(initiate: MethodFinder.() -> Unit) {
+        fun method(initiate: MethodFinder.() -> Unit) = runBlocking {
             runCatching {
                 member = MethodFinder(hookClass).apply(initiate).find()
             }.onFailure {
@@ -129,7 +132,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                 onAllFailureCallback?.invoke(it)
                 if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
             }
-        }
+        }.result { onHookLogMsg(msg = "Find Method [$member] takes ${it}ms") }
 
         /**
          * 查找需要 Hook 的构造类
@@ -137,7 +140,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          */
-        fun constructor(initiate: ConstructorFinder.() -> Unit) {
+        fun constructor(initiate: ConstructorFinder.() -> Unit) = runBlocking {
             runCatching {
                 member = ConstructorFinder(hookClass).apply(initiate).find()
             }.onFailure {
@@ -146,7 +149,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                 onAllFailureCallback?.invoke(it)
                 if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
             }
-        }
+        }.result { onHookLogMsg(msg = "Find Constructor [$member] takes ${it}ms") }
 
         /**
          * 查找 [Field]
@@ -155,7 +158,11 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          */
         fun HookParam.field(initiate: FieldFinder.() -> Unit) =
             try {
-                FieldFinder(hookClass).apply(initiate).find()
+                var result: FieldFinder.Result? = null
+                runBlocking {
+                    result = FieldFinder(hookClass).apply(initiate).find()
+                }.result { onHookLogMsg(msg = "Find Field [${result?.give()}] takes ${it}ms") }
+                result!!
             } catch (e: Throwable) {
                 isStopHookMode = true
                 onNoSuchMemberCallback?.invoke(e)
@@ -277,6 +284,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                 if (baseParam == null) return null
                                 return HookParam(baseParam).let { param ->
                                     try {
+                                        if (replaceHookCallback != null)
+                                            onHookLogMsg(msg = "Replace Hook Member [${member}] done")
                                         replaceHookCallback?.invoke(param)
                                     } catch (e: Throwable) {
                                         onConductFailureCallback?.invoke(param, e)
@@ -295,6 +304,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                 HookParam(baseParam).also { param ->
                                     runCatching {
                                         beforeHookCallback?.invoke(param)
+                                        if (beforeHookCallback != null)
+                                            onHookLogMsg(msg = "Before Hook Member [${member}] done")
                                     }.onFailure {
                                         onConductFailureCallback?.invoke(param, it)
                                         onAllFailureCallback?.invoke(it)
@@ -309,6 +320,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                 HookParam(baseParam).also { param ->
                                     runCatching {
                                         afterHookCallback?.invoke(param)
+                                        if (afterHookCallback != null)
+                                            onHookLogMsg(msg = "After Hook Member [${member}] done")
                                     }.onFailure {
                                         onConductFailureCallback?.invoke(param, it)
                                         onAllFailureCallback?.invoke(it)
@@ -332,6 +345,14 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          */
         private fun onHookFailureMsg(throwable: Throwable) =
             loggerE(msg = "Try to hook $hookClass[$member] got an Exception", e = throwable)
+
+        /**
+         * Hook 过程中开启了 [YukiHookAPI.isDebug] 输出调试信息
+         * @param msg 调试日志内容
+         */
+        private fun onHookLogMsg(msg: String) {
+            if (YukiHookAPI.isDebug) loggerI(msg = msg)
+        }
 
         override fun toString() = "$member#YukiHook"
 

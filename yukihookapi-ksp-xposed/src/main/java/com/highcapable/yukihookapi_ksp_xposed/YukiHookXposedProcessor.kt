@@ -53,6 +53,17 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         private val xposedClassShortName = "_YukiHookXposedInit"
 
         /**
+         * 获取父类名称 - 只取最后一个
+         * @return [String]
+         */
+        private val KSClassDeclaration.superName
+            get() = try {
+                superTypes.last().element.toString()
+            } catch (_: Exception) {
+                ""
+            }
+
+        /**
          * 创建一个环境方法体方便调用
          * @param env 方法体
          */
@@ -72,14 +83,16 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             resolver.getSymbolsWithAnnotation(InjectYukiHookWithXposed::class.java.name)
                 .asSequence()
                 .filterIsInstance<KSClassDeclaration>().forEach {
-                    if (injectOnce) {
-                        injectAssets(
-                            codePath = (it.location as? FileLocation?)?.filePath ?: "",
-                            packageName = it.packageName.asString(),
-                            className = it.simpleName.asString()
-                        )
-                        injectClass(it.packageName.asString(), it.simpleName.asString())
-                    } else logger.error(message = "@InjectYukiHookWithXposed only can be use in once times")
+                    if (injectOnce)
+                        if (it.superName == "YukiHookXposedInitProxy") {
+                            injectAssets(
+                                codePath = (it.location as? FileLocation?)?.filePath ?: "",
+                                packageName = it.packageName.asString(),
+                                className = it.simpleName.asString()
+                            )
+                            injectClass(it.packageName.asString(), it.simpleName.asString())
+                        } else logger.error(message = "HookEntryClass \"${it.simpleName.asString()}\" must be implements YukiHookXposedInitProxy")
+                    else logger.error(message = "@InjectYukiHookWithXposed only can be use in once times")
                     /** 仅处理第一个标记的类 - 再次处理将拦截并报错 */
                     injectOnce = false
                 }

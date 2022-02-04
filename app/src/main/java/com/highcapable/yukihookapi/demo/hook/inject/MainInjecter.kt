@@ -31,28 +31,30 @@ package com.highcapable.yukihookapi.demo.hook.inject
 
 import android.app.AlertDialog
 import android.widget.Toast
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo.BuildConfig
 import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
-import com.highcapable.yukihookapi.demo.hook.MainHooker
-import com.highcapable.yukihookapi.demo.hook.SecondHooker
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.factory.findMethod
 import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.type.ActivityClass
 import com.highcapable.yukihookapi.hook.type.BundleClass
 import com.highcapable.yukihookapi.hook.type.StringType
+import com.highcapable.yukihookapi.hook.type.UnitType
 
 // for test
 @InjectYukiHookWithXposed
 class MainInjecter : YukiHookXposedInitProxy {
 
     override fun onHook() {
+        // 设置模式
+        YukiHookAPI.isDebug = true
         // 方案 1
-        encase(MainHooker(), SecondHooker())
+        // encase(MainHooker(), SecondHooker())
         // 方案 2
-        encase(BuildConfig.APPLICATION_ID) {
+        encase {
             loadApp(name = BuildConfig.APPLICATION_ID) {
                 MainActivity::class.java.hook {
                     injectMember {
@@ -65,6 +67,24 @@ class MainInjecter : YukiHookXposedInitProxy {
                                 name = "a"
                                 type = StringType
                             }.set(instance, "这段文字被修改成功了")
+                        }
+                    }
+                    injectMember {
+                        method {
+                            name = "toast"
+                            returnType = UnitType
+                        }
+                        intercept()
+                    }
+                    injectMember {
+                        method {
+                            name = "a"
+                            param(StringType, StringType)
+                            returnType = StringType
+                        }
+                        beforeHook {
+                            args(index = 0).set("改了前面的")
+                            args(index = 1).set("改了后面的")
                         }
                     }
                     injectMember {

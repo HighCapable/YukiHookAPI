@@ -53,6 +53,15 @@ object YukiHookAPI {
     const val TAG = "YukiHookAPI"
 
     /**
+     * 是否开启调试模式 - 默认启用
+     *
+     * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
+     *
+     * 请过滤 [TAG] (YukiHookAPI) 即可找到每条日志
+     */
+    var isDebug = true
+
+    /**
      * Xposed Hook API 绑定的模块包名 - 未写将自动生成
      * - 你不应该设置此变量的名称 - 请使用 [encase] 装载模块包名
      */

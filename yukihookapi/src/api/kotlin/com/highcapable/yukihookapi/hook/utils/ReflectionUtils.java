@@ -171,7 +171,7 @@ public class ReflectionUtils {
      * @param methodName 方法名
      */
     public static Method findMethodNoParam(Class<?> clazz, Class<?> returnType, String methodName) {
-        String fullMethodName = clazz.getName() + '#' + methodName + returnType + "#exact#NoParam";
+        String fullMethodName = "name:[" + methodName + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
         if (!methodCache.containsKey(fullMethodName)) {
             Method method = findMethodIfExists(clazz, returnType, methodName);
             methodCache.put(fullMethodName, method);
@@ -190,7 +190,7 @@ public class ReflectionUtils {
      * @param parameterTypes 方法参数类型数组
      */
     public static Method findMethodBestMatch(Class<?> clazz, Class<?> returnType, String methodName, Class<?>... parameterTypes) {
-        String fullMethodName = clazz.getName() + '#' + methodName + returnType + getParametersString(parameterTypes) + "#exact";
+        String fullMethodName = "name:[" + methodName + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
         if (!methodCache.containsKey(fullMethodName)) {
             Method method = findMethodIfExists(clazz, returnType, methodName, parameterTypes);
             methodCache.put(fullMethodName, method);
@@ -207,24 +207,24 @@ public class ReflectionUtils {
      * @param parameterTypes 构造类方法参数类型数组
      */
     public static Constructor<?> findConstructorExact(Class<?> clazz, Class<?>... parameterTypes) {
-        String fullConstructorName = clazz.getName() + getParametersString(parameterTypes) + "#exact";
+        String fullConstructorName = "paramType:[" + getParametersString(parameterTypes) + "in Class [" + clazz.getName() + "] by YukiHook#finder";
         try {
             Constructor<?> constructor = clazz.getDeclaredConstructor(parameterTypes);
             constructor.setAccessible(true);
             return constructor;
         } catch (NoSuchMethodException e) {
-            throw new NoSuchMethodError("Can't find constructor " + fullConstructorName);
+            throw new NoSuchMethodError("Can't find this constructor --> " + fullConstructorName);
         }
     }
 
     private static Method findMethodExact(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-        String fullMethodName = clazz.getName() + '#' + methodName + getParametersString(parameterTypes) + "#zYukiHook#exact";
+        String fullMethodName = "name:[" + methodName + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
         try {
             Method method = clazz.getDeclaredMethod(methodName, parameterTypes);
             method.setAccessible(true);
             return method;
         } catch (NoSuchMethodException e) {
-            throw new NoSuchMethodError("Can't find method " + fullMethodName);
+            throw new NoSuchMethodError("Can't find this method --> " + fullMethodName);
         }
     }
 
@@ -238,6 +238,6 @@ public class ReflectionUtils {
                 for (Method method : methods) if (method.getName().equals(methodName)) return method;
             } while ((clz = clz.getSuperclass()) != null);
         }
-        throw new IllegalArgumentException("Method not found <name:" + methodName + " returnType:" + returnType.getName() + " paramType:" + getParametersString(parameterTypes) + "> in Class <" + clazz.getName() + ">");
+        throw new IllegalArgumentException("Can't find this method --> name:[" + methodName + "] returnType:[" + returnType.getName() + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHook#finder");
     }
 }
