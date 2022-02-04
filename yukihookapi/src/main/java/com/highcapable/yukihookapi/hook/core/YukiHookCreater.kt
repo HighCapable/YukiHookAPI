@@ -99,7 +99,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         private var onNoSuchMemberCallback: ((Throwable) -> Unit)? = null
 
         /** 全部错误回调 */
-        private var onFailureCallback: ((Throwable) -> Unit)? = null
+        private var onAllFailureCallback: ((Throwable) -> Unit)? = null
 
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
@@ -126,8 +126,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             }.onFailure {
                 isStopHookMode = true
                 onNoSuchMemberCallback?.invoke(it)
-                onFailureCallback?.invoke(it)
-                if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(it)
+                onAllFailureCallback?.invoke(it)
+                if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
             }
         }
 
@@ -143,8 +143,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             }.onFailure {
                 isStopHookMode = true
                 onNoSuchMemberCallback?.invoke(it)
-                onFailureCallback?.invoke(it)
-                if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(it)
+                onAllFailureCallback?.invoke(it)
+                if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
             }
         }
 
@@ -159,8 +159,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             } catch (e: Throwable) {
                 isStopHookMode = true
                 onNoSuchMemberCallback?.invoke(e)
-                onFailureCallback?.invoke(e)
-                if (onNoSuchMemberCallback == null && onFailureCallback == null) onHookFailureMsg(e)
+                onAllFailureCallback?.invoke(e)
+                if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
                 FieldFinder(hookClass).Result()
             }
 
@@ -280,8 +280,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                         replaceHookCallback?.invoke(param)
                                     } catch (e: Throwable) {
                                         onConductFailureCallback?.invoke(param, e)
-                                        onFailureCallback?.invoke(e)
-                                        if (onConductFailureCallback == null && onFailureCallback == null)
+                                        onAllFailureCallback?.invoke(e)
+                                        if (onConductFailureCallback == null && onAllFailureCallback == null)
                                             onHookFailureMsg(e)
                                         null
                                     }
@@ -297,8 +297,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                         beforeHookCallback?.invoke(param)
                                     }.onFailure {
                                         onConductFailureCallback?.invoke(param, it)
-                                        onFailureCallback?.invoke(it)
-                                        if (onConductFailureCallback == null && onFailureCallback == null)
+                                        onAllFailureCallback?.invoke(it)
+                                        if (onConductFailureCallback == null && onAllFailureCallback == null)
                                             onHookFailureMsg(it)
                                     }
                                 }
@@ -311,8 +311,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                                         afterHookCallback?.invoke(param)
                                     }.onFailure {
                                         onConductFailureCallback?.invoke(param, it)
-                                        onFailureCallback?.invoke(it)
-                                        if (onConductFailureCallback == null && onFailureCallback == null)
+                                        onAllFailureCallback?.invoke(it)
+                                        if (onConductFailureCallback == null && onAllFailureCallback == null)
                                             onHookFailureMsg(it)
                                     }
                                 }
@@ -320,14 +320,14 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                         })
                 }.onFailure {
                     onHookingFailureCallback?.invoke(it)
-                    onFailureCallback?.invoke(it)
-                    if (onHookingFailureCallback == null && onFailureCallback == null) onHookFailureMsg(it)
+                    onAllFailureCallback?.invoke(it)
+                    if (onHookingFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
                 }
             } ?: error("Hook Member cannot be null")
         }
 
         /**
-         * Hook 失败但未设置 [onFailureCallback] 将默认输出失败信息
+         * Hook 失败但未设置 [onAllFailureCallback] 将默认输出失败信息
          * @param throwable 异常信息
          */
         private fun onHookFailureMsg(throwable: Throwable) =
@@ -385,7 +385,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
              * @return [Result] 可继续向下监听
              */
             fun onAllFailure(initiate: (Throwable) -> Unit): Result {
-                onFailureCallback = initiate
+                onAllFailureCallback = initiate
                 return this
             }
         }
