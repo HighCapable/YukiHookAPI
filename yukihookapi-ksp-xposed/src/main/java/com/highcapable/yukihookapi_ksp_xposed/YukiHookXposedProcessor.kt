@@ -143,7 +143,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             if (packageName.contains(".hook."))
                 realPackageName = packageName.split(".hook.")[0]
             else logger.warn(message = "YukiHook cannot identify your App's package name,please refer to the wiki https://github.com/fankes/YukiHookAPI/wiki to fix the package name or manually configure the package name")
-            codeGenerator.createNewFile(Dependencies.ALL_FILES, packageName, fileName = "${className}_YukiHookXposedInit")
+            codeGenerator.createNewFile(Dependencies.ALL_FILES, packageName, fileName = "$className$xposedClassShortName")
                 .apply {
                     /** 🤡 由于插入的代码量不大就不想用工具生成了 */
                     write(
