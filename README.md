@@ -14,7 +14,7 @@
   《ももくり》女主 栗原 雪(Yuki)</a>
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
-# Get Startted
+# Get Started
 
 - 暂定 1.0 版本
 - 可做学习参考但暂时不要 Fork 也不要使用
