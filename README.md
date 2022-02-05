@@ -17,8 +17,8 @@
 # Get Startted
 
 - 暂定 1.0 版本
-- 可做学习参考但暂时不要 Fork 也不要使用！
-- 还差 Wiki 没有撰写 Demo 没有写完和 API 未提交至 Mven
+- 可做学习参考但暂时不要 Fork 也不要使用
+- 还差 Wiki 没有撰写 Demo 没有写完和 API 未提交至 Maven
 - 敬请期待！
 
 # License
