@@ -49,15 +49,23 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 @Keep
 object YukiHookAPI {
 
-    /** 全局标识 */
-    const val TAG = "YukiHookAPI"
+    /**
+     * 这是一个调试日志的全局标识
+     *
+     * 默认文案为 YukiHookAPI
+     *
+     * 你可以修改为你自己的文案
+     */
+    var debugTag = "YukiHookAPI"
 
     /**
      * 是否开启调试模式 - 默认启用
      *
      * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
      *
-     * 请过滤 [TAG] (YukiHookAPI) 即可找到每条日志
+     * 关闭后将只输出 Error 级别的日志
+     *
+     * 请过滤 [debugTag] 即可找到每条日志
      */
     var isDebug = true
 

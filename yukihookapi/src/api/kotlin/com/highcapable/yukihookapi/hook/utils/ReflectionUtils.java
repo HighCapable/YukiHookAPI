@@ -107,18 +107,8 @@ public class ReflectionUtils {
         return false;
     }
 
-    public static Field findField(Class<?> clazz, String typeName, String fieldName) {
-        try {
-            return findFieldIfExists(clazz, typeName, fieldName);
-        } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Can't find field <" + clazz.getName() + "#" + typeName + "#" + fieldName + ">");
-        }
-    }
-
-    public static Field findFieldIfExists(Class<?> clazz, String typeName, String fieldName)
-            throws NoSuchFieldException {
-        String fullFieldName = clazz.getName() + "#" + fieldName + "#" + typeName;
-
+    public static Field findFieldIfExists(Class<?> clazz, String typeName, String fieldName) throws NoSuchFieldException {
+        String fullFieldName = "name:[" + fieldName + "] type:[" + typeName + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
         if (!fieldCache.containsKey(fullFieldName)) {
             if (clazz != null && !TextUtils.isEmpty(typeName) && !TextUtils.isEmpty(fieldName)) {
                 Class<?> clz = clazz;
@@ -134,7 +124,7 @@ public class ReflectionUtils {
                         }
                     }
                 } while ((clz = clz.getSuperclass()) != null);
-                throw new NoSuchFieldException(clazz.getName() + "#" + typeName + " " + fieldName);
+                throw new NoSuchFieldException("Can't find this field --> " + fullFieldName);
             }
             return null;
         } else {

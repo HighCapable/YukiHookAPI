@@ -38,7 +38,6 @@ import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.log.loggerI
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.utils.runBlocking
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
@@ -59,15 +58,17 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
 
     /**
      * 注入要 Hook 的方法、构造类
+     * @param tag 可设置标签 - 在发生错误时方便进行调试
      * @param initiate 方法体
      */
-    fun injectMember(initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater().apply(initiate).apply {
+    fun injectMember(tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
+        MemberHookCreater(tag).apply(initiate).apply {
             hookMembers[toString()] = this
-        }.create()
+        }.build()
 
     /**
-     * Hook 执行入口 - 不可在外部调用
+     * Hook 执行入口
+     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @throws IllegalStateException 如果必要参数没有被设置
      */
     @DoNotUseMethod
@@ -80,8 +81,9 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
      * 智能全局方法、构造类查找类实现方法
      *
      * 处理需要 Hook 的方法
+     * @param tag 当前设置的标签
      */
-    inner class MemberHookCreater {
+    inner class MemberHookCreater(var tag: String) {
 
         /** [beforeHook] 回调 */
         private var beforeHookCallback: (HookParam.() -> Unit)? = null
@@ -98,17 +100,14 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /** Hook 开始时出现错误回调 */
         private var onHookingFailureCallback: ((Throwable) -> Unit)? = null
 
-        /** 当找不到方法、变量时错误回调 */
-        private var onNoSuchMemberCallback: ((Throwable) -> Unit)? = null
-
         /** 全部错误回调 */
         private var onAllFailureCallback: ((Throwable) -> Unit)? = null
 
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
 
-        /** 是否停止 Hook */
-        private var isStopHookMode = false
+        /** 标识是否已经设置了要 Hook 的 [member] */
+        private var isHookMemberSetup = false
 
         /**
          * 手动指定要 Hook 的方法、构造类
@@ -122,17 +121,12 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          *
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
+         * @return [MethodFinder.Result]
          */
-        fun method(initiate: MethodFinder.() -> Unit) = runBlocking {
-            runCatching {
-                member = MethodFinder(hookClass).apply(initiate).find()
-            }.onFailure {
-                isStopHookMode = true
-                onNoSuchMemberCallback?.invoke(it)
-                onAllFailureCallback?.invoke(it)
-                if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
-            }
-        }.result { onHookLogMsg(msg = "Find Method [$member] takes ${it}ms") }
+        fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result {
+            isHookMemberSetup = true
+            return MethodFinder(hookInstance = this, hookClass).apply(initiate).build()
+        }
 
         /**
          * 查找需要 Hook 的构造类
@@ -140,16 +134,10 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          */
-        fun constructor(initiate: ConstructorFinder.() -> Unit) = runBlocking {
-            runCatching {
-                member = ConstructorFinder(hookClass).apply(initiate).find()
-            }.onFailure {
-                isStopHookMode = true
-                onNoSuchMemberCallback?.invoke(it)
-                onAllFailureCallback?.invoke(it)
-                if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
-            }
-        }.result { onHookLogMsg(msg = "Find Constructor [$member] takes ${it}ms") }
+        fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result {
+            isHookMemberSetup = true
+            return ConstructorFinder(hookInstance = this, hookClass).apply(initiate).build()
+        }
 
         /**
          * 查找 [Field]
@@ -157,19 +145,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @return [FieldFinder.Result]
          */
         fun HookParam.field(initiate: FieldFinder.() -> Unit) =
-            try {
-                var result: FieldFinder.Result? = null
-                runBlocking {
-                    result = FieldFinder(hookClass).apply(initiate).find()
-                }.result { onHookLogMsg(msg = "Find Field [${result?.give()}] takes ${it}ms") }
-                result!!
-            } catch (e: Throwable) {
-                isStopHookMode = true
-                onNoSuchMemberCallback?.invoke(e)
-                onAllFailureCallback?.invoke(e)
-                if (onNoSuchMemberCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
-                FieldFinder(hookClass).Result()
-            }
+            FieldFinder(hookInstance = this@MemberHookCreater, hookClass).apply(initiate).build()
 
         /**
          * 在方法执行完成前 Hook
@@ -263,80 +239,99 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         }
 
         /**
-         * Hook 创建入口 - 不可在外部调用
+         * Hook 创建入口
+         * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
          * @return [Result]
          */
         @DoNotUseMethod
-        fun create() = Result()
+        fun build() = Result()
 
         /**
-         * Hook 执行入口 - 不可在外部调用
-         * @throws IllegalStateException 如果必要参数没有被设置
+         * Hook 执行入口
+         * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
         @DoNotUseMethod
         fun hook() {
-            if (isStopHookMode) return
-            member?.also { member ->
-                runCatching {
-                    if (isReplaceHookMode)
-                        XposedBridge.hookMethod(member, object : XC_MethodReplacement() {
-                            override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
-                                if (baseParam == null) return null
-                                return HookParam(baseParam).let { param ->
-                                    try {
-                                        if (replaceHookCallback != null)
-                                            onHookLogMsg(msg = "Replace Hook Member [${member}] done")
-                                        replaceHookCallback?.invoke(param)
-                                    } catch (e: Throwable) {
-                                        onConductFailureCallback?.invoke(param, e)
-                                        onAllFailureCallback?.invoke(e)
-                                        if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                            onHookFailureMsg(e)
-                                        null
+            if (member != null)
+                member.also { member ->
+                    runCatching {
+                        if (isReplaceHookMode)
+                            XposedBridge.hookMethod(member, object : XC_MethodReplacement() {
+                                override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
+                                    if (baseParam == null) return null
+                                    return HookParam(baseParam).let { param ->
+                                        try {
+                                            if (replaceHookCallback != null)
+                                                onHookLogMsg(msg = "Replace Hook Member [${member}] done [$tag]")
+                                            replaceHookCallback?.invoke(param)
+                                        } catch (e: Throwable) {
+                                            onConductFailureCallback?.invoke(param, e)
+                                            onAllFailureCallback?.invoke(e)
+                                            if (onConductFailureCallback == null && onAllFailureCallback == null)
+                                                onHookFailureMsg(e)
+                                            null
+                                        }
                                     }
                                 }
-                            }
-                        })
-                    else
-                        XposedBridge.hookMethod(member, object : XC_MethodHook() {
-                            override fun beforeHookedMethod(baseParam: MethodHookParam?) {
-                                if (baseParam == null) return
-                                HookParam(baseParam).also { param ->
-                                    runCatching {
-                                        beforeHookCallback?.invoke(param)
-                                        if (beforeHookCallback != null)
-                                            onHookLogMsg(msg = "Before Hook Member [${member}] done")
-                                    }.onFailure {
-                                        onConductFailureCallback?.invoke(param, it)
-                                        onAllFailureCallback?.invoke(it)
-                                        if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                            onHookFailureMsg(it)
+                            })
+                        else
+                            XposedBridge.hookMethod(member, object : XC_MethodHook() {
+                                override fun beforeHookedMethod(baseParam: MethodHookParam?) {
+                                    if (baseParam == null) return
+                                    HookParam(baseParam).also { param ->
+                                        runCatching {
+                                            beforeHookCallback?.invoke(param)
+                                            if (beforeHookCallback != null)
+                                                onHookLogMsg(msg = "Before Hook Member [${member}] done [$tag]")
+                                        }.onFailure {
+                                            onConductFailureCallback?.invoke(param, it)
+                                            onAllFailureCallback?.invoke(it)
+                                            if (onConductFailureCallback == null && onAllFailureCallback == null)
+                                                onHookFailureMsg(it)
+                                        }
                                     }
                                 }
-                            }
 
-                            override fun afterHookedMethod(baseParam: MethodHookParam?) {
-                                if (baseParam == null) return
-                                HookParam(baseParam).also { param ->
-                                    runCatching {
-                                        afterHookCallback?.invoke(param)
-                                        if (afterHookCallback != null)
-                                            onHookLogMsg(msg = "After Hook Member [${member}] done")
-                                    }.onFailure {
-                                        onConductFailureCallback?.invoke(param, it)
-                                        onAllFailureCallback?.invoke(it)
-                                        if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                            onHookFailureMsg(it)
+                                override fun afterHookedMethod(baseParam: MethodHookParam?) {
+                                    if (baseParam == null) return
+                                    HookParam(baseParam).also { param ->
+                                        runCatching {
+                                            afterHookCallback?.invoke(param)
+                                            if (afterHookCallback != null)
+                                                onHookLogMsg(msg = "After Hook Member [${member}] done [$tag]")
+                                        }.onFailure {
+                                            onConductFailureCallback?.invoke(param, it)
+                                            onAllFailureCallback?.invoke(it)
+                                            if (onConductFailureCallback == null && onAllFailureCallback == null)
+                                                onHookFailureMsg(it)
+                                        }
                                     }
                                 }
-                            }
-                        })
-                }.onFailure {
-                    onHookingFailureCallback?.invoke(it)
-                    onAllFailureCallback?.invoke(it)
-                    if (onHookingFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                            })
+                    }.onFailure {
+                        onHookingFailureCallback?.invoke(it)
+                        onAllFailureCallback?.invoke(it)
+                        if (onHookingFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                    }
                 }
-            } ?: error("Hook Member cannot be null")
+            else {
+                onHookingFailureCallback?.invoke(Throwable())
+                onAllFailureCallback?.invoke(Throwable())
+                if (onHookingFailureCallback == null && onAllFailureCallback == null)
+                    loggerE(
+                        msg = if (isHookMemberSetup)
+                            "Hooked Member with a finding error in Class [$hookClass] [$tag]"
+                        else "Hooked Member cannot be non-null in Class [$hookClass] [$tag]"
+                    )
+            }
+        }
+
+        /**
+         * Hook 过程中开启了 [YukiHookAPI.isDebug] 输出调试信息
+         * @param msg 调试日志内容
+         */
+        internal fun onHookLogMsg(msg: String) {
+            if (YukiHookAPI.isDebug) loggerI(msg = msg)
         }
 
         /**
@@ -344,17 +339,9 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param throwable 异常信息
          */
         private fun onHookFailureMsg(throwable: Throwable) =
-            loggerE(msg = "Try to hook $hookClass[$member] got an Exception", e = throwable)
+            loggerE(msg = "Try to hook $hookClass[$member] got an Exception [$tag]", e = throwable)
 
-        /**
-         * Hook 过程中开启了 [YukiHookAPI.isDebug] 输出调试信息
-         * @param msg 调试日志内容
-         */
-        private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.isDebug) loggerI(msg = msg)
-        }
-
-        override fun toString() = "$member#YukiHook"
+        override fun toString() = "$member$tag#YukiHook"
 
         /**
          * 监听 Hook 结果实现类
@@ -388,7 +375,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
 
             /**
              * 监听 Hook 开始时发生错误的回调方法
-             * @param initiate 回调错误 - ([Throwable] 异常)
+             * @param initiate 回调错误
              * @return [Result] 可继续向下监听
              */
             fun onHookingFailure(initiate: (Throwable) -> Unit): Result {
@@ -403,24 +390,8 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             fun ignoredHookingFailure() = onHookingFailure {}
 
             /**
-             * 监听 Hook 过程发生找不到方法、变量错误的回调方法
-             * @param initiate 回调错误 - ([Throwable] 异常)
-             * @return [Result] 可继续向下监听
-             */
-            fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result {
-                onNoSuchMemberCallback = initiate
-                return this
-            }
-
-            /**
-             * 忽略 Hook 过程发生找不到方法、变量的错误
-             * @return [Result] 可继续向下监听
-             */
-            fun ignoredNoSuchMemberFailure() = onNoSuchMemberFailure {}
-
-            /**
              * 监听全部 Hook 过程发生错误的回调方法
-             * @param initiate 回调错误 - ([Throwable] 异常)
+             * @param initiate 回调错误
              * @return [Result] 可继续向下监听
              */
             fun onAllFailure(initiate: (Throwable) -> Unit): Result {

@@ -50,6 +50,7 @@ class MainInjecter : YukiHookXposedInitProxy {
 
     override fun onHook() {
         // 设置模式
+        YukiHookAPI.debugTag = "YukiSuki"
         YukiHookAPI.isDebug = true
         // 方案 1
         // encase(MainHooker(), SecondHooker())
@@ -80,11 +81,11 @@ class MainInjecter : YukiHookXposedInitProxy {
                         method {
                             name = "a"
                             param(StringType, StringType)
-                            returnType = StringType
+                            returnType = UnitType
                         }
                         beforeHook {
-                            args(index = 0).set("改了前面的")
-                            args(index = 1).set("改了后面的")
+                            args(index = 0).set("✌️改了前面的")
+                            args(index = 1).set("✌️改了后面的")
                         }
                     }
                     injectMember {
@@ -141,11 +142,9 @@ class MainInjecter : YukiHookXposedInitProxy {
                     }.failures {
                         onConductFailure { _, _ -> }
                         onHookingFailure {}
-                        onNoSuchMemberFailure {}
                         onAllFailure {}
                         ignoredConductFailure()
                         ignoredHookingFailure()
-                        ignoredNoSuchMemberFailure()
                         ignoredAllFailure()
                     }
                 }

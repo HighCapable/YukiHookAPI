@@ -30,16 +30,20 @@
 package com.highcapable.yukihookapi.hook.core.finder
 
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
+import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
 
 /**
  * Field 查找结果实现类
  *
  * 可在这里处理找到的 [fieldInstance]
+ * @param hookInstance 当前 Hook 实例
  * @param hookClass 当前被 Hook 的 [Class]
  */
-class FieldFinder(private val hookClass: Class<*>) {
+class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>) {
 
     /** 当前找到的 [Field] */
     private var fieldInstance: Field? = null
@@ -51,25 +55,42 @@ class FieldFinder(private val hookClass: Class<*>) {
     var type: Class<*>? = null
 
     /**
-     * 得到变量处理结果 - 不能在外部调用
+     * 得到变量处理结果
+     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [Result]
-     * @throws NoSuchFieldError 如果找不到变量
+     * @throws IllegalStateException 如果 [name] 没有被设置
      */
     @DoNotUseMethod
-    fun find(): Result {
-        fieldInstance = when {
-            name.isBlank() -> error("Field name cannot be empty")
-            else -> ReflectionUtils.findFieldIfExists(hookClass, type?.name, name)
+    fun build() = if (name.isBlank()) {
+        loggerE(msg = "Field name cannot be empty in Class [$hookClass] [${hookInstance.tag}]")
+        Result(isNoSuch = true)
+    } else try {
+        runBlocking {
+            fieldInstance = ReflectionUtils.findFieldIfExists(hookClass, type?.name, name)
+        }.result {
+            hookInstance.onHookLogMsg(msg = "Find Field [${fieldInstance}] takes ${it}ms [${hookInstance.tag}]")
         }
-        return Result()
+        Result()
+    } catch (e: Throwable) {
+        loggerE(msg = "NoSuchField happend in [$hookClass] [${hookInstance.tag}]", e = e)
+        Result(isNoSuch = true, e)
     }
 
     /**
      * Field 查找结果实现类
      *
      * 可在这里处理找到的 [fieldInstance]
+     * @param isNoSuch 是否没有找到变量 - 默认否
+     * @param e 错误信息
      */
-    inner class Result {
+    inner class Result(private val isNoSuch: Boolean = false, private val e: Throwable? = null) {
+
+        /**
+         * 创建监听结果事件方法体
+         * @param initiate 方法体
+         * @return [Result] 可继续向下监听
+         */
+        fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
          * 设置变量实例
@@ -90,5 +111,17 @@ class FieldFinder(private val hookClass: Class<*>) {
          * @return [Field] or null
          */
         fun give() = fieldInstance
+
+        /**
+         * 监听找不到变量时
+         *
+         * 只会返回第一次和最后一次的错误信息
+         * @param initiate 回调错误
+         * @return [Result] 可继续向下监听
+         */
+        fun onNoSuchField(initiate: (Throwable) -> Unit): Result {
+            if (isNoSuch) initiate(e ?: Throwable())
+            return this
+        }
     }
 }

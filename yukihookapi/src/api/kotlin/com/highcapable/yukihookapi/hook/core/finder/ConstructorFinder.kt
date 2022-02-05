@@ -25,27 +25,35 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "EXPERIMENTAL_API_USAGE", "MemberVisibilityCanBePrivate")
 
 package com.highcapable.yukihookapi.hook.core.finder
 
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
+import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Constructor
 
 /**
  * [Constructor] 查找类
  *
- * 可通过指定类型查找指定构造类
+ * 可通过指定类型查找指定构造方法
+ * @param hookInstance 当前 Hook 实例
  * @param hookClass 当前被 Hook 的 [Class]
  */
-class ConstructorFinder(private val hookClass: Class<*>) {
+class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>) {
 
-    /** 方法参数 */
+    /** 失败尝试次数数组 */
+    private val remedyPlan = HashMap<Long, ConstructorFinder>()
+
+    /** 构造方法参数 */
     private var params: Array<out Class<*>>? = null
 
     /**
-     * 方法参数
+     * 构造方法参数
      * @param param 参数数组
      */
     fun param(vararg param: Class<*>) {
@@ -53,13 +61,135 @@ class ConstructorFinder(private val hookClass: Class<*>) {
     }
 
     /**
-     * 得到构造类 - 不能在外部调用
+     * 得到构造方法
      * @return [Constructor]
-     * @throws NoSuchMethodError 如果找不到构造类
+     * @throws NoSuchMethodError 如果找不到构造方法
      */
-    @DoNotUseMethod
-    fun find(): Constructor<*> =
-        if (params != null)
+    private val result
+        get() = if (params != null)
             ReflectionUtils.findConstructorExact(hookClass, *params!!)
         else ReflectionUtils.findConstructorExact(hookClass)
+
+    /**
+     * 得到构造方法结果
+     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @return [Result]
+     */
+    @DoNotUseMethod
+    fun build() = try {
+        runBlocking {
+            hookInstance.member = result
+        }.result {
+            hookInstance.onHookLogMsg(msg = "Find Constructor [${hookInstance.member}] takes ${it}ms [${hookInstance.tag}]")
+        }
+        Result()
+    } catch (e: Throwable) {
+        onFailureMsg(throwable = e)
+        Result(isNoSuch = true, e)
+    }
+
+    /**
+     * 发生错误时输出日志
+     * @param msg 消息日志
+     * @param throwable 错误
+     */
+    private fun onFailureMsg(msg: String = "", throwable: Throwable? = null) =
+        loggerE(msg = "NoSuchConstructor happend in [$hookClass] $msg [${hookInstance.tag}]", e = throwable)
+
+    /**
+     * [Constructor] 重查找实现类
+     *
+     * 可累计失败次数直到查找成功
+     */
+    inner class RemedyPlan {
+
+        /** 失败尝试次数数组 */
+        private val remedyPlan = HashSet<ConstructorFinder>()
+
+        /**
+         * 创建需要重新查找的 [Constructor]
+         *
+         * 你可以添加多个备选构造方法 - 直到成功为止
+         *
+         * 若最后依然失败 - 将停止查找并输出错误日志
+         * @param initiate 方法体
+         */
+        fun constructor(initiate: ConstructorFinder.() -> Unit) =
+            remedyPlan.add(ConstructorFinder(hookInstance, hookClass).apply(initiate))
+
+        /**
+         * 开始重查找
+         * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
+         */
+        @DoNotUseMethod
+        internal fun build() {
+            if (remedyPlan.isNotEmpty()) run {
+                var isFindSuccess = false
+                var lastError: Throwable? = null
+                remedyPlan.forEachIndexed { p, it ->
+                    runCatching {
+                        runBlocking {
+                            hookInstance.member = it.result
+                        }.result {
+                            hookInstance.onHookLogMsg(msg = "Find Constructor [${hookInstance.member}] takes ${it}ms [${hookInstance.tag}]")
+                        }
+                        isFindSuccess = true
+                        hookInstance.onHookLogMsg(msg = "Constructor [${hookInstance.member}] trying ${p + 1} times success by RemedyPlan [${hookInstance.tag}]")
+                        return@run
+                    }.onFailure {
+                        lastError = it
+                        onFailureMsg(msg = "trying ${p + 1} times by RemedyPlan --> $it")
+                    }
+                }
+                if (!isFindSuccess) {
+                    onFailureMsg(
+                        msg = "trying ${remedyPlan.size} times and all failure by RemedyPlan",
+                        throwable = lastError
+                    )
+                    remedyPlan.clear()
+                }
+            } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookInstance.tag}]")
+        }
+    }
+
+    /**
+     * [Constructor] 查找结果实现类
+     * @param isNoSuch 是否没有找到构造方法 - 默认否
+     * @param e 错误信息
+     */
+    inner class Result(private val isNoSuch: Boolean = false, private val e: Throwable? = null) {
+
+        /**
+         * 创建监听结果事件方法体
+         * @param initiate 方法体
+         * @return [Result] 可继续向下监听
+         */
+        fun result(initiate: Result.() -> Unit) = apply(initiate)
+
+        /**
+         * 创建构造方法重查找功能
+         *
+         * 当你遇到一种构造方法可能存在不同形式的存在时
+         *
+         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchConstructor] 捕获异常二次查找构造方法
+         * @param initiate 方法体
+         * @return [Result] 可继续向下监听
+         */
+        fun remedys(initiate: RemedyPlan.() -> Unit): Result {
+            if (isNoSuch) RemedyPlan().apply(initiate).build()
+            return this
+        }
+
+        /**
+         * 监听找不到构造方法时
+         *
+         * 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
+         * @param initiate 回调错误
+         * @return [Result] 可继续向下监听
+         */
+        fun onNoSuchConstructor(initiate: (Throwable) -> Unit): Result {
+            if (isNoSuch) initiate(e ?: Throwable())
+            return this
+        }
+    }
 }
