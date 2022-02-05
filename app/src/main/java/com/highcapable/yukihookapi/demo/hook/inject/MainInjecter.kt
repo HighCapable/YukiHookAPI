@@ -38,11 +38,11 @@ import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.factory.findMethod
-import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
 import com.highcapable.yukihookapi.hook.type.ActivityClass
 import com.highcapable.yukihookapi.hook.type.BundleClass
 import com.highcapable.yukihookapi.hook.type.StringType
 import com.highcapable.yukihookapi.hook.type.UnitType
+import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 // for test
 @InjectYukiHookWithXposed

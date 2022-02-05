@@ -36,7 +36,7 @@ import android.os.Bundle
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
+import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
  * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]

@@ -27,14 +27,17 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.proxy
+package com.highcapable.yukihookapi.hook.xposed.proxy
 
 import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.encase
 
 /**
  * YukiHook 的 Xposed 装载 API 调用接口
+ *
+ * - 请在此类上添加注释 [InjectYukiHookWithXposed] 标记模块 Hook 入口
  *
  * Hook 开始时将自动调用 [onHook] 方法
  *
@@ -44,7 +47,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * ....
  *
- * override fun onHook() = YukiHookAPI.encase(moduleName = "模块包名") {
+ * override fun onHook() = YukiHookAPI.encase(moduleName = "模块包名/可选") {
  *
  * ....// Your code here.
  *
@@ -56,7 +59,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * ....
  *
- * override fun onHook() = encase(moduleName = "模块包名") {
+ * override fun onHook() = encase(moduleName = "模块包名/可选") {
  *
  * ....// Your code here.
  *

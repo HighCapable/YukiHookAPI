@@ -31,7 +31,7 @@ package com.highcapable.yukihookapi.annotation.xposed
 
 import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
+import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
  * 标识 YukiHook 注入 Xposed 入口的类注释

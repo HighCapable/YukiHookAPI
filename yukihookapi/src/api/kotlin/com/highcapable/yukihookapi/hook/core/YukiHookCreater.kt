@@ -381,6 +381,12 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             }
 
             /**
+             * 忽略 Hook 进行过程中发生错误
+             * @return [Result] 可继续向下监听
+             */
+            fun ignoredConductFailure() = onConductFailure { _, _ -> }
+
+            /**
              * 监听 Hook 开始时发生错误的回调方法
              * @param initiate 回调错误 - ([Throwable] 异常)
              * @return [Result] 可继续向下监听
@@ -389,6 +395,12 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                 onHookingFailureCallback = initiate
                 return this
             }
+
+            /**
+             * 忽略 Hook 开始时发生的错误
+             * @return [Result] 可继续向下监听
+             */
+            fun ignoredHookingFailure() = onHookingFailure {}
 
             /**
              * 监听 Hook 过程发生找不到方法、变量错误的回调方法
@@ -401,6 +413,12 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             }
 
             /**
+             * 忽略 Hook 过程发生找不到方法、变量的错误
+             * @return [Result] 可继续向下监听
+             */
+            fun ignoredNoSuchMemberFailure() = onNoSuchMemberFailure {}
+
+            /**
              * 监听全部 Hook 过程发生错误的回调方法
              * @param initiate 回调错误 - ([Throwable] 异常)
              * @return [Result] 可继续向下监听
@@ -409,6 +427,12 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                 onAllFailureCallback = initiate
                 return this
             }
+
+            /**
+             * 忽略全部 Hook 过程发生的错误
+             * @return [Result] 可继续向下监听
+             */
+            fun ignoredAllFailure() = onAllFailure {}
         }
     }
 }

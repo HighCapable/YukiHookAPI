@@ -29,8 +29,9 @@ package com.highcapable.yukihookapi.hook.entity
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
+import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
  * YukiHook 的子类实现
@@ -41,9 +42,13 @@ import com.highcapable.yukihookapi.hook.proxy.YukiHookXposedInitProxy
  *
  * 你可以在 [YukiHookXposedInitProxy] 的 [YukiHookXposedInitProxy.onHook] 中实现如下用法
  *
- * 调用 [YukiHookAPI.encase] encase(moduleName = "模块包名", MainHooker(), SecondHooker(), ThirdHooker() ...)
+ * 第一种方式：调用 [YukiHookAPI.encase] encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
+ *
+ * 第二种方式：调用 [YukiHookAPI.encase] encase(moduleName = "模块包名", MainHooker(), SecondHooker(), ThirdHooker() ...)
  *
  * 调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
+ *
+ * 更多请参考 [InjectYukiHookWithXposed] 中的注释内容
  *
  * ....
  *
