@@ -9,6 +9,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+kotlin { sourceSets.main { kotlin.srcDir("src/api/kotlin") } }
+
 dependencies {
     // Used 82 API Version
     compileOnly 'de.robv.android.xposed:api:82'

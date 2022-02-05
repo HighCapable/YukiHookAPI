@@ -62,24 +62,6 @@ public class ReflectionUtils {
     }
 
     @Deprecated
-    public static <T> T getStaticObjectIfExists(Class<?> clazz, Class<?> fieldType, String fieldName) {
-        return getObjectIfExists(clazz, fieldType, fieldName, null);
-    }
-
-    public static <T> T getObjectIfExists(Class<?> clazz, Class<?> fieldType, String fieldName, Object obj) {
-        return getObjectIfExists(clazz, fieldType.getName(), fieldName, obj);
-    }
-
-    public static <T> T getObjectIfExists(Class<?> clazz, String typeName, String fieldName, Object obj) {
-        try {
-            Field field = findFieldIfExists(clazz, typeName, fieldName);
-            return field == null ? null : (T) field.get(obj);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Deprecated
     public static void setStaticObjectField(Class<?> clazz, Class<?> fieldType, String fieldName, Object value)
             throws NoSuchFieldException, IllegalAccessException {
         findFieldIfExists(clazz, fieldType, fieldName).set(null, value);
