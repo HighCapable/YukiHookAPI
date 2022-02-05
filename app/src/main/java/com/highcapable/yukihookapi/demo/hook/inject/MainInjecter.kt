@@ -143,6 +143,10 @@ class MainInjecter : YukiHookXposedInitProxy {
                         onHookingFailure {}
                         onNoSuchMemberFailure {}
                         onAllFailure {}
+                        ignoredConductFailure()
+                        ignoredHookingFailure()
+                        ignoredNoSuchMemberFailure()
+                        ignoredAllFailure()
                     }
                 }
             }
