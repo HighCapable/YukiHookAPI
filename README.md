@@ -12,7 +12,7 @@
 - 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
 - 名称取自 <a href='https://www.bilibili.com/bangumi/play/ss5016/?from=search&seid=313229405371562533&spm_id_from=333.337.0.0'>
   《ももくり》女主 栗原 雪(Yuki)</a>
-- 前身为 [TMore](https://github.com/fankes/TMore) 开发学习项目中使用的 Innocent Xposed API，现在重新命名并开源。
+- 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
 # Get Startted
 
