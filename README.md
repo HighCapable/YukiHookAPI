@@ -20,7 +20,7 @@
   自动构建程序可以帮你快速创建一个 Xposed 模块，完全省去配置入口类和 xposed_init 文件<br/>
 - <strong>轻量优雅</strong><br/>
   拥有一套强大、优雅和人性的 Kotlin lambda Hook API，可以帮你快速实现 Method、Constructor、Field 的查找以及 Hook<br/>
-- <strong>高效调试</strong>
+- <strong>高效调试</strong><br/>
   拥有丰富的调试日志功能，细到每个 Hook 方法的名称、所在类以及查找耗时，可进行快速调试和排错<br/>
 - <strong>方便移植</strong><br/>
   原生支持 Xposed API 用法，并原生对接 Xposed API，拥有 Xposed API 的 Hook 框架都能快速对接 YuKiHookAPI<br/>
