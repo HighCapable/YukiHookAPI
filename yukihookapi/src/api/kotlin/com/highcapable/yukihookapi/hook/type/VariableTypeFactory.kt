@@ -35,13 +35,13 @@ import java.io.Serializable
  * 获得 [Any] 类型
  * @return [Class]
  */
-val AnyType get() = Any::class.javaPrimitiveType
+val AnyType get() = Any::class.java
 
 /**
  * 获得 [Unit] 类型
  * @return [Class]
  */
-val UnitType get() = Unit::class.javaPrimitiveType
+val UnitType get() = Void.TYPE ?: Unit::class.java
 
 /**
  * 获得 [Boolean] 类型

@@ -133,6 +133,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          *
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
+         * @return [ConstructorFinder.Result]
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result {
             isHookMemberSetup = true
@@ -327,11 +328,11 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         }
 
         /**
-         * Hook 过程中开启了 [YukiHookAPI.isDebug] 输出调试信息
+         * Hook 过程中开启了 [YukiHookAPI.Configs.isDebug] 输出调试信息
          * @param msg 调试日志内容
          */
         internal fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.isDebug) loggerI(msg = msg)
+            if (YukiHookAPI.Configs.isDebug) loggerI(msg = msg)
         }
 
         /**
@@ -368,7 +369,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
             }
 
             /**
-             * 忽略 Hook 进行过程中发生错误
+             * 忽略 Hook 进行过程中发生的错误
              * @return [Result] 可继续向下监听
              */
             fun ignoredConductFailure() = onConductFailure { _, _ -> }

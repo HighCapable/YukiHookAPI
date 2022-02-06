@@ -37,9 +37,9 @@ import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
 
 /**
- * Field 查找结果实现类
+ * Field 查找类
  *
- * 可在这里处理找到的 [fieldInstance]
+ * 可通过执行类型查找指定变量
  * @param hookInstance 当前 Hook 实例
  * @param hookClass 当前被 Hook 的 [Class]
  */

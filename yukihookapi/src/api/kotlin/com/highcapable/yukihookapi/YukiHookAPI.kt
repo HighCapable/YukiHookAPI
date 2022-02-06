@@ -32,11 +32,11 @@ package com.highcapable.yukihookapi
 import android.content.pm.ApplicationInfo
 import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI.encase
-import com.highcapable.yukihookapi.annotation.DoNotUseField
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.CustomParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
@@ -49,36 +49,51 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 @Keep
 object YukiHookAPI {
 
-    /**
-     * 这是一个调试日志的全局标识
-     *
-     * 默认文案为 YukiHookAPI
-     *
-     * 你可以修改为你自己的文案
-     */
-    var debugTag = "YukiHookAPI"
-
-    /**
-     * 是否开启调试模式 - 默认启用
-     *
-     * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
-     *
-     * 关闭后将只输出 Error 级别的日志
-     *
-     * 请过滤 [debugTag] 即可找到每条日志
-     */
-    var isDebug = true
-
-    /**
-     * Xposed Hook API 绑定的模块包名 - 未写将自动生成
-     * - 你不应该设置此变量的名称 - 请使用 [encase] 装载模块包名
-     */
-    @DoNotUseField
-    @Keep
-    var modulePackageName = ""
-
     /** Xposed Hook API 方法体回调 */
     private var packageParamCallback: (PackageParam.() -> Unit)? = null
+
+    /**
+     * 配置 YukiHook
+     */
+    object Configs {
+
+        /**
+         * 这是一个调试日志的全局标识
+         *
+         * 默认文案为 YukiHookAPI
+         *
+         * 你可以修改为你自己的文案
+         */
+        var debugTag = "YukiHookAPI"
+
+        /**
+         * 是否开启调试模式 - 默认启用
+         *
+         * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
+         *
+         * 关闭后将只输出 Error 级别的日志
+         *
+         * 请过滤 [debugTag] 即可找到每条日志
+         */
+        var isDebug = true
+
+        /**
+         * Xposed Hook API 绑定的模块包名
+         *
+         * - 用于 [YukiHookModuleStatus] 判断模块激活状态
+         *
+         * 未写将自动生成
+         */
+        @Keep
+        var modulePackageName = ""
+    }
+
+    /**
+     * 配置 YukiHook 相关参数
+     * @param initiate 方法体
+     * @return [Configs]
+     */
+    fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate)
 
     /**
      * 装载 Xposed API 回调
@@ -92,22 +107,18 @@ object YukiHookAPI {
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
-     * @param moduleName 你的模块包名 - 可通过 Xposed API 自动生成
      * @param initiate Hook 方法体
      */
-    fun encase(moduleName: String = "", initiate: PackageParam.() -> Unit) {
-        modulePackageName = moduleName
+    fun encase(initiate: PackageParam.() -> Unit) {
         packageParamCallback = initiate
     }
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
-     * @param moduleName 你的模块包名 - 可通过 Xposed API 自动生成
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
-    fun encase(moduleName: String = "", vararg hooker: YukiBaseHooker) {
-        modulePackageName = moduleName
+    fun encase(vararg hooker: YukiBaseHooker) {
         packageParamCallback = {
             if (hooker.isNotEmpty())
                 hooker.forEach { it.assignInstance(packageParam = this) }

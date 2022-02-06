@@ -50,8 +50,10 @@ class MainInjecter : YukiHookXposedInitProxy {
 
     override fun onHook() {
         // 设置模式
-        YukiHookAPI.debugTag = "YukiSuki"
-        YukiHookAPI.isDebug = true
+        YukiHookAPI.configs {
+            debugTag = "YukiSuki"
+            isDebug = true
+        }
         // 方案 1
         // encase(MainHooker(), SecondHooker())
         // 方案 2
@@ -81,7 +83,7 @@ class MainInjecter : YukiHookXposedInitProxy {
                         method {
                             name = "a"
                             param(StringType, StringType)
-                            returnType = UnitType
+                            returnType = StringType
                         }
                         beforeHook {
                             args(index = 0).set("✌️改了前面的")

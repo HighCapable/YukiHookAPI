@@ -153,6 +153,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "\n" +
                                 "import androidx.annotation.Keep\n" +
                                 "import com.highcapable.yukihookapi.YukiHookAPI\n" +
+                                "import com.highcapable.yukihookapi.YukiHookAPI.Configs\n" +
                                 "import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus\n" +
                                 "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
                                 "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
@@ -171,8 +172,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "        }.onFailure {\n" +
                                 "            loggerE(msg = \"Try to load $packageName.$className Failed\", e = it)\n" +
                                 "        }\n" +
-                                "        YukiHookAPI.modulePackageName.ifEmpty {\n" +
-                                "            YukiHookAPI.modulePackageName = \"$realPackageName\"\n" +
+                                "        YukiHookAPI.Configs.modulePackageName.ifEmpty {\n" +
+                                "            YukiHookAPI.Configs.modulePackageName = \"$realPackageName\"\n" +
                                 "            \"$realPackageName\"\n" +
                                 "        }.also {\n" +
                                 "            if (lpparam.packageName == it)\n" +

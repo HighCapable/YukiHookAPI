@@ -104,7 +104,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
     inner class RemedyPlan {
 
         /** 失败尝试次数数组 */
-        private val remedyPlan = HashSet<ConstructorFinder>()
+        private val remedyPlans = HashSet<ConstructorFinder>()
 
         /**
          * 创建需要重新查找的 [Constructor]
@@ -115,7 +115,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
          * @param initiate 方法体
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit) =
-            remedyPlan.add(ConstructorFinder(hookInstance, hookClass).apply(initiate))
+            remedyPlans.add(ConstructorFinder(hookInstance, hookClass).apply(initiate))
 
         /**
          * 开始重查找
@@ -123,10 +123,10 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
          */
         @DoNotUseMethod
         internal fun build() {
-            if (remedyPlan.isNotEmpty()) run {
+            if (remedyPlans.isNotEmpty()) run {
                 var isFindSuccess = false
                 var lastError: Throwable? = null
-                remedyPlan.forEachIndexed { p, it ->
+                remedyPlans.forEachIndexed { p, it ->
                     runCatching {
                         runBlocking {
                             hookInstance.member = it.result
@@ -143,10 +143,10 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
                 }
                 if (!isFindSuccess) {
                     onFailureMsg(
-                        msg = "trying ${remedyPlan.size} times and all failure by RemedyPlan",
+                        msg = "trying ${remedyPlans.size} times and all failure by RemedyPlan",
                         throwable = lastError
                     )
-                    remedyPlan.clear()
+                    remedyPlans.clear()
                 }
             } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookInstance.tag}]")
         }

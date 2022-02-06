@@ -48,7 +48,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * - 你的模块包名将被这样识别：|com.example.module|.hook...
  *
- * - 若你不喜欢这样创建类 - 没问题 - 请在 [YukiHookAPI.encase] 中自行指定模块包名即可 - 但不按照规则定义包名你将会收到编译警告
+ * - 若你不喜欢这样创建类 - 没问题 - 请在 [YukiHookAPI.Configs.modulePackageName] 填写模块包名即可 - 但不按照规则定义包名你将会收到编译警告
  *
  * 例子：YukiHookAPI.encase(moduleName = "com.example.module", ...)
  *

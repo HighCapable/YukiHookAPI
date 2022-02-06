@@ -40,11 +40,9 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
  * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
- * @param moduleName 你的模块包名 - 可通过 Xposed API 自动生成
  * @param initiate Hook 方法体
  */
-fun YukiHookXposedInitProxy.encase(moduleName: String = "", initiate: PackageParam.() -> Unit) =
-    YukiHookAPI.encase(moduleName, initiate)
+fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
 
 /**
  * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
@@ -52,15 +50,6 @@ fun YukiHookXposedInitProxy.encase(moduleName: String = "", initiate: PackagePar
  * @throws IllegalStateException 如果 [hooker] 是空的
  */
 fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
-
-/**
- * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
- * @param moduleName 你的模块包名 - 可通过 Xposed API 自动生成
- * @param hooker Hook 子类数组 - 必填不能为空
- * @throws IllegalStateException 如果 [hooker] 是空的
- */
-fun YukiHookXposedInitProxy.encase(moduleName: String, vararg hooker: YukiBaseHooker) =
-    YukiHookAPI.encase(moduleName, *hooker)
 
 /**
  * 判断模块是否在太极、无极中激活

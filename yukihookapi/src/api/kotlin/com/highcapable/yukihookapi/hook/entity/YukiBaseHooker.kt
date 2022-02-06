@@ -40,13 +40,11 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * 你可以继续继承此类进行自定义 Hooker 相关参数
  *
- * 你可以在 [YukiHookXposedInitProxy] 的 [YukiHookXposedInitProxy.onHook] 中实现如下用法
+ * 你可以在 [YukiHookXposedInitProxy] 的 [YukiHookXposedInitProxy.onHook] 中实现如下用法：
  *
- * 第一种方式：调用 [YukiHookAPI.encase] encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
+ * 1.调用 [YukiHookAPI.encase] encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
  *
- * 第二种方式：调用 [YukiHookAPI.encase] encase(moduleName = "模块包名", MainHooker(), SecondHooker(), ThirdHooker() ...)
- *
- * 调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
+ * 2.调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
  *
  * 更多请参考 [InjectYukiHookWithXposed] 中的注释内容
  *

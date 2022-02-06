@@ -5,6 +5,17 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('../keystore/public')
+            storePassword '123456'
+            keyAlias 'public'
+            keyPassword '123456'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     compileSdk 31
 
     defaultConfig {
@@ -20,6 +31,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

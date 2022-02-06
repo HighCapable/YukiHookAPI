@@ -41,13 +41,31 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * Hook 开始时将自动调用 [onHook] 方法
  *
+ * 你可以对 [YukiHookAPI] 进行配置
+ *
+ * 调用 [YukiHookAPI.configs] 进行配置
+ *
+ * ....
+ *
+ * YukiHookApi.configs {
+ *
+ * ....debugTag = "自定义 TAG"
+ *
+ * ....modulePackageName = "模块包名/可选"
+ *
+ * ....isDebug = true
+ *
+ * }
+ *
+ * ....
+ *
  * 请在 [onHook] 中调用 [YukiHookAPI.encase] 或直接调用 [encase]
  *
  * 可写作如下形式：
  *
  * ....
  *
- * override fun onHook() = YukiHookAPI.encase(moduleName = "模块包名/可选") {
+ * override fun onHook() = YukiHookAPI.encase {
  *
  * ....// Your code here.
  *
@@ -59,7 +77,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * ....
  *
- * override fun onHook() = encase(moduleName = "模块包名/可选") {
+ * override fun onHook() = encase {
  *
  * ....// Your code here.
  *
@@ -71,7 +89,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * ......
  *
- * override fun onHook() = encase(moduleName = "模块包名", MainHooker(), SecondHooker(), ThirdHooker() ...)
+ * override fun onHook() = encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
  *
  * ......
  *
@@ -80,7 +98,13 @@ import com.highcapable.yukihookapi.hook.factory.encase
 @Keep
 interface YukiHookXposedInitProxy {
 
-    /** 模块装载调用入口方法 - Xposed API */
+    /**
+     * 模块装载调用入口方法
+     *
+     * Xposed API
+     *
+     * 调用 [YukiHookAPI.encase] 或直接调用 [encase] 开始 Hook
+     */
     @Keep
     fun onHook()
 }

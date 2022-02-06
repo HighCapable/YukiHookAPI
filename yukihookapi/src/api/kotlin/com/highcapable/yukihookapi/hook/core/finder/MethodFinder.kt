@@ -111,7 +111,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
     inner class RemedyPlan {
 
         /** 失败尝试次数数组 */
-        private val remedyPlan = HashSet<MethodFinder>()
+        private val remedyPlans = HashSet<MethodFinder>()
 
         /**
          * 创建需要重新查找的 [Method]
@@ -121,7 +121,8 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
          * 若最后依然失败 - 将停止查找并输出错误日志
          * @param initiate 方法体
          */
-        fun method(initiate: MethodFinder.() -> Unit) = remedyPlan.add(MethodFinder(hookInstance, hookClass).apply(initiate))
+        fun method(initiate: MethodFinder.() -> Unit) =
+            remedyPlans.add(MethodFinder(hookInstance, hookClass).apply(initiate))
 
         /**
          * 开始重查找
@@ -129,10 +130,10 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
          */
         @DoNotUseMethod
         internal fun build() {
-            if (remedyPlan.isNotEmpty()) run {
+            if (remedyPlans.isNotEmpty()) run {
                 var isFindSuccess = false
                 var lastError: Throwable? = null
-                remedyPlan.forEachIndexed { p, it ->
+                remedyPlans.forEachIndexed { p, it ->
                     runCatching {
                         runBlocking {
                             hookInstance.member = it.result
@@ -149,10 +150,10 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
                 }
                 if (!isFindSuccess) {
                     onFailureMsg(
-                        msg = "trying ${remedyPlan.size} times and all failure by RemedyPlan",
+                        msg = "trying ${remedyPlans.size} times and all failure by RemedyPlan",
                         throwable = lastError
                     )
-                    remedyPlan.clear()
+                    remedyPlans.clear()
                 }
             } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookInstance.tag}]")
         }
