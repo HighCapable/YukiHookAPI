@@ -14,7 +14,7 @@
   《ももくり》女主 栗原 雪(Yuki)</a>
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
-# 它能做什么
+# 项目优势
 
 - <strong>Xposed 模块开发</strong><br/>
   自动构建程序可以帮你快速创建一个 Xposed 模块，完全省去配置入口类和 xposed_init 文件。<br/>
@@ -29,7 +29,7 @@
 - <strong>快速上手</strong><br/>
   简单易用，不需要繁琐的配置，不需要十足的开发经验，搭建环境集成依赖即可立即开始使用。
 
-# 项目优势
+# 开始使用
 
 - 暂定 1.0 版本
 - 可做学习参考但暂时不要 Fork 也不要使用
