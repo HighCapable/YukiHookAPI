@@ -25,7 +25,7 @@
 - <strong>方便移植</strong><br/>
   原生支持 Xposed API 用法，并原生对接 Xposed API，拥有 Xposed API 的 Hook 框架都能快速对接 Yuki Hook API。<br/>
 - <strong>支持混淆</strong><br/>
-  使用 Yuki Hook API 构建的 Xposed 模块原生支持 R8 压缩优化混淆，混淆后将无法找到 Hook 入口点，可增加反编译难度以及代码安全性，无需任何配置。<br/>
+  使用 Yuki Hook API 构建的 Xposed 模块原生支持 R8 压缩优化混淆，混淆后将难以找到 Hook 入口点，可提升代码安全性，无需任何配置。<br/>
 - <strong>快速上手</strong><br/>
   简单易用，不需要繁琐的配置，不需要十足的开发经验，搭建环境集成依赖即可立即开始使用。
 
