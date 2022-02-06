@@ -19,3 +19,23 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn
+-ignorewarnings
+
+-optimizationpasses 10
+-dontusemixedcaseclassnames
+
+-dontoptimize
+-verbose
+-overloadaggressively
+-repackageclasses i
+-allowaccessmodification
+
+-adaptclassstrings
+-adaptresourcefilenames
+-adaptresourcefilecontents
+
+# -optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-renamesourcefileattribute P
+-keepattributes SourceFile,LineNumberTable

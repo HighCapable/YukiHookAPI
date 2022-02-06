@@ -33,21 +33,12 @@ import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
- *
- * 如果你想将 YukiHook 作为 Hook API 使用 - 你可自定义 [customParam]
- *
- * - 特别注意如果 [baseParam] 和 [customParam] 都为空将发生问题
- * @param baseParam 对接 Xposed API 的 [XC_LoadPackage.LoadPackageParam] - 默认空
- * @param customParam 自定义装载类 - 默认空
+ * @param baseParam 对接环境装载类的实现 - 默认是空的
  */
-open class PackageParam(
-    private var baseParam: XC_LoadPackage.LoadPackageParam? = null,
-    private var customParam: CustomParam? = null
-) {
+open class PackageParam(private var baseParam: EnvironmentParam? = null) {
 
     /**
      * 获取当前 APP 的 [ClassLoader]
@@ -55,36 +46,33 @@ open class PackageParam(
      * @throws IllegalStateException 如果 [ClassLoader] 是空的
      */
     val appClassLoader
-        get() = baseParam?.classLoader ?: customParam?.appClassLoader ?: javaClass.classLoader
-        ?: error("PackageParam ClassLoader is null")
+        get() = baseParam?.appClassLoader ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
 
     /**
      * 获取当前 APP 的 [ApplicationInfo]
      * @return [ApplicationInfo]
      */
-    val appInfo get() = baseParam?.appInfo ?: customParam?.appInfo ?: ApplicationInfo()
+    val appInfo get() = baseParam?.appInfo ?: ApplicationInfo()
 
     /**
      * 获取当前 APP 的进程名称
      *
-     * 默认的进程名称是 [packageName] 如果自定义了 [customParam] 将返回包名
+     * 默认的进程名称是 [packageName]
      * @return [String]
      */
-    val processName get() = baseParam?.processName ?: customParam?.packageName ?: ""
+    val processName get() = baseParam?.processName ?: packageName
 
     /**
      * 获取当前 APP 的包名
      * @return [String]
      */
-    val packageName get() = baseParam?.packageName ?: customParam?.packageName ?: ""
+    val packageName get() = baseParam?.packageName ?: ""
 
     /**
      * 获取当前 APP 是否为第一个 Application
-     *
-     * 若自定义了 [customParam] 将永远返回 true
      * @return [Boolean]
      */
-    val isFirstApplication get() = baseParam?.isFirstApplication ?: true
+    val isFirstApplication get() = packageName == processName
 
     /**
      * 赋值并克隆另一个 [PackageParam]
@@ -94,7 +82,6 @@ open class PackageParam(
     @DoNotUseMethod
     internal fun baseAssignInstance(another: PackageParam) {
         this.baseParam = another.baseParam
-        this.customParam = another.customParam
     }
 
     /**

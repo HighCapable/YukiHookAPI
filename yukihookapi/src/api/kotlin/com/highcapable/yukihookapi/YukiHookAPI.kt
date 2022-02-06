@@ -29,12 +29,14 @@
 
 package com.highcapable.yukihookapi
 
-import android.content.pm.ApplicationInfo
+import android.app.Application
+import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.param.CustomParam
+import com.highcapable.yukihookapi.hook.factory.processName
+import com.highcapable.yukihookapi.hook.param.EnvironmentParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -54,7 +56,7 @@ object YukiHookAPI {
     private var packageParamCallback: (PackageParam.() -> Unit)? = null
 
     /**
-     * 配置 YukiHook
+     * 配置 YukiHookAPI
      */
     object Configs {
 
@@ -102,7 +104,17 @@ object YukiHookAPI {
      * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
      */
     @DoNotUseMethod
-    fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) = packageParamCallback?.invoke(PackageParam(lpparam))
+    fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) =
+        packageParamCallback?.invoke(
+            PackageParam(
+                EnvironmentParam(
+                    packageName = lpparam.packageName,
+                    processName = lpparam.processName,
+                    appClassLoader = lpparam.classLoader,
+                    appInfo = lpparam.appInfo
+                )
+            )
+        )
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
@@ -126,16 +138,87 @@ object YukiHookAPI {
     }
 
     /**
-     * 自定义 Hook 方法装载入口
-     * @param classLoader [ClassLoader]
-     * @param packageName 包名
-     * @param appInfo [ApplicationInfo]
+     * 作为 [Application] 装载调用入口方法
+     *
+     * 请在 [Application.attachBaseContext] 中写入如下代码：
+     *
+     * ....
+     *
+     *  override fun attachBaseContext(base: Context?) {
+     *
+     *  ....////
+     *
+     *  ....// 装载你使用的 Hook 框架的代码
+     *
+     *  ....// 你的 Hook 框架需要支持 Xposed API
+     *
+     *  ....////
+     *
+     *  ....// 装载 YukiHookAPI
+     *
+     *  ....YukiHookAPI.encase(base) {
+     *
+     *  ........// Your code here.
+     *
+     *  ....}
+     *
+     *  ....super.attachBaseContext(base)
+     *
+     *  }
+     *
+     *  ....
+     *
+     * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
+     * @param baseContext attachBaseContext
      * @param initiate Hook 方法体
      */
-    fun encase(
-        classLoader: ClassLoader,
-        packageName: String,
-        appInfo: ApplicationInfo,
-        initiate: PackageParam.() -> Unit
-    ) = initiate.invoke(PackageParam(customParam = CustomParam(classLoader, appInfo, packageName)))
+    fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
+        if (baseContext != null) initiate.invoke(baseContext.packagePararm)
+    }
+
+    /**
+     * 作为 [Application] 装载调用入口方法
+     *
+     * 请在 [Application.attachBaseContext] 中写入如下代码：
+     *
+     * ....
+     *
+     *  override fun attachBaseContext(base: Context?) {
+     *
+     *  ....////
+     *
+     *  ....// 装载你使用的 Hook 框架的代码
+     *
+     *  ....// 你的 Hook 框架需要支持 Xposed API
+     *
+     *  ....////
+     *
+     *  ....// 装载 YukiHookAPI
+     *
+     *  ....YukiHookAPI.encase(base, MainHooker(), SecondHooker() ...)
+     *
+     *  ....super.attachBaseContext(base)
+     *
+     *  }
+     *
+     *  ....
+     *
+     * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
+     * @param baseContext attachBaseContext
+     * @param hooker Hook 子类数组 - 必填不能为空
+     * @throws IllegalStateException 如果 [hooker] 是空的
+     */
+    fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
+        if (baseContext != null)
+            if (hooker.isNotEmpty())
+                hooker.forEach { it.assignInstance(packageParam = baseContext.packagePararm) }
+            else error("Hooker is empty")
+    }
+
+    /**
+     * 通过 baseContext 创建 Hook 入口类
+     * @return [PackageParam]
+     */
+    private val Context.packagePararm
+        get() = PackageParam(EnvironmentParam(packageName, processName, classLoader, applicationInfo))
 }

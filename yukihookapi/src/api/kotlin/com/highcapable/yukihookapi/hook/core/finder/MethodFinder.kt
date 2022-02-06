@@ -46,20 +46,32 @@ import java.lang.reflect.Method
  */
 class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>) {
 
-    /** 方法参数 */
+    /** [Method] 参数数组 */
     private var params: Array<out Class<*>>? = null
 
-    /** 方法名 */
+    /**
+     * [Method] 名称
+     *
+     * - 必须设置
+     */
     var name = ""
 
-    /** 方法返回值 */
+    /**
+     * [Method] 返回值
+     *
+     * 可不填写返回值 - 默认模糊查找并取第一个匹配的 [Method]
+     */
     var returnType: Class<*>? = null
 
     /**
-     * 方法参数
+     * [Method] 参数
+     * - 无参 [Method] 不要使用此方法
+     *
+     * - 有参 [Method] 必须使用此方法设定参数
      * @param param 参数数组
      */
     fun param(vararg param: Class<*>) {
+        if (param.isEmpty()) error("param is empty, please delete param() method")
         params = param
     }
 

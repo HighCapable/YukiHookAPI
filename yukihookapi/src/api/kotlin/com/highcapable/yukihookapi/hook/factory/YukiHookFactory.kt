@@ -33,10 +33,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Process
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
 
 /**
  * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
@@ -50,6 +54,22 @@ fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook
  * @throws IllegalStateException 如果 [hooker] 是空的
  */
 fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
+
+/**
+ * 获取当前进程名称
+ * @return [String]
+ */
+val Context.processName
+    get() = try {
+        BufferedReader(FileReader(File("/proc/${Process.myPid()}/cmdline"))).let { buff ->
+            buff.readLine().trim { it <= ' ' }.let {
+                buff.close()
+                it
+            }
+        }
+    } catch (_: Throwable) {
+        packageName ?: ""
+    }
 
 /**
  * 判断模块是否在太极、无极中激活

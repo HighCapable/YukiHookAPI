@@ -48,10 +48,16 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
     /** 当前找到的 [Field] */
     private var fieldInstance: Field? = null
 
-    /** 变量名 */
+    /**
+     * [Field] 名称
+     * - 必须设置
+     */
     var name = ""
 
-    /** 变量类型 */
+    /**
+     * [Field] 类型
+     * - 必须设置
+     */
     var type: Class<*>? = null
 
     /**

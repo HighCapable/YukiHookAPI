@@ -46,17 +46,18 @@ import java.lang.reflect.Constructor
  */
 class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>) {
 
-    /** 失败尝试次数数组 */
-    private val remedyPlan = HashMap<Long, ConstructorFinder>()
-
-    /** 构造方法参数 */
+    /** [Constructor] 参数数组 */
     private var params: Array<out Class<*>>? = null
 
     /**
-     * 构造方法参数
+     * [Constructor] 参数
+     * - 无参 [Constructor] 不要使用此方法
+     *
+     * - 有参 [Constructor] 必须使用此方法设定参数
      * @param param 参数数组
      */
     fun param(vararg param: Class<*>) {
+        if (param.isEmpty()) error("param is empty, please delete param() method")
         params = param
     }
 

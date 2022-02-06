@@ -23,20 +23,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/2.
+ * This file is Created by fankes on 2022/2/7.
  */
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "EXPERIMENTAL_API_USAGE")
+
 package com.highcapable.yukihookapi.hook.param
 
 import android.content.pm.ApplicationInfo
 
 /**
- * 自定义 [PackageParam] 的装载入口置换类
+ * Hook 环境装载实现类
+ * @param packageName 包名
+ * @param processName 当前进程名
  * @param appClassLoader APP [ClassLoader]
  * @param appInfo APP [ApplicationInfo]
- * @param packageName 包名
  */
-class CustomParam(
+class EnvironmentParam(
+    var packageName: String,
+    var processName: String,
     var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo,
-    var packageName: String
+    var appInfo: ApplicationInfo
 )
