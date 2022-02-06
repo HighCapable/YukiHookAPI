@@ -31,12 +31,15 @@ package com.highcapable.yukihookapi.demo
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 
+@Keep
 class MainActivity : AppCompatActivity() {
 
+    @Keep
     private var a = "没更改的变量"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,14 +69,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     // for test
+    @Keep
     private fun toast() = Toast.makeText(this, "我弹出来了，没有 Hook", Toast.LENGTH_SHORT).show()
 
     // for test
+    @Keep
     private fun a(content1: String = "前缀", content: String) = "$content1${content}_后面加了一段文字"
 
     // for test
+    @Keep
     private fun test() = "正常显示的一行文字"
 
     // for test
+    @Keep
     private fun test(string: String) = string
 }

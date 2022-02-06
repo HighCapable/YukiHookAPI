@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.annotation.xposed
 
-import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
@@ -50,8 +49,6 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * - 若你不喜欢这样创建类 - 没问题 - 请在 [YukiHookAPI.Configs.modulePackageName] 填写模块包名即可 - 但不按照规则定义包名你将会收到编译警告
  *
- * 例子：YukiHookAPI.encase(moduleName = "com.example.module", ...)
- *
  * - 最后这一点很重要：请不要随意修改项目 ../src/main/assets/xposed_init 中的内容 - 否则可能会导致模块装载发生错误
  *
  * 你必须将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
@@ -61,5 +58,4 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
  */
 @Target(AnnotationTarget.CLASS)
-@Keep
 annotation class InjectYukiHookWithXposed

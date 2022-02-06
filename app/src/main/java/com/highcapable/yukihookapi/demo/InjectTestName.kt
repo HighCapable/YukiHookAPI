@@ -27,9 +27,13 @@
  */
 package com.highcapable.yukihookapi.demo
 
+import androidx.annotation.Keep
+
 // for test
+@Keep
 class InjectTestName(private val string: String) {
 
     // for test
+    @Keep
     fun getString() = string
 }

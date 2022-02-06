@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.xposed.proxy
 
-import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.encase
@@ -95,7 +94,6 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
  */
-@Keep
 interface YukiHookXposedInitProxy {
 
     /**
@@ -105,6 +103,5 @@ interface YukiHookXposedInitProxy {
      *
      * 调用 [YukiHookAPI.encase] 或直接调用 [encase] 开始 Hook
      */
-    @Keep
     fun onHook()
 }

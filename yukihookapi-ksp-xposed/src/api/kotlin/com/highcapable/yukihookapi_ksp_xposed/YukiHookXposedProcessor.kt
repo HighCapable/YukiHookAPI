@@ -162,6 +162,15 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
                                 "import $packageName.$className\n" +
                                 "\n" +
+                                "/**\n" +
+                                " * XposedInit Inject Class\n" +
+                                " *\n" +
+                                " * Compiled from YukiHookXposedProcessor\n" +
+                                " *\n" +
+                                " * HookEntryClass: [$className]\n" +
+                                " *\n" +
+                                " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
+                                " */\n" +
                                 "@Keep\n" +
                                 "class $className$xposedClassShortName : IXposedHookLoadPackage {\n" +
                                 "\n" +
@@ -170,7 +179,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "        runCatching {\n" +
                                 "            $className().onHook()\n" +
                                 "        }.onFailure {\n" +
-                                "            loggerE(msg = \"Try to load $packageName.$className Failed\", e = it)\n" +
+                                "            loggerE(msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it)\n" +
                                 "        }\n" +
                                 "        YukiHookAPI.Configs.modulePackageName.ifEmpty {\n" +
                                 "            YukiHookAPI.Configs.modulePackageName = \"$realPackageName\"\n" +

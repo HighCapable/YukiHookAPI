@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi
 
 import android.content.pm.ApplicationInfo
-import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
@@ -46,7 +45,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  *
  * 模块装载方式已经自动对接 Xposed API - 可直接调用 [encase] 完成操作
  */
-@Keep
 object YukiHookAPI {
 
     /** Xposed Hook API 方法体回调 */
@@ -84,7 +82,6 @@ object YukiHookAPI {
          *
          * 未写将自动生成
          */
-        @Keep
         var modulePackageName = ""
     }
 
@@ -102,7 +99,6 @@ object YukiHookAPI {
      * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
      */
     @DoNotUseMethod
-    @Keep
     fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) = packageParamCallback?.invoke(PackageParam(lpparam))
 
     /**
