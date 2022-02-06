@@ -179,7 +179,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "        runCatching {\n" +
                                 "            $className().onHook()\n" +
                                 "        }.onFailure {\n" +
-                                "            loggerE(msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it)\n" +
+                                "            loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it)\n" +
                                 "        }\n" +
                                 "        YukiHookAPI.Configs.modulePackageName.ifEmpty {\n" +
                                 "            YukiHookAPI.Configs.modulePackageName = \"$realPackageName\"\n" +

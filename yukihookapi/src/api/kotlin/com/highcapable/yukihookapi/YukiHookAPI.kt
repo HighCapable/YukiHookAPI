@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi
 
 import android.content.pm.ApplicationInfo
+import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
@@ -44,6 +45,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  * 可以实现作为模块装载和自定义 Hook 装载两种方式
  *
  * 模块装载方式已经自动对接 Xposed API - 可直接调用 [encase] 完成操作
+ *
+ * 你可以调用 [configs] 对 YukiHook 进行配置
  */
 object YukiHookAPI {
 

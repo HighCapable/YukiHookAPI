@@ -35,6 +35,8 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.isActive
  * 这是一个 Xposed 模块 Hook 状态类
  *
  * 我们需要监听自己的模块是否被激活 - 可直接调用这个类的 [isActive] 方法
+ *
+ * 你完全不需要自己实现模块的监听 - 此类将不会对 R8 混淆生效
  */
 @Keep
 object YukiHookModuleStatus {
