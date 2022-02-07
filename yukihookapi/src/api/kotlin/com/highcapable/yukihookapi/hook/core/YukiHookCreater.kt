@@ -79,6 +79,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
      */
     @DoNotUseMethod
     fun hook() {
+        if (!YukiHookAPI.hasXposedBridge) return
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
         hookMembers.forEach { (_, member) -> member.hook() }
     }
@@ -296,6 +297,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          */
         @DoNotUseMethod
         fun hook() {
+            if (!YukiHookAPI.hasXposedBridge) return
             /** 定义替换 Hook 回调方法体 */
             val replaceMent = object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {

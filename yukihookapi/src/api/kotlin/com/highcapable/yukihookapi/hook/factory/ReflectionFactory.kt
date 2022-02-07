@@ -41,6 +41,18 @@ import java.lang.reflect.Method
 val String.clazz: Class<*> get() = Class.forName(this)
 
 /**
+ * 通过字符串查找类是否存在
+ * @return [Boolean] 是否存在
+ */
+val String.hasClass
+    get() = try {
+        clazz
+        true
+    } catch (_: Throwable) {
+        false
+    }
+
+/**
  * 查找方法是否存在
  * @param name 名称
  * @param clazz params

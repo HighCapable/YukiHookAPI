@@ -35,10 +35,13 @@ import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.processName
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
+import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
@@ -121,7 +124,9 @@ object YukiHookAPI {
      * @param initiate Hook 方法体
      */
     fun encase(initiate: PackageParam.() -> Unit) {
-        packageParamCallback = initiate
+        if (hasXposedBridge)
+            packageParamCallback = initiate
+        else printNoXposedBridge()
     }
 
     /**
@@ -130,11 +135,13 @@ object YukiHookAPI {
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
     fun encase(vararg hooker: YukiBaseHooker) {
-        packageParamCallback = {
-            if (hooker.isNotEmpty())
-                hooker.forEach { it.assignInstance(packageParam = this) }
-            else error("Hooker is empty")
-        }
+        if (hasXposedBridge)
+            packageParamCallback = {
+                if (hooker.isNotEmpty())
+                    hooker.forEach { it.assignInstance(packageParam = this) }
+                else error("Hooker is empty")
+            }
+        else printNoXposedBridge()
     }
 
     /**
@@ -173,7 +180,9 @@ object YukiHookAPI {
      * @param initiate Hook 方法体
      */
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
-        if (baseContext != null) initiate.invoke(baseContext.packagePararm)
+        if (hasXposedBridge)
+            (if (baseContext != null) initiate.invoke(baseContext.packagePararm))
+        else printNoXposedBridge()
     }
 
     /**
@@ -209,11 +218,16 @@ object YukiHookAPI {
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
-        if (baseContext != null)
-            if (hooker.isNotEmpty())
-                hooker.forEach { it.assignInstance(packageParam = baseContext.packagePararm) }
-            else error("Hooker is empty")
+        if (hasXposedBridge)
+            (if (baseContext != null)
+                if (hooker.isNotEmpty())
+                    hooker.forEach { it.assignInstance(packageParam = baseContext.packagePararm) }
+                else error("Hooker is empty"))
+        else printNoXposedBridge()
     }
+
+    /** 输出找不到 [XposedBridge] 的错误日志 */
+    private fun printNoXposedBridge() = loggerE(msg = "Could not found XposedBridge in current space! Aborted")
 
     /**
      * 通过 baseContext 创建 Hook 入口类
@@ -221,4 +235,10 @@ object YukiHookAPI {
      */
     private val Context.packagePararm
         get() = PackageParam(PackageParamWrapper(packageName, processName, classLoader, applicationInfo))
+
+    /**
+     * 是否存在 [XposedBridge]
+     * @return [Boolean]
+     */
+    internal val hasXposedBridge get() = ("de.robv.android.xposed.XposedBridge").hasClass
 }
