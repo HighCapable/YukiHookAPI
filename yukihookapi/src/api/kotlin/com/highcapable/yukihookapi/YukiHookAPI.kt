@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.processName
-import com.highcapable.yukihookapi.hook.param.EnvironmentParam
+import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -107,7 +107,7 @@ object YukiHookAPI {
     fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) =
         packageParamCallback?.invoke(
             PackageParam(
-                EnvironmentParam(
+                PackageParamWrapper(
                     packageName = lpparam.packageName,
                     processName = lpparam.processName,
                     appClassLoader = lpparam.classLoader,
@@ -220,5 +220,5 @@ object YukiHookAPI {
      * @return [PackageParam]
      */
     private val Context.packagePararm
-        get() = PackageParam(EnvironmentParam(packageName, processName, classLoader, applicationInfo))
+        get() = PackageParam(PackageParamWrapper(packageName, processName, classLoader, applicationInfo))
 }

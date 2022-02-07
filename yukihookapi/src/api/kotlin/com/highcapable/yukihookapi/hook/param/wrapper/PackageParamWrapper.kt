@@ -27,18 +27,19 @@
  */
 @file:Suppress("unused", "MemberVisibilityCanBePrivate", "EXPERIMENTAL_API_USAGE")
 
-package com.highcapable.yukihookapi.hook.param
+package com.highcapable.yukihookapi.hook.param.wrapper
 
 import android.content.pm.ApplicationInfo
+import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
- * Hook 环境装载实现类
+ * 用于包装 [PackageParam]
  * @param packageName 包名
  * @param processName 当前进程名
  * @param appClassLoader APP [ClassLoader]
  * @param appInfo APP [ApplicationInfo]
  */
-class EnvironmentParam(
+class PackageParamWrapper(
     var packageName: String,
     var processName: String,
     var appClassLoader: ClassLoader,

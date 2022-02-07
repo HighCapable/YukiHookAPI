@@ -33,12 +33,13 @@ import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
  * @param baseParam 对接环境装载类的实现 - 默认是空的
  */
-open class PackageParam(private var baseParam: EnvironmentParam? = null) {
+open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
 
     /**
      * 获取当前 APP 的 [ClassLoader]
