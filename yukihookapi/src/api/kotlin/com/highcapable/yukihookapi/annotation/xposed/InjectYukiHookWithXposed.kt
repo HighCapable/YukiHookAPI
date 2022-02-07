@@ -35,7 +35,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 /**
  * 标识 YukiHook 注入 Xposed 入口的类注释
  *
- * - 你的项目 source 目录必须为 ../src/main/ 后方内容根据你自行喜好定义即可 - 否则编译会报错
+ * - ⚡你的项目 source 目录必须为 ../src/main/ 后方内容根据你自行喜好定义即可 - 否则编译会报错
  *
  * - 你的 Hook 入口类(HookEntryClass) 需要按照此格式创建 --> 你的模块APP包名/hook/...可允许子包名存在.../你的入口类
  *
@@ -49,7 +49,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * - 若你不喜欢这样创建类 - 没问题 - 请在 [YukiHookAPI.Configs.modulePackageName] 填写模块包名即可 - 但不按照规则定义包名你将会收到编译警告
  *
- * - 最后这一点很重要：请不要随意修改项目 ../src/main/assets/xposed_init 中的内容 - 否则可能会导致模块装载发生错误
+ * - ⚡最后这一点很重要：请不要随意修改项目 ../src/main/assets/xposed_init 中的内容 - 否则可能会导致模块装载发生错误
  *
  * 你必须将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
  *

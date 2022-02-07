@@ -51,21 +51,21 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
     /**
      * [Field] 名称
      *
-     * - 必须设置
+     * - ⚡必须设置
      */
     var name = ""
 
     /**
      * [Field] 类型
      *
-     * - 必须设置
+     * - ⚡必须设置
      */
     var type: Class<*>? = null
 
     /**
      * 得到变量处理结果
      *
-     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - ⚡此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [Result]
      * @throws IllegalStateException 如果 [name] 没有被设置
      */

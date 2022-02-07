@@ -49,9 +49,14 @@ import java.lang.reflect.Member
  *
  * 这是一个 API 对接类 - 实现原生对接 [XposedBridge]
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
- * @param hookClass 要 Hook 的 [Class]
+ * @param hookClass 要 Hook 的 [Class] - 必须已使用当前 Hook APP 的 [ClassLoader] 装载
  */
 class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Class<*>) {
+
+    /**
+     * Hook 全部方法的标识
+     */
+    enum class HookAllMembers { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_NONE }
 
     /** 设置要 Hook 的方法、构造类 */
     private var hookMembers = HashMap<String, MemberHookCreater>()
@@ -69,7 +74,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
     /**
      * Hook 执行入口
      *
-     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - ⚡此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @throws IllegalStateException 如果必要参数没有被设置
      */
     @DoNotUseMethod
@@ -110,12 +115,44 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /** 标识是否已经设置了要 Hook 的 [member] */
         private var isHookMemberSetup = false
 
+        /** 是否 Hook 全部方法以及类型 */
+        private var hookAllMembers = HookAllMembers.HOOK_NONE
+
+        /** 全部方法的名称 */
+        private var allMethodsName = ""
+
         /**
          * 手动指定要 Hook 的方法、构造类
          *
          * 你可以调用 [hookClass] 来手动查询要 Hook 的方法
          */
         var member: Member? = null
+
+        /**
+         * Hook [hookClass] 中指定 [name] 的全部方法
+         *
+         * - ⚡警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] 对每个方法单独 Hook
+         *
+         * - ⚡如果 [hookClass] 中没有方法可能会发生错误
+         * @param name 方法名称
+         */
+        fun allMethods(name: String) {
+            allMethodsName = name
+            hookAllMembers = HookAllMembers.HOOK_ALL_METHODS
+            isHookMemberSetup = true
+        }
+
+        /**
+         * Hook [hookClass] 中的全部构造方法
+         *
+         * - ⚡警告：无法准确处理每个构造方法的 param - 建议使用 [constructor] 对每个构造方法单独 Hook
+         *
+         * - ⚡如果 [hookClass] 中没有构造方法可能会发生错误
+         */
+        fun allConstructors() {
+            hookAllMembers = HookAllMembers.HOOK_ALL_CONSTRUCTORS
+            isHookMemberSetup = true
+        }
 
         /**
          * 查找需要 Hook 的方法
@@ -125,6 +162,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @return [MethodFinder.Result]
          */
         fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result {
+            hookAllMembers = HookAllMembers.HOOK_NONE
             isHookMemberSetup = true
             return MethodFinder(hookInstance = this, hookClass).apply(initiate).build()
         }
@@ -137,6 +175,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @return [ConstructorFinder.Result]
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result {
+            hookAllMembers = HookAllMembers.HOOK_NONE
             isHookMemberSetup = true
             return ConstructorFinder(hookInstance = this, hookClass).apply(initiate).build()
         }
@@ -243,7 +282,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /**
          * Hook 创建入口
          *
-         * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
+         * - ⚡此功能交由方法体自动完成 - 你不应该手动调用此方法
          * @return [Result]
          */
         @DoNotUseMethod
@@ -252,81 +291,103 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /**
          * Hook 执行入口
          *
-         * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
+         * - ⚡此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
         @DoNotUseMethod
         fun hook() {
-            if (member != null)
-                member.also { member ->
-                    runCatching {
-                        if (isReplaceHookMode)
-                            XposedBridge.hookMethod(member, object : XC_MethodReplacement() {
-                                override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
-                                    if (baseParam == null) return null
-                                    return HookParam(baseParam).let { param ->
-                                        try {
-                                            if (replaceHookCallback != null)
-                                                onHookLogMsg(msg = "Replace Hook Member [${member}] done [$tag]")
-                                            replaceHookCallback?.invoke(param)
-                                        } catch (e: Throwable) {
-                                            onConductFailureCallback?.invoke(param, e)
-                                            onAllFailureCallback?.invoke(e)
-                                            if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                                onHookFailureMsg(e)
-                                            null
-                                        }
-                                    }
-                                }
-                            })
-                        else
-                            XposedBridge.hookMethod(member, object : XC_MethodHook() {
-                                override fun beforeHookedMethod(baseParam: MethodHookParam?) {
-                                    if (baseParam == null) return
-                                    HookParam(baseParam).also { param ->
-                                        runCatching {
-                                            beforeHookCallback?.invoke(param)
-                                            if (beforeHookCallback != null)
-                                                onHookLogMsg(msg = "Before Hook Member [${member}] done [$tag]")
-                                        }.onFailure {
-                                            onConductFailureCallback?.invoke(param, it)
-                                            onAllFailureCallback?.invoke(it)
-                                            if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                                onHookFailureMsg(it)
-                                        }
-                                    }
-                                }
-
-                                override fun afterHookedMethod(baseParam: MethodHookParam?) {
-                                    if (baseParam == null) return
-                                    HookParam(baseParam).also { param ->
-                                        runCatching {
-                                            afterHookCallback?.invoke(param)
-                                            if (afterHookCallback != null)
-                                                onHookLogMsg(msg = "After Hook Member [${member}] done [$tag]")
-                                        }.onFailure {
-                                            onConductFailureCallback?.invoke(param, it)
-                                            onAllFailureCallback?.invoke(it)
-                                            if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                                onHookFailureMsg(it)
-                                        }
-                                    }
-                                }
-                            })
-                    }.onFailure {
-                        onHookingFailureCallback?.invoke(it)
-                        onAllFailureCallback?.invoke(it)
-                        if (onHookingFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+            /** 定义替换回调方法体 */
+            val replaceMent = object : XC_MethodReplacement() {
+                override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
+                    if (baseParam == null) return null
+                    return HookParam(baseParam).let { param ->
+                        try {
+                            if (replaceHookCallback != null)
+                                onHookLogMsg(msg = "Replace Hook Member [${member}] done [$tag]")
+                            replaceHookCallback?.invoke(param)
+                        } catch (e: Throwable) {
+                            onConductFailureCallback?.invoke(param, e)
+                            onAllFailureCallback?.invoke(e)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null)
+                                onHookFailureMsg(e)
+                            null
+                        }
                     }
                 }
-            else {
-                onHookingFailureCallback?.invoke(Throwable())
-                onAllFailureCallback?.invoke(Throwable())
+            }
+
+            /** 定义前后 Hook 回调方法体 */
+            val beforeAfterHook = object : XC_MethodHook() {
+                override fun beforeHookedMethod(baseParam: MethodHookParam?) {
+                    if (baseParam == null) return
+                    HookParam(baseParam).also { param ->
+                        runCatching {
+                            beforeHookCallback?.invoke(param)
+                            if (beforeHookCallback != null)
+                                onHookLogMsg(msg = "Before Hook Member [${member}] done [$tag]")
+                        }.onFailure {
+                            onConductFailureCallback?.invoke(param, it)
+                            onAllFailureCallback?.invoke(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null)
+                                onHookFailureMsg(it)
+                        }
+                    }
+                }
+
+                override fun afterHookedMethod(baseParam: MethodHookParam?) {
+                    if (baseParam == null) return
+                    HookParam(baseParam).also { param ->
+                        runCatching {
+                            afterHookCallback?.invoke(param)
+                            if (afterHookCallback != null)
+                                onHookLogMsg(msg = "After Hook Member [${member}] done [$tag]")
+                        }.onFailure {
+                            onConductFailureCallback?.invoke(param, it)
+                            onAllFailureCallback?.invoke(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null)
+                                onHookFailureMsg(it)
+                        }
+                    }
+                }
+            }
+            if (hookAllMembers == HookAllMembers.HOOK_NONE)
+                if (member != null)
+                    member.also { member ->
+                        runCatching {
+                            if (isReplaceHookMode)
+                                XposedBridge.hookMethod(member, replaceMent)
+                            else XposedBridge.hookMethod(member, beforeAfterHook)
+                        }.onFailure {
+                            onHookingFailureCallback?.invoke(it)
+                            onAllFailureCallback?.invoke(it)
+                            if (onHookingFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                        }
+                    }
+                else {
+                    onHookingFailureCallback?.invoke(Throwable())
+                    onAllFailureCallback?.invoke(Throwable())
+                    if (onHookingFailureCallback == null && onAllFailureCallback == null)
+                        loggerE(
+                            msg = if (isHookMemberSetup)
+                                "Hooked Member with a finding error in Class [$hookClass] [$tag]"
+                            else "Hooked Member cannot be non-null in Class [$hookClass] [$tag]"
+                        )
+                }
+            else runCatching {
+                when (hookAllMembers) {
+                    HookAllMembers.HOOK_ALL_METHODS ->
+                        if (isReplaceHookMode)
+                            XposedBridge.hookAllMethods(hookClass, allMethodsName, replaceMent)
+                        else XposedBridge.hookAllMethods(hookClass, allMethodsName, beforeAfterHook)
+                    HookAllMembers.HOOK_ALL_CONSTRUCTORS ->
+                        if (isReplaceHookMode)
+                            XposedBridge.hookAllConstructors(hookClass, replaceMent)
+                        else XposedBridge.hookAllConstructors(hookClass, beforeAfterHook)
+                    else -> error("Hooked got a no error possible")
+                }
+            }.onFailure {
+                onAllFailureCallback?.invoke(it)
                 if (onHookingFailureCallback == null && onAllFailureCallback == null)
-                    loggerE(
-                        msg = if (isHookMemberSetup)
-                            "Hooked Member with a finding error in Class [$hookClass] [$tag]"
-                        else "Hooked Member cannot be non-null in Class [$hookClass] [$tag]"
-                    )
+                    loggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
             }
         }
 

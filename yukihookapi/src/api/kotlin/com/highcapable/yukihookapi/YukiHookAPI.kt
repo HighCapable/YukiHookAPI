@@ -36,8 +36,8 @@ import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.processName
-import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
@@ -100,7 +100,7 @@ object YukiHookAPI {
     /**
      * 装载 Xposed API 回调
      *
-     * - 装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
+     * - ⚡装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
      */
     @DoNotUseMethod
