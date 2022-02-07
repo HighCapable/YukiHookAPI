@@ -150,6 +150,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * - ⚡如果 [hookClass] 中没有构造方法可能会发生错误
          */
         fun allConstructors() {
+            allMethodsName = "<init>"
             hookAllMembers = HookAllMembers.HOOK_ALL_CONSTRUCTORS
             isHookMemberSetup = true
         }
@@ -295,14 +296,14 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          */
         @DoNotUseMethod
         fun hook() {
-            /** 定义替换回调方法体 */
+            /** 定义替换 Hook 回调方法体 */
             val replaceMent = object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
                     if (baseParam == null) return null
                     return HookParam(baseParam).let { param ->
                         try {
                             if (replaceHookCallback != null)
-                                onHookLogMsg(msg = "Replace Hook Member [${member}] done [$tag]")
+                                onHookLogMsg(msg = "Replace Hook Member [${member ?: "All Member $allMethodsName"}] done [$tag]")
                             replaceHookCallback?.invoke(param)
                         } catch (e: Throwable) {
                             onConductFailureCallback?.invoke(param, e)
@@ -323,7 +324,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                         runCatching {
                             beforeHookCallback?.invoke(param)
                             if (beforeHookCallback != null)
-                                onHookLogMsg(msg = "Before Hook Member [${member}] done [$tag]")
+                                onHookLogMsg(msg = "Before Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
@@ -339,7 +340,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
                         runCatching {
                             afterHookCallback?.invoke(param)
                             if (afterHookCallback != null)
-                                onHookLogMsg(msg = "After Hook Member [${member}] done [$tag]")
+                                onHookLogMsg(msg = "After Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)

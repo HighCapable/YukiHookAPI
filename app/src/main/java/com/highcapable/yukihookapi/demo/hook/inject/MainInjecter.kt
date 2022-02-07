@@ -34,6 +34,7 @@ import android.widget.Toast
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo.BuildConfig
+import com.highcapable.yukihookapi.demo.InjectLucky
 import com.highcapable.yukihookapi.demo.InjectTest
 import com.highcapable.yukihookapi.demo.MainActivity
 import com.highcapable.yukihookapi.hook.factory.encase
@@ -104,6 +105,17 @@ class MainInjecter : YukiHookXposedInitProxy {
                             returnType = StringType
                         }
                         beforeHook { args().set("方法参数已被 Hook 成功") }
+                    }
+                }
+                InjectLucky::class.java.hook {
+                    injectMember {
+                        allConstructors()
+                        afterHook {
+                            field {
+                                name = "string"
+                                type = StringType
+                            }.set(instance, "内容被改掉了")
+                        }
                     }
                 }
                 InjectTest::class.java.hook {
