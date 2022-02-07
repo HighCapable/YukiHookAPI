@@ -68,6 +68,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
 
     /**
      * Hook 执行入口
+     *
      * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @throws IllegalStateException 如果必要参数没有被设置
      */
@@ -241,6 +242,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
 
         /**
          * Hook 创建入口
+         *
          * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
          * @return [Result]
          */
@@ -249,6 +251,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
 
         /**
          * Hook 执行入口
+         *
          * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
         @DoNotUseMethod

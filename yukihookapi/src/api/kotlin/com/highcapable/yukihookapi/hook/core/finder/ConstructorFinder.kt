@@ -51,6 +51,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
 
     /**
      * [Constructor] 参数
+     *
      * - 无参 [Constructor] 不要使用此方法
      *
      * - 有参 [Constructor] 必须使用此方法设定参数
@@ -73,6 +74,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
 
     /**
      * 得到构造方法结果
+     *
      * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [Result]
      */
@@ -120,6 +122,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
 
         /**
          * 开始重查找
+         *
          * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
         @DoNotUseMethod

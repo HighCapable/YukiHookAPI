@@ -65,6 +65,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
 
     /**
      * [Method] 参数
+     *
      * - 无参 [Method] 不要使用此方法
      *
      * - 有参 [Method] 必须使用此方法设定参数
@@ -88,6 +89,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
 
     /**
      * 得到方法结果
+     *
      * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [Result]
      */
@@ -138,6 +140,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
 
         /**
          * 开始重查找
+         *
          * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
         @DoNotUseMethod

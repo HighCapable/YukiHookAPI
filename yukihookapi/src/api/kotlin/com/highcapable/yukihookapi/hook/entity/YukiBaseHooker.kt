@@ -72,8 +72,9 @@ abstract class YukiBaseHooker : PackageParam() {
 
     /**
      * 赋值并克隆一个 [PackageParam]
-     * @param packageParam 需要使用的 [PackageParam]
+     *
      * - 此方法为私有功能性 API - 你不应该手动调用此方法
+     * @param packageParam 需要使用的 [PackageParam]
      */
     @DoNotUseMethod
     internal fun assignInstance(packageParam: PackageParam) {
