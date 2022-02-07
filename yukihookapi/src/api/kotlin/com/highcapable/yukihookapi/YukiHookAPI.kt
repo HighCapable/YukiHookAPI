@@ -231,8 +231,4 @@ object YukiHookAPI {
      * @return [Boolean]
      */
     internal val hasXposedBridge get() = ("de.robv.android.xposed.XposedBridge").hasClass
-
-    fun a(){
-
-    }
 }
