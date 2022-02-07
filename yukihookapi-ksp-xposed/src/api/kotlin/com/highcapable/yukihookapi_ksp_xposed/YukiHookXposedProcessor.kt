@@ -185,7 +185,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 ).apply {
                     /** 插入 xposed_init 代码 */
                     write(
-                        ("package $packageName\n" +
+                        ("@file:Suppress(\"EXPERIMENTAL_API_USAGE\")\n" +
+                                "\n" +
+                                "package $packageName\n" +
                                 "\n" +
                                 "import androidx.annotation.Keep\n" +
                                 "import com.highcapable.yukihookapi.YukiHookAPI\n" +
