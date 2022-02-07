@@ -50,8 +50,6 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * ....debugTag = "自定义 TAG"
  *
- * ....modulePackageName = "模块包名/可选"
- *
  * ....isDebug = true
  *
  * }

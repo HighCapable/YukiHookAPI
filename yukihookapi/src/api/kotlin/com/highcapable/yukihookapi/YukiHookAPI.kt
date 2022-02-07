@@ -40,7 +40,6 @@ import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
@@ -82,15 +81,6 @@ object YukiHookAPI {
          * 请过滤 [debugTag] 即可找到每条日志
          */
         var isDebug = true
-
-        /**
-         * Xposed Hook API 绑定的模块包名
-         *
-         * - 用于 [YukiHookModuleStatus] 判断模块激活状态
-         *
-         * 未写将自动生成
-         */
-        var modulePackageName = ""
     }
 
     /**

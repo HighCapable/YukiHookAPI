@@ -29,15 +29,16 @@
 
 package com.highcapable.yukihookapi.annotation.xposed
 
-import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
  * 标识 YukiHook 注入 Xposed 入口的类注释
  *
- * - ⚡你的项目 source 目录必须为 ../src/main/ 后方内容根据你自行喜好定义即可 - 否则编译会报错
+ * - 你的项目 source 目录默认为 "src/main/" 可在 [sourcePath] 中进行自定义 - 自动处理程序将只检查 ..app/[sourcePath]/java.. 中间部分
  *
- * - 你的 Hook 入口类(HookEntryClass) 需要按照此格式创建 --> 你的模块APP包名/hook/...可允许子包名存在.../你的入口类
+ * - 自动处理程序将自动在 ../[sourcePath]/assets/ 下建立 xposed_init 文件
+ *
+ * - 你的 Hook 入口类(HookEntryClass) 需要按照此格式创建 --> 你的模块 APP 包名/hook/...可允许子包名存在.../你的入口类
  *
  * 例子：com.example.module.hook.MainHook、com.example.module.hook.inject.MainInject、com.example.module.hook.custom.CustomClass
  *
@@ -47,15 +48,19 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * - 你的模块包名将被这样识别：|com.example.module|.hook...
  *
- * - 若你不喜欢这样创建类 - 没问题 - 请在 [YukiHookAPI.Configs.modulePackageName] 填写模块包名即可 - 但不按照规则定义包名你将会收到编译警告
+ * - 若你不喜欢这样创建类 - 没问题 - 请在 [modulePackageName] 填写你的模块包名即可 - 默认会按照标准识别 - 失败编译会报错
  *
- * - ⚡最后这一点很重要：请不要随意修改项目 ../src/main/assets/xposed_init 中的内容 - 否则可能会导致模块装载发生错误
+ * - 为了防止模块包名无法正常被识别 - 自定义 [modulePackageName] 会在编译时产生警告
  *
- * 你必须将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
+ * - ⚡最后这一点很重要：请不要随意修改项目 ../[sourcePath]/assets/xposed_init 中的内容 - 否则可能会导致模块无法装载
  *
- * 只能拥有一个 Hook 入口 - 若存在多个注释编译会报错
+ * - ⚡你必须将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
+ *
+ * - ⚡只能拥有一个 Hook 入口 - 若存在多个注释编译会报错
  *
  * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
+ * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
+ * @param modulePackageName 模块包名 - 使用标准路径可不填会自动生成
  */
 @Target(AnnotationTarget.CLASS)
-annotation class InjectYukiHookWithXposed
+annotation class InjectYukiHookWithXposed(val sourcePath: String = "src/main", val modulePackageName: String = "")
