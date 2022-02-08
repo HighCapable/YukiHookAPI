@@ -32,7 +32,7 @@ package com.highcapable.yukihookapi.annotation.xposed
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
- * 标识 YukiHook 注入 Xposed 入口的类注释
+ * 标识 YukiHookAPI 注入 Xposed 入口的类注释
  *
  * - 你的项目 source 目录默认为 "src/main/" 可在 [sourcePath] 中进行自定义 - 自动处理程序将只检查 ..app/[sourcePath]/java.. 中间部分
  *

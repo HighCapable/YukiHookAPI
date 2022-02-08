@@ -176,7 +176,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     modulePackageName.ifBlank {
                         if (packageName.contains(".hook."))
                             packageName.split(".hook.")[0]
-                        else error(msg = "YukiHook cannot identify your App's package name,please refer to the wiki https://github.com/fankes/YukiHookAPI/wiki to fix the package name or manually configure the package name")
+                        else error(msg = "YukiHookAPI cannot identify your App's package name,please refer to the wiki https://github.com/fankes/YukiHookAPI/wiki to fix the package name or manually configure the package name")
                     }
                 codeGenerator.createNewFile(
                     Dependencies.ALL_FILES,

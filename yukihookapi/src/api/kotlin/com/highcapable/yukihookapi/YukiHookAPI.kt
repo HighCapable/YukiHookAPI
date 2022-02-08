@@ -44,13 +44,13 @@ import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
- * YukiHook 的装载 API 调用类
+ * YukiHookAPI 的装载调用类
  *
  * 可以实现作为模块装载和自定义 Hook 装载两种方式
  *
  * 模块装载方式已经自动对接 Xposed API - 可直接调用 [encase] 完成操作
  *
- * 你可以调用 [configs] 对 YukiHook 进行配置
+ * 你可以调用 [configs] 对 YukiHookAPI 进行配置
  */
 object YukiHookAPI {
 
@@ -84,7 +84,7 @@ object YukiHookAPI {
     }
 
     /**
-     * 配置 YukiHook 相关参数
+     * 配置 YukiHookAPI 相关参数
      * @param initiate 方法体
      * @return [Configs]
      */

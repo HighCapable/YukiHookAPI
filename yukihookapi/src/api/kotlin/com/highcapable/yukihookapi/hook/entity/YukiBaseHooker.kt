@@ -34,7 +34,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
- * YukiHook 的子类实现
+ * YukiHookAPI 的子类 Hooker 实现
  *
  * 也许你的 Module 中存在多个 Hooker - 继承此类可以方便帮你管理每个 Hooker
  *

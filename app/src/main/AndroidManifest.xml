@@ -18,7 +18,7 @@
         <!-- 模块描述 -->
         <meta-data
             android:name="xposeddescription"
-            android:value="YukiHook Xposed Module Test" />
+            android:value="YukiHookAPI Xposed Module Test" />
 
         <!-- 最低xposed版本号 -->
         <meta-data
