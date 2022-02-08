@@ -67,6 +67,18 @@
       </td>
      </tr>
      <tr>
+      <td>YAHFA</td>
+      <td>
+       ❗需要自行实现 Xposed API
+      </td>
+     </tr>
+     <tr>
+      <td>FastHook</td>
+      <td>
+       ❗需要自行实现 Xposed API
+      </td>
+     </tr>
+     <tr>
       <td>Epic</td>
       <td>
        ⭕ 可以使用
