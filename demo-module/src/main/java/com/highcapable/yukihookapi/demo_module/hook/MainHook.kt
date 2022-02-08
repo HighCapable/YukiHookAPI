@@ -27,7 +27,7 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.module_demo.hook
+package com.highcapable.yukihookapi.demo_module.hook
 
 import android.app.AlertDialog
 import com.highcapable.yukihookapi.YukiHookAPI
@@ -51,7 +51,7 @@ class MainHook : YukiHookXposedInitProxy {
         // 开始你的 Hook
         YukiHookAPI.encase {
             // 装载需要 Hook 的 APP
-            loadApp(name = "com.highcapable.yukihookapi.app_demo") {
+            loadApp(name = "com.highcapable.yukihookapi.demo_app") {
                 // 得到需要 Hook 的 Class
                 findClass(name = "$packageName.ui.MainActivity").hook {
                     // 注入要 Hook 的方法

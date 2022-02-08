@@ -27,15 +27,15 @@
  */
 @file:Suppress("SameParameterValue")
 
-package com.highcapable.yukihookapi.app_demo.ui
+package com.highcapable.yukihookapi.demo_app.ui
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.highcapable.yukihookapi.app_demo.R
-import com.highcapable.yukihookapi.app_demo.utils.Main
+import com.highcapable.yukihookapi.demo_app.R
+import com.highcapable.yukihookapi.demo_app.utils.Main
 
 class MainActivity : AppCompatActivity() {
 

@@ -27,7 +27,7 @@
  */
 @file:Suppress("SetTextI18n")
 
-package com.highcapable.yukihookapi.module_demo.ui
+package com.highcapable.yukihookapi.demo_module.ui
 
 import android.os.Bundle
 import android.widget.Button
@@ -35,9 +35,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
-import com.highcapable.yukihookapi.module_demo.R
 
 class MainActivity : AppCompatActivity() {
 

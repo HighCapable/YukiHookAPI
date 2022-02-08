@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/9.
  */
-package com.highcapable.yukihookapi.app_demo.utils
+package com.highcapable.yukihookapi.demo_app.utils
 
 class Main(private val string: String) {
 

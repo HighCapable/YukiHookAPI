@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.highcapable.yukihookapi.app_demo">
+    package="com.highcapable.yukihookapi.demo_module">
 
     <application
         android:allowBackup="true"
@@ -9,6 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Default">
+
+        <!-- 设置为 Xposed 模块 -->
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+
+        <!-- 设置你的模块描述 -->
+        <meta-data
+            android:name="xposeddescription"
+            android:value="YukiHookAPI Xposed Module Test" />
+
+        <!-- 最低 Xposed 版本号 -->
+        <meta-data
+            android:name="xposedminversion"
+            android:value="93" />
 
         <activity
             android:name=".ui.MainActivity"

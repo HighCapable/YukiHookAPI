@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
-      <module name="YukiHookAPI.app_demo" target="11" />
-      <module name="YukiHookAPI.module_demo" target="11" />
+      <module name="YukiHookAPI.demo-app" target="11" />
+      <module name="YukiHookAPI.demo-module" target="11" />
       <module name="YukiHookAPI.yukihookapi-yaya" target="11" />
     </bytecodeTargetLevel>
   </component>

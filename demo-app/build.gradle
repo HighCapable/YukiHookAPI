@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.6.10-1.0.2'
 }
 
 android {
@@ -19,7 +18,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.highcapable.yukihookapi.module_demo"
+        applicationId "com.highcapable.yukihookapi.demo_app"
         minSdk 22
         targetSdk 31
         versionCode 1
@@ -42,21 +41,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    kotlin {
-        sourceSets.main {
-            kotlin.srcDir("build/generated/ksp/debug/kotlin")
-            kotlin.srcDir("build/generated/ksp/release/kotlin")
-        }
-    }
 }
 
 dependencies {
-    // Used 82 API Version
-    compileOnly 'de.robv.android.xposed:api:82'
-    // Implementation API
-    implementation project(':yukihookapi')
-    // Implementation Processor
-    ksp project(':yukihookapi-ksp-xposed')
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
