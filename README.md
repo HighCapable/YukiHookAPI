@@ -85,9 +85,9 @@
       </td>
      </tr>
      <tr>
-      <td>Taichi</td>
+      <td>TaiChi</td>
       <td>
-       ❎ 未测试
+       ⭕ 可以使用
       </td>
      </tr>
      <tr>
