@@ -74,7 +74,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
     /**
      * Hook 执行入口
      *
-     * - ⚡此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @throws IllegalStateException 如果必要参数没有被设置
      */
     @DoNotUseMethod
@@ -132,9 +132,9 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /**
          * Hook [hookClass] 中指定 [name] 的全部方法
          *
-         * - ⚡警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] 对每个方法单独 Hook
+         * - ❗警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] 对每个方法单独 Hook
          *
-         * - ⚡如果 [hookClass] 中没有方法可能会发生错误
+         * - ❗如果 [hookClass] 中没有方法可能会发生错误
          * @param name 方法名称
          */
         fun allMethods(name: String) {
@@ -146,9 +146,9 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /**
          * Hook [hookClass] 中的全部构造方法
          *
-         * - ⚡警告：无法准确处理每个构造方法的 param - 建议使用 [constructor] 对每个构造方法单独 Hook
+         * - ❗警告：无法准确处理每个构造方法的 param - 建议使用 [constructor] 对每个构造方法单独 Hook
          *
-         * - ⚡如果 [hookClass] 中没有构造方法可能会发生错误
+         * - ❗如果 [hookClass] 中没有构造方法可能会发生错误
          */
         fun allConstructors() {
             allMethodsName = "<init>"
@@ -284,7 +284,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /**
          * Hook 创建入口
          *
-         * - ⚡此功能交由方法体自动完成 - 你不应该手动调用此方法
+         * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          * @return [Result]
          */
         @DoNotUseMethod
@@ -293,7 +293,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
         /**
          * Hook 执行入口
          *
-         * - ⚡此功能交由方法体自动完成 - 你不应该手动调用此方法
+         * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
         @DoNotUseMethod
         fun hook() {

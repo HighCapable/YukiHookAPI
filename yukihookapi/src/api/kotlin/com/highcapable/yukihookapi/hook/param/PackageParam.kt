@@ -86,7 +86,7 @@ open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
     /**
      * 赋值并克隆另一个 [PackageParam]
      *
-     * - ⚡此方法为私有功能性 API - 你不应该手动调用此方法
+     * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
      * @param another 另一个 [PackageParam]
      */
     @DoNotUseMethod
@@ -114,7 +114,7 @@ open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
     /**
      * 将目标 [Class] 绑定到 [appClassLoader]
      *
-     * - ⚡请注意未绑定到 [appClassLoader] 的 [Class] 不能被装载 - 调用 [hook] 方法会自动绑定
+     * - ❗请注意未绑定到 [appClassLoader] 的 [Class] 不能被装载 - 调用 [hook] 方法会自动绑定
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到类会报错
      */

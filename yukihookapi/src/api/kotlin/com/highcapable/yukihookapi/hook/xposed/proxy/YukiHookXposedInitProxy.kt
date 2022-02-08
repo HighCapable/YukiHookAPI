@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
 /**
  * YukiHookAPI 的 Xposed 装载 API 调用接口
  *
- * - ⚡请在此类上添加注释 [InjectYukiHookWithXposed] 标记模块 Hook 入口
+ * - ❗请在此类上添加注释 [InjectYukiHookWithXposed] 标记模块 Hook 入口
  *
  * Hook 开始时将自动调用 [onHook] 方法
  *

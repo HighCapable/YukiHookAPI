@@ -52,11 +52,11 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * - 为了防止模块包名无法正常被识别 - 自定义 [modulePackageName] 会在编译时产生警告
  *
- * - ⚡最后这一点很重要：请不要随意修改项目 ../[sourcePath]/assets/xposed_init 中的内容 - 否则可能会导致模块无法装载
+ * - ❗最后这一点很重要：请不要随意修改项目 ../[sourcePath]/assets/xposed_init 中的内容 - 否则可能会导致模块无法装载
  *
- * - ⚡你必须将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
+ * - ❗你必须将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
  *
- * - ⚡只能拥有一个 Hook 入口 - 若存在多个注释编译会报错
+ * - ❗只能拥有一个 Hook 入口 - 若存在多个注释编译会报错
  *
  * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
  * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..

@@ -53,7 +53,7 @@ import java.io.File
  *
  * - 未使用 LSposed 环境请将你的模块 API 降至 26 以下 - YukiHookAPI 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
  *
- * - ⚡当你在模块中存取数据的时候 [context] 必须不能是空的
+ * - ❗当你在模块中存取数据的时候 [context] 必须不能是空的
  * @param context 上下文实例 - 默认空
  */
 class YukiHookModulePrefs(private val context: Context? = null) {
@@ -222,7 +222,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      *
      * - 在模块 [Context] 环境中使用
      *
-     * - ⚡在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
      * @param key 键值名称
      */
     fun remove(key: String) {
@@ -236,7 +236,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      *
      * - 在模块 [Context] 环境中使用
      *
-     * - ⚡在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -251,7 +251,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      *
      * - 在模块 [Context] 环境中使用
      *
-     * - ⚡在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -266,7 +266,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      *
      * - 在模块 [Context] 环境中使用
      *
-     * - ⚡在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -281,7 +281,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      *
      * - 在模块 [Context] 环境中使用
      *
-     * - ⚡在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -296,7 +296,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      *
      * - 在模块 [Context] 环境中使用
      *
-     * - ⚡在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */

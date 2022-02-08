@@ -61,7 +61,7 @@ object YukiHookAPI {
     /**
      * 预设的 Xposed 模块包名
      *
-     * - ⚡请勿手动修改 - 会引发未知异常
+     * - ❗请勿手动修改 - 会引发未知异常
      */
     @DoNotUseField
     var modulePackageName = ""
@@ -102,7 +102,7 @@ object YukiHookAPI {
     /**
      * 装载 Xposed API 回调
      *
-     * - ⚡装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
+     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
      */
     @DoNotUseMethod
