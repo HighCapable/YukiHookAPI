@@ -174,8 +174,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 if (modulePackageName.isNotBlank()) logger.warn(message = "You set the customize module package name to \"$modulePackageName\",please check for yourself if it is correct")
                 val realPackageName =
                     modulePackageName.ifBlank {
-                        if (packageName.contains(".hook."))
-                            packageName.split(".hook.")[0]
+                        if (packageName.contains(".hook.") || packageName.endsWith(".hook"))
+                            packageName.split(".hook")[0]
                         else error(msg = "YukiHookAPI cannot identify your App's package name,please refer to the wiki https://github.com/fankes/YukiHookAPI/wiki to fix the package name or manually configure the package name")
                     }
                 codeGenerator.createNewFile(
