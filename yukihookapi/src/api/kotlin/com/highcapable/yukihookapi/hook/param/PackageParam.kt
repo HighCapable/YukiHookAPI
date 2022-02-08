@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
@@ -74,6 +75,13 @@ open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
      * @return [Boolean]
      */
     val isFirstApplication get() = packageName == processName
+
+    /**
+     * 获得当前使用的存取数据对象缓存实例
+     *
+     * @return [YukiHookModulePrefs]
+     */
+    val prefs by lazy { YukiHookModulePrefs() }
 
     /**
      * 赋值并克隆另一个 [PackageParam]

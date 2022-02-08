@@ -72,6 +72,13 @@ class MainInjecter : YukiHookXposedInitProxy {
                     }
                     injectMember {
                         method {
+                            name = "xptest"
+                            returnType = StringType
+                        }
+                        replaceTo(prefs.getString(key = "data", default = "获取 Hook：没数据"))
+                    }
+                    injectMember {
+                        method {
                             name = "toast"
                             returnType = UnitType
                         }
@@ -150,7 +157,11 @@ class MainInjecter : YukiHookXposedInitProxy {
                             AlertDialog.Builder(instance())
                                 .setCancelable(false)
                                 .setTitle("测试 Hook")
-                                .setMessage("Hook 已成功")
+                                .setMessage(
+                                    "Hook 已成功\n" +
+                                            "test_key:${prefs.getBoolean("test_key")}\n" +
+                                            "test_key_name:${prefs.getString("test_key_name", "默认值")}"
+                                )
                                 .setPositiveButton("OK") { _, _ ->
                                     Toast.makeText(instance(), "Hook Success", Toast.LENGTH_SHORT).show()
                                 }.show()

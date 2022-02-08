@@ -30,10 +30,12 @@
 package com.highcapable.yukihookapi.demo
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.highcapable.yukihookapi.hook.factory.modulePrefs
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 
 @Keep
@@ -46,9 +48,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // for test
+        findViewById<Button>(R.id.main_button).setOnClickListener {
+            modulePrefs.apply {
+                putString("data", "这是存储的数据")
+                putBoolean("test_key", true)
+                putString("test_key_name", "存储数据成功，包名：$packageName")
+            }
+            Toast.makeText(this, "存储完成", Toast.LENGTH_SHORT).show()
+        }
+        // for test
         AlertDialog.Builder(this)
             .setTitle("Hook 方法返回值测试")
-            .setMessage(test() + "\n变量：$a\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+            .setMessage(test() + "\n变量：$a\n模块数据：${xptest()}\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
             .setPositiveButton("下一个") { _, _ ->
                 AlertDialog.Builder(this)
                     .setTitle("Hook 方法参数测试")
@@ -89,6 +100,10 @@ class MainActivity : AppCompatActivity() {
     // for test
     @Keep
     private fun test() = "正常显示的一行文字"
+
+    // for test
+    @Keep
+    private fun xptest() = "这里是正常的文字"
 
     // for test
     @Keep

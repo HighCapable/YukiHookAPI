@@ -37,6 +37,7 @@ import android.os.Process
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 import java.io.BufferedReader
 import java.io.File
@@ -54,6 +55,12 @@ fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit) = YukiHook
  * @throws IllegalStateException 如果 [hooker] 是空的
  */
 fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
+
+/**
+ * 获取模块的存取对象
+ * @return [YukiHookModulePrefs]
+ */
+val Context.modulePrefs get() = YukiHookModulePrefs(context = this)
 
 /**
  * 获取当前进程名称

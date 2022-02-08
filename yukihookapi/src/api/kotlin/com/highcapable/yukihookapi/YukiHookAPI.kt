@@ -33,6 +33,7 @@ import android.app.Application
 import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
+import com.highcapable.yukihookapi.annotation.DoNotUseField
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.hasClass
@@ -56,6 +57,14 @@ object YukiHookAPI {
 
     /** Xposed Hook API 方法体回调 */
     private var packageParamCallback: (PackageParam.() -> Unit)? = null
+
+    /**
+     * 预设的 Xposed 模块包名
+     *
+     * - ⚡请勿手动修改 - 会引发未知异常
+     */
+    @DoNotUseField
+    var modulePackageName = ""
 
     /**
      * 配置 YukiHookAPI

@@ -23,7 +23,7 @@
         <!-- 最低xposed版本号 -->
         <meta-data
             android:name="xposedminversion"
-            android:value="82" />
+            android:value="93" />
 
         <activity
             android:name=".MainActivity"

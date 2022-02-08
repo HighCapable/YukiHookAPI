@@ -226,6 +226,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "                object : XC_MethodReplacement() {\n" +
                                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
                                 "                })\n" +
+                                "        YukiHookAPI.modulePackageName = \"$realPackageName\"\n" +
                                 "        YukiHookAPI.onXposedLoaded(lpparam)\n" +
                                 "    }\n" +
                                 "}").toByteArray()
