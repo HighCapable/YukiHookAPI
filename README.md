@@ -10,14 +10,14 @@
 ⛱️ An efficient Kotlin version of the Xposed Hook API.
 <br/>
 
-# 项目介绍
+# What's this
 
 - 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
 - 名称取自 <a href='https://www.bilibili.com/bangumi/play/ss5016/?from=search&seid=313229405371562533&spm_id_from=333.337.0.0'>
   《ももくり》女主 栗原 雪(Yuki)</a>
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
-# 项目优势
+# Function
 
 - <strong>Xposed 模块开发</strong><br/>
   自动构建程序可以帮你快速创建一个 Xposed 模块，完全省去配置入口类和 xposed_init 文件。<br/>
@@ -32,14 +32,70 @@
 - <strong>快速上手</strong><br/>
   简单易用，不需要繁琐的配置，不需要十足的开发经验，搭建环境集成依赖即可立即开始使用。
 
-# 开始使用
+# Compatibility
+
+<table class="table">
+  <thead>
+    <tr>
+      <th colspan="1">Hook Framework</th>
+      <th colspan="1">测试结果</th>
+    </tr>
+  </thead>
+  <tbody>
+     <tr>
+      <td>LSPosed</td>
+      <td>
+        ✅ 完全兼容
+      </td>
+     </tr>
+     <tr>
+      <td>EdXposed</td>
+      <td>
+       ☑️ 部分兼容
+      </td>
+     </tr>
+     <tr>
+      <td>Pine</td>
+      <td>
+       ⭕ 可以使用
+      </td>
+     </tr>
+     <tr>
+      <td>SandHook/Whale</td>
+      <td>
+       ⭕ 可以使用
+      </td>
+     </tr>
+     <tr>
+      <td>Epic</td>
+      <td>
+       ⭕ 可以使用
+      </td>
+     </tr>
+     <tr>
+      <td>Taichi</td>
+      <td>
+       ❎ 未测试
+      </td>
+     </tr>
+     <tr>
+      <td>Xposed</td>
+      <td>
+       ❎ 未测试
+      </td>
+     </tr>
+    <tr>
+ </tbody>
+</table>
+
+# Get Started
 
 - 暂定 1.0 版本
 - 可做学习参考但暂时不要 Fork 也不要使用
 - 还差 Wiki 没有撰写 Demo 没有写完和 API 未提交至 Maven
 - 敬请期待！
 
-# 许可证
+# License
 
 - [MIT](https://choosealicense.com/licenses/mit)
 
