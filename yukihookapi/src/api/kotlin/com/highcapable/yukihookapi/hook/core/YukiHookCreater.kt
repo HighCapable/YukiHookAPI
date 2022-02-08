@@ -176,7 +176,7 @@ class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Cla
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
-        fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result {
+        fun constructor(initiate: ConstructorFinder.() -> Unit = {}): ConstructorFinder.Result {
             hookAllMembers = HookAllMembers.HOOK_NONE
             isHookMemberSetup = true
             return ConstructorFinder(hookInstance = this, hookClass).apply(initiate).build()

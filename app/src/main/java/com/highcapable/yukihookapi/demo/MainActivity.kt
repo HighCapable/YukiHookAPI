@@ -63,10 +63,15 @@ class MainActivity : AppCompatActivity() {
                                     .setMessage(InjectLucky().getString() + "\n" + InjectLucky(string = "没更改的文字").getString() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
                                     .setPositiveButton("下一个") { _, _ ->
                                         AlertDialog.Builder(this)
-                                            .setTitle("Hook 构造方法测试(名称)")
-                                            .setMessage(InjectTestName("文字没更改").getString() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
-                                            .setPositiveButton("完成") { _, _ -> toast() }
-                                            .show()
+                                            .setTitle("Hook 构造方法测试(无参)")
+                                            .setMessage(InjectNoParamTest().getString() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+                                            .setPositiveButton("下一个") { _, _ ->
+                                                AlertDialog.Builder(this)
+                                                    .setTitle("Hook 构造方法测试(名称)")
+                                                    .setMessage(InjectTestName("文字没更改").getString() + "\n模块是否已激活：${YukiHookModuleStatus.isActive()}")
+                                                    .setPositiveButton("完成") { _, _ -> toast() }
+                                                    .show()
+                                            }.show()
                                     }.show()
                             }.show()
                     }.show()

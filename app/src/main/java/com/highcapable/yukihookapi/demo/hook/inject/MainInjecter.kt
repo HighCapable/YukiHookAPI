@@ -33,10 +33,7 @@ import android.app.AlertDialog
 import android.widget.Toast
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.demo.BuildConfig
-import com.highcapable.yukihookapi.demo.InjectLucky
-import com.highcapable.yukihookapi.demo.InjectTest
-import com.highcapable.yukihookapi.demo.MainActivity
+import com.highcapable.yukihookapi.demo.*
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.factory.findMethod
 import com.highcapable.yukihookapi.hook.type.ActivityClass
@@ -122,6 +119,17 @@ class MainInjecter : YukiHookXposedInitProxy {
                     injectMember {
                         constructor { param(StringType) }
                         beforeHook { args().set("构造方法已被 Hook 成功") }
+                    }
+                }
+                InjectNoParamTest::class.java.hook {
+                    injectMember {
+                        constructor()
+                        afterHook {
+                            field {
+                                name = "test"
+                                type = StringType
+                            }.set(instance, "内容被改掉了")
+                        }
                     }
                 }
                 findClass(name = "$packageName.InjectTestName").hook {
