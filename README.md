@@ -105,7 +105,7 @@
 - 暂定 1.0 版本
 - 可做学习参考但暂时不要 Fork 也不要使用
 - 还差 Wiki 没有完善 API 未提交至 Maven
-- 敬请期待！
+- 敬请期待！<br/><br/>
   [快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)<br/>
   [前往Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki)
 
