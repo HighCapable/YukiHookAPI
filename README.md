@@ -38,7 +38,7 @@
   <thead>
     <tr>
       <th colspan="1">Hook Framework</th>
-      <th colspan="1">测试结果</th>
+      <th colspan="1">兼容性说明</th>
     </tr>
   </thead>
   <tbody>
@@ -105,7 +105,7 @@
 - 暂定 1.0 版本
 - 可做学习参考但暂时不要 Fork 也不要使用
 - 还差 Wiki 没有完善 API 未提交至 Maven
-- 敬请期待！<br/><br/>
+- 敬请期待！
 - 你可以 [快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
 - 或 [前往Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki)
 
