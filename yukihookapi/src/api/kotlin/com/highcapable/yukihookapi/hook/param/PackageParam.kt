@@ -37,7 +37,7 @@ import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
- * @param baseParam 对接环境装载类的实现 - 默认是空的
+ * @param baseParam [PackageParam] 的参数包装类实例 - 默认是空的
  */
 open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
 

@@ -49,7 +49,7 @@ import java.lang.reflect.Member
  *
  * 这是一个 API 对接类 - 实现原生对接 [XposedBridge]
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
- * @param hookClass 要 Hook 的 [Class] - 必须已使用当前 Hook APP 的 [ClassLoader] 装载
+ * @param hookClass 要 Hook 的 [Class] - 必须使用当前 Hook APP 的 [ClassLoader] 装载
  */
 class YukiHookCreater(private val packageParam: PackageParam, val hookClass: Class<*>) {
 
