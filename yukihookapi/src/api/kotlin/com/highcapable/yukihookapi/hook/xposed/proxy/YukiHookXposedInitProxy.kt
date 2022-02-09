@@ -40,57 +40,9 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * Hook 开始时将自动调用 [onHook] 方法
  *
- * 你可以对 [YukiHookAPI] 进行配置
- *
- * 调用 [YukiHookAPI.configs] 进行配置
- *
- * ....
- *
- * YukiHookApi.configs {
- *
- * ....debugTag = "自定义 TAG"
- *
- * ....isDebug = true
- *
- * }
- *
- * ....
- *
  * 请在 [onHook] 中调用 [YukiHookAPI.encase] 或直接调用 [encase]
  *
- * 可写作如下形式：
- *
- * ....
- *
- * override fun onHook() = YukiHookAPI.encase {
- *
- * ....// Your code here.
- *
- * }
- *
- * ....
- *
- * 还可写作如下形式：
- *
- * ....
- *
- * override fun onHook() = encase {
- *
- * ....// Your code here.
- *
- * }
- *
- * ....
- *
- * 若你喜欢分类创建 Hooker - 还可以这样写：
- *
- * ......
- *
- * override fun onHook() = encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
- *
- * ......
- *
- * 详情请参考 [作为 Xposed 模块使用的相关配置](https://github.com/fankes/YukiHookAPI/wiki/%E4%BD%9C%E4%B8%BA-Xposed-%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E7%9A%84%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE)
+ * 详情请参考 [YukiHookXposedInitProxy 接口](https://github.com/fankes/YukiHookAPI/wiki/%E4%BD%9C%E4%B8%BA-Xposed-%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E7%9A%84%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE#yukihookxposedinitproxy-%E6%8E%A5%E5%8F%A3)
  */
 interface YukiHookXposedInitProxy {
 
