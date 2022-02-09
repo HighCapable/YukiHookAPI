@@ -85,7 +85,7 @@
       </td>
      </tr>
      <tr>
-      <td>Taichi</td>
+      <td>TaiChi</td>
       <td>
        ⭕ 可以使用
       </td>
