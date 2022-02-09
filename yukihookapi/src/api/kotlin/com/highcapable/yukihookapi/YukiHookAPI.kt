@@ -120,6 +120,8 @@ object YukiHookAPI {
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
+     *
+     * 详情请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
      * @param initiate Hook 方法体
      */
     fun encase(initiate: PackageParam.() -> Unit) {
@@ -146,35 +148,11 @@ object YukiHookAPI {
     /**
      * 作为 [Application] 装载调用入口方法
      *
-     * 请在 [Application.attachBaseContext] 中写入如下代码：
+     * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
      *
-     * ....
+     * 详情请参考 [作为 Hook API 使用](https://github.com/fankes/YukiHookAPI/wiki#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     *  override fun attachBaseContext(base: Context?) {
-     *
-     *  ....////
-     *
-     *  ....// 装载你使用的 Hook 框架的代码
-     *
-     *  ....// 你的 Hook 框架需要支持 Xposed API
-     *
-     *  ....////
-     *
-     *  ....// 装载 YukiHookAPI
-     *
-     *  ....YukiHookAPI.encase(base) {
-     *
-     *  ........// Your code here.
-     *
-     *  ....}
-     *
-     *  ....super.attachBaseContext(base)
-     *
-     *  }
-     *
-     *  ....
-     *
-     * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
+     * 用法请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
      * @param baseContext attachBaseContext
      * @param initiate Hook 方法体
      */
@@ -187,31 +165,11 @@ object YukiHookAPI {
     /**
      * 作为 [Application] 装载调用入口方法
      *
-     * 请在 [Application.attachBaseContext] 中写入如下代码：
+     * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
      *
-     * ....
+     * 详情请参考 [作为 Hook API 使用](https://github.com/fankes/YukiHookAPI/wiki#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     *  override fun attachBaseContext(base: Context?) {
-     *
-     *  ....////
-     *
-     *  ....// 装载你使用的 Hook 框架的代码
-     *
-     *  ....// 你的 Hook 框架需要支持 Xposed API
-     *
-     *  ....////
-     *
-     *  ....// 装载 YukiHookAPI
-     *
-     *  ....YukiHookAPI.encase(base, MainHooker(), SecondHooker() ...)
-     *
-     *  ....super.attachBaseContext(base)
-     *
-     *  }
-     *
-     *  ....
-     *
-     * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
+     * 用法请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
      * @param baseContext attachBaseContext
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的
