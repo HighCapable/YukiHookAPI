@@ -112,6 +112,15 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     }
 
     /**
+     * 装载并 Hook 指定包名的 APP
+     * @param name 包名
+     * @param hooker Hook 子类
+     */
+    fun loadApp(name: String, hooker: YukiBaseHooker) {
+        if (packageName == name) loadHooker(hooker)
+    }
+
+    /**
      * 装载 Hook 子类
      *
      * 你可以在 Hooker 中继续装载 Hooker

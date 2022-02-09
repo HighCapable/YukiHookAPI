@@ -94,6 +94,8 @@ object YukiHookAPI {
 
     /**
      * 配置 YukiHookAPI 相关参数
+     *
+     * 详情请参考 [configs 方法](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#configs-%E6%96%B9%E6%B3%95)
      * @param initiate 方法体
      * @return [Configs]
      */
@@ -121,7 +123,9 @@ object YukiHookAPI {
     /**
      * 作为模块装载调用入口方法 - Xposed API
      *
-     * 详情请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
+     * 用法请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
+     *
+     * 配置请参考 [通过 Lambda 创建](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
      * @param initiate Hook 方法体
      */
     fun encase(initiate: PackageParam.() -> Unit) {
@@ -132,6 +136,10 @@ object YukiHookAPI {
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
+     *
+     * 用法请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
+     *
+     * 配置请参考 [通过自定义 Hooker 创建](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
@@ -152,6 +160,8 @@ object YukiHookAPI {
      *
      * 详情请参考 [作为 Hook API 使用](https://github.com/fankes/YukiHookAPI/wiki#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
+     * 配置请参考 [通过 Lambda 创建](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     *
      * 用法请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
      * @param baseContext attachBaseContext
      * @param initiate Hook 方法体
@@ -168,6 +178,8 @@ object YukiHookAPI {
      * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
      *
      * 详情请参考 [作为 Hook API 使用](https://github.com/fankes/YukiHookAPI/wiki#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
+     *
+     * 配置请参考 [通过自定义 Hooker 创建](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      *
      * 用法请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
      * @param baseContext attachBaseContext

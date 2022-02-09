@@ -48,25 +48,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * 更多请参考 [InjectYukiHookWithXposed] 中的注释内容
  *
- * ....
- *
- * 继承类参考示例：
- *
- * ....
- *
- * class CustomHooker : YukiBaseHooker() {
- *
- * ....override fun onHook() {
- *
- * ........// Your code here.
- *
- * ....}
- *
- * }
- *
- * ....
- *
- * 详情请参考 [API 基本配置](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE)
+ * 详情请参考 [通过自定义 Hooker 创建](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
  */
 abstract class YukiBaseHooker : PackageParam() {
 
