@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
+import com.highcapable.yukihookapi.hook.bean.HookClass
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -51,6 +52,18 @@ val String.hasClass
     } catch (_: Throwable) {
         false
     }
+
+/**
+ * [Class] 转换为 [HookClass]
+ * @return [HookClass]
+ */
+val Class<*>.hookClass get() = HookClass(instance = this, name)
+
+/**
+ * [HookClass] 转换为 [Class]
+ * @return [Class] or null
+ */
+val HookClass.clazz get() = instance
 
 /**
  * 查找方法是否存在

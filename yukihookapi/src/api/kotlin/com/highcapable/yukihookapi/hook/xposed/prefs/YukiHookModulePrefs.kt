@@ -51,15 +51,15 @@ import java.io.File
  *
  * - 详见 [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)
  *
- * - 未使用 LSposed 环境请将你的模块 API 降至 26 以下 - YukiHookAPI 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
+ * - 未使用 LSPosed 环境请将你的模块 API 降至 26 以下 - YukiHookAPI 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
  *
  * - ❗当你在模块中存取数据的时候 [context] 必须不能是空的
  * @param context 上下文实例 - 默认空
  */
 class YukiHookModulePrefs(private val context: Context? = null) {
 
-    /** 存储名称 - 包名 + _preferences */
-    private val prefsName get() = "${YukiHookAPI.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
+    /** 存储名称 - 默认包名 + _preferences */
+    private var prefsName = "${YukiHookAPI.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
 
     /** 是否为 Xposed 环境 */
     private val isXposedEnvironment = YukiHookAPI.hasXposedBridge
@@ -83,26 +83,24 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * 获得 [XSharedPreferences] 对象
      * @return [XSharedPreferences]
      */
-    private val xPref by lazy {
-        XSharedPreferences(YukiHookAPI.modulePackageName, prefsName).apply {
+    private val xPref
+        get() = XSharedPreferences(YukiHookAPI.modulePackageName, prefsName).apply {
             makeWorldReadable()
             reload()
         }
-    }
 
     /**
      * 获得 [SharedPreferences] 对象
      * @return [SharedPreferences]
      */
-    private val sPref by lazy {
-        try {
+    private val sPref
+        get() = try {
             context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
                 ?: error("If you want to use module prefs,you must set the context instance first")
         } catch (_: Throwable) {
             context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
                 ?: error("If you want to use module prefs,you must set the context instance first")
         }
-    }
 
     /** 设置全局可读可写 */
     private fun makeWorldReadable() = runCatching {
@@ -110,6 +108,16 @@ class YukiHookModulePrefs(private val context: Context? = null) {
             setReadable(true, false)
             setExecutable(true, false)
         }
+    }
+
+    /**
+     * 自定义 Sp 存储名称
+     * @param name 自定义的 Sp 存储名称
+     * @return [YukiHookModulePrefs]
+     */
+    fun name(name: String): YukiHookModulePrefs {
+        prefsName = name
+        return this
     }
 
     /**

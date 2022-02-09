@@ -31,16 +31,18 @@ package com.highcapable.yukihookapi.hook.param
 
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.hookClass
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
- * @param baseParam [PackageParam] 的参数包装类实例 - 默认是空的
+ * @param wrapper [PackageParam] 的参数包装类实例 - 默认是空的
  */
-open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
+open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
 
     /**
      * 获取当前 APP 的 [ClassLoader]
@@ -48,13 +50,13 @@ open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
      * @throws IllegalStateException 如果 [ClassLoader] 是空的
      */
     val appClassLoader
-        get() = baseParam?.appClassLoader ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
+        get() = wrapper?.appClassLoader ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
 
     /**
      * 获取当前 APP 的 [ApplicationInfo]
      * @return [ApplicationInfo]
      */
-    val appInfo get() = baseParam?.appInfo ?: ApplicationInfo()
+    val appInfo get() = wrapper?.appInfo ?: ApplicationInfo()
 
     /**
      * 获取当前 APP 的进程名称
@@ -62,13 +64,13 @@ open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
      * 默认的进程名称是 [packageName]
      * @return [String]
      */
-    val processName get() = baseParam?.processName ?: packageName
+    val processName get() = wrapper?.processName ?: packageName
 
     /**
      * 获取当前 APP 的包名
      * @return [String]
      */
-    val packageName get() = baseParam?.packageName ?: ""
+    val packageName get() = wrapper?.packageName ?: ""
 
     /**
      * 获取当前 APP 是否为第一个 Application
@@ -78,20 +80,26 @@ open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
 
     /**
      * 获得当前使用的存取数据对象缓存实例
-     *
      * @return [YukiHookModulePrefs]
      */
     val prefs by lazy { YukiHookModulePrefs() }
 
     /**
+     * 获得当前使用的存取数据对象缓存实例
+     * @param name 自定义 Sp 存储名称
+     * @return [YukiHookModulePrefs]
+     */
+    fun prefs(name: String) = prefs.name(name)
+
+    /**
      * 赋值并克隆另一个 [PackageParam]
      *
      * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
-     * @param another 另一个 [PackageParam]
+     * @param anotherParam 另一个 [PackageParam]
      */
     @DoNotUseMethod
-    internal fun baseAssignInstance(another: PackageParam) {
-        this.baseParam = another.baseParam
+    internal fun baseAssignInstance(anotherParam: PackageParam) {
+        thisParam.wrapper = anotherParam.wrapper
     }
 
     /**
@@ -112,26 +120,45 @@ open class PackageParam(private var baseParam: PackageParamWrapper? = null) {
     fun loadHooker(hooker: YukiBaseHooker) = hooker.assignInstance(packageParam = this)
 
     /**
-     * 将目标 [Class] 绑定到 [appClassLoader]
-     *
-     * - ❗请注意未绑定到 [appClassLoader] 的 [Class] 不能被装载 - 调用 [hook] 方法会自动绑定
-     * @return [Class]
-     * @throws NoClassDefFoundError 如果找不到类会报错
-     */
-    fun Class<*>.bind(): Class<*> = appClassLoader.loadClass(name)
-
-    /**
      * 通过 [appClassLoader] 查询并装载 [Class]
      * @param name 类名
-     * @return [Class]
-     * @throws NoClassDefFoundError 如果找不到类会报错
+     * @return [HookClass]
      */
-    fun findClass(name: String): Class<*> = appClassLoader.loadClass(name)
+    fun findClass(name: String) = try {
+        appClassLoader.loadClass(name).hookClass
+    } catch (e: Throwable) {
+        HookClass(name = name, throwable = e)
+    }
 
     /**
      * Hook 方法、构造类
      * @param initiate 方法体
      */
     fun Class<*>.hook(initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(packageParam = this@PackageParam, hookClass = bind()).apply(initiate).hook()
+        YukiHookCreater(packageParam = thisParam, hookClass = hookClass.bind()).apply(initiate).hook()
+
+    /**
+     * Hook 方法、构造类
+     * @param initiate 方法体
+     */
+    fun HookClass.hook(initiate: YukiHookCreater.() -> Unit) =
+        YukiHookCreater(packageParam = thisParam, hookClass = bind()).apply(initiate).hook()
+
+    /**
+     * 将目标 [Class] 绑定到 [appClassLoader]
+     *
+     * - ❗请注意未绑定到 [appClassLoader] 的 [Class] 不能被装载 - 调用 [hook] 方法会自动绑定
+     * @return [HookClass]
+     */
+    private fun HookClass.bind() = try {
+        appClassLoader.loadClass(name).hookClass
+    } catch (e: Throwable) {
+        HookClass(name = name, throwable = e)
+    }
+
+    /**
+     * 返回自身实例
+     * @return [PackageParam]
+     */
+    private val thisParam get() = this
 }

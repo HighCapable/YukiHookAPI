@@ -29,42 +29,46 @@
 
 package com.highcapable.yukihookapi.hook.param
 
-import de.robv.android.xposed.XC_MethodHook
+import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
-import java.lang.reflect.Method
+import java.lang.reflect.Member
 
 /**
  * Hook 方法、构造类的目标对象实现类
- * @param baseParam 对接 Xposed API 的 [XC_MethodHook.MethodHookParam]
+ * @param wrapper [HookParam] 的参数包装类实例
  */
-class HookParam(private val baseParam: XC_MethodHook.MethodHookParam) {
+class HookParam(private val wrapper: HookParamWrapper) {
 
     /**
-     * 获取当前 [method] or [constructor] 的参数对象数组
+     * 获取当前 [member] or [constructor] 的参数对象数组
      * @return [Array]
      */
-    val args get() = baseParam.args ?: arrayOf(0)
+    val args get() = wrapper.args ?: arrayOf(0)
 
     /**
-     * 获取当前 [method] or [constructor] 的参数对象数组第一位
-     * @return [Array]
-     * @throws IllegalStateException 如果数组为空或对象为空
-     */
-    val firstArgs get() = args[0] ?: error("HookParam args[0] with a non-null object")
-
-    /**
-     * 获取当前 [method] or [constructor] 的参数对象数组最后一位
+     * 获取当前 [member] or [constructor] 的参数对象数组第一位
      * @return [Array]
      * @throws IllegalStateException 如果数组为空或对象为空
      */
-    val lastArgs get() = args[args.lastIndex] ?: error("HookParam args[lastIndex] with a non-null object")
+    val firstArgs
+        get() = if (args.isNotEmpty()) args[0] ?: error("HookParam args[0] with a non-null object")
+        else error("HookParam args is empty")
+
+    /**
+     * 获取当前 [member] or [constructor] 的参数对象数组最后一位
+     * @return [Array]
+     * @throws IllegalStateException 如果数组为空或对象为空
+     */
+    val lastArgs
+        get() = if (args.isNotEmpty()) args[args.lastIndex] ?: error("HookParam args[lastIndex] with a non-null object")
+        else error("HookParam args is empty")
 
     /**
      * 获取当前 Hook 实例的对象
      * @return [Any]
      * @throws IllegalStateException 如果对象为空
      */
-    val instance get() = baseParam.thisObject ?: error("HookParam must with a non-null object")
+    val instance get() = wrapper.instance ?: error("HookParam must with a non-null instance")
 
     /**
      * 获取当前 Hook 实例的类对象
@@ -73,27 +77,27 @@ class HookParam(private val baseParam: XC_MethodHook.MethodHookParam) {
     val instanceClass get() = instance.javaClass
 
     /**
-     * 获取当前 Hook 的方法
-     * @return [Method]
-     * @throws IllegalStateException 如果方法为空或方法类型不是 [Method]
+     * 获取当前 Hook 的方法、构造方法
+     * @return [Member]
+     * @throws IllegalStateException 如果 [Member] 是空的
      */
-    val method get() = baseParam.method as? Method? ?: error("Current hook method type is wrong or null")
+    val member get() = wrapper.member ?: error("Current hook member type is wrong or null")
 
     /**
      * 获取当前 Hook 的构造方法
      * @return [Constructor]
      * @throws IllegalStateException 如果方法为空或方法类型不是 [Constructor]
      */
-    val constructor get() = baseParam.method as? Constructor<*>? ?: error("Current hook constructor type is wrong or null")
+    val constructor get() = wrapper.member as? Constructor<*>? ?: error("Current hook constructor type is wrong or null")
 
     /**
-     * 获取、设置当前 [method] or [constructor] 的返回值
+     * 获取、设置当前 [member] or [constructor] 的返回值
      * @return [Any] or null
      */
     var result: Any?
-        get() = baseParam.result
+        get() = wrapper.result
         set(value) {
-            baseParam.result = value
+            wrapper.result = value
         }
 
     /**
@@ -101,10 +105,10 @@ class HookParam(private val baseParam: XC_MethodHook.MethodHookParam) {
      * @return [T]
      * @throws IllegalStateException 如果对象为空或对象类型不是 [T]
      */
-    inline fun <reified T> instance() = instance as? T? ?: error("HookParam object cannot cast to ${T::class.java.name}")
+    inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${T::class.java.name}")
 
     /**
-     * 获取当前 [method] or [constructor] 的参数实例化对象类
+     * 获取当前 [member] or [constructor] 的参数实例化对象类
      * @param index 参数对象数组下标 - 默认是 0
      * @return [ArgsModifyer]
      */
@@ -151,7 +155,7 @@ class HookParam(private val baseParam: XC_MethodHook.MethodHookParam) {
         fun <T> set(any: T?) {
             if (args.isEmpty()) error("HookParam method args is empty,mabe not has args")
             if (index > args.lastIndex) error("HookParam method args index out of bounds,max is ${args.lastIndex}")
-            baseParam.args[index] = any
+            wrapper.setArgs(index, any)
         }
 
         /**

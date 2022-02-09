@@ -44,7 +44,7 @@ import java.lang.reflect.Constructor
  * @param hookInstance 当前 Hook 实例
  * @param hookClass 当前被 Hook 的 [Class]
  */
-class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>) {
+class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>? = null) {
 
     /** [Constructor] 参数数组 */
     private var params: Array<out Class<*>>? = null
@@ -90,6 +90,16 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
         onFailureMsg(throwable = e)
         Result(isNoSuch = true, e)
     }
+
+    /**
+     * 创建一个异常结果
+     *
+     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @param throwable 异常
+     * @return [Result]
+     */
+    @DoNotUseMethod
+    fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
      * 发生错误时输出日志

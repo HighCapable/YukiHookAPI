@@ -43,7 +43,7 @@ import java.lang.reflect.Field
  * @param hookInstance 当前 Hook 实例
  * @param hookClass 当前被 Hook 的 [Class]
  */
-class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>) {
+class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>? = null) {
 
     /** 当前找到的 [Field] */
     private var fieldInstance: Field? = null
@@ -84,6 +84,16 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
         loggerE(msg = "NoSuchField happend in [$hookClass] [${hookInstance.tag}]", e = e)
         Result(isNoSuch = true, e)
     }
+
+    /**
+     * 创建一个异常结果
+     *
+     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @param throwable 异常
+     * @return [Result]
+     */
+    @DoNotUseMethod
+    fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
      * Field 查找结果实现类
