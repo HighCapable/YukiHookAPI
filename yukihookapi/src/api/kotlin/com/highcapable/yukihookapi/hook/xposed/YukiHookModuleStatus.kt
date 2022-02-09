@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.isActive
  *
  * 我们需要监听自己的模块是否被激活 - 可直接调用这个类的 [isActive] 方法
  *
- * 你完全不需要自己实现模块的监听 - 此类将不会对 R8 混淆生效
+ * 详情请参考 [判断自身激活状态](https://github.com/fankes/YukiHookAPI/wiki#%E5%88%A4%E6%96%AD%E8%87%AA%E8%BA%AB%E6%BF%80%E6%B4%BB%E7%8A%B6%E6%80%81)
  */
 @Keep
 object YukiHookModuleStatus {
