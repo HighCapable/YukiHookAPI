@@ -29,6 +29,7 @@ package com.highcapable.yukihookapi.hook.param.wrapper
 
 import com.highcapable.yukihookapi.hook.param.HookParam
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Member
 
 /**
@@ -73,4 +74,15 @@ class HookParamWrapper(private val baseParam: XC_MethodHook.MethodHookParam) {
     fun setArgs(index: Int, any: Any?) {
         baseParam.args[index] = any
     }
+
+    /**
+     * 执行原始 [Member]
+     *
+     * 未进行 Hook 的 [Member]
+     * @param member 实例
+     * @param args 参数实例
+     * @return [Any] or null
+     */
+    fun invokeOriginalMember(member: Member, vararg args: Array<Any?>?): Any? =
+        XposedBridge.invokeOriginalMethod(member, instance, args)
 }

@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -113,6 +113,15 @@ class HookParam(private val wrapper: HookParamWrapper) {
      * @return [ArgsModifyer]
      */
     fun args(index: Int = 0) = ArgsModifyer(index)
+
+    /**
+     * 执行原始 [Member]
+     *
+     * 未进行 Hook 的 [Member]
+     * @param args 参数实例
+     * @return [T]
+     */
+    fun <T> Member.invokeOriginal(vararg args: Array<Any?>?) = wrapper.invokeOriginalMember(member = this, *args) as? T?
 
     /**
      * 设置 [result] 返回值为 true
