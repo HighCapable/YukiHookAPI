@@ -90,7 +90,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * ......
  *
- * 详情请参考 [YukiHookAPI Wiki](https://github.com/fankes/YukiHookAPI/wiki)
+ * 详情请参考 [作为 Xposed 模块使用的相关配置](https://github.com/fankes/YukiHookAPI/wiki/%E4%BD%9C%E4%B8%BA-Xposed-%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E7%9A%84%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE)
  */
 interface YukiHookXposedInitProxy {
 
