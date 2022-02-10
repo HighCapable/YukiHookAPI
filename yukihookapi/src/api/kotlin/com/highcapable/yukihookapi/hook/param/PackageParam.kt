@@ -46,7 +46,7 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
 
     /**
-     * 获取当前 APP 的 [ClassLoader]
+     * 获取当前 Hook APP 的 [ClassLoader]
      * @return [ClassLoader]
      * @throws IllegalStateException 如果 [ClassLoader] 是空的
      */
@@ -60,7 +60,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     val appInfo get() = wrapper?.appInfo ?: ApplicationInfo()
 
     /**
-     * 获取当前 APP 的进程名称
+     * 获取当前 Hook APP 的进程名称
      *
      * 默认的进程名称是 [packageName]
      * @return [String]
@@ -68,13 +68,13 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     val processName get() = wrapper?.processName ?: packageName
 
     /**
-     * 获取当前 APP 的包名
+     * 获取当前 Hook APP 的包名
      * @return [String]
      */
     val packageName get() = wrapper?.packageName ?: ""
 
     /**
-     * 获取当前 APP 是否为第一个 Application
+     * 获取当前 Hook APP 是否为第一个 Application
      * @return [Boolean]
      */
     val isFirstApplication get() = packageName == processName
