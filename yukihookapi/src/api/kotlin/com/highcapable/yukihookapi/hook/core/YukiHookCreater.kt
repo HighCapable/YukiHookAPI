@@ -47,7 +47,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Member
 
 /**
- * YukiHookAPI 核心类实现方法
+ * YukiHookAPI 核心 Hook 实现类
  *
  * 这是一个 API 对接类 - 实现原生对接 [XposedBridge]
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
