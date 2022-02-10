@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.param
 
+import android.app.Application
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -74,7 +75,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     val packageName get() = wrapper?.packageName ?: ""
 
     /**
-     * 获取当前 Hook APP 是否为第一个 Application
+     * 获取当前 Hook APP 是否为第一个 [Application]
      * @return [Boolean]
      */
     val isFirstApplication get() = packageName == processName
