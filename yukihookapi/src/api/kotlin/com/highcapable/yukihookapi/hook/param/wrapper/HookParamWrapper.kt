@@ -83,6 +83,6 @@ class HookParamWrapper(private val baseParam: XC_MethodHook.MethodHookParam) {
      * @param args 参数实例
      * @return [Any] or null
      */
-    fun invokeOriginalMember(member: Member, vararg args: Array<Any?>?): Any? =
+    fun invokeOriginalMember(member: Member, vararg args: Any?): Any? =
         XposedBridge.invokeOriginalMethod(member, instance, args)
 }

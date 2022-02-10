@@ -433,7 +433,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         private fun onHookFailureMsg(throwable: Throwable) =
             loggerE(msg = "Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
 
-        override fun toString() = "$member$tag#YukiHook"
+        override fun toString() = "${hookClass.name}$member$tag#YukiHookAPI"
 
         /**
          * 监听 Hook 结果实现类

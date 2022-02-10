@@ -121,7 +121,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
      * @param args 参数实例
      * @return [T]
      */
-    fun <T> Member.invokeOriginal(vararg args: Array<Any?>?) = wrapper.invokeOriginalMember(member = this, *args) as? T?
+    fun <T> Member.invokeOriginal(vararg args: Any?) = wrapper.invokeOriginalMember(member = this, *args) as? T?
 
     /**
      * 设置 [result] 返回值为 true

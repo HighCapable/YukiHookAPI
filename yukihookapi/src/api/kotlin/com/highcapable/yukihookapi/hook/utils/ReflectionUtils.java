@@ -108,7 +108,7 @@ public class ReflectionUtils {
     }
 
     public static Field findFieldIfExists(Class<?> clazz, String typeName, String fieldName) throws NoSuchFieldException {
-        String fullFieldName = "name:[" + fieldName + "] type:[" + typeName + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
+        String fullFieldName = "name:[" + fieldName + "] type:[" + typeName + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
         if (!fieldCache.containsKey(fullFieldName)) {
             if (clazz != null && !TextUtils.isEmpty(typeName) && !TextUtils.isEmpty(fieldName)) {
                 Class<?> clz = clazz;
@@ -143,7 +143,7 @@ public class ReflectionUtils {
      * @param methodName 方法名
      */
     public static Method findMethodNoParam(Class<?> clazz, Class<?> returnType, String methodName) {
-        String fullMethodName = "name:[" + methodName + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
+        String fullMethodName = "name:[" + methodName + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
         if (!methodCache.containsKey(fullMethodName)) {
             Method method = findMethodIfExists(clazz, returnType, methodName);
             methodCache.put(fullMethodName, method);
@@ -162,7 +162,7 @@ public class ReflectionUtils {
      * @param parameterTypes 方法参数类型数组
      */
     public static Method findMethodBestMatch(Class<?> clazz, Class<?> returnType, String methodName, Class<?>... parameterTypes) {
-        String fullMethodName = "name:[" + methodName + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
+        String fullMethodName = "name:[" + methodName + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
         if (!methodCache.containsKey(fullMethodName)) {
             Method method = findMethodIfExists(clazz, returnType, methodName, parameterTypes);
             methodCache.put(fullMethodName, method);
@@ -179,7 +179,7 @@ public class ReflectionUtils {
      * @param parameterTypes 构造类方法参数类型数组
      */
     public static Constructor<?> findConstructorExact(Class<?> clazz, Class<?>... parameterTypes) {
-        String fullConstructorName = "paramType:[" + getParametersString(parameterTypes) + "in Class [" + clazz.getName() + "] by YukiHook#finder";
+        String fullConstructorName = "paramType:[" + getParametersString(parameterTypes) + "in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
         try {
             Constructor<?> constructor = clazz.getDeclaredConstructor(parameterTypes);
             constructor.setAccessible(true);
@@ -190,7 +190,7 @@ public class ReflectionUtils {
     }
 
     private static Method findMethodExact(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-        String fullMethodName = "name:[" + methodName + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHook#finder";
+        String fullMethodName = "name:[" + methodName + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
         try {
             Method method = clazz.getDeclaredMethod(methodName, parameterTypes);
             method.setAccessible(true);
@@ -210,6 +210,6 @@ public class ReflectionUtils {
                 for (Method method : methods) if (method.getName().equals(methodName)) return method;
             } while ((clz = clz.getSuperclass()) != null);
         }
-        throw new IllegalArgumentException("Can't find this method --> name:[" + methodName + "] returnType:[" + returnType.getName() + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHook#finder");
+        throw new IllegalArgumentException("Can't find this method --> name:[" + methodName + "] returnType:[" + returnType.getName() + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder");
     }
 }
