@@ -48,20 +48,16 @@ class HookParam(private val wrapper: HookParamWrapper) {
     /**
      * 获取当前 [member] or [constructor] 的参数对象数组第一位
      * @return [Array]
-     * @throws IllegalStateException 如果数组为空或对象为空
+     * @throws IllegalStateException 如果数组为空
      */
-    val firstArgs
-        get() = if (args.isNotEmpty()) args[0] ?: error("HookParam args[0] with a non-null object")
-        else error("HookParam args is empty")
+    val firstArgs get() = if (args.isNotEmpty()) args[0] else error("HookParam args is empty")
 
     /**
      * 获取当前 [member] or [constructor] 的参数对象数组最后一位
      * @return [Array]
-     * @throws IllegalStateException 如果数组为空或对象为空
+     * @throws IllegalStateException 如果数组为空
      */
-    val lastArgs
-        get() = if (args.isNotEmpty()) args[args.lastIndex] ?: error("HookParam args[lastIndex] with a non-null object")
-        else error("HookParam args is empty")
+    val lastArgs get() = if (args.isNotEmpty()) args[args.lastIndex] else error("HookParam args is empty")
 
     /**
      * 获取当前 Hook 实例的对象
