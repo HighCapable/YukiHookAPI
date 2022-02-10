@@ -40,20 +40,20 @@ import java.lang.reflect.Member
 class HookParam(private val wrapper: HookParamWrapper) {
 
     /**
-     * 获取当前 [member] or [constructor] 的参数对象数组
+     * 获取当前 Hook 对象 [member] or [constructor] 的参数对象数组
      * @return [Array]
      */
     val args get() = wrapper.args ?: arrayOf(0)
 
     /**
-     * 获取当前 [member] or [constructor] 的参数对象数组第一位
+     * 获取当前 Hook 对象 [member] or [constructor] 的参数对象数组第一位
      * @return [Array]
      * @throws IllegalStateException 如果数组为空
      */
     val firstArgs get() = if (args.isNotEmpty()) args[0] else error("HookParam args is empty")
 
     /**
-     * 获取当前 [member] or [constructor] 的参数对象数组最后一位
+     * 获取当前 Hook 对象 [member] or [constructor] 的参数对象数组最后一位
      * @return [Array]
      * @throws IllegalStateException 如果数组为空
      */
@@ -73,21 +73,21 @@ class HookParam(private val wrapper: HookParamWrapper) {
     val instanceClass get() = instance.javaClass
 
     /**
-     * 获取当前 Hook 的方法、构造方法
+     * 获取当前 Hook 对象的方法、构造方法
      * @return [Member]
      * @throws IllegalStateException 如果 [Member] 是空的
      */
     val member get() = wrapper.member ?: error("Current hook member type is wrong or null")
 
     /**
-     * 获取当前 Hook 的构造方法
+     * 获取当前 Hook 对象的构造方法
      * @return [Constructor]
      * @throws IllegalStateException 如果方法为空或方法类型不是 [Constructor]
      */
     val constructor get() = wrapper.member as? Constructor<*>? ?: error("Current hook constructor type is wrong or null")
 
     /**
-     * 获取、设置当前 [member] or [constructor] 的返回值
+     * 获取、设置当前 Hook 对象的 [member] or [constructor] 的返回值
      * @return [Any] or null
      */
     var result: Any?
@@ -104,7 +104,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
     inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${T::class.java.name}")
 
     /**
-     * 获取当前 [member] or [constructor] 的参数实例化对象类
+     * 获取当前 Hook 对象的 [member] or [constructor] 的参数实例化对象类
      * @param index 参数对象数组下标 - 默认是 0
      * @return [ArgsModifyer]
      */
@@ -120,25 +120,25 @@ class HookParam(private val wrapper: HookParamWrapper) {
     fun <T> Member.invokeOriginal(vararg args: Any?) = wrapper.invokeOriginalMember(member = this, *args) as? T?
 
     /**
-     * 设置 [result] 返回值为 true
+     * 设置当前 Hook 对象方法的 [result] 返回值为 true
      *
-     * 请确保返回值类型为 [Boolean]
+     * ❗请确保返回值类型为 [Boolean]
      */
     fun resultTrue() {
         result = true
     }
 
     /**
-     * 设置 [result] 返回值为 false
+     * 设置当前 Hook 对象方法的 [result] 返回值为 false
      *
-     * 请确保返回值类型为 [Boolean]
+     * ❗请确保返回值类型为 [Boolean]
      */
     fun resultFalse() {
         result = false
     }
 
     /**
-     * 设置返回值为 null
+     * 设置当前 Hook 对象方法的返回值为 null
      *
      * 此方法将强制设置方法体的 [result] 为 null
      */
@@ -173,14 +173,14 @@ class HookParam(private val wrapper: HookParamWrapper) {
         /**
          * 设置方法参数的实例对象为 true
          *
-         * 请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
+         * ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setTrue() = set(true)
 
         /**
          * 设置方法参数的实例对象为 false
          *
-         * 请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
+         * ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setFalse() = set(false)
     }
