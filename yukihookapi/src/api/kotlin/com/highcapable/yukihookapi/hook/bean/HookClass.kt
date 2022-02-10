@@ -33,8 +33,4 @@ package com.highcapable.yukihookapi.hook.bean
  * @param name 完整名称
  * @param throwable 异常
  */
-class HookClass(
-    var instance: Class<*>? = null,
-    var name: String,
-    var throwable: Throwable? = null
-)
+class HookClass(var instance: Class<*>? = null, var name: String, var throwable: Throwable? = null)
