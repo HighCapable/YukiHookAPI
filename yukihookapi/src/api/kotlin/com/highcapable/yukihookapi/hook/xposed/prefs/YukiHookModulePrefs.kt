@@ -45,7 +45,7 @@ import java.io.File
  *
  * 在不同环境智能选择存取使用的对象
  *
- * - 请注意此功能为实验性功能 - 仅在 LSPosed 环境测试通过
+ * - ❗请注意此功能为实验性功能 - 仅在 LSPosed 环境测试通过
  *
  * - 使用 LSPosed 环境请在 AndroidManifests.xml 中将 "xposedminversion" 最低设置为 93
  *
