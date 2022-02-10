@@ -1,9 +1,9 @@
 /*
+ * YukiHookAPI - An efficient Kotlin version of the Xposed Hook API.
+ * Copyright (C) 2019-2022 HighCapable
+ * https://github.com/fankes/YukiHookAPI
+ *
  * MIT License
- *
- * Copyright (C) 2022 HighCapable
- *
- * This file is part of YukiHookAPI.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
