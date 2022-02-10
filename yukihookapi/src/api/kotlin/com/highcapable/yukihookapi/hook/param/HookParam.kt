@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.param
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * Hook 方法、构造类的目标对象实现类
@@ -40,20 +41,20 @@ import java.lang.reflect.Member
 class HookParam(private val wrapper: HookParamWrapper) {
 
     /**
-     * 获取当前 Hook 对象 [member] or [constructor] 的参数对象数组
+     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组
      * @return [Array]
      */
     val args get() = wrapper.args ?: arrayOf(0)
 
     /**
-     * 获取当前 Hook 对象 [member] or [constructor] 的参数对象数组第一位
+     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组第一位
      * @return [Array]
      * @throws IllegalStateException 如果数组为空
      */
     val firstArgs get() = if (args.isNotEmpty()) args[0] else error("HookParam args is empty")
 
     /**
-     * 获取当前 Hook 对象 [member] or [constructor] 的参数对象数组最后一位
+     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组最后一位
      * @return [Array]
      * @throws IllegalStateException 如果数组为空
      */
@@ -73,21 +74,21 @@ class HookParam(private val wrapper: HookParamWrapper) {
     val instanceClass get() = instance.javaClass
 
     /**
-     * 获取当前 Hook 对象的方法、构造方法
-     * @return [Member]
-     * @throws IllegalStateException 如果 [Member] 是空的
+     * 获取当前 Hook 对象的方法
+     * @return [Method]
+     * @throws IllegalStateException 如果 [Method] 为空或方法类型不是 [Method]
      */
-    val member get() = wrapper.member ?: error("Current hook member type is wrong or null")
+    val method get() = wrapper.member as? Method? ?: error("Current hook method type is wrong or null")
 
     /**
      * 获取当前 Hook 对象的构造方法
      * @return [Constructor]
-     * @throws IllegalStateException 如果方法为空或方法类型不是 [Constructor]
+     * @throws IllegalStateException 如果 [Constructor] 为空或方法类型不是 [Constructor]
      */
     val constructor get() = wrapper.member as? Constructor<*>? ?: error("Current hook constructor type is wrong or null")
 
     /**
-     * 获取、设置当前 Hook 对象的 [member] or [constructor] 的返回值
+     * 获取、设置当前 Hook 对象的 [method] or [constructor] 的返回值
      * @return [Any] or null
      */
     var result: Any?
@@ -104,7 +105,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
     inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${T::class.java.name}")
 
     /**
-     * 获取当前 Hook 对象的 [member] or [constructor] 的参数实例化对象类
+     * 获取当前 Hook 对象的 [method] or [constructor] 的参数实例化对象类
      * @param index 参数对象数组下标 - 默认是 0
      * @return [ArgsModifyer]
      */
