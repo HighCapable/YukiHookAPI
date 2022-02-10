@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.param
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.bean.HookClass
+import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.hookClass
@@ -140,6 +141,37 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     }
 
     /**
+     * 通过 [appClassLoader] 查询并装载 [Class]
+     *
+     * 使用此方法查询将会取 [name] 其中命中存在的第一个 [Class] 作为结果
+     * @param name 可填入多个类名 - 自动匹配
+     * @return [HookClass]
+     */
+    fun findClass(vararg name: String) = findClass(VariousClass(*name))
+
+    /**
+     * 通过 [appClassLoader] 查询并装载 [VariousClass]
+     * @param various 实例
+     * @return [HookClass]
+     */
+    fun findClass(various: VariousClass): HookClass {
+        var finalClass: Class<*>? = null
+        if (various.name.isNotEmpty())
+            run {
+                various.name.forEach {
+                    runCatching {
+                        finalClass = appClassLoader.loadClass(it)
+                        return@run
+                    }
+                }
+            }
+        return finalClass?.hookClass ?: HookClass(
+            name = "VariousClass",
+            throwable = Throwable("VariousClass match failed of those $various")
+        )
+    }
+
+    /**
      * Hook 方法、构造类
      * @param initiate 方法体
      */
@@ -162,7 +194,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     private fun HookClass.bind() = try {
         appClassLoader.loadClass(name).hookClass
     } catch (e: Throwable) {
-        HookClass(name = name, throwable = e)
+        HookClass(name = name, throwable = throwable ?: e)
     }
 
     /**
