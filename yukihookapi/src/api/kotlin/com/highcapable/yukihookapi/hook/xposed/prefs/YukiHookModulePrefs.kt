@@ -49,11 +49,11 @@ import java.io.File
  *
  * - 使用 LSPosed 环境请在 AndroidManifests.xml 中将 "xposedminversion" 最低设置为 93
  *
- * - 详见 [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)
- *
  * - 未使用 LSPosed 环境请将你的模块 API 降至 26 以下 - YukiHookAPI 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
  *
  * - ❗当你在模块中存取数据的时候 [context] 必须不能是空的
+ *
+ * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3#yukihookmoduleprefs-class)
  * @param context 上下文实例 - 默认空
  */
 class YukiHookModulePrefs(private val context: Context? = null) {
