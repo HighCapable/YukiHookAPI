@@ -34,7 +34,7 @@
 
 # Compatibility
 
-| Hook Framework                                            | U/A| Describe                                                                                 |
+| Hook Framework                                            | ST | Describe                                                                                 |
 | --------------------------------------------------------- | -- | ---------------------------------------------------------------------------------------- |
 | [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅ | 稳定使用                                                                                  |
 | [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ☑  | 部分兼容                                                                                  |
