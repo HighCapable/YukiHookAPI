@@ -39,54 +39,59 @@
     <tr>
       <th colspan="1">Hook Framework</th>
       <th colspan="1">U/A</th>
-      <th colspan="1">Info</th>
+      <th colspan="1">Describe</th>
     </tr>
   </thead>
   <tbody>
      <tr>
-      <td>LSPosed</td>
+      <td>[LSPosed](https://github.com/LSPosed/LSPosed)</td>
       <td>✅</td>
       <td>稳定使用</td>
      </tr>
      <tr>
-      <td>EdXposed</td>
+      <td>[EdXposed](https://github.com/ElderDrivers/EdXposed)</td>
       <td>☑</td>
       <td>部分兼容</td>
      </tr>
      <tr>
-      <td>Pine</td>
+      <td>[Pine](https://github.com/canyie/pine)</td>
       <td>⭕</td>
       <td>可以使用</td>
      </tr>
      <tr>
-      <td>SandHook/Whale</td>
+      <td>[SandHook](https://github.com/asLody/SandHook)</td>
       <td>⭕</td>
       <td>可以使用</td>
      </tr>
      <tr>
-      <td>YAHFA</td>
+      <td>[Whale](https://github.com/asLody/whale)</td>
+      <td>⭕</td>
+      <td>需要 [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale)</td>
+     </tr>
+     <tr>
+      <td>[YAHFA](https://github.com/PAGalaxyLab/YAHFA)</td>
       <td>❗</td>
       <td>需要自行实现 Xposed API</td>
      </tr>
      <tr>
-      <td>FastHook</td>
+      <td>[FastHook](https://github.com/turing-technician/FastHook)</td>
       <td>❗</td>
       <td>需要自行实现 Xposed API</td>
      </tr>
      <tr>
-      <td>Epic</td>
+      <td>[Epic](https://github.com/tiann/epic)</td>
       <td>⭕</td>
-      <td>可以使用</td>
+      <td>需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)</td>
      </tr>
      <tr>
-      <td>TaiChi</td>
+      <td>[TaiChi](https://github.com/taichi-framework/TaiChi)</td>
       <td>⭕</td>
-      <td>可以使用</td>
+      <td>可以作为模块使用</td>
      </tr>
      <tr>
-      <td>Xposed</td>
+      <td>[Xposed](https://github.com/rovo89/Xposed)</td>
       <td>❎</td>
-      <td>未测试</td>
+      <td>未测试，不再推荐使用</td>
      </tr>
     <tr>
  </tbody>
