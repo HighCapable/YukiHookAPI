@@ -34,68 +34,18 @@
 
 # Compatibility
 
-<table class="table">
-  <thead>
-    <tr>
-      <th colspan="1">Hook Framework</th>
-      <th colspan="1">U/A</th>
-      <th colspan="1">Describe</th>
-    </tr>
-  </thead>
-  <tbody>
-     <tr>
-      <td><a href='https://github.com/LSPosed/LSPosed'>LSPosed</a></td>
-      <td>✅</td>
-      <td>稳定使用</td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/ElderDrivers/EdXposed'>EdXposed</a></td>
-      <td>☑</td>
-      <td>部分兼容</td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/canyie/pine'>Pine</a></td>
-      <td>⭕</td>
-      <td>可以使用</td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/asLody/SandHook'>SandHook</a></td>
-      <td>⭕</td>
-      <td>可以使用</td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/asLody/whale'>Whale</a></td>
-      <td>⭕</td>
-      <td>需要 <a href='https://github.com/WindySha/xposed-hook-based-on-whale'>xposed-hook-based-on-whale</a></td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/PAGalaxyLab/YAHFA'>YAHFA</a></td>
-      <td>❗</td>
-      <td>需要自行实现 Xposed API</td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/turing-technician/FastHook'>FastHook</a></td>
-      <td>❗</td>
-      <td>需要自行实现 Xposed API</td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/tiann/epic'>Epic</a></td>
-      <td>⭕</td>
-      <td>需要自行对接 <a href='https://github.com/alibaba/dexposed'>Dexposed</a></td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/taichi-framework/TaiChi'>TaiChi</a></td>
-      <td>⭕</td>
-      <td>可以作为模块使用</td>
-     </tr>
-     <tr>
-      <td><a href='https://github.com/rovo89/Xposed'>Xposed</a></td>
-      <td>❎</td>
-      <td>未测试，不再推荐使用</td>
-     </tr>
-    <tr>
- </tbody>
-</table>
+| Hook Framework                                            | U/A| Describe                                                                                 |
+| --------------------------------------------------------- | -- | ---------------------------------------------------------------------------------------- |
+| [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅ | 稳定使用                                                                                  |
+| [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ☑  | 部分兼容                                                                                  |
+| [Pine](https://github.com/canyie/pine)                    | ⭕ | 可以使用                                                                                  |
+| [SandHook](https://github.com/asLody/SandHook)            | ⭕ | 可以使用                                                                                  |
+| [Whale](https://github.com/asLody/whale)                  | ⭕ | 需要 [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale) |
+| [YAHFA](https://github.com/PAGalaxyLab/YAHFA)             | ❗ | 需要自行实现 Xposed API                                                                    |
+| [FastHook](https://github.com/turing-technician/FastHook) | ❗ | 需要自行实现 Xposed API                                                                    |
+| [Epic](https://github.com/tiann/epic)                     | ⭕ | 需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)                               |
+| [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕ | 可以作为模块使用                                                                           |
+| [Xposed](https://github.com/rovo89/Xposed)                | ❎ | 未测试，不再推荐使用                                                                        |
 
 # Get Started
 
