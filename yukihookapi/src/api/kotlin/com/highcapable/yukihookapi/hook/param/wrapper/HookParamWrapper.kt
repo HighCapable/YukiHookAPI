@@ -27,6 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.param.wrapper
 
+import com.highcapable.yukihookapi.annotation.DoNotUseClass
 import com.highcapable.yukihookapi.hook.param.HookParam
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
@@ -34,8 +35,11 @@ import java.lang.reflect.Member
 
 /**
  * 用于包装 [HookParam]
+ *
+ * ❗这是一个私有 API - 请不要在外部使用
  * @param baseParam 对接 [XC_MethodHook.MethodHookParam]
  */
+@DoNotUseClass
 class HookParamWrapper(private val baseParam: XC_MethodHook.MethodHookParam) {
 
     /**
