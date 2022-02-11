@@ -72,7 +72,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
      * @param paramType 参数类型数组
      */
     fun param(vararg paramType: Class<*>) {
-        if (paramType.isEmpty()) error("param is empty, please delete param() method")
+        if (paramType.isEmpty()) error("paramType is empty, please delete param() method")
         params = paramType
     }
 
