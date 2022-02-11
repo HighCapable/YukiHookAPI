@@ -49,13 +49,8 @@
 
 # Get Started
 
-- 正在光速编写 Wiki 中(快写完了)...
-- 暂定 1.0 版本
-- 可做学习参考但暂时不要 Fork 也不要使用
-- 还差 Wiki 没有完善 API 未提交至 Maven
-- 敬请期待！
-- 你可以 [快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
-- 或 [前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki)
+- 你可以点击[快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)集成 `YuKiHookAPI` 并开始使用。
+- 更多使用教程及 API 文档请[前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki)进行查看。
 
 # License
 
