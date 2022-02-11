@@ -38,8 +38,8 @@
   <thead>
     <tr>
       <th colspan="1">Hook Framework</th>
-      <th colspan="1">可用性</th>
-      <th colspan="1">兼容性说明</th>
+      <th colspan="1">U/A</th>
+      <th colspan="1">Info</th>
     </tr>
   </thead>
   <tbody>
