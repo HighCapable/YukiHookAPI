@@ -69,11 +69,11 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
      * - ❗无参 [Method] 不要使用此方法
      *
      * - ❗有参 [Method] 必须使用此方法设定参数
-     * @param param 参数数组
+     * @param paramType 参数类型数组
      */
-    fun param(vararg param: Class<*>) {
-        if (param.isEmpty()) error("param is empty, please delete param() method")
-        params = param
+    fun param(vararg paramType: Class<*>) {
+        if (paramType.isEmpty()) error("param is empty, please delete param() method")
+        params = paramType
     }
 
     /**

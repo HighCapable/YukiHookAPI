@@ -55,11 +55,11 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
      * - ❗无参 [Constructor] 不要使用此方法
      *
      * - ❗有参 [Constructor] 必须使用此方法设定参数
-     * @param param 参数数组
+     * @param paramType 参数类型数组
      */
-    fun param(vararg param: Class<*>) {
-        if (param.isEmpty()) error("param is empty, please delete param() method")
-        params = param
+    fun param(vararg paramType: Class<*>) {
+        if (paramType.isEmpty()) error("param is empty, please delete param() method")
+        params = paramType
     }
 
     /**
