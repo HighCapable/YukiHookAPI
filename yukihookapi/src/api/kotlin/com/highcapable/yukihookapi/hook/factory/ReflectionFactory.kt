@@ -63,7 +63,7 @@ val Class<*>.hookClass get() = HookClass(instance = this, name)
  * [HookClass] 转换为 [Class]
  * @return [Class] or null
  */
-val HookClass.clazz get() = instance
+val HookClass.normalClass get() = instance
 
 /**
  * 查找方法是否存在
