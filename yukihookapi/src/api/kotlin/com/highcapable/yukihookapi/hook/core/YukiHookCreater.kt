@@ -143,7 +143,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         var member: Member? = null
 
         /**
-         * Hook [hookClass] 中指定 [name] 的全部方法
+         * 查找并 Hook [hookClass] 中指定 [name] 的全部方法
          *
          * - ❗警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] 对每个方法单独 Hook
          *
@@ -157,7 +157,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * Hook [hookClass] 中的全部构造方法
+         * 查找并 Hook [hookClass] 中的全部构造方法
          *
          * - ❗警告：无法准确处理每个构造方法的 param - 建议使用 [constructor] 对每个构造方法单独 Hook
          *
@@ -170,7 +170,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * 查找需要 Hook 的方法
+         * 查找 [hookClass] 需要 Hook 的方法
          *
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
@@ -184,7 +184,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * 查找需要 Hook 的构造类
+         * 查找 [hookClass] 需要 Hook 的构造类
          *
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
