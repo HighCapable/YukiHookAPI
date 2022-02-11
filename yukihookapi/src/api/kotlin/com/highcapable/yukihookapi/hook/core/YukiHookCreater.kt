@@ -98,7 +98,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
     }
 
     /**
-     * 智能全局方法、构造类查找类实现方法
+     * Hook 核心功能实现类
      *
      * 处理需要 Hook 的方法
      * @param tag 当前设置的标签
