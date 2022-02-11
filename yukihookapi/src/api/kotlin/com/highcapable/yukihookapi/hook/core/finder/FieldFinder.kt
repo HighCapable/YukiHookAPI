@@ -133,8 +133,6 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
 
         /**
          * 监听找不到变量时
-         *
-         * 只会返回第一次和最后一次的错误信息
          * @param initiate 回调错误
          * @return [Result] 可继续向下监听
          */
