@@ -138,7 +138,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /**
          * 手动指定要 Hook 的方法、构造类
          *
-         * 你可以调用 [hookClass] 来手动查询要 Hook 的方法
+         * 你可以调用 [thisClass] 来手动查询要 Hook 的方法
          */
         var member: Member? = null
 
