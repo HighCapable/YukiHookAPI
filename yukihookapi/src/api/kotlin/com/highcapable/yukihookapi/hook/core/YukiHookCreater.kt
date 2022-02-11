@@ -77,6 +77,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      * 注入要 Hook 的方法、构造类
      * @param tag 可设置标签 - 在发生错误时方便进行调试
      * @param initiate 方法体
+     * @return [MemberHookCreater.Result]
      */
     fun injectMember(tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
         MemberHookCreater(tag).apply(initiate).apply {
