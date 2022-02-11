@@ -88,7 +88,7 @@ fun Class<*>.hasMethod(name: String, vararg clazz: Class<*>): Boolean =
 fun Class<*>.findStaticField(name: String): Any? = getDeclaredField(name).apply { isAccessible = true }[null]
 
 /**
- * 查找 [Field] 的实例 - 不能是静态
+ * 查找 [Field] 的实例
  * @param any 对象
  * @param name 名称
  * @return [Any] 实例对象
@@ -97,7 +97,20 @@ fun Class<*>.findStaticField(name: String): Any? = getDeclaredField(name).apply 
 fun Class<*>.findField(any: Any?, name: String): Any? = getDeclaredField(name).apply { isAccessible = true }[any]
 
 /**
- * 设置 [Field] - 不能是静态
+ * 修改静态 [Field] 实例内容
+ * @param name 名称
+ * @param value 值
+ * @throws NoSuchFieldError
+ */
+fun Class<*>.modifyStaticField(name: String, value: Any?) {
+    getDeclaredField(name).apply {
+        isAccessible = true
+        set(null, value)
+    }
+}
+
+/**
+ * 修改 [Field] 实例内容
  * @param any 对象
  * @param name 名称
  * @param value 值
