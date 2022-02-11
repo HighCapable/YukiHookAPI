@@ -100,7 +100,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
     /**
      * Hook 核心功能实现类
      *
-     * 处理需要 Hook 的方法
+     * 查找和处理需要 Hook 的方法、构造类
      * @param tag 当前设置的标签
      */
     inner class MemberHookCreater(var tag: String) {
