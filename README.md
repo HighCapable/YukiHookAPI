@@ -38,63 +38,55 @@
   <thead>
     <tr>
       <th colspan="1">Hook Framework</th>
+      <th colspan="1">可用性</th>
       <th colspan="1">兼容性说明</th>
     </tr>
   </thead>
   <tbody>
      <tr>
       <td>LSPosed</td>
-      <td>
-        ✅ 完全兼容
-      </td>
+      <td>✅</td>
+      <td>稳定使用</td>
      </tr>
      <tr>
       <td>EdXposed</td>
-      <td>
-       ☑️ 部分兼容
-      </td>
+      <td>☑</td>
+      <td>部分兼容</td>
      </tr>
      <tr>
       <td>Pine</td>
-      <td>
-       ⭕ 可以使用
-      </td>
+      <td>⭕</td>
+      <td>可以使用</td>
      </tr>
      <tr>
       <td>SandHook/Whale</td>
-      <td>
-       ⭕ 可以使用
-      </td>
+      <td>⭕</td>
+      <td>可以使用</td>
      </tr>
      <tr>
       <td>YAHFA</td>
-      <td>
-       ❗需要自行实现 Xposed API
-      </td>
+      <td>❗</td>
+      <td>需要自行实现 Xposed API</td>
      </tr>
      <tr>
       <td>FastHook</td>
-      <td>
-       ❗需要自行实现 Xposed API
-      </td>
+      <td>❗</td>
+      <td>需要自行实现 Xposed API</td>
      </tr>
      <tr>
       <td>Epic</td>
-      <td>
-       ⭕ 可以使用
-      </td>
+      <td>⭕</td>
+      <td>可以使用</td>
      </tr>
      <tr>
       <td>TaiChi</td>
-      <td>
-       ⭕ 可以使用
-      </td>
+      <td>⭕</td>
+      <td>可以使用</td>
      </tr>
      <tr>
       <td>Xposed</td>
-      <td>
-       ❎ 未测试
-      </td>
+      <td>❎</td>
+      <td>未测试</td>
      </tr>
     <tr>
  </tbody>
