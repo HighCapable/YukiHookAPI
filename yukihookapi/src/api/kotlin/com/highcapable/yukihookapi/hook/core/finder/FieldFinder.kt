@@ -116,14 +116,14 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [Instance]
          */
-        fun get(instance: Any? = null) = Instance(give()?.get(instance))
+        fun get(instance: Any? = null) = Instance(instance, give()?.get(instance))
 
         /**
          * 得到变量实例
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [T] or null
          */
-        fun <T> of(instance: Any? = null) = get(instance) as? T?
+        fun <T> of(instance: Any? = null) = get(instance).self as? T?
 
         /**
          * 得到变量本身
@@ -143,9 +143,10 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
 
         /**
          * [Field] 实例变量处理类
-         * @param instance 当前 [Field] 的实例对象
+         * @param instance 当前 [Field] 所在类的实例对象
+         * @param self 当前 [Field] 自身的实例对象
          */
-        inner class Instance(val instance: Any?) {
+        inner class Instance(private val instance: Any?, val self: Any?) {
 
             /**
              * 设置变量实例
