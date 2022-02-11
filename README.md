@@ -44,52 +44,52 @@
   </thead>
   <tbody>
      <tr>
-      <td>[LSPosed](https://github.com/LSPosed/LSPosed)</td>
+      <td><a href='https://github.com/LSPosed/LSPosed'>LSPosed</a></td>
       <td>✅</td>
       <td>稳定使用</td>
      </tr>
      <tr>
-      <td>[EdXposed](https://github.com/ElderDrivers/EdXposed)</td>
+      <td><a href='https://github.com/ElderDrivers/EdXposed'>EdXposed</a></td>
       <td>☑</td>
       <td>部分兼容</td>
      </tr>
      <tr>
-      <td>[Pine](https://github.com/canyie/pine)</td>
+      <td><a href='https://github.com/canyie/pine'>Pine</a></td>
       <td>⭕</td>
       <td>可以使用</td>
      </tr>
      <tr>
-      <td>[SandHook](https://github.com/asLody/SandHook)</td>
+      <td><a href='https://github.com/asLody/SandHook'>SandHook</a></td>
       <td>⭕</td>
       <td>可以使用</td>
      </tr>
      <tr>
-      <td>[Whale](https://github.com/asLody/whale)</td>
+      <td><a href='https://github.com/asLody/whale'>Whale</a></td>
       <td>⭕</td>
-      <td>需要 [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale)</td>
+      <td>需要 <a href='https://github.com/WindySha/xposed-hook-based-on-whale'>xposed-hook-based-on-whale</a></td>
      </tr>
      <tr>
-      <td>[YAHFA](https://github.com/PAGalaxyLab/YAHFA)</td>
+      <td><a href='https://github.com/PAGalaxyLab/YAHFA'>YAHFA</a></td>
       <td>❗</td>
       <td>需要自行实现 Xposed API</td>
      </tr>
      <tr>
-      <td>[FastHook](https://github.com/turing-technician/FastHook)</td>
+      <td><a href='https://github.com/turing-technician/FastHook'>FastHook</a></td>
       <td>❗</td>
       <td>需要自行实现 Xposed API</td>
      </tr>
      <tr>
-      <td>[Epic](https://github.com/tiann/epic)</td>
+      <td><a href='https://github.com/tiann/epic'>Epic</a></td>
       <td>⭕</td>
-      <td>需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)</td>
+      <td>需要自行对接 <a href='https://github.com/alibaba/dexposed'>Dexposed</a></td>
      </tr>
      <tr>
-      <td>[TaiChi](https://github.com/taichi-framework/TaiChi)</td>
+      <td><a href='https://github.com/taichi-framework/TaiChi'>TaiChi</a></td>
       <td>⭕</td>
       <td>可以作为模块使用</td>
      </tr>
      <tr>
-      <td>[Xposed](https://github.com/rovo89/Xposed)</td>
+      <td><a href='https://github.com/rovo89/Xposed'>Xposed</a></td>
       <td>❎</td>
       <td>未测试，不再推荐使用</td>
      </tr>
