@@ -36,14 +36,14 @@
 
 | Hook Framework                                            | ST | Describe                                                                                 |
 | --------------------------------------------------------- | -- | ---------------------------------------------------------------------------------------- |
-| [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅ | 稳定使用                                                                                  |
+| [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅ | 多场景下稳定使用                                                                           |
 | [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ☑  | 部分兼容                                                                                  |
 | [Pine](https://github.com/canyie/pine)                    | ⭕ | 可以使用                                                                                  |
 | [SandHook](https://github.com/asLody/SandHook)            | ⭕ | 可以使用                                                                                  |
 | [Whale](https://github.com/asLody/whale)                  | ⭕ | 需要 [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale) |
 | [YAHFA](https://github.com/PAGalaxyLab/YAHFA)             | ❗ | 需要自行实现 Xposed API                                                                    |
 | [FastHook](https://github.com/turing-technician/FastHook) | ❗ | 需要自行实现 Xposed API                                                                    |
-| [Epic](https://github.com/tiann/epic)                     | ⭕ | 需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)                               |
+| [Epic](https://github.com/tiann/epic)                     | ❗ | 需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)                               |
 | [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕ | 可以作为模块使用                                                                           |
 | [Xposed](https://github.com/rovo89/Xposed)                | ❎ | 未测试，不再推荐使用                                                                        |
 
