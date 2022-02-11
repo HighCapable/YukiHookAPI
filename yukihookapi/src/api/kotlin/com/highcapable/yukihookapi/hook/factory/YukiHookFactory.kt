@@ -63,6 +63,13 @@ fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.
 val Context.modulePrefs get() = YukiHookModulePrefs(context = this)
 
 /**
+ * 获取模块的存取对象
+ * @param name 自定义 Sp 存储名称
+ * @return [YukiHookModulePrefs]
+ */
+fun Context.modulePrefs(name: String) = YukiHookModulePrefs(context = this).name(name)
+
+/**
  * 获取当前进程名称
  * @return [String]
  */
@@ -82,7 +89,7 @@ val Context.processName
  * 判断模块是否在太极、无极中激活
  * @return [Boolean] 是否激活
  */
-val Context.isTaichiModuleActive: Boolean
+val Context.isTaiChiModuleActive: Boolean
     get() {
         var isModuleActive = false
         runCatching {
