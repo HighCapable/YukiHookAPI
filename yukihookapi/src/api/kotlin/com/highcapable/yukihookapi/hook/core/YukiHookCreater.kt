@@ -202,9 +202,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [FieldFinder.Result]
          */
-        fun HookParam.field(initiate: FieldFinder.() -> Unit) =
-            if (hookClass.instance == null) FieldFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
-            else FieldFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
+        fun field(initiate: FieldFinder.() -> Unit) =
+            if (hookClass.instance == null) FieldFinder(hookInstance = this).failure(hookClass.throwable)
+            else FieldFinder(hookInstance = this, hookClass.instance).apply(initiate).build()
 
         /**
          * 在方法执行完成前 Hook
