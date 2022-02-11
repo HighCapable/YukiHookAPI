@@ -25,13 +25,19 @@
  *
  * This file is Created by fankes on 2022/2/5.
  */
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package com.highcapable.yukihookapi.hook.utils
+
+import com.highcapable.yukihookapi.annotation.DoNotUseClass
+import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 
 /**
  * 计算方法执行耗时
  * @param block 方法块
  * @return [RunBlockResult]
  */
+@DoNotUseMethod
 inline fun <R> runBlocking(block: () -> R): RunBlockResult {
     val start = System.currentTimeMillis()
     block()
@@ -42,6 +48,7 @@ inline fun <R> runBlocking(block: () -> R): RunBlockResult {
  * 构造耗时计算结果类
  * @param after 耗时
  */
+@DoNotUseClass
 class RunBlockResult(private val after: Long) {
 
     /**

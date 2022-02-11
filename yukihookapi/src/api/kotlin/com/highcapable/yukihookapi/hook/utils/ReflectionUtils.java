@@ -30,6 +30,8 @@ package com.highcapable.yukihookapi.hook.utils;
 
 import android.text.TextUtils;
 
+import com.highcapable.yukihookapi.annotation.DoNotUseClass;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,6 +40,7 @@ import java.util.HashMap;
 import de.robv.android.xposed.XposedHelpers;
 
 @SuppressWarnings("ALL")
+@DoNotUseClass
 public class ReflectionUtils {
 
     private static final HashMap<String, Field> fieldCache = new HashMap<>();
