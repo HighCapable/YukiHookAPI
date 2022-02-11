@@ -74,7 +74,7 @@ class MainHook : YukiHookXposedInitProxy {
                             field {
                                 name = "secondText"
                                 type = StringType
-                            }.set(instance, "I am hook result")
+                            }.get(instance).set("I am hook result")
                         }
                     }
                     // 注入要 Hook 的方法

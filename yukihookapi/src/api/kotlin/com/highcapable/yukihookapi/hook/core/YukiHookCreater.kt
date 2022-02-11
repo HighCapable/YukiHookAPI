@@ -229,7 +229,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * 替换此方法内容 - 给出返回值
+         * 拦截并替换此方法内容 - 给出返回值
          *
          * 不可与 [beforeHook]、[afterHook] 同时使用
          * @param initiate [HookParam] 方法体
@@ -240,7 +240,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * 替换此方法内容 - 没有返回值 ([Unit])
+         * 拦截并替换此方法内容 - 没有返回值 ([Unit])
          *
          * 不可与 [beforeHook]、[afterHook] 同时使用
          * @param initiate [HookParam] 方法体
@@ -251,7 +251,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * 替换方法返回值
+         * 拦截并替换方法返回值
          *
          * 不可与 [beforeHook]、[afterHook] 同时使用
          * @param any 要替换为的返回值对象
@@ -262,9 +262,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * 替换方法返回值为 true
+         * 拦截并替换方法返回值为 true
          *
-         * 确保替换方法的返回对象为 [Boolean]
+         * ❗确保替换方法的返回对象为 [Boolean]
          *
          * 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -274,9 +274,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         }
 
         /**
-         * 替换方法返回值为 false
+         * 拦截并替换方法返回值为 false
          *
-         * 确保替换方法的返回对象为 [Boolean]
+         * ❗确保替换方法的返回对象为 [Boolean]
          *
          * 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -288,7 +288,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /**
          * 拦截此方法
          *
-         * 这将会禁止此方法执行并返回 null
+         * ❗这将会禁止此方法执行并返回 null
          *
          * 不可与 [beforeHook]、[afterHook] 同时使用
          */

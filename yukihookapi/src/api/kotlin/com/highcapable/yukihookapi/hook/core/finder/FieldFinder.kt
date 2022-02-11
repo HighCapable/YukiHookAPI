@@ -96,7 +96,7 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
     fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
-     * Field 查找结果实现类
+     * [Field] 查找结果实现类
      *
      * 可在这里处理找到的 [fieldInstance]
      * @param isNoSuch 是否没有找到变量 - 默认否
@@ -112,18 +112,18 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
         fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
-         * 设置变量实例
+         * 得到变量实例处理类
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @param any 设置的实例内容
+         * @return [Instance]
          */
-        fun set(instance: Any? = null, any: Any?) = give()?.set(instance, any)
+        fun get(instance: Any? = null) = Instance(give()?.get(instance))
 
         /**
          * 得到变量实例
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [T] or null
          */
-        fun <T> get(instance: Any? = null) = give()?.get(instance) as? T?
+        fun <T> of(instance: Any? = null) = get(instance) as? T?
 
         /**
          * 得到变量本身
@@ -139,6 +139,36 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
         fun onNoSuchField(initiate: (Throwable) -> Unit): Result {
             if (isNoSuch) initiate(e ?: Throwable())
             return this
+        }
+
+        /**
+         * [Field] 实例变量处理类
+         * @param instance 当前 [Field] 的实例对象
+         */
+        inner class Instance(val instance: Any?) {
+
+            /**
+             * 设置变量实例
+             * @param any 设置的实例内容
+             */
+            fun set(any: Any?) = give()?.set(instance, any)
+
+            /**
+             * 设置变量实例为 true
+             *
+             * ❗请确保示例对象类型为 [Boolean]
+             */
+            fun setTrue() = set(true)
+
+            /**
+             * 设置变量实例为 true
+             *
+             * ❗请确保示例对象类型为 [Boolean]
+             */
+            fun setFalse() = set(false)
+
+            /** 设置变量实例为 null */
+            fun setNull() = set(null)
         }
     }
 }
