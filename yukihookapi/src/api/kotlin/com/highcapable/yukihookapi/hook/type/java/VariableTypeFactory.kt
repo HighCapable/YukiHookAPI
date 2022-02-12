@@ -27,54 +27,78 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.type
+package com.highcapable.yukihookapi.hook.type.java
 
-import android.app.Activity
-import android.app.Application
-import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.res.Resources
-import android.os.Bundle
+import java.io.Serializable
 
 /**
- * 获得 [Context] 类型
+ * 获得 [Any] 类型
  * @return [Class]
  */
-val ContextClass get() = Context::class.java
+val AnyType get() = Any::class.java
 
 /**
- * 获得 [Activity] 类型
+ * 获得 [Unit] 类型
  * @return [Class]
  */
-val ActivityClass get() = Activity::class.java
+val UnitType get() = Void.TYPE ?: Unit::class.java
 
 /**
- * 获得 [Service] 类型
+ * 获得 [Boolean] 类型
  * @return [Class]
  */
-val ServiceClass get() = Service::class.java
+val BooleanType get() = Boolean::class.java
 
 /**
- * 获得 [BroadcastReceiver] 类型
+ * 获得 [Int] 类型
  * @return [Class]
  */
-val BroadcastReceiverClass get() = BroadcastReceiver::class.java
+val IntType get() = Int::class.javaPrimitiveType
 
 /**
- * 获得 [Bundle] 类型
+ * 获得 [Long] 类型
  * @return [Class]
  */
-val BundleClass get() = Bundle::class.java
+val LongType get() = Long::class.javaPrimitiveType
 
 /**
- * 获得 [Resources] 类型
+ * 获得 [Short] 类型
  * @return [Class]
  */
-val ResourcesClass get() = Resources::class.java
+val ShortType get() = Short::class.javaPrimitiveType
 
 /**
- * 获得 [Application] 类型
+ * 获得 [Float] 类型
  * @return [Class]
  */
-val ApplicationClass get() = Application::class.java
+val FloatType get() = Float::class.javaPrimitiveType
+
+/**
+ * 获得 [Double] 类型
+ * @return [Class]
+ */
+val DoubleType get() = Double::class.javaPrimitiveType
+
+/**
+ * 获得 [String] 类型
+ * @return [Class]
+ */
+val StringType get() = String::class.java
+
+/**
+ * 获得 [Char] 类型
+ * @return [Class]
+ */
+val CharType get() = Char::class.java
+
+/**
+ * 获得 [CharSequence] 类型
+ * @return [Class]
+ */
+val CharSequenceType get() = CharSequence::class.java
+
+/**
+ * 获得 [Serializable] 类型
+ * @return [Class]
+ */
+val SerializableClass get() = Serializable::class.java

@@ -27,7 +27,7 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.type
+package com.highcapable.yukihookapi.hook.type.android
 
 import android.view.View
 import android.view.ViewGroup

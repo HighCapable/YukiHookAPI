@@ -32,9 +32,9 @@ package com.highcapable.yukihookapi.demo_module.hook
 import android.app.AlertDialog
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.type.BundleClass
-import com.highcapable.yukihookapi.hook.type.StringType
-import com.highcapable.yukihookapi.hook.type.UnitType
+import com.highcapable.yukihookapi.hook.type.android.BundleClass
+import com.highcapable.yukihookapi.hook.type.java.StringType
+import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 @InjectYukiHookWithXposed
