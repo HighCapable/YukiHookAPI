@@ -89,4 +89,6 @@ class HookParamWrapper(private val baseParam: XC_MethodHook.MethodHookParam) {
      */
     fun invokeOriginalMember(member: Member, vararg args: Any?): Any? =
         XposedBridge.invokeOriginalMethod(member, instance, args)
+
+    override fun toString() = "HookParamWrapper[$baseParam]"
 }

@@ -49,6 +49,13 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
     private var fieldInstance: Field? = null
 
     /**
+     * [Field] 所在的 [Class]
+     *
+     * 不填默认为当前的 [hookClass]
+     */
+    var classSet = hookClass
+
+    /**
      * [Field] 名称
      *
      * - ❗必须设置
@@ -70,19 +77,26 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
      * @throws IllegalStateException 如果 [name] 没有被设置
      */
     @DoNotUseMethod
-    fun build() = if (name.isBlank()) {
-        loggerE(msg = "Field name cannot be empty in Class [$hookClass] [${hookInstance.tag}]")
-        Result(isNoSuch = true)
-    } else try {
-        runBlocking {
-            fieldInstance = ReflectionUtils.findFieldIfExists(hookClass, type?.name, name)
-        }.result {
-            hookInstance.onHookLogMsg(msg = "Find Field [${fieldInstance}] takes ${it}ms [${hookInstance.tag}]")
+    fun build() = when {
+        name.isBlank() -> {
+            loggerE(msg = "Field name cannot be empty in Class [$classSet] [${hookInstance.tag}]")
+            Result(isNoSuch = true)
         }
-        Result()
-    } catch (e: Throwable) {
-        loggerE(msg = "NoSuchField happend in [$hookClass] [${hookInstance.tag}]", e = e)
-        Result(isNoSuch = true, e)
+        type == null -> {
+            loggerE(msg = "Field type cannot be null in Class [$classSet] [${hookInstance.tag}]")
+            Result(isNoSuch = true)
+        }
+        else -> try {
+            runBlocking {
+                fieldInstance = ReflectionUtils.findFieldIfExists(classSet, type?.name, name)
+            }.result {
+                hookInstance.onHookLogMsg(msg = "Find Field [${fieldInstance}] takes ${it}ms [${hookInstance.tag}]")
+            }
+            Result()
+        } catch (e: Throwable) {
+            loggerE(msg = "NoSuchField happend in [$classSet] [${hookInstance.tag}]", e = e)
+            Result(isNoSuch = true, e)
+        }
     }
 
     /**
@@ -170,6 +184,8 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
 
             /** 设置变量实例为 null */
             fun setNull() = set(null)
+
+            override fun toString() = "[${self?.javaClass?.name ?: ""}] in [${instance?.javaClass?.name ?: ""}] value \"$self\""
         }
     }
 }

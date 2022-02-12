@@ -25,11 +25,38 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "KDocUnresolvedReference", "DEPRECATION", "FunctionName", "NewApi")
 
 package com.highcapable.yukihookapi.hook.type.java
 
-import java.io.Serializable
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.*
+import java.lang.ref.Reference
+import java.lang.ref.WeakReference
+import java.lang.reflect.Constructor
+import java.lang.reflect.Field
+import java.lang.reflect.Member
+import java.lang.reflect.Method
+import java.net.HttpCookie
+import java.net.HttpURLConnection
+import java.net.http.HttpClient
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
+
+/**
+ * 任意类型的数组
+ *
+ * Java 中的表示：array[]
+ * @param type 类型
+ * @return [Class]
+ */
+fun AnyArrayClass(type: Class<*>) = java.lang.reflect.Array.newInstance(type, 0).javaClass
 
 /**
  * 获得 [Any] 类型
@@ -53,31 +80,31 @@ val BooleanType get() = Boolean::class.java
  * 获得 [Int] 类型
  * @return [Class]
  */
-val IntType get() = Int::class.javaPrimitiveType
+val IntType get() = Int::class.javaPrimitiveType ?: UnitType
 
 /**
  * 获得 [Long] 类型
  * @return [Class]
  */
-val LongType get() = Long::class.javaPrimitiveType
+val LongType get() = Long::class.javaPrimitiveType ?: UnitType
 
 /**
  * 获得 [Short] 类型
  * @return [Class]
  */
-val ShortType get() = Short::class.javaPrimitiveType
+val ShortType get() = Short::class.javaPrimitiveType ?: UnitType
 
 /**
  * 获得 [Float] 类型
  * @return [Class]
  */
-val FloatType get() = Float::class.javaPrimitiveType
+val FloatType get() = Float::class.javaPrimitiveType ?: UnitType
 
 /**
  * 获得 [Double] 类型
  * @return [Class]
  */
-val DoubleType get() = Double::class.javaPrimitiveType
+val DoubleType get() = Double::class.javaPrimitiveType ?: UnitType
 
 /**
  * 获得 [String] 类型
@@ -102,3 +129,325 @@ val CharSequenceType get() = CharSequence::class.java
  * @return [Class]
  */
 val SerializableClass get() = Serializable::class.java
+
+/**
+ * 获得 [Byte] 类型
+ * @return [Class]
+ */
+val ByteClass get() = Byte::class.java
+
+/**
+ * 获得 [Array] 类型
+ * @return [Class]
+ */
+val ArrayClass get() = Array::class.java
+
+/**
+ * 获得 [Byte] - [Array] 类型
+ *
+ * Java 中表示：byte[]
+ * @return [Class]
+ */
+val ByteArrayClass get() = AnyArrayClass(ByteClass)
+
+/**
+ * 获得 [Int] - [Array] 类型
+ *
+ * Java 中表示：int[]
+ * @return [Class]
+ */
+val IntArrayClass get() = AnyArrayClass(IntType)
+
+/**
+ * 获得 [String] - [Array] 类型
+ *
+ * Java 中表示：String[]
+ * @return [Class]
+ */
+val StringArrayClass get() = AnyArrayClass(StringType)
+
+/**
+ * 获得 [Long] - [Array] 类型
+ *
+ * Java 中表示：long[]
+ * @return [Class]
+ */
+val LongArrayClass get() = AnyArrayClass(LongType)
+
+/**
+ * 获得 [Short] - [Array] 类型
+ *
+ * Java 中表示：short[]
+ * @return [Class]
+ */
+val ShortArrayClass get() = AnyArrayClass(ShortType)
+
+/**
+ * 获得 [Float] - [Array] 类型
+ *
+ * Java 中表示：float[]
+ * @return [Class]
+ */
+val FloatArrayClass get() = AnyArrayClass(FloatType)
+
+/**
+ * 获得 [Double] - [Array] 类型
+ *
+ * Java 中表示：double[]
+ * @return [Class]
+ */
+val DoubleArrayClass get() = AnyArrayClass(DoubleType)
+
+/**
+ * 获得 [Cloneable] 类型
+ * @return [Class]
+ */
+val CloneableClass get() = Cloneable::class.java
+
+/**
+ * 获得 [List] 类型
+ * @return [Class]
+ */
+val ListClass get() = List::class.java
+
+/**
+ * 获得 [ArrayList] 类型
+ * @return [Class]
+ */
+val ArrayListClass get() = ArrayList::class.java
+
+/**
+ * 获得 [HashMap] 类型
+ * @return [Class]
+ */
+val HashMapClass get() = HashMap::class.java
+
+/**
+ * 获得 [HashSet] 类型
+ * @return [Class]
+ */
+val HashSetClass get() = HashSet::class.java
+
+/**
+ * 获得 [WeakHashMap] 类型
+ * @return [Class]
+ */
+val WeakHashMapClass get() = WeakHashMap::class.java
+
+/**
+ * 获得 [WeakReference] 类型
+ * @return [Class]
+ */
+val WeakReferenceClass get() = WeakReference::class.java
+
+/**
+ * 获得 [Map] 类型
+ * @return [Class]
+ */
+val MapClass get() = Map::class.java
+
+/**
+ * 获得 [Map.Entry] 类型
+ * @return [Class]
+ */
+val Map_EntryClass get() = Map.Entry::class.java
+
+/**
+ * 获得 [Reference] 类型
+ * @return [Class]
+ */
+val ReferenceClass get() = Reference::class.java
+
+/**
+ * 获得 [Vector] 类型
+ * @return [Class]
+ */
+val VectorClass get() = Vector::class.java
+
+/**
+ * 获得 [File] 类型
+ * @return [Class]
+ */
+val FileClass get() = File::class.java
+
+/**
+ * 获得 [InputStream] 类型
+ * @return [Class]
+ */
+val InputStreamClass get() = InputStream::class.java
+
+/**
+ * 获得 [OutputStream] 类型
+ * @return [Class]
+ */
+val OutputStreamClass get() = OutputStream::class.java
+
+/**
+ * 获得 [BufferedReader] 类型
+ * @return [Class]
+ */
+val BufferedReaderClass get() = BufferedReader::class.java
+
+/**
+ * 获得 [Date] 类型
+ * @return [Class]
+ */
+val DateClass get() = Date::class.java
+
+/**
+ * 获得 [TimeZone] 类型
+ * @return [Class]
+ */
+val TimeZoneClass get() = TimeZone::class.java
+
+/**
+ * 获得 [SimpleDateFormat] 类型
+ * @return [Class]
+ */
+val SimpleDateFormatClass_Java get() = SimpleDateFormat::class.java
+
+/**
+ * 获得 [Timer] 类型
+ * @return [Class]
+ */
+val TimerClass get() = Timer::class.java
+
+/**
+ * 获得 [TimerTask] 类型
+ * @return [Class]
+ */
+val TimerTaskClass get() = TimerTask::class.java
+
+/**
+ * 获得 [Thread] 类型
+ * @return [Class]
+ */
+val ThreadClass get() = Thread::class.java
+
+/**
+ * 获得 [Base64] 类型
+ *
+ * ❗在 Android O (26) 及以上系统加入
+ * @return [Class]
+ */
+val Base64Class_Java get() = Base64::class.java
+
+/**
+ * 获得 [Observer] 类型
+ * @return [Class]
+ */
+val ObserverClass get() = Observer::class.java
+
+/**
+ * 获得 [Set] 类型
+ * @return [Class]
+ */
+val SetClass get() = Set::class.java
+
+/**
+ * 获得 [JSONObject] 类型
+ * @return [Class]
+ */
+val JSONObjectClass get() = JSONObject::class.java
+
+/**
+ * 获得 [JSONArray] 类型
+ * @return [Class]
+ */
+val JSONArrayClass get() = JSONArray::class.java
+
+/**
+ * 获得 [StringBuilder] 类型
+ * @return [Class]
+ */
+val StringBuilderClass get() = StringBuilder::class.java
+
+/**
+ * 获得 [StringBuffer] 类型
+ * @return [Class]
+ */
+val StringBufferClass get() = StringBuffer::class.java
+
+/**
+ * 获得 [ZipEntry] 类型
+ * @return [Class]
+ */
+val ZipEntryClass get() = ZipEntry::class.java
+
+/**
+ * 获得 [ZipFile] 类型
+ * @return [Class]
+ */
+val ZipFileClass get() = ZipFile::class.java
+
+/**
+ * 获得 [ZipInputStream] 类型
+ * @return [Class]
+ */
+val ZipInputStreamClass get() = ZipInputStream::class.java
+
+/**
+ * 获得 [ZipOutputStream] 类型
+ * @return [Class]
+ */
+val ZipOutputStreamClass get() = ZipOutputStream::class.java
+
+/**
+ * 获得 [HttpURLConnection] 类型
+ * @return [Class]
+ */
+val HttpURLConnectionClass get() = HttpURLConnection::class.java
+
+/**
+ * 获得 [HttpCookie] 类型
+ * @return [Class]
+ */
+val HttpCookieClass get() = HttpCookie::class.java
+
+/**
+ * 获得 [HttpClient] 类型
+ * @return [Class]
+ */
+val HttpClientClass get() = HttpClient::class.java
+
+/**
+ * 获得 [AtomicBoolean] 类型
+ * @return [Class]
+ */
+val AtomicBooleanClass get() = AtomicBoolean::class.java
+
+/**
+ * 获得 [Class] 类型
+ * @return [Class]
+ */
+val JavaClass get() = Class::class.java
+
+/**
+ * 获得 [Method] 类型
+ * @return [Class]
+ */
+val JavaMethodClass get() = Method::class.java
+
+/**
+ * 获得 [Field] 类型
+ * @return [Class]
+ */
+val JavaFieldClass get() = Field::class.java
+
+/**
+ * 获得 [Constructor] 类型
+ * @return [Class]
+ */
+val JavaConstructorClass get() = Constructor::class.java
+
+/**
+ * 获得 [Member] 类型
+ * @return [Class]
+ */
+val JavaMemberClass get() = Member::class.java
+
+/**
+ * 获得 [Annotation] 类型
+ * @return [Class]
+ */
+val JavaAnnotationClass get() = Annotation::class.java

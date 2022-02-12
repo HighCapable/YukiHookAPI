@@ -36,6 +36,8 @@ import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.hookClass
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
@@ -131,12 +133,50 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     fun loadHooker(hooker: YukiBaseHooker) = hooker.assignInstance(packageParam = this)
 
     /**
+     * 通过字符串转换为实体类
+     *
+     * - 使用当前 [appClassLoader] 装载目标 [Class]
+     * @return [Class]
+     * @throws NoClassDefFoundError 如果找不到 [Class]
+     */
+    val String.clazz get() = classOf(name = this, appClassLoader)
+
+    /**
+     * [VariousClass] 转换为实体类
+     *
+     * - 使用当前 [appClassLoader] 装载目标 [Class]
+     * @return [Class]
+     * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
+     */
+    val VariousClass.clazz
+        get() :Class<*> {
+            var finalClass: Class<*>? = null
+            if (name.isNotEmpty()) run {
+                name.forEach {
+                    runCatching {
+                        finalClass = it.clazz
+                        return@run
+                    }
+                }
+            }
+            return finalClass ?: error("VariousClass match failed of those $this")
+        }
+
+    /**
+     * 通过字符串查找类是否存在
+     *
+     * - 使用当前 [appClassLoader] 装载目标 [Class]
+     * @return [Boolean] 是否存在
+     */
+    val String.hasClass get() = hasClass(appClassLoader)
+
+    /**
      * 通过 [appClassLoader] 查询并装载 [Class]
      * @param name 类名
      * @return [HookClass]
      */
     fun findClass(name: String) = try {
-        appClassLoader.loadClass(name).hookClass
+        name.clazz.hookClass
     } catch (e: Throwable) {
         HookClass(name = name, throwable = e)
     }
@@ -155,21 +195,10 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param various 实例
      * @return [HookClass]
      */
-    fun findClass(various: VariousClass): HookClass {
-        var finalClass: Class<*>? = null
-        if (various.name.isNotEmpty())
-            run {
-                various.name.forEach {
-                    runCatching {
-                        finalClass = appClassLoader.loadClass(it)
-                        return@run
-                    }
-                }
-            }
-        return finalClass?.hookClass ?: HookClass(
-            name = "VariousClass",
-            throwable = Throwable("VariousClass match failed of those $various")
-        )
+    fun findClass(various: VariousClass) = try {
+        various.clazz.hookClass
+    } catch (e: Throwable) {
+        HookClass(name = "VariousClass", throwable = Throwable(e.message))
     }
 
     /**
@@ -193,7 +222,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @return [HookClass]
      */
     private fun HookClass.bind() = try {
-        appClassLoader.loadClass(name).hookClass
+        name.clazz.hookClass
     } catch (e: Throwable) {
         HookClass(name = name, throwable = throwable ?: e)
     }
@@ -203,4 +232,6 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @return [PackageParam]
      */
     private val thisParam get() = this
+
+    override fun toString() = "PackageParam by $wrapper"
 }

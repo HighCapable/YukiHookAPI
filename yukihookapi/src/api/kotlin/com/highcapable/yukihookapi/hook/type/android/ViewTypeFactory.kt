@@ -29,8 +29,9 @@
 
 package com.highcapable.yukihookapi.hook.type.android
 
-import android.view.View
-import android.view.ViewGroup
+import android.graphics.Outline
+import android.util.AttributeSet
+import android.view.*
 import android.widget.*
 
 /**
@@ -80,3 +81,147 @@ val CheckBoxClass get() = CheckBox::class.java
  * @return [Class]
  */
 val CompoundButtonClass get() = CompoundButton::class.java
+
+/**
+ * 获得 [VideoView] 类型
+ * @return [Class]
+ */
+val VideoViewClass get() = VideoView::class.java
+
+/**
+ * 获得 [ListView] 类型
+ * @return [Class]
+ */
+val ListViewClass get() = ListView::class.java
+
+/**
+ * 获得 [LayoutInflater] 类型
+ * @return [Class]
+ */
+val LayoutInflaterClass get() = LayoutInflater::class.java
+
+/**
+ * 获得 [ListAdapter] 类型
+ * @return [Class]
+ */
+val ListAdapterClass get() = ListAdapter::class.java
+
+/**
+ * 获得 [ArrayAdapter] 类型
+ * @return [Class]
+ */
+val ArrayAdapterClass get() = ArrayAdapter::class.java
+
+/**
+ * 获得 [BaseAdapter] 类型
+ * @return [Class]
+ */
+val BaseAdapterClass get() = BaseAdapter::class.java
+
+/**
+ * 获得 [RelativeLayout] 类型
+ * @return [Class]
+ */
+val RelativeLayoutClass get() = RelativeLayout::class.java
+
+/**
+ * 获得 [FrameLayout] 类型
+ * @return [Class]
+ */
+val FrameLayoutClass get() = FrameLayout::class.java
+
+/**
+ * 获得 [LinearLayout] 类型
+ * @return [Class]
+ */
+val LinearLayoutClass get() = LinearLayout::class.java
+
+/**
+ * 获得 [ViewGroup.LayoutParams] 类型
+ * @return [Class]
+ */
+val ViewGroup_LayoutParamsClass get() = ViewGroup.LayoutParams::class.java
+
+/**
+ * 获得 [RelativeLayout.LayoutParams] 类型
+ * @return [Class]
+ */
+val RelativeLayout_LayoutParamsClass get() = RelativeLayout.LayoutParams::class.java
+
+/**
+ * 获得 [LinearLayout.LayoutParams] 类型
+ * @return [Class]
+ */
+val LinearLayout_LayoutParamsClass get() = LinearLayout.LayoutParams::class.java
+
+/**
+ * 获得 [FrameLayout.LayoutParams] 类型
+ * @return [Class]
+ */
+val FrameLayout_LayoutParamsClass get() = FrameLayout.LayoutParams::class.java
+
+/**
+ * 获得 [Outline] 类型
+ * @return [Class]
+ */
+val OutlineClass get() = Outline::class.java
+
+/**
+ * 获得 [View.OnClickListener] 类型
+ * @return [Class]
+ */
+val View_OnClickListenerClass get() = View.OnClickListener::class.java
+
+/**
+ * 获得 [View.OnLongClickListener] 类型
+ * @return [Class]
+ */
+val View_OnLongClickListenerClass get() = View.OnLongClickListener::class.java
+
+/**
+ * 获得 [View.OnTouchListener] 类型
+ * @return [Class]
+ */
+val View_OnTouchListenerClass get() = View.OnTouchListener::class.java
+
+/**
+ * 获得 [AutoCompleteTextView] 类型
+ * @return [Class]
+ */
+val AutoCompleteTextViewClass get() = AutoCompleteTextView::class.java
+
+/**
+ * 获得 [ViewStub] 类型
+ * @return [Class]
+ */
+val ViewStubClass get() = ViewStub::class.java
+
+/**
+ * 获得 [ViewStub.OnInflateListener] 类型
+ * @return [Class]
+ */
+val ViewStub_OnInflateListenerClass get() = ViewStub.OnInflateListener::class.java
+
+/**
+ * 获得 [GestureDetector] 类型
+ * @return [Class]
+ */
+val GestureDetectorClass get() = GestureDetector::class.java
+
+/**
+ * 获得 [GestureDetector.SimpleOnGestureListener] 类型
+ * @return [Class]
+ */
+val GestureDetector_SimpleOnGestureListenerClass get() = GestureDetector.SimpleOnGestureListener::class.java
+
+/**
+ * 获得 [ProgressBar] 类型
+ * @return [Class]
+ */
+val ProgressBarClass get() = ProgressBar::class.java
+
+/**
+ * 获得 [AttributeSet] 类型
+ * @return [Class]
+ */
+val AttributeSetClass get() = AttributeSet::class.java

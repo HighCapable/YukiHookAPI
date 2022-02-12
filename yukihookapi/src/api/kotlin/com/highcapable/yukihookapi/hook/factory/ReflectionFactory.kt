@@ -35,25 +35,6 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 /**
- * 字符串转换为实体类
- * @return [Class]
- * @throws NoClassDefFoundError
- */
-val String.clazz: Class<*> get() = Class.forName(this)
-
-/**
- * 通过字符串查找类是否存在
- * @return [Boolean] 是否存在
- */
-val String.hasClass
-    get() = try {
-        clazz
-        true
-    } catch (_: Throwable) {
-        false
-    }
-
-/**
  * [Class] 转换为 [HookClass]
  * @return [HookClass]
  */
@@ -64,6 +45,37 @@ val Class<*>.hookClass get() = HookClass(instance = this, name)
  * @return [Class] or null
  */
 val HookClass.normalClass get() = instance
+
+/**
+ * 通过字符串查找类是否存在
+ *
+ * - ❗仅限使用当前的 [ClassLoader]
+ * @return [Boolean] 是否存在
+ */
+val String.hasClass get() = hasClass(loader = null)
+
+/**
+ * 通过字符串转换为实体类
+ * @param name [Class] 的完整包名+名称
+ * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
+ * @return [Class]
+ * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+ */
+fun classOf(name: String, loader: ClassLoader? = null): Class<*> =
+    if (loader == null) Class.forName(name)
+    else loader.loadClass(name)
+
+/**
+ * 通过字符串查找类是否存在
+ * @param loader [Class] 所在的 [ClassLoader]
+ * @return [Boolean] 是否存在
+ */
+fun String.hasClass(loader: ClassLoader?) = try {
+    classOf(name = this, loader)
+    true
+} catch (_: Throwable) {
+    false
+}
 
 /**
  * 查找方法是否存在
@@ -151,7 +163,9 @@ fun Class<*>.obtainConstructor(vararg paramType: Class<*>): Constructor<out Any>
  * @throws IllegalStateException 如果 [T] 类型错误
  */
 inline fun <reified T> Method.invokeStatic(vararg param: Any?) =
-    invoke(null, param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+    if (param.isNotEmpty())
+        invoke(null, param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+    else invoke(null) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
 
 /**
  * 执行方法
@@ -161,4 +175,6 @@ inline fun <reified T> Method.invokeStatic(vararg param: Any?) =
  * @throws IllegalStateException 如果 [T] 类型错误
  */
 inline fun <reified T> Method.invokeAny(any: Any?, vararg param: Any?) =
-    invoke(any, param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+    if (param.isNotEmpty())
+        invoke(any, param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+    else invoke(any) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")

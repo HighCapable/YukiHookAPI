@@ -48,4 +48,7 @@ class PackageParamWrapper(
     var processName: String,
     var appClassLoader: ClassLoader,
     var appInfo: ApplicationInfo
-)
+) {
+
+    override fun toString() = "PackageParamWrapper [packageName] $packageName [processName] $processName [appInfo] $appInfo"
+}

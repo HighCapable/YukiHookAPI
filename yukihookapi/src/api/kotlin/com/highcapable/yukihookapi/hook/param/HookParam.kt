@@ -184,5 +184,9 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setFalse() = set(false)
+
+        override fun toString() = "Args of index $index"
     }
+
+    override fun toString() = "HookParam by $wrapper"
 }
