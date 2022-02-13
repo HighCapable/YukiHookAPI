@@ -4,7 +4,7 @@
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
 ![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0-green)
 <br/><br/>
-<img src="https://github.com/fankes/YuKiHookAPI/blob/master/demo-app/src/main/res/mipmap-xxhdpi/ic_icon.png" width = "100" height = "100"/>
+<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
 <br/>
 <br/>
 ⛱️ An efficient Kotlin version of the Xposed Hook API.
