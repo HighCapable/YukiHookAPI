@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/5.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "KDocUnresolvedReference")
 
 package com.highcapable.yukihookapi_ksp_xposed
 
@@ -34,7 +34,6 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import java.io.File
 
 /**
@@ -48,6 +47,12 @@ import java.io.File
 class YukiHookXposedProcessor : SymbolProcessorProvider {
 
     override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
+
+        /** 自动处理程序的 TAG */
+        private val TAG = "YukiHookAPI"
+
+        /** 查找的注释名称 */
+        private val annotationName = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
 
         /** 插入 Xposed 尾部的名称 */
         private val xposedClassShortName = "_YukiHookXposedInit"
@@ -78,9 +83,17 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param msg 错误消息
          */
         private fun SymbolProcessorEnvironment.error(msg: String) {
-            logger.error(msg)
-            throw RuntimeException(msg)
+            val helpMsg = "Looking for help? see " +
+                    "https://github.com/fankes/YukiHookAPI/wiki/%E4%BD%9C%E4%B8%BA-Xposed-%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E7%9A%84%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE"
+            logger.error(message = "[$TAG] $msg\n$helpMsg")
+            throw RuntimeException("[$TAG] $msg\n$helpMsg")
         }
+
+        /**
+         * 发出警告
+         * @param msg 错误消息
+         */
+        private fun SymbolProcessorEnvironment.warn(msg: String) = logger.warn(message = "[$TAG] $msg")
 
         override fun process(resolver: Resolver) = emptyList<KSAnnotated>().let {
             injectProcess(resolver)
@@ -93,7 +106,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun injectProcess(resolver: Resolver) = environment {
             var injectOnce = true
-            resolver.getSymbolsWithAnnotation(InjectYukiHookWithXposed::class.java.name).apply {
+            resolver.getSymbolsWithAnnotation(annotationName).apply {
                 /**
                  * 检索需要注入的类
                  * @param sourcePath 指定的 source 路径
@@ -118,8 +131,14 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 }
                 forEach {
                     it.annotations.forEach { e ->
-                        val sourcePath = e.arguments[0].value.toString()
-                        val modulePackageName = e.arguments[1].value.toString()
+                        var sourcePath = ""
+                        var modulePackageName = ""
+                        e.arguments.forEach { pease ->
+                            if (pease.name?.asString() == "sourcePath")
+                                sourcePath = pease.value.toString()
+                            if (pease.name?.asString() == "modulePackageName")
+                                modulePackageName = pease.value.toString()
+                        }
                         if ((modulePackageName.startsWith(".") ||
                                     modulePackageName.endsWith(".") ||
                                     !modulePackageName.contains(".") ||
@@ -141,7 +160,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun injectAssets(codePath: String, sourcePath: String, packageName: String, className: String) =
             environment {
-                if (codePath.isBlank()) error("Project CodePath is empty")
+                if (codePath.isBlank()) error(msg = "Project CodePath not available")
+                if (sourcePath.isBlank()) error(msg = "Project SourcePath not available")
                 val projectPath = when (File.separator) {
                     "\\" -> sourcePath.replace("/", "\\")
                     "/" -> sourcePath.replace("\\", "/")
@@ -159,6 +179,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         }
                         File("${assFile.absolutePath}${File.separator}xposed_init")
                             .writeText(text = "$packageName.$className$xposedClassShortName")
+                        File("${assFile.absolutePath}${File.separator}yukihookapi_init")
+                            .writeText(text = "$packageName.$className")
                     } else error(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
                 }
             }
@@ -171,12 +193,12 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun injectClass(packageName: String, className: String, modulePackageName: String) =
             environment(ignoredError = true) {
-                if (modulePackageName.isNotBlank()) logger.warn(message = "You set the customize module package name to \"$modulePackageName\",please check for yourself if it is correct")
+                if (modulePackageName.isNotBlank()) warn(msg = "You set the customize module package name to \"$modulePackageName\",please check for yourself if it is correct")
                 val realPackageName =
                     modulePackageName.ifBlank {
                         if (packageName.contains(".hook.") || packageName.endsWith(".hook"))
                             packageName.split(".hook")[0]
-                        else error(msg = "YukiHookAPI cannot identify your App's package name,please refer to the wiki https://github.com/fankes/YukiHookAPI/wiki to fix the package name or manually configure the package name")
+                        else error(msg = "Cannot identify your App's package name,please manually configure the package name")
                     }
                 codeGenerator.createNewFile(
                     Dependencies.ALL_FILES,

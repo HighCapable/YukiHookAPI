@@ -25,8 +25,6 @@
  *
  * This file is Created by fankes on 2022/2/9.
  */
-@file:Suppress("unused")
-
 package com.highcapable.yukihookapi.demo_module.hook
 
 import android.app.AlertDialog
