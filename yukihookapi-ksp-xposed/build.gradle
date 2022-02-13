@@ -2,6 +2,8 @@ plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
     id 'com.google.devtools.ksp' version '1.6.10-1.0.2'
+    id 'maven-publish'
+    id 'signing'
 }
 
 java {
@@ -15,4 +17,54 @@ dependencies {
     implementation 'com.google.auto.service:auto-service-annotations:1.0.1'
     compileOnly 'com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.2'
     ksp 'dev.zacsweers.autoservice:auto-service-ksp:1.0.0'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'ksp-xposed'
+            from components.java
+            pom {
+                name = 'YukiHookAPI'
+                description = 'An efficient Kotlin version of the Xposed Hook API.'
+                url = 'https://github.com/fankes/YukiHookAPI'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/fankes/YukiHookAPI/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = '0'
+                        name = 'fankesyooni'
+                        email = 'qzmmcn@163.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/path/to/repo.git'
+                    developerConnection = 'scm:git:ssh://github.com/path/to/repo.git'
+                    url = 'https://github.com/path/to/repo'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSRH"
+            if (project.version.toString().endsWith("-SNAPSHOT")) {
+                url = "https://s01.oss.sonatype.org/content/repositories/snapshots"
+            } else {
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            }
+            credentials {
+                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
+                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+            }
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications.mavenJava)
 }
