@@ -15,13 +15,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew jar |
-             ./gradlew kotlinSourcesJar
+        run: ./gradlew assembleRelease
       - name: Decode
         run: |
           echo "${{secrets.SIGNING_SECRET_KEY_RING_FILE}}" > ~/.gradle/secring.gpg.base64
           base64 -d ~/.gradle/secring.gpg.base64 > ~/.gradle/secring.gpg
-      - name: Publish package
+      - name: Publish Package
         run: gradle publish  -Psigning.keyId=${{secrets.SIGNING_KEY_ID}} -Psigning.password=${{secrets.SIGNING_KEY_PASSWORD}} -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg)
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
