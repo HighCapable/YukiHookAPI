@@ -2,6 +2,7 @@ name: Publish YukiHookAPI to the Maven Central Repository
 on:
   release:
     types: [created]
+  workflow_dispatch:
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -15,9 +16,8 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
-
-    - name: Execute Gradle build
-      run: ./gradlew build
+      with:
+        arguments: build
 
     - name: Decode
       run: |
@@ -25,7 +25,13 @@ jobs:
         base64 -d ~/.gradle/secring.gpg.base64 > ~/.gradle/secring.gpg
 
     - name: Publish Package
-      run: gradle publish  -Psigning.keyId=${{secrets.SIGNING_KEY_ID}} -Psigning.password=${{secrets.SIGNING_KEY_PASSWORD}} -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg)
+      uses: gradle/gradle-build-action@v2
       env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      with: 
+        arguments: |
+          publish
+          -Psigning.keyId=${{secrets.SIGNING_KEY_ID}}
+          -Psigning.password=${{secrets.SIGNING_KEY_PASSWORD}}
+          -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg)
