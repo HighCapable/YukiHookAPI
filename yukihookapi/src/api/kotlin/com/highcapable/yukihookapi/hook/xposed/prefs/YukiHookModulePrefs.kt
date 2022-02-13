@@ -79,12 +79,18 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /** 缓存数据 */
     private var xPrefCacheKeyValueFloats = HashMap<String, Float>()
 
+    /** 检查是否处于自定义 Hook API 状态 */
+    private fun checkApiInBaseContext() {
+        if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
+    }
+
     /**
      * 获得 [XSharedPreferences] 对象
      * @return [XSharedPreferences]
      */
     private val xPref
         get() = XSharedPreferences(YukiHookAPI.modulePackageName, prefsName).apply {
+            checkApiInBaseContext()
             makeWorldReadable()
             reload()
         }
@@ -95,9 +101,11 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     private val sPref
         get() = try {
+            checkApiInBaseContext()
             context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
                 ?: error("If you want to use module prefs,you must set the context instance first")
         } catch (_: Throwable) {
+            checkApiInBaseContext()
             context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
                 ?: error("If you want to use module prefs,you must set the context instance first")
         }

@@ -67,6 +67,13 @@ object YukiHookAPI {
     var modulePackageName = ""
 
     /**
+     * 标识是否从自定义 Hook API 装载
+     *
+     * - ❗这是私有 API - 请勿手动修改 - 否则会导致功能判断错误
+     */
+    internal var isLoadedFromBaseContext = false
+
+    /**
      * 配置 YukiHookAPI
      */
     object Configs {
@@ -129,6 +136,7 @@ object YukiHookAPI {
      * @param initiate Hook 方法体
      */
     fun encase(initiate: PackageParam.() -> Unit) {
+        isLoadedFromBaseContext = false
         if (hasXposedBridge)
             packageParamCallback = initiate
         else printNoXposedBridge()
@@ -144,6 +152,7 @@ object YukiHookAPI {
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
     fun encase(vararg hooker: YukiBaseHooker) {
+        isLoadedFromBaseContext = false
         if (hasXposedBridge)
             packageParamCallback = {
                 if (hooker.isNotEmpty())
@@ -167,6 +176,7 @@ object YukiHookAPI {
      * @param initiate Hook 方法体
      */
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
+        isLoadedFromBaseContext = true
         if (hasXposedBridge)
             (if (baseContext != null) initiate.invoke(baseContext.packagePararm))
         else printNoXposedBridge()
@@ -187,6 +197,7 @@ object YukiHookAPI {
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
+        isLoadedFromBaseContext = true
         if (hasXposedBridge)
             (if (baseContext != null)
                 if (hooker.isNotEmpty())

@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.type.android
 
-import android.graphics.Outline
 import android.util.AttributeSet
 import android.view.*
 import android.widget.*
@@ -161,10 +160,10 @@ val LinearLayout_LayoutParamsClass get() = LinearLayout.LayoutParams::class.java
 val FrameLayout_LayoutParamsClass get() = FrameLayout.LayoutParams::class.java
 
 /**
- * 获得 [Outline] 类型
+ * 获得 [TextClock] 类型
  * @return [Class]
  */
-val OutlineClass get() = Outline::class.java
+val TextClockClass get() = TextClock::class.java
 
 /**
  * 获得 [View.OnClickListener] 类型

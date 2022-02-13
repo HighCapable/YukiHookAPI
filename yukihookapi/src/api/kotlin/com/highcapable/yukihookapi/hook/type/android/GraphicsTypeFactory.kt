@@ -46,18 +46,24 @@ val TypefaceClass get() = Typeface::class.java
 val BitmapClass get() = Bitmap::class.java
 
 /**
- * 获得 [Drawable] 类型
- * @return [Class]
- */
-val DrawableClass get() = Drawable::class.java
-
-/**
  * 获得 [Icon] 类型
  *
  * ❗在 Android M (23) 及以上系统加入
  * @return [Class]
  */
 val IconClass get() = Icon::class.java
+
+/**
+ * 获得 [Outline] 类型
+ * @return [Class]
+ */
+val OutlineClass get() = Outline::class.java
+
+/**
+ * 获得 [Drawable] 类型
+ * @return [Class]
+ */
+val DrawableClass get() = Drawable::class.java
 
 /**
  * 获得 [GradientDrawable] 类型

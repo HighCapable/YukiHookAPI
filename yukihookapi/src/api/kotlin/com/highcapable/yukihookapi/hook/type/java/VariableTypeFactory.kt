@@ -451,3 +451,63 @@ val JavaMemberClass get() = Member::class.java
  * @return [Class]
  */
 val JavaAnnotationClass get() = Annotation::class.java
+
+/**
+ * 获得 [Runtime] 类型
+ * @return [Class]
+ */
+val RuntimeClass get() = Runtime::class.java
+
+/**
+ * 获得 [NullPointerException] 类型
+ * @return [Class]
+ */
+val NullPointerExceptionClass get() = NullPointerException::class.java
+
+/**
+ * 获得 [NumberFormatException] 类型
+ * @return [Class]
+ */
+val NumberFormatExceptionClass get() = NumberFormatException::class.java
+
+/**
+ * 获得 [IllegalStateException] 类型
+ * @return [Class]
+ */
+val IllegalStateExceptionClass get() = IllegalStateException::class.java
+
+/**
+ * 获得 [RuntimeException] 类型
+ * @return [Class]
+ */
+val RuntimeExceptionClass get() = RuntimeException::class.java
+
+/**
+ * 获得 [NoSuchMethodError] 类型
+ * @return [Class]
+ */
+val NoSuchMethodErrorClass get() = NoSuchMethodError::class.java
+
+/**
+ * 获得 [NoSuchFieldError] 类型
+ * @return [Class]
+ */
+val NoSuchFieldErrorClass get() = NoSuchFieldError::class.java
+
+/**
+ * 获得 [Error] 类型
+ * @return [Class]
+ */
+val ErrorClass get() = Error::class.java
+
+/**
+ * 获得 [Exception] 类型
+ * @return [Class]
+ */
+val ExceptionClass get() = Exception::class.java
+
+/**
+ * 获得 [Throwable] 类型
+ * @return [Class]
+ */
+val ThrowableClass get() = Throwable::class.java

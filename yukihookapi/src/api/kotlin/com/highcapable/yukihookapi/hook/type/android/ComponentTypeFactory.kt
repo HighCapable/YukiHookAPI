@@ -39,15 +39,18 @@ import android.media.MediaPlayer
 import android.os.*
 import android.service.notification.StatusBarNotification
 import android.text.SpannableStringBuilder
-import android.util.ArrayMap
-import android.util.ArraySet
-import android.util.Base64
-import android.util.DisplayMetrics
+import android.util.*
 import android.view.Display
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import com.highcapable.yukihookapi.hook.factory.classOf
+
+/**
+ * 获得 [android.R] 类型
+ * @return [Class]
+ */
+val AndroidRClass get() = android.R::class.java
 
 /**
  * 获得 [Context] 类型
@@ -104,6 +107,12 @@ val LoadedApkClass get() = classOf(name = "android.app.LoadedApk")
 val ActivityClass get() = Activity::class.java
 
 /**
+ * 获得 [Looper] 类型
+ * @return [Class]
+ */
+val LooperClass get() = Looper::class.java
+
+/**
  * 获得 [Fragment] 类型 - Support
  * @return [Class]
  */
@@ -128,10 +137,28 @@ val FragmentActivityClass_AndroidSupport get() = classOf(name = "android.support
 val FragmentActivityClass_AndroidX get() = classOf(name = "androidx.fragment.app.FragmentActivity")
 
 /**
+ * 获得 [DocumentFile] 类型 - AndroidX
+ * @return [Class]
+ */
+val DocumentFileClass get() = classOf(name = "androidx.documentfile.provider.DocumentFile")
+
+/**
  * 获得 [Service] 类型
  * @return [Class]
  */
 val ServiceClass get() = Service::class.java
+
+/**
+ * 获得 [Binder] 类型
+ * @return [Class]
+ */
+val BinderClass get() = Binder::class.java
+
+/**
+ * 获得 [IBinder] 类型
+ * @return [Class]
+ */
+val IBinderClass get() = IBinder::class.java
 
 /**
  * 获得 [BroadcastReceiver] 类型
@@ -144,6 +171,12 @@ val BroadcastReceiverClass get() = BroadcastReceiver::class.java
  * @return [Class]
  */
 val BundleClass get() = Bundle::class.java
+
+/**
+ * 获得 [BaseBundle] 类型
+ * @return [Class]
+ */
+val BaseBundleClass get() = BaseBundle::class.java
 
 /**
  * 获得 [Resources] 类型
@@ -196,6 +229,18 @@ val Handler_CallbackClass get() = Handler.Callback::class.java
 val MessageClass get() = Message::class.java
 
 /**
+ * 获得 [MessageQueue] 类型
+ * @return [Class]
+ */
+val MessageQueueClass get() = MessageQueue::class.java
+
+/**
+ * 获得 [Messenger] 类型
+ * @return [Class]
+ */
+val MessengerClass get() = Messenger::class.java
+
+/**
  * 获得 [AsyncTask] 类型
  * @return [Class]
  */
@@ -216,10 +261,22 @@ val SimpleDateFormatClass_Android get() = SimpleDateFormat::class.java
 val Base64Class_Android get() = Base64::class.java
 
 /**
+ * 获得 [Window] 类型
+ * @return [Class]
+ */
+val WindowClass get() = Window::class.java
+
+/**
  * 获得 [WindowManager] 类型
  * @return [Class]
  */
 val WindowManagerClass get() = WindowManager::class.java
+
+/**
+ * 获得 [Parcel] 类型
+ * @return [Class]
+ */
+val ParcelClass get() = Parcel::class.java
 
 /**
  * 获得 [Parcelable] 类型
@@ -294,12 +351,6 @@ val SharedPreferencesClass get() = SharedPreferences::class.java
 val SpannableStringBuilderClass get() = SpannableStringBuilder::class.java
 
 /**
- * 获得 [Window] 类型
- * @return [Class]
- */
-val WindowClass get() = Window::class.java
-
-/**
  * 获得 [MediaPlayer] 类型
  * @return [Class]
  */
@@ -312,22 +363,28 @@ val MediaPlayerClass get() = MediaPlayer::class.java
 val ProgressDialogClass get() = ProgressDialog::class.java
 
 /**
+ * 获得 [Log] 类型
+ * @return [Class]
+ */
+val LogClass get() = Log::class.java
+
+/**
  * 获得 [Build] 类型
  * @return [Class]
  */
 val BuildClass get() = Build::class.java
 
 /**
+ * 获得 [Xml] 类型
+ * @return [Class]
+ */
+val XmlClass get() = Xml::class.java
+
+/**
  * 获得 [ContrastColorUtil] 类型
  * @return [Class]
  */
 val ContrastColorUtilClass get() = classOf(name = "com.android.internal.util.ContrastColorUtil")
-
-/**
- * 获得 [DialogInterface] 类型
- * @return [Class]
- */
-val DialogInterfaceClass get() = DialogInterface::class.java
 
 /**
  * 获得 [StatusBarNotification] 类型
@@ -348,6 +405,12 @@ val NotificationClass get() = Notification::class.java
 val Notification_BuilderClass get() = Notification.Builder::class.java
 
 /**
+ * 获得 [DialogInterface] 类型
+ * @return [Class]
+ */
+val DialogInterfaceClass get() = DialogInterface::class.java
+
+/**
  * 获得 [DialogInterface.OnClickListener] 类型
  * @return [Class]
  */
@@ -364,3 +427,55 @@ val DialogInterface_OnCancelListenerClass get() = DialogInterface.OnCancelListen
  * @return [Class]
  */
 val DialogInterface_OnDismissListenerClass get() = DialogInterface.OnDismissListener::class.java
+
+/**
+ * 获得 [Environment] 类型
+ * @return [Class]
+ */
+val EnvironmentClass get() = Environment::class.java
+
+/**
+ * 获得 [Process] 类型
+ * @return [Class]
+ */
+val ProcessClass get() = Process::class.java
+
+/**
+ * 获得 [Vibrator] 类型
+ * @return [Class]
+ */
+val VibratorClass get() = Vibrator::class.java
+
+/**
+ * 获得 [VibrationEffect] 类型
+ *
+ * ❗在 Android O (26) 及以上系统加入
+ * @return [Class]
+ */
+val VibrationEffectClass get() = VibrationEffect::class.java
+
+/**
+ * 获得 [VibrationAttributes] 类型
+ *
+ * ❗在 Android R (30) 及以上系统加入
+ * @return [Class]
+ */
+val VibrationAttributesClass get() = VibrationAttributes::class.java
+
+/**
+ * 获得 [SystemClock] 类型
+ * @return [Class]
+ */
+val SystemClockClass get() = SystemClock::class.java
+
+/**
+ * 获得 [PowerManager] 类型
+ * @return [Class]
+ */
+val PowerManagerClass get() = PowerManager::class.java
+
+/**
+ * 获得 [PowerManager.WakeLock] 类型
+ * @return [Class]
+ */
+val PowerManager_WakeLockClass get() = PowerManager.WakeLock::class.java

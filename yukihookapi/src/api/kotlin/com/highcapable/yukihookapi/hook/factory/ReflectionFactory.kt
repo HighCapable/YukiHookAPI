@@ -164,7 +164,7 @@ fun Class<*>.obtainConstructor(vararg paramType: Class<*>): Constructor<out Any>
  */
 inline fun <reified T> Method.invokeStatic(vararg param: Any?) =
     if (param.isNotEmpty())
-        invoke(null, param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+        invoke(null, *param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
     else invoke(null) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
 
 /**
@@ -176,5 +176,5 @@ inline fun <reified T> Method.invokeStatic(vararg param: Any?) =
  */
 inline fun <reified T> Method.invokeAny(any: Any?, vararg param: Any?) =
     if (param.isNotEmpty())
-        invoke(any, param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+        invoke(any, *param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
     else invoke(any) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
