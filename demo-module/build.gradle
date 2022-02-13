@@ -42,12 +42,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    kotlin {
-        sourceSets.main {
-            kotlin.srcDir("build/generated/ksp/debug/kotlin")
-            kotlin.srcDir("build/generated/ksp/release/kotlin")
-        }
-    }
 }
 
 dependencies {
