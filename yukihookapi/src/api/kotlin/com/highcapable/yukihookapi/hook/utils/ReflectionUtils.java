@@ -49,10 +49,6 @@ public class ReflectionUtils {
     private static final HashMap<String, Field> fieldCache = new HashMap<>();
     private static final HashMap<String, Method> methodCache = new HashMap<>();
 
-    /**
-     * @param clazzes
-     * @return String
-     */
     private static String getParametersString(Class<?>... clazzes) {
         StringBuilder sb = new StringBuilder("(");
         boolean first = true;
@@ -72,70 +68,13 @@ public class ReflectionUtils {
     }
 
     /**
-     * @param clazz
-     * @param fieldType
-     * @param fieldName
-     * @param value
+     * 适用于查找混淆类型的 abcd 变量
+     *
+     * @param clazz     变量所在类
+     * @param typeName  类型名称
+     * @param fieldName 变量名
      * @return Field
-     */
-    @Deprecated
-    public static void setStaticObjectField(Class<?> clazz, Class<?> fieldType, String fieldName, Object value)
-            throws NoSuchFieldException, IllegalAccessException {
-        findFieldIfExists(clazz, fieldType, fieldName).set(null, value);
-    }
-
-    /**
-     * @param fieldType
-     * @param fieldName
-     * @param value
-     * @param obj
-     * @return Field
-     */
-    @Deprecated
-    public static void setObjectField(Object obj, Class<?> fieldType, String fieldName, Object value)
-            throws NoSuchFieldException, IllegalAccessException {
-        if (obj != null) {
-            Field field = findFieldIfExists(obj.getClass(), fieldType, fieldName);
-            if (field != null) {
-                field.set(obj, value);
-            }
-        }
-    }
-
-    private static Field findFieldIfExists(Class<?> clazz, Class<?> fieldType, String fieldName)
-            throws NoSuchFieldException {
-        return findFieldIfExists(clazz, fieldType.getName(), fieldName);
-    }
-
-    private static boolean isCallingFrom(String className) {
-        StackTraceElement[] stackTraceElements = Thread.currentThread()
-                .getStackTrace();
-        for (StackTraceElement element : stackTraceElements) {
-            if (element.getClassName()
-                    .contains(className)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isCallingFromEither(String... classname) {
-        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        for (StackTraceElement element : stackTraceElements) {
-            for (String name : classname) {
-                if (element.toString().contains(name)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param clazz
-     * @param typeName
-     * @param fieldName
-     * @return Field
+     * @throws NoSuchFieldException 如果找不到变量
      */
     public static Field findFieldIfExists(Class<?> clazz, String typeName, String fieldName) throws NoSuchFieldException {
         String fullFieldName = "name:[" + fieldName + "] type:[" + typeName + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
@@ -172,6 +111,7 @@ public class ReflectionUtils {
      * @param returnType 返回类型
      * @param methodName 方法名
      * @return Method
+     * @throws NoSuchMethodError 如果找不到方法
      */
     public static Method findMethodNoParam(Class<?> clazz, Class<?> returnType, String methodName) {
         String fullMethodName = "name:[" + methodName + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
@@ -192,6 +132,7 @@ public class ReflectionUtils {
      * @param methodName     方法名
      * @param parameterTypes 方法参数类型数组
      * @return Method
+     * @throws NoSuchMethodError 如果找不到方法
      */
     public static Method findMethodBestMatch(Class<?> clazz, Class<?> returnType, String methodName, Class<?>... parameterTypes) {
         String fullMethodName = "name:[" + methodName + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder";
@@ -210,6 +151,7 @@ public class ReflectionUtils {
      * @param clazz          构造类所在类
      * @param parameterTypes 构造类方法参数类型数组
      * @return Constructor
+     * @throws NoSuchMethodError 如果找不到构造类
      */
     public static Constructor<?> findConstructorExact(Class<?> clazz, Class<?>... parameterTypes) {
         String fullConstructorName = "paramType:[" + getParametersString(parameterTypes) + "in Class [" + clazz.getName() + "] by YukiHookAPI#finder";

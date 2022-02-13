@@ -9,7 +9,13 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
     sourceSets.main { java.srcDir("src/api/kotlin") }
+    withJavadocJar()
     withSourcesJar()
+}
+
+javadoc {
+    options.addStringOption("charset", "UTF-8")
+    if (JavaVersion.current().isJava9Compatible()) options.addBooleanOption('html5', true)
 }
 
 kotlin { sourceSets.main { kotlin.srcDir("src/api/kotlin") } }
@@ -63,14 +69,8 @@ publishing {
                 url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             }
             credentials {
-                BufferedReader buff_USERNAME = new BufferedReader(new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/OSSRH_USERNAME"))
-                String OSSRH_USERNAME = buff_USERNAME.readLine()
-                buff_USERNAME.close()
-                BufferedReader buff_PASSWORD = new BufferedReader(new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/OSSRH_PASSWORD"))
-                String OSSRH_PASSWORD = buff_PASSWORD.readLine()
-                buff_PASSWORD.close()
-                username = OSSRH_USERNAME
-                password = OSSRH_PASSWORD
+                username = getFileContent("OSSRH_USERNAME")
+                password = getFileContent("OSSRH_PASSWORD")
             }
         }
     }
@@ -78,4 +78,13 @@ publishing {
 
 signing {
     sign(publishing.publications.mavenJava)
+}
+
+private static String getFileContent(String name) {
+    FileReader reader = new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/" + name)
+    BufferedReader buff = new BufferedReader(reader)
+    String result = buff.readLine()
+    buff.close()
+    reader.close()
+    return result
 }

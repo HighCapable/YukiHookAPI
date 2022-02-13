@@ -1,4 +1,4 @@
-# Yuki Hook API (完善中)
+# Yuki Hook API
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
@@ -49,7 +49,6 @@
 
 # Get Started
 
-- ❗相关依赖暂未上传 Maven，将在稍后完成。
 - 你可以点击[快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)，集成 `YukiHookAPI` 并开始使用。
 - 更多使用教程及 API 文档请[前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki)进行查看。
 
