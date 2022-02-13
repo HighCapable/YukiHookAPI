@@ -7,6 +7,8 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
     sourceSets.main { java.srcDir("src/api/kotlin") }
+    withJavadocJar()
+    withSourcesJar()
 }
 
 kotlin { sourceSets.main { kotlin.srcDir("src/api/kotlin") } }
