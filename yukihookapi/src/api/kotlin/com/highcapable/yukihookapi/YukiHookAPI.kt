@@ -61,7 +61,7 @@ object YukiHookAPI {
     /**
      * 预设的 Xposed 模块包名
      *
-     * - ❗请勿手动修改 - 会引发未知异常
+     * - ❗这是私有 API - 请勿手动修改 - 会引发未知异常
      */
     @DoNotUseField
     var modulePackageName = ""
