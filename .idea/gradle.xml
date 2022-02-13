@@ -10,7 +10,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/demo-app" />
+            <option value="$PROJECT_DIR$/demo-module" />
             <option value="$PROJECT_DIR$/yukihookapi" />
             <option value="$PROJECT_DIR$/yukihookapi-ksp-xposed" />
           </set>
