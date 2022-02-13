@@ -19,6 +19,9 @@ dependencies {
     ksp 'dev.zacsweers.autoservice:auto-service-ksp:1.0.0'
 }
 
+group = 'com.highcapable.yukihookapi'
+version = '1.0'
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -58,8 +61,14 @@ publishing {
                 url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             }
             credentials {
-                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
-                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+                BufferedReader buff_USERNAME = new BufferedReader(new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/OSSRH_USERNAME"))
+                String OSSRH_USERNAME = buff_USERNAME.readLine()
+                buff_USERNAME.close()
+                BufferedReader buff_PASSWORD = new BufferedReader(new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/OSSRH_PASSWORD"))
+                String OSSRH_PASSWORD = buff_PASSWORD.readLine()
+                buff_PASSWORD.close()
+                username = OSSRH_USERNAME
+                password = OSSRH_PASSWORD
             }
         }
     }
