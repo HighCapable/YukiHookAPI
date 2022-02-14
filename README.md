@@ -79,7 +79,8 @@ class MainHook : IXposedHookLoadPackage {
 
 自 `Kotlin` 作为 Android 主要开发语言以来，这套 API 用起来确实已经不是很优雅了。<br/><br/>
 有没有什么 <b>好用、轻量、优雅</b> 的解决办法呢？<br/><br/>
-本着这样的想法，于是 `YukiHookAPI` 就这样诞生了，我们只需要编写少量的代码，一切时间开销和花费交给自动化处理。
+本着这样的想法，于是 `YukiHookAPI` 就这样诞生了。<br/><br/>
+现在，我们只需要编写少量的代码，一切时间开销和花费交给自动化处理。
 
 - 示例如下
 
@@ -108,12 +109,12 @@ class MainHook : YukiHookXposedInitProxy {
 }
 ```
 
-你没有看错，仅仅就需要这几行代码，就一切安排妥当。<br/><br/>
+是的，你没有看错，仅仅就需要这几行代码，就一切安排妥当。<br/><br/>
 代码量少，逻辑清晰，借助高效强大的 `YukiHookAPI`，你就可以实现一个非常简单的 Xposed 模块。
 
 # Get Started
 
-- 你可以点击[快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)，集成 `YukiHookAPI` 并开始使用。
+- 你可以点击[快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)，在 `Gradle` 中集成 `YukiHookAPI` 并开始使用。
 - 更多使用教程及 API 文档请[前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki)进行查看。
 
 # Donate
