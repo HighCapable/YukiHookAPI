@@ -117,17 +117,17 @@ class MainHook : YukiHookXposedInitProxy {
 - 你可以点击 [快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)，在 `Gradle` 中集成 `YukiHookAPI` 并开始使用。
 - 更多使用教程及 API 文档请 [前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki) 进行查看。
 
+# Changelog
+
+- v1.0 <br/>
+  首个版本提交至 Maven。
+- v1.0 <br/>
+  首个版本提交至 Maven。
+
 # Donate
 
 - 工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。<br/><br/>
   <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/wechat_code.jpg" width = "200" height = "200"/>
-  
-# Changelog
-
-<b>v1.0</b><br/><br/>
-- 首个版本提交至 Maven。
-<b>v1.0</b><br/><br/>
-- 首个版本提交至 Maven。
 
 # License
 
