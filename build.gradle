@@ -1,28 +1,36 @@
-buildscript {
-    ext.kotlin_version = "1.6.10"
-    repositories {
-        google()
-        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
-        maven { url "https://www.jitpack.io" }
-        maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
-        mavenCentral()
-    }
-    dependencies {
-        classpath "com.android.tools.build:gradle:7.0.4"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+//file:noinspection unused
+plugins {
+    id 'com.android.application' version '7.1.1' apply false
+    id 'com.android.library' version '7.1.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
 }
 
-allprojects {
-    repositories {
-        google()
-        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
-        maven { url "https://www.jitpack.io" }
-        maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
-        mavenCentral()
-    }
+ext {
+    kotlinVersion = "1.6.10"
+    devId = "0"
+    devUser = "fankesyooni"
+    userEmail = 'qzmmcn@163.com'
+    groupId = "com.highcapable.yukihookapi"
+    apiVersion = "1.0"
+    repoName = "YukiHookAPI"
+    repoDescription = "An efficient Kotlin version of the Xposed Hook API."
+    licenceName = "MIT License"
+    licenceUrl = "https://github.com/fankes/YukiHookAPI/blob/master/LICENSE"
+    website = "https://github.com/fankes/YukiHookAPI"
+    githubConnection = 'scm:git:git://github.com/path/to/repo.git'
+    githubDeveloperConnection = 'scm:git:ssh://github.com/path/to/repo.git'
+    githubUrl = 'https://github.com/path/to/repo'
+    ossName = "OSSRH"
+    ossUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+}
+
+static String getFileContent(String name) {
+    FileReader reader = new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/" + name)
+    BufferedReader buff = new BufferedReader(reader)
+    String result = buff.readLine()
+    buff.close()
+    reader.close()
+    return result
 }
 
 task clean(type: Delete) {

@@ -27,8 +27,8 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.3.0'
 }
 
-group = 'com.highcapable.yukihookapi'
-version = '1.0'
+group = rootProject.ext.groupId
+version = rootProject.ext.apiVersion
 
 publishing {
     publications {
@@ -36,38 +36,34 @@ publishing {
             artifactId = 'api'
             from components.java
             pom {
-                name = 'YukiHookAPI'
-                description = 'An efficient Kotlin version of the Xposed Hook API.'
-                url = 'https://github.com/fankes/YukiHookAPI'
+                name = rootProject.ext.repoName
+                description = rootProject.ext.repoDescription
+                url = rootProject.ext.website
                 licenses {
                     license {
-                        name = 'MIT License'
-                        url = 'https://github.com/fankes/YukiHookAPI/blob/master/LICENSE'
+                        name = rootProject.ext.licenceName
+                        url = rootProject.ext.licenceUrl
                     }
                 }
                 developers {
                     developer {
-                        id = '0'
-                        name = 'fankesyooni'
-                        email = 'qzmmcn@163.com'
+                        id = rootProject.ext.devId
+                        name = rootProject.ext.devUser
+                        email = rootProject.ext.userEmail
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/path/to/repo.git'
-                    developerConnection = 'scm:git:ssh://github.com/path/to/repo.git'
-                    url = 'https://github.com/path/to/repo'
+                    connection = rootProject.ext.githubConnection
+                    developerConnection = rootProject.ext.githubDeveloperConnection
+                    url = rootProject.ext.githubUrl
                 }
             }
         }
     }
     repositories {
         maven {
-            name = "OSSRH"
-            if (project.version.toString().endsWith("-SNAPSHOT")) {
-                url = "https://s01.oss.sonatype.org/content/repositories/snapshots"
-            } else {
-                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            }
+            name = rootProject.ext.ossName
+            url = rootProject.ext.ossUrl
             credentials {
                 username = getFileContent("OSSRH_USERNAME")
                 password = getFileContent("OSSRH_PASSWORD")
@@ -78,13 +74,4 @@ publishing {
 
 signing {
     sign(publishing.publications.mavenJava)
-}
-
-private static String getFileContent(String name) {
-    FileReader reader = new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/" + name)
-    BufferedReader buff = new BufferedReader(reader)
-    String result = buff.readLine()
-    buff.close()
-    reader.close()
-    return result
 }
