@@ -85,7 +85,7 @@ fun String.hasClass(loader: ClassLoader?) = try {
  */
 fun Class<*>.hasMethod(name: String, vararg paramType: Class<*>): Boolean =
     try {
-        getDeclaredMethod(name, *paramType)
+        obtainMethod(name, *paramType)
         true
     } catch (_: Throwable) {
         false
@@ -145,7 +145,9 @@ fun Class<*>.modifyField(any: Any?, name: String, value: Any?) {
  * @throws NoSuchMethodError
  */
 fun Class<*>.obtainMethod(name: String, vararg paramType: Class<*>): Method? =
-    getDeclaredMethod(name, *paramType).apply { isAccessible = true }
+    if (paramType.isNotEmpty())
+        getDeclaredMethod(name, *paramType).apply { isAccessible = true }
+    else getDeclaredMethod(name).apply { isAccessible = true }
 
 /**
  * 查找并得到构造类
@@ -154,7 +156,9 @@ fun Class<*>.obtainMethod(name: String, vararg paramType: Class<*>): Method? =
  * @throws NoSuchMethodError
  */
 fun Class<*>.obtainConstructor(vararg paramType: Class<*>): Constructor<out Any>? =
-    getDeclaredConstructor(*paramType).apply { isAccessible = true }
+    if (paramType.isNotEmpty())
+        getDeclaredConstructor(*paramType).apply { isAccessible = true }
+    else getDeclaredConstructor().apply { isAccessible = true }
 
 /**
  * 执行静态方法
