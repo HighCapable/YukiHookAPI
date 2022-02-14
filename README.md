@@ -79,7 +79,7 @@ class MainHook : IXposedHookLoadPackage {
 
 自 `Kotlin` 作为 Android 主要开发语言以来，这套 API 用起来确实已经不是很优雅了。<br/><br/>
 有没有什么 <b>好用、轻量、优雅</b> 的解决办法呢？<br/><br/>
-本着这样的想法，于是 `YukiHookAPI` 就这样诞生了。<br/><br/>
+本着这样的想法，`YukiHookAPI` 诞生了。<br/><br/>
 现在，我们只需要编写少量的代码，一切时间开销和花费交给自动化处理。
 
 - 示例如下
