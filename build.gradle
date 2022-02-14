@@ -8,7 +8,7 @@ plugins {
 ext {
     devId = "0"
     devUser = "fankesyooni"
-    userEmail = 'qzmmcn@163.com'
+    userEmail = "qzmmcn@163.com"
     groupId = "com.highcapable.yukihookapi"
     apiVersion = "1.0"
     repoName = "YukiHookAPI"
@@ -16,9 +16,9 @@ ext {
     licenceName = "MIT License"
     licenceUrl = "https://github.com/fankes/YukiHookAPI/blob/master/LICENSE"
     website = "https://github.com/fankes/YukiHookAPI"
-    githubConnection = 'scm:git:git://github.com/path/to/repo.git'
-    githubDeveloperConnection = 'scm:git:ssh://github.com/path/to/repo.git'
-    githubUrl = 'https://github.com/path/to/repo'
+    githubConnection = "scm:git:git://github.com/path/to/repo.git"
+    githubDeveloperConnection = "scm:git:ssh://github.com/path/to/repo.git"
+    githubUrl = "https://github.com/path/to/repo"
     ossName = "OSSRH"
     ossUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
 }
