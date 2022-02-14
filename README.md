@@ -114,8 +114,8 @@ class MainHook : YukiHookXposedInitProxy {
 
 # Get Started
 
-- 你可以点击[快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)，在 `Gradle` 中集成 `YukiHookAPI` 并开始使用。
-- 更多使用教程及 API 文档请[前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki)进行查看。
+- 你可以点击 [快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)，在 `Gradle` 中集成 `YukiHookAPI` 并开始使用。
+- 更多使用教程及 API 文档请 [前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki) 进行查看。
 
 # Donate
 
