@@ -119,7 +119,7 @@ class MainHook : YukiHookXposedInitProxy {
 
 # Changelog
 
-- v1.0 <br/>
+- 1.0 <br/>
   首个版本提交至 Maven。
 
 # Donate
