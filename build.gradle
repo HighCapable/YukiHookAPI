@@ -6,7 +6,6 @@ plugins {
 }
 
 ext {
-    kotlinVersion = "1.6.10"
     devId = "0"
     devUser = "fankesyooni"
     userEmail = 'qzmmcn@163.com'
