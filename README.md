@@ -121,8 +121,6 @@ class MainHook : YukiHookXposedInitProxy {
 
 - v1.0 <br/>
   首个版本提交至 Maven。
-- v1.0 <br/>
-  首个版本提交至 Maven。
 
 # Donate
 
