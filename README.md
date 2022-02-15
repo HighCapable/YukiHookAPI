@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.1-green)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
 <br/>
@@ -121,6 +121,11 @@ class MainHook : YukiHookXposedInitProxy {
 
 - 1.0 <br/>
   首个版本提交至 Maven。
+- 1.0.1 <br/>
+  `RemedyPlan` 增加 `onFind` 功能；<br/>
+  整合并修改了部分反射 API 代码；<br/>
+  增加了 `type` 中的 `java` 类型；<br/>
+  修复忽略错误在控制台仍然输出的问题。
 
 # Donate
 
