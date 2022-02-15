@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core.finder
 
+import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.log.loggerE
@@ -93,7 +94,11 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
             }
             Result()
         } catch (e: Throwable) {
-            loggerE(msg = "NoSuchField happend in [$classSet] [${hookInstance.tag}]", e = e)
+            Thread {
+                SystemClock.sleep(10)
+                if (hookInstance.isNotIgnoredHookingFailure)
+                    loggerE(msg = "NoSuchField happend in [$classSet] [${hookInstance.tag}]", e = e)
+            }.start()
             Result(isNoSuch = true, e)
         }
     }

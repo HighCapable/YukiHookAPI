@@ -318,8 +318,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                 (hookClass.throwable ?: Throwable("Failed Hooked Class [${hookClass.name}]")).also {
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
-                    if (onHookingFailureCallback == null && onAllFailureCallback == null)
-                        onHookFailureMsg(it)
+                    if (isNotIgnoredHookingFailure) onHookFailureMsg(it)
                 }
                 return
             }
@@ -335,8 +334,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                         } catch (e: Throwable) {
                             onConductFailureCallback?.invoke(param, e)
                             onAllFailureCallback?.invoke(e)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                onHookFailureMsg(e)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
                             null
                         }
                     }
@@ -355,8 +353,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                onHookFailureMsg(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
                         }
                     }
                 }
@@ -371,8 +368,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null)
-                                onHookFailureMsg(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
                         }
                     }
                 }
@@ -387,13 +383,13 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                         }.onFailure {
                             onHookingFailureCallback?.invoke(it)
                             onAllFailureCallback?.invoke(it)
-                            if (onHookingFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                            if (isNotIgnoredHookingFailure) onHookFailureMsg(it)
                         }
                     }
                 else {
                     onHookingFailureCallback?.invoke(Throwable())
                     onAllFailureCallback?.invoke(Throwable())
-                    if (onHookingFailureCallback == null && onAllFailureCallback == null)
+                    if (isNotIgnoredHookingFailure)
                         loggerE(
                             msg = if (isHookMemberSetup)
                                 "Hooked Member with a finding error in Class [$hookClass] [$tag]"
@@ -414,8 +410,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                 }
             }.onFailure {
                 onAllFailureCallback?.invoke(it)
-                if (onHookingFailureCallback == null && onAllFailureCallback == null)
-                    loggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
+                if (isNotIgnoredHookingFailure) loggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
             }
         }
 
@@ -433,6 +428,12 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         private fun onHookFailureMsg(throwable: Throwable) =
             loggerE(msg = "Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
+
+        /**
+         * 判断是否没有设置 Hook 过程中的任何异常拦截
+         * @return [Boolean] 没有设置任何异常拦截
+         */
+        internal val isNotIgnoredHookingFailure get() = onHookingFailureCallback == null && onAllFailureCallback == null
 
         override fun toString() = "${hookClass.name}$member$tag#YukiHookAPI"
 

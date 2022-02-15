@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core.finder
 
+import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.log.loggerE
@@ -48,6 +49,9 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
 
     /** [Constructor] 参数数组 */
     private var params: Array<out Class<*>>? = null
+
+    /** 是否使用了 [RemedyPlan] */
+    private var isUsingRemedyPlan = false
 
     /**
      * [Constructor] 参数
@@ -105,9 +109,15 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
      * 发生错误时输出日志
      * @param msg 消息日志
      * @param throwable 错误
+     * @param isAlwaysPrint 忽略条件每次都打印错误
      */
-    private fun onFailureMsg(msg: String = "", throwable: Throwable? = null) =
-        loggerE(msg = "NoSuchConstructor happend in [$hookClass] $msg [${hookInstance.tag}]", e = throwable)
+    private fun onFailureMsg(msg: String = "", throwable: Throwable? = null, isAlwaysPrint: Boolean = false) {
+        Thread {
+            SystemClock.sleep(10)
+            if ((hookInstance.isNotIgnoredHookingFailure && !isUsingRemedyPlan) || isAlwaysPrint)
+                loggerE(msg = "NoSuchConstructor happend in [$hookClass] $msg [${hookInstance.tag}]", e = throwable)
+        }.start()
+    }
 
     /**
      * [Constructor] 重查找实现类
@@ -152,13 +162,14 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
                         return@run
                     }.onFailure {
                         lastError = it
-                        onFailureMsg(msg = "trying ${p + 1} times by RemedyPlan --> $it")
+                        onFailureMsg(msg = "trying ${p + 1} times by RemedyPlan --> $it", isAlwaysPrint = true)
                     }
                 }
                 if (!isFindSuccess) {
                     onFailureMsg(
                         msg = "trying ${remedyPlans.size} times and all failure by RemedyPlan",
-                        throwable = lastError
+                        throwable = lastError,
+                        isAlwaysPrint = true
                     )
                     remedyPlans.clear()
                 }
@@ -190,6 +201,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
          * @return [Result] 可继续向下监听
          */
         fun remedys(initiate: RemedyPlan.() -> Unit): Result {
+            isUsingRemedyPlan = true
             if (isNoSuch) RemedyPlan().apply(initiate).build()
             return this
         }
