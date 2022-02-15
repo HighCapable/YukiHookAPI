@@ -65,7 +65,7 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
     /**
      * [Field] 类型
      *
-     * - ❗必须设置
+     * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
      */
     var type: Class<*>? = null
 
@@ -82,13 +82,12 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
             loggerE(msg = "Field name cannot be empty in Class [$classSet] [${hookInstance.tag}]")
             Result(isNoSuch = true)
         }
-        type == null -> {
-            loggerE(msg = "Field type cannot be null in Class [$classSet] [${hookInstance.tag}]")
-            Result(isNoSuch = true)
-        }
         else -> try {
             runBlocking {
-                fieldInstance = ReflectionUtils.findFieldIfExists(classSet, type?.name, name)
+                fieldInstance =
+                    if (type != null)
+                        ReflectionUtils.findFieldIfExists(classSet, type?.name, name)
+                    else classSet?.getDeclaredField(name)?.apply { isAccessible = true }
             }.result {
                 hookInstance.onHookLogMsg(msg = "Find Field [${fieldInstance}] takes ${it}ms [${hookInstance.tag}]")
             }
