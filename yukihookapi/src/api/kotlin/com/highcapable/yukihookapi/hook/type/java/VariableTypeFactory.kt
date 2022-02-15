@@ -145,7 +145,7 @@ val ArrayClass get() = Array::class.java
 /**
  * 获得 [Any] - [Array] 类型
  *
- * Java 中表示：object[]
+ * Java 中表示：Object[]
  * @return [Class]
  */
 val AnyArrayClass get() = ArrayClass(AnyType)
