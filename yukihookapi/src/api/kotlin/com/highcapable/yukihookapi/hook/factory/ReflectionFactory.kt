@@ -25,13 +25,13 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "EXPERIMENTAL_API_USAGE")
 
 package com.highcapable.yukihookapi.hook.factory
 
 import com.highcapable.yukihookapi.hook.bean.HookClass
+import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
 import java.lang.reflect.Constructor
-import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 /**
@@ -81,73 +81,29 @@ fun String.hasClass(loader: ClassLoader?) = try {
  * 查找方法是否存在
  * @param name 名称
  * @param paramType params
+ * @param returnType 返回类型 - 不填默认模糊
  * @return [Boolean] 是否存在
  */
-fun Class<*>.hasMethod(name: String, vararg paramType: Class<*>): Boolean =
+fun Class<*>.hasMethod(name: String, vararg paramType: Class<*>, returnType: Class<*>? = null): Boolean =
     try {
-        obtainMethod(name, *paramType)
+        method(name, *paramType, returnType = returnType)
         true
     } catch (_: Throwable) {
         false
     }
 
 /**
- * 查找并得到静态 [Field] 的实例
- * @param name 名称
- * @return [T] 实例对象 or null
- * @throws NoSuchFieldError
- */
-inline fun <reified T> Class<*>.obtainStaticFieldAny(name: String): T? =
-    getDeclaredField(name).apply { isAccessible = true }[null] as? T?
-
-/**
- * 查找并得到 [Field] 的实例
- * @param any 对象
- * @param name 名称
- * @return [T] 实例对象 or null
- * @throws NoSuchFieldError
- */
-inline fun <reified T> Class<*>.obtainFieldAny(any: Any?, name: String): T? =
-    getDeclaredField(name).apply { isAccessible = true }[any] as? T?
-
-/**
- * 修改静态 [Field] 的实例内容
- * @param name 名称
- * @param value 值
- * @throws NoSuchFieldError
- */
-fun Class<*>.modifyStaticField(name: String, value: Any?) {
-    getDeclaredField(name).apply {
-        isAccessible = true
-        set(null, value)
-    }
-}
-
-/**
- * 修改 [Field] 的实例内容
- * @param any 对象
- * @param name 名称
- * @param value 值
- * @throws NoSuchFieldError
- */
-fun Class<*>.modifyField(any: Any?, name: String, value: Any?) {
-    getDeclaredField(name).apply {
-        isAccessible = true
-        set(any, value)
-    }
-}
-
-/**
  * 查找并得到方法
  * @param name 方法名称
  * @param paramType params
+ * @param returnType 返回类型 - 不填默认模糊
  * @return [Method] or null
  * @throws NoSuchMethodError
  */
-fun Class<*>.obtainMethod(name: String, vararg paramType: Class<*>): Method? =
+fun Class<*>.method(name: String, vararg paramType: Class<*>, returnType: Class<*>? = null): Method? =
     if (paramType.isNotEmpty())
-        getDeclaredMethod(name, *paramType).apply { isAccessible = true }
-    else getDeclaredMethod(name).apply { isAccessible = true }
+        ReflectionUtils.findMethodBestMatch(this, returnType, name, *paramType)
+    else ReflectionUtils.findMethodNoParam(this, returnType, name)
 
 /**
  * 查找并得到构造类
@@ -155,30 +111,28 @@ fun Class<*>.obtainMethod(name: String, vararg paramType: Class<*>): Method? =
  * @return [Constructor] or null
  * @throws NoSuchMethodError
  */
-fun Class<*>.obtainConstructor(vararg paramType: Class<*>): Constructor<out Any>? =
+fun Class<*>.constructor(vararg paramType: Class<*>): Constructor<out Any>? =
     if (paramType.isNotEmpty())
-        getDeclaredConstructor(*paramType).apply { isAccessible = true }
-    else getDeclaredConstructor().apply { isAccessible = true }
+        ReflectionUtils.findConstructorExact(this, *paramType)
+    else ReflectionUtils.findConstructorExact(this)
 
 /**
  * 执行静态方法
  * @param param 方法参数
- * @return [T]
- * @throws IllegalStateException 如果 [T] 类型错误
+ * @return [T] or null
  */
-inline fun <reified T> Method.invokeStatic(vararg param: Any?) =
+inline fun <reified T> Method.callStatic(vararg param: Any?) =
     if (param.isNotEmpty())
-        invoke(null, *param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
-    else invoke(null) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+        invoke(null, *param) as? T?
+    else invoke(null) as? T?
 
 /**
  * 执行方法
- * @param any 目标对象
+ * @param instance 目标对象
  * @param param 方法参数
- * @return [T]
- * @throws IllegalStateException 如果 [T] 类型错误
+ * @return [T] or null
  */
-inline fun <reified T> Method.invokeAny(any: Any?, vararg param: Any?) =
+inline fun <reified T> Method.call(instance: Any?, vararg param: Any?) =
     if (param.isNotEmpty())
-        invoke(any, *param) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
-    else invoke(any) as? T? ?: error("Method ReturnType cannot cast to ${T::class.java}")
+        invoke(instance, *param) as? T?
+    else invoke(instance) as? T?
