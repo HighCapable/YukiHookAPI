@@ -188,18 +188,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param name 可填入多个类名 - 自动匹配
      * @return [HookClass]
      */
-    fun findClass(vararg name: String) = findClass(VariousClass(*name))
-
-    /**
-     * 通过 [appClassLoader] 查询并装载 [VariousClass]
-     * @param various 实例
-     * @return [HookClass]
-     */
-    fun findClass(various: VariousClass) = try {
-        various.clazz.hookClass
-    } catch (e: Throwable) {
-        HookClass(name = "VariousClass", throwable = Throwable(e.message))
-    }
+    fun findClass(vararg name: String) = VariousClass(*name).hookClass
 
     /**
      * Hook 方法、构造类
@@ -214,6 +203,24 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      */
     fun HookClass.hook(initiate: YukiHookCreater.() -> Unit) =
         YukiHookCreater(packageParam = thisParam, hookClass = bind()).apply(initiate).hook()
+
+    /**
+     * Hook 方法、构造类
+     * @param initiate 方法体
+     */
+    fun VariousClass.hook(initiate: YukiHookCreater.() -> Unit) =
+        YukiHookCreater(packageParam = thisParam, hookClass = hookClass).apply(initiate).hook()
+
+    /**
+     * [VariousClass] 转换为 [HookClass] 并绑定到 [appClassLoader]
+     * @return [HookClass]
+     */
+    private val VariousClass.hookClass
+        get() = try {
+            clazz.hookClass
+        } catch (e: Throwable) {
+            HookClass(name = "VariousClass", throwable = Throwable(e.message))
+        }
 
     /**
      * 将目标 [Class] 绑定到 [appClassLoader]
