@@ -122,9 +122,9 @@ class MainHook : YukiHookXposedInitProxy {
 - 1.0 <br/>
   首个版本提交至 Maven。
 - 1.0.1 <br/>
-  `RemedyPlan` 增加 `onFind` 功能；<br/>
-  整合并修改了部分反射 API 代码；<br/>
-  增加了 `type` 中的 `java` 类型；<br/>
+  `RemedyPlan` 增加 `onFind` 功能；<br/><br/>
+  整合并修改了部分反射 API 代码；<br/><br/>
+  增加了 `type` 中的 `java` 类型；<br/><br/>
   修复忽略错误在控制台仍然输出的问题。
 
 # Donate
