@@ -56,7 +56,7 @@ import java.util.zip.ZipOutputStream
  * @param type 类型
  * @return [Class]
  */
-fun AnyArrayClass(type: Class<*>) = java.lang.reflect.Array.newInstance(type, 0).javaClass
+fun ArrayClass(type: Class<*>) = java.lang.reflect.Array.newInstance(type, 0).javaClass
 
 /**
  * 获得 [Any] 类型
@@ -143,12 +143,20 @@ val ByteClass get() = Byte::class.java
 val ArrayClass get() = Array::class.java
 
 /**
+ * 获得 [Any] - [Array] 类型
+ *
+ * Java 中表示：object[]
+ * @return [Class]
+ */
+val AnyArrayClass get() = ArrayClass(AnyType)
+
+/**
  * 获得 [Byte] - [Array] 类型
  *
  * Java 中表示：byte[]
  * @return [Class]
  */
-val ByteArrayClass get() = AnyArrayClass(ByteClass)
+val ByteArrayClass get() = ArrayClass(ByteClass)
 
 /**
  * 获得 [Int] - [Array] 类型
@@ -156,7 +164,7 @@ val ByteArrayClass get() = AnyArrayClass(ByteClass)
  * Java 中表示：int[]
  * @return [Class]
  */
-val IntArrayClass get() = AnyArrayClass(IntType)
+val IntArrayClass get() = ArrayClass(IntType)
 
 /**
  * 获得 [String] - [Array] 类型
@@ -164,7 +172,7 @@ val IntArrayClass get() = AnyArrayClass(IntType)
  * Java 中表示：String[]
  * @return [Class]
  */
-val StringArrayClass get() = AnyArrayClass(StringType)
+val StringArrayClass get() = ArrayClass(StringType)
 
 /**
  * 获得 [Long] - [Array] 类型
@@ -172,7 +180,7 @@ val StringArrayClass get() = AnyArrayClass(StringType)
  * Java 中表示：long[]
  * @return [Class]
  */
-val LongArrayClass get() = AnyArrayClass(LongType)
+val LongArrayClass get() = ArrayClass(LongType)
 
 /**
  * 获得 [Short] - [Array] 类型
@@ -180,7 +188,7 @@ val LongArrayClass get() = AnyArrayClass(LongType)
  * Java 中表示：short[]
  * @return [Class]
  */
-val ShortArrayClass get() = AnyArrayClass(ShortType)
+val ShortArrayClass get() = ArrayClass(ShortType)
 
 /**
  * 获得 [Float] - [Array] 类型
@@ -188,7 +196,7 @@ val ShortArrayClass get() = AnyArrayClass(ShortType)
  * Java 中表示：float[]
  * @return [Class]
  */
-val FloatArrayClass get() = AnyArrayClass(FloatType)
+val FloatArrayClass get() = ArrayClass(FloatType)
 
 /**
  * 获得 [Double] - [Array] 类型
@@ -196,7 +204,7 @@ val FloatArrayClass get() = AnyArrayClass(FloatType)
  * Java 中表示：double[]
  * @return [Class]
  */
-val DoubleArrayClass get() = AnyArrayClass(DoubleType)
+val DoubleArrayClass get() = ArrayClass(DoubleType)
 
 /**
  * 获得 [Cloneable] 类型
