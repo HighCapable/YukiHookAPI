@@ -120,7 +120,7 @@ class MainHook : YukiHookXposedInitProxy {
 # Changelog
 
 - 1.0 <br/>
-  首个版本提交至 Maven。
+  首个版本提交至 Maven。<br/>
 - 1.0.1 <br/>
   `RemedyPlan` 增加 `onFind` 功能；<br/>
   整合并修改了部分反射 API 代码；<br/>
