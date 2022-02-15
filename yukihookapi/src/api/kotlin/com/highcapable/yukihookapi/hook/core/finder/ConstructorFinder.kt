@@ -112,10 +112,11 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
      * @param isAlwaysPrint 忽略条件每次都打印错误
      */
     private fun onFailureMsg(msg: String = "", throwable: Throwable? = null, isAlwaysPrint: Boolean = false) {
-        Thread {
+        fun print() = loggerE(msg = "NoSuchConstructor happend in [$hookClass] $msg [${hookInstance.tag}]", e = throwable)
+        if (isAlwaysPrint) print()
+        else Thread {
             SystemClock.sleep(10)
-            if ((hookInstance.isNotIgnoredHookingFailure && !isUsingRemedyPlan) || isAlwaysPrint)
-                loggerE(msg = "NoSuchConstructor happend in [$hookClass] $msg [${hookInstance.tag}]", e = throwable)
+            if (hookInstance.isNotIgnoredHookingFailure && !isUsingRemedyPlan) print()
         }.start()
     }
 
@@ -127,7 +128,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
     inner class RemedyPlan {
 
         /** 失败尝试次数数组 */
-        private val remedyPlans = HashSet<ConstructorFinder>()
+        private val remedyPlans = HashSet<Pair<ConstructorFinder, Result>>()
 
         /**
          * 创建需要重新查找的 [Constructor]
@@ -138,7 +139,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
          * @param initiate 方法体
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit) =
-            remedyPlans.add(ConstructorFinder(hookInstance, hookClass).apply(initiate))
+            Result().apply { remedyPlans.add(Pair(ConstructorFinder(hookInstance, hookClass).apply(initiate), this)) }
 
         /**
          * 开始重查找
@@ -153,11 +154,12 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
                 remedyPlans.forEachIndexed { p, it ->
                     runCatching {
                         runBlocking {
-                            hookInstance.member = it.result
+                            hookInstance.member = it.first.result
                         }.result {
                             hookInstance.onHookLogMsg(msg = "Find Constructor [${hookInstance.member}] takes ${it}ms [${hookInstance.tag}]")
                         }
                         isFindSuccess = true
+                        it.second.onFindCallback?.invoke(hookInstance.member as Constructor<*>)
                         hookInstance.onHookLogMsg(msg = "Constructor [${hookInstance.member}] trying ${p + 1} times success by RemedyPlan [${hookInstance.tag}]")
                         return@run
                     }.onFailure {
@@ -174,6 +176,25 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
                     remedyPlans.clear()
                 }
             } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookInstance.tag}]")
+        }
+
+        /**
+         * [RemedyPlan] 结果实现类
+         *
+         * 可在这里处理是否成功的回调
+         */
+        inner class Result {
+
+            /** 找到结果时的回调 */
+            internal var onFindCallback: (Constructor<*>.() -> Unit)? = null
+
+            /**
+             * 当找到结果时
+             * @param initiate 回调
+             */
+            fun onFind(initiate: Constructor<*>.() -> Unit) {
+                onFindCallback = initiate
+            }
         }
     }
 
