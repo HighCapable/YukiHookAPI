@@ -133,6 +133,8 @@ class MainHook : YukiHookXposedInitProxy {
   
 # Cooperation Projects
 
+以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
+
 | Repository                                                        | Developer                                |
 | ----------------------------------------------------------------- | ---------------------------------------- |
 | [TSBattery](https://github.com/fankes/TSBattery)                  | [fankesyooni](https://github.com/fankes) |
