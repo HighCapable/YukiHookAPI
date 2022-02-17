@@ -28,6 +28,7 @@ ext {
  *
  * 若编译失败请将路径替换为自己的或置空
  * @param name
+ * @return [String]
  */
 static String getFileContent(String name) {
     FileReader reader = new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/" + name)
