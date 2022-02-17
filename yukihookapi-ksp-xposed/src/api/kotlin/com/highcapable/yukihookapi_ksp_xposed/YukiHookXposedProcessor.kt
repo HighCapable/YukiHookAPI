@@ -162,24 +162,29 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             environment {
                 if (codePath.isBlank()) error(msg = "Project CodePath not available")
                 if (sourcePath.isBlank()) error(msg = "Project SourcePath not available")
-                val projectPath = when (File.separator) {
-                    "\\" -> sourcePath.replace("/", "\\")
-                    "/" -> sourcePath.replace("\\", "/")
+                val separator = when {
+                    codePath.contains("\\") -> "\\"
+                    codePath.contains("/") -> "/"
+                    else -> kotlin.error("Unix File Separator unknown")
+                }
+                val projectPath = when  {
+                    codePath.contains("\\") -> sourcePath.replace("/", "\\")
+                    codePath.contains("/") -> sourcePath.replace("\\", "/")
                     else -> kotlin.error("Unix File Separator unknown")
                 }.let {
                     if (codePath.contains(it))
                         codePath.split(it)[0] + it
                     else error(msg = "Project Source Path \"$it\" not matched")
                 }
-                File("$projectPath${File.separator}assets").also { assFile ->
-                    if (File("$projectPath${File.separator}AndroidManifest.xml").exists()) {
+                File("$projectPath${separator}assets").also { assFile ->
+                    if (File("$projectPath${separator}AndroidManifest.xml").exists()) {
                         if (!assFile.exists() || !assFile.isDirectory) {
                             assFile.delete()
                             assFile.mkdirs()
                         }
-                        File("${assFile.absolutePath}${File.separator}xposed_init")
+                        File("${assFile.absolutePath}${separator}xposed_init")
                             .writeText(text = "$packageName.$className$xposedClassShortName")
-                        File("${assFile.absolutePath}${File.separator}yukihookapi_init")
+                        File("${assFile.absolutePath}${separator}yukihookapi_init")
                             .writeText(text = "$packageName.$className")
                     } else error(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
                 }
