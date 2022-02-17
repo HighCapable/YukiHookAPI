@@ -130,6 +130,13 @@ class MainHook : YukiHookXposedInitProxy {
   修复 Windows 下无法找到项目路径的问题；<br/>
   移除部分反射 API，合并至 `BaseFinder` 进行整合；<br/>
   增加直接使用字符串创建 Hook 的方法。
+  
+# Cooperation Projects
+
+| Repository                                                        | Developer                                |
+| ----------------------------------------------------------------- | ---------------------------------------- |
+| [TSBattery](https://github.com/fankes/TSBattery)                  | [fankesyooni](https://github.com/fankes) |
+| [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon) | [fankesyooni](https://github.com/fankes) |
 
 # Donate
 
