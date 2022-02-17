@@ -23,6 +23,12 @@ ext {
     ossUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
 }
 
+/**
+ * 获取授权文件内容 - 用于 Maven 的提交
+ *
+ * 若编译失败请将路径替换为自己的或置空
+ * @param name
+ */
 static String getFileContent(String name) {
     FileReader reader = new FileReader("/Users/fankes/ProjectPath/AndroidStudioProjects/YukiHookAPI/.gradle/" + name)
     BufferedReader buff = new BufferedReader(reader)
