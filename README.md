@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.1-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.2-green)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
 <br/>
@@ -125,7 +125,11 @@ class MainHook : YukiHookXposedInitProxy {
   `RemedyPlan` 增加 `onFind` 功能；<br/>
   整合并修改了部分反射 API 代码；<br/>
   增加了 `type` 中的 `java` 类型；<br/>
-  修复忽略错误在控制台仍然输出的问题。
+  修复忽略错误在控制台仍然输出的问题。<br/><br/>
+- 1.0.2 <br/>
+  修复 Windows 下无法找到项目路径的问题；<br/>
+  移除部分反射 API，合并至 `BaseFinder` 进行整合；<br/>
+  增加直接使用字符串创建 Hook 的方法。
 
 # Donate
 
