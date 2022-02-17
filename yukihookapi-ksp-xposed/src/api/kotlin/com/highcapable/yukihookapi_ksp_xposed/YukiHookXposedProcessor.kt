@@ -162,12 +162,16 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             environment {
                 if (codePath.isBlank()) error(msg = "Project CodePath not available")
                 if (sourcePath.isBlank()) error(msg = "Project SourcePath not available")
+                /**
+                 * Gradle 在这里自动处理了 Windows 和 Unix 下的反斜杠路径问题
+                 * 为了防止万一还是做了一下反斜杠处理防止旧版本不支持此用法
+                 */
                 val separator = when {
                     codePath.contains("\\") -> "\\"
                     codePath.contains("/") -> "/"
                     else -> kotlin.error("Unix File Separator unknown")
                 }
-                val projectPath = when  {
+                val projectPath = when {
                     codePath.contains("\\") -> sourcePath.replace("/", "\\")
                     codePath.contains("/") -> sourcePath.replace("\\", "/")
                     else -> kotlin.error("Unix File Separator unknown")
