@@ -192,10 +192,23 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
 
     /**
      * Hook 方法、构造类
+     *
+     * - ❗为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
      * @param initiate 方法体
      */
-    fun Class<*>.hook(initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(packageParam = thisParam, hookClass = hookClass.bind()).apply(initiate).hook()
+    fun String.hook(initiate: YukiHookCreater.() -> Unit) = findClass(name = this).hook(initiate)
+
+    /**
+     * Hook 方法、构造类
+     * @param initiate 方法体
+     */
+    fun Class<*>.hook(initiate: YukiHookCreater.() -> Unit) = hookClass.hook(initiate)
+
+    /**
+     * Hook 方法、构造类
+     * @param initiate 方法体
+     */
+    fun VariousClass.hook(initiate: YukiHookCreater.() -> Unit) = hookClass.hook(initiate)
 
     /**
      * Hook 方法、构造类
@@ -203,13 +216,6 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      */
     fun HookClass.hook(initiate: YukiHookCreater.() -> Unit) =
         YukiHookCreater(packageParam = thisParam, hookClass = bind()).apply(initiate).hook()
-
-    /**
-     * Hook 方法、构造类
-     * @param initiate 方法体
-     */
-    fun VariousClass.hook(initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(packageParam = thisParam, hookClass = hookClass).apply(initiate).hook()
 
     /**
      * [VariousClass] 转换为 [HookClass] 并绑定到 [appClassLoader]

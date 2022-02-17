@@ -70,7 +70,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      * @return [Class]
      * @throws IllegalStateException 如果当前 [Class] 未被正确装载
      */
-    val thisClass
+    val instanceClass
         get() = hookClass.instance ?: error("Cannot get hook class \"${hookClass.name}\" cause ${hookClass.throwable?.message}")
 
     /**
@@ -138,7 +138,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /**
          * 手动指定要 Hook 的方法、构造类
          *
-         * 你可以调用 [thisClass] 来手动查询要 Hook 的方法
+         * 你可以调用 [instanceClass] 来手动查询要 Hook 的方法
          */
         var member: Member? = null
 
@@ -180,11 +180,11 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
             if (hookClass.instance == null) return MethodFinder(hookInstance = this).failure(hookClass.throwable)
             hookAllMembers = HookAllMembers.HOOK_NONE
             isHookMemberSetup = true
-            return MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).build()
+            return MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
         }
 
         /**
-         * 查找 [hookClass] 需要 Hook 的构造类
+         * 查找 [hookClass] 需要 Hook 的构造方法
          *
          * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
@@ -194,17 +194,35 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
             if (hookClass.instance == null) return ConstructorFinder(hookInstance = this).failure(hookClass.throwable)
             hookAllMembers = HookAllMembers.HOOK_NONE
             isHookMemberSetup = true
-            return ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).build()
+            return ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
         }
 
         /**
-         * 查找 [Field]
+         * 使用当前 [hookClass] 查找并得到 [Field]
          * @param initiate 方法体
          * @return [FieldFinder.Result]
          */
-        fun field(initiate: FieldFinder.() -> Unit) =
-            if (hookClass.instance == null) FieldFinder(hookInstance = this).failure(hookClass.throwable)
-            else FieldFinder(hookInstance = this, hookClass.instance).apply(initiate).build()
+        fun HookParam.field(initiate: FieldFinder.() -> Unit) =
+            if (hookClass.instance == null) FieldFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
+            else FieldFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
+
+        /**
+         * 使用当前 [hookClass] 查找并得到方法
+         * @param initiate 方法体
+         * @return [MethodFinder.Result]
+         */
+        fun HookParam.method(initiate: MethodFinder.() -> Unit) =
+            if (hookClass.instance == null) MethodFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
+            else MethodFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
+
+        /**
+         * 使用当前 [hookClass] 查找并得到构造方法
+         * @param initiate 方法体
+         * @return [ConstructorFinder.Result]
+         */
+        fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit) =
+            if (hookClass.instance == null) ConstructorFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
+            else ConstructorFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
         /**
          * 在方法执行完成前 Hook
@@ -418,7 +436,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * Hook 过程中开启了 [YukiHookAPI.Configs.isDebug] 输出调试信息
          * @param msg 调试日志内容
          */
-        internal fun onHookLogMsg(msg: String) {
+        private fun onHookLogMsg(msg: String) {
             if (YukiHookAPI.Configs.isDebug) loggerI(msg = msg)
         }
 

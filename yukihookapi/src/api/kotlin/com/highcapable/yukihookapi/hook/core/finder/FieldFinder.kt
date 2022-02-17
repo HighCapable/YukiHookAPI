@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.core.finder
 import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
 import com.highcapable.yukihookapi.hook.utils.runBlocking
@@ -42,19 +43,12 @@ import java.lang.reflect.Field
  *
  * 可通过执行类型查找指定变量
  * @param hookInstance 当前 Hook 实例
- * @param hookClass 当前被 Hook 的 [Class]
+ * @param classSet 当前需要查找的 [Class] 实例
  */
-class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>? = null) {
-
-    /** 当前找到的 [Field] */
-    private var fieldInstance: Field? = null
-
-    /**
-     * [Field] 所在的 [Class]
-     *
-     * 不填默认为当前的 [hookClass]
-     */
-    var classSet = hookClass
+class FieldFinder(
+    override val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    override val classSet: Class<*>? = null
+) : BaseFinder(tag = "Field", hookInstance, classSet) {
 
     /**
      * [Field] 名称
@@ -74,30 +68,30 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
      * 得到变量处理结果
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
      * @return [Result]
      * @throws IllegalStateException 如果 [name] 没有被设置
      */
     @DoNotUseMethod
-    fun build() = when {
+    override fun build(isBind: Boolean) = when {
         name.isBlank() -> {
-            loggerE(msg = "Field name cannot be empty in Class [$classSet] [${hookInstance.tag}]")
+            loggerE(msg = "Field name cannot be empty in Class [$classSet] [${hookTag}]")
             Result(isNoSuch = true)
         }
         else -> try {
             runBlocking {
-                fieldInstance =
+                memberInstance =
                     if (type != null)
                         ReflectionUtils.findFieldIfExists(classSet, type?.name, name)
                     else classSet?.getDeclaredField(name)?.apply { isAccessible = true }
             }.result {
-                hookInstance.onHookLogMsg(msg = "Find Field [${fieldInstance}] takes ${it}ms [${hookInstance.tag}]")
+                onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]")
             }
             Result()
         } catch (e: Throwable) {
             Thread {
                 SystemClock.sleep(10)
-                if (hookInstance.isNotIgnoredHookingFailure)
-                    loggerE(msg = "NoSuchField happend in [$classSet] [${hookInstance.tag}]", e = e)
+                if (isNotIgnoredHookingFailure) loggerE(msg = "NoSuchField happend in [$classSet] [${hookTag}]", e = e)
             }.start()
             Result(isNoSuch = true, e)
         }
@@ -111,12 +105,11 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
      * @return [Result]
      */
     @DoNotUseMethod
-    fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
+    override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
      * [Field] 查找结果实现类
      *
-     * 可在这里处理找到的 [fieldInstance]
      * @param isNoSuch 是否没有找到变量 - 默认否
      * @param e 错误信息
      */
@@ -147,7 +140,7 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
          * 得到变量本身
          * @return [Field] or null
          */
-        fun give() = fieldInstance
+        fun give() = memberInstance as? Field?
 
         /**
          * 监听找不到变量时
@@ -189,7 +182,8 @@ class FieldFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, p
             /** 设置变量实例为 null */
             fun setNull() = set(null)
 
-            override fun toString() = "[${self?.javaClass?.name ?: ""}] in [${instance?.javaClass?.name ?: ""}] value \"$self\""
+            override fun toString() =
+                "[${self?.javaClass?.name ?: "<empty>"}] in [${instance?.javaClass?.name ?: "<empty>"}] value \"$self\""
         }
     }
 }

@@ -30,9 +30,10 @@
 package com.highcapable.yukihookapi.hook.factory
 
 import com.highcapable.yukihookapi.hook.bean.HookClass
+import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
+import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
+import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
-import java.lang.reflect.Constructor
-import java.lang.reflect.Method
 
 /**
  * [Class] 转换为 [HookClass]
@@ -86,53 +87,46 @@ fun String.hasClass(loader: ClassLoader?) = try {
  */
 fun Class<*>.hasMethod(name: String, vararg paramType: Class<*>, returnType: Class<*>? = null): Boolean =
     try {
-        method(name, *paramType, returnType = returnType)
+        if (paramType.isNotEmpty())
+            ReflectionUtils.findMethodBestMatch(this, returnType, name, *paramType)
+        else ReflectionUtils.findMethodNoParam(this, returnType, name)
         true
     } catch (_: Throwable) {
         false
     }
 
 /**
- * 查找并得到方法
- * @param name 方法名称
+ * 查找构造方法是否存在
  * @param paramType params
- * @param returnType 返回类型 - 不填默认模糊
- * @return [Method] or null
- * @throws NoSuchMethodError
+ * @return [Boolean] 是否存在
  */
-fun Class<*>.method(name: String, vararg paramType: Class<*>, returnType: Class<*>? = null): Method? =
-    if (paramType.isNotEmpty())
-        ReflectionUtils.findMethodBestMatch(this, returnType, name, *paramType)
-    else ReflectionUtils.findMethodNoParam(this, returnType, name)
+fun Class<*>.hasConstructor(vararg paramType: Class<*>): Boolean =
+    try {
+        if (paramType.isNotEmpty())
+            ReflectionUtils.findConstructorExact(this, *paramType)
+        else ReflectionUtils.findConstructorExact(this)
+        true
+    } catch (_: Throwable) {
+        false
+    }
+
+/**
+ * 查找并得到变量
+ * @param initiate 查找方法体
+ * @return [FieldFinder.Result]
+ */
+fun Class<*>.field(initiate: FieldFinder.() -> Unit) = FieldFinder(classSet = this).apply(initiate).build()
+
+/**
+ * 查找并得到方法
+ * @param initiate 查找方法体
+ * @return [MethodFinder.Result]
+ */
+fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到构造类
- * @param paramType params
- * @return [Constructor] or null
- * @throws NoSuchMethodError
+ * @param initiate 查找方法体
+ * @return [ConstructorFinder.Result]
  */
-fun Class<*>.constructor(vararg paramType: Class<*>): Constructor<out Any>? =
-    if (paramType.isNotEmpty())
-        ReflectionUtils.findConstructorExact(this, *paramType)
-    else ReflectionUtils.findConstructorExact(this)
-
-/**
- * 执行静态方法
- * @param param 方法参数
- * @return [T] or null
- */
-inline fun <reified T> Method.callStatic(vararg param: Any?) =
-    if (param.isNotEmpty())
-        invoke(null, *param) as? T?
-    else invoke(null) as? T?
-
-/**
- * 执行方法
- * @param instance 目标对象
- * @param param 方法参数
- * @return [T] or null
- */
-inline fun <reified T> Method.call(instance: Any?, vararg param: Any?) =
-    if (param.isNotEmpty())
-        invoke(instance, *param) as? T?
-    else invoke(instance) as? T?
+fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit) = ConstructorFinder(classSet = this).apply(initiate).build()

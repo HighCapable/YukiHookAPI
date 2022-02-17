@@ -25,13 +25,13 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "EXPERIMENTAL_API_USAGE", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.core.finder
 
-import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
@@ -42,16 +42,22 @@ import java.lang.reflect.Method
  * [Method] 查找类
  *
  * 可通过指定类型查找指定方法
- * @param hookInstance 当前 Hook 实例
- * @param hookClass 当前 Hook 的 Class
+ * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiHookCreater.MemberHookCreater.member]
+ * @param classSet 当前需要查找的 [Class] 实例
  */
-class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>? = null) {
+class MethodFinder(
+    override val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    override val classSet: Class<*>? = null
+) : BaseFinder(tag = "Method", hookInstance, classSet) {
+
+    /** 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater] */
+    private var isBindToHooker = false
+
+    /** 当前重查找结果回调 */
+    private var remedyPlansCallback: (() -> Unit)? = null
 
     /** [Method] 参数数组 */
     private var params: Array<out Class<*>>? = null
-
-    /** 是否使用了 [RemedyPlan] */
-    private var isUsingRemedyPlan = false
 
     /**
      * [Method] 名称
@@ -88,29 +94,44 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
      */
     private val result
         get() = if (params != null)
-            ReflectionUtils.findMethodBestMatch(hookClass, returnType, name, *params!!)
-        else ReflectionUtils.findMethodNoParam(hookClass, returnType, name)
+            ReflectionUtils.findMethodBestMatch(classSet, returnType, name, *params!!)
+        else ReflectionUtils.findMethodNoParam(classSet, returnType, name)
+
+    /**
+     * 设置实例
+     * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
+     * @param method 当前找到的 [Method]
+     */
+    private fun setInstance(isBind: Boolean, method: Method) {
+        memberInstance = method
+        if (isBind) hookInstance?.member = method
+    }
 
     /**
      * 得到方法结果
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
      * @return [Result]
      */
     @DoNotUseMethod
-    fun build() = if (name.isBlank()) {
-        loggerE(msg = "Method name cannot be empty in Class [$hookClass] [${hookInstance.tag}]")
-        Result(isNoSuch = true)
-    } else try {
-        runBlocking {
-            hookInstance.member = result
-        }.result {
-            hookInstance.onHookLogMsg(msg = "Find Method [${hookInstance.member}] takes ${it}ms [${hookInstance.tag}]")
+    override fun build(isBind: Boolean) = when {
+        name.isBlank() -> {
+            loggerE(msg = "Method name cannot be empty in Class [$classSet] [${hookTag}]")
+            Result(isNoSuch = true)
         }
-        Result()
-    } catch (e: Throwable) {
-        onFailureMsg(throwable = e)
-        Result(isNoSuch = true, e)
+        else -> try {
+            runBlocking {
+                isBindToHooker = isBind
+                setInstance(isBind, result)
+            }.result {
+                onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]")
+            }
+            Result()
+        } catch (e: Throwable) {
+            onFailureMsg(throwable = e)
+            Result(isNoSuch = true, e)
+        }
     }
 
     /**
@@ -121,22 +142,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
      * @return [Result]
      */
     @DoNotUseMethod
-    fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
-
-    /**
-     * 发生错误时输出日志
-     * @param msg 消息日志
-     * @param throwable 错误
-     * @param isAlwaysPrint 忽略条件每次都打印错误
-     */
-    private fun onFailureMsg(msg: String = "", throwable: Throwable? = null, isAlwaysPrint: Boolean = false) {
-        fun print() = loggerE(msg = "NoSuchMethod happend in [$hookClass] $msg [${hookInstance.tag}]", e = throwable)
-        if (isAlwaysPrint) print()
-        else Thread {
-            SystemClock.sleep(10)
-            if (hookInstance.isNotIgnoredHookingFailure && !isUsingRemedyPlan) print()
-        }.start()
-    }
+    override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
      * [Method] 重查找实现类
@@ -158,7 +164,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
          * @return [Result] 结果
          */
         fun method(initiate: MethodFinder.() -> Unit) =
-            Result().apply { remedyPlans.add(Pair(MethodFinder(hookInstance, hookClass).apply(initiate), this)) }
+            Result().apply { remedyPlans.add(Pair(MethodFinder(hookInstance, classSet).apply(initiate), this)) }
 
         /**
          * 开始重查找
@@ -173,13 +179,14 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
                 remedyPlans.forEachIndexed { p, it ->
                     runCatching {
                         runBlocking {
-                            hookInstance.member = it.first.result
+                            setInstance(isBindToHooker, it.first.result)
                         }.result {
-                            hookInstance.onHookLogMsg(msg = "Find Method [${hookInstance.member}] takes ${it}ms [${hookInstance.tag}]")
+                            onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]")
                         }
                         isFindSuccess = true
-                        it.second.onFindCallback?.invoke(hookInstance.member as Method)
-                        hookInstance.onHookLogMsg(msg = "Method [${hookInstance.member}] trying ${p + 1} times success by RemedyPlan [${hookInstance.tag}]")
+                        it.second.onFindCallback?.invoke(memberInstance as Method)
+                        remedyPlansCallback?.invoke()
+                        onHookLogMsg(msg = "Method [${memberInstance}] trying ${p + 1} times success by RemedyPlan [${hookTag}]")
                         return@run
                     }.onFailure {
                         lastError = it
@@ -194,7 +201,7 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
                     )
                     remedyPlans.clear()
                 }
-            } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookInstance.tag}]")
+            } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookTag}]")
         }
 
         /**
@@ -232,6 +239,29 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
         fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
+         * 获得 [Method] 实例处理类
+         *
+         * - ❗在 [memberInstance] 结果为空时使用此方法将无法获得对象
+         * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
+         * @param instance 所在实例
+         * @return [Instance]
+         */
+        fun get(instance: Any? = null) = Instance(instance)
+
+        /**
+         * 获得 [Method] 实例处理类
+         *
+         * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         * - ❗若你没有设置 [remedys] 此方法将不会被回调
+         * @param instance 所在实例
+         * @param initiate 回调 [Instance]
+         */
+        fun wait(instance: Any? = null, initiate: Instance.() -> Unit) {
+            if (memberInstance != null) initiate(get(instance))
+            else remedyPlansCallback = { initiate(get(instance)) }
+        }
+
+        /**
          * 创建方法重查找功能
          *
          * 当你遇到一种方法可能存在不同形式的存在时
@@ -256,8 +286,42 @@ class MethodFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, 
          * @return [Result] 可继续向下监听
          */
         fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result {
-            if (isNoSuch) initiate(e ?: Throwable())
+            if (isNoSuch) initiate(e ?: Throwable("Initialization Error"))
             return this
+        }
+
+        /**
+         * [Method] 实例处理类
+         * @param instance 当前 [Method] 所在类的实例对象
+         */
+        inner class Instance(private val instance: Any?) {
+
+            /**
+             * 执行方法
+             * @param param 方法参数
+             * @return [Any] or null
+             */
+            private fun baseCall(vararg param: Any?) =
+                if (param.isNotEmpty())
+                    (memberInstance as? Method?)?.invoke(instance, *param)
+                else (memberInstance as? Method?)?.invoke(instance)
+
+            /**
+             * 执行方法 - 不指定返回值类型
+             * @param param 方法参数
+             * @return [Any] or null
+             */
+            fun call(vararg param: Any?) = baseCall(*param)
+
+            /**
+             * 执行方法 - 指定 [T] 返回值类型
+             * @param param 方法参数
+             * @return [T] or null
+             */
+            fun <T> invoke(vararg param: Any?) = baseCall(*param) as? T?
+
+            override fun toString() =
+                "[${(memberInstance as? Method?)?.name ?: "<empty>"}] in [${instance?.javaClass?.name ?: "<empty>"}]"
         }
     }
 }

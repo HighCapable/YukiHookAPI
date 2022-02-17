@@ -25,14 +25,13 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "EXPERIMENTAL_API_USAGE", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "EXPERIMENTAL_API_USAGE", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.core.finder
 
-import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
-import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
 import com.highcapable.yukihookapi.hook.utils.runBlocking
@@ -42,16 +41,22 @@ import java.lang.reflect.Constructor
  * [Constructor] 查找类
  *
  * 可通过指定类型查找指定构造方法
- * @param hookInstance 当前 Hook 实例
- * @param hookClass 当前被 Hook 的 [Class]
+ * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiHookCreater.MemberHookCreater.member]
+ * @param classSet 当前需要查找的 [Class] 实例
  */
-class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCreater, private val hookClass: Class<*>? = null) {
+class ConstructorFinder(
+    override val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    override val classSet: Class<*>? = null
+) : BaseFinder(tag = "Constructor", hookInstance, classSet) {
+
+    /** 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater] */
+    private var isBindToHooker = false
+
+    /** 当前重查找结果回调 */
+    private var remedyPlansCallback: (() -> Unit)? = null
 
     /** [Constructor] 参数数组 */
     private var params: Array<out Class<*>>? = null
-
-    /** 是否使用了 [RemedyPlan] */
-    private var isUsingRemedyPlan = false
 
     /**
      * [Constructor] 参数
@@ -73,8 +78,18 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
      */
     private val result
         get() = if (params != null)
-            ReflectionUtils.findConstructorExact(hookClass, *params!!)
-        else ReflectionUtils.findConstructorExact(hookClass)
+            ReflectionUtils.findConstructorExact(classSet, *params!!)
+        else ReflectionUtils.findConstructorExact(classSet)
+
+    /**
+     * 设置实例
+     * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
+     * @param constructor 当前找到的 [Constructor]
+     */
+    private fun setInstance(isBind: Boolean, constructor: Constructor<*>) {
+        memberInstance = constructor
+        if (isBind) hookInstance?.member = constructor
+    }
 
     /**
      * 得到构造方法结果
@@ -83,11 +98,12 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
      * @return [Result]
      */
     @DoNotUseMethod
-    fun build() = try {
+    override fun build(isBind: Boolean) = try {
         runBlocking {
-            hookInstance.member = result
+            isBindToHooker = isBind
+            setInstance(isBind, result)
         }.result {
-            hookInstance.onHookLogMsg(msg = "Find Constructor [${hookInstance.member}] takes ${it}ms [${hookInstance.tag}]")
+            onHookLogMsg(msg = "Find Constructor [${memberInstance}] takes ${it}ms [${hookTag}]")
         }
         Result()
     } catch (e: Throwable) {
@@ -103,22 +119,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
      * @return [Result]
      */
     @DoNotUseMethod
-    fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
-
-    /**
-     * 发生错误时输出日志
-     * @param msg 消息日志
-     * @param throwable 错误
-     * @param isAlwaysPrint 忽略条件每次都打印错误
-     */
-    private fun onFailureMsg(msg: String = "", throwable: Throwable? = null, isAlwaysPrint: Boolean = false) {
-        fun print() = loggerE(msg = "NoSuchConstructor happend in [$hookClass] $msg [${hookInstance.tag}]", e = throwable)
-        if (isAlwaysPrint) print()
-        else Thread {
-            SystemClock.sleep(10)
-            if (hookInstance.isNotIgnoredHookingFailure && !isUsingRemedyPlan) print()
-        }.start()
-    }
+    override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
      * [Constructor] 重查找实现类
@@ -139,7 +140,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
          * @param initiate 方法体
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit) =
-            Result().apply { remedyPlans.add(Pair(ConstructorFinder(hookInstance, hookClass).apply(initiate), this)) }
+            Result().apply { remedyPlans.add(Pair(ConstructorFinder(hookInstance, classSet).apply(initiate), this)) }
 
         /**
          * 开始重查找
@@ -154,13 +155,14 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
                 remedyPlans.forEachIndexed { p, it ->
                     runCatching {
                         runBlocking {
-                            hookInstance.member = it.first.result
+                            setInstance(isBindToHooker, it.first.result)
                         }.result {
-                            hookInstance.onHookLogMsg(msg = "Find Constructor [${hookInstance.member}] takes ${it}ms [${hookInstance.tag}]")
+                            onHookLogMsg(msg = "Find Constructor [${memberInstance}] takes ${it}ms [${hookTag}]")
                         }
                         isFindSuccess = true
-                        it.second.onFindCallback?.invoke(hookInstance.member as Constructor<*>)
-                        hookInstance.onHookLogMsg(msg = "Constructor [${hookInstance.member}] trying ${p + 1} times success by RemedyPlan [${hookInstance.tag}]")
+                        it.second.onFindCallback?.invoke(memberInstance as Constructor<*>)
+                        remedyPlansCallback?.invoke()
+                        onHookLogMsg(msg = "Constructor [${memberInstance}] trying ${p + 1} times success by RemedyPlan [${hookTag}]")
                         return@run
                     }.onFailure {
                         lastError = it
@@ -175,7 +177,7 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
                     )
                     remedyPlans.clear()
                 }
-            } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookInstance.tag}]")
+            } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookTag}]")
         }
 
         /**
@@ -213,6 +215,27 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
         fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
+         * 获得 [Constructor] 实例处理类
+         *
+         * - ❗在 [memberInstance] 结果为空时使用此方法将无法获得对象
+         * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
+         * @return [Instance]
+         */
+        fun get() = Instance()
+
+        /**
+         * 获得 [Constructor] 实例处理类
+         *
+         * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         * - ❗若你没有设置 [remedys] 此方法将不会被回调
+         * @param initiate 回调 [Instance]
+         */
+        fun wait(initiate: Instance.() -> Unit) {
+            if (memberInstance != null) initiate(get())
+            else remedyPlansCallback = { initiate(get()) }
+        }
+
+        /**
          * 创建构造方法重查找功能
          *
          * 当你遇到一种构造方法可能存在不同形式的存在时
@@ -237,6 +260,40 @@ class ConstructorFinder(private val hookInstance: YukiHookCreater.MemberHookCrea
         fun onNoSuchConstructor(initiate: (Throwable) -> Unit): Result {
             if (isNoSuch) initiate(e ?: Throwable())
             return this
+        }
+
+        /**
+         * [Constructor] 实例处理类
+         *
+         * 调用与创建目标实例类对象
+         */
+        inner class Instance {
+
+            /**
+             * 执行构造方法创建目标实例
+             * @param param 构造方法参数
+             * @return [Any] or null
+             */
+            private fun baseCall(vararg param: Any?) =
+                if (param.isNotEmpty())
+                    (memberInstance as? Constructor<*>?)?.newInstance(*param)
+                else (memberInstance as? Constructor<*>?)?.newInstance()
+
+            /**
+             * 执行构造方法创建目标实例 - 不指定目标实例类型
+             * @param param 构造方法参数
+             * @return [Any] or null
+             */
+            fun call(vararg param: Any?) = baseCall(*param)
+
+            /**
+             * 执行构造方法创建目标实例 - 指定 [T] 目标实例类型
+             * @param param 构造方法参数
+             * @return [T] or null
+             */
+            fun <T> newInstance(vararg param: Any?) = baseCall(*param) as? T?
+
+            override fun toString() = "[${(memberInstance as? Constructor<*>?)?.name ?: "<empty>"}]"
         }
     }
 }
