@@ -34,6 +34,8 @@
 
 # Supports
 
+以下是 `YukiHookAPI` 支持的 `Hook Framework` 以及 Xposed 框架。
+
 | Hook Framework                                            | ST | Describe                                                                                 |
 | --------------------------------------------------------- | -- | ---------------------------------------------------------------------------------------- |
 | [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅ | 多场景下稳定使用                                                                           |
