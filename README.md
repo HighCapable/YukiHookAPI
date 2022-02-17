@@ -131,7 +131,7 @@ class MainHook : YukiHookXposedInitProxy {
   移除部分反射 API，合并至 `BaseFinder` 进行整合；<br/>
   增加直接使用字符串创建 Hook 的方法。
   
-# Cooperation Projects
+# Cooperations
 
 以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
 
@@ -145,7 +145,7 @@ class MainHook : YukiHookXposedInitProxy {
 - 工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。<br/><br/>
   <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/wechat_code.jpg" width = "200" height = "200"/>
 
-# License
+# License 
 
 - [MIT](https://choosealicense.com/licenses/mit)
 
