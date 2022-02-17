@@ -17,7 +17,7 @@
   《ももくり》女主 栗原 雪(Yuki)</a>
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
-# Function
+# Functions
 
 - <strong>Xposed 模块开发</strong><br/>
   自动构建程序可以帮你快速创建一个 Xposed 模块，完全省去配置入口类和 xposed_init 文件。<br/>
@@ -32,7 +32,7 @@
 - <strong>快速上手</strong><br/>
   简单易用，不需要繁琐的配置，不需要十足的开发经验，搭建环境集成依赖即可立即开始使用。
 
-# Support
+# Supports
 
 | Hook Framework                                            | ST | Describe                                                                                 |
 | --------------------------------------------------------- | -- | ---------------------------------------------------------------------------------------- |
@@ -117,7 +117,7 @@ class MainHook : YukiHookXposedInitProxy {
 - 你可以点击 [快速开始](https://github.com/fankes/YukiHookAPI/wiki#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)，在 `Gradle` 中集成 `YukiHookAPI` 并开始使用。
 - 更多使用教程及 API 文档请 [前往 Wiki 主页](https://github.com/fankes/YukiHookAPI/wiki) 进行查看。
 
-# Changelog
+# Changelogs
 
 - 1.0 <br/>
   首个版本提交至 Maven。<br/><br/>
