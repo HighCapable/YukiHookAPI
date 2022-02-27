@@ -327,6 +327,12 @@ val ToastClass get() = Toast::class.java
 val IntentClass get() = Intent::class.java
 
 /**
+ * 获得 [PendingIntent] 类型
+ * @return [Class]
+ */
+val PendingIntentClass get() = PendingIntent::class.java
+
+/**
  * 获得 [ColorStateList] 类型
  * @return [Class]
  */
