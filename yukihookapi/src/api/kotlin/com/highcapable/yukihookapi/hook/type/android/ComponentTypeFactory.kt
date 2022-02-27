@@ -411,6 +411,12 @@ val NotificationClass get() = Notification::class.java
 val Notification_BuilderClass get() = Notification.Builder::class.java
 
 /**
+ * 获得 [Notification.Action] 类型
+ * @return [Class]
+ */
+val Notification_ActionClass get() = Notification.Action::class.java
+
+/**
  * 获得 [DialogInterface] 类型
  * @return [Class]
  */
