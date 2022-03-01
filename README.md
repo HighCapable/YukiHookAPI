@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.2-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.3-green)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
 <br/>
@@ -131,8 +131,13 @@ class MainHook : YukiHookXposedInitProxy {
 - 1.0.2 <br/>
   修复 Windows 下无法找到项目路径的问题；<br/>
   移除部分反射 API，合并至 `BaseFinder` 进行整合；<br/>
-  增加直接使用字符串创建 Hook 的方法。
-  
+  增加直接使用字符串创建 Hook 的方法。<br/><br/>
+- 1.0.3 <br/>
+  修复一个潜在性的异常未拦截 BUG；<br/>
+  增加 `ignoredError` 功能；<br/>
+  增加了 `type` 中的 `android` 类型；<br/>
+  增加监听 `hook` 后的 `ClassNotFound` 功能。
+
 # Cooperations
 
 以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
