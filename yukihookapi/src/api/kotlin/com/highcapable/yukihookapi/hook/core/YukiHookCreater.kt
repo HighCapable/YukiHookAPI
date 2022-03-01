@@ -120,6 +120,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /** Hook 开始时出现错误回调 */
         private var onHookingFailureCallback: ((Throwable) -> Unit)? = null
 
+        /** [hookClass] 找不到时出现的错误回调 */
+        private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
+
         /** 全部错误回调 */
         private var onAllFailureCallback: ((Throwable) -> Unit)? = null
 
@@ -334,9 +337,10 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
             if (!YukiHookAPI.hasXposedBridge) return
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("Failed Hooked Class [${hookClass.name}]")).also {
+                    onHookClassNotFoundFailureCallback?.invoke(it)
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
-                    if (isNotIgnoredHookingFailure) onHookFailureMsg(it)
+                    if (isNotIgnoredHookingFailure && onHookClassNotFoundFailureCallback == null) onHookFailureMsg(it)
                 }
                 return
             }
@@ -405,8 +409,10 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                         }
                     }
                 else {
-                    onHookingFailureCallback?.invoke(Throwable())
-                    onAllFailureCallback?.invoke(Throwable())
+                    Throwable(message = "Finding Error isSetUpMember [$isHookMemberSetup] [$tag]").also {
+                        onHookingFailureCallback?.invoke(it)
+                        onAllFailureCallback?.invoke(it)
+                    }
                     if (isNotIgnoredHookingFailure)
                         loggerE(
                             msg = if (isHookMemberSetup)
@@ -500,6 +506,22 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
              * @return [Result] 可继续向下监听
              */
             fun ignoredHookingFailure() = onHookingFailure {}
+
+            /**
+             * 监听 [hookClass] 找不到时发生错误的回调方法
+             * @param initiate 回调错误
+             * @return [Result] 可继续向下监听
+             */
+            fun onHookClassNotFoundFailure(initiate: (Throwable) -> Unit): Result {
+                onHookClassNotFoundFailureCallback = initiate
+                return this
+            }
+
+            /**
+             * 忽略 [hookClass] 找不到时出现的错误
+             * @return [Result] 可继续向下监听
+             */
+            fun ignoredHookClassNotFoundFailure() = onHookClassNotFoundFailure {}
 
             /**
              * 监听全部 Hook 过程发生错误的回调方法
