@@ -135,6 +135,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /** 全部错误回调 */
         private var onAllFailureCallback: ((Throwable) -> Unit)? = null
 
+        /** 查找过程中发生的异常 */
+        private var findingThrowable: Throwable? = null
+
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
 
@@ -188,11 +191,13 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [MethodFinder.Result]
          */
-        fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result {
-            if (hookClass.instance == null) return MethodFinder(hookInstance = this).failure(hookClass.throwable)
+        fun method(initiate: MethodFinder.() -> Unit) = try {
             hookAllMembers = HookAllMembers.HOOK_NONE
             isHookMemberSetup = true
-            return MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
+            MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
+        } catch (e: Throwable) {
+            findingThrowable = e
+            MethodFinder(hookInstance = this).failure(e)
         }
 
         /**
@@ -202,11 +207,13 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
-        fun constructor(initiate: ConstructorFinder.() -> Unit = {}): ConstructorFinder.Result {
-            if (hookClass.instance == null) return ConstructorFinder(hookInstance = this).failure(hookClass.throwable)
+        fun constructor(initiate: ConstructorFinder.() -> Unit = {}) = try {
             hookAllMembers = HookAllMembers.HOOK_NONE
             isHookMemberSetup = true
-            return ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
+            ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
+        } catch (e: Throwable) {
+            findingThrowable = e
+            ConstructorFinder(hookInstance = this).failure(e)
         }
 
         /**
@@ -416,16 +423,15 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                             if (isNotIgnoredHookingFailure) onHookFailureMsg(it)
                         }
                     }
-                else {
-                    Throwable(message = "Finding Error isSetUpMember [$isHookMemberSetup] [$tag]").also {
-                        onHookingFailureCallback?.invoke(it)
-                        onAllFailureCallback?.invoke(it)
-                    }
+                else Throwable("Finding Error isSetUpMember [$isHookMemberSetup] [$tag]").also {
+                    onHookingFailureCallback?.invoke(it)
+                    onAllFailureCallback?.invoke(it)
                     if (isNotIgnoredHookingFailure)
                         loggerE(
                             msg = if (isHookMemberSetup)
-                                "Hooked Member with a finding error in Class [$hookClass] [$tag]"
-                            else "Hooked Member cannot be non-null in Class [$hookClass] [$tag]"
+                                "Hooked Member with a finding error by $hookClass [$tag]"
+                            else "Hooked Member cannot be non-null by $hookClass [$tag]",
+                            e = findingThrowable ?: it
                         )
                 }
             else runCatching {
