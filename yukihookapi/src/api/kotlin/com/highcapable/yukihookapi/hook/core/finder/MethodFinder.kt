@@ -291,6 +291,17 @@ class MethodFinder(
         }
 
         /**
+         * 忽略任何错误发出的警告
+         *
+         * - 若 [isNotIgnoredHookingFailure] 为 false 则自动忽略
+         * @return [Result] 可继续向下监听
+         */
+        fun ignoredError(): Result {
+            isShutErrorPrinting = true
+            return this
+        }
+
+        /**
          * [Method] 实例处理类
          * @param instance 当前 [Method] 所在类的实例对象
          */

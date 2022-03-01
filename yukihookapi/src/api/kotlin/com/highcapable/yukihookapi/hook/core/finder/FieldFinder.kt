@@ -153,6 +153,17 @@ class FieldFinder(
         }
 
         /**
+         * 忽略任何错误发出的警告
+         *
+         * - 若 [isNotIgnoredHookingFailure] 为 false 则自动忽略
+         * @return [Result] 可继续向下监听
+         */
+        fun ignoredError(): Result {
+            isShutErrorPrinting = true
+            return this
+        }
+
+        /**
          * [Field] 实例变量处理类
          * @param instance 当前 [Field] 所在类的实例对象
          * @param self 当前 [Field] 自身的实例对象

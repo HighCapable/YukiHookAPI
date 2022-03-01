@@ -263,6 +263,17 @@ class ConstructorFinder(
         }
 
         /**
+         * 忽略任何错误发出的警告
+         *
+         * - 若 [isNotIgnoredHookingFailure] 为 false 则自动忽略
+         * @return [Result] 可继续向下监听
+         */
+        fun ignoredError(): Result {
+            isShutErrorPrinting = true
+            return this
+        }
+
+        /**
          * [Constructor] 实例处理类
          *
          * 调用与创建目标实例类对象

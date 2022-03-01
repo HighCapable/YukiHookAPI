@@ -47,6 +47,9 @@ abstract class BaseFinder(
     open val classSet: Class<*>? = null
 ) {
 
+    /** 是否开启忽略错误警告功能 */
+    internal var isShutErrorPrinting = false
+
     /** 是否使用了重查找功能 */
     internal var isUsingRemedyPlan = false
 
@@ -76,7 +79,7 @@ abstract class BaseFinder(
         if (isAlwaysPrint) print()
         else Thread {
             SystemClock.sleep(10)
-            if (isNotIgnoredHookingFailure && !isUsingRemedyPlan) print()
+            if (isNotIgnoredHookingFailure && !isUsingRemedyPlan && !isShutErrorPrinting) print()
         }.start()
     }
 
