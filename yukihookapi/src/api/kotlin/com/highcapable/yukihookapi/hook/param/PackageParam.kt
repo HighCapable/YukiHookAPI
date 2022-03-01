@@ -195,24 +195,28 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      *
      * - ❗为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
      * @param initiate 方法体
+     * @return [YukiHookCreater.Result]
      */
     fun String.hook(initiate: YukiHookCreater.() -> Unit) = findClass(name = this).hook(initiate)
 
     /**
      * Hook 方法、构造类
      * @param initiate 方法体
+     * @return [YukiHookCreater.Result]
      */
     fun Class<*>.hook(initiate: YukiHookCreater.() -> Unit) = hookClass.hook(initiate)
 
     /**
      * Hook 方法、构造类
      * @param initiate 方法体
+     * @return [YukiHookCreater.Result]
      */
     fun VariousClass.hook(initiate: YukiHookCreater.() -> Unit) = hookClass.hook(initiate)
 
     /**
      * Hook 方法、构造类
      * @param initiate 方法体
+     * @return [YukiHookCreater.Result]
      */
     fun HookClass.hook(initiate: YukiHookCreater.() -> Unit) =
         YukiHookCreater(packageParam = thisParam, hookClass = bind()).apply(initiate).hook()
