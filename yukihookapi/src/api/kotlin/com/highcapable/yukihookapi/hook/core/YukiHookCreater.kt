@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core
 
+import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -63,6 +64,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
     /** 设置要 Hook 的方法、构造类 */
     private var hookMembers = HashMap<String, MemberHookCreater>()
 
+    /** [hookClass] 找不到时出现的错误回调 */
+    private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
+
     /**
      * 得到当前被 Hook 的 [Class]
      *
@@ -89,12 +93,20 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @throws IllegalStateException 如果必要参数没有被设置
+     * @return [Result]
      */
     @DoNotUseMethod
-    fun hook() {
-        if (!YukiHookAPI.hasXposedBridge) return
+    fun hook(): Result {
+        if (!YukiHookAPI.hasXposedBridge) return Result()
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
-        hookMembers.forEach { (_, member) -> member.hook() }
+        if (hookClass.instance != null) hookMembers.forEach { (_, member) -> member.hook() }
+        else Thread {
+            SystemClock.sleep(10)
+            if (onHookClassNotFoundFailureCallback == null)
+                loggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+            else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
+        }.start()
+        return Result()
     }
 
     /**
@@ -119,9 +131,6 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
 
         /** Hook 开始时出现错误回调 */
         private var onHookingFailureCallback: ((Throwable) -> Unit)? = null
-
-        /** [hookClass] 找不到时出现的错误回调 */
-        private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
 
         /** 全部错误回调 */
         private var onAllFailureCallback: ((Throwable) -> Unit)? = null
@@ -336,11 +345,10 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         fun hook() {
             if (!YukiHookAPI.hasXposedBridge) return
             if (hookClass.instance == null) {
-                (hookClass.throwable ?: Throwable("Failed Hooked Class [${hookClass.name}]")).also {
-                    onHookClassNotFoundFailureCallback?.invoke(it)
+                (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
-                    if (isNotIgnoredHookingFailure && onHookClassNotFoundFailureCallback == null) onHookFailureMsg(it)
+                    if (isNotIgnoredHookingFailure) onHookFailureMsg(it)
                 }
                 return
             }
@@ -508,22 +516,6 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
             fun ignoredHookingFailure() = onHookingFailure {}
 
             /**
-             * 监听 [hookClass] 找不到时发生错误的回调方法
-             * @param initiate 回调错误
-             * @return [Result] 可继续向下监听
-             */
-            fun onHookClassNotFoundFailure(initiate: (Throwable) -> Unit): Result {
-                onHookClassNotFoundFailureCallback = initiate
-                return this
-            }
-
-            /**
-             * 忽略 [hookClass] 找不到时出现的错误
-             * @return [Result] 可继续向下监听
-             */
-            fun ignoredHookClassNotFoundFailure() = onHookClassNotFoundFailure {}
-
-            /**
              * 监听全部 Hook 过程发生错误的回调方法
              * @param initiate 回调错误
              * @return [Result] 可继续向下监听
@@ -539,5 +531,36 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
              */
             fun ignoredAllFailure() = onAllFailure {}
         }
+    }
+
+    /**
+     * 监听全部 Hook 结果实现类
+     *
+     * 可在这里处理失败事件监听
+     */
+    inner class Result {
+
+        /**
+         * 创建监听失败事件方法体
+         * @param initiate 方法体
+         * @return [Result] 可继续向下监听
+         */
+        fun failures(initiate: Result.() -> Unit) = apply(initiate)
+
+        /**
+         * 监听 [hookClass] 找不到时发生错误的回调方法
+         * @param initiate 回调错误
+         * @return [Result] 可继续向下监听
+         */
+        fun onHookClassNotFoundFailure(initiate: (Throwable) -> Unit): Result {
+            onHookClassNotFoundFailureCallback = initiate
+            return this
+        }
+
+        /**
+         * 忽略 [hookClass] 找不到时出现的错误
+         * @return [Result] 可继续向下监听
+         */
+        fun ignoredHookClassNotFoundFailure() = onHookClassNotFoundFailure {}
     }
 }
