@@ -94,6 +94,8 @@ object YukiHookAPI {
          * 关闭后将只输出 Error 级别的日志
          *
          * 请过滤 [debugTag] 即可找到每条日志
+         *
+         * 当 [isAllowPrintingLogs] 关闭后 [isDebug] 也将同时关闭
          */
         var isDebug = true
 
@@ -105,6 +107,8 @@ object YukiHookAPI {
          *  但是不影响当你手动调用下面这些方法输出日志
          *
          *  [loggerD]、[loggerI]、[loggerW]、[loggerE]
+         *
+         *  当 [isAllowPrintingLogs] 关闭后 [isDebug] 也将同时关闭
          */
         var isAllowPrintingLogs = true
     }
