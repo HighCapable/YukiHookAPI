@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.3-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.4-green)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
 <br/>
@@ -136,7 +136,12 @@ class MainHook : YukiHookXposedInitProxy {
   修复一个潜在性的异常未拦截 BUG；<br/>
   增加 `ignoredError` 功能；<br/>
   增加了 `type` 中的 `android` 类型；<br/>
-  增加监听 `hook` 后的 `ClassNotFound` 功能。
+  增加监听 `hook` 后的 `ClassNotFound` 功能。<br/><br/>
+- 1.0.4 <br/>
+  修复 LSPosed 在最新版本中启用“只有模块classloader可以使用Xposed API”选项后找不到 `XposedBridge` 的问题；<br/>
+  添加 `YukiHookAPI` 的常量版本名称和版本号；<br/>
+  新增 `hasField` 方法以及 `isAllowPrintingLogs` 配置参数；<br/>
+  新增 `isDebug` 开启的情况下 API 将自动打印欢迎信息测试模块是否生效。
 
 # Cooperations
 
