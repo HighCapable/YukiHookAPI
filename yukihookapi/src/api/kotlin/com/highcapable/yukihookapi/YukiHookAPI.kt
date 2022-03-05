@@ -57,6 +57,12 @@ object YukiHookAPI {
     /** Xposed Hook API 方法体回调 */
     private var packageParamCallback: (PackageParam.() -> Unit)? = null
 
+    /** 获取当前 [YukiHookAPI] 的版本 */
+    const val API_VERSION_NAME = "1.0.4"
+
+    /** 获取当前 [YukiHookAPI] 的版本号 */
+    const val API_VERSION_CODE = 5
+
     /**
      * 预设的 Xposed 模块包名
      *
@@ -138,7 +144,7 @@ object YukiHookAPI {
                     appClassLoader = lpparam.classLoader,
                     appInfo = lpparam.appInfo
                 )
-            )
+            ).apply { printHelloMsg() }
         )
 
     /**
@@ -171,7 +177,7 @@ object YukiHookAPI {
             packageParamCallback = {
                 if (hooker.isNotEmpty())
                     hooker.forEach { it.assignInstance(packageParam = this) }
-                else error("Hooker is empty")
+                else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty")
             }
         else printNoXposedBridge()
     }
@@ -192,7 +198,7 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = true
         if (hasXposedBridge)
-            (if (baseContext != null) initiate.invoke(baseContext.packagePararm))
+            (if (baseContext != null) initiate.invoke(baseContext.packagePararm.apply { printHelloMsg() }))
         else printNoXposedBridge()
     }
 
@@ -214,14 +220,21 @@ object YukiHookAPI {
         isLoadedFromBaseContext = true
         if (hasXposedBridge)
             (if (baseContext != null)
-                if (hooker.isNotEmpty())
+                if (hooker.isNotEmpty()) {
+                    printHelloMsg()
                     hooker.forEach { it.assignInstance(packageParam = baseContext.packagePararm) }
-                else error("Hooker is empty"))
+                } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty"))
         else printNoXposedBridge()
     }
 
     /** 输出找不到 [XposedBridge] 的错误日志 */
     private fun printNoXposedBridge() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted")
+
+    /** 输出欢迎信息调试日志 */
+    private fun printHelloMsg() {
+        if (Configs.isDebug)
+            yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using Xposed API $hookingXposedApiVersion")
+    }
 
     /**
      * 通过 baseContext 创建 Hook 入口类
@@ -234,9 +247,11 @@ object YukiHookAPI {
      * 是否存在 [XposedBridge]
      * @return [Boolean]
      */
-    internal val hasXposedBridge
-        get() = runCatching {
-            if (Configs.isDebug) yLoggerI(msg = "YukiHookAPI is running on Xposed API ${XposedBridge.getXposedVersion()}")
-            true
-        }.getOrNull() ?: false
+    internal val hasXposedBridge get() = hookingXposedApiVersion >= 0
+
+    /**
+     * 输出当前使用的 Xposed 版本
+     * @return [Int]
+     */
+    internal val hookingXposedApiVersion get() = runCatching { XposedBridge.getXposedVersion() }.getOrNull() ?: -1
 }
