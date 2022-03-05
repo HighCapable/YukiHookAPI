@@ -45,6 +45,8 @@ class MainHook : YukiHookXposedInitProxy {
             debugTag = "YukiHookAPI"
             // 是否开启全局调试日志输出功能
             isDebug = true
+            // 是否启用调试日志的输出功能
+            isAllowPrintingLogs = true
         }
         // 开始你的 Hook
         YukiHookAPI.encase {
