@@ -49,7 +49,7 @@ import java.io.File
  *
  * - 使用 LSPosed 环境请在 AndroidManifests.xml 中将 "xposedminversion" 最低设置为 93
  *
- * - 未使用 LSPosed 环境请将你的模块 API 降至 26 以下 - YukiHookAPI 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
+ * - 未使用 LSPosed 环境请将你的模块 API 降至 26 以下 - [YukiHookAPI] 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
  *
  * - ❗当你在模块中存取数据的时候 [context] 必须不能是空的
  *

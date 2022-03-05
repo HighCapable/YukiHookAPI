@@ -32,7 +32,7 @@ package com.highcapable.yukihookapi.hook.core.finder
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
-import com.highcapable.yukihookapi.hook.log.loggerW
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Constructor
@@ -177,7 +177,7 @@ class ConstructorFinder(
                     )
                     remedyPlans.clear()
                 }
-            } else loggerW(msg = "RemedyPlan is empty,forgot it? [${hookTag}]")
+            } else yLoggerW(msg = "RemedyPlan is empty,forgot it? [${hookTag}]")
         }
 
         /**

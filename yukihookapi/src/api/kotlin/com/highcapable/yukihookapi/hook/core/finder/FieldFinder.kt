@@ -33,7 +33,7 @@ import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
-import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
@@ -75,7 +75,7 @@ class FieldFinder(
     @DoNotUseMethod
     override fun build(isBind: Boolean) = when {
         name.isBlank() -> {
-            loggerE(msg = "Field name cannot be empty in Class [$classSet] [${hookTag}]")
+            yLoggerE(msg = "Field name cannot be empty in Class [$classSet] [${hookTag}]")
             Result(isNoSuch = true)
         }
         else -> try {
@@ -91,7 +91,7 @@ class FieldFinder(
         } catch (e: Throwable) {
             Thread {
                 SystemClock.sleep(10)
-                if (isNotIgnoredHookingFailure) loggerE(msg = "NoSuchField happend in [$classSet] [${hookTag}]", e = e)
+                if (isNotIgnoredHookingFailure) yLoggerE(msg = "NoSuchField happend in [$classSet] [${hookTag}]", e = e)
             }.start()
             Result(isNoSuch = true, e)
         }

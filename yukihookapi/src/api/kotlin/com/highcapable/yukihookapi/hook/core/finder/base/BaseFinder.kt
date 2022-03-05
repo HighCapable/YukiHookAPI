@@ -31,8 +31,8 @@ import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
-import com.highcapable.yukihookapi.hook.log.loggerE
-import com.highcapable.yukihookapi.hook.log.loggerI
+import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.yLoggerI
 import java.lang.reflect.Member
 
 /**
@@ -75,7 +75,7 @@ abstract class BaseFinder(
      * @param isAlwaysPrint 忽略条件每次都打印错误
      */
     internal fun onFailureMsg(msg: String = "", throwable: Throwable? = null, isAlwaysPrint: Boolean = false) {
-        fun print() = loggerE(msg = "NoSuch$tag happend in [$classSet] $msg [${hookTag}]", e = throwable)
+        fun print() = yLoggerE(msg = "NoSuch$tag happend in [$classSet] $msg [${hookTag}]", e = throwable)
         if (isAlwaysPrint) print()
         else Thread {
             SystemClock.sleep(10)
@@ -88,7 +88,7 @@ abstract class BaseFinder(
      * @param msg 调试日志内容
      */
     internal fun onHookLogMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug) loggerI(msg = msg)
+        if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = msg)
     }
 
     /**

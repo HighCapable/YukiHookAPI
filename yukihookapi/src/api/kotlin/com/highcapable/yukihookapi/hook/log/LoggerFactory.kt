@@ -34,6 +34,47 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import de.robv.android.xposed.XposedBridge
 
 /**
+ * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - D
+ *
+ * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
+ * @param msg 日志打印的内容
+ */
+internal fun yLoggerD(msg: String) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerD(msg = msg)
+}
+
+/**
+ * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - I
+ *
+ * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
+ * @param msg 日志打印的内容
+ */
+internal fun yLoggerI(msg: String) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerI(msg = msg)
+}
+
+/**
+ * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - W
+ *
+ * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
+ * @param msg 日志打印的内容
+ */
+internal fun yLoggerW(msg: String) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerW(msg = msg)
+}
+
+/**
+ * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - E
+ *
+ * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
+ * @param msg 日志打印的内容
+ * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
+ */
+internal fun yLoggerE(msg: String, e: Throwable? = null) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerE(msg = msg, e = e)
+}
+
+/**
  * 向控制台和 [XposedBridge] 打印日志 - D
  *
  * [XposedBridge] 中的日志打印风格为 [[tag]]「类型」--> [msg]

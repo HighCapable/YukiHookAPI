@@ -36,22 +36,21 @@ import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseField
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.processName
-import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
- * YukiHookAPI 的装载调用类
+ * [YukiHookAPI] 的装载调用类
  *
  * 可以实现作为模块装载和自定义 Hook 装载两种方式
  *
  * 模块装载方式已经自动对接 Xposed API - 可直接调用 [encase] 完成操作
  *
- * 你可以调用 [configs] 对 YukiHookAPI 进行配置
+ * 你可以调用 [configs] 对 [YukiHookAPI] 进行配置
  */
 object YukiHookAPI {
 
@@ -97,10 +96,21 @@ object YukiHookAPI {
          * 请过滤 [debugTag] 即可找到每条日志
          */
         var isDebug = true
+
+        /**
+         * 是否启用调试日志的输出功能
+         *
+         * - ❗关闭后将会停用 [YukiHookAPI] 对全部日志的输出
+         *
+         *  但是不影响当你手动调用下面这些方法输出日志
+         *
+         *  [loggerD]、[loggerI]、[loggerW]、[loggerE]
+         */
+        var isAllowPrintingLogs = true
     }
 
     /**
-     * 配置 YukiHookAPI 相关参数
+     * 配置 [YukiHookAPI] 相关参数
      *
      * 详情请参考 [configs 方法](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#configs-%E6%96%B9%E6%B3%95)
      * @param initiate 方法体
@@ -207,7 +217,7 @@ object YukiHookAPI {
     }
 
     /** 输出找不到 [XposedBridge] 的错误日志 */
-    private fun printNoXposedBridge() = loggerE(msg = "Could not found XposedBridge in current space! Aborted")
+    private fun printNoXposedBridge() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted")
 
     /**
      * 通过 baseContext 创建 Hook 入口类
@@ -220,5 +230,9 @@ object YukiHookAPI {
      * 是否存在 [XposedBridge]
      * @return [Boolean]
      */
-    internal val hasXposedBridge get() = ("de.robv.android.xposed.XposedBridge").hasClass
+    internal val hasXposedBridge
+        get() = runCatching {
+            if (Configs.isDebug) yLoggerI(msg = "YukiHookAPI is running on Xposed API ${XposedBridge.getXposedVersion()}")
+            true
+        }.getOrNull() ?: false
 }

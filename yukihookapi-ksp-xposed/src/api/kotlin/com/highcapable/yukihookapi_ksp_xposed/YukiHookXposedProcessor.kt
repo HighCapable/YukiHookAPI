@@ -37,7 +37,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.File
 
 /**
- * 这是 YukiHookAPI 的自动生成处理类 - 核心基于 KSP
+ * 这是 [YukiHookAPI] 的自动生成处理类 - 核心基于 KSP
  *
  * 可以帮你快速生成 Xposed 入口类和包名
  *

@@ -36,8 +36,8 @@ import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
-import com.highcapable.yukihookapi.hook.log.loggerE
-import com.highcapable.yukihookapi.hook.log.loggerI
+import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
@@ -48,7 +48,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Member
 
 /**
- * YukiHookAPI 核心 Hook 实现类
+ * [YukiHookAPI] 核心 Hook 实现类
  *
  * 这是一个 API 对接类 - 实现原生对接 [XposedBridge]
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
@@ -103,7 +103,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         else Thread {
             SystemClock.sleep(10)
             if (onHookClassNotFoundFailureCallback == null)
-                loggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
             else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
         }.start()
         return Result()
@@ -427,7 +427,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
                     if (isNotIgnoredHookingFailure)
-                        loggerE(
+                        yLoggerE(
                             msg = if (isHookMemberSetup)
                                 "Hooked Member with a finding error by $hookClass [$tag]"
                             else "Hooked Member cannot be non-null by $hookClass [$tag]",
@@ -448,7 +448,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                 }
             }.onFailure {
                 onAllFailureCallback?.invoke(it)
-                if (isNotIgnoredHookingFailure) loggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
+                if (isNotIgnoredHookingFailure) yLoggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
             }
         }
 
@@ -457,7 +457,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) loggerI(msg = msg)
+            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = msg)
         }
 
         /**
@@ -465,7 +465,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param throwable 异常信息
          */
         private fun onHookFailureMsg(throwable: Throwable) =
-            loggerE(msg = "Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
+            yLoggerE(msg = "Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截

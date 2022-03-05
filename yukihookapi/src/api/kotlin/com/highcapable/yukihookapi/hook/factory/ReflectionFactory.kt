@@ -79,6 +79,22 @@ fun String.hasClass(loader: ClassLoader?) = try {
 }
 
 /**
+ * 查找变量是否存在
+ * @param name 名称
+ * @param type 类型 - 不填默认模糊
+ * @return [Boolean] 是否存在
+ */
+fun Class<*>.hasField(name: String, type: Class<*>? = null): Boolean =
+    try {
+        if (type != null)
+            ReflectionUtils.findFieldIfExists(this, type.name, name)
+        else getDeclaredField(name).apply { isAccessible = true }
+        true
+    } catch (_: Throwable) {
+        false
+    }
+
+/**
  * 查找方法是否存在
  * @param name 名称
  * @param paramType params
