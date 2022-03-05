@@ -43,7 +43,7 @@ class MainHook : YukiHookXposedInitProxy {
         YukiHookAPI.configs {
             // 全局调试用的 TAG
             debugTag = "YukiHookAPI"
-            // 是否开启全局调试日志输出功能
+            // 是否开启调试模式
             isDebug = true
             // 是否启用调试日志的输出功能
             isAllowPrintingLogs = true
