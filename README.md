@@ -151,6 +151,7 @@ class MainHook : YukiHookXposedInitProxy {
 | ----------------------------------------------------------------- | ---------------------------------------- |
 | [TSBattery](https://github.com/fankes/TSBattery)                  | [fankesyooni](https://github.com/fankes) |
 | [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon) | [fankesyooni](https://github.com/fankes) |
+| [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon) | [fankesyooni](https://github.com/fankes) |
 
 # Donate
 
