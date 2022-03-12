@@ -36,10 +36,11 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 @InjectYukiHookWithXposed
-class MainHook : YukiHookXposedInitProxy {
+class HookEntry : YukiHookXposedInitProxy {
 
     override fun onHook() {
         // 配置 YuKiHookAPI
+        // 可简写为 configs {}
         YukiHookAPI.configs {
             // 全局调试用的 TAG
             debugTag = "YukiHookAPI"
@@ -49,6 +50,7 @@ class MainHook : YukiHookXposedInitProxy {
             isAllowPrintingLogs = true
         }
         // 开始你的 Hook
+        // 可简写为 encase {}
         YukiHookAPI.encase {
             // 装载需要 Hook 的 APP
             loadApp(name = "com.highcapable.yukihookapi.demo_app") {
