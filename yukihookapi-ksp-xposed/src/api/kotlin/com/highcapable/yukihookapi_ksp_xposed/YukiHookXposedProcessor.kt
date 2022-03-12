@@ -216,7 +216,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 ).apply {
                     /** 插入 xposed_init 代码 */
                     write(
-                        ("@file:Suppress(\"EXPERIMENTAL_API_USAGE\")\n" +
+                        ("@file:Suppress(\"OPT_IN_USAGE\")\n" +
                                 "\n" +
                                 "package $packageName\n" +
                                 "\n" +

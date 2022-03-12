@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("unused", "OPT_IN_USAGE")
 
 package com.highcapable.yukihookapi.hook.factory
 

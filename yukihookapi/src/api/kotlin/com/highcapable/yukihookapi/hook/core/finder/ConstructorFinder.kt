@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "EXPERIMENTAL_API_USAGE", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
+@file:Suppress("unused", "OPT_IN_USAGE", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.core.finder
 
