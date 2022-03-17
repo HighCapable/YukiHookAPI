@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.4-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.5-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -142,7 +142,14 @@ class MainHook : YukiHookXposedInitProxy {
   修复 LSPosed 在最新版本中启用“只有模块classloader可以使用Xposed API”选项后找不到 `XposedBridge` 的问题；<br/>
   添加 `YukiHookAPI` 的常量版本名称和版本号；<br/>
   新增 `hasField` 方法以及 `isAllowPrintingLogs` 配置参数；<br/>
-  新增 `isDebug` 开启的情况下 API 将自动打印欢迎信息测试模块是否生效。
+  新增 `isDebug` 开启的情况下 API 将自动打印欢迎信息测试模块是否生效。<br/><br/>
+- 1.0.5 <br/>
+  修复旧版本 LSPosed 框架情况下欢迎信息多次打印的问题；<br/>
+  添加 `onInit` 方法来配置 `YukiHookAPI`；<br/>
+  新增 `executorName` 和 `executorVersion` 来获取当前 Hook 框架的名称和版本号；<br/>
+  新增 `by` 方法来设置 Hook 的时机和条件；<br/>
+  `YukiHookModulePrefs` 新增可控制的键值缓存，可在宿主运行时模块动态更新数据；<br/>
+  修复了一些可能存在的 BUG。
 
 # Cooperations
 
