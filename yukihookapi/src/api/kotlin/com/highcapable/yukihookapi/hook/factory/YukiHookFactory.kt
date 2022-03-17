@@ -46,7 +46,6 @@ import java.io.FileReader
 /**
  * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI.Configs]
  * @param initiate Hook 方法体
- * @return [YukiHookAPI.Configs]
  */
 fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
 
