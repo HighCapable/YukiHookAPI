@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+@file:Suppress("OPT_IN_IS_NOT_ENABLED", "EXPERIMENTAL_IS_NOT_ENABLED")
 
 package com.highcapable.yukihookapi.annotation
 

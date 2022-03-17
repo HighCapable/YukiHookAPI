@@ -25,8 +25,6 @@
  *
  * This file is Created by fankes on 2022/2/3.
  */
-@file:Suppress("unused")
-
 package com.highcapable.yukihookapi.annotation.xposed
 
 import com.highcapable.yukihookapi.YukiHookAPI

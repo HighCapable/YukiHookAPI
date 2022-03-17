@@ -26,7 +26,7 @@
  * This file is Created by fankes on 2022/2/8.
  */
 @file:Suppress(
-    "OPT_IN_USAGE", "SetWorldReadable", "CommitPrefEdits",
+    "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE", "SetWorldReadable", "CommitPrefEdits",
     "DEPRECATION", "WorldReadableFiles", "unused"
 )
 

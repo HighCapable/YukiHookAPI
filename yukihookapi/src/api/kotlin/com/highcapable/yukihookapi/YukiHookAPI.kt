@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("MemberVisibilityCanBePrivate", "unused", "OPT_IN_USAGE")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE")
 
 package com.highcapable.yukihookapi
 
@@ -56,6 +56,9 @@ object YukiHookAPI {
 
     /** Xposed Hook API 方法体回调 */
     private var packageParamCallback: (PackageParam.() -> Unit)? = null
+
+    /** 是否还未输出欢迎信息 */
+    private var isShowSplashLogOnceTime = true
 
     /** 获取当前 [YukiHookAPI] 的版本 */
     const val API_VERSION_NAME = "1.0.4"
@@ -144,7 +147,7 @@ object YukiHookAPI {
                     appClassLoader = lpparam.classLoader,
                     appInfo = lpparam.appInfo
                 )
-            ).apply { printHelloMsg() }
+            ).apply { printSplashLog() }
         )
 
     /**
@@ -159,7 +162,7 @@ object YukiHookAPI {
         isLoadedFromBaseContext = false
         if (hasXposedBridge)
             packageParamCallback = initiate
-        else printNoXposedBridge()
+        else printNoXposedEnvLog()
     }
 
     /**
@@ -179,7 +182,7 @@ object YukiHookAPI {
                     hooker.forEach { it.assignInstance(packageParam = this) }
                 else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty")
             }
-        else printNoXposedBridge()
+        else printNoXposedEnvLog()
     }
 
     /**
@@ -197,9 +200,10 @@ object YukiHookAPI {
      */
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = true
-        if (hasXposedBridge)
-            (if (baseContext != null) initiate.invoke(baseContext.packagePararm.apply { printHelloMsg() }))
-        else printNoXposedBridge()
+        when {
+            hasXposedBridge && baseContext != null -> initiate.invoke(baseContext.packagePararm.apply { printSplashLog() })
+            else -> printNoXposedEnvLog()
+        }
     }
 
     /**
@@ -221,19 +225,20 @@ object YukiHookAPI {
         if (hasXposedBridge)
             (if (baseContext != null)
                 if (hooker.isNotEmpty()) {
-                    printHelloMsg()
+                    printSplashLog()
                     hooker.forEach { it.assignInstance(packageParam = baseContext.packagePararm) }
                 } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty"))
-        else printNoXposedBridge()
+        else printNoXposedEnvLog()
     }
 
     /** 输出找不到 [XposedBridge] 的错误日志 */
-    private fun printNoXposedBridge() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted")
+    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted")
 
     /** 输出欢迎信息调试日志 */
-    private fun printHelloMsg() {
-        if (Configs.isDebug)
-            yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using Xposed API $hookingXposedApiVersion")
+    private fun printSplashLog() {
+        if (!Configs.isDebug || !isShowSplashLogOnceTime) return
+        isShowSplashLogOnceTime = false
+        yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using Xposed API $hookingXposedApiVersion")
     }
 
     /**
