@@ -44,7 +44,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        findViewById<TextView>(R.id.module_demo_text).text = "Module is Active -> ${YukiHookModuleStatus.isActive()}"
+        findViewById<TextView>(R.id.module_demo_text).text = "Module is Active -> ${YukiHookModuleStatus.isActive()}\n" +
+                "Hook Framework -> ${YukiHookModuleStatus.executorName}\n" +
+                "API Version -> ${YukiHookModuleStatus.executorVersion}"
         findViewById<EditText>(R.id.module_demo_edit_text).also {
             it.setText(modulePrefs.getString(key = "test_data"))
             findViewById<Button>(R.id.module_demo_button).setOnClickListener { _ ->

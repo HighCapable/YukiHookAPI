@@ -227,6 +227,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
                                 "import de.robv.android.xposed.XC_MethodReplacement\n" +
                                 "import de.robv.android.xposed.XposedHelpers\n" +
+                                "import de.robv.android.xposed.XposedBridge\n" +
                                 "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
                                 "import $packageName.$className\n" +
                                 "\n" +
@@ -244,12 +245,12 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "\n" +
                                 "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
                                 "        if (lpparam == null) return\n" +
-                                "        runCatching {\n" +
+                                "        try {\n" +
                                 "            $className().onHook()\n" +
-                                "        }.onFailure {\n" +
-                                "            loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it)\n" +
+                                "        } catch (e: Throwable) {\n" +
+                                "            loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = e)\n" +
                                 "        }\n" +
-                                "        if (lpparam.packageName == \"$realPackageName\")\n" +
+                                "        if (lpparam.packageName == \"$realPackageName\") {\n" +
                                 "            XposedHelpers.findAndHookMethod(\n" +
                                 "                YukiHookModuleStatus::class.java.name,\n" +
                                 "                lpparam.classLoader,\n" +
@@ -257,6 +258,25 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "                object : XC_MethodReplacement() {\n" +
                                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
                                 "                })\n" +
+                                "            XposedHelpers.findAndHookMethod(\n" +
+                                "                YukiHookModuleStatus::class.java.name,\n" +
+                                "                lpparam.classLoader,\n" +
+                                "                \"getXposedBridgeTag\",\n" +
+                                "                object : XC_MethodReplacement() {\n" +
+                                "                    override fun replaceHookedMethod(param: MethodHookParam?) = try {\n" +
+                                "                        XposedBridge::class.java.getDeclaredField(\"TAG\").apply { isAccessible = true }.get(null) as String\n" +
+                                "                    } catch (_: Throwable) {\n" +
+                                "                        \"invalid\"\n" +
+                                "                    }\n" +
+                                "                })\n" +
+                                "            XposedHelpers.findAndHookMethod(\n" +
+                                "                YukiHookModuleStatus::class.java.name,\n" +
+                                "                lpparam.classLoader,\n" +
+                                "                \"getXposedVersion\",\n" +
+                                "                object : XC_MethodReplacement() {\n" +
+                                "                    override fun replaceHookedMethod(param: MethodHookParam?) = XposedBridge.getXposedVersion()\n" +
+                                "                })\n" +
+                                "        }\n" +
                                 "        YukiHookAPI.modulePackageName = \"$realPackageName\"\n" +
                                 "        YukiHookAPI.onXposedLoaded(lpparam)\n" +
                                 "    }\n" +

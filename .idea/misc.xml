@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4169230769230769" />
         <entry key="app_demo/src/main/res/layout/activity_main.xml" value="0.4375" />
+        <entry key="demo-module/src/main/res/layout/activity_main.xml" value="0.4375" />
         <entry key="demo/src/main/res/layout/activity_main.xml" value="0.4375" />
         <entry key="module_demo/src/main/res/layout/activity_main.xml" value="0.4375" />
       </map>
