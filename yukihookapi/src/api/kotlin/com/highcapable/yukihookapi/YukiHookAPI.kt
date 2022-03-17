@@ -82,6 +82,26 @@ object YukiHookAPI {
     internal var isLoadedFromBaseContext = false
 
     /**
+     * 获取当前 Hook 框架的名称
+     *
+     * 从 [XposedBridge] 获取 TAG
+     * @return [String] 无法获取会返回 unknown - [hasXposedBridge] 不存在会返回 invalid
+     */
+    val executorName
+        get() = runCatching {
+            (XposedBridge::class.java.getDeclaredField("TAG").apply { isAccessible = true }.get(null) as? String?)
+                ?.replace(oldValue = "Bridge", newValue = "")?.replace(oldValue = "-", newValue = "")?.trim() ?: "unknown"
+        }.getOrNull() ?: "invalid"
+
+    /**
+     * 获取当前 Hook 框架的版本
+     *
+     * 获取 [XposedBridge.getXposedVersion]
+     * @return [Int] 无法获取会返回 -1
+     */
+    val executorVersion get() = runCatching { XposedBridge.getXposedVersion() }.getOrNull() ?: -1
+
+    /**
      * 配置 YukiHookAPI
      */
     object Configs {
@@ -238,7 +258,7 @@ object YukiHookAPI {
     private fun printSplashLog() {
         if (!Configs.isDebug || !isShowSplashLogOnceTime) return
         isShowSplashLogOnceTime = false
-        yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using Xposed API $hookingXposedApiVersion")
+        yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using $executorName API $executorVersion")
     }
 
     /**
@@ -252,11 +272,5 @@ object YukiHookAPI {
      * 是否存在 [XposedBridge]
      * @return [Boolean]
      */
-    internal val hasXposedBridge get() = hookingXposedApiVersion >= 0
-
-    /**
-     * 输出当前使用的 Xposed 版本
-     * @return [Int]
-     */
-    internal val hookingXposedApiVersion get() = runCatching { XposedBridge.getXposedVersion() }.getOrNull() ?: -1
+    internal val hasXposedBridge get() = executorVersion >= 0
 }
