@@ -163,6 +163,9 @@ object YukiHookAPI {
          *  你可以手动在 [YukiHookModulePrefs] 中自由开启和关闭缓存功能以及清除缓存
          */
         var isEnableModulePrefsCache = true
+
+        /** 结束方法体 */
+        internal fun build() {}
     }
 
     /**
@@ -170,9 +173,8 @@ object YukiHookAPI {
      *
      * 详情请参考 [configs 方法](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#configs-%E6%96%B9%E6%B3%95)
      * @param initiate 方法体
-     * @return [Configs]
      */
-    fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate)
+    fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
 
     /**
      * 标识 Xposed API 装载完成
