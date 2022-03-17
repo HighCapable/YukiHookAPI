@@ -79,6 +79,9 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /** 缓存数据 */
     private var xPrefCacheKeyValueFloats = HashMap<String, Float>()
 
+    /** 是否使用键值缓存 */
+    private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
+
     /** 检查是否处于自定义 Hook API 状态 */
     private fun checkApiInBaseContext() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
@@ -124,7 +127,21 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @return [YukiHookModulePrefs]
      */
     fun name(name: String): YukiHookModulePrefs {
+        isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
         prefsName = name
+        return this
+    }
+
+    /**
+     * 忽略缓存直接读取键值
+     *
+     * 无论是否开启 [YukiHookAPI.Configs.isEnableModulePrefsCache]
+     *
+     * - 仅在 [XSharedPreferences] 下生效
+     * @return [YukiHookModulePrefs]
+     */
+    fun direct(): YukiHookModulePrefs {
+        isUsingKeyValueCache = false
         return this
     }
 
@@ -138,12 +155,14 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     fun getString(key: String, default: String = "") =
         (if (isXposedEnvironment)
-            xPrefCacheKeyValueStrings[key].let {
-                (it ?: xPref.getString(key, default) ?: default).let { value ->
-                    xPrefCacheKeyValueStrings[key] = value
-                    value
+            if (isUsingKeyValueCache)
+                xPrefCacheKeyValueStrings[key].let {
+                    (it ?: xPref.getString(key, default) ?: default).let { value ->
+                        xPrefCacheKeyValueStrings[key] = value
+                        value
+                    }
                 }
-            }
+            else xPref.getString(key, default) ?: default
         else sPref.getString(key, default) ?: default).let {
             makeWorldReadable()
             it
@@ -159,12 +178,14 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     fun getBoolean(key: String, default: Boolean = false) =
         (if (isXposedEnvironment)
-            xPrefCacheKeyValueBooleans[key].let {
-                it ?: xPref.getBoolean(key, default).let { value ->
-                    xPrefCacheKeyValueBooleans[key] = value
-                    value
+            if (isUsingKeyValueCache)
+                xPrefCacheKeyValueBooleans[key].let {
+                    it ?: xPref.getBoolean(key, default).let { value ->
+                        xPrefCacheKeyValueBooleans[key] = value
+                        value
+                    }
                 }
-            }
+            else xPref.getBoolean(key, default)
         else sPref.getBoolean(key, default)).let {
             makeWorldReadable()
             it
@@ -180,12 +201,14 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     fun getInt(key: String, default: Int = 0) =
         (if (isXposedEnvironment)
-            xPrefCacheKeyValueInts[key].let {
-                it ?: xPref.getInt(key, default).let { value ->
-                    xPrefCacheKeyValueInts[key] = value
-                    value
+            if (isUsingKeyValueCache)
+                xPrefCacheKeyValueInts[key].let {
+                    it ?: xPref.getInt(key, default).let { value ->
+                        xPrefCacheKeyValueInts[key] = value
+                        value
+                    }
                 }
-            }
+            else xPref.getInt(key, default)
         else sPref.getInt(key, default)).let {
             makeWorldReadable()
             it
@@ -201,12 +224,14 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     fun getFloat(key: String, default: Float = 0f) =
         (if (isXposedEnvironment)
-            xPrefCacheKeyValueFloats[key].let {
-                it ?: xPref.getFloat(key, default).let { value ->
-                    xPrefCacheKeyValueFloats[key] = value
-                    value
+            if (isUsingKeyValueCache)
+                xPrefCacheKeyValueFloats[key].let {
+                    it ?: xPref.getFloat(key, default).let { value ->
+                        xPrefCacheKeyValueFloats[key] = value
+                        value
+                    }
                 }
-            }
+            else xPref.getFloat(key, default)
         else sPref.getFloat(key, default)).let {
             makeWorldReadable()
             it
@@ -222,12 +247,14 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     fun getLong(key: String, default: Long = 0L) =
         (if (isXposedEnvironment)
-            xPrefCacheKeyValueLongs[key].let {
-                it ?: xPref.getLong(key, default).let { value ->
-                    xPrefCacheKeyValueLongs[key] = value
-                    value
+            if (isUsingKeyValueCache)
+                xPrefCacheKeyValueLongs[key].let {
+                    it ?: xPref.getLong(key, default).let { value ->
+                        xPrefCacheKeyValueLongs[key] = value
+                        value
+                    }
                 }
-            }
+            else xPref.getLong(key, default)
         else sPref.getLong(key, default)).let {
             makeWorldReadable()
             it
@@ -320,5 +347,20 @@ class YukiHookModulePrefs(private val context: Context? = null) {
         if (isXposedEnvironment) return
         sPref.edit().putLong(key, value).apply()
         makeWorldReadable()
+    }
+
+    /**
+     * 无论是否开启 [YukiHookAPI.Configs.isEnableModulePrefsCache]
+     *
+     * 调用此方法将清除当前存储的全部键值缓存
+     *
+     * 下次将从 [XSharedPreferences] 重新读取
+     */
+    fun clearCache() {
+        xPrefCacheKeyValueStrings.clear()
+        xPrefCacheKeyValueBooleans.clear()
+        xPrefCacheKeyValueInts.clear()
+        xPrefCacheKeyValueLongs.clear()
+        xPrefCacheKeyValueFloats.clear()
     }
 }

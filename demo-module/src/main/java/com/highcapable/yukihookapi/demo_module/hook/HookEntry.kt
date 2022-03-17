@@ -38,7 +38,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 @InjectYukiHookWithXposed
 class HookEntry : YukiHookXposedInitProxy {
 
-    override fun onHook() {
+    override fun onInit() {
         // 配置 YuKiHookAPI
         // 可简写为 configs {}
         YukiHookAPI.configs {
@@ -48,7 +48,14 @@ class HookEntry : YukiHookXposedInitProxy {
             isDebug = true
             // 是否启用调试日志的输出功能
             isAllowPrintingLogs = true
+            // 是否启用 [YukiHookModulePrefs] 的键值缓存功能
+            // 若无和模块频繁交互数据在宿主重新启动之前建议开启
+            // 若需要实时交互数据建议关闭或从 [YukiHookModulePrefs] 中进行动态配置
+            isEnableModulePrefsCache = true
         }
+    }
+
+    override fun onHook() {
         // 开始你的 Hook
         // 可简写为 encase {}
         YukiHookAPI.encase {

@@ -40,6 +40,7 @@ import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
@@ -60,11 +61,24 @@ object YukiHookAPI {
     /** 是否还未输出欢迎信息 */
     private var isShowSplashLogOnceTime = true
 
+    /** Xposed 是否装载完成 */
+    private var isXposedInitialized = false
+
     /** 获取当前 [YukiHookAPI] 的版本 */
     const val API_VERSION_NAME = "1.0.4"
 
     /** 获取当前 [YukiHookAPI] 的版本号 */
     const val API_VERSION_CODE = 5
+
+    /**
+     * 模块是否装载了 Xposed 回调方法
+     *
+     * - ❗此变量为私有功能性 API - 你不应该手动调用此变量
+     * @return [Boolean]
+     */
+    @DoNotUseField
+    val isXposedCallbackSetUp
+        get() = !isXposedInitialized && packageParamCallback != null
 
     /**
      * 预设的 Xposed 模块包名
@@ -140,6 +154,15 @@ object YukiHookAPI {
          *  当 [isAllowPrintingLogs] 关闭后 [isDebug] 也将同时关闭
          */
         var isAllowPrintingLogs = true
+
+        /**
+         * 是否启用 [YukiHookModulePrefs] 的键值缓存功能
+         *
+         * - 为防止内存复用过高问题 - 此功能默认启用
+         *
+         *  你可以手动在 [YukiHookModulePrefs] 中自由开启和关闭缓存功能以及清除缓存
+         */
+        var isEnableModulePrefsCache = true
     }
 
     /**
@@ -150,6 +173,16 @@ object YukiHookAPI {
      * @return [Configs]
      */
     fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate)
+
+    /**
+     * 标识 Xposed API 装载完成
+     *
+     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
+     */
+    @DoNotUseMethod
+    fun onXposedInitialized() {
+        isXposedInitialized = true
+    }
 
     /**
      * 装载 Xposed API 回调
