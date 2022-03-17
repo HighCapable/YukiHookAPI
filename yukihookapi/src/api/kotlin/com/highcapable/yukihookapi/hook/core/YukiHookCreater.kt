@@ -61,6 +61,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      */
     enum class HookAllMembers { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_NONE }
 
+    /** 是否对当前 [YukiHookCreater] 禁止执行 Hook 操作 */
+    private var isDisableCreaterRunHook = false
+
     /** 设置要 Hook 的方法、构造类 */
     private var hookMembers = HashMap<String, MemberHookCreater>()
 
@@ -99,12 +102,13 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
     fun hook(): Result {
         if (!YukiHookAPI.hasXposedBridge) return Result()
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
-        if (hookClass.instance != null) hookMembers.forEach { (_, member) -> member.hook() }
         else Thread {
             SystemClock.sleep(10)
-            if (onHookClassNotFoundFailureCallback == null)
-                yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
-            else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
+            if (!isDisableCreaterRunHook && hookClass.instance != null) hookMembers.forEach { (_, member) -> member.hook() }
+            if (!isDisableCreaterRunHook && hookClass.instance == null)
+                if (onHookClassNotFoundFailureCallback == null)
+                    yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
         }.start()
         return Result()
     }
@@ -126,6 +130,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /** [replaceAny]、[replaceUnit]、[replaceTo] 等回调 */
         private var replaceHookCallback: (HookParam.() -> Any?)? = null
 
+        /** 找不到 [member] 出现错误回调 */
+        private var onNoSuchMemberFailureCallback: ((Throwable) -> Unit)? = null
+
         /** Hook 过程中出现错误回调 */
         private var onConductFailureCallback: ((HookParam, Throwable) -> Unit)? = null
 
@@ -143,6 +150,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
 
         /** 标识是否已经设置了要 Hook 的 [member] */
         private var isHookMemberSetup = false
+
+        /** 是否对当前 [MemberHookCreater] 禁止执行 Hook 操作 */
+        private var isDisableMemberRunHook = false
 
         /** 是否 Hook 全部方法以及类型 */
         private var hookAllMembers = HookAllMembers.HOOK_NONE
@@ -350,7 +360,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         @DoNotUseMethod
         fun hook() {
-            if (!YukiHookAPI.hasXposedBridge) return
+            if (!YukiHookAPI.hasXposedBridge || isDisableMemberRunHook) return
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
                     onHookingFailureCallback?.invoke(it)
@@ -424,9 +434,10 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                         }
                     }
                 else Throwable("Finding Error isSetUpMember [$isHookMemberSetup] [$tag]").also {
+                    onNoSuchMemberFailureCallback?.invoke(it)
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
-                    if (isNotIgnoredHookingFailure)
+                    if (isNotIgnoredNoSuchMemberFailure)
                         yLoggerE(
                             msg = if (isHookMemberSetup)
                                 "Hooked Member with a finding error by $hookClass [$tag]"
@@ -447,8 +458,11 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     else -> error("Hooked got a no error possible")
                 }
             }.onFailure {
+                val isMemberNotFound = it.message?.lowercase()?.contains(other = "nosuch") == true
+                if (isMemberNotFound) onNoSuchMemberFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
-                if (isNotIgnoredHookingFailure) yLoggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
+                if ((isNotIgnoredHookingFailure && !isMemberNotFound) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
+                    yLoggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
             }
         }
 
@@ -471,7 +485,13 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * 判断是否没有设置 Hook 过程中的任何异常拦截
          * @return [Boolean] 没有设置任何异常拦截
          */
-        internal val isNotIgnoredHookingFailure get() = onHookingFailureCallback == null && onAllFailureCallback == null
+        private val isNotIgnoredHookingFailure get() = onHookingFailureCallback == null && onAllFailureCallback == null
+
+        /**
+         * 判断是否没有设置 Hook 过程中 [member] 找不到的任何异常拦截
+         * @return [Boolean] 没有设置任何异常拦截
+         */
+        internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
 
         override fun toString() = "${hookClass.name}$member$tag#YukiHookAPI"
 
@@ -483,11 +503,40 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         inner class Result {
 
             /**
-             * 创建监听失败事件方法体
+             * 创建监听事件方法体
              * @param initiate 方法体
              * @return [Result] 可继续向下监听
              */
-            fun failures(initiate: Result.() -> Unit) = apply(initiate)
+            fun result(initiate: Result.() -> Unit) = apply(initiate)
+
+            /**
+             * 添加执行 Hook 需要满足的条件
+             *
+             * 不满足条件将直接停止 Hook
+             * @param initiate 条件方法体
+             * @return [Result] 可继续向下监听
+             */
+            fun by(initiate: () -> Boolean): Result {
+                isDisableMemberRunHook = !initiate()
+                if (isDisableMemberRunHook) ignoredAllFailure()
+                return this
+            }
+
+            /**
+             * 监听 [member] 不存在发生错误的回调方法
+             * @param initiate 回调错误
+             * @return [Result] 可继续向下监听
+             */
+            fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result {
+                onNoSuchMemberFailureCallback = initiate
+                return this
+            }
+
+            /**
+             * 忽略 [member] 不存在发生的错误
+             * @return [Result] 可继续向下监听
+             */
+            fun ignoredNoSuchMemberFailure() = onNoSuchMemberFailure {}
 
             /**
              * 监听 Hook 进行过程中发生错误的回调方法
@@ -547,11 +596,23 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
     inner class Result {
 
         /**
-         * 创建监听失败事件方法体
+         * 创建监听事件方法体
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
-        fun failures(initiate: Result.() -> Unit) = apply(initiate)
+        fun result(initiate: Result.() -> Unit) = apply(initiate)
+
+        /**
+         * 添加执行 Hook 需要满足的条件
+         *
+         * 不满足条件将直接停止 Hook
+         * @param initiate 条件方法体
+         * @return [Result] 可继续向下监听
+         */
+        fun by(initiate: () -> Boolean): Result {
+            isDisableCreaterRunHook = !initiate()
+            return this
+        }
 
         /**
          * 监听 [hookClass] 找不到时发生错误的回调方法
@@ -567,6 +628,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * 忽略 [hookClass] 找不到时出现的错误
          * @return [Result] 可继续向下监听
          */
-        fun ignoredHookClassNotFoundFailure() = onHookClassNotFoundFailure {}
+        fun ignoredHookClassNotFoundFailure(): Result {
+            by { hookClass.instance != null }
+            return this
+        }
     }
 }

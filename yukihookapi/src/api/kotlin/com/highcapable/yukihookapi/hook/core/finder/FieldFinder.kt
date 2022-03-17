@@ -91,7 +91,7 @@ class FieldFinder(
         } catch (e: Throwable) {
             Thread {
                 SystemClock.sleep(10)
-                if (isNotIgnoredHookingFailure) yLoggerE(msg = "NoSuchField happend in [$classSet] [${hookTag}]", e = e)
+                if (isNotIgnoredNoSuchMemberFailure) yLoggerE(msg = "NoSuchField happend in [$classSet] [${hookTag}]", e = e)
             }.start()
             Result(isNoSuch = true, e)
         }
@@ -155,7 +155,7 @@ class FieldFinder(
         /**
          * 忽略任何错误发出的警告
          *
-         * - 若 [isNotIgnoredHookingFailure] 为 false 则自动忽略
+         * - 若 [isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
          * @return [Result] 可继续向下监听
          */
         fun ignoredError(): Result {
