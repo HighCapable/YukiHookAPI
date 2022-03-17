@@ -66,6 +66,16 @@ object YukiHookModuleStatus {
     val executorVersion get() = getXposedVersion()
 
     /**
+     * 此方法经过 Hook 后返回 true 即模块已激活
+     * @return [Boolean]
+     */
+    @Keep
+    fun isActive(): Boolean {
+        yLoggerI(msg = "This Module is not actived")
+        return false
+    }
+
+    /**
      * 此方法经过 Hook 后返回 [XposedBridge.getXposedVersion]
      * @return [Int]
      */
@@ -78,14 +88,4 @@ object YukiHookModuleStatus {
      */
     @Keep
     private fun getXposedBridgeTag() = "unknown"
-
-    /**
-     * 此方法经过 Hook 后返回 true 即模块已激活
-     * @return [Boolean]
-     */
-    @Keep
-    fun isActive(): Boolean {
-        yLoggerI(msg = "This Module is not actived")
-        return false
-    }
 }
