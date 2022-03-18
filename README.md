@@ -151,7 +151,7 @@ class MainHook : YukiHookXposedInitProxy {
   `YukiHookModulePrefs` 新增可控制的键值缓存，可在宿主运行时模块动态更新数据；<br/>
   修复了一些可能存在的 BUG。<br/><br/>
 - 1.0.5.1 <br/>
-  修正一处注释错误；<br/><br/>
+  修正一处注释错误；<br/>
   临时修复一个 BUG。
 
 # Cooperations
