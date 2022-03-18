@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.5－fix-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.5.1-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -150,7 +150,8 @@ class MainHook : YukiHookXposedInitProxy {
   新增 `by` 方法来设置 Hook 的时机和条件；<br/>
   `YukiHookModulePrefs` 新增可控制的键值缓存，可在宿主运行时模块动态更新数据；<br/>
   修复了一些可能存在的 BUG。<br/><br/>
-- 1.0.5-fix <br/>
+- 1.0.5.1 <br/>
+  修正一处注释错误；<br/><br/>
   临时修复一个 BUG。
 
 # Cooperations
