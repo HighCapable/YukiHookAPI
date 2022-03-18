@@ -246,12 +246,14 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
                                 "        if (lpparam == null) return\n" +
                                 "        try {\n" +
-                                "            $className().onInit()\n" +
-                                "            if (YukiHookAPI.isXposedCallbackSetUp) {\n" +
-                                "                loggerE(tag = \"YukiHookAPI\", msg = \"You cannot loading a hooker in \\\"onInit\\\" method! Aborted\")\n" +
-                                "                return\n" +
+                                "            $className().apply {\n" +
+                                "                onInit()\n" +
+                                "                if (YukiHookAPI.isXposedCallbackSetUp) {\n" +
+                                "                    loggerE(tag = \"YukiHookAPI\", msg = \"You cannot loading a hooker in \\\"onInit\\\" method! Aborted\")\n" +
+                                "                    return\n" +
+                                "                }\n" +
+                                "                onHook()\n" +
                                 "            }\n" +
-                                "            $className().onHook()\n" +
                                 "            YukiHookAPI.onXposedInitialized()\n" +
                                 "        } catch (e: Throwable) {\n" +
                                 "            loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = e)\n" +
