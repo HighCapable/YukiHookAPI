@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.5.1-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.5.2-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -152,7 +152,9 @@ class MainHook : YukiHookXposedInitProxy {
   修复了一些可能存在的 BUG。<br/><br/>
 - 1.0.5.1 <br/>
   修正一处注释错误；<br/>
-  临时修复一个 BUG。
+  临时修复一个 BUG。<br/><br/>
+- 1.0.5.2 <br/>
+  修复新版与旧版 Kotlin APIs 的兼容性问题。
 
 # Cooperations
 
