@@ -44,6 +44,7 @@ import java.net.http.HttpClient
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.function.Supplier
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
@@ -423,6 +424,12 @@ val HttpClientClass get() = HttpClient::class.java
  * @return [Class]
  */
 val AtomicBooleanClass get() = AtomicBoolean::class.java
+
+/**
+ * 获得 [Supplier] 类型
+ * @return [Class]
+ */
+val SupplierClass get() = Supplier::class.java
 
 /**
  * 获得 [Class] 类型

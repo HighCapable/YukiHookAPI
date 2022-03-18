@@ -29,9 +29,17 @@
 
 package com.highcapable.yukihookapi.hook.type.android
 
+import android.animation.*
+import android.appwidget.AppWidgetHostView
 import android.util.AttributeSet
 import android.view.*
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.TranslateAnimation
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.*
+import android.widget.RemoteViews.RemoteView
 
 /**
  * 获得 [View] 类型
@@ -40,10 +48,70 @@ import android.widget.*
 val ViewClass get() = View::class.java
 
 /**
+ * 获得 [Surface] 类型
+ * @return [Class]
+ */
+val SurfaceClass get() = Surface::class.java
+
+/**
+ * 获得 [SurfaceView] 类型
+ * @return [Class]
+ */
+val SurfaceViewClass get() = SurfaceView::class.java
+
+/**
+ * 获得 [TextureView] 类型
+ * @return [Class]
+ */
+val TextureViewClass get() = TextureView::class.java
+
+/**
+ * 获得 [WebView] 类型
+ * @return [Class]
+ */
+val WebViewClass get() = WebView::class.java
+
+/**
+ * 获得 [WebViewClient] 类型
+ * @return [Class]
+ */
+val WebViewClientClass get() = WebViewClient::class.java
+
+/**
+ * 获得 [ViewStructure] 类型
+ * @return [Class]
+ */
+val ViewStructureClass get() = ViewStructure::class.java
+
+/**
  * 获得 [ViewGroup] 类型
  * @return [Class]
  */
 val ViewGroupClass get() = ViewGroup::class.java
+
+/**
+ * 获得 [ViewParent] 类型
+ * @return [Class]
+ */
+val ViewParentClass get() = ViewParent::class.java
+
+/**
+ * 获得 [AppWidgetHostView] 类型
+ * @return [Class]
+ */
+val AppWidgetHostViewClass get() = AppWidgetHostView::class.java
+
+/**
+ * 获得 [RemoteViews] 类型
+ * @return [Class]
+ */
+val RemoteViewsClass get() = RemoteViews::class.java
+
+/**
+ * 获得 [RemoteView] 类型
+ * @return [Class]
+ */
+val RemoteViewClass get() = RemoteView::class.java
 
 /**
  * 获得 [TextView] 类型
@@ -56,6 +124,12 @@ val TextViewClass get() = TextView::class.java
  * @return [Class]
  */
 val ImageViewClass get() = ImageView::class.java
+
+/**
+ * 获得 [ImageButton] 类型
+ * @return [Class]
+ */
+val ImageButtonClass get() = ImageButton::class.java
 
 /**
  * 获得 [EditText] 类型
@@ -98,6 +172,24 @@ val ListViewClass get() = ListView::class.java
  * @return [Class]
  */
 val LayoutInflaterClass get() = LayoutInflater::class.java
+
+/**
+ * 获得 [LayoutInflater.Filter] 类型
+ * @return [Class]
+ */
+val LayoutInflater_FilterClass get() = LayoutInflater.Filter::class.java
+
+/**
+ * 获得 [LayoutInflater.Factory] 类型
+ * @return [Class]
+ */
+val LayoutInflater_FactoryClass get() = LayoutInflater.Factory::class.java
+
+/**
+ * 获得 [LayoutInflater.Factory2] 类型
+ * @return [Class]
+ */
+val LayoutInflater_Factory2Class get() = LayoutInflater.Factory2::class.java
 
 /**
  * 获得 [ListAdapter] 类型
@@ -166,6 +258,12 @@ val FrameLayout_LayoutParamsClass get() = FrameLayout.LayoutParams::class.java
 val TextClockClass get() = TextClock::class.java
 
 /**
+ * 获得 [MotionEvent] 类型
+ * @return [Class]
+ */
+val MotionEventClass get() = MotionEvent::class.java
+
+/**
  * 获得 [View.OnClickListener] 类型
  * @return [Class]
  */
@@ -224,3 +322,93 @@ val ProgressBarClass get() = ProgressBar::class.java
  * @return [Class]
  */
 val AttributeSetClass get() = AttributeSet::class.java
+
+/**
+ * 获得 [Animation] 类型
+ * @return [Class]
+ */
+val AnimationClass get() = Animation::class.java
+
+/**
+ * 获得 [Animation.AnimationListener] 类型
+ * @return [Class]
+ */
+val Animation_AnimationListenerClass get() = Animation.AnimationListener::class.java
+
+/**
+ * 获得 [TranslateAnimation] 类型
+ * @return [Class]
+ */
+val TranslateAnimationClass get() = TranslateAnimation::class.java
+
+/**
+ * 获得 [AlphaAnimation] 类型
+ * @return [Class]
+ */
+val AlphaAnimationClass get() = AlphaAnimation::class.java
+
+/**
+ * 获得 [Animator] 类型
+ * @return [Class]
+ */
+val AnimatorClass get() = Animator::class.java
+
+/**
+ * 获得 [Animator.AnimatorListener] 类型
+ * @return [Class]
+ */
+val Animator_AnimatorListenerClass get() = Animator.AnimatorListener::class.java
+
+/**
+ * 获得 [ObjectAnimator] 类型
+ * @return [Class]
+ */
+val ObjectAnimatorClass get() = ObjectAnimator::class.java
+
+/**
+ * 获得 [ValueAnimator] 类型
+ * @return [Class]
+ */
+val ValueAnimatorClass get() = ValueAnimator::class.java
+
+/**
+ * 获得 [ValueAnimator.AnimatorUpdateListener] 类型
+ * @return [Class]
+ */
+val ValueAnimator_AnimatorUpdateListenerClass get() = ValueAnimator.AnimatorUpdateListener::class.java
+
+/**
+ * 获得 [ViewAnimator] 类型
+ * @return [Class]
+ */
+val ViewAnimatorClass get() = ViewAnimator::class.java
+
+/**
+ * 获得 [AnimatorSet] 类型
+ * @return [Class]
+ */
+val AnimatorSetClass get() = AnimatorSet::class.java
+
+/**
+ * 获得 [AnimatorSet.Builder] 类型
+ * @return [Class]
+ */
+val AnimatorSet_BuilderClass get() = AnimatorSet.Builder::class.java
+
+/**
+ * 获得 [PropertyValuesHolder] 类型
+ * @return [Class]
+ */
+val PropertyValuesHolderClass get() = PropertyValuesHolder::class.java
+
+/**
+ * 获得 [ViewPropertyAnimator] 类型
+ * @return [Class]
+ */
+val ViewPropertyAnimatorClass get() = ViewPropertyAnimator::class.java
+
+/**
+ * 获得 [View.MeasureSpec] 类型
+ * @return [Class]
+ */
+val View_MeasureSpecClass get() = View.MeasureSpec::class.java

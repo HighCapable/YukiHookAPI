@@ -32,6 +32,8 @@ package com.highcapable.yukihookapi.hook.type.android
 import android.graphics.*
 import android.graphics.drawable.*
 import android.text.*
+import android.util.Size
+import android.util.SizeF
 
 /**
  * 获得 [Typeface] 类型
@@ -84,10 +86,28 @@ val ColorDrawableClass get() = ColorDrawable::class.java
 val BitmapDrawableClass get() = BitmapDrawable::class.java
 
 /**
+ * 获得 [Size] 类型
+ * @return [Class]
+ */
+val SizeClass get() = Size::class.java
+
+/**
+ * 获得 [SizeF] 类型
+ * @return [Class]
+ */
+val SizeFClass get() = SizeF::class.java
+
+/**
  * 获得 [Rect] 类型
  * @return [Class]
  */
 val RectClass get() = Rect::class.java
+
+/**
+ * 获得 [RectF] 类型
+ * @return [Class]
+ */
+val RectFClass get() = RectF::class.java
 
 /**
  * 获得 [NinePatch] 类型
@@ -118,6 +138,30 @@ val CanvasClass get() = Canvas::class.java
  * @return [Class]
  */
 val PointClass get() = Point::class.java
+
+/**
+ * 获得 [PointF] 类型
+ * @return [Class]
+ */
+val PointFClass get() = PointF::class.java
+
+/**
+ * 获得 [Matrix] 类型
+ * @return [Class]
+ */
+val MatrixClass get() = Matrix::class.java
+
+/**
+ * 获得 [ColorMatrix] 类型
+ * @return [Class]
+ */
+val ColorMatrixClass get() = ColorMatrix::class.java
+
+/**
+ * 获得 [ColorMatrixColorFilter] 类型
+ * @return [Class]
+ */
+val ColorMatrixColorFilterClass get() = ColorMatrixColorFilter::class.java
 
 /**
  * 获得 [Editable] 类型
