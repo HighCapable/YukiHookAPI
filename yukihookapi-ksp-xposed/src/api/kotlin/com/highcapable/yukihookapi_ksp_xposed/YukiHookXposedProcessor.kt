@@ -296,7 +296,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "                object : XC_MethodReplacement() {\n" +
                                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = XposedBridge.getXposedVersion()\n" +
                                 "                })\n" +
-                                "            YukiHookAPI.isModulePackageXposedEnv = true" +
+                                "            YukiHookAPI.isModulePackageXposedEnv = true\n" +
                                 "        }\n" +
                                 "        YukiHookAPI.modulePackageName = \"$realPackageName\"\n" +
                                 "        YukiHookAPI.onXposedLoaded(lpparam)\n" +
