@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 /**
  * 用于包装 [PackageParam]
  *
- * ❗这是一个私有 API - 请不要在外部使用
+ * - ❗这是一个私有 API - 请不要在外部使用
  * @param packageName 包名
  * @param processName 当前进程名
  * @param appClassLoader APP [ClassLoader]

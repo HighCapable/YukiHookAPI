@@ -50,7 +50,7 @@ val BitmapClass get() = Bitmap::class.java
 /**
  * 获得 [Icon] 类型
  *
- * ❗在 Android M (23) 及以上系统加入
+ * - ❗在 Android M (23) 及以上系统加入
  * @return [Class]
  */
 val IconClass get() = Icon::class.java

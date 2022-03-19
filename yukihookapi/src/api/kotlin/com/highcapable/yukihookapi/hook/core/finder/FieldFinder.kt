@@ -179,14 +179,14 @@ class FieldFinder(
             /**
              * 设置变量实例为 true
              *
-             * ❗请确保示例对象类型为 [Boolean]
+             * - ❗请确保示例对象类型为 [Boolean]
              */
             fun setTrue() = set(true)
 
             /**
              * 设置变量实例为 true
              *
-             * ❗请确保示例对象类型为 [Boolean]
+             * - ❗请确保示例对象类型为 [Boolean]
              */
             fun setFalse() = set(false)
 

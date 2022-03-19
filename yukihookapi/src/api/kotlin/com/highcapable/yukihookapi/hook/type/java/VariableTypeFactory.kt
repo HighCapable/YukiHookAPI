@@ -336,7 +336,7 @@ val ThreadClass get() = Thread::class.java
 /**
  * 获得 [Base64] 类型
  *
- * ❗在 Android O (26) 及以上系统加入
+ * - ❗在 Android O (26) 及以上系统加入
  * @return [Class]
  */
 val Base64Class_Java get() = Base64::class.java

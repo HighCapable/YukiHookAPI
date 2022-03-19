@@ -162,7 +162,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
                         value
                     }
                 }
-            else xPref.getString(key, default) ?: default
+            else resetCacheSet { xPref.getString(key, default) ?: default }
         else sPref.getString(key, default) ?: default).let {
             makeWorldReadable()
             it
@@ -185,7 +185,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
                         value
                     }
                 }
-            else xPref.getBoolean(key, default)
+            else resetCacheSet { xPref.getBoolean(key, default) }
         else sPref.getBoolean(key, default)).let {
             makeWorldReadable()
             it
@@ -208,7 +208,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
                         value
                     }
                 }
-            else xPref.getInt(key, default)
+            else resetCacheSet { xPref.getInt(key, default) }
         else sPref.getInt(key, default)).let {
             makeWorldReadable()
             it
@@ -231,7 +231,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
                         value
                     }
                 }
-            else xPref.getFloat(key, default)
+            else resetCacheSet { xPref.getFloat(key, default) }
         else sPref.getFloat(key, default)).let {
             makeWorldReadable()
             it
@@ -254,7 +254,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
                         value
                     }
                 }
-            else xPref.getLong(key, default)
+            else resetCacheSet { xPref.getLong(key, default) }
         else sPref.getLong(key, default)).let {
             makeWorldReadable()
             it
@@ -362,5 +362,15 @@ class YukiHookModulePrefs(private val context: Context? = null) {
         xPrefCacheKeyValueInts.clear()
         xPrefCacheKeyValueLongs.clear()
         xPrefCacheKeyValueFloats.clear()
+    }
+
+    /**
+     * 恢复 [isUsingKeyValueCache] 为默认状态
+     * @param result 回调方法体的结果
+     * @return [T]
+     */
+    private fun <T> resetCacheSet(result: () -> T): T {
+        isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
+        return result()
     }
 }

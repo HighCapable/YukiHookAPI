@@ -36,7 +36,7 @@ import java.lang.reflect.Member
 /**
  * 用于包装 [HookParam]
  *
- * ❗这是一个私有 API - 请不要在外部使用
+ * - ❗这是一个私有 API - 请不要在外部使用
  * @param baseParam 对接 [XC_MethodHook.MethodHookParam]
  */
 @DoNotUseClass

@@ -123,7 +123,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 true
      *
-     * ❗请确保 [result] 类型为 [Boolean]
+     * - ❗请确保 [result] 类型为 [Boolean]
      */
     fun resultTrue() {
         result = true
@@ -132,7 +132,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 false
      *
-     * ❗请确保 [result] 类型为 [Boolean]
+     * - ❗请确保 [result] 类型为 [Boolean]
      */
     fun resultFalse() {
         result = false
@@ -141,7 +141,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
     /**
      * 设置当前 Hook 对象方法的 [result] 为 null
      *
-     * ❗此方法将强制设置方法体的 [result] 为 null
+     * - ❗此方法将强制设置方法体的 [result] 为 null
      */
     fun resultNull() {
         result = null
@@ -174,14 +174,14 @@ class HookParam(private val wrapper: HookParamWrapper) {
         /**
          * 设置方法参数的实例对象为 true
          *
-         * ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
+         * - ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setTrue() = set(true)
 
         /**
          * 设置方法参数的实例对象为 false
          *
-         * ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
+         * - ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setFalse() = set(false)
 

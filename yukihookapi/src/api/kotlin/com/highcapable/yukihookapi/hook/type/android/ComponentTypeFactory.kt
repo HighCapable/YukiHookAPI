@@ -293,7 +293,7 @@ val ArrayMapClass get() = ArrayMap::class.java
  * 获得 [ArraySet] 类型
  * @return [Class]
  *
- * ❗在 Android M (23) 及以上系统加入
+ * - ❗在 Android M (23) 及以上系统加入
  */
 val ArraySetClass get() = ArraySet::class.java
 
@@ -336,7 +336,7 @@ val AsyncTaskClass get() = AsyncTask::class.java
 /**
  * 获得 [SimpleDateFormat] 类型
  *
- * ❗在 Android N (24) 及以上系统加入
+ * - ❗在 Android N (24) 及以上系统加入
  * @return [Class]
  */
 val SimpleDateFormatClass_Android get() = SimpleDateFormat::class.java
@@ -362,7 +362,7 @@ val WindowClass get() = Window::class.java
 /**
  * 获得 [WindowMetrics] 类型
  *
- * ❗在 Android R (30) 及以上系统加入
+ * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
 val WindowMetricsClass get() = WindowMetrics::class.java
@@ -376,7 +376,7 @@ val WindowInsetsClass get() = WindowInsets::class.java
 /**
  * 获得 [WindowInsets.Type] 类型
  *
- * ❗在 Android R (30) 及以上系统加入
+ * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
 val WindowInsets_TypeClass get() = WindowInsets.Type::class.java
@@ -594,7 +594,7 @@ val VibratorClass get() = Vibrator::class.java
 /**
  * 获得 [VibrationEffect] 类型
  *
- * ❗在 Android O (26) 及以上系统加入
+ * - ❗在 Android O (26) 及以上系统加入
  * @return [Class]
  */
 val VibrationEffectClass get() = VibrationEffect::class.java
@@ -602,7 +602,7 @@ val VibrationEffectClass get() = VibrationEffect::class.java
 /**
  * 获得 [VibrationAttributes] 类型
  *
- * ❗在 Android R (30) 及以上系统加入
+ * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
 val VibrationAttributesClass get() = VibrationAttributes::class.java
@@ -640,7 +640,7 @@ val UserDataHandlerClass get() = UserDataHandler::class.java
 /**
  * 获得 [ShortcutInfo] 类型
  *
- * ❗在 Android N_MR1 (25) 及以上系统加入
+ * - ❗在 Android N_MR1 (25) 及以上系统加入
  * @return [Class]
  */
 val ShortcutInfoClass get() = ShortcutInfo::class.java
@@ -648,7 +648,7 @@ val ShortcutInfoClass get() = ShortcutInfo::class.java
 /**
  * 获得 [ShortcutManager] 类型
  *
- * ❗在 Android R (30) 及以上系统加入
+ * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
 val ShortcutManagerClass get() = ShortcutManager::class.java
@@ -656,7 +656,7 @@ val ShortcutManagerClass get() = ShortcutManager::class.java
 /**
  * 获得 [ShortcutQuery] 类型
  *
- * ❗在 Android N_MR1 (25) 及以上系统加入
+ * - ❗在 Android N_MR1 (25) 及以上系统加入
  * @return [Class]
  */
 val ShortcutQueryClass get() = ShortcutQuery::class.java
