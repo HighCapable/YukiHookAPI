@@ -36,8 +36,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-
-import de.robv.android.xposed.XposedHelpers;
+import java.util.LinkedList;
+import java.util.List;
 
 @SuppressWarnings("ALL")
 @DoNotUseClass
@@ -181,10 +181,30 @@ public class ReflectionUtils {
             Class<?> clz = clazz;
             if (returnType == null) return findMethodExact(clazz, methodName, parameterTypes);
             do {
-                Method[] methods = XposedHelpers.findMethodsByExactParameters(clazz, returnType, parameterTypes);
+                Method[] methods = findMethodsByExactParameters(clazz, returnType, parameterTypes);
                 for (Method method : methods) if (method.getName().equals(methodName)) return method;
             } while ((clz = clz.getSuperclass()) != null);
         }
         throw new IllegalArgumentException("Can't find this method --> name:[" + methodName + "] returnType:[" + returnType.getName() + "] paramType:[" + getParametersString(parameterTypes) + "] in Class [" + clazz.getName() + "] by YukiHookAPI#finder");
+    }
+
+    private static Method[] findMethodsByExactParameters(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
+        List<Method> result = new LinkedList<Method>();
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (returnType != null && returnType != method.getReturnType()) continue;
+            Class<?>[] methodParameterTypes = method.getParameterTypes();
+            if (parameterTypes.length != methodParameterTypes.length) continue;
+            boolean match = true;
+            for (int i = 0; i < parameterTypes.length; i++) {
+                if (parameterTypes[i] != methodParameterTypes[i]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (!match) continue;
+            method.setAccessible(true);
+            result.add(method);
+        }
+        return result.toArray(new Method[result.size()]);
     }
 }

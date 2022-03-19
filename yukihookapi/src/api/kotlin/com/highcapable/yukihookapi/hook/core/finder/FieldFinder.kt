@@ -89,7 +89,7 @@ class FieldFinder(
         } catch (e: Throwable) {
             Thread {
                 SystemClock.sleep(10)
-                if (isNotIgnoredNoSuchMemberFailure) yLoggerE(msg = "NoSuchField happend in [$classSet] [${hookTag}]", e = e)
+                onFailureMsg(msg = "NoSuchField happend in [$classSet] [${hookTag}]", throwable = e)
             }.start()
             Result(isNoSuch = true, e)
         }
@@ -122,10 +122,17 @@ class FieldFinder(
 
         /**
          * 得到变量实例处理类
+         *
+         * - ❗如果目标对象不是静态 - 你必须设置 [instance]
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [Instance]
          */
-        fun get(instance: Any? = null) = Instance(instance, give()?.get(instance))
+        fun get(instance: Any? = null) = try {
+            Instance(instance, give()?.get(instance))
+        } catch (e: Throwable) {
+            onFailureMsg(msg = "Try to get field instance failed", throwable = e)
+            Instance(instance, self = null)
+        }
 
         /**
          * 得到变量实例

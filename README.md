@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.55-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.6-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -154,7 +154,16 @@ class MainHook : YukiHookXposedInitProxy {
   修正一处注释错误；<br/>
   临时修复一个 BUG；<br/>
   增加了 `type` 中的大量 `android` 类型以及少量 `java` 类型；<br/>
-  修复新版与旧版 Kotlin APIs 的兼容性问题。
+  修复新版与旧版 Kotlin APIs 的兼容性问题。<br/><br/>
+- 1.0.6 <br/>
+  修复 `YukiHookModulePrefs` 在使用一次 `direct` 忽略缓存后每次都忽略的 BUG；<br/>
+  增加新的 API，作废了 `isActive` 判断模块激活的传统用法；<br/>
+  修复非 Xposed 环境使用 API 时打印调试日志的问题；<br/>
+  修复查找 `Field` 时的日志输出问题和未拦截的异常问题；<br/>
+  解耦合 `ReflectionUtils` 中的 Xposed API；<br/>
+  增加 `YukiHookModuleStatus` 方法名称的混淆，以精简模块生成的体积；<br/>
+  装载模块自身 Hook 时将不再打印欢迎信息；<br/>
+  修复上一个版本仍然存在的某些 BUG。
 
 # Cooperations
 

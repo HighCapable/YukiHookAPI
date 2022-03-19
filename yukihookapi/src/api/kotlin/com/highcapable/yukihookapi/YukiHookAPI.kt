@@ -65,10 +65,10 @@ object YukiHookAPI {
     private var isXposedInitialized = false
 
     /** 获取当前 [YukiHookAPI] 的版本 */
-    const val API_VERSION_NAME = "1.0.55"
+    const val API_VERSION_NAME = "1.0.6"
 
     /** 获取当前 [YukiHookAPI] 的版本号 */
-    const val API_VERSION_CODE = 9
+    const val API_VERSION_CODE = 10
 
     /**
      * 模块是否装载了 Xposed 回调方法
@@ -79,6 +79,14 @@ object YukiHookAPI {
     @DoNotUseField
     val isXposedCallbackSetUp
         get() = !isXposedInitialized && packageParamCallback != null
+
+    /**
+     * 当前 Hook 的对象是模块自身
+     *
+     * - ❗这是私有 API - 请勿手动修改 - 会引发未知异常
+     */
+    @DoNotUseField
+    var isModulePackageXposedEnv = false
 
     /**
      * 预设的 Xposed 模块包名
@@ -291,7 +299,7 @@ object YukiHookAPI {
 
     /** 输出欢迎信息调试日志 */
     private fun printSplashLog() {
-        if (!Configs.isDebug || !isShowSplashLogOnceTime) return
+        if (!Configs.isDebug || !isShowSplashLogOnceTime || isModulePackageXposedEnv) return
         isShowSplashLogOnceTime = false
         yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using $executorName API $executorVersion")
     }
