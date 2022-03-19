@@ -25,7 +25,10 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE", "UNCHECKED_CAST")
+@file:Suppress(
+    "unused", "MemberVisibilityCanBePrivate",
+    "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE", "UNCHECKED_CAST", "KotlinConstantConditions"
+)
 
 package com.highcapable.yukihookapi.hook.core.finder
 
@@ -124,9 +127,7 @@ class MethodFinder(
             runBlocking {
                 isBindToHooker = isBind
                 setInstance(isBind, result)
-            }.result {
-                onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]")
-            }
+            }.result { onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
         } catch (e: Throwable) {
             onFailureMsg(throwable = e)

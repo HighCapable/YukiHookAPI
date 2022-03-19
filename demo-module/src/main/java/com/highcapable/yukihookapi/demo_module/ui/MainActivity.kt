@@ -36,6 +36,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.demo_module.R
+import com.highcapable.yukihookapi.hook.factory.isModuleActive
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        findViewById<TextView>(R.id.module_demo_text).text = "Module is Active -> ${YukiHookModuleStatus.isActive()}\n" +
+        findViewById<TextView>(R.id.module_demo_text).text = "Module is Active -> $isModuleActive\n" +
                 "Hook Framework -> ${YukiHookModuleStatus.executorName}\n" +
                 "API Version -> ${YukiHookModuleStatus.executorVersion}"
         findViewById<EditText>(R.id.module_demo_edit_text).also {

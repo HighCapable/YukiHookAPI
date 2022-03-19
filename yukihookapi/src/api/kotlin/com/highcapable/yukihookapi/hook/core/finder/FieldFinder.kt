@@ -84,9 +84,7 @@ class FieldFinder(
                     if (type != null)
                         ReflectionUtils.findFieldIfExists(classSet, type?.name, name)
                     else classSet?.getDeclaredField(name)?.apply { isAccessible = true }
-            }.result {
-                onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]")
-            }
+            }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
         } catch (e: Throwable) {
             Thread {

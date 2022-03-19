@@ -43,7 +43,9 @@ package com.highcapable.yukihookapi.annotation
 @Retention(AnnotationRetention.BINARY)
 /**
  * -️ ❗警告方法外部调用声明
+ *
  * 此方法除继承和接口外不应该在这里被调用
+ *
  * 如果调用此方法可能会出现错误或 APP 发生异常
  */
 annotation class DoNotUseField

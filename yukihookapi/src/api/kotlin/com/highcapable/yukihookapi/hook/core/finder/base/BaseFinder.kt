@@ -88,7 +88,7 @@ abstract class BaseFinder(
      * @param msg 调试日志内容
      */
     internal fun onHookLogMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = msg)
+        if (YukiHookAPI.Configs.isDebug && YukiHookAPI.hasXposedBridge) yLoggerI(msg = msg)
     }
 
     /**

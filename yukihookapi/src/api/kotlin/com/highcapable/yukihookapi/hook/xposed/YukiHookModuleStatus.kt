@@ -27,17 +27,27 @@
  */
 package com.highcapable.yukihookapi.hook.xposed
 
+import android.app.Activity
 import androidx.annotation.Keep
+import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.hook.factory.isModuleActive
+import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
+import com.highcapable.yukihookapi.hook.factory.isXposedModuleActive
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorName
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorVersion
-import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.isActive
 import de.robv.android.xposed.XposedBridge
 
 /**
  * 这是一个 Xposed 模块 Hook 状态类
  *
- * 我们需要监听自己的模块是否被激活 - 可直接调用这个类的 [isActive] 方法
+ * 我们需要监听自己的模块是否被激活 - 可使用以下方法调用
+ *
+ * 在 [Activity] 中调用 [isModuleActive] 或 [isTaiChiModuleActive]
+ *
+ * 在任意地方调用 [isXposedModuleActive]
+ *
+ * 你还可以使用以下方法获取当前 Hook 框架的详细信息
  *
  * 调用 [executorName] 来获取当前 Hook 框架的名称
  *
@@ -67,10 +77,14 @@ object YukiHookModuleStatus {
 
     /**
      * 此方法经过 Hook 后返回 true 即模块已激活
+     *
+     * 请使用 [isModuleActive]、[isXposedModuleActive]、[isTaiChiModuleActive] 判断模块激活状态
+     *
+     * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
      * @return [Boolean]
      */
-    @Keep
-    fun isActive(): Boolean {
+    @DoNotUseMethod
+    internal fun isActive(): Boolean {
         yLoggerI(msg = "This Module is not actived")
         return false
     }
@@ -79,13 +93,11 @@ object YukiHookModuleStatus {
      * 此方法经过 Hook 后返回 [XposedBridge.getXposedVersion]
      * @return [Int]
      */
-    @Keep
     private fun getXposedVersion() = -1
 
     /**
      * 此方法经过 Hook 后返回 [XposedBridge] 的 TAG
      * @return [String]
      */
-    @Keep
     private fun getXposedBridgeTag() = "unknown"
 }

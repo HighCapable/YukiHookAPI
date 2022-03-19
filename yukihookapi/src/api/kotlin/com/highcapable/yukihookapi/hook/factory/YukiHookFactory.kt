@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE")
 
 package com.highcapable.yukihookapi.hook.factory
 
@@ -37,6 +37,7 @@ import android.os.Process
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 import java.io.BufferedReader
@@ -92,7 +93,19 @@ val Context.processName
     }
 
 /**
- * 判断模块是否在太极、无极中激活
+ * 判断模块是否在 Xposed 或太极、无极中激活
+ * @return [Boolean] 是否激活
+ */
+val Context.isModuleActive get() = YukiHookModuleStatus.isActive() || isTaiChiModuleActive
+
+/**
+ * 仅判断模块是否在 Xposed 中激活
+ * @return [Boolean] 是否激活
+ */
+val Any?.isXposedModuleActive get() = YukiHookModuleStatus.isActive()
+
+/**
+ * 仅判断模块是否在太极、无极中激活
  * @return [Boolean] 是否激活
  */
 val Context.isTaiChiModuleActive: Boolean
