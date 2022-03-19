@@ -33,7 +33,6 @@ import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.isXposedModuleActive
-import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorName
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorVersion
 import de.robv.android.xposed.XposedBridge
@@ -55,8 +54,16 @@ import de.robv.android.xposed.XposedBridge
  *
  * 详情请参考 [判断自身激活状态](https://github.com/fankes/YukiHookAPI/wiki#%E5%88%A4%E6%96%AD%E8%87%AA%E8%BA%AB%E6%BF%80%E6%B4%BB%E7%8A%B6%E6%80%81)
  */
-@Keep
 object YukiHookModuleStatus {
+
+    /** 定义 Jvm 方法名 */
+    private const val IS_ACTIVE_METHOD_NAME = "__--"
+
+    /** 定义 Jvm 方法名 */
+    private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
+
+    /** 定义 Jvm 方法名 */
+    private const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
 
     /**
      * 获取当前 Hook 框架的名称
@@ -83,21 +90,24 @@ object YukiHookModuleStatus {
      * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
      * @return [Boolean]
      */
+    @Keep
     @DoNotUseMethod
-    internal fun isActive(): Boolean {
-        yLoggerI(msg = "This Module is not actived")
-        return false
-    }
+    @JvmName(IS_ACTIVE_METHOD_NAME)
+    internal fun isActive() = false
 
     /**
      * 此方法经过 Hook 后返回 [XposedBridge.getXposedVersion]
      * @return [Int]
      */
+    @Keep
+    @JvmName(GET_XPOSED_VERSION_METHOD_NAME)
     private fun getXposedVersion() = -1
 
     /**
      * 此方法经过 Hook 后返回 [XposedBridge] 的 TAG
      * @return [String]
      */
+    @Keep
+    @JvmName(GET_XPOSED_TAG_METHOD_NAME)
     private fun getXposedBridgeTag() = "unknown"
 }

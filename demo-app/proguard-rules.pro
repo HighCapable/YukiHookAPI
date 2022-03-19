@@ -29,13 +29,11 @@
 -dontoptimize
 -verbose
 -overloadaggressively
--repackageclasses i
 -allowaccessmodification
 
 -adaptclassstrings
 -adaptresourcefilenames
 -adaptresourcefilecontents
 
-# -optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
 -renamesourcefileattribute P
 -keepattributes SourceFile,LineNumberTable

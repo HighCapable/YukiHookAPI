@@ -46,6 +46,18 @@ import java.io.File
 @AutoService(SymbolProcessorProvider::class)
 class YukiHookXposedProcessor : SymbolProcessorProvider {
 
+    companion object {
+
+        /** 定义 Jvm 方法名 */
+        private const val IS_ACTIVE_METHOD_NAME = "__--"
+
+        /** 定义 Jvm 方法名 */
+        private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
+
+        /** 定义 Jvm 方法名 */
+        private const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
+    }
+
     override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
 
         /** 自动处理程序的 TAG */
@@ -262,14 +274,14 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "            XposedHelpers.findAndHookMethod(\n" +
                                 "                YukiHookModuleStatus::class.java.name,\n" +
                                 "                lpparam.classLoader,\n" +
-                                "                \"isActive\",\n" +
+                                "                \"$IS_ACTIVE_METHOD_NAME\",\n" +
                                 "                object : XC_MethodReplacement() {\n" +
                                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
                                 "                })\n" +
                                 "            XposedHelpers.findAndHookMethod(\n" +
                                 "                YukiHookModuleStatus::class.java.name,\n" +
                                 "                lpparam.classLoader,\n" +
-                                "                \"getXposedBridgeTag\",\n" +
+                                "                \"$GET_XPOSED_TAG_METHOD_NAME\",\n" +
                                 "                object : XC_MethodReplacement() {\n" +
                                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = try {\n" +
                                 "                        XposedBridge::class.java.getDeclaredField(\"TAG\").apply { isAccessible = true }.get(null) as String\n" +
@@ -280,7 +292,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "            XposedHelpers.findAndHookMethod(\n" +
                                 "                YukiHookModuleStatus::class.java.name,\n" +
                                 "                lpparam.classLoader,\n" +
-                                "                \"getXposedVersion\",\n" +
+                                "                \"$GET_XPOSED_VERSION_METHOD_NAME\",\n" +
                                 "                object : XC_MethodReplacement() {\n" +
                                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = XposedBridge.getXposedVersion()\n" +
                                 "                })\n" +
