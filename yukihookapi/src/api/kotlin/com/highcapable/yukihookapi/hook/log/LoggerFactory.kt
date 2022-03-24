@@ -38,9 +38,10 @@ import de.robv.android.xposed.XposedBridge
  *
  * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
+ * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerD(msg: String) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerD(msg = msg)
+internal fun yLoggerD(msg: String, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerD(msg = msg)
 }
 
 /**
@@ -48,9 +49,10 @@ internal fun yLoggerD(msg: String) {
  *
  * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
+ * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerI(msg: String) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerI(msg = msg)
+internal fun yLoggerI(msg: String, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerI(msg = msg)
 }
 
 /**
@@ -58,9 +60,10 @@ internal fun yLoggerI(msg: String) {
  *
  * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
+ * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerW(msg: String) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerW(msg = msg)
+internal fun yLoggerW(msg: String, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerW(msg = msg)
 }
 
 /**
@@ -69,9 +72,10 @@ internal fun yLoggerW(msg: String) {
  * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
+ * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerE(msg: String, e: Throwable? = null) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) loggerE(msg = msg, e = e)
+internal fun yLoggerE(msg: String, e: Throwable? = null, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerE(msg = msg, e = e)
 }
 
 /**

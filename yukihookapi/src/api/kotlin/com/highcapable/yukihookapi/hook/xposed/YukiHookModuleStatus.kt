@@ -33,6 +33,7 @@ import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.isXposedModuleActive
+import com.highcapable.yukihookapi.hook.log.yLoggerD
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorName
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorVersion
 import de.robv.android.xposed.XposedBridge
@@ -93,7 +94,10 @@ object YukiHookModuleStatus {
     @Keep
     @DoNotUseMethod
     @JvmName(IS_ACTIVE_METHOD_NAME)
-    internal fun isActive() = false
+    internal fun isActive(): Boolean {
+        yLoggerD(msg = IS_ACTIVE_METHOD_NAME, isDisableLog = true)
+        return false
+    }
 
     /**
      * 此方法经过 Hook 后返回 [XposedBridge.getXposedVersion]
@@ -101,7 +105,10 @@ object YukiHookModuleStatus {
      */
     @Keep
     @JvmName(GET_XPOSED_VERSION_METHOD_NAME)
-    private fun getXposedVersion() = -1
+    private fun getXposedVersion(): Int {
+        yLoggerD(msg = GET_XPOSED_VERSION_METHOD_NAME, isDisableLog = true)
+        return -1
+    }
 
     /**
      * 此方法经过 Hook 后返回 [XposedBridge] 的 TAG
@@ -109,5 +116,8 @@ object YukiHookModuleStatus {
      */
     @Keep
     @JvmName(GET_XPOSED_TAG_METHOD_NAME)
-    private fun getXposedBridgeTag() = "unknown"
+    private fun getXposedBridgeTag(): String {
+        yLoggerD(msg = GET_XPOSED_TAG_METHOD_NAME, isDisableLog = true)
+        return "unknown"
+    }
 }

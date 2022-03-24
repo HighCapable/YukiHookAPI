@@ -106,6 +106,10 @@ val Any?.isXposedModuleActive get() = YukiHookModuleStatus.isActive()
 
 /**
  * 仅判断模块是否在太极、无极中激活
+ *
+ * 下方的代码来自太极官方文档封装和改进
+ *
+ * 详情请参考太极开发指南中的 [如何判断模块是否激活了？](https://taichi.cool/zh/doc/for-xposed-dev.html#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E6%A8%A1%E5%9D%97%E6%98%AF%E5%90%A6%E6%BF%80%E6%B4%BB%E4%BA%86%EF%BC%9F)
  * @return [Boolean] 是否激活
  */
 val Context.isTaiChiModuleActive: Boolean

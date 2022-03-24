@@ -468,6 +468,18 @@ val JavaMemberClass get() = Member::class.java
 val JavaAnnotationClass get() = Annotation::class.java
 
 /**
+ * 获得 [java.util.function.Function] 类型
+ * @return [Class]
+ */
+val FunctionClass get() = java.util.function.Function::class.java
+
+/**
+ * 获得 [Objects] 类型
+ * @return [Class]
+ */
+val ObjectsClass get() = Objects::class.java
+
+/**
  * 获得 [Runtime] 类型
  * @return [Class]
  */
