@@ -59,7 +59,7 @@ class ConstructorFinder(
     private var remedyPlansCallback: (() -> Unit)? = null
 
     /** [Constructor] 参数数组 */
-    private var params: Array<out Class<*>>? = null
+    private var paramTypes: Array<out Class<*>>? = null
 
     /**
      * [Constructor] 参数
@@ -71,7 +71,7 @@ class ConstructorFinder(
      */
     fun param(vararg paramType: Class<*>) {
         if (paramType.isEmpty()) error("paramType is empty, please delete param() method")
-        params = paramType
+        paramTypes = paramType
     }
 
     /**
@@ -80,8 +80,8 @@ class ConstructorFinder(
      * @throws NoSuchMethodError 如果找不到构造方法
      */
     private val result
-        get() = if (params != null)
-            ReflectionUtils.findConstructorExact(classSet, *params!!)
+        get() = if (paramTypes != null)
+            ReflectionUtils.findConstructorExact(classSet, *paramTypes!!)
         else ReflectionUtils.findConstructorExact(classSet)
 
     /**

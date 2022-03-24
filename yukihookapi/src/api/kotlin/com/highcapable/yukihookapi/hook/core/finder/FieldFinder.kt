@@ -142,6 +142,78 @@ class FieldFinder(
         fun <T> of(instance: Any? = null) = get(instance).self as? T?
 
         /**
+         * 得到变量的 [Int] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [Int] 取不到返回 0
+         */
+        fun ofInt(instance: Any? = null) = of(instance) ?: 0
+
+        /**
+         * 得到变量的 [Long] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [Long] 取不到返回 0L
+         */
+        fun ofLong(instance: Any? = null) = of(instance) ?: 0L
+
+        /**
+         * 得到变量的 [Short] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [Short] 取不到返回 0
+         */
+        fun ofShort(instance: Any? = null) = of<Short?>(instance) ?: 0
+
+        /**
+         * 得到变量的 [Double] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [Double] 取不到返回 0.0
+         */
+        fun ofDouble(instance: Any? = null) = of(instance) ?: 0.0
+
+        /**
+         * 得到变量的 [Float] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [Float] 取不到返回 0f
+         */
+        fun ofFloat(instance: Any? = null) = of(instance) ?: 0f
+
+        /**
+         * 得到变量的 [String] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [String] 取不到返回 ""
+         */
+        fun ofString(instance: Any? = null) = of(instance) ?: ""
+
+        /**
+         * 得到变量的 [Boolean] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [Boolean] 取不到返回 false
+         */
+        fun ofBoolean(instance: Any? = null) = of(instance) ?: false
+
+        /**
+         * 得到变量的 [Any] 实例
+         *
+         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @return [Any] or null
+         */
+        fun ofAny(instance: Any? = null) = of<Any?>(instance)
+
+        /**
          * 得到变量本身
          * @return [Field] or null
          */
