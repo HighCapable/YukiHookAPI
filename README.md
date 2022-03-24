@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.65-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.66-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -169,7 +169,11 @@ class MainHook : YukiHookXposedInitProxy {
   增加 `MethodFinder` 与 `FieldFinder` 新的返回值调用方法；<br/>
   修复可能存在的问题，并修复太极使用过程中可能存在的问题；<br/>
   修复自动生成 Xposed 入口类可能发生的问题；<br/>
-  增加了 `type` 中的 `android` 类型以及 `java` 类型。
+  增加了 `type` 中的 `android` 类型以及 `java` 类型。<br/><br/>
+- 1.0.66 <br/>
+  修复 `MethodFinder` 中的一个严重问题；<br/>
+  增加 `hookParam` 中的 `args` 调用方法；<br/>
+  修复其它可能存在的问题以及修复部分类的注释问题。
 
 # Cooperations
 
