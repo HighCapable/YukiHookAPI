@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.6-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.65-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -163,7 +163,13 @@ class MainHook : YukiHookXposedInitProxy {
   解耦合 `ReflectionUtils` 中的 Xposed API；<br/>
   增加 `YukiHookModuleStatus` 方法名称的混淆，以精简模块生成的体积；<br/>
   装载模块自身 Hook 时将不再打印欢迎信息；<br/>
-  修复上一个版本仍然存在的某些 BUG。
+  修复上一个版本仍然存在的某些 BUG。<br/><br/>
+- 1.0.65 <br/>
+  重新发布版本修复 Maven 仓库因为缓存问题新版本不正确的情况；<br/>
+  增加 `MethodFinder` 与 `FieldFinder` 新的返回值调用方法；<br/>
+  修复可能存在的问题，并修复太极使用过程中可能存在的问题；<br/>
+  修复自动生成 Xposed 入口类可能发生的问题；<br/>
+  增加了 `type` 中的 `android` 类型以及 `java` 类型。
 
 # Cooperations
 
