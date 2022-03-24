@@ -206,8 +206,6 @@ class FieldFinder(
 
         /**
          * 得到变量的 [Any] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
          * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [Any] or null
          */

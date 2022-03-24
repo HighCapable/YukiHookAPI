@@ -98,6 +98,20 @@ class HookParam(private val wrapper: HookParamWrapper) {
         }
 
     /**
+     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组第一位 [T]
+     * @return [T] or null
+     * @throws IllegalStateException 如果数组为空
+     */
+    inline fun <reified T> firstArgs() = firstArgs as? T?
+
+    /**
+     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组最后一位 [T]
+     * @return [T] or null
+     * @throws IllegalStateException 如果数组为空
+     */
+    inline fun <reified T> lastArgs() = lastArgs as? T?
+
+    /**
      * 获取当前 Hook 实例的对象 [T]
      * @return [T]
      * @throws IllegalStateException 如果对象为空或对象类型不是 [T]
@@ -152,6 +166,68 @@ class HookParam(private val wrapper: HookParamWrapper) {
      * @param index 参数对象数组下标
      */
     inner class ArgsModifyer(private val index: Int) {
+
+        /**
+         * 得到方法参数的实例对象 [T]
+         * @return [T] or null
+         */
+        fun <T> of() = runCatching { args[index] as? T? }.getOrNull()
+
+        /**
+         * 得到方法参数的实例对象 [Int]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [Int] 取不到返回 0
+         */
+        fun ofInt() = of() ?: 0
+
+        /**
+         * 得到方法参数的实例对象 [Long]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [Long] 取不到返回 0L
+         */
+        fun ofLong() = of() ?: 0L
+
+        /**
+         * 得到方法参数的实例对象 [Short]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [Short] 取不到返回 0
+         */
+        fun ofShort() = of<Short?>() ?: 0
+
+        /**
+         * 得到方法参数的实例对象 [Double]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [Double] 取不到返回 0.0
+         */
+        fun ofDouble() = of() ?: 0.0
+
+        /**
+         * 得到方法参数的实例对象 [Float]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [Float] 取不到返回 0f
+         */
+        fun ofFloat() = of() ?: 0f
+
+        /**
+         * 得到方法参数的实例对象 [String]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [String] 取不到返回 ""
+         */
+        fun ofString() = of() ?: ""
+
+        /**
+         * 得到方法参数的实例对象 [Boolean]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [Boolean] 取不到返回 false
+         */
+        fun ofBoolean() = of() ?: false
 
         /**
          * 设置方法参数的实例对象
