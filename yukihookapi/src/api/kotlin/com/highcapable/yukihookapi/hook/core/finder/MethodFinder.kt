@@ -346,7 +346,7 @@ class MethodFinder(
              *
              * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
              * @param param 方法参数
-             * @return [Long] 取不到返回 0
+             * @return [Long] 取不到返回 0L
              */
             fun callLong(vararg param: Any?) = invoke(param) ?: 0L
 
@@ -364,7 +364,7 @@ class MethodFinder(
              *
              * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
              * @param param 方法参数
-             * @return [Double] 取不到返回 0
+             * @return [Double] 取不到返回 0.0
              */
             fun callDouble(vararg param: Any?) = invoke(param) ?: 0.0
 
