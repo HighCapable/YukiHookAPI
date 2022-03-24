@@ -339,7 +339,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Int] 取不到返回 0
              */
-            fun callInt(vararg param: Any?) = invoke(param) ?: 0
+            fun callInt(vararg param: Any?) = invoke(*param) ?: 0
 
             /**
              * 执行方法 - 指定 [Long] 返回值类型
@@ -348,7 +348,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Long] 取不到返回 0L
              */
-            fun callLong(vararg param: Any?) = invoke(param) ?: 0L
+            fun callLong(vararg param: Any?) = invoke(*param) ?: 0L
 
             /**
              * 执行方法 - 指定 [Short] 返回值类型
@@ -357,7 +357,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Short] 取不到返回 0
              */
-            fun callShort(vararg param: Any?) = invoke<Short?>(param) ?: 0
+            fun callShort(vararg param: Any?) = invoke<Short?>(*param) ?: 0
 
             /**
              * 执行方法 - 指定 [Double] 返回值类型
@@ -366,7 +366,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Double] 取不到返回 0.0
              */
-            fun callDouble(vararg param: Any?) = invoke(param) ?: 0.0
+            fun callDouble(vararg param: Any?) = invoke(*param) ?: 0.0
 
             /**
              * 执行方法 - 指定 [Float] 返回值类型
@@ -375,14 +375,14 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Float] 取不到返回 0f
              */
-            fun callFloat(vararg param: Any?) = invoke(param) ?: 0f
+            fun callFloat(vararg param: Any?) = invoke(*param) ?: 0f
 
             /**
              * 执行方法 - 指定 [String] 返回值类型
              * @param param 方法参数
              * @return [String] 取不到返回 ""
              */
-            fun callString(vararg param: Any?) = invoke(param) ?: ""
+            fun callString(vararg param: Any?) = invoke(*param) ?: ""
 
             /**
              * 执行方法 - 指定 [Boolean] 返回值类型
@@ -391,7 +391,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Boolean] 取不到返回 false
              */
-            fun callBoolean(vararg param: Any?) = invoke(param) ?: false
+            fun callBoolean(vararg param: Any?) = invoke(*param) ?: false
 
             override fun toString() =
                 "[${(memberInstance as? Method?)?.name ?: "<empty>"}] in [${instance?.javaClass?.name ?: "<empty>"}]"
