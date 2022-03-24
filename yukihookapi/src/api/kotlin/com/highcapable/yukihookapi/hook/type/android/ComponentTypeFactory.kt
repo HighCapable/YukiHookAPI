@@ -762,3 +762,9 @@ val AccessibilityEventClass get() = AccessibilityEvent::class.java
  * @return [Class]
  */
 val AccessibilityNodeInfoClass get() = AccessibilityNodeInfo::class.java
+
+/**
+ * 获得 [IInterface] 类型
+ * @return [Class]
+ */
+val IInterfaceClass get() = IInterface::class.java

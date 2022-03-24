@@ -294,7 +294,11 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "                lpparam.classLoader,\n" +
                                 "                \"$GET_XPOSED_VERSION_METHOD_NAME\",\n" +
                                 "                object : XC_MethodReplacement() {\n" +
-                                "                    override fun replaceHookedMethod(param: MethodHookParam?) = XposedBridge.getXposedVersion()\n" +
+                                "                    override fun replaceHookedMethod(param: MethodHookParam?) = try {\n" +
+                                "                        XposedBridge.getXposedVersion()\n" +
+                                "                    } catch (_: Throwable) {\n" +
+                                "                        -1\n" +
+                                "                    }\n" +
                                 "                })\n" +
                                 "            YukiHookAPI.isModulePackageXposedEnv = true\n" +
                                 "        }\n" +

@@ -250,6 +250,12 @@ val WeakHashMapClass get() = WeakHashMap::class.java
 val WeakReferenceClass get() = WeakReference::class.java
 
 /**
+ * 获得 [Enum] 类型
+ * @return [Class]
+ */
+val EnumClass get() = Enum::class.java
+
+/**
  * 获得 [Map] 类型
  * @return [Class]
  */
@@ -472,6 +478,30 @@ val JavaAnnotationClass get() = Annotation::class.java
  * @return [Class]
  */
 val FunctionClass get() = java.util.function.Function::class.java
+
+/**
+ * 获得 [Optional] 类型
+ * @return [Class]
+ */
+val OptionalClass get() = Optional::class.java
+
+/**
+ * 获得 [OptionalInt] 类型
+ * @return [Class]
+ */
+val OptionalIntClass get() = OptionalInt::class.java
+
+/**
+ * 获得 [OptionalLong] 类型
+ * @return [Class]
+ */
+val OptionalLongClass get() = OptionalLong::class.java
+
+/**
+ * 获得 [OptionalDouble] 类型
+ * @return [Class]
+ */
+val OptionalDoubleClass get() = OptionalDouble::class.java
 
 /**
  * 获得 [Objects] 类型
