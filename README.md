@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.66-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.67-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -173,7 +173,15 @@ class MainHook : YukiHookXposedInitProxy {
 - 1.0.66 <br/>
   修复 `MethodFinder` 中的一个严重问题；<br/>
   增加 `hookParam` 中的 `args` 调用方法；<br/>
-  修复其它可能存在的问题以及修复部分类的注释问题。
+  修复其它可能存在的问题以及修复部分类的注释问题。<br/><br/>
+- 1.0.67 <br/>
+  增加三个 `Finder` 中的 `modifiers` 功能，可筛选 `static`、`native`、`public`、`abstract` 等诸多描述类型；<br/>
+  增加方法和构造方法查找时可模糊方法参数类型为指定个数进行查找；<br/>
+  增加 `Member` 的 `hasModifiers` 扩展功能；<br/>
+  增加 `MethodFinder` 和 `ConstructorFinder` 中的 `give` 方法，可获得原始类型；<br/>
+  增加 `YukiHookModulePrefs` 中的 `PrefsData` 模板功能；<br/>
+  彻底对方法、构造方法及变量的查找方案进行重构；<br/>
+  优化代码注释，修复了可能产生的 BUG。
 
 # Features
 
