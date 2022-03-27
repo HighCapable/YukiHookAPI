@@ -175,6 +175,10 @@ class MainHook : YukiHookXposedInitProxy {
   增加 `hookParam` 中的 `args` 调用方法；<br/>
   修复其它可能存在的问题以及修复部分类的注释问题。
 
+# Features
+
+如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码，可以是任何改进的建议以及新增的功能。
+
 # Cooperations
 
 以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
