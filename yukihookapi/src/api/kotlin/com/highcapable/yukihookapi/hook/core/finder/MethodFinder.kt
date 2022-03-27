@@ -272,6 +272,12 @@ class MethodFinder(
         fun get(instance: Any? = null) = Instance(instance)
 
         /**
+         * 得到方法本身
+         * @return [Method] or null
+         */
+        fun give() = memberInstance as? Method?
+
+        /**
          * 获得 [Method] 实例处理类
          *
          * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果

@@ -248,6 +248,12 @@ class ConstructorFinder(
         fun get() = Instance()
 
         /**
+         * 得到构造方法本身
+         * @return [Constructor] or null
+         */
+        fun give() = memberInstance as? Constructor<*>?
+
+        /**
          * 获得 [Constructor] 实例处理类
          *
          * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
