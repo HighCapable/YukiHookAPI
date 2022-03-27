@@ -33,7 +33,8 @@ import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
-import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
+import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import java.lang.reflect.Member
 
 /**
  * [Class] 转换为 [HookClass]
@@ -80,51 +81,31 @@ fun String.hasClass(loader: ClassLoader?) = try {
 
 /**
  * 查找变量是否存在
- * @param name 名称
- * @param type 类型 - 不填默认模糊
+ * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-fun Class<*>.hasField(name: String, type: Class<*>? = null): Boolean =
-    try {
-        if (type != null)
-            ReflectionUtils.findFieldIfExists(this, type.name, name)
-        else getDeclaredField(name).apply { isAccessible = true }
-        true
-    } catch (_: Throwable) {
-        false
-    }
+fun Class<*>.hasField(initiate: FieldFinder.() -> Unit) = field(initiate).ignoredError().isNoSuch.not()
 
 /**
  * 查找方法是否存在
- * @param name 名称
- * @param paramType params
- * @param returnType 返回类型 - 不填默认模糊
+ * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-fun Class<*>.hasMethod(name: String, vararg paramType: Class<*>, returnType: Class<*>? = null): Boolean =
-    try {
-        if (paramType.isNotEmpty())
-            ReflectionUtils.findMethodBestMatch(this, returnType, name, *paramType)
-        else ReflectionUtils.findMethodNoParam(this, returnType, name)
-        true
-    } catch (_: Throwable) {
-        false
-    }
+fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit) = method(initiate).ignoredError().isNoSuch.not()
 
 /**
  * 查找构造方法是否存在
- * @param paramType params
+ * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-fun Class<*>.hasConstructor(vararg paramType: Class<*>): Boolean =
-    try {
-        if (paramType.isNotEmpty())
-            ReflectionUtils.findConstructorExact(this, *paramType)
-        else ReflectionUtils.findConstructorExact(this)
-        true
-    } catch (_: Throwable) {
-        false
-    }
+fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit) = constructor(initiate).ignoredError().isNoSuch.not()
+
+/**
+ * 查询 [Member] 中匹配的描述符
+ * @param initiate 方法体
+ * @return [Boolean] 是否存在
+ */
+fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
 
 /**
  * 查找并得到变量

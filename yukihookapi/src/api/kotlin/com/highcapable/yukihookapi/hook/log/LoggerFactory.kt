@@ -41,7 +41,7 @@ import de.robv.android.xposed.XposedBridge
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
 internal fun yLoggerD(msg: String, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerD(msg = msg)
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerD(msg = msg)
 }
 
 /**
@@ -52,7 +52,7 @@ internal fun yLoggerD(msg: String, isDisableLog: Boolean = false) {
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
 internal fun yLoggerI(msg: String, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerI(msg = msg)
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerI(msg = msg)
 }
 
 /**
@@ -63,7 +63,7 @@ internal fun yLoggerI(msg: String, isDisableLog: Boolean = false) {
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
 internal fun yLoggerW(msg: String, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerW(msg = msg)
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerW(msg = msg)
 }
 
 /**
@@ -75,7 +75,7 @@ internal fun yLoggerW(msg: String, isDisableLog: Boolean = false) {
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
 internal fun yLoggerE(msg: String, e: Throwable? = null, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (!isDisableLog) loggerE(msg = msg, e = e)
+    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerE(msg = msg, e = e)
 }
 
 /**

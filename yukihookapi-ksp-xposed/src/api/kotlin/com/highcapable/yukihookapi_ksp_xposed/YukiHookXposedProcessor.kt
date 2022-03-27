@@ -194,7 +194,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 }
                 File("$projectPath${separator}assets").also { assFile ->
                     if (File("$projectPath${separator}AndroidManifest.xml").exists()) {
-                        if (!assFile.exists() || !assFile.isDirectory) {
+                        if (assFile.exists().not() || assFile.isDirectory.not()) {
                             assFile.delete()
                             assFile.mkdirs()
                         }

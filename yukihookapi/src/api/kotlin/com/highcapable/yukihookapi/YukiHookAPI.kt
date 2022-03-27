@@ -299,7 +299,7 @@ object YukiHookAPI {
 
     /** 输出欢迎信息调试日志 */
     private fun printSplashLog() {
-        if (!Configs.isDebug || !isShowSplashLogOnceTime || isModulePackageXposedEnv) return
+        if (Configs.isDebug.not() || isShowSplashLogOnceTime.not() || isModulePackageXposedEnv) return
         isShowSplashLogOnceTime = false
         yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using $executorName API $executorVersion")
     }

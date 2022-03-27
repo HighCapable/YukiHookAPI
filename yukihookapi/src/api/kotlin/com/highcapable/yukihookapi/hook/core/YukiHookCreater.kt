@@ -100,12 +100,12 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      */
     @DoNotUseMethod
     fun hook(): Result {
-        if (!YukiHookAPI.hasXposedBridge) return Result()
+        if (YukiHookAPI.hasXposedBridge.not()) return Result()
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
         else Thread {
             SystemClock.sleep(10)
-            if (!isDisableCreaterRunHook && hookClass.instance != null) hookMembers.forEach { (_, member) -> member.hook() }
-            if (!isDisableCreaterRunHook && hookClass.instance == null)
+            if (isDisableCreaterRunHook.not() && hookClass.instance != null) hookMembers.forEach { (_, member) -> member.hook() }
+            if (isDisableCreaterRunHook.not() && hookClass.instance == null)
                 if (onHookClassNotFoundFailureCallback == null)
                     yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
                 else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
@@ -360,7 +360,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         @DoNotUseMethod
         fun hook() {
-            if (!YukiHookAPI.hasXposedBridge || isDisableMemberRunHook) return
+            if (YukiHookAPI.hasXposedBridge.not() || isDisableMemberRunHook) return
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
                     onHookingFailureCallback?.invoke(it)

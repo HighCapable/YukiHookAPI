@@ -35,9 +35,10 @@ package com.highcapable.yukihookapi.hook.core.finder
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
+import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
+import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Method
 
@@ -62,12 +63,24 @@ class MethodFinder(
     /** [Method] 参数数组 */
     private var paramTypes: Array<out Class<*>>? = null
 
+    /** [ModifierRules] 实例 */
+    private var modifiers: ModifierRules? = null
+
     /**
      * [Method] 名称
      *
      * - ❗必须设置
      */
     var name = ""
+
+    /**
+     * [Method] 参数个数
+     *
+     * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
+     *
+     * 若参数个数小于零则忽略并使用 [param]
+     */
+    var paramCount = -1
 
     /**
      * [Method] 返回值
@@ -77,28 +90,37 @@ class MethodFinder(
     var returnType: Class<*>? = null
 
     /**
+     * [Method] 筛选条件
+     *
+     * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Method]
+     * @param initiate 方法体
+     */
+    fun modifiers(initiate: ModifierRules.() -> Unit) {
+        modifiers = ModifierRules().apply(initiate)
+    }
+
+    /**
      * [Method] 参数
+     *
+     * 如果同时使用了 [paramCount] 则 [paramTypes] 的数量必须与 [paramCount] 完全匹配
      *
      * - ❗无参 [Method] 不要使用此方法
      *
-     * - ❗有参 [Method] 必须使用此方法设定参数
+     * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param paramType 参数类型数组
      */
     fun param(vararg paramType: Class<*>) {
-        if (paramType.isEmpty()) error("paramType is empty, please delete param() method")
+        if (paramType.isEmpty()) error("paramTypes is empty, please delete param() method")
         paramTypes = paramType
     }
 
     /**
      * 得到方法
      * @return [Method]
-     * @throws IllegalStateException 如果 [name] 未设置
+     * @throws IllegalStateException 如果 [classSet] 为 null
      * @throws NoSuchMethodError 如果找不到方法
      */
-    private val result
-        get() = if (paramTypes != null)
-            ReflectionUtils.findMethodBestMatch(classSet, returnType, name, *paramTypes!!)
-        else ReflectionUtils.findMethodNoParam(classSet, returnType, name)
+    private val result get() = ReflectionTool.findMethod(classSet, name, modifiers, returnType, paramCount, paramTypes)
 
     /**
      * 设置实例
@@ -194,7 +216,7 @@ class MethodFinder(
                         onFailureMsg(msg = "trying ${p + 1} times by RemedyPlan --> $it", isAlwaysPrint = true)
                     }
                 }
-                if (!isFindSuccess) {
+                if (isFindSuccess.not()) {
                     onFailureMsg(
                         msg = "trying ${remedyPlans.size} times and all failure by RemedyPlan",
                         throwable = lastError,
@@ -230,7 +252,7 @@ class MethodFinder(
      * @param isNoSuch 是否没有找到方法 - 默认否
      * @param e 错误信息
      */
-    inner class Result(private val isNoSuch: Boolean = false, private val e: Throwable? = null) {
+    inner class Result(internal val isNoSuch: Boolean = false, private val e: Throwable? = null) {
 
         /**
          * 创建监听结果事件方法体

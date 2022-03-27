@@ -33,8 +33,9 @@ import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
+import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.utils.ReflectionUtils
+import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
 
@@ -50,6 +51,9 @@ class FieldFinder(
     override val classSet: Class<*>? = null
 ) : BaseFinder(tag = "Field", hookInstance, classSet) {
 
+    /** [ModifierRules] 实例 */
+    private var modifiers: ModifierRules? = null
+
     /**
      * [Field] 名称
      *
@@ -63,6 +67,16 @@ class FieldFinder(
      * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
      */
     var type: Class<*>? = null
+
+    /**
+     * [Field] 筛选条件
+     *
+     * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Field]
+     * @param initiate 方法体
+     */
+    fun modifiers(initiate: ModifierRules.() -> Unit) {
+        modifiers = ModifierRules().apply(initiate)
+    }
 
     /**
      * 得到变量处理结果
@@ -80,10 +94,7 @@ class FieldFinder(
         }
         else -> try {
             runBlocking {
-                memberInstance =
-                    if (type != null)
-                        ReflectionUtils.findFieldIfExists(classSet, type?.name, name)
-                    else classSet?.getDeclaredField(name)?.apply { isAccessible = true }
+                memberInstance = ReflectionTool.findField(classSet, name, modifiers, type)
             }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
         } catch (e: Throwable) {
@@ -111,7 +122,7 @@ class FieldFinder(
      * @param isNoSuch 是否没有找到变量 - 默认否
      * @param e 错误信息
      */
-    inner class Result(private val isNoSuch: Boolean = false, private val e: Throwable? = null) {
+    inner class Result(internal val isNoSuch: Boolean = false, private val e: Throwable? = null) {
 
         /**
          * 创建监听结果事件方法体
