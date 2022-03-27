@@ -35,6 +35,7 @@ package com.highcapable.yukihookapi.hook.xposed.prefs
 import android.content.Context
 import android.content.SharedPreferences
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import de.robv.android.xposed.XSharedPreferences
 import java.io.File
 
@@ -64,19 +65,19 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /** 是否为 Xposed 环境 */
     private val isXposedEnvironment = YukiHookAPI.hasXposedBridge
 
-    /** 缓存数据 */
+    /** [XSharedPreferences] 缓存的 [String] 键值数据 */
     private var xPrefCacheKeyValueStrings = HashMap<String, String>()
 
-    /** 缓存数据 */
+    /** [XSharedPreferences] 缓存的 [Boolean] 键值数据 */
     private var xPrefCacheKeyValueBooleans = HashMap<String, Boolean>()
 
-    /** 缓存数据 */
+    /** [XSharedPreferences] 缓存的 [Int] 键值数据 */
     private var xPrefCacheKeyValueInts = HashMap<String, Int>()
 
-    /** 缓存数据 */
+    /** [XSharedPreferences] 缓存的 [Long] 键值数据 */
     private var xPrefCacheKeyValueLongs = HashMap<String, Long>()
 
-    /** 缓存数据 */
+    /** [XSharedPreferences] 缓存的 [Float] 键值数据 */
     private var xPrefCacheKeyValueFloats = HashMap<String, Float>()
 
     /** 是否使用键值缓存 */
@@ -149,21 +150,23 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * 获取 [String] 键值
      *
      * - 智能识别对应环境读取键值数据
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
      * @param key 键值名称
-     * @param default 默认数据 - ""
+     * @param value 默认数据 - ""
      * @return [String]
      */
-    fun getString(key: String, default: String = "") =
+    fun getString(key: String, value: String = "") =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueStrings[key].let {
-                    (it ?: xPref.getString(key, default) ?: default).let { value ->
+                    (it ?: xPref.getString(key, value) ?: value).let { value ->
                         xPrefCacheKeyValueStrings[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getString(key, default) ?: default }
-        else sPref.getString(key, default) ?: default).let {
+            else resetCacheSet { xPref.getString(key, value) ?: value }
+        else sPref.getString(key, value) ?: value).let {
             makeWorldReadable()
             it
         }
@@ -172,21 +175,23 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * 获取 [Boolean] 键值
      *
      * - 智能识别对应环境读取键值数据
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
      * @param key 键值名称
-     * @param default 默认数据 - false
+     * @param value 默认数据 - false
      * @return [Boolean]
      */
-    fun getBoolean(key: String, default: Boolean = false) =
+    fun getBoolean(key: String, value: Boolean = false) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueBooleans[key].let {
-                    it ?: xPref.getBoolean(key, default).let { value ->
+                    it ?: xPref.getBoolean(key, value).let { value ->
                         xPrefCacheKeyValueBooleans[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getBoolean(key, default) }
-        else sPref.getBoolean(key, default)).let {
+            else resetCacheSet { xPref.getBoolean(key, value) }
+        else sPref.getBoolean(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -195,21 +200,23 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * 获取 [Int] 键值
      *
      * - 智能识别对应环境读取键值数据
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
      * @param key 键值名称
-     * @param default 默认数据 - 0
+     * @param value 默认数据 - 0
      * @return [Int]
      */
-    fun getInt(key: String, default: Int = 0) =
+    fun getInt(key: String, value: Int = 0) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueInts[key].let {
-                    it ?: xPref.getInt(key, default).let { value ->
+                    it ?: xPref.getInt(key, value).let { value ->
                         xPrefCacheKeyValueInts[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getInt(key, default) }
-        else sPref.getInt(key, default)).let {
+            else resetCacheSet { xPref.getInt(key, value) }
+        else sPref.getInt(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -218,21 +225,23 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * 获取 [Float] 键值
      *
      * - 智能识别对应环境读取键值数据
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
      * @param key 键值名称
-     * @param default 默认数据 - 0f
+     * @param value 默认数据 - 0f
      * @return [Float]
      */
-    fun getFloat(key: String, default: Float = 0f) =
+    fun getFloat(key: String, value: Float = 0f) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueFloats[key].let {
-                    it ?: xPref.getFloat(key, default).let { value ->
+                    it ?: xPref.getFloat(key, value).let { value ->
                         xPrefCacheKeyValueFloats[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getFloat(key, default) }
-        else sPref.getFloat(key, default)).let {
+            else resetCacheSet { xPref.getFloat(key, value) }
+        else sPref.getFloat(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -241,21 +250,23 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * 获取 [Long] 键值
      *
      * - 智能识别对应环境读取键值数据
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
      * @param key 键值名称
-     * @param default 默认数据 - 0L
+     * @param value 默认数据 - 0L
      * @return [Long]
      */
-    fun getLong(key: String, default: Long = 0L) =
+    fun getLong(key: String, value: Long = 0L) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueLongs[key].let {
-                    it ?: xPref.getLong(key, default).let { value ->
+                    it ?: xPref.getLong(key, value).let { value ->
                         xPrefCacheKeyValueLongs[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getLong(key, default) }
-        else sPref.getLong(key, default)).let {
+            else resetCacheSet { xPref.getLong(key, value) }
+        else sPref.getLong(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -275,7 +286,19 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     }
 
     /**
+     * 移除 [PrefsData.key] 的存储数据
+     *
+     * - 在模块 [Context] 环境中使用
+     *
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * @param prefs 键值实例
+     */
+    inline fun <reified T> remove(prefs: PrefsData<T>) = remove(prefs.key)
+
+    /**
      * 存储 [String] 键值
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
      * - 在模块 [Context] 环境中使用
      *
@@ -292,6 +315,8 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /**
      * 存储 [Boolean] 键值
      *
+     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     *
      * - 在模块 [Context] 环境中使用
      *
      * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
@@ -306,6 +331,8 @@ class YukiHookModulePrefs(private val context: Context? = null) {
 
     /**
      * 存储 [Int] 键值
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
      * - 在模块 [Context] 环境中使用
      *
@@ -322,6 +349,8 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /**
      * 存储 [Float] 键值
      *
+     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     *
      * - 在模块 [Context] 环境中使用
      *
      * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
@@ -337,6 +366,8 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /**
      * 存储 [Long] 键值
      *
+     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     *
      * - 在模块 [Context] 环境中使用
      *
      * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
@@ -350,6 +381,41 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     }
 
     /**
+     * 智能获取指定类型的键值
+     * @param prefs 键值实例
+     * @param value 默认值 - 未指定默认为 [prefs] 中的 [PrefsData.value]
+     * @return [T] 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
+     */
+    inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = when (prefs.value) {
+        is String -> getString(prefs.key, value as String) as T
+        is Int -> getInt(prefs.key, value as Int) as T
+        is Float -> getFloat(prefs.key, value as Float) as T
+        is Long -> getLong(prefs.key, value as Long) as T
+        is Boolean -> getBoolean(prefs.key, value as Boolean) as T
+        else -> error("Key-Value type ${T::class.java.name} is not allowed")
+    }
+
+    /**
+     * 智能存储指定类型的键值
+     *
+     * - 在模块 [Context] 环境中使用
+     *
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * @param prefs 键值实例
+     * @param value 要存储的值 - 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
+     */
+    inline fun <reified T> put(prefs: PrefsData<T>, value: T) = when (prefs.value) {
+        is String -> putString(prefs.key, value as String)
+        is Int -> putInt(prefs.key, value as Int)
+        is Float -> putFloat(prefs.key, value as Float)
+        is Long -> putLong(prefs.key, value as Long)
+        is Boolean -> putBoolean(prefs.key, value as Boolean)
+        else -> error("Key-Value type ${T::class.java.name} is not allowed")
+    }
+
+    /**
+     * 清除 [XSharedPreferences] 中缓存的键值数据
+     *
      * 无论是否开启 [YukiHookAPI.Configs.isEnableModulePrefsCache]
      *
      * 调用此方法将清除当前存储的全部键值缓存

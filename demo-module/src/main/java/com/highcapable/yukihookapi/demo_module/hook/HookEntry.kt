@@ -30,6 +30,7 @@ package com.highcapable.yukihookapi.demo_module.hook
 import android.app.AlertDialog
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.StringType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
@@ -121,7 +122,7 @@ class HookEntry : YukiHookXposedInitProxy {
                             returnType = StringType
                         }
                         // 执行替换 Hook
-                        replaceTo(prefs.getString(key = "test_data", default = "Test data is nothing"))
+                        replaceTo(prefs.get(DataConst.TEST_KV_DATA))
                     }
                 }
                 // 得到需要 Hook 的 Class

@@ -36,6 +36,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.demo_module.R
+import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
@@ -49,10 +50,10 @@ class MainActivity : AppCompatActivity() {
                 "Hook Framework -> ${YukiHookModuleStatus.executorName}\n" +
                 "API Version -> ${YukiHookModuleStatus.executorVersion}"
         findViewById<EditText>(R.id.module_demo_edit_text).also {
-            it.setText(modulePrefs.getString(key = "test_data"))
+            it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
             findViewById<Button>(R.id.module_demo_button).setOnClickListener { _ ->
                 if (it.text.toString().isNotEmpty()) {
-                    modulePrefs.putString(key = "test_data", value = it.text.toString())
+                    modulePrefs.put(DataConst.TEST_KV_DATA, it.text.toString())
                     Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
                 } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
             }
