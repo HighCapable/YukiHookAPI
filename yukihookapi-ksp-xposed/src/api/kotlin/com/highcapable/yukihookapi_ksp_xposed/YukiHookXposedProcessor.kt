@@ -35,6 +35,8 @@ import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * 这是 [YukiHookAPI] 的自动生成处理类 - 核心基于 KSP
@@ -249,6 +251,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 " * Compiled from YukiHookXposedProcessor\n" +
                                 " *\n" +
                                 " * HookEntryClass: [$className]\n" +
+                                " *\n" +
+                                " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
                                 " *\n" +
                                 " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
                                 " */\n" +

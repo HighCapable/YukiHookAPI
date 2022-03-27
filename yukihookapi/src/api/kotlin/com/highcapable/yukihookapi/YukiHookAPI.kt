@@ -65,10 +65,10 @@ object YukiHookAPI {
     private var isXposedInitialized = false
 
     /** 获取当前 [YukiHookAPI] 的版本 */
-    const val API_VERSION_NAME = "1.0.65"
+    const val API_VERSION_NAME = "1.0.67"
 
     /** 获取当前 [YukiHookAPI] 的版本号 */
-    const val API_VERSION_CODE = 11
+    const val API_VERSION_CODE = 12
 
     /**
      * 模块是否装载了 Xposed 回调方法
