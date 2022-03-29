@@ -183,7 +183,7 @@ class FieldFinder(
              * 得到变量实例
              * @return [T] or null
              */
-            fun <T> cast() = get(instance).self as? T?
+            fun <T> cast() = self as? T?
 
             /**
              * 得到变量的 [Byte] 实例
