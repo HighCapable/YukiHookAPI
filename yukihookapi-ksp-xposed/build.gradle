@@ -7,8 +7,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withJavadocJar()
     withSourcesJar()
 }
@@ -22,7 +22,7 @@ kotlin { sourceSets.main { kotlin.srcDir("src/api/kotlin") } }
 
 dependencies {
     implementation 'com.google.auto.service:auto-service-annotations:1.0.1'
-    compileOnly 'com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.2'
+    compileOnly 'com.google.devtools.ksp:symbol-processing-api:1.6.20-RC-1.0.4'
     ksp 'dev.zacsweers.autoservice:auto-service-ksp:1.0.0'
 }
 
