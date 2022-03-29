@@ -25,6 +25,11 @@
             android:name="xposedminversion"
             android:value="93" />
 
+        <!-- LSPosed 作用域声明 -->
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/module_scope" />
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
