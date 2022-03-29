@@ -32,6 +32,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
+import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
 import com.highcapable.yukihookapi.hook.type.java.StringType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
@@ -98,6 +99,19 @@ class HookEntry : YukiHookXposedInitProxy {
                         beforeHook {
                             // 设置 0 号 param
                             args().set("I am hook method param")
+                        }
+                    }
+                    // 注入要 Hook 的方法
+                    injectMember {
+                        method {
+                            name = "getArray"
+                            param(StringArrayClass)
+                            returnType = StringArrayClass
+                        }
+                        // 在方法执行之前拦截
+                        beforeHook {
+                            // 设置 0 号 param
+                            args().array<String>()[0] = "peach"
                         }
                     }
                     // 注入要 Hook 的方法

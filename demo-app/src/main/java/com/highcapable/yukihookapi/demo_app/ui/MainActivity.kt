@@ -30,27 +30,30 @@
 package com.highcapable.yukihookapi.demo_app.ui
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.highcapable.yukihookapi.demo_app.R
+import com.highcapable.yukihookapi.demo_app.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.demo_app.utils.Main
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        findViewById<TextView>(R.id.app_demo_first_text).text = getFirstText()
-        findViewById<TextView>(R.id.app_demo_second_text).text = secondText
-        findViewById<TextView>(R.id.app_demo_third_text).text = Main("Feel real").getString()
-        findViewById<TextView>(R.id.app_demo_fourth_text).text = getRegularText("Have fun day")
-        findViewById<TextView>(R.id.app_demo_fifth_text).text = getDataText()
-        findViewById<Button>(R.id.app_demo_button).setOnClickListener { toast() }
+        ActivityMainBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+            appDemoFirstText.text = getFirstText()
+            appDemoSecondText.text = secondText
+            appDemoThirdText.text = Main(string = "Feel real").getString()
+            appDemoFourthText.text = getRegularText(string = "Have fun day")
+            appDemoFifthText.text = getDataText()
+            appDemoSixthText.text = getArray(arrayOf("apple", "banana")).let { "${it[0]}, ${it[1]}" }
+            appDemoButton.setOnClickListener { toast() }
+        }
     }
 
     private val secondText = "This is a miracle"
+
+    private fun getArray(array: Array<String>) = array
 
     private fun getFirstText() = "Hello World!"
 

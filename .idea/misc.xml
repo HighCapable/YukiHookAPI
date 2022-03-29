@@ -5,13 +5,14 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4169230769230769" />
         <entry key="app_demo/src/main/res/layout/activity_main.xml" value="0.4375" />
+        <entry key="demo-app/src/main/res/layout/activity_main.xml" value="0.4375" />
         <entry key="demo-module/src/main/res/layout/activity_main.xml" value="0.4375" />
         <entry key="demo/src/main/res/layout/activity_main.xml" value="0.4375" />
         <entry key="module_demo/src/main/res/layout/activity_main.xml" value="0.4375" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

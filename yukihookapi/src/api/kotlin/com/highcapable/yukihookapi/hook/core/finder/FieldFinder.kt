@@ -146,83 +146,6 @@ class FieldFinder(
         }
 
         /**
-         * 得到变量实例
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [T] or null
-         */
-        fun <T> of(instance: Any? = null) = get(instance).self as? T?
-
-        /**
-         * 得到变量的 [Int] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Int] 取不到返回 0
-         */
-        fun ofInt(instance: Any? = null) = of(instance) ?: 0
-
-        /**
-         * 得到变量的 [Long] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Long] 取不到返回 0L
-         */
-        fun ofLong(instance: Any? = null) = of(instance) ?: 0L
-
-        /**
-         * 得到变量的 [Short] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Short] 取不到返回 0
-         */
-        fun ofShort(instance: Any? = null) = of<Short?>(instance) ?: 0
-
-        /**
-         * 得到变量的 [Double] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Double] 取不到返回 0.0
-         */
-        fun ofDouble(instance: Any? = null) = of(instance) ?: 0.0
-
-        /**
-         * 得到变量的 [Float] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Float] 取不到返回 0f
-         */
-        fun ofFloat(instance: Any? = null) = of(instance) ?: 0f
-
-        /**
-         * 得到变量的 [String] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [String] 取不到返回 ""
-         */
-        fun ofString(instance: Any? = null) = of(instance) ?: ""
-
-        /**
-         * 得到变量的 [Boolean] 实例
-         *
-         * - ❗请确认目标变量的类型 - 发生错误会返回默认值
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Boolean] 取不到返回 false
-         */
-        fun ofBoolean(instance: Any? = null) = of(instance) ?: false
-
-        /**
-         * 得到变量的 [Any] 实例
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [Any] or null
-         */
-        fun ofAny(instance: Any? = null) = of<Any?>(instance)
-
-        /**
          * 得到变量本身
          * @return [Field] or null
          */
@@ -255,6 +178,106 @@ class FieldFinder(
          * @param self 当前 [Field] 自身的实例对象
          */
         inner class Instance(private val instance: Any?, val self: Any?) {
+
+            /**
+             * 得到变量实例
+             * @return [T] or null
+             */
+            fun <T> cast() = get(instance).self as? T?
+
+            /**
+             * 得到变量的 [Byte] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回 null
+             * @return [Byte] or null
+             */
+            fun byte() = cast<Byte?>()
+
+            /**
+             * 得到变量的 [Int] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [Int] 取不到返回 0
+             */
+            fun int() = cast() ?: 0
+
+            /**
+             * 得到变量的 [Long] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [Long] 取不到返回 0L
+             */
+            fun long() = cast() ?: 0L
+
+            /**
+             * 得到变量的 [Short] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [Short] 取不到返回 0
+             */
+            fun short() = cast<Short?>() ?: 0
+
+            /**
+             * 得到变量的 [Double] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [Double] 取不到返回 0.0
+             */
+            fun double() = cast() ?: 0.0
+
+            /**
+             * 得到变量的 [Float] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [Float] 取不到返回 0f
+             */
+            fun float() = cast() ?: 0f
+
+            /**
+             * 得到变量的 [String] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [String] 取不到返回 ""
+             */
+            fun string() = cast() ?: ""
+
+            /**
+             * 得到变量的 [Char] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [Char] 取不到返回 ' '
+             */
+            fun char() = cast() ?: ' '
+
+            /**
+             * 得到变量的 [Boolean] 实例
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回默认值
+             * @return [Boolean] 取不到返回 false
+             */
+            fun boolean() = cast() ?: false
+
+            /**
+             * 得到变量的 [Any] 实例
+             * @return [Any] or null
+             */
+            fun any() = cast<Any?>()
+
+            /**
+             * 得到变量的 [Array] 实例 - 每项类型 [T]
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回空数组
+             * @return [Array] 取不到返回空数组
+             */
+            inline fun <reified T> array() = cast() ?: arrayOf<T>()
+
+            /**
+             * 得到变量的 [List] 实例 - 每项类型 [T]
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回空数组
+             * @return [List] 取不到返回空数组
+             */
+            inline fun <reified T> list() = cast() ?: listOf<T>()
 
             /**
              * 设置变量实例

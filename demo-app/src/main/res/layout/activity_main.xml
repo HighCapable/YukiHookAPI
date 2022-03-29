@@ -47,6 +47,14 @@
         android:text="sample"
         android:textSize="20sp" />
 
+    <TextView
+        android:id="@+id/app_demo_sixth_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:text="sample"
+        android:textSize="20sp" />
+
     <Button
         android:id="@+id/app_demo_button"
         android:layout_width="wrap_content"

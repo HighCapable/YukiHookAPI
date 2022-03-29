@@ -171,7 +171,15 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * 得到方法参数的实例对象 [T]
          * @return [T] or null
          */
-        fun <T> of() = runCatching { args[index] as? T? }.getOrNull()
+        fun <T> cast() = runCatching { args[index] as? T? }.getOrNull()
+
+        /**
+         * 得到方法参数的实例对象 [Byte]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回 null
+         * @return [Byte] or null
+         */
+        fun byte() = cast<Byte?>()
 
         /**
          * 得到方法参数的实例对象 [Int]
@@ -179,7 +187,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * - ❗请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Int] 取不到返回 0
          */
-        fun ofInt() = of() ?: 0
+        fun int() = cast() ?: 0
 
         /**
          * 得到方法参数的实例对象 [Long]
@@ -187,7 +195,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * - ❗请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Long] 取不到返回 0L
          */
-        fun ofLong() = of() ?: 0L
+        fun long() = cast() ?: 0L
 
         /**
          * 得到方法参数的实例对象 [Short]
@@ -195,7 +203,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * - ❗请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Short] 取不到返回 0
          */
-        fun ofShort() = of<Short?>() ?: 0
+        fun short() = cast<Short?>() ?: 0
 
         /**
          * 得到方法参数的实例对象 [Double]
@@ -203,7 +211,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * - ❗请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Double] 取不到返回 0.0
          */
-        fun ofDouble() = of() ?: 0.0
+        fun double() = cast() ?: 0.0
 
         /**
          * 得到方法参数的实例对象 [Float]
@@ -211,7 +219,7 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * - ❗请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Float] 取不到返回 0f
          */
-        fun ofFloat() = of() ?: 0f
+        fun float() = cast() ?: 0f
 
         /**
          * 得到方法参数的实例对象 [String]
@@ -219,7 +227,15 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * - ❗请确认目标参数的类型 - 发生错误会返回默认值
          * @return [String] 取不到返回 ""
          */
-        fun ofString() = of() ?: ""
+        fun string() = cast() ?: ""
+
+        /**
+         * 得到方法参数的实例对象 [Char]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * @return [Char] 取不到返回 ' '
+         */
+        fun char() = cast() ?: ' '
 
         /**
          * 得到方法参数的实例对象 [Boolean]
@@ -227,7 +243,23 @@ class HookParam(private val wrapper: HookParamWrapper) {
          * - ❗请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Boolean] 取不到返回 false
          */
-        fun ofBoolean() = of() ?: false
+        fun boolean() = cast() ?: false
+
+        /**
+         * 得到方法参数的实例对象 [Array] - 每项类型 [T]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回空数组
+         * @return [Array] 取不到返回空数组
+         */
+        inline fun <reified T> array() = cast() ?: arrayOf<T>()
+
+        /**
+         * 得到方法参数的实例对象 [List] - 每项类型 [T]
+         *
+         * - ❗请确认目标参数的类型 - 发生错误会返回空数组
+         * @return [List] 取不到返回空数组
+         */
+        inline fun <reified T> list() = cast() ?: listOf<T>()
 
         /**
          * 设置方法参数的实例对象

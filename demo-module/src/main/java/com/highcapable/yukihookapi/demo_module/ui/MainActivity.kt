@@ -30,13 +30,10 @@
 package com.highcapable.yukihookapi.demo_module.ui
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
+import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
@@ -45,17 +42,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        findViewById<TextView>(R.id.module_demo_text).text = "Module is Active -> $isModuleActive\n" +
-                "Hook Framework -> ${YukiHookModuleStatus.executorName}\n" +
-                "API Version -> ${YukiHookModuleStatus.executorVersion}"
-        findViewById<EditText>(R.id.module_demo_edit_text).also {
-            it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
-            findViewById<Button>(R.id.module_demo_button).setOnClickListener { _ ->
-                if (it.text.toString().isNotEmpty()) {
-                    modulePrefs.put(DataConst.TEST_KV_DATA, it.text.toString())
-                    Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
-                } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
+        ActivityMainBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+            moduleDemoText.text = "Module is Active -> $isModuleActive\n" +
+                    "Hook Framework -> ${YukiHookModuleStatus.executorName}\n" +
+                    "API Version -> ${YukiHookModuleStatus.executorVersion}"
+            moduleDemoEditText.also {
+                it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
+                moduleDemoButton.setOnClickListener { _ ->
+                    if (it.text.toString().isNotEmpty()) {
+                        modulePrefs.put(DataConst.TEST_KV_DATA, it.text.toString())
+                        Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
+                    } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

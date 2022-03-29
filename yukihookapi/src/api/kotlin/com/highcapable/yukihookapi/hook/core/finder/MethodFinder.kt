@@ -361,13 +361,22 @@ class MethodFinder(
             fun <T> invoke(vararg param: Any?) = baseCall(*param) as? T?
 
             /**
+             * 执行方法 - 指定 [Byte] 返回值类型
+             *
+             * - ❗请确认目标变量的类型 - 发生错误会返回 null
+             * @param param 方法参数
+             * @return [Byte] or null
+             */
+            fun byte(vararg param: Any?) = invoke<Byte?>(*param)
+
+            /**
              * 执行方法 - 指定 [Int] 返回值类型
              *
              * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
              * @param param 方法参数
              * @return [Int] 取不到返回 0
              */
-            fun callInt(vararg param: Any?) = invoke(*param) ?: 0
+            fun int(vararg param: Any?) = invoke(*param) ?: 0
 
             /**
              * 执行方法 - 指定 [Long] 返回值类型
@@ -376,7 +385,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Long] 取不到返回 0L
              */
-            fun callLong(vararg param: Any?) = invoke(*param) ?: 0L
+            fun long(vararg param: Any?) = invoke(*param) ?: 0L
 
             /**
              * 执行方法 - 指定 [Short] 返回值类型
@@ -385,7 +394,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Short] 取不到返回 0
              */
-            fun callShort(vararg param: Any?) = invoke<Short?>(*param) ?: 0
+            fun short(vararg param: Any?) = invoke<Short?>(*param) ?: 0
 
             /**
              * 执行方法 - 指定 [Double] 返回值类型
@@ -394,7 +403,7 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Double] 取不到返回 0.0
              */
-            fun callDouble(vararg param: Any?) = invoke(*param) ?: 0.0
+            fun double(vararg param: Any?) = invoke(*param) ?: 0.0
 
             /**
              * 执行方法 - 指定 [Float] 返回值类型
@@ -403,14 +412,21 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Float] 取不到返回 0f
              */
-            fun callFloat(vararg param: Any?) = invoke(*param) ?: 0f
+            fun float(vararg param: Any?) = invoke(*param) ?: 0f
 
             /**
              * 执行方法 - 指定 [String] 返回值类型
              * @param param 方法参数
              * @return [String] 取不到返回 ""
              */
-            fun callString(vararg param: Any?) = invoke(*param) ?: ""
+            fun string(vararg param: Any?) = invoke(*param) ?: ""
+
+            /**
+             * 执行方法 - 指定 [Char] 返回值类型
+             * @param param 方法参数
+             * @return [Char] 取不到返回 ' '
+             */
+            fun char(vararg param: Any?) = invoke(*param) ?: ' '
 
             /**
              * 执行方法 - 指定 [Boolean] 返回值类型
@@ -419,7 +435,23 @@ class MethodFinder(
              * @param param 方法参数
              * @return [Boolean] 取不到返回 false
              */
-            fun callBoolean(vararg param: Any?) = invoke(*param) ?: false
+            fun boolean(vararg param: Any?) = invoke(*param) ?: false
+
+            /**
+             * 执行方法 - 指定 [Array] 返回值类型 - 每项类型 [T]
+             *
+             * - ❗请确认目标方法的返回值 - 发生错误会返回空数组
+             * @return [Array] 取不到返回空数组
+             */
+            inline fun <reified T> array(vararg param: Any?) = invoke(*param) ?: arrayOf<T>()
+
+            /**
+             * 执行方法 - 指定 [List] 返回值类型 - 每项类型 [T]
+             *
+             * - ❗请确认目标方法的返回值 - 发生错误会返回空数组
+             * @return [List] 取不到返回空数组
+             */
+            inline fun <reified T> list(vararg param: Any?) = invoke(*param) ?: listOf<T>()
 
             override fun toString() =
                 "[${(memberInstance as? Method?)?.name ?: "<empty>"}] in [${instance?.javaClass?.name ?: "<empty>"}]"
