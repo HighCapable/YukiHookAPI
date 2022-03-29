@@ -183,11 +183,11 @@ class MainHook : YukiHookXposedInitProxy {
   彻底对方法、构造方法及变量的查找方案进行重构；<br/>
   优化代码注释，修复了可能产生的 BUG。<br/><br/>
 - 1.0.68 <br/>
-  增加 Demo 中的新用例和 LSPosed 作用域；
-  增加 `Member` 查找缓存和查找缓存配置开关；
-  移除和修改 `MethodFinder`、`FieldFinder` 以及 `HookParam` 相关方法的调用；
-  增加更多 `Finder` 中的 `cast` 类型并支持 `cast` 为数组；
-  整体的性能和稳定性提升；
+  增加 Demo 中的新用例和 LSPosed 作用域；<br/>
+  增加 `Member` 查找缓存和查找缓存配置开关；<br/>
+  移除和修改 `MethodFinder`、`FieldFinder` 以及 `HookParam` 相关方法的调用；<br/>
+  增加更多 `Finder` 中的 `cast` 类型并支持 `cast` 为数组；<br/>
+  整体的性能和稳定性提升；<br/>
   修复上一个版本可能存在的 BUG。
 
 # Features
