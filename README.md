@@ -181,7 +181,9 @@ class MainHook : YukiHookXposedInitProxy {
   增加 `MethodFinder` 和 `ConstructorFinder` 中的 `give` 方法，可获得原始类型；<br/>
   增加 `YukiHookModulePrefs` 中的 `PrefsData` 模板功能；<br/>
   彻底对方法、构造方法及变量的查找方案进行重构；<br/>
-  优化代码注释，修复了可能产生的 BUG。
+  优化代码注释，修复了可能产生的 BUG。<br/><br/>
+- 1.0.68 <br/>
+  完善中。
 
 # Features
 
