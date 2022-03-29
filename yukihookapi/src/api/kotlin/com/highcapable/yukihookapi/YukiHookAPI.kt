@@ -35,14 +35,22 @@ import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.DoNotUseField
 import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
+import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
+import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import java.lang.reflect.Constructor
+import java.lang.reflect.Field
+import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * [YukiHookAPI] 的装载调用类
@@ -155,11 +163,11 @@ object YukiHookAPI {
          *
          * - ❗关闭后将会停用 [YukiHookAPI] 对全部日志的输出
          *
-         *  但是不影响当你手动调用下面这些方法输出日志
+         * 但是不影响当你手动调用下面这些方法输出日志
          *
-         *  [loggerD]、[loggerI]、[loggerW]、[loggerE]
+         * [loggerD]、[loggerI]、[loggerW]、[loggerE]
          *
-         *  当 [isAllowPrintingLogs] 关闭后 [isDebug] 也将同时关闭
+         * 当 [isAllowPrintingLogs] 关闭后 [isDebug] 也将同时关闭
          */
         var isAllowPrintingLogs = true
 
@@ -168,9 +176,26 @@ object YukiHookAPI {
          *
          * - 为防止内存复用过高问题 - 此功能默认启用
          *
-         *  你可以手动在 [YukiHookModulePrefs] 中自由开启和关闭缓存功能以及清除缓存
+         * 你可以手动在 [YukiHookModulePrefs] 中自由开启和关闭缓存功能以及清除缓存
          */
         var isEnableModulePrefsCache = true
+
+        /**
+         * 是否启用 [Member] 缓存功能
+         *
+         * - 为防止 [Member] 复用过高造成的系统 GC 问题 - 此功能默认启用
+         *
+         * 启用后会缓存已经找到的 [Class]、[Method]、[Constructor]、[Field]
+         *
+         * 缓存的 [Member] 都将处于 [MemberCacheStore] 的全局静态实例中
+         *
+         * 推荐使用 [MethodFinder]、[ConstructorFinder]、[FieldFinder] 来获取 [Member]
+         *
+         * 详情请参考 [API 文档](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3)
+         *
+         * 除非缓存的 [Member] 发生了混淆的问题 - 例如使用 R8 混淆后的 APP 的目标 [Member] - 否则建议启用
+         */
+        var isEnableMemberCache = true
 
         /** 结束方法体 */
         internal fun build() {}

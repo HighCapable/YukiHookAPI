@@ -54,6 +54,10 @@ class HookEntry : YukiHookXposedInitProxy {
             // 若无和模块频繁交互数据在宿主重新启动之前建议开启
             // 若需要实时交互数据建议关闭或从 [YukiHookModulePrefs] 中进行动态配置
             isEnableModulePrefsCache = true
+            // 是否启用 [Member] 缓存功能
+            // 为防止 [Member] 复用过高造成的系统 GC 问题 - 此功能默认启用
+            // 除非缓存的 [Member] 发生了混淆的问题 - 否则建议启用
+            isEnableMemberCache = true
         }
     }
 

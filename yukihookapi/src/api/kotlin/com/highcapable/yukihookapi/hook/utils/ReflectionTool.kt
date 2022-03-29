@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.utils
 
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -52,26 +53,30 @@ internal object ReflectionTool {
      * @throws NoSuchFieldError 如果找不到变量
      */
     internal fun findField(classSet: Class<*>?, name: String, modifiers: ModifierRules?, type: Class<*>?): Field {
-        var field: Field? = null
-        run {
-            classSet?.declaredFields?.forEach {
-                var conditions = name == it.name
-                if (type != null) conditions = conditions && it.type == type
-                if (modifiers != null) conditions = conditions && modifiers.contains(it)
-                if (conditions) {
-                    field = it.apply { isAccessible = true }
-                    return@run
-                }
-            } ?: error("Can't find this Field [$name] because classSet is null")
+        val hashCode = ("[$name][$type][$modifiers][$classSet]").hashCode()
+        return MemberCacheStore.findField(hashCode) ?: let {
+            var field: Field? = null
+            run {
+                classSet?.declaredFields?.forEach {
+                    var conditions = name == it.name
+                    if (type != null) conditions = conditions && it.type == type
+                    if (modifiers != null) conditions = conditions && modifiers.contains(it)
+                    if (conditions) {
+                        field = it.apply { isAccessible = true }
+                        return@run
+                    }
+                } ?: error("Can't find this Field [$name] because classSet is null")
+            }
+            field?.also { MemberCacheStore.putField(hashCode, field) }
+                ?: throw NoSuchFieldError(
+                    "Can't find this Field --> " +
+                            "name:[$name] " +
+                            "type:[$type] " +
+                            "modifiers:${modifiers ?: "[]"} " +
+                            "in Class [$classSet] " +
+                            "by $TAG"
+                )
         }
-        return field ?: throw NoSuchFieldError(
-            "Can't find this Field --> " +
-                    "name:[$name] " +
-                    "type:[$type] " +
-                    "modifiers:${modifiers ?: "[]"} " +
-                    "in Class [$classSet] " +
-                    "by $TAG"
-        )
     }
 
     /**
@@ -94,30 +99,34 @@ internal object ReflectionTool {
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Method {
-        var method: Method? = null
-        run {
-            classSet?.declaredMethods?.forEach {
-                var conditions = name == it.name
-                if (returnType != null) conditions = conditions && it.returnType == returnType
-                if (paramCount >= 0) conditions = conditions && it.parameterTypes.size == paramCount
-                if (paramTypes != null) conditions = conditions && arrayContentsEq(paramTypes, it.parameterTypes)
-                if (modifiers != null) conditions = conditions && modifiers.contains(it)
-                if (conditions) {
-                    method = it.apply { isAccessible = true }
-                    return@run
-                }
-            } ?: error("Can't find this Method [$name] because classSet is null")
+        val hashCode = ("[$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
+        return MemberCacheStore.findMethod(hashCode) ?: let {
+            var method: Method? = null
+            run {
+                classSet?.declaredMethods?.forEach {
+                    var conditions = name == it.name
+                    if (returnType != null) conditions = conditions && it.returnType == returnType
+                    if (paramCount >= 0) conditions = conditions && it.parameterTypes.size == paramCount
+                    if (paramTypes != null) conditions = conditions && arrayContentsEq(paramTypes, it.parameterTypes)
+                    if (modifiers != null) conditions = conditions && modifiers.contains(it)
+                    if (conditions) {
+                        method = it.apply { isAccessible = true }
+                        return@run
+                    }
+                } ?: error("Can't find this Method [$name] because classSet is null")
+            }
+            method?.also { MemberCacheStore.putMethod(hashCode, method) }
+                ?: throw NoSuchMethodError(
+                    "Can't find this Method --> " +
+                            "name:[$name] " +
+                            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "paramTypes:[${paramTypes.typeOfString()}] " +
+                            "returnType:[$returnType] " +
+                            "modifiers:${modifiers ?: "[]"} " +
+                            "in Class [$classSet] " +
+                            "by $TAG"
+                )
         }
-        return method ?: throw NoSuchMethodError(
-            "Can't find this Method --> " +
-                    "name:[$name] " +
-                    "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                    "paramTypes:[${paramTypes.typeOfString()}] " +
-                    "returnType:[$returnType] " +
-                    "modifiers:${modifiers ?: "[]"} " +
-                    "in Class [$classSet] " +
-                    "by $TAG"
-        )
     }
 
     /**
@@ -136,27 +145,31 @@ internal object ReflectionTool {
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Constructor<*> {
-        var constructor: Constructor<*>? = null
-        run {
-            classSet?.declaredConstructors?.forEach {
-                var conditions = false
-                if (paramCount >= 0) conditions = it.parameterTypes.size == paramCount
-                if (paramTypes != null) conditions = arrayContentsEq(paramTypes, it.parameterTypes)
-                if (modifiers != null) conditions = conditions && modifiers.contains(it)
-                if (conditions) {
-                    constructor = it.apply { isAccessible = true }
-                    return@run
-                }
-            } ?: error("Can't find this Constructor because classSet is null")
+        val hashCode = ("[$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
+        return MemberCacheStore.findConstructor(hashCode) ?: let {
+            var constructor: Constructor<*>? = null
+            run {
+                classSet?.declaredConstructors?.forEach {
+                    var conditions = false
+                    if (paramCount >= 0) conditions = it.parameterTypes.size == paramCount
+                    if (paramTypes != null) conditions = arrayContentsEq(paramTypes, it.parameterTypes)
+                    if (modifiers != null) conditions = conditions && modifiers.contains(it)
+                    if (conditions) {
+                        constructor = it.apply { isAccessible = true }
+                        return@run
+                    }
+                } ?: error("Can't find this Constructor because classSet is null")
+            }
+            return constructor?.also { MemberCacheStore.putConstructor(hashCode, constructor) }
+                ?: throw NoSuchMethodError(
+                    "Can't find this Constructor --> " +
+                            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "paramTypes:[${paramTypes.typeOfString()}] " +
+                            "modifiers:${modifiers ?: "[]"} " +
+                            "in Class [$classSet] " +
+                            "by $TAG"
+                )
         }
-        return constructor ?: throw NoSuchMethodError(
-            "Can't find this Constructor --> " +
-                    "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                    "paramTypes:[${paramTypes.typeOfString()}] " +
-                    "modifiers:${modifiers ?: "[]"} " +
-                    "in Class [$classSet] " +
-                    "by $TAG"
-        )
     }
 
     /**

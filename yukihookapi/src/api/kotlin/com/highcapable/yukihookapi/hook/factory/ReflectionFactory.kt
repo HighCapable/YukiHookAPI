@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import java.lang.reflect.Member
 
 /**
@@ -63,9 +64,13 @@ val String.hasClass get() = hasClass(loader = null)
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
-fun classOf(name: String, loader: ClassLoader? = null): Class<*> =
-    if (loader == null) Class.forName(name)
-    else loader.loadClass(name)
+fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
+    val hashCode = ("[$name][$loader]").hashCode()
+    return MemberCacheStore.findClass(hashCode) ?: run {
+        (if (loader == null) Class.forName(name)
+        else loader.loadClass(name)).also { MemberCacheStore.putClass(hashCode, it) }
+    }
+}
 
 /**
  * 通过字符串查找类是否存在
