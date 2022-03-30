@@ -170,6 +170,10 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /**
          * 查找并 Hook [hookClass] 中指定 [name] 的全部方法
          *
+         * 在同一个 [injectMember] 中
+         *
+         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
+         *
          * - ❗警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] 对每个方法单独 Hook
          *
          * - ❗如果 [hookClass] 中没有方法可能会发生错误
@@ -184,6 +188,10 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /**
          * 查找并 Hook [hookClass] 中的全部构造方法
          *
+         * 在同一个 [injectMember] 中
+         *
+         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
+         *
          * - ❗警告：无法准确处理每个构造方法的 param - 建议使用 [constructor] 对每个构造方法单独 Hook
          *
          * - ❗如果 [hookClass] 中没有构造方法可能会发生错误
@@ -197,7 +205,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /**
          * 查找 [hookClass] 需要 Hook 的方法
          *
-         * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
+         * 在同一个 [injectMember] 中
+         *
+         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          * @return [MethodFinder.Result]
          */
@@ -213,7 +223,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /**
          * 查找 [hookClass] 需要 Hook 的构造方法
          *
-         * 你只能使用一次 [method] 或 [constructor] 方法 - 否则结果会被替换
+         * 在同一个 [injectMember] 中
+         *
+         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
@@ -493,7 +505,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
 
-        override fun toString() = "${hookClass.name}$member$tag#YukiHookAPI"
+        override fun toString() = "${hookClass.name}$allMethodsName$member$hookAllMembers$tag#YukiHookAPI"
 
         /**
          * 监听 Hook 结果实现类

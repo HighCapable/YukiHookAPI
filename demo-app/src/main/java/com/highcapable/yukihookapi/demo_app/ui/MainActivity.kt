@@ -47,6 +47,10 @@ class MainActivity : AppCompatActivity() {
             appDemoFourthText.text = getRegularText(string = "Have fun day")
             appDemoFifthText.text = getDataText()
             appDemoSixthText.text = getArray(arrayOf("apple", "banana")).let { "${it[0]}, ${it[1]}" }
+            appDemoSeventhText.text = Main().getTestResultFirst()
+            appDemoEighthText.text = Main().getTestResultFirst(string = "Find something interesting")
+            appDemoNinthText.text = Main().getTestResultLast()
+            appDemoTenthText.text = Main().getTestResultLast(string = "This is the last sentence")
             appDemoButton.setOnClickListener { toast() }
         }
     }

@@ -27,7 +27,15 @@
  */
 package com.highcapable.yukihookapi.demo_app.utils
 
-class Main(private val string: String) {
+class Main(private val string: String = "") {
 
     fun getString() = string
+
+    fun getTestResultFirst() = "The world is beautiful"
+
+    fun getTestResultFirst(string: String) = string
+
+    fun getTestResultLast() = "The world is fantastic"
+
+    fun getTestResultLast(string: String) = string
 }

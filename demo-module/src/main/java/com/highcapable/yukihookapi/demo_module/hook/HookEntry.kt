@@ -154,6 +154,18 @@ class HookEntry : YukiHookXposedInitProxy {
                             args().set("I am hook constructor param")
                         }
                     }
+                    // 注入要 Hook 的方法
+                    injectMember {
+                        allMethods(name = "getTestResultFirst")
+                        // 执行替换 Hook
+                        replaceTo("I am hook all methods first")
+                    }
+                    // 注入要 Hook 的方法
+                    injectMember {
+                        allMethods(name = "getTestResultLast")
+                        // 执行替换 Hook
+                        replaceTo("I am hook all methods last")
+                    }
                 }
             }
         }
