@@ -57,15 +57,15 @@ import java.lang.reflect.Member
 class YukiHookCreater(private val packageParam: PackageParam, private val hookClass: HookClass) {
 
     /**
-     * Hook 全部方法的标识
+     * Hook 模式定义
      */
-    enum class HookAllMembers { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_NONE }
+    enum class HookMemberMode { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_CONVENTIONAL }
 
     /** 是否对当前 [YukiHookCreater] 禁止执行 Hook 操作 */
     private var isDisableCreaterRunHook = false
 
     /** 设置要 Hook 的方法、构造类 */
-    private var hookMembers = HashMap<String, MemberHookCreater>()
+    private var hookMembers = HashSet<MemberHookCreater>()
 
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
@@ -87,9 +87,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      * @return [MemberHookCreater.Result]
      */
     fun injectMember(tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(tag).apply(initiate).apply {
-            hookMembers[toString()] = this
-        }.build()
+        MemberHookCreater(tag).apply(initiate).apply { hookMembers.add(this) }.build()
 
     /**
      * Hook 执行入口
@@ -104,7 +102,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
         else Thread {
             SystemClock.sleep(10)
-            if (isDisableCreaterRunHook.not() && hookClass.instance != null) hookMembers.forEach { (_, member) -> member.hook() }
+            if (isDisableCreaterRunHook.not() && hookClass.instance != null) hookMembers.forEach { it.hook() }
             if (isDisableCreaterRunHook.not() && hookClass.instance == null)
                 if (onHookClassNotFoundFailureCallback == null)
                     yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
@@ -154,8 +152,8 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /** 是否对当前 [MemberHookCreater] 禁止执行 Hook 操作 */
         private var isDisableMemberRunHook = false
 
-        /** 是否 Hook 全部方法以及类型 */
-        private var hookAllMembers = HookAllMembers.HOOK_NONE
+        /** Hook 当前模式类型 */
+        private var hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
 
         /** 全部方法的名称 */
         private var allMethodsName = ""
@@ -181,7 +179,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun allMethods(name: String) {
             allMethodsName = name
-            hookAllMembers = HookAllMembers.HOOK_ALL_METHODS
+            hookMemberMode = HookMemberMode.HOOK_ALL_METHODS
             isHookMemberSetup = true
         }
 
@@ -198,7 +196,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun allConstructors() {
             allMethodsName = "<init>"
-            hookAllMembers = HookAllMembers.HOOK_ALL_CONSTRUCTORS
+            hookMemberMode = HookMemberMode.HOOK_ALL_CONSTRUCTORS
             isHookMemberSetup = true
         }
 
@@ -212,7 +210,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @return [MethodFinder.Result]
          */
         fun method(initiate: MethodFinder.() -> Unit) = try {
-            hookAllMembers = HookAllMembers.HOOK_NONE
+            hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
             MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
         } catch (e: Throwable) {
@@ -230,7 +228,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @return [ConstructorFinder.Result]
          */
         fun constructor(initiate: ConstructorFinder.() -> Unit = {}) = try {
-            hookAllMembers = HookAllMembers.HOOK_NONE
+            hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
             ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
         } catch (e: Throwable) {
@@ -432,7 +430,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     }
                 }
             }
-            if (hookAllMembers == HookAllMembers.HOOK_NONE)
+            if (hookMemberMode == HookMemberMode.HOOK_CONVENTIONAL)
                 if (member != null)
                     member.also { member ->
                         runCatching {
@@ -458,12 +456,12 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                         )
                 }
             else runCatching {
-                when (hookAllMembers) {
-                    HookAllMembers.HOOK_ALL_METHODS ->
+                when (hookMemberMode) {
+                    HookMemberMode.HOOK_ALL_METHODS ->
                         if (isReplaceHookMode)
                             XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, replaceMent)
                         else XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook)
-                    HookAllMembers.HOOK_ALL_CONSTRUCTORS ->
+                    HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
                         if (isReplaceHookMode)
                             XposedBridge.hookAllConstructors(hookClass.instance, replaceMent)
                         else XposedBridge.hookAllConstructors(hookClass.instance, beforeAfterHook)
@@ -505,7 +503,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
 
-        override fun toString() = "${hookClass.name}$allMethodsName$member$hookAllMembers$tag#YukiHookAPI"
+        override fun toString() = "[tag] $tag [class] $hookClass [member] $member $allMethodsName [mode] $hookMemberMode"
 
         /**
          * 监听 Hook 结果实现类

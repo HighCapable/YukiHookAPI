@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.68-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.69-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -188,7 +188,11 @@ class MainHook : YukiHookXposedInitProxy {
   移除和修改 `MethodFinder`、`FieldFinder` 以及 `HookParam` 相关方法的调用；<br/>
   增加更多 `Finder` 中的 `cast` 类型并支持 `cast` 为数组；<br/>
   整体的性能和稳定性提升；<br/>
-  修复上一个版本可能存在的 BUG。
+  修复上一个版本可能存在的 BUG。<br/><br/>
+- 1.0.69 <br/>
+  添加并改进一些方法功能的注释；<br/>
+  增加 Demo 中的更多示例 Hook 内容；<br/>
+  修复在一个 Hook 实例中，`allMethods` 多次使用时只有最后一个生效的问题，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈。
 
 # Features
 
