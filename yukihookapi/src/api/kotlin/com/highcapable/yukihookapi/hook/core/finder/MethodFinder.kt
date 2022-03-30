@@ -265,6 +265,7 @@ class MethodFinder(
          * 获得 [Method] 实例处理类
          *
          * - ❗在 [memberInstance] 结果为空时使用此方法将无法获得对象
+         *
          * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
          * @param instance 所在实例
          * @return [Instance]
@@ -281,6 +282,7 @@ class MethodFinder(
          * 获得 [Method] 实例处理类
          *
          * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         *
          * - ❗若你没有设置 [remedys] 此方法将不会被回调
          * @param instance 所在实例
          * @param initiate 回调 [Instance]
@@ -332,6 +334,8 @@ class MethodFinder(
 
         /**
          * [Method] 实例处理类
+         *
+         * - ❗请使用 [get] 或 [wait] 方法来获取 [Instance]
          * @param instance 当前 [Method] 所在类的实例对象
          */
         inner class Instance(private val instance: Any?) {

@@ -174,6 +174,8 @@ class FieldFinder(
 
         /**
          * [Field] 实例变量处理类
+         *
+         * - ❗请使用 [get] 方法来获取 [Instance]
          * @param instance 当前 [Field] 所在类的实例对象
          * @param self 当前 [Field] 自身的实例对象
          */

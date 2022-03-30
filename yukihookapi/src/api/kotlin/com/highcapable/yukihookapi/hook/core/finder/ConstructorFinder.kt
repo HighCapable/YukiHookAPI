@@ -242,6 +242,7 @@ class ConstructorFinder(
          * 获得 [Constructor] 实例处理类
          *
          * - ❗在 [memberInstance] 结果为空时使用此方法将无法获得对象
+         *
          * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
          * @return [Instance]
          */
@@ -257,6 +258,7 @@ class ConstructorFinder(
          * 获得 [Constructor] 实例处理类
          *
          * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         *
          * - ❗若你没有设置 [remedys] 此方法将不会被回调
          * @param initiate 回调 [Instance]
          */
@@ -307,6 +309,8 @@ class ConstructorFinder(
          * [Constructor] 实例处理类
          *
          * 调用与创建目标实例类对象
+         *
+         * - ❗请使用 [get] 或 [wait] 方法来获取 [Instance]
          */
         inner class Instance {
 
