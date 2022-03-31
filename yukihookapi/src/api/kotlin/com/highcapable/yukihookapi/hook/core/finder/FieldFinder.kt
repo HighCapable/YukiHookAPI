@@ -34,7 +34,6 @@ import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
@@ -55,9 +54,22 @@ class FieldFinder(
     private var modifiers: ModifierRules? = null
 
     /**
+     * [Field] 在当前类中的位置
+     *
+     * - 设置后将筛选 [Class.getDeclaredFields] 的数组下标
+     *
+     * - ❗受到字节码顺序影响 - 请勿完全依赖于此功能
+     *
+     * 若 index 小于零则忽略此条件 (等于 -2 为取最后一个)
+     *
+     * 可使用 [firstIndex] 和 [lastIndex] 设置首位和末位筛选条件
+     */
+    var index = -1
+
+    /**
      * [Field] 名称
      *
-     * - ❗必须设置
+     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Field]
      */
     var name = ""
 
@@ -67,6 +79,16 @@ class FieldFinder(
      * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
      */
     var type: Class<*>? = null
+
+    /** 设置 [Field] 在当前类中的位置为首位 */
+    fun firstIndex() {
+        index = 0
+    }
+
+    /** 设置 [Field] 在当前类中的位置为末位 */
+    fun lastIndex() {
+        index = -2
+    }
 
     /**
      * [Field] 筛选条件
@@ -87,23 +109,17 @@ class FieldFinder(
      * @throws IllegalStateException 如果 [name] 没有被设置
      */
     @DoNotUseMethod
-    override fun build(isBind: Boolean) = when {
-        name.isBlank() -> {
-            yLoggerE(msg = "Field name cannot be empty in Class [$classSet] [${hookTag}]")
-            Result(isNoSuch = true)
-        }
-        else -> try {
-            runBlocking {
-                memberInstance = ReflectionTool.findField(classSet, name, modifiers, type)
-            }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
-            Result()
-        } catch (e: Throwable) {
-            Thread {
-                SystemClock.sleep(10)
-                onFailureMsg(msg = "NoSuchField happend in [$classSet] [${hookTag}]", throwable = e)
-            }.start()
-            Result(isNoSuch = true, e)
-        }
+    override fun build(isBind: Boolean) = try {
+        runBlocking {
+            memberInstance = ReflectionTool.findField(classSet, index, name, modifiers, type)
+        }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
+        Result()
+    } catch (e: Throwable) {
+        Thread {
+            SystemClock.sleep(10)
+            onFailureMsg(msg = "NoSuchField happend in [$classSet] [${hookTag}]", throwable = e)
+        }.start()
+        Result(isNoSuch = true, e)
     }
 
     /**

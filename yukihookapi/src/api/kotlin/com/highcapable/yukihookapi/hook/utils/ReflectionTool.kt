@@ -45,6 +45,7 @@ internal object ReflectionTool {
     /**
      * 查找任意变量
      * @param classSet 变量所在类
+     * @param index 下标
      * @param name 变量名称
      * @param modifiers 变量描述
      * @param type 变量类型
@@ -52,26 +53,31 @@ internal object ReflectionTool {
      * @throws IllegalStateException 如果 [classSet] 为 null
      * @throws NoSuchFieldError 如果找不到变量
      */
-    internal fun findField(classSet: Class<*>?, name: String, modifiers: ModifierRules?, type: Class<*>?): Field {
-        val hashCode = ("[$name][$type][$modifiers][$classSet]").hashCode()
+    internal fun findField(classSet: Class<*>?, index: Int, name: String, modifiers: ModifierRules?, type: Class<*>?): Field {
+        val hashCode = ("[$index][$name][$type][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findField(hashCode) ?: let {
             var field: Field? = null
-            run {
-                classSet?.declaredFields?.forEach {
-                    var conditions = name == it.name
-                    if (type != null) conditions = conditions && it.type == type
-                    if (modifiers != null) conditions = conditions && modifiers.contains(it)
-                    if (conditions) {
+            classSet?.declaredFields?.apply {
+                forEachIndexed { p, it ->
+                    var isMatched = false
+                    var conditions = true
+                    if (name.isNotBlank()) conditions = (name == it.name).also { isMatched = true }
+                    if (type != null) conditions = (conditions && it.type == type).also { isMatched = true }
+                    if (modifiers != null) conditions = (conditions && modifiers.contains(it)).also { isMatched = true }
+                    if (index == -2) conditions = (conditions && p == lastIndex).also { isMatched = true }
+                    if (index >= 0) conditions = (conditions && p == index).also { isMatched = true }
+                    if (conditions && isMatched) {
                         field = it.apply { isAccessible = true }
-                        return@run
+                        return@apply
                     }
-                } ?: error("Can't find this Field [$name] because classSet is null")
-            }
+                }
+            } ?: error("Can't find this Field [$name] because classSet is null")
             field?.also { MemberCacheStore.putField(hashCode, field) }
                 ?: throw NoSuchFieldError(
                     "Can't find this Field --> " +
-                            "name:[$name] " +
-                            "type:[$type] " +
+                            "index:[${index.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
+                            "type:[${type ?: "unspecified"}] " +
                             "modifiers:${modifiers ?: "[]"} " +
                             "in Class [$classSet] " +
                             "by $TAG"
@@ -82,6 +88,7 @@ internal object ReflectionTool {
     /**
      * 查找任意方法
      * @param classSet 方法所在类
+     * @param index 下标
      * @param name 方法名称
      * @param modifiers 方法描述
      * @param returnType 方法返回值
@@ -93,35 +100,42 @@ internal object ReflectionTool {
      */
     internal fun findMethod(
         classSet: Class<*>?,
+        index: Int,
         name: String,
         modifiers: ModifierRules?,
         returnType: Class<*>?,
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Method {
-        val hashCode = ("[$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
+        val hashCode = ("[$index][$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findMethod(hashCode) ?: let {
             var method: Method? = null
-            run {
-                classSet?.declaredMethods?.forEach {
-                    var conditions = name == it.name
-                    if (returnType != null) conditions = conditions && it.returnType == returnType
-                    if (paramCount >= 0) conditions = conditions && it.parameterTypes.size == paramCount
-                    if (paramTypes != null) conditions = conditions && arrayContentsEq(paramTypes, it.parameterTypes)
-                    if (modifiers != null) conditions = conditions && modifiers.contains(it)
-                    if (conditions) {
+            classSet?.declaredMethods?.apply {
+                forEachIndexed { p, it ->
+                    var isMatched = false
+                    var conditions = true
+                    if (name.isNotBlank()) conditions = (name == it.name).also { isMatched = true }
+                    if (returnType != null) conditions = (conditions && it.returnType == returnType).also { isMatched = true }
+                    if (paramCount >= 0) conditions = (conditions && it.parameterTypes.size == paramCount).also { isMatched = true }
+                    if (paramTypes != null) conditions =
+                        (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).also { isMatched = true }
+                    if (modifiers != null) conditions = (conditions && modifiers.contains(it)).also { isMatched = true }
+                    if (index == -2) conditions = (conditions && p == lastIndex).also { isMatched = true }
+                    if (index >= 0) conditions = (conditions && p == index).also { isMatched = true }
+                    if (conditions && isMatched) {
                         method = it.apply { isAccessible = true }
-                        return@run
+                        return@apply
                     }
-                } ?: error("Can't find this Method [$name] because classSet is null")
-            }
+                }
+            } ?: error("Can't find this Method [$name] because classSet is null")
             method?.also { MemberCacheStore.putMethod(hashCode, method) }
                 ?: throw NoSuchMethodError(
                     "Can't find this Method --> " +
-                            "name:[$name] " +
+                            "index:[${index.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
                             "paramTypes:[${paramTypes.typeOfString()}] " +
-                            "returnType:[$returnType] " +
+                            "returnType:[${returnType ?: "unspecified"}] " +
                             "modifiers:${modifiers ?: "[]"} " +
                             "in Class [$classSet] " +
                             "by $TAG"
@@ -132,6 +146,7 @@ internal object ReflectionTool {
     /**
      * 查找任意构造方法
      * @param classSet 构造方法所在类
+     * @param index 下标
      * @param modifiers 构造方法描述
      * @param paramCount 构造方法参数个数
      * @param paramTypes 构造方法参数类型
@@ -141,28 +156,34 @@ internal object ReflectionTool {
      */
     internal fun findConstructor(
         classSet: Class<*>?,
+        index: Int,
         modifiers: ModifierRules?,
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Constructor<*> {
-        val hashCode = ("[$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
+        val hashCode = ("[$index][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findConstructor(hashCode) ?: let {
             var constructor: Constructor<*>? = null
-            run {
-                classSet?.declaredConstructors?.forEach {
-                    var conditions = false
-                    if (paramCount >= 0) conditions = it.parameterTypes.size == paramCount
-                    if (paramTypes != null) conditions = arrayContentsEq(paramTypes, it.parameterTypes)
-                    if (modifiers != null) conditions = conditions && modifiers.contains(it)
-                    if (conditions) {
+            classSet?.declaredConstructors?.apply {
+                forEachIndexed { p, it ->
+                    var isMatched = false
+                    var conditions = true
+                    if (paramCount >= 0) conditions = (it.parameterTypes.size == paramCount).also { isMatched = true }
+                    if (paramTypes != null) conditions =
+                        (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).also { isMatched = true }
+                    if (modifiers != null) conditions = (conditions && modifiers.contains(it)).also { isMatched = true }
+                    if (index == -2) conditions = (conditions && p == lastIndex).also { isMatched = true }
+                    if (index >= 0) conditions = (conditions && p == index).also { isMatched = true }
+                    if (conditions && isMatched) {
                         constructor = it.apply { isAccessible = true }
-                        return@run
+                        return@apply
                     }
-                } ?: error("Can't find this Constructor because classSet is null")
-            }
+                }
+            } ?: error("Can't find this Constructor because classSet is null")
             return constructor?.also { MemberCacheStore.putConstructor(hashCode, constructor) }
                 ?: throw NoSuchMethodError(
                     "Can't find this Constructor --> " +
+                            "index:[${index.takeIf { it >= 0 } ?: "unspecified"}] " +
                             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
                             "paramTypes:[${paramTypes.typeOfString()}] " +
                             "modifiers:${modifiers ?: "[]"} " +

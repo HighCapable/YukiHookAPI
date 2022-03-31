@@ -66,6 +66,19 @@ class ConstructorFinder(
     private var modifiers: ModifierRules? = null
 
     /**
+     * [Constructor] 在当前类中的位置
+     *
+     * - 设置后将筛选 [Class.getDeclaredConstructors] 的数组下标
+     *
+     * - ❗受到字节码顺序影响 - 请勿完全依赖于此功能
+     *
+     * 若 index 小于零则忽略此条件 (等于 -2 为取最后一个)
+     *
+     * 可使用 [firstIndex] 和 [lastIndex] 设置首位和末位筛选条件
+     */
+    var index = -1
+
+    /**
      * [Constructor] 参数个数
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
@@ -73,6 +86,16 @@ class ConstructorFinder(
      * 若参数个数小于零则忽略并使用 [param]
      */
     var paramCount = -1
+
+    /** 设置 [Constructor] 在当前类中的位置为首位 */
+    fun firstIndex() {
+        index = 0
+    }
+
+    /** 设置 [Constructor] 在当前类中的位置为末位 */
+    fun lastIndex() {
+        index = -2
+    }
 
     /**
      * [Constructor] 筛选条件
@@ -105,7 +128,7 @@ class ConstructorFinder(
      * @throws IllegalStateException 如果 [classSet] 为 null
      * @throws NoSuchMethodError 如果找不到构造方法
      */
-    private val result get() = ReflectionTool.findConstructor(classSet, modifiers, paramCount, paramTypes)
+    private val result get() = ReflectionTool.findConstructor(classSet, index, modifiers, paramCount, paramTypes)
 
     /**
      * 设置实例

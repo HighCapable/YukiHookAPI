@@ -36,7 +36,6 @@ import com.highcapable.yukihookapi.annotation.DoNotUseMethod
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
@@ -67,9 +66,22 @@ class MethodFinder(
     private var modifiers: ModifierRules? = null
 
     /**
+     * [Method] 在当前类中的位置
+     *
+     * - 设置后将筛选 [Class.getDeclaredMethods] 的数组下标
+     *
+     * - ❗受到字节码顺序影响 - 请勿完全依赖于此功能
+     *
+     * 若 index 小于零则忽略此条件 (等于 -2 为取最后一个)
+     *
+     * 可使用 [firstIndex] 和 [lastIndex] 设置首位和末位筛选条件
+     */
+    var index = -1
+
+    /**
      * [Method] 名称
      *
-     * - ❗必须设置
+     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Method]
      */
     var name = ""
 
@@ -88,6 +100,16 @@ class MethodFinder(
      * 可不填写返回值 - 默认模糊查找并取第一个匹配的 [Method]
      */
     var returnType: Class<*>? = null
+
+    /** 设置 [Method] 在当前类中的位置为首位 */
+    fun firstIndex() {
+        index = 0
+    }
+
+    /** 设置 [Method] 在当前类中的位置为末位 */
+    fun lastIndex() {
+        index = -2
+    }
 
     /**
      * [Method] 筛选条件
@@ -120,7 +142,7 @@ class MethodFinder(
      * @throws IllegalStateException 如果 [classSet] 为 null
      * @throws NoSuchMethodError 如果找不到方法
      */
-    private val result get() = ReflectionTool.findMethod(classSet, name, modifiers, returnType, paramCount, paramTypes)
+    private val result get() = ReflectionTool.findMethod(classSet, index, name, modifiers, returnType, paramCount, paramTypes)
 
     /**
      * 设置实例
@@ -140,21 +162,15 @@ class MethodFinder(
      * @return [Result]
      */
     @DoNotUseMethod
-    override fun build(isBind: Boolean) = when {
-        name.isBlank() -> {
-            yLoggerE(msg = "Method name cannot be empty in Class [$classSet] [${hookTag}]")
-            Result(isNoSuch = true)
-        }
-        else -> try {
-            runBlocking {
-                isBindToHooker = isBind
-                setInstance(isBind, result)
-            }.result { onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]") }
-            Result()
-        } catch (e: Throwable) {
-            onFailureMsg(throwable = e)
-            Result(isNoSuch = true, e)
-        }
+    override fun build(isBind: Boolean) = try {
+        runBlocking {
+            isBindToHooker = isBind
+            setInstance(isBind, result)
+        }.result { onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]") }
+        Result()
+    } catch (e: Throwable) {
+        onFailureMsg(throwable = e)
+        Result(isNoSuch = true, e)
     }
 
     /**
