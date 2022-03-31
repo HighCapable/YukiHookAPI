@@ -83,6 +83,14 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     val isFirstApplication get() = packageName == processName
 
     /**
+     * 获取当前 Hook APP 的主进程名称
+     *
+     * 其对应的就是 [packageName]
+     * @return [String]
+     */
+    val mainProcessName get() = packageName
+
+    /**
      * 获得当前使用的存取数据对象缓存实例
      * @return [YukiHookModulePrefs]
      */
@@ -122,6 +130,24 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      */
     fun loadApp(name: String, hooker: YukiBaseHooker) {
         if (packageName == name) loadHooker(hooker)
+    }
+
+    /**
+     * 装载并 Hook APP 的指定进程
+     * @param name 进程名 - 若要指定主进程可填写 [mainProcessName] - 效果与 [isFirstApplication] 一致
+     * @param initiate 方法体
+     */
+    fun withProcess(name: String, initiate: PackageParam.() -> Unit) {
+        if (processName == name) initiate(this)
+    }
+
+    /**
+     * 装载并 Hook APP 的指定进程
+     * @param name 进程名 - 若要指定主进程可填写 [mainProcessName] - 效果与 [isFirstApplication] 一致
+     * @param hooker Hook 子类
+     */
+    fun withProcess(name: String, hooker: YukiBaseHooker) {
+        if (processName == name) loadHooker(hooker)
     }
 
     /**
