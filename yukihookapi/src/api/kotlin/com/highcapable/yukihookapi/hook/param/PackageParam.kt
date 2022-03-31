@@ -136,6 +136,8 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * 通过字符串转换为实体类
      *
      * - 使用当前 [appClassLoader] 装载目标 [Class]
+     *
+     * - 若要使用指定的 [ClassLoader] 装载 - 请手动调用 [classOf] 方法
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
@@ -165,13 +167,13 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     /**
      * 通过字符串查找类是否存在
      *
-     * - 使用当前 [appClassLoader] 装载目标 [Class]
+     * - 默认使用当前 [appClassLoader] 装载目标 [Class]
      * @return [Boolean] 是否存在
      */
     val String.hasClass get() = hasClass(appClassLoader)
 
     /**
-     * 通过 [appClassLoader] 查询并装载 [Class]
+     * 默认使用当前 [appClassLoader] 查询并装载 [Class]
      * @param name 类名
      * @return [HookClass]
      */
@@ -182,7 +184,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     }
 
     /**
-     * 通过 [appClassLoader] 查询并装载 [Class]
+     * 默认使用当前 [appClassLoader] 查询并装载 [Class]
      *
      * 使用此方法查询将会取 [name] 其中命中存在的第一个 [Class] 作为结果
      * @param name 可填入多个类名 - 自动匹配
@@ -194,32 +196,39 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * Hook 方法、构造类
      *
      * - ❗为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
+     * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun String.hook(initiate: YukiHookCreater.() -> Unit) = findClass(name = this).hook(initiate)
+    fun String.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+        findClass(name = this).hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类
+     * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun Class<*>.hook(initiate: YukiHookCreater.() -> Unit) = hookClass.hook(initiate)
+    fun Class<*>.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+        hookClass.hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类
+     * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun VariousClass.hook(initiate: YukiHookCreater.() -> Unit) = hookClass.hook(initiate)
+    fun VariousClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+        hookClass.hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类
+     * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun HookClass.hook(initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(packageParam = thisParam, hookClass = bind()).apply(initiate).hook()
+    fun HookClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+        YukiHookCreater(packageParam = thisParam, hookClass = if (isUseAppClassLoader) bind() else this).apply(initiate).hook()
 
     /**
      * [VariousClass] 转换为 [HookClass] 并绑定到 [appClassLoader]
@@ -235,7 +244,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     /**
      * 将目标 [Class] 绑定到 [appClassLoader]
      *
-     * - ❗请注意未绑定到 [appClassLoader] 的 [Class] 不能被装载 - 调用 [hook] 方法会自动绑定
+     * - ❗请注意未绑定到 [appClassLoader] 的 [Class] 是不安全的 - 调用 [hook] 方法会根据设定自动绑定
      * @return [HookClass]
      */
     private fun HookClass.bind() = try {

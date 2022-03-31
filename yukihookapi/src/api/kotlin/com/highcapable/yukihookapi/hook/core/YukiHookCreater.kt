@@ -383,7 +383,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
             val replaceMent = object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
                     if (baseParam == null) return null
-                    return HookParam(HookParamWrapper(baseParam)).let { param ->
+                    return HookParam(createrInstance = this@YukiHookCreater, HookParamWrapper(baseParam)).let { param ->
                         try {
                             if (replaceHookCallback != null)
                                 onHookLogMsg(msg = "Replace Hook Member [${member ?: "All Member $allMethodsName"}] done [$tag]")
@@ -402,7 +402,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
             val beforeAfterHook = object : XC_MethodHook() {
                 override fun beforeHookedMethod(baseParam: MethodHookParam?) {
                     if (baseParam == null) return
-                    HookParam(HookParamWrapper(baseParam)).also { param ->
+                    HookParam(createrInstance = this@YukiHookCreater, HookParamWrapper(baseParam)).also { param ->
                         runCatching {
                             beforeHookCallback?.invoke(param)
                             if (beforeHookCallback != null)
@@ -417,7 +417,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
 
                 override fun afterHookedMethod(baseParam: MethodHookParam?) {
                     if (baseParam == null) return
-                    HookParam(HookParamWrapper(baseParam)).also { param ->
+                    HookParam(createrInstance = this@YukiHookCreater, HookParamWrapper(baseParam)).also { param ->
                         runCatching {
                             afterHookCallback?.invoke(param)
                             if (afterHookCallback != null)

@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.param
 
+import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
@@ -36,9 +37,10 @@ import java.lang.reflect.Method
 
 /**
  * Hook 方法、构造类的目标对象实现类
+ * @param createrInstance [YukiHookCreater] 的实例对象
  * @param wrapper [HookParam] 的参数包装类实例
  */
-class HookParam(private val wrapper: HookParamWrapper) {
+class HookParam(private val createrInstance: YukiHookCreater, private val wrapper: HookParamWrapper) {
 
     /**
      * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组
@@ -62,16 +64,18 @@ class HookParam(private val wrapper: HookParamWrapper) {
 
     /**
      * 获取当前 Hook 实例的对象
+     *
+     * - ❗如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
      * @return [Any]
      * @throws IllegalStateException 如果对象为空
      */
-    val instance get() = wrapper.instance ?: error("HookParam must with a non-null instance")
+    val instance get() = wrapper.instance ?: error("HookParam instance got null,Is this a static member?")
 
     /**
      * 获取当前 Hook 实例的类对象
      * @return [Class]
      */
-    val instanceClass get() = instance.javaClass
+    val instanceClass get() = wrapper.instance?.javaClass ?: createrInstance.instanceClass
 
     /**
      * 获取当前 Hook 对象的方法
