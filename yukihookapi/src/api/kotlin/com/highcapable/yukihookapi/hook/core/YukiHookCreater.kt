@@ -473,11 +473,12 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     else -> error("Hooked got a no error possible")
                 }
             }.onFailure {
-                val isMemberNotFound = it.message?.lowercase()?.contains(other = "nosuch") == true
+                val isMemberNotFound = it.message?.lowercase()?.contains(other = "nosuch") == true ||
+                        it is NoSuchMethodError || it is NoSuchFieldError
                 if (isMemberNotFound) onNoSuchMemberFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
                 if ((isNotIgnoredHookingFailure && isMemberNotFound.not()) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
-                    yLoggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
+                    yLoggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]", e = it)
             }
         }
 

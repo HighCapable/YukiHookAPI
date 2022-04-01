@@ -162,7 +162,7 @@ class HookEntry : YukiHookXposedInitProxy {
                     }
                     // 注入要 Hook 的方法
                     injectMember {
-                        allMethods(name = "getTestResultLast")
+                        allMethods(name = "getTestResultLast111111111111111111111111111111")
                         // 执行替换 Hook
                         replaceTo("I am hook all methods last")
                     }
