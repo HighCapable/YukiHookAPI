@@ -461,18 +461,22 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     HookMemberMode.HOOK_ALL_METHODS ->
                         if (isReplaceHookMode)
                             XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, replaceMent)
+                                .also { if (it.size <= 0) throw NoSuchMethodError("No method name \"$allMethodsName\" matched") }
                         else XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook)
+                            .also { if (it.size <= 0) throw NoSuchMethodError("No method name \"$allMethodsName\" matched") }
                     HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
                         if (isReplaceHookMode)
                             XposedBridge.hookAllConstructors(hookClass.instance, replaceMent)
+                                .also { if (it.size <= 0) throw NoSuchMethodError("No constructor matched") }
                         else XposedBridge.hookAllConstructors(hookClass.instance, beforeAfterHook)
+                            .also { if (it.size <= 0) throw NoSuchMethodError("No constructor matched") }
                     else -> error("Hooked got a no error possible")
                 }
             }.onFailure {
                 val isMemberNotFound = it.message?.lowercase()?.contains(other = "nosuch") == true
                 if (isMemberNotFound) onNoSuchMemberFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
-                if ((isNotIgnoredHookingFailure && !isMemberNotFound) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
+                if ((isNotIgnoredHookingFailure && isMemberNotFound.not()) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
                     yLoggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]")
             }
         }

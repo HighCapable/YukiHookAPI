@@ -80,7 +80,7 @@ abstract class BaseFinder(
         else Thread {
             /** 延迟使得方法取到返回值 */
             SystemClock.sleep(1)
-            if (isNotIgnoredNoSuchMemberFailure && !isUsingRemedyPlan && !isShutErrorPrinting) print()
+            if (isNotIgnoredNoSuchMemberFailure && isUsingRemedyPlan.not() && isShutErrorPrinting.not()) print()
         }.start()
     }
 
