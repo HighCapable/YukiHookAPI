@@ -110,10 +110,12 @@ class FieldFinder(
      */
     @DoNotUseMethod
     override fun build(isBind: Boolean) = try {
-        runBlocking {
-            memberInstance = ReflectionTool.findField(classSet, index, name, modifiers, type)
-        }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
-        Result()
+        if (classSet != null) {
+            runBlocking {
+                memberInstance = ReflectionTool.findField(classSet, index, name, modifiers, type)
+            }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
+            Result()
+        } else Result(isNoSuch = true, Throwable("classSet is null"))
     } catch (e: Throwable) {
         Thread {
             SystemClock.sleep(10)

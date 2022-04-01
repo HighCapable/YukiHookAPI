@@ -139,7 +139,6 @@ class MethodFinder(
     /**
      * 得到方法
      * @return [Method]
-     * @throws IllegalStateException 如果 [classSet] 为 null
      * @throws NoSuchMethodError 如果找不到方法
      */
     private val result get() = ReflectionTool.findMethod(classSet, index, name, modifiers, returnType, paramCount, paramTypes)
@@ -163,11 +162,13 @@ class MethodFinder(
      */
     @DoNotUseMethod
     override fun build(isBind: Boolean) = try {
-        runBlocking {
-            isBindToHooker = isBind
-            setInstance(isBind, result)
-        }.result { onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]") }
-        Result()
+        if (classSet != null) {
+            runBlocking {
+                isBindToHooker = isBind
+                setInstance(isBind, result)
+            }.result { onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]") }
+            Result()
+        } else Result(isNoSuch = true, Throwable("classSet is null"))
     } catch (e: Throwable) {
         onFailureMsg(throwable = e)
         Result(isNoSuch = true, e)
@@ -212,6 +213,7 @@ class MethodFinder(
          */
         @DoNotUseMethod
         internal fun build() {
+            if (classSet == null) return
             if (remedyPlans.isNotEmpty()) run {
                 var isFindSuccess = false
                 var lastError: Throwable? = null

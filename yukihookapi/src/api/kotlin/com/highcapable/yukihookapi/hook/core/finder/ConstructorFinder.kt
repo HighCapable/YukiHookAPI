@@ -125,7 +125,6 @@ class ConstructorFinder(
     /**
      * 得到构造方法
      * @return [Constructor]
-     * @throws IllegalStateException 如果 [classSet] 为 null
      * @throws NoSuchMethodError 如果找不到构造方法
      */
     private val result get() = ReflectionTool.findConstructor(classSet, index, modifiers, paramCount, paramTypes)
@@ -148,11 +147,13 @@ class ConstructorFinder(
      */
     @DoNotUseMethod
     override fun build(isBind: Boolean) = try {
-        runBlocking {
-            isBindToHooker = isBind
-            setInstance(isBind, result)
-        }.result { onHookLogMsg(msg = "Find Constructor [${memberInstance}] takes ${it}ms [${hookTag}]") }
-        Result()
+        if (classSet != null) {
+            runBlocking {
+                isBindToHooker = isBind
+                setInstance(isBind, result)
+            }.result { onHookLogMsg(msg = "Find Constructor [${memberInstance}] takes ${it}ms [${hookTag}]") }
+            Result()
+        } else Result(isNoSuch = true, Throwable("classSet is null"))
     } catch (e: Throwable) {
         onFailureMsg(throwable = e)
         Result(isNoSuch = true, e)
@@ -196,6 +197,7 @@ class ConstructorFinder(
          */
         @DoNotUseMethod
         internal fun build() {
+            if (classSet == null) return
             if (remedyPlans.isNotEmpty()) run {
                 var isFindSuccess = false
                 var lastError: Throwable? = null
