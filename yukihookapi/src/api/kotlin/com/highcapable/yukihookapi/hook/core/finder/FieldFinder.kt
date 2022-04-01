@@ -53,14 +53,20 @@ class FieldFinder(
     /** [ModifierRules] 实例 */
     private var modifiers: ModifierRules? = null
 
-    private object IndexConfig {
-
-        var orderIndex = -1
-
-        var nameIndex = -1
-
-        var typeIndex = -1
-    }
+    /**
+     * [Field] 在当前类中的位置
+     *
+     * - 设置后将筛选 [Class.getDeclaredFields] 的数组下标
+     *
+     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     *
+     * - ❗受到字节码顺序影响 - 请勿完全依赖于此功能
+     *
+     * 若 index 小于零则忽略此条件 (等于 -2 为取最后一个)
+     *
+     * 可使用 [firstIndex] 和 [lastIndex] 设置首位和末位筛选条件
+     */
+    var index = -1
 
     /**
      * [Field] 名称
@@ -76,12 +82,31 @@ class FieldFinder(
      */
     var type: Class<*>? = null
 
-    /** 筛选字节码的顺序下标 */
-    fun order() = IndexTypeCondition()
+    /**
+     * 设置 [Field] 在当前类中的位置为首位
+     *
+     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     */
+    fun firstIndex() {
+        index = 0
+    }
 
-    fun name(value: String) = IndexTypeCondition()
+    /**
+     * 设置 [Field] 在当前类中的位置为末位
+     *
+     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     */
+    fun lastIndex() {
+        index = -2
+    }
 
-    fun type(value: Class<*>) = IndexTypeCondition()
+    fun name(value: String) {
+
+    }
+
+    fun type(value: Class<*>) {
+
+    }
 
     /**
      * [Field] 筛选条件
@@ -105,7 +130,6 @@ class FieldFinder(
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
-                val index=-1
                 memberInstance = ReflectionTool.findField(classSet, index, name, modifiers, type)
             }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
@@ -129,28 +153,8 @@ class FieldFinder(
     @DoNotUseMethod
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
-    /**
-     * 字节码下标筛选实现类
-     */
     inner class IndexTypeCondition {
 
-        /**
-         * 设置下标
-         * @param num 下标
-         */
-        fun index(num: Int) {
-
-        }
-
-        /** 设置满足条件的第一个*/
-        fun firstIndex() {
-
-        }
-
-        /** 设置满足条件的最后一个*/
-        fun lastIndex() {
-
-        }
     }
 
     /**
