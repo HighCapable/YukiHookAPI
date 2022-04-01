@@ -58,6 +58,8 @@ class FieldFinder(
      *
      * - 设置后将筛选 [Class.getDeclaredFields] 的数组下标
      *
+     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     *
      * - ❗受到字节码顺序影响 - 请勿完全依赖于此功能
      *
      * 若 index 小于零则忽略此条件 (等于 -2 为取最后一个)
@@ -80,12 +82,20 @@ class FieldFinder(
      */
     var type: Class<*>? = null
 
-    /** 设置 [Field] 在当前类中的位置为首位 */
+    /**
+     * 设置 [Field] 在当前类中的位置为首位
+     *
+     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     */
     fun firstIndex() {
         index = 0
     }
 
-    /** 设置 [Field] 在当前类中的位置为末位 */
+    /**
+     * 设置 [Field] 在当前类中的位置为末位
+     *
+     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     */
     fun lastIndex() {
         index = -2
     }
@@ -118,7 +128,8 @@ class FieldFinder(
         } else Result(isNoSuch = true, Throwable("classSet is null"))
     } catch (e: Throwable) {
         Thread {
-            SystemClock.sleep(10)
+            /** 延迟使得方法取到返回值 */
+            SystemClock.sleep(1)
             onFailureMsg(msg = "NoSuchField happend in [$classSet] [${hookTag}]", throwable = e)
         }.start()
         Result(isNoSuch = true, e)

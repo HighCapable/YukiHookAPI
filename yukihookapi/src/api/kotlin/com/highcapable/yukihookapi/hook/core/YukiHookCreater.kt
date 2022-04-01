@@ -101,7 +101,8 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         if (YukiHookAPI.hasXposedBridge.not()) return Result()
         if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
         else Thread {
-            SystemClock.sleep(10)
+            /** 延迟使得方法取到返回值 */
+            SystemClock.sleep(1)
             if (isDisableCreaterRunHook.not() && hookClass.instance != null) hookMembers.forEach { it.hook() }
             if (isDisableCreaterRunHook.not() && hookClass.instance == null)
                 if (onHookClassNotFoundFailureCallback == null)

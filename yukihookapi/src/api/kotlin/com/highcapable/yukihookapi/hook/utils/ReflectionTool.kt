@@ -58,11 +58,11 @@ internal object ReflectionTool {
         return MemberCacheStore.findField(hashCode) ?: let {
             var field: Field? = null
             classSet?.declaredFields?.apply {
-                forEachIndexed { p, it ->
+                filter { type == null || type == it.type }.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
+                    if (type != null) isMatched = true
                     if (name.isNotBlank()) conditions = (name == it.name).also { isMatched = true }
-                    if (type != null) conditions = (conditions && it.type == type).also { isMatched = true }
                     if (modifiers != null) conditions = (conditions && modifiers.contains(it)).also { isMatched = true }
                     if (index == -2) conditions = (conditions && p == lastIndex).also { isMatched = true }
                     if (index >= 0) conditions = (conditions && p == index).also { isMatched = true }
@@ -75,7 +75,10 @@ internal object ReflectionTool {
             field?.also { MemberCacheStore.putField(hashCode, field) }
                 ?: throw NoSuchFieldError(
                     "Can't find this Field --> " +
-                            "index:[${index.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "index:[${
+                                index.takeIf { it >= 0 || it == -2 }?.toString()
+                                    ?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"
+                            }] " +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "type:[${type ?: "unspecified"}] " +
                             "modifiers:${modifiers ?: "[]"} " +
@@ -131,7 +134,10 @@ internal object ReflectionTool {
             method?.also { MemberCacheStore.putMethod(hashCode, method) }
                 ?: throw NoSuchMethodError(
                     "Can't find this Method --> " +
-                            "index:[${index.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "index:[${
+                                index.takeIf { it >= 0 || it == -2 }
+                                    ?.toString()?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"
+                            }] " +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
                             "paramTypes:[${paramTypes.typeOfString()}] " +
@@ -184,7 +190,10 @@ internal object ReflectionTool {
                 ?: throw NoSuchMethodError(
                     "Can't find this Constructor --> " +
                             "index:[${index.takeIf { it >= 0 } ?: "unspecified"}] " +
-                            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "paramCount:[${
+                                paramCount.takeIf { it >= 0 || it == -2 }
+                                    ?.toString()?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"
+                            }] " +
                             "paramTypes:[${paramTypes.typeOfString()}] " +
                             "modifiers:${modifiers ?: "[]"} " +
                             "in Class [$classSet] " +

@@ -78,7 +78,8 @@ abstract class BaseFinder(
         fun print() = yLoggerE(msg = "NoSuch$tag happend in [$classSet] $msg [${hookTag}]", e = throwable)
         if (isAlwaysPrint) print()
         else Thread {
-            SystemClock.sleep(10)
+            /** 延迟使得方法取到返回值 */
+            SystemClock.sleep(1)
             if (isNotIgnoredNoSuchMemberFailure && !isUsingRemedyPlan && !isShutErrorPrinting) print()
         }.start()
     }
