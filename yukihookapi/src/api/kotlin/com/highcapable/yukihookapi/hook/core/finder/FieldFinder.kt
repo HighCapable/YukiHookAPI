@@ -54,21 +54,6 @@ class FieldFinder(
     private var modifiers: ModifierRules? = null
 
     /**
-     * [Field] 在当前类中的位置
-     *
-     * - 设置后将筛选 [Class.getDeclaredFields] 的数组下标
-     *
-     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
-     *
-     * - ❗受到字节码顺序影响 - 请勿完全依赖于此功能
-     *
-     * 若 index 小于零则忽略此条件 (等于 -2 为取最后一个)
-     *
-     * 可使用 [firstIndex] 和 [lastIndex] 设置首位和末位筛选条件
-     */
-    var index = -1
-
-    /**
      * [Field] 名称
      *
      * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Field]
@@ -83,39 +68,51 @@ class FieldFinder(
     var type: Class<*>? = null
 
     /**
-     * 设置 [Field] 在当前类中的位置为首位
-     *
-     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     * 顺序筛选字节码的下标
+     * @return [BaseFinder.IndexTypeCondition]
      */
-    fun firstIndex() {
-        index = 0
+    fun order() = IndexTypeCondition(IndexConfigType.ORDER)
+
+    /**
+     * [Field] 名称
+     *
+     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Field]
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param value 名称
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun name(value: String): IndexTypeCondition {
+        name = value
+        return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
-     * 设置 [Field] 在当前类中的位置为末位
+     * [Field] 类型
      *
-     * - ❗若你同时设置了 [type] 将仅过滤类型为 [type] 的数组下标
+     * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param value 类型
+     * @return [BaseFinder.IndexTypeCondition]
      */
-    fun lastIndex() {
-        index = -2
-    }
-
-    fun name(value: String) {
-
-    }
-
-    fun type(value: Class<*>) {
-
+    fun type(value: Class<*>): IndexTypeCondition {
+        type = value
+        return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
      * [Field] 筛选条件
      *
      * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Field]
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
+     * @return [BaseFinder.IndexTypeCondition]
      */
-    fun modifiers(initiate: ModifierRules.() -> Unit) {
+    fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
         modifiers = ModifierRules().apply(initiate)
+        return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
@@ -130,7 +127,7 @@ class FieldFinder(
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
-                memberInstance = ReflectionTool.findField(classSet, index, name, modifiers, type)
+                memberInstance = ReflectionTool.findField(classSet, orderIndex, matchIndex, name, modifiers, type)
             }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))
@@ -152,10 +149,6 @@ class FieldFinder(
      */
     @DoNotUseMethod
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
-
-    inner class IndexTypeCondition {
-
-    }
 
     /**
      * [Field] 查找结果实现类

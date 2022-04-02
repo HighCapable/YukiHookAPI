@@ -66,19 +66,6 @@ class ConstructorFinder(
     private var modifiers: ModifierRules? = null
 
     /**
-     * [Constructor] 在当前类中的位置
-     *
-     * - 设置后将筛选 [Class.getDeclaredConstructors] 的数组下标
-     *
-     * - ❗受到字节码顺序影响 - 请勿完全依赖于此功能
-     *
-     * 若 index 小于零则忽略此条件 (等于 -2 为取最后一个)
-     *
-     * 可使用 [firstIndex] 和 [lastIndex] 设置首位和末位筛选条件
-     */
-    var index = -1
-
-    /**
      * [Constructor] 参数个数
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
@@ -87,24 +74,16 @@ class ConstructorFinder(
      */
     var paramCount = -1
 
-    /** 设置 [Constructor] 在当前类中的位置为首位 */
-    fun firstIndex() {
-        index = 0
-    }
-
-    /** 设置 [Constructor] 在当前类中的位置为末位 */
-    fun lastIndex() {
-        index = -2
-    }
-
     /**
      * [Constructor] 筛选条件
      *
-     * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Constructor]
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
+     * @return [BaseFinder.IndexTypeCondition]
      */
-    fun modifiers(initiate: ModifierRules.() -> Unit) {
+    fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
         modifiers = ModifierRules().apply(initiate)
+        return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
@@ -115,11 +94,37 @@ class ConstructorFinder(
      * - ❗无参 [Constructor] 不要使用此方法
      *
      * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param paramType 参数类型数组
+     * @return [BaseFinder.IndexTypeCondition]
      */
-    fun param(vararg paramType: Class<*>) {
+    fun param(vararg paramType: Class<*>): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please delete param() method")
         paramTypes = paramType
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
+     * 顺序筛选字节码的下标
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun order() = IndexTypeCondition(IndexConfigType.ORDER)
+
+    /**
+     * [Constructor] 参数个数
+     *
+     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数
+     *
+     * 若参数个数小于零则忽略并使用 [param]
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param num 个数
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun paramCount(num: Int): IndexTypeCondition {
+        paramCount = num
+        return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
@@ -127,7 +132,7 @@ class ConstructorFinder(
      * @return [Constructor]
      * @throws NoSuchMethodError 如果找不到构造方法
      */
-    private val result get() = ReflectionTool.findConstructor(classSet, index, modifiers, paramCount, paramTypes)
+    private val result get() = ReflectionTool.findConstructor(classSet, orderIndex, matchIndex, modifiers, paramCount, paramTypes)
 
     /**
      * 设置实例

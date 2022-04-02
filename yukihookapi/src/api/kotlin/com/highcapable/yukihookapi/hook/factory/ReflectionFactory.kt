@@ -35,7 +35,10 @@ import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import java.lang.reflect.Constructor
+import java.lang.reflect.Field
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * [Class] 转换为 [HookClass]
@@ -132,3 +135,24 @@ fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet =
  * @return [ConstructorFinder.Result]
  */
 fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit) = ConstructorFinder(classSet = this).apply(initiate).build()
+
+/**
+ * 遍历当前类中的所有方法
+ * @param callback 回调 - ([Int] 下标,[Method] 实例)
+ */
+fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit) =
+    declaredMethods.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }
+
+/**
+ * 遍历当前类中的所有构造方法
+ * @param callback 回调 - ([Int] 下标,[Constructor] 实例)
+ */
+fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit) =
+    declaredConstructors.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }
+
+/**
+ * 遍历当前类中的所有变量
+ * @param callback 回调 - ([Int] 下标,[Field] 实例)
+ */
+fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit) =
+    declaredFields.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }

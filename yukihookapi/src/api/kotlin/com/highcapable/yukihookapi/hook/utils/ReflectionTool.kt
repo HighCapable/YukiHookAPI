@@ -33,6 +33,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
+import kotlin.math.abs
 
 /**
  * 这是一个对 [Member] 查找的工具实现类
@@ -45,7 +46,8 @@ internal object ReflectionTool {
     /**
      * 查找任意变量
      * @param classSet 变量所在类
-     * @param index 下标
+     * @param orderIndex 字节码顺序下标
+     * @param matchIndex 字节码筛选下标
      * @param name 变量名称
      * @param modifiers 变量描述
      * @param type 变量类型
@@ -53,19 +55,63 @@ internal object ReflectionTool {
      * @throws IllegalStateException 如果 [classSet] 为 null
      * @throws NoSuchFieldError 如果找不到变量
      */
-    internal fun findField(classSet: Class<*>?, index: Int, name: String, modifiers: ModifierRules?, type: Class<*>?): Field {
-        val hashCode = ("[$index][$name][$type][$modifiers][$classSet]").hashCode()
+    internal fun findField(
+        classSet: Class<*>?,
+        orderIndex: Pair<Int, Boolean>?,
+        matchIndex: Pair<Int, Boolean>?,
+        name: String,
+        modifiers: ModifierRules?,
+        type: Class<*>?
+    ): Field {
+        val hashCode = ("[$orderIndex][$matchIndex][$name][$type][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findField(hashCode) ?: let {
             var field: Field? = null
+            if (orderIndex == null && matchIndex != null && name.isBlank() && modifiers == null && type == null)
+                error("You must set a condition when finding a Field")
             classSet?.declaredFields?.apply {
-                filter { type == null || type == it.type }.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
+                var typeIndex = -1
+                var nameIndex = -1
+                var modifyIndex = -1
+                val typeLastIndex = if (type != null && matchIndex != null) filter { type == it.type }.lastIndex else -1
+                val nameLastIndex = if (name.isNotBlank() && matchIndex != null) filter { name == it.name }.lastIndex else -1
+                val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
+                forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
-                    if (type != null) isMatched = true
-                    if (name.isNotBlank()) conditions = (name == it.name).also { isMatched = true }
-                    if (modifiers != null) conditions = (conditions && modifiers.contains(it)).also { isMatched = true }
-                    if (index == -2) conditions = (conditions && p == lastIndex).also { isMatched = true }
-                    if (index >= 0) conditions = (conditions && p == index).also { isMatched = true }
+                    if (type != null)
+                        conditions = (type == it.type).let {
+                            if (it) typeIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == typeIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (typeLastIndex - typeIndex) && matchIndex.second) ||
+                                    (typeLastIndex == typeIndex && matchIndex.second.not()))
+                        }
+                    if (name.isNotBlank())
+                        conditions = (conditions && name == it.name).let {
+                            if (it) nameIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
+                                    (nameLastIndex == nameIndex && matchIndex.second.not()))
+                        }
+                    if (modifiers != null)
+                        conditions = (conditions && modifiers.contains(it)).let {
+                            if (it) modifyIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
+                                    (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                        }
+                    if (orderIndex != null) conditions =
+                        (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
+                                (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
+                                (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
                     if (conditions && isMatched) {
                         field = it.apply { isAccessible = true }
                         return@apply
@@ -75,9 +121,19 @@ internal object ReflectionTool {
             field?.also { MemberCacheStore.putField(hashCode, field) }
                 ?: throw NoSuchFieldError(
                     "Can't find this Field --> " +
-                            "index:[${
-                                index.takeIf { it >= 0 || it == -2 }?.toString()
-                                    ?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"
+                            "orderIndex:[${
+                                when {
+                                    orderIndex == null -> "unspecified"
+                                    orderIndex.second.not() -> "last"
+                                    else -> orderIndex.first
+                                }
+                            }] " +
+                            "matchIndex:[${
+                                when {
+                                    matchIndex == null -> "unspecified"
+                                    matchIndex.second.not() -> "last"
+                                    else -> matchIndex.first
+                                }
                             }] " +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "type:[${type ?: "unspecified"}] " +
@@ -91,7 +147,8 @@ internal object ReflectionTool {
     /**
      * 查找任意方法
      * @param classSet 方法所在类
-     * @param index 下标
+     * @param orderIndex 字节码顺序下标
+     * @param matchIndex 字节码筛选下标
      * @param name 方法名称
      * @param modifiers 方法描述
      * @param returnType 方法返回值
@@ -103,28 +160,89 @@ internal object ReflectionTool {
      */
     internal fun findMethod(
         classSet: Class<*>?,
-        index: Int,
+        orderIndex: Pair<Int, Boolean>?,
+        matchIndex: Pair<Int, Boolean>?,
         name: String,
         modifiers: ModifierRules?,
         returnType: Class<*>?,
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Method {
-        val hashCode = ("[$index][$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
+        val hashCode =
+            ("[$orderIndex][$matchIndex][$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findMethod(hashCode) ?: let {
             var method: Method? = null
             classSet?.declaredMethods?.apply {
+                var returnTypeIndex = -1
+                var paramTypeIndex = -1
+                var paramCountIndex = -1
+                var nameIndex = -1
+                var modifyIndex = -1
+                val returnTypeLastIndex =
+                    if (returnType != null && matchIndex != null) filter { returnType == it.returnType }.lastIndex else -1
+                val paramCountLastIndex =
+                    if (paramCount >= 0 && matchIndex != null) filter { paramCount == it.parameterTypes.size }.lastIndex else -1
+                val paramTypeLastIndex =
+                    if (paramTypes != null && matchIndex != null) filter { arrayContentsEq(paramTypes, it.parameterTypes) }.lastIndex else -1
+                val nameLastIndex = if (name.isNotBlank() && matchIndex != null) filter { name == it.name }.lastIndex else -1
+                val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
                 forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
-                    if (name.isNotBlank()) conditions = (name == it.name).also { isMatched = true }
-                    if (returnType != null) conditions = (conditions && it.returnType == returnType).also { isMatched = true }
-                    if (paramCount >= 0) conditions = (conditions && it.parameterTypes.size == paramCount).also { isMatched = true }
-                    if (paramTypes != null) conditions =
-                        (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).also { isMatched = true }
-                    if (modifiers != null) conditions = (conditions && modifiers.contains(it)).also { isMatched = true }
-                    if (index == -2) conditions = (conditions && p == lastIndex).also { isMatched = true }
-                    if (index >= 0) conditions = (conditions && p == index).also { isMatched = true }
+                    if (name.isNotBlank())
+                        conditions = (name == it.name).let {
+                            if (it) nameIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
+                                    (nameLastIndex == nameIndex && matchIndex.second.not()))
+                        }
+                    if (returnType != null)
+                        conditions = (conditions && returnType == it.returnType).let {
+                            if (it) returnTypeIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == returnTypeIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (returnTypeLastIndex - returnTypeIndex) && matchIndex.second) ||
+                                    (returnTypeLastIndex == returnTypeIndex && matchIndex.second.not()))
+                        }
+                    if (paramCount >= 0)
+                        conditions = (conditions && it.parameterTypes.size == paramCount).let {
+                            if (it) paramCountIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
+                                    (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                        }
+                    if (paramTypes != null)
+                        conditions = (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).let {
+                            if (it) paramTypeIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
+                                    (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                        }
+                    if (modifiers != null)
+                        conditions = (conditions && modifiers.contains(it)).let {
+                            if (it) modifyIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
+                                    (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                        }
+                    if (orderIndex != null) conditions =
+                        (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
+                                (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
+                                (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
                     if (conditions && isMatched) {
                         method = it.apply { isAccessible = true }
                         return@apply
@@ -134,9 +252,19 @@ internal object ReflectionTool {
             method?.also { MemberCacheStore.putMethod(hashCode, method) }
                 ?: throw NoSuchMethodError(
                     "Can't find this Method --> " +
-                            "index:[${
-                                index.takeIf { it >= 0 || it == -2 }
-                                    ?.toString()?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"
+                            "orderIndex:[${
+                                when {
+                                    orderIndex == null -> "unspecified"
+                                    orderIndex.second.not() -> "last"
+                                    else -> orderIndex.first
+                                }
+                            }] " +
+                            "matchIndex:[${
+                                when {
+                                    matchIndex == null -> "unspecified"
+                                    matchIndex.second.not() -> "last"
+                                    else -> matchIndex.first
+                                }
                             }] " +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
@@ -152,7 +280,8 @@ internal object ReflectionTool {
     /**
      * 查找任意构造方法
      * @param classSet 构造方法所在类
-     * @param index 下标
+     * @param orderIndex 字节码顺序下标
+     * @param matchIndex 字节码筛选下标
      * @param modifiers 构造方法描述
      * @param paramCount 构造方法参数个数
      * @param paramTypes 构造方法参数类型
@@ -162,24 +291,61 @@ internal object ReflectionTool {
      */
     internal fun findConstructor(
         classSet: Class<*>?,
-        index: Int,
+        orderIndex: Pair<Int, Boolean>?,
+        matchIndex: Pair<Int, Boolean>?,
         modifiers: ModifierRules?,
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Constructor<*> {
-        val hashCode = ("[$index][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
+        val hashCode = ("[$orderIndex][$matchIndex][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findConstructor(hashCode) ?: let {
             var constructor: Constructor<*>? = null
             classSet?.declaredConstructors?.apply {
+                var paramTypeIndex = -1
+                var paramCountIndex = -1
+                var modifyIndex = -1
+                val paramCountLastIndex =
+                    if (paramCount >= 0 && matchIndex != null) filter { paramCount == it.parameterTypes.size }.lastIndex else -1
+                val paramTypeLastIndex =
+                    if (paramTypes != null && matchIndex != null) filter { arrayContentsEq(paramTypes, it.parameterTypes) }.lastIndex else -1
+                val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
                 forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
-                    if (paramCount >= 0) conditions = (it.parameterTypes.size == paramCount).also { isMatched = true }
-                    if (paramTypes != null) conditions =
-                        (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).also { isMatched = true }
-                    if (modifiers != null) conditions = (conditions && modifiers.contains(it)).also { isMatched = true }
-                    if (index == -2) conditions = (conditions && p == lastIndex).also { isMatched = true }
-                    if (index >= 0) conditions = (conditions && p == index).also { isMatched = true }
+                    if (paramCount >= 0)
+                        conditions = (it.parameterTypes.size == paramCount).let {
+                            if (it) paramCountIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
+                                    (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                        }
+                    if (paramTypes != null)
+                        conditions = (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).let {
+                            if (it) paramTypeIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
+                                    (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                        }
+                    if (modifiers != null)
+                        conditions = (conditions && modifiers.contains(it)).let {
+                            if (it) modifyIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
+                                    (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                        }
+                    if (orderIndex != null) conditions =
+                        (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
+                                (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
+                                (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
                     if (conditions && isMatched) {
                         constructor = it.apply { isAccessible = true }
                         return@apply
@@ -189,7 +355,20 @@ internal object ReflectionTool {
             return constructor?.also { MemberCacheStore.putConstructor(hashCode, constructor) }
                 ?: throw NoSuchMethodError(
                     "Can't find this Constructor --> " +
-                            "index:[${index.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "orderIndex:[${
+                                when {
+                                    orderIndex == null -> "unspecified"
+                                    orderIndex.second.not() -> "last"
+                                    else -> orderIndex.first
+                                }
+                            }] " +
+                            "matchIndex:[${
+                                when {
+                                    matchIndex == null -> "unspecified"
+                                    matchIndex.second.not() -> "last"
+                                    else -> matchIndex.first
+                                }
+                            }] " +
                             "paramCount:[${
                                 paramCount.takeIf { it >= 0 || it == -2 }
                                     ?.toString()?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"

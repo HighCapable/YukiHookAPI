@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import java.lang.reflect.Member
+import kotlin.math.abs
 
 /**
  * 这是查找类功能的基本类实现
@@ -46,6 +47,70 @@ abstract class BaseFinder(
     open val hookInstance: YukiHookCreater.MemberHookCreater? = null,
     open val classSet: Class<*>? = null
 ) {
+
+    /**
+     * 字节码下标筛选数据类型
+     */
+    enum class IndexConfigType { ORDER, MATCH }
+
+    /** 字节码顺序下标 */
+    internal var orderIndex: Pair<Int, Boolean>? = null
+
+    /** 字节码筛选下标 */
+    internal var matchIndex: Pair<Int, Boolean>? = null
+
+    /**
+     * 字节码下标筛选实现类
+     * @param type 类型
+     */
+    inner class IndexTypeCondition(private val type: IndexConfigType) {
+
+        /**
+         * 设置下标
+         *
+         * 若 index 小于零则为倒序 - 此时可以使用 [IndexTypeConditionSort.reverse] 方法实现
+         *
+         * 可使用 [IndexTypeConditionSort.first] 和 [IndexTypeConditionSort.last] 设置首位和末位筛选条件
+         * @param num 下标
+         */
+        fun index(num: Int) = when (type) {
+            IndexConfigType.ORDER -> orderIndex = Pair(num, true)
+            IndexConfigType.MATCH -> matchIndex = Pair(num, true)
+        }
+
+        /**
+         * 得到下标
+         * @return [IndexTypeConditionSort]
+         */
+        fun index() = IndexTypeConditionSort()
+
+        /**
+         * 字节码下标排序实现类
+         *
+         * - ❗请使用 [index] 方法来获取 [IndexTypeConditionSort]
+         */
+        inner class IndexTypeConditionSort {
+
+            /** 设置满足条件的第一个*/
+            fun first() = index(num = 0)
+
+            /** 设置满足条件的最后一个*/
+            fun last() = when (type) {
+                IndexConfigType.ORDER -> orderIndex = Pair(0, false)
+                IndexConfigType.MATCH -> matchIndex = Pair(0, false)
+            }
+
+            /**
+             * 设置倒序下标
+             * @param num 下标
+             */
+            fun reverse(num: Int) = when {
+                num < 0 -> index(abs(num))
+                num == 0 -> index().last()
+                else -> index(-num)
+            }
+        }
+    }
 
     /** 是否开启忽略错误警告功能 */
     internal var isShutErrorPrinting = false
