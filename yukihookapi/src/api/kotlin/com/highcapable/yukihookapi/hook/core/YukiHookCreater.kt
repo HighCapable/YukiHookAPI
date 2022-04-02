@@ -99,17 +99,23 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
     @DoNotUseMethod
     fun hook(): Result {
         if (YukiHookAPI.hasXposedBridge.not()) return Result()
-        if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
-        else Thread {
-            /** 延迟使得方法取到返回值 */
-            SystemClock.sleep(1)
-            if (isDisableCreaterRunHook.not() && hookClass.instance != null) hookMembers.forEach { it.hook() }
-            if (isDisableCreaterRunHook.not() && hookClass.instance == null)
-                if (onHookClassNotFoundFailureCallback == null)
-                    yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
-                else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
-        }.start()
-        return Result()
+        return if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
+        else Result().also {
+            Thread {
+                /** 延迟使得方法取到返回值 */
+                SystemClock.sleep(1)
+                when {
+                    isDisableCreaterRunHook.not() && hookClass.instance != null -> {
+                        it.onPrepareHook?.invoke()
+                        hookMembers.forEach { m -> m.hook() }
+                    }
+                    isDisableCreaterRunHook.not() && hookClass.instance == null ->
+                        if (onHookClassNotFoundFailureCallback == null)
+                            yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                        else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
+                }
+            }.start()
+        }
     }
 
     /**
@@ -611,6 +617,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      */
     inner class Result {
 
+        /** Hook 开始时的监听事件回调 */
+        internal var onPrepareHook: (() -> Unit)? = null
+
         /**
          * 创建监听事件方法体
          * @param initiate 方法体
@@ -627,6 +636,16 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun by(initiate: () -> Boolean): Result {
             isDisableCreaterRunHook = !(runCatching { initiate() }.getOrNull() ?: false)
+            return this
+        }
+
+        /**
+         * 监听 [hookClass] 存在时准备开始 Hook 的操作
+         * @param initiate 条件方法体
+         * @return [Result] 可继续向下监听
+         */
+        fun onPrepareHook(initiate: () -> Unit): Result {
+            onPrepareHook = initiate
             return this
         }
 
