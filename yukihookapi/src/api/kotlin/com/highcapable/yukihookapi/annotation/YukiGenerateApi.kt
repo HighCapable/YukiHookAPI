@@ -46,8 +46,8 @@ package com.highcapable.yukihookapi.annotation
 )
 @Retention(AnnotationRetention.BINARY)
 /**
- * - ❗不可在非指定区域被使用的隐藏 API
+ * - ❗标记为自动生成调用的 API
  *
  * 此功能除继承和接口外不应该在这里被调用
  */
-annotation class DoNotUseAPI
+annotation class YukiGenerateApi

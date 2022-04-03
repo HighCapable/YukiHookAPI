@@ -29,7 +29,7 @@ package com.highcapable.yukihookapi.hook.xposed
 
 import android.app.Activity
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.annotation.DoNotUseAPI
+import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.isXposedModuleActive
@@ -92,7 +92,7 @@ object YukiHookModuleStatus {
      * @return [Boolean]
      */
     @Keep
-    @DoNotUseAPI
+    @YukiPrivateApi
     @JvmName(IS_ACTIVE_METHOD_NAME)
     internal fun isActive(): Boolean {
         yLoggerD(msg = IS_ACTIVE_METHOD_NAME, isDisableLog = true)

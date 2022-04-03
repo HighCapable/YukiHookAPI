@@ -29,7 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core.finder
 
-import com.highcapable.yukihookapi.annotation.DoNotUseAPI
+import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
@@ -147,7 +147,7 @@ class ConstructorFinder(
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [Result]
      */
-    @DoNotUseAPI
+    @YukiPrivateApi
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
@@ -168,7 +168,7 @@ class ConstructorFinder(
      * @param throwable 异常
      * @return [Result]
      */
-    @DoNotUseAPI
+    @YukiPrivateApi
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
@@ -197,7 +197,7 @@ class ConstructorFinder(
          *
          * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
-        @DoNotUseAPI
+        @YukiPrivateApi
         internal fun build() {
             if (classSet == null) return
             if (remedyPlans.isNotEmpty()) run {

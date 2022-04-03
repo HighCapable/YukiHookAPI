@@ -23,34 +23,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/5.
+ * This file is Created by fankes on 2022/4/3.
  */
-package com.highcapable.yukihookapi.hook.utils
+@file:Suppress("OPT_IN_IS_NOT_ENABLED", "EXPERIMENTAL_IS_NOT_ENABLED")
 
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+package com.highcapable.yukihookapi.annotation
 
+@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
+@MustBeDocumented
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.ANNOTATION_CLASS,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.FIELD,
+    AnnotationTarget.LOCAL_VARIABLE,
+    AnnotationTarget.VALUE_PARAMETER,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+    AnnotationTarget.TYPEALIAS
+)
+@Retention(AnnotationRetention.BINARY)
 /**
- * 计算方法执行耗时
- * @param block 方法块
- * @return [RunBlockResult]
+ * - ❗标记功能为私有功能性 API
+ *
+ * 此功能除继承和接口外不应该在这里被调用
  */
-@YukiPrivateApi
-inline fun <R> runBlocking(block: () -> R): RunBlockResult {
-    val start = System.currentTimeMillis()
-    block()
-    return RunBlockResult(after = System.currentTimeMillis() - start)
-}
-
-/**
- * 构造耗时计算结果类
- * @param after 耗时
- */
-@YukiPrivateApi
-class RunBlockResult(private val after: Long) {
-
-    /**
-     * 获取耗时计算结果
-     * @param initiate 回调结果 - ([Long] 耗时)
-     */
-    fun result(initiate: (Long) -> Unit) = initiate(after)
-}
+internal annotation class YukiPrivateApi

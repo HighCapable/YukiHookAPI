@@ -30,7 +30,7 @@
 package com.highcapable.yukihookapi.hook.param.wrapper
 
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.DoNotUseAPI
+import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
@@ -42,7 +42,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
  * @param appClassLoader APP [ClassLoader]
  * @param appInfo APP [ApplicationInfo]
  */
-@DoNotUseAPI
+@YukiPrivateApi
 class PackageParamWrapper(
     var packageName: String,
     var processName: String,

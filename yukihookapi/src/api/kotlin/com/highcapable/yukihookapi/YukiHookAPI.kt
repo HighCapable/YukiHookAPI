@@ -33,7 +33,6 @@ import android.app.Application
 import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
-import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
@@ -43,6 +42,7 @@ import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -62,53 +62,17 @@ import java.lang.reflect.Method
  */
 object YukiHookAPI {
 
-    /** Xposed Hook API 方法体回调 */
-    private var packageParamCallback: (PackageParam.() -> Unit)? = null
-
     /** 是否还未输出欢迎信息 */
     private var isShowSplashLogOnceTime = true
 
-    /** Xposed 是否装载完成 */
-    private var isXposedInitialized = false
+    /** 标识是否从自定义 Hook API 装载 */
+    internal var isLoadedFromBaseContext = false
 
     /** 获取当前 [YukiHookAPI] 的版本 */
     const val API_VERSION_NAME = "1.0.69"
 
     /** 获取当前 [YukiHookAPI] 的版本号 */
     const val API_VERSION_CODE = 14
-
-    /**
-     * 模块是否装载了 Xposed 回调方法
-     *
-     * - ❗此变量为私有功能性 API - 你不应该手动调用此变量
-     * @return [Boolean]
-     */
-    @DoNotUseAPI
-    val isXposedCallbackSetUp
-        get() = !isXposedInitialized && packageParamCallback != null
-
-    /**
-     * 当前 Hook 的对象是模块自身
-     *
-     * - ❗这是私有 API - 请勿手动修改 - 会引发未知异常
-     */
-    @DoNotUseAPI
-    var isModulePackageXposedEnv = false
-
-    /**
-     * 预设的 Xposed 模块包名
-     *
-     * - ❗这是私有 API - 请勿手动修改 - 会引发未知异常
-     */
-    @DoNotUseAPI
-    var modulePackageName = ""
-
-    /**
-     * 标识是否从自定义 Hook API 装载
-     *
-     * - ❗这是私有 API - 请勿手动修改 - 否则会导致功能判断错误
-     */
-    internal var isLoadedFromBaseContext = false
 
     /**
      * 获取当前 Hook 框架的名称
@@ -201,32 +165,11 @@ object YukiHookAPI {
     }
 
     /**
-     * 配置 [YukiHookAPI] 相关参数
-     *
-     * 详情请参考 [configs 方法](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#configs-%E6%96%B9%E6%B3%95)
-     * @param initiate 方法体
-     */
-    fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
-
-    /**
-     * 标识 Xposed API 装载完成
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
-     */
-    @DoNotUseAPI
-    fun onXposedInitialized() {
-        isXposedInitialized = true
-    }
-
-    /**
-     * 装载 Xposed API 回调
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
+     * 装载 Xposed API 回调核心实现方法
      * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
      */
-    @DoNotUseAPI
-    fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) =
-        packageParamCallback?.invoke(
+    internal fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) =
+        YukiHookXposedBridge.packageParamCallback?.invoke(
             PackageParam(
                 PackageParamWrapper(
                     packageName = lpparam.packageName,
@@ -236,6 +179,14 @@ object YukiHookAPI {
                 )
             ).apply { printSplashLog() }
         )
+
+    /**
+     * 配置 [YukiHookAPI] 相关参数
+     *
+     * 详情请参考 [configs 方法](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#configs-%E6%96%B9%E6%B3%95)
+     * @param initiate 方法体
+     */
+    fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
 
     /**
      * 作为模块装载调用入口方法 - Xposed API
@@ -248,7 +199,7 @@ object YukiHookAPI {
     fun encase(initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = false
         if (hasXposedBridge)
-            packageParamCallback = initiate
+            YukiHookXposedBridge.packageParamCallback = initiate
         else printNoXposedEnvLog()
     }
 
@@ -264,7 +215,7 @@ object YukiHookAPI {
     fun encase(vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = false
         if (hasXposedBridge)
-            packageParamCallback = {
+            YukiHookXposedBridge.packageParamCallback = {
                 if (hooker.isNotEmpty())
                     hooker.forEach { it.assignInstance(packageParam = this) }
                 else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty")
@@ -323,7 +274,7 @@ object YukiHookAPI {
 
     /** 输出欢迎信息调试日志 */
     private fun printSplashLog() {
-        if (Configs.isDebug.not() || isShowSplashLogOnceTime.not() || isModulePackageXposedEnv) return
+        if (Configs.isDebug.not() || isShowSplashLogOnceTime.not() || YukiHookXposedBridge.isModulePackageXposedEnv) return
         isShowSplashLogOnceTime = false
         yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using $executorName API $executorVersion")
     }

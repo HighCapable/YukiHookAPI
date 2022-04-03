@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.xposed.prefs
 import android.content.Context
 import android.content.SharedPreferences
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import de.robv.android.xposed.XSharedPreferences
 import java.io.File
@@ -57,7 +58,7 @@ import java.io.File
 class YukiHookModulePrefs(private val context: Context? = null) {
 
     /** 存储名称 - 默认包名 + _preferences */
-    private var prefsName = "${YukiHookAPI.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
+    private var prefsName = "${YukiHookXposedBridge.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
 
     /** 是否为 Xposed 环境 */
     private val isXposedEnvironment = YukiHookAPI.hasXposedBridge
@@ -80,9 +81,11 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /** 是否使用键值缓存 */
     private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
 
-    /** 检查是否处于自定义 Hook API 状态 */
-    private fun checkApiInBaseContext() {
+    /** 检查 API 装载状态 */
+    private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
+        if (YukiHookAPI.hasXposedBridge && YukiHookXposedBridge.modulePackageName.isBlank())
+            error("Xposed modulePackageName load failed, please reset and rebuild it")
     }
 
     /**
@@ -90,8 +93,8 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @return [XSharedPreferences]
      */
     private val xPref
-        get() = XSharedPreferences(YukiHookAPI.modulePackageName, prefsName).apply {
-            checkApiInBaseContext()
+        get() = XSharedPreferences(YukiHookXposedBridge.modulePackageName, prefsName).apply {
+            checkApi()
             makeWorldReadable()
             reload()
         }
@@ -102,11 +105,11 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     private val sPref
         get() = try {
-            checkApiInBaseContext()
+            checkApi()
             context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
                 ?: error("If you want to use module prefs,you must set the context instance first")
         } catch (_: Throwable) {
-            checkApiInBaseContext()
+            checkApi()
             context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
                 ?: error("If you want to use module prefs,you must set the context instance first")
         }

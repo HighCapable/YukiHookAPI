@@ -29,7 +29,7 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 
 import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.DoNotUseAPI
+import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
@@ -164,7 +164,7 @@ abstract class BaseFinder(
      * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
      * @return [Any]
      */
-    @DoNotUseAPI
+    @YukiPrivateApi
     abstract fun build(isBind: Boolean = false): Any
 
     /**
@@ -174,6 +174,6 @@ abstract class BaseFinder(
      * @param throwable 异常
      * @return [Any]
      */
-    @DoNotUseAPI
+    @YukiPrivateApi
     abstract fun failure(throwable: Throwable?): Any
 }
