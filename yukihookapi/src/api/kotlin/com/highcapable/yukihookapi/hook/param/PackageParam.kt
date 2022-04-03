@@ -31,7 +31,6 @@ package com.highcapable.yukihookapi.hook.param
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
@@ -105,11 +104,8 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
 
     /**
      * 赋值并克隆另一个 [PackageParam]
-     *
-     * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
      * @param anotherParam 另一个 [PackageParam]
      */
-    @YukiPrivateApi
     internal fun baseAssignInstance(anotherParam: PackageParam) {
         thisParam.wrapper = anotherParam.wrapper
     }
