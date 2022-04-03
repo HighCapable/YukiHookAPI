@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
+import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
@@ -137,18 +138,14 @@ fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet =
 fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
- * 调用当前实例中的变量
- * @param initiate 查找方法体
- * @return [FieldFinder.Result.Instance]
+ * 获得当前实例的类操作对象
+ * @param initiate 方法体
+ * @return [T]
  */
-fun Any.field(initiate: FieldFinder.() -> Unit) = javaClass.field(initiate).get(this)
-
-/**
- * 调用当前实例中的方法
- * @param initiate 查找方法体
- * @return [MethodFinder.Result.Instance]
- */
-fun Any.method(initiate: MethodFinder.() -> Unit) = javaClass.method(initiate).get(this)
+inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
+    CurrentClass(javaClass, self = this).apply(initiate)
+    return this
+}
 
 /**
  * 通过构造方法创建新实例 - 指定类型 [T]
@@ -156,7 +153,7 @@ fun Any.method(initiate: MethodFinder.() -> Unit) = javaClass.method(initiate).g
  * @param initiate 查找方法体
  * @return [T] or null
  */
-fun <T> Class<*>.construct(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = constructor(initiate).get().newInstance<T>(*param)
+fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = constructor(initiate).get().newInstance<T>(*param)
 
 /**
  * 通过构造方法创建新实例 - 任意类型 [Any]
@@ -164,7 +161,7 @@ fun <T> Class<*>.construct(vararg param: Any?, initiate: ConstructorFinder.() ->
  * @param initiate 查找方法体
  * @return [Any] or null
  */
-fun Class<*>.constructAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = construct<Any>(*param, initiate)
+fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = buildOf<Any?>(*param, initiate)
 
 /**
  * 遍历当前类中的所有方法
