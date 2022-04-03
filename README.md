@@ -194,18 +194,18 @@ class MainHook : YukiHookXposedInitProxy {
   增加 Demo 中的更多示例 Hook 内容；<br/>
   修复在一个 Hook 实例中，`allMethods` 多次使用时只有最后一个生效的问题，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈。<br/><br/>
 - 1.0.70 <br/>
-  修复 `instanceClass` 在静态实例中调用后报错问题；<br/><br/>
-  在 Hook 过程中加入 `isUseAppClassLoader` 功能，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈；<br/><br/>
-  加入 `withProcess` 功能，可根据 APP 当前指定进程进行 Hook；<br/><br/>
-  修复查找方法、构造类和变量的严重逻辑错误问题；<br/><br/>
-  修复 Hook 目标类不存在的时候无法忽略异常输出的问题；<br/><br/>
-  修复部分情况下 APP 启动方法装载过快导致 Hook 不能生效的问题；<br/><br/>
-  修复 `allMethods` 未 Hook 到方法时不会抛出异常的问题，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈；<br/><br/>
-  加入 Hook 状态监听功能，感谢 [WankkoRee](https://github.com/WankkoRee) 的建议；<br/><br/>
-  修改 Xposed 入口注入类的方式，重新声明 API 的定义域；<br/><br/>
-  加入混淆的方法以及变量的查找功能，可使用不同类型筛选 `index` 定位指定的方法和变量，感谢 [WankkoRee](https://github.com/WankkoRee) 提供的思路；<br/><br/>
-  查找方法、变量时允许传入多种类型，例如 `String` 声明的类名和 `VariousClass`；<br/><br/>
-  加入全新的 `current` 功能，可对任意的类构建一个反射方法操作空间，方便地调用和修改其中的方法和变量；<br/><br/>
+  修复 `instanceClass` 在静态实例中调用后报错问题；<br/>
+  在 Hook 过程中加入 `isUseAppClassLoader` 功能，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈；<br/>
+  加入 `withProcess` 功能，可根据 APP 当前指定进程进行 Hook；<br/>
+  修复查找方法、构造类和变量的严重逻辑错误问题；<br/>
+  修复 Hook 目标类不存在的时候无法忽略异常输出的问题；<br/>
+  修复部分情况下 APP 启动方法装载过快导致 Hook 不能生效的问题；<br/>
+  修复 `allMethods` 未 Hook 到方法时不会抛出异常的问题，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈；<br/>
+  加入 Hook 状态监听功能，感谢 [WankkoRee](https://github.com/WankkoRee) 的建议；<br/>
+  修改 Xposed 入口注入类的方式，重新声明 API 的定义域；<br/>
+  加入混淆的方法以及变量的查找功能，可使用不同类型筛选 `index` 定位指定的方法和变量，感谢 [WankkoRee](https://github.com/WankkoRee) 提供的思路；<br/>
+  查找方法、变量时允许传入多种类型，例如 `String` 声明的类名和 `VariousClass`；<br/>
+  加入全新的 `current` 功能，可对任意的类构建一个反射方法操作空间，方便地调用和修改其中的方法和变量；<br/>
   修复了 Hook 过程中的大量 BUG，感谢 [WankkoRee](https://github.com/WankkoRee) 对此项目所做出的贡献。
 
 # Features
