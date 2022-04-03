@@ -25,12 +25,12 @@
  *
  * This file is Created by fankes on 2022/2/7.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.highcapable.yukihookapi.hook.param.wrapper
 
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.DoNotUseClass
+import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
@@ -42,7 +42,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
  * @param appClassLoader APP [ClassLoader]
  * @param appInfo APP [ApplicationInfo]
  */
-@DoNotUseClass
+@DoNotUseAPI
 class PackageParamWrapper(
     var packageName: String,
     var processName: String,

@@ -18,7 +18,14 @@ javadoc {
     if (JavaVersion.current().isJava9Compatible()) options.addBooleanOption('html5', true)
 }
 
-kotlin { sourceSets.main { kotlin.srcDir("src/api/kotlin") } }
+kotlin {
+    sourceSets.main { kotlin.srcDir("src/api/kotlin") }
+    sourceSets { all { languageSettings { optIn('com.highcapable.yukihookapi.annotation.DoNotUseAPI') } } }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions { freeCompilerArgs += "-opt-in=com.highcapable.yukihookapi.annotation.DoNotUseAPI" }
+}
 
 dependencies {
     // Used 82 API Version

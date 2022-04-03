@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("MemberVisibilityCanBePrivate", "unused", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package com.highcapable.yukihookapi
 
@@ -33,8 +33,7 @@ import android.app.Application
 import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
-import com.highcapable.yukihookapi.annotation.DoNotUseField
-import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
@@ -84,7 +83,7 @@ object YukiHookAPI {
      * - ❗此变量为私有功能性 API - 你不应该手动调用此变量
      * @return [Boolean]
      */
-    @DoNotUseField
+    @DoNotUseAPI
     val isXposedCallbackSetUp
         get() = !isXposedInitialized && packageParamCallback != null
 
@@ -93,7 +92,7 @@ object YukiHookAPI {
      *
      * - ❗这是私有 API - 请勿手动修改 - 会引发未知异常
      */
-    @DoNotUseField
+    @DoNotUseAPI
     var isModulePackageXposedEnv = false
 
     /**
@@ -101,7 +100,7 @@ object YukiHookAPI {
      *
      * - ❗这是私有 API - 请勿手动修改 - 会引发未知异常
      */
-    @DoNotUseField
+    @DoNotUseAPI
     var modulePackageName = ""
 
     /**
@@ -214,7 +213,7 @@ object YukiHookAPI {
      *
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     fun onXposedInitialized() {
         isXposedInitialized = true
     }
@@ -225,7 +224,7 @@ object YukiHookAPI {
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) =
         packageParamCallback?.invoke(
             PackageParam(

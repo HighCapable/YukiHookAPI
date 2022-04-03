@@ -25,13 +25,13 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("MemberVisibilityCanBePrivate", "unused", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package com.highcapable.yukihookapi.hook.core
 
 import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
@@ -96,7 +96,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      * @throws IllegalStateException 如果必要参数没有被设置
      * @return [Result]
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     fun hook(): Result {
         if (YukiHookAPI.hasXposedBridge.not()) return Result()
         return if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
@@ -370,7 +370,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          * @return [Result]
          */
-        @DoNotUseMethod
+        @DoNotUseAPI
         fun build() = Result()
 
         /**
@@ -378,7 +378,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          *
          * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
-        @DoNotUseMethod
+        @DoNotUseAPI
         fun hook() {
             if (YukiHookAPI.hasXposedBridge.not() || isDisableMemberRunHook) return
             if (hookClass.instance == null) {

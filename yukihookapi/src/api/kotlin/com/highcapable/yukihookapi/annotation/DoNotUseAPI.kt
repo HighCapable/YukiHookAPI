@@ -23,15 +23,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/2.
+ * This file is Created by fankes on 2022/4/3.
  */
 @file:Suppress("OPT_IN_IS_NOT_ENABLED", "EXPERIMENTAL_IS_NOT_ENABLED")
 
 package com.highcapable.yukihookapi.annotation
 
-@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
+@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
 @MustBeDocumented
 @Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.ANNOTATION_CLASS,
     AnnotationTarget.PROPERTY,
     AnnotationTarget.FIELD,
     AnnotationTarget.LOCAL_VARIABLE,
@@ -42,10 +46,8 @@ package com.highcapable.yukihookapi.annotation
 )
 @Retention(AnnotationRetention.BINARY)
 /**
- * -️ ❗警告方法外部调用声明
+ * - ❗不可在非指定区域被使用的隐藏 API
  *
- * 此方法除继承和接口外不应该在这里被调用
- *
- * 如果调用此方法可能会出现错误或 APP 发生异常
+ * 此功能除继承和接口外不应该在这里被调用
  */
-annotation class DoNotUseField
+annotation class DoNotUseAPI

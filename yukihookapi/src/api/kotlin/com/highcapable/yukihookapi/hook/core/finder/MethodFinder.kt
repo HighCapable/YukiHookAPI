@@ -25,14 +25,11 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress(
-    "unused", "MemberVisibilityCanBePrivate",
-    "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE", "UNCHECKED_CAST", "KotlinConstantConditions"
-)
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "KotlinConstantConditions")
 
 package com.highcapable.yukihookapi.hook.core.finder
 
-import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
@@ -195,7 +192,7 @@ class MethodFinder(
      * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
      * @return [Result]
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
@@ -216,7 +213,7 @@ class MethodFinder(
      * @param throwable 异常
      * @return [Result]
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**
@@ -246,7 +243,7 @@ class MethodFinder(
          *
          * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
-        @DoNotUseMethod
+        @DoNotUseAPI
         internal fun build() {
             if (classSet == null) return
             if (remedyPlans.isNotEmpty()) run {

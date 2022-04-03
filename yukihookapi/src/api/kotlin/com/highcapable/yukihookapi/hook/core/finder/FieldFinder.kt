@@ -25,12 +25,12 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 
 package com.highcapable.yukihookapi.hook.core.finder
 
 import android.os.SystemClock
-import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
@@ -123,7 +123,7 @@ class FieldFinder(
      * @return [Result]
      * @throws IllegalStateException 如果 [name] 没有被设置
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
@@ -147,7 +147,7 @@ class FieldFinder(
      * @param throwable 异常
      * @return [Result]
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
     /**

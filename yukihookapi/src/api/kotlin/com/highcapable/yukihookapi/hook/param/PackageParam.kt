@@ -25,13 +25,13 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "OPT_IN_USAGE", "EXPERIMENTAL_API_USAGE")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.highcapable.yukihookapi.hook.param
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
@@ -109,7 +109,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
      * @param anotherParam 另一个 [PackageParam]
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     internal fun baseAssignInstance(anotherParam: PackageParam) {
         thisParam.wrapper = anotherParam.wrapper
     }

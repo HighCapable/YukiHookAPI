@@ -230,9 +230,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 ).apply {
                     /** 插入 xposed_init 代码 */
                     write(
-                        ("@file:Suppress(\"OPT_IN_USAGE\", \"EXPERIMENTAL_API_USAGE\")\n" +
-                                "\n" +
-                                "package $packageName\n" +
+                        ("package $packageName\n" +
                                 "\n" +
                                 "import androidx.annotation.Keep\n" +
                                 "import com.highcapable.yukihookapi.YukiHookAPI\n" +
@@ -243,6 +241,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "import de.robv.android.xposed.XposedHelpers\n" +
                                 "import de.robv.android.xposed.XposedBridge\n" +
                                 "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
+                                "import com.highcapable.yukihookapi.annotation.DoNotUseAPI\n" +
                                 "import $packageName.$className\n" +
                                 "\n" +
                                 "/**\n" +
@@ -257,6 +256,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
                                 " */\n" +
                                 "@Keep\n" +
+                                "@DoNotUseAPI\n" +
                                 "class $className$xposedClassShortName : IXposedHookLoadPackage {\n" +
                                 "\n" +
                                 "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +

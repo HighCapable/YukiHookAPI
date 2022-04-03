@@ -28,7 +28,7 @@
 package com.highcapable.yukihookapi.hook.entity
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.DoNotUseMethod
+import com.highcapable.yukihookapi.annotation.DoNotUseAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
@@ -58,7 +58,7 @@ abstract class YukiBaseHooker : PackageParam() {
      * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
      * @param packageParam 需要使用的 [PackageParam]
      */
-    @DoNotUseMethod
+    @DoNotUseAPI
     internal fun assignInstance(packageParam: PackageParam) {
         baseAssignInstance(packageParam)
         onHook()

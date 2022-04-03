@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+    <component name="Kotlin2JvmCompilerArguments">
+        <option name="jvmTarget" value="11" />
+    </component>
+    <component name="KotlinCompilerSettings">
+        <option name="additionalArguments" value="-version -Xopt-in=kotlin.RequiresOptIn" />
+    </component>
+</project>
