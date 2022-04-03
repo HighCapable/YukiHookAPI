@@ -135,6 +135,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /** [replaceAny]、[replaceUnit]、[replaceTo] 等回调 */
         private var replaceHookCallback: (HookParam.() -> Any?)? = null
 
+        /** Hook 成功时回调 */
+        private var onHookedCallback: ((Member) -> Unit)? = null
+
         /** 找不到 [member] 出现错误回调 */
         private var onNoSuchMemberFailureCallback: ((Throwable) -> Unit)? = null
 
@@ -442,8 +445,10 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     member.also { member ->
                         runCatching {
                             if (isReplaceHookMode)
-                                XposedBridge.hookMethod(member, replaceMent)
-                            else XposedBridge.hookMethod(member, beforeAfterHook)
+                                XposedBridge.hookMethod(member, replaceMent)?.hookedMethod?.also { onHookedCallback?.invoke(it) }
+                                    ?: error("Hook Member [$member] failed")
+                            else XposedBridge.hookMethod(member, beforeAfterHook)?.hookedMethod?.also { onHookedCallback?.invoke(it) }
+                                ?: error("Hook Member [$member] failed")
                         }.onFailure {
                             onHookingFailureCallback?.invoke(it)
                             onAllFailureCallback?.invoke(it)
@@ -466,16 +471,24 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                 when (hookMemberMode) {
                     HookMemberMode.HOOK_ALL_METHODS ->
                         if (isReplaceHookMode)
-                            XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, replaceMent)
-                                .also { if (it.size <= 0) throw NoSuchMethodError("No method name \"$allMethodsName\" matched") }
-                        else XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook)
-                            .also { if (it.size <= 0) throw NoSuchMethodError("No method name \"$allMethodsName\" matched") }
+                            XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, replaceMent).also {
+                                if (it.isEmpty()) throw NoSuchMethodError("No method name \"$allMethodsName\" matched")
+                                else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                            }
+                        else XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook).also {
+                            if (it.isEmpty()) throw NoSuchMethodError("No method name \"$allMethodsName\" matched")
+                            else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                        }
                     HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
                         if (isReplaceHookMode)
-                            XposedBridge.hookAllConstructors(hookClass.instance, replaceMent)
-                                .also { if (it.size <= 0) throw NoSuchMethodError("No constructor matched") }
-                        else XposedBridge.hookAllConstructors(hookClass.instance, beforeAfterHook)
-                            .also { if (it.size <= 0) throw NoSuchMethodError("No constructor matched") }
+                            XposedBridge.hookAllConstructors(hookClass.instance, replaceMent).also {
+                                if (it.isEmpty()) throw NoSuchMethodError("No constructor matched")
+                                else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                            }
+                        else XposedBridge.hookAllConstructors(hookClass.instance, beforeAfterHook).also {
+                            if (it.isEmpty()) throw NoSuchMethodError("No constructor matched")
+                            else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                        }
                     else -> error("Hooked got a no error possible")
                 }
             }.onFailure {
@@ -541,6 +554,18 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
             fun by(initiate: () -> Boolean): Result {
                 isDisableMemberRunHook = !(runCatching { initiate() }.getOrNull() ?: false)
                 if (isDisableMemberRunHook) ignoredAllFailure()
+                return this
+            }
+
+            /**
+             * 监听 [member] Hook 成功的回调方法
+             *
+             * 在首次 Hook 成功后回调
+             * @param initiate 回调被 Hook 的 [Member]
+             * @return [Result] 可继续向下监听
+             */
+            fun onHooked(initiate: (Member) -> Unit): Result {
+                onHookedCallback = initiate
                 return this
             }
 
