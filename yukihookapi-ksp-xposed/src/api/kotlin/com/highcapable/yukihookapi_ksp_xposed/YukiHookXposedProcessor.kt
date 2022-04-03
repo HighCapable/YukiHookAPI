@@ -155,7 +155,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         }
                         if ((modulePackageName.startsWith(".") ||
                                     modulePackageName.endsWith(".") ||
-                                    !modulePackageName.contains(".") ||
+                                    modulePackageName.contains(".").not() ||
                                     modulePackageName.contains("..")) &&
                             modulePackageName.isNotEmpty()
                         ) error(msg = "Invalid Module Package name \"$modulePackageName\"")

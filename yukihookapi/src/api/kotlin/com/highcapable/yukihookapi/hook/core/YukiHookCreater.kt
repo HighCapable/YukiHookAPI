@@ -552,7 +552,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
              * @return [Result] 可继续向下监听
              */
             fun by(initiate: () -> Boolean): Result {
-                isDisableMemberRunHook = !(runCatching { initiate() }.getOrNull() ?: false)
+                isDisableMemberRunHook = (runCatching { initiate() }.getOrNull() ?: false).not()
                 if (isDisableMemberRunHook) ignoredAllFailure()
                 return this
             }
@@ -660,7 +660,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @return [Result] 可继续向下监听
          */
         fun by(initiate: () -> Boolean): Result {
-            isDisableCreaterRunHook = !(runCatching { initiate() }.getOrNull() ?: false)
+            isDisableCreaterRunHook = (runCatching { initiate() }.getOrNull() ?: false).not()
             return this
         }
 

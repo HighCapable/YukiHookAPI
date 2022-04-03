@@ -59,7 +59,7 @@ object YukiHookXposedBridge {
      */
     @YukiGenerateApi
     val isXposedCallbackSetUp
-        get() = !isXposedInitialized && packageParamCallback != null
+        get() = isXposedInitialized.not() && packageParamCallback != null
 
     /**
      * 当前 Hook 的对象是模块自身
