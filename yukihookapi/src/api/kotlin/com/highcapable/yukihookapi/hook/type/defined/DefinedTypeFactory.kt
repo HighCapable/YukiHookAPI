@@ -23,44 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/10.
+ * This file is Created by fankes on 2022/4/3.
  */
-package com.highcapable.yukihookapi.hook.bean
+package com.highcapable.yukihookapi.hook.type.defined
 
-import com.highcapable.yukihookapi.hook.factory.classOf
+/** 未定义类型实例 */
+internal class UndefinedClass
 
 /**
- * 这是一个不确定性 [Class] 类名装载器
- * @param name 可指定多个类名 - 将会自动匹配存在的第一个类名
+ * 未定义类型
+ * @return [UndefinedClass]
  */
-class VariousClass(vararg var name: String) {
-
-    /**
-     * 获取匹配的实体类
-     *
-     * - 使用当前 [loader] 装载目标 [Class]
-     * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
-     * @return [Class]
-     * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
-     */
-    fun get(loader: ClassLoader? = null): Class<*> {
-        var finalClass: Class<*>? = null
-        if (name.isNotEmpty()) run {
-            name.forEach {
-                runCatching {
-                    finalClass = classOf(it, loader)
-                    return@run
-                }
-            }
-        }
-        return finalClass ?: error("VariousClass match failed of those $this")
-    }
-
-    override fun toString(): String {
-        var result = ""
-        return if (name.isNotEmpty()) {
-            name.forEach { result += "\"$it\"," }
-            "[${result.substring(0, result.lastIndex)}]"
-        } else "[]"
-    }
-}
+internal val UndefinedType get() = UndefinedClass::class.java

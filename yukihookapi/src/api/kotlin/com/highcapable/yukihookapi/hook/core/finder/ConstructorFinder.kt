@@ -30,10 +30,12 @@
 package com.highcapable.yukihookapi.hook.core.finder
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Constructor
@@ -93,12 +95,12 @@ class ConstructorFinder(
      * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param paramType 参数类型数组
+     * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]
      * @return [BaseFinder.IndexTypeCondition]
      */
-    fun param(vararg paramType: Class<*>): IndexTypeCondition {
+    fun param(vararg paramType: Any): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please delete param() method")
-        paramTypes = paramType
+        paramTypes = ArrayList<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 

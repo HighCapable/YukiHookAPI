@@ -176,19 +176,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    val VariousClass.clazz
-        get() :Class<*> {
-            var finalClass: Class<*>? = null
-            if (name.isNotEmpty()) run {
-                name.forEach {
-                    runCatching {
-                        finalClass = it.clazz
-                        return@run
-                    }
-                }
-            }
-            return finalClass ?: error("VariousClass match failed of those $this")
-        }
+    val VariousClass.clazz get() = get(appClassLoader)
 
     /**
      * 通过字符串查找类是否存在
@@ -214,9 +202,9 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      *
      * 使用此方法查询将会取 [name] 其中命中存在的第一个 [Class] 作为结果
      * @param name 可填入多个类名 - 自动匹配
-     * @return [HookClass]
+     * @return [VariousClass]
      */
-    fun findClass(vararg name: String) = VariousClass(*name).hookClass
+    fun findClass(vararg name: String) = VariousClass(*name)
 
     /**
      * Hook 方法、构造类
@@ -245,7 +233,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @return [YukiHookCreater.Result]
      */
     fun VariousClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
-        hookClass.hook(isUseAppClassLoader, initiate)
+        get(if (isUseAppClassLoader) appClassLoader else null).hookClass.hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类

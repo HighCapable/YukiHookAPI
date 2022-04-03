@@ -30,9 +30,12 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
+import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Member
 import kotlin.math.abs
 
@@ -132,6 +135,18 @@ abstract class BaseFinder(
      * @return [Boolean] 没有设置任何异常拦截
      */
     internal val isNotIgnoredNoSuchMemberFailure get() = hookInstance?.isNotIgnoredNoSuchMemberFailure ?: true
+
+    /**
+     * 将目标类型转换为可识别的兼容类型
+     * @return [Class] or null
+     */
+    internal fun Any?.compat() = when (this) {
+        null -> null
+        is Class<*> -> this
+        is String -> runCatching { classOf(name = this, classSet!!.classLoader) }.getOrNull() ?: UndefinedType
+        is VariousClass -> runCatching { get(classSet!!.classLoader) }.getOrNull() ?: UndefinedType
+        else -> error("$tag match type \"$javaClass\" not allowed")
+    } as Class<*>?
 
     /**
      * 发生错误时输出日志

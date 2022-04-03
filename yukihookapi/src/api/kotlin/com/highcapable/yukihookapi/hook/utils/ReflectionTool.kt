@@ -29,6 +29,7 @@ package com.highcapable.yukihookapi.hook.utils
 
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -52,7 +53,7 @@ internal object ReflectionTool {
      * @param modifiers 变量描述
      * @param type 变量类型
      * @return [Field]
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [type] 目标类不存在
      * @throws NoSuchFieldError 如果找不到变量
      */
     internal fun findField(
@@ -63,6 +64,7 @@ internal object ReflectionTool {
         modifiers: ModifierRules?,
         type: Class<*>?
     ): Field {
+        if (type == UndefinedType) error("Field match type class is not found")
         if (orderIndex == null && matchIndex == null && name.isBlank() && modifiers == null && type == null)
             error("You must set a condition when finding a Field")
         val hashCode = ("[$orderIndex][$matchIndex][$name][$type][$modifiers][$classSet]").hashCode()
@@ -155,7 +157,7 @@ internal object ReflectionTool {
      * @param paramCount 方法参数个数
      * @param paramTypes 方法参数类型
      * @return [Method]
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [paramTypes] 以及 [returnType] 目标类不存在
      * @throws NoSuchMethodError 如果找不到方法
      */
     internal fun findMethod(
@@ -168,6 +170,9 @@ internal object ReflectionTool {
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Method {
+        if (returnType == UndefinedType) error("Method match returnType class is not found")
+        paramTypes?.takeIf { it.isNotEmpty() }
+            ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Method match paramType[$p] class is not found") }
         if (orderIndex == null && matchIndex == null && name.isBlank() && modifiers == null && paramCount < 0 && paramTypes == null && returnType == null)
             error("You must set a condition when finding a Method")
         val hashCode =
@@ -288,7 +293,7 @@ internal object ReflectionTool {
      * @param paramCount 构造方法参数个数
      * @param paramTypes 构造方法参数类型
      * @return [Constructor]
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [paramTypes] 目标类不存在
      * @throws NoSuchMethodError 如果找不到构造方法
      */
     internal fun findConstructor(
@@ -299,6 +304,8 @@ internal object ReflectionTool {
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Constructor<*> {
+        paramTypes?.takeIf { it.isNotEmpty() }
+            ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
         if (orderIndex == null && matchIndex == null && paramCount < 0 && paramTypes == null && modifiers == null)
             error("You must set a condition when finding a Constructor")
         val hashCode = ("[$orderIndex][$matchIndex][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()

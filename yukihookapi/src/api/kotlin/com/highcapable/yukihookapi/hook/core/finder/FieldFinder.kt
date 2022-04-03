@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.core.finder
 
 import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
@@ -63,9 +64,25 @@ class FieldFinder(
     /**
      * [Field] 类型
      *
+     * - ❗只能是 [Class]、[String]、[VariousClass]
+     *
      * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
      */
-    var type: Class<*>? = null
+    var type: Any? = null
+
+    /**
+     * [Field] 筛选条件
+     *
+     * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Field]
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param initiate 方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
+        modifiers = ModifierRules().apply(initiate)
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
 
     /**
      * 顺序筛选字节码的下标
@@ -93,25 +110,11 @@ class FieldFinder(
      * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param value 类型
+     * @param value 类型 - ❗只能是 [Class]、[String]、[VariousClass]
      * @return [BaseFinder.IndexTypeCondition]
      */
-    fun type(value: Class<*>): IndexTypeCondition {
+    fun type(value: Any): IndexTypeCondition {
         type = value
-        return IndexTypeCondition(IndexConfigType.MATCH)
-    }
-
-    /**
-     * [Field] 筛选条件
-     *
-     * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Field]
-     *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param initiate 方法体
-     * @return [BaseFinder.IndexTypeCondition]
-     */
-    fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
-        modifiers = ModifierRules().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -127,7 +130,7 @@ class FieldFinder(
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
-                memberInstance = ReflectionTool.findField(classSet, orderIndex, matchIndex, name, modifiers, type)
+                memberInstance = ReflectionTool.findField(classSet, orderIndex, matchIndex, name, modifiers, type.compat())
             }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))
@@ -135,7 +138,7 @@ class FieldFinder(
         Thread {
             /** 延迟使得方法取到返回值 */
             SystemClock.sleep(1)
-            onFailureMsg(msg = "NoSuchField happend in [$classSet] [${hookTag}]", throwable = e)
+            onFailureMsg(throwable = e)
         }.start()
         Result(isNoSuch = true, e)
     }

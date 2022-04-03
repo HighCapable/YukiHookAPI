@@ -30,10 +30,12 @@
 package com.highcapable.yukihookapi.hook.core.finder
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Method
@@ -81,9 +83,11 @@ class MethodFinder(
     /**
      * [Method] 返回值
      *
-     * 可不填写返回值 - 默认模糊查找并取第一个匹配的 [Method]
+     * - ❗只能是 [Class]、[String]、[VariousClass]
+     *
+     * - 可不填写返回值 - 默认模糊查找并取第一个匹配的 [Method]
      */
-    var returnType: Class<*>? = null
+    var returnType: Any? = null
 
     /**
      * [Method] 筛选条件
@@ -109,12 +113,12 @@ class MethodFinder(
      * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param paramType 参数类型数组
+     * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]
      * @return [BaseFinder.IndexTypeCondition]
      */
-    fun param(vararg paramType: Class<*>): IndexTypeCondition {
+    fun param(vararg paramType: Any): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please delete param() method")
-        paramTypes = paramType
+        paramTypes = ArrayList<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -163,7 +167,7 @@ class MethodFinder(
      * @param value 个数
      * @return [BaseFinder.IndexTypeCondition]
      */
-    fun returnType(value: Class<*>): IndexTypeCondition {
+    fun returnType(value: Any): IndexTypeCondition {
         returnType = value
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
@@ -173,7 +177,8 @@ class MethodFinder(
      * @return [Method]
      * @throws NoSuchMethodError 如果找不到方法
      */
-    private val result get() = ReflectionTool.findMethod(classSet, orderIndex, matchIndex, name, modifiers, returnType, paramCount, paramTypes)
+    private val result
+        get() = ReflectionTool.findMethod(classSet, orderIndex, matchIndex, name, modifiers, returnType.compat(), paramCount, paramTypes)
 
     /**
      * 设置实例
