@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.7-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.70-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -193,7 +193,7 @@ class MainHook : YukiHookXposedInitProxy {
   添加并改进一些方法功能的注释；<br/>
   增加 Demo 中的更多示例 Hook 内容；<br/>
   修复在一个 Hook 实例中，`allMethods` 多次使用时只有最后一个生效的问题，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈。<br/><br/>
-- 1.0.7 <br/>
+- 1.0.70 <br/>
   修复 `instanceClass` 在静态实例中调用后报错问题；<br/><br/>
   在 Hook 过程中加入 `isUseAppClassLoader` 功能，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈；<br/><br/>
   加入 `withProcess` 功能，可根据 APP 当前指定进程进行 Hook；<br/><br/>
