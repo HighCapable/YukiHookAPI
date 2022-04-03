@@ -52,7 +52,7 @@ internal object ReflectionTool {
      * @param modifiers 变量描述
      * @param type 变量类型
      * @return [Field]
-     * @throws IllegalStateException 如果 [classSet] 为 null
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件
      * @throws NoSuchFieldError 如果找不到变量
      */
     internal fun findField(
@@ -63,11 +63,11 @@ internal object ReflectionTool {
         modifiers: ModifierRules?,
         type: Class<*>?
     ): Field {
+        if (orderIndex == null && matchIndex == null && name.isBlank() && modifiers == null && type == null)
+            error("You must set a condition when finding a Field")
         val hashCode = ("[$orderIndex][$matchIndex][$name][$type][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findField(hashCode) ?: let {
             var field: Field? = null
-            if (orderIndex == null && matchIndex != null && name.isBlank() && modifiers == null && type == null)
-                error("You must set a condition when finding a Field")
             classSet?.declaredFields?.apply {
                 var typeIndex = -1
                 var nameIndex = -1
@@ -155,7 +155,7 @@ internal object ReflectionTool {
      * @param paramCount 方法参数个数
      * @param paramTypes 方法参数类型
      * @return [Method]
-     * @throws IllegalStateException 如果 [classSet] 为 null
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件
      * @throws NoSuchMethodError 如果找不到方法
      */
     internal fun findMethod(
@@ -168,6 +168,8 @@ internal object ReflectionTool {
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Method {
+        if (orderIndex == null && matchIndex == null && name.isBlank() && modifiers == null && paramCount < 0 && paramTypes == null && returnType == null)
+            error("You must set a condition when finding a Method")
         val hashCode =
             ("[$orderIndex][$matchIndex][$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findMethod(hashCode) ?: let {
@@ -286,7 +288,7 @@ internal object ReflectionTool {
      * @param paramCount 构造方法参数个数
      * @param paramTypes 构造方法参数类型
      * @return [Constructor]
-     * @throws IllegalStateException 如果 [classSet] 为 null
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件
      * @throws NoSuchMethodError 如果找不到构造方法
      */
     internal fun findConstructor(
@@ -297,6 +299,8 @@ internal object ReflectionTool {
         paramCount: Int,
         paramTypes: Array<out Class<*>>?
     ): Constructor<*> {
+        if (orderIndex == null && matchIndex == null && paramCount < 0 && paramTypes == null && modifiers == null)
+            error("You must set a condition when finding a Constructor")
         val hashCode = ("[$orderIndex][$matchIndex][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findConstructor(hashCode) ?: let {
             var constructor: Constructor<*>? = null
