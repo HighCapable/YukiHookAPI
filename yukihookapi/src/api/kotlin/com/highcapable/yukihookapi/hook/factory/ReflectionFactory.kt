@@ -137,6 +137,36 @@ fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet =
 fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
+ * 调用当前实例中的变量
+ * @param initiate 查找方法体
+ * @return [FieldFinder.Result.Instance]
+ */
+fun Any.field(initiate: FieldFinder.() -> Unit) = javaClass.field(initiate).get(this)
+
+/**
+ * 调用当前实例中的方法
+ * @param initiate 查找方法体
+ * @return [MethodFinder.Result.Instance]
+ */
+fun Any.method(initiate: MethodFinder.() -> Unit) = javaClass.method(initiate).get(this)
+
+/**
+ * 通过构造方法创建新实例 - 指定类型 [T]
+ * @param param 方法参数
+ * @param initiate 查找方法体
+ * @return [T] or null
+ */
+fun <T> Class<*>.construct(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = constructor(initiate).get().newInstance<T>(*param)
+
+/**
+ * 通过构造方法创建新实例 - 任意类型 [Any]
+ * @param param 方法参数
+ * @param initiate 查找方法体
+ * @return [Any] or null
+ */
+fun Class<*>.constructAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = construct<Any>(*param, initiate)
+
+/**
  * 遍历当前类中的所有方法
  * @param callback 回调 - ([Int] 下标,[Method] 实例)
  */

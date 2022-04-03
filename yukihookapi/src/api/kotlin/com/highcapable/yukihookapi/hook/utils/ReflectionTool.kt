@@ -306,9 +306,9 @@ internal object ReflectionTool {
     ): Constructor<*> {
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
-        if (orderIndex == null && matchIndex == null && paramCount < 0 && paramTypes == null && modifiers == null)
-            error("You must set a condition when finding a Constructor")
-        val hashCode = ("[$orderIndex][$matchIndex][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
+        val paramCountR =
+            if (orderIndex == null && matchIndex == null && paramCount < 0 && paramTypes == null && modifiers == null) 0 else paramCount
+        val hashCode = ("[$orderIndex][$matchIndex][$paramCountR][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
         return MemberCacheStore.findConstructor(hashCode) ?: let {
             var constructor: Constructor<*>? = null
             classSet?.declaredConstructors?.apply {
@@ -316,7 +316,7 @@ internal object ReflectionTool {
                 var paramCountIndex = -1
                 var modifyIndex = -1
                 val paramCountLastIndex =
-                    if (paramCount >= 0 && matchIndex != null) filter { paramCount == it.parameterTypes.size }.lastIndex else -1
+                    if (paramCountR >= 0 && matchIndex != null) filter { paramCountR == it.parameterTypes.size }.lastIndex else -1
                 val paramTypeLastIndex =
                     if (paramTypes != null && matchIndex != null) filter { arrayContentsEq(paramTypes, it.parameterTypes) }.lastIndex else -1
                 val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
@@ -324,7 +324,7 @@ internal object ReflectionTool {
                     var isMatched = false
                     var conditions = true
                     if (paramCount >= 0)
-                        conditions = (it.parameterTypes.size == paramCount).let {
+                        conditions = (it.parameterTypes.size == paramCountR).let {
                             if (it) paramCountIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -381,7 +381,7 @@ internal object ReflectionTool {
                                 }
                             }] " +
                             "paramCount:[${
-                                paramCount.takeIf { it >= 0 || it == -2 }
+                                paramCountR.takeIf { it >= 0 || it == -2 }
                                     ?.toString()?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"
                             }] " +
                             "paramTypes:[${paramTypes.typeOfString()}] " +
