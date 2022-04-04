@@ -122,7 +122,7 @@ class MainHook : YukiHookXposedInitProxy {
 
 # Changelogs
 
-- [CHANGELOG](https://github.com/fankes/YukiHookAPI/CHANGELOG.md)
+- [更新日志](https://github.com/fankes/YukiHookAPI/blob/master/CHANGELOG.md)
 
 # Features
 
