@@ -1,4 +1,4 @@
-# Yuki Hook API
+# YukiHook API
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
