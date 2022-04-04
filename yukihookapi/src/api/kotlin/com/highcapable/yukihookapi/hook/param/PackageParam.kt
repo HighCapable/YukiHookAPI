@@ -242,6 +242,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
 
     /**
      * [VariousClass] 转换为 [HookClass] 并绑定到 [appClassLoader]
+     * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
      * @return [HookClass]
      */
     private fun VariousClass.hookClass(loader: ClassLoader? = null) = try {

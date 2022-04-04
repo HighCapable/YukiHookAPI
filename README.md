@@ -2,7 +2,7 @@
 
 ![Eclipse Marketplace](https://img.shields.io/badge/build-passing-brightgreen)
 ![Eclipse Marketplace](https://img.shields.io/badge/license-MIT-blue)
-![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.70-green)
+![Eclipse Marketplace](https://img.shields.io/badge/version-v1.0.71-green)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=交流讨论&color=0088cc)](https://t.me/XiaofangInternet)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -206,7 +206,9 @@ class MainHook : YukiHookXposedInitProxy {
   加入混淆的方法以及变量的查找功能，可使用不同类型筛选 `index` 定位指定的方法和变量，感谢 [WankkoRee](https://github.com/WankkoRee) 提供的思路；<br/>
   查找方法、变量时允许传入多种类型，例如 `String` 声明的类名和 `VariousClass`；<br/>
   加入全新的 `current` 功能，可对任意的类构建一个反射方法操作空间，方便地调用和修改其中的方法和变量；<br/>
-  修复了 Hook 过程中的大量 BUG，感谢 [WankkoRee](https://github.com/WankkoRee) 对此项目所做出的贡献。
+  修复了 Hook 过程中的大量 BUG，感谢 [WankkoRee](https://github.com/WankkoRee) 对此项目所做出的贡献。<br/><br/>
+- 1.0.71 <br/>
+  修复 VariousClass 无法匹配时会停止 Hook 抛出异常的严重问题。
 
 # Features
 
