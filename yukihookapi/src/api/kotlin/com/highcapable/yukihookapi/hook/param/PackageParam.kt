@@ -229,7 +229,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @return [YukiHookCreater.Result]
      */
     fun VariousClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
-        get(if (isUseAppClassLoader) appClassLoader else null).hookClass.hook(isUseAppClassLoader, initiate)
+        hookClass(if (isUseAppClassLoader) appClassLoader else null).hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类
@@ -244,12 +244,11 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * [VariousClass] 转换为 [HookClass] 并绑定到 [appClassLoader]
      * @return [HookClass]
      */
-    private val VariousClass.hookClass
-        get() = try {
-            clazz.hookClass
-        } catch (e: Throwable) {
-            HookClass(name = "VariousClass", throwable = Throwable(e.message))
-        }
+    private fun VariousClass.hookClass(loader: ClassLoader? = null) = try {
+        get(loader).hookClass
+    } catch (e: Throwable) {
+        HookClass(name = "VariousClass", throwable = Throwable(e.message))
+    }
 
     /**
      * 将目标 [Class] 绑定到 [appClassLoader]
