@@ -99,7 +99,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
     @YukiPrivateApi
     fun hook(): Result {
         if (YukiHookAPI.hasXposedBridge.not()) return Result()
-        return if (hookMembers.isEmpty()) error("Hook Members is empty,hook aborted")
+        return if (hookMembers.isEmpty()) error("Hook Members is empty, hook aborted")
         else Result().also {
             Thread {
                 /** 延迟使得方法取到返回值 */

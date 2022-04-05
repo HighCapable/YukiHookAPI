@@ -69,7 +69,7 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
      * @return [Any]
      * @throws IllegalStateException 如果对象为空
      */
-    val instance get() = wrapper.instance ?: error("HookParam instance got null,Is this a static member?")
+    val instance get() = wrapper.instance ?: error("HookParam instance got null! Is this a static member?")
 
     /**
      * 获取当前 Hook 实例的类对象
@@ -271,8 +271,8 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
          * @throws IllegalStateException 如果目标方法参数对象数组为空或 [index] 下标不存在
          */
         fun <T> set(any: T?) {
-            if (args.isEmpty()) error("HookParam method args is empty,mabe not has args")
-            if (index > args.lastIndex) error("HookParam method args index out of bounds,max is ${args.lastIndex}")
+            if (args.isEmpty()) error("HookParam method args is empty, mabe not has args")
+            if (index > args.lastIndex) error("HookParam method args index out of bounds, max is ${args.lastIndex}")
             wrapper.setArgs(index, any)
         }
 

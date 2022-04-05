@@ -85,7 +85,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
         if (YukiHookAPI.hasXposedBridge && YukiHookXposedBridge.modulePackageName.isBlank())
-            error("Xposed modulePackageName load failed,please reset and rebuild it")
+            error("Xposed modulePackageName load failed, please reset and rebuild it")
     }
 
     /**
@@ -107,11 +107,11 @@ class YukiHookModulePrefs(private val context: Context? = null) {
         get() = try {
             checkApi()
             context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
-                ?: error("If you want to use module prefs,you must set the context instance first")
+                ?: error("If you want to use module prefs, you must set the context instance first")
         } catch (_: Throwable) {
             checkApi()
             context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-                ?: error("If you want to use module prefs,you must set the context instance first")
+                ?: error("If you want to use module prefs, you must set the context instance first")
         }
 
     /** 设置全局可读可写 */

@@ -138,7 +138,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 )
                                 injectClass(it.packageName.asString(), it.simpleName.asString(), modulePackageName)
                             } else error(msg = "HookEntryClass \"${it.simpleName.asString()}\" must be implements YukiHookXposedInitProxy")
-                        else error(msg = "@InjectYukiHookWithXposed only can be use in once times")
+                        else error(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
                         /** 仅处理第一个标记的类 - 再次处理将拦截并报错 */
                         injectOnce = false
                     }
@@ -216,12 +216,12 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun injectClass(packageName: String, className: String, modulePackageName: String) =
             environment(ignoredError = true) {
-                if (modulePackageName.isNotBlank()) warn(msg = "You set the customize module package name to \"$modulePackageName\",please check for yourself if it is correct")
+                if (modulePackageName.isNotBlank()) warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
                 val realPackageName =
                     modulePackageName.ifBlank {
                         if (packageName.contains(".hook.") || packageName.endsWith(".hook"))
                             packageName.split(".hook")[0]
-                        else error(msg = "Cannot identify your App's package name,please manually configure the package name")
+                        else error(msg = "Cannot identify your App's package name, please manually configure the package name")
                     }
                 codeGenerator.createNewFile(
                     Dependencies.ALL_FILES,
