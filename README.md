@@ -50,6 +50,10 @@
 | [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕ | 可以作为模块使用                                                                           |
 | [Xposed](https://github.com/rovo89/Xposed)                | ❎ | 未测试，不再推荐使用                                                                        |
 
+# Contacts
+
+- [点击加入 Telegram 群组](https://t.me/YukiHookAPI)
+
 # Advantage
 
 以前，我们在构建 Xposed 模块的时候，首先需要在 `assets` 下创建 `xposed_init` 文件。<br/><br/>
