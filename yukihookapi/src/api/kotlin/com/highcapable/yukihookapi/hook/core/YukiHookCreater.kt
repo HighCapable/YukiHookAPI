@@ -472,21 +472,21 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     HookMemberMode.HOOK_ALL_METHODS ->
                         if (isReplaceHookMode)
                             XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, replaceMent).also {
-                                if (it.isEmpty()) throw NoSuchMethodError("No method name \"$allMethodsName\" matched")
+                                if (it.isEmpty()) throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
                                 else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
                             }
                         else XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook).also {
-                            if (it.isEmpty()) throw NoSuchMethodError("No method name \"$allMethodsName\" matched")
+                            if (it.isEmpty()) throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
                             else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
                         }
                     HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
                         if (isReplaceHookMode)
                             XposedBridge.hookAllConstructors(hookClass.instance, replaceMent).also {
-                                if (it.isEmpty()) throw NoSuchMethodError("No constructor matched")
+                                if (it.isEmpty()) throw NoSuchMethodError("No Constructor matched")
                                 else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
                             }
                         else XposedBridge.hookAllConstructors(hookClass.instance, beforeAfterHook).also {
-                            if (it.isEmpty()) throw NoSuchMethodError("No constructor matched")
+                            if (it.isEmpty()) throw NoSuchMethodError("No Constructor matched")
                             else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
                         }
                     else -> error("Hooked got a no error possible")
