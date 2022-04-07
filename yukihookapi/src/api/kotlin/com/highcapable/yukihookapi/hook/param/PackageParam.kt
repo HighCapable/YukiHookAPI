@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.param
 
+import android.app.AndroidAppHelper
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -56,10 +57,18 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
         get() = wrapper?.appClassLoader ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
 
     /**
-     * 获取当前 APP 的 [ApplicationInfo]
+     * 获取当前 Hook APP 的 [ApplicationInfo]
      * @return [ApplicationInfo]
      */
     val appInfo get() = wrapper?.appInfo ?: ApplicationInfo()
+
+    /**
+     * 获取当前 Hook APP 的 [Application] 实例
+     * @return [Application]
+     * @throws IllegalStateException 如果 [Application] 是空的
+     */
+    val appContext
+        get() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull() ?: error("PackageParam got null appContext")
 
     /**
      * 获取当前 Hook APP 的进程名称
