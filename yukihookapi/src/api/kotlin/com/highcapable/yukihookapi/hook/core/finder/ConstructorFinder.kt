@@ -219,12 +219,12 @@ class ConstructorFinder(
                         return@run
                     }.onFailure {
                         lastError = it
-                        onFailureMsg(msg = "trying ${p + 1} times by RemedyPlan --> $it", isAlwaysPrint = true)
+                        onFailureMsg(msg = "Trying ${p + 1} times by RemedyPlan --> $it", isAlwaysPrint = true)
                     }
                 }
                 if (isFindSuccess.not()) {
                     onFailureMsg(
-                        msg = "trying ${remedyPlans.size} times and all failure by RemedyPlan",
+                        msg = "Trying ${remedyPlans.size} times and all failure by RemedyPlan",
                         throwable = lastError,
                         isAlwaysPrint = true
                     )
