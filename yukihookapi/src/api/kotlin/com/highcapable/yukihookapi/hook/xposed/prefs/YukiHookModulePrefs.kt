@@ -44,7 +44,7 @@ import java.io.File
  *
  * 在不同环境智能选择存取使用的对象
  *
- * - ❗请注意此功能为实验性功能 - 仅在 LSPosed 环境测试通过
+ * - ❗请注意此功能为实验性功能 - 仅在 LSPosed 环境测试通过 - EdXposed 理论也可以使用但不再推荐
  *
  * - 使用 LSPosed 环境请在 AndroidManifests.xml 中将 "xposedminversion" 最低设置为 93
  *
@@ -52,7 +52,7 @@ import java.io.File
  *
  * - ❗当你在模块中存取数据的时候 [context] 必须不能是空的
  *
- * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://github.com/fankes/YukiHookAPI/wiki/API-%E6%96%87%E6%A1%A3#yukihookmoduleprefs-class)
+ * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/#/api/document?id=yukihookmoduleprefs-class)
  * @param context 上下文实例 - 默认空
  */
 class YukiHookModulePrefs(private val context: Context? = null) {

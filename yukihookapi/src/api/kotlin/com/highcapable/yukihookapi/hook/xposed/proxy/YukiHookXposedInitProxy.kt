@@ -47,7 +47,7 @@ import com.highcapable.yukihookapi.hook.factory.encase
  *
  * 请在 [onHook] 中调用 [YukiHookAPI.encase] 或直接调用 [encase]
  *
- * 详情请参考 [YukiHookXposedInitProxy 接口](https://github.com/fankes/YukiHookAPI/wiki/%E4%BD%9C%E4%B8%BA-Xposed-%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E7%9A%84%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE#yukihookxposedinitproxy-%E6%8E%A5%E5%8F%A3)
+ * 详情请参考 [YukiHookXposedInitProxy 接口](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=yukihookxposedinitproxy-%e6%8e%a5%e5%8f%a3)
  */
 interface YukiHookXposedInitProxy {
 

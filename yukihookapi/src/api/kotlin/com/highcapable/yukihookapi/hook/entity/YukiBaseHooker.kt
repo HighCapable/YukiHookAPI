@@ -47,7 +47,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * 更多请参考 [InjectYukiHookWithXposed] 中的注释内容
  *
- * 详情请参考 [通过自定义 Hooker 创建](https://github.com/fankes/YukiHookAPI/wiki/API-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
+ * 详情请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=%e9%80%9a%e8%bf%87%e8%87%aa%e5%ae%9a%e4%b9%89-hooker-%e5%88%9b%e5%bb%ba)
  */
 abstract class YukiBaseHooker : PackageParam() {
 

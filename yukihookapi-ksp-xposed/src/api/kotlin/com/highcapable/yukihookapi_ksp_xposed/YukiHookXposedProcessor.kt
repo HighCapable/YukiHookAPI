@@ -97,8 +97,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param msg 错误消息
          */
         private fun SymbolProcessorEnvironment.error(msg: String) {
-            val helpMsg = "Looking for help? see " +
-                    "https://github.com/fankes/YukiHookAPI/wiki/%E4%BD%9C%E4%B8%BA-Xposed-%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E7%9A%84%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE"
+            val helpMsg = "Looking for help? see https://fankes.github.io/YukiHookAPI/#/config/xposed-using"
             logger.error(message = "[$TAG] $msg\n$helpMsg")
             throw RuntimeException("[$TAG] $msg\n$helpMsg")
         }
@@ -254,6 +253,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
                                 " *\n" +
                                 " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
+                                " *\n" +
+                                " * Project Address: https://github.com/fankes/YukiHookAPI\n" +
                                 " */\n" +
                                 "@Keep\n" +
                                 "@YukiGenerateApi\n" +
