@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.param
 
-import android.app.AndroidAppHelper
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -40,6 +39,7 @@ import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.hookClass
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
 /**
@@ -54,21 +54,21 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @throws IllegalStateException 如果 [ClassLoader] 是空的
      */
     val appClassLoader
-        get() = wrapper?.appClassLoader ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
+        get() = wrapper?.appClassLoader ?: YukiHookAppHelper.currentApplication()?.classLoader ?: javaClass.classLoader
+        ?: error("PackageParam got null ClassLoader")
 
     /**
      * 获取当前 Hook APP 的 [ApplicationInfo]
      * @return [ApplicationInfo]
      */
-    val appInfo get() = wrapper?.appInfo ?: ApplicationInfo()
+    val appInfo get() = wrapper?.appInfo ?: YukiHookAppHelper.currentApplicationInfo() ?: ApplicationInfo()
 
     /**
      * 获取当前 Hook APP 的 [Application] 实例
      * @return [Application]
      * @throws IllegalStateException 如果 [Application] 是空的
      */
-    val appContext
-        get() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull() ?: error("PackageParam got null appContext")
+    val appContext get() = YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
 
     /**
      * 获取当前 Hook APP 的进程名称
@@ -76,13 +76,13 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * 默认的进程名称是 [packageName]
      * @return [String]
      */
-    val processName get() = wrapper?.processName ?: packageName
+    val processName get() = wrapper?.processName ?: YukiHookAppHelper.currentProcessName() ?: packageName
 
     /**
      * 获取当前 Hook APP 的包名
      * @return [String]
      */
-    val packageName get() = wrapper?.packageName ?: ""
+    val packageName get() = wrapper?.packageName ?: YukiHookAppHelper.currentPackageName() ?: ""
 
     /**
      * 获取当前 Hook APP 是否为第一个 [Application]
