@@ -2,7 +2,7 @@
 
 ![Blank](https://img.shields.io/badge/build-passing-brightgreen)
 ![Blank](https://img.shields.io/badge/license-MIT-blue)
-![Blank](https://img.shields.io/badge/version-v1.0.71-green)
+![Blank](https://img.shields.io/badge/version-v1.0.72-green)
 [![Telegram](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>

@@ -2,6 +2,12 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.72 | 2022.04.09
+
+- 更新 API 文档到新的地址
+- `PackageParam` 中加入 `appContext` 功能
+- 修复一些已知的 BUG，提升 Hook 稳定性
+
 ### 1.0.71 | 2022.04.04
 
 - 修复 VariousClass 无法匹配时会停止 Hook 抛出异常的严重问题
