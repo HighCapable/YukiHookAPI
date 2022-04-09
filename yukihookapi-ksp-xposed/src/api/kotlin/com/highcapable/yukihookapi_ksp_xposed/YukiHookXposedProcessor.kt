@@ -43,7 +43,7 @@ import java.util.*
  *
  * 可以帮你快速生成 Xposed 入口类和包名
  *
- * 你只需要添加 [InjectYukiHookWithXposed] 注释即可完美解决一切问题
+ * 你只需要添加 [InjectYukiHookWithXposed] 注解即可完美解决一切问题
  */
 @AutoService(SymbolProcessorProvider::class)
 class YukiHookXposedProcessor : SymbolProcessorProvider {
@@ -65,7 +65,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         /** 自动处理程序的 TAG */
         private val TAG = "YukiHookAPI"
 
-        /** 查找的注释名称 */
+        /** 查找的注解名称 */
         private val annotationName = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
 
         /** 插入 Xposed 尾部的名称 */
@@ -166,7 +166,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
 
         /**
          * 自动生成 Xposed assets 入口文件
-         * @param codePath 注释类的完整代码文件路径
+         * @param codePath 注解类的完整代码文件路径
          * @param sourcePath 指定的 source 路径
          * @param packageName 包名
          * @param className 类名

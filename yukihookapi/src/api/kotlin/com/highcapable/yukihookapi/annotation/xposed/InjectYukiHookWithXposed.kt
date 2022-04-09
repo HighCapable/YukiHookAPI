@@ -31,7 +31,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 
 /**
- * 标识 [YukiHookAPI] 注入 Xposed 入口的类注释
+ * 标识 [YukiHookAPI] 注入 Xposed 入口的类注解
  *
  * - 你的项目 source 目录默认为 "src/main/" 可在 [sourcePath] 中进行自定义 - 自动处理程序将只检查 ..app/[sourcePath]/java.. 中间部分
  *
@@ -53,11 +53,11 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * - ❗最后这一点很重要：请不要随意修改项目 ../[sourcePath]/assets/xposed_init 中的内容 - 否则可能会导致模块无法装载
  *
- * - ❗你必须将被注释的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
+ * - ❗你必须将被注解的类继承于 [YukiHookXposedInitProxy] 接口实现 [YukiHookXposedInitProxy.onHook] 方法 - 否则编译会报错
  *
- * - ❗只能拥有一个 Hook 入口 - 若存在多个注释编译会报错
+ * - ❗只能拥有一个 Hook 入口 - 若存在多个注解编译会报错
  *
- * 详情请参考 [InjectYukiHookWithXposed 注释](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=injectyukihookwithxposed-%e6%b3%a8%e9%87%8a)
+ * 详情请参考 [InjectYukiHookWithXposed 注解](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=injectyukihookwithxposed-%e6%b3%a8%e9%87%8a)
  * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
  * @param modulePackageName 模块包名 - 使用标准路径可不填会自动生成
  */

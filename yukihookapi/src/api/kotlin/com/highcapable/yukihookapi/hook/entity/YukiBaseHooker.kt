@@ -45,7 +45,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * 2.调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
  *
- * 更多请参考 [InjectYukiHookWithXposed] 中的注释内容
+ * 更多请参考 [InjectYukiHookWithXposed] 中的注解内容
  *
  * 详情请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=%e9%80%9a%e8%bf%87%e8%87%aa%e5%ae%9a%e4%b9%89-hooker-%e5%88%9b%e5%bb%ba)
  */
