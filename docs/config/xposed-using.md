@@ -12,15 +12,15 @@
 
 > 你可以对 `YukiHookAPI` 将如何生成 `xposed_init` 入口进行相关配置。
 
-### InjectYukiHookWithXposed 注释
+### InjectYukiHookWithXposed 注解
 
 ```kotlin
 annotation class InjectYukiHookWithXposed(val sourcePath: String, val modulePackageName: String)
 ```
 
-`InjectYukiHookWithXposed` 注释是一个标记模块 Hook 入口的重要注释。
+`@InjectYukiHookWithXposed` 注解是一个标记模块 Hook 入口的重要注解。
 
-!> `InjectYukiHookWithXposed` 注释的 `Class` 必须实现 `YukiHookXposedInitProxy` 接口。
+!> `@InjectYukiHookWithXposed` 注解的 `Class` 必须实现 `YukiHookXposedInitProxy` 接口。
 
 !> 在你当前项目中的所有 `Class` 标记中<b>只能存在一次</b>，若<b>存在多个声明自动处理程序<u>会在编译时抛出异常</u></b>，你可以自定义其相关参数。
 
@@ -40,7 +40,7 @@ annotation class InjectYukiHookWithXposed(val sourcePath: String, val modulePack
 
 #### modulePackageName 参数
 
-`modulePackageName` 是你当前项目的包名，也就是你的模块包名，默认留空自动处理程序将自动根据你注释的 `Class` 入口类的路径进行生成。
+`modulePackageName` 是你当前项目的包名，也就是你的模块包名，默认留空自动处理程序将自动根据你注解的 `Class` 入口类的路径进行生成。
 
 !> 若你想使用包名自动生成，你的 Hook 入口类 `HookEntryClass` 就要遵守包名的命名规范，格式为 `包名.hook.HookEntryClass` 或 `包名.hook.子包名.HookEntryClass`。
 
