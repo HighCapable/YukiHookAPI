@@ -168,7 +168,7 @@ object YukiHookAPI {
      * @param wrapper 代理包装 [PackageParamWrapper]
      */
     internal fun onXposedLoaded(wrapper: PackageParamWrapper) =
-        YukiHookXposedBridge.packageParamCallback?.invoke(PackageParam(wrapper)).apply { printSplashLog() }
+        YukiHookXposedBridge.packageParamCallback?.invoke(PackageParam(wrapper).apply { printSplashLog() })
 
     /**
      * 配置 [YukiHookAPI] 相关参数
@@ -229,7 +229,7 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = true
         when {
-            hasXposedBridge && baseContext != null -> initiate.invoke(baseContext.packagePararm.apply { printSplashLog() })
+            hasXposedBridge && baseContext != null -> initiate.invoke(baseContext.packageParam.apply { printSplashLog() })
             else -> printNoXposedEnvLog()
         }
     }
@@ -254,7 +254,7 @@ object YukiHookAPI {
             (if (baseContext != null)
                 if (hooker.isNotEmpty()) {
                     printSplashLog()
-                    hooker.forEach { it.assignInstance(packageParam = baseContext.packagePararm) }
+                    hooker.forEach { it.assignInstance(packageParam = baseContext.packageParam) }
                 } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty"))
         else printNoXposedEnvLog()
     }
@@ -273,7 +273,7 @@ object YukiHookAPI {
      * 通过 baseContext 创建 Hook 入口类
      * @return [PackageParam]
      */
-    private val Context.packagePararm get() = PackageParam(PackageParamWrapper(packageName, processName, classLoader, applicationInfo))
+    private val Context.packageParam get() = PackageParam(PackageParamWrapper(packageName, processName, classLoader, applicationInfo))
 
     /**
      * 是否存在 [XposedBridge]
