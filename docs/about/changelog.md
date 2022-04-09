@@ -2,6 +2,12 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.73 | 2022.04.10
+
+- 修正几处文档的中文翻页错误，感谢 [WankkoRee](https://github.com/WankkoRee) 的贡献
+- 修复在某些情况下 `XC_LoadPackage.LoadPackageParam` 内容为空抛出异常的问题，感谢 [Luckyzyx](https://github.com/luckyzyx) 的反馈
+- 修复一些已知的 BUG，提升 Hook 稳定性
+
 ### 1.0.72 | 2022.04.09
 
 - 更新 API 文档到新的地址
