@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.xposed.bridge
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
@@ -94,5 +95,10 @@ object YukiHookXposedBridge {
      * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
      */
     @YukiGenerateApi
-    fun callXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) = YukiHookAPI.onXposedLoaded(lpparam)
+    fun callXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) {
+        /** 判断基础 API 可能为空的情况 */
+        if (lpparam.packageName == null || lpparam.processName == null || lpparam.appInfo == null || lpparam.classLoader == null) return
+        /** 回调 Xposed API 装载 */
+        YukiHookAPI.onXposedLoaded(PackageParamWrapper(lpparam.packageName, lpparam.processName, lpparam.classLoader, lpparam.appInfo))
+    }
 }

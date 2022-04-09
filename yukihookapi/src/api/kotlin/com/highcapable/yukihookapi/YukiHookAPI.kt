@@ -45,7 +45,6 @@ import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -166,19 +165,10 @@ object YukiHookAPI {
 
     /**
      * 装载 Xposed API 回调核心实现方法
-     * @param lpparam Xposed [XC_LoadPackage.LoadPackageParam]
+     * @param wrapper 代理包装 [PackageParamWrapper]
      */
-    internal fun onXposedLoaded(lpparam: XC_LoadPackage.LoadPackageParam) =
-        YukiHookXposedBridge.packageParamCallback?.invoke(
-            PackageParam(
-                PackageParamWrapper(
-                    packageName = lpparam.packageName,
-                    processName = lpparam.processName,
-                    appClassLoader = lpparam.classLoader,
-                    appInfo = lpparam.appInfo
-                )
-            ).apply { printSplashLog() }
-        )
+    internal fun onXposedLoaded(wrapper: PackageParamWrapper) =
+        YukiHookXposedBridge.packageParamCallback?.invoke(PackageParam(wrapper)).apply { printSplashLog() }
 
     /**
      * 配置 [YukiHookAPI] 相关参数
@@ -269,9 +259,6 @@ object YukiHookAPI {
         else printNoXposedEnvLog()
     }
 
-    /** 输出找不到 [XposedBridge] 的错误日志 */
-    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted")
-
     /** 输出欢迎信息调试日志 */
     private fun printSplashLog() {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not() || YukiHookXposedBridge.isModulePackageXposedEnv) return
@@ -279,12 +266,14 @@ object YukiHookAPI {
         yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using $executorName API $executorVersion")
     }
 
+    /** 输出找不到 [XposedBridge] 的错误日志 */
+    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted")
+
     /**
      * 通过 baseContext 创建 Hook 入口类
      * @return [PackageParam]
      */
-    private val Context.packagePararm
-        get() = PackageParam(PackageParamWrapper(packageName, processName, classLoader, applicationInfo))
+    private val Context.packagePararm get() = PackageParam(PackageParamWrapper(packageName, processName, classLoader, applicationInfo))
 
     /**
      * 是否存在 [XposedBridge]
