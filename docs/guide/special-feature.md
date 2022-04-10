@@ -699,7 +699,7 @@ loggerD(tag = "YukiHookAPI", msg = "This is a log")
 loggerE(msg = "This is an error")
 ```
 
-错误级别的日志是最高的，无论你有没有过滤仅为 `E` 级别的日志。
+错误日志的级别是最高的，无论你有没有过滤仅为 `E` 级别的日志。
 
 对于错误级别的日志，你还可以在后面加上一个异常堆栈。
 
