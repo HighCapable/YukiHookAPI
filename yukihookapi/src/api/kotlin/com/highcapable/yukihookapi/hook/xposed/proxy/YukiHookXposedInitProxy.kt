@@ -33,6 +33,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.factory.encase
+import de.robv.android.xposed.IXposedHookZygoteInit
 
 /**
  * [YukiHookAPI] 的 Xposed 装载 API 调用接口
@@ -50,6 +51,15 @@ import com.highcapable.yukihookapi.hook.factory.encase
  * 详情请参考 [YukiHookXposedInitProxy 接口](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=yukihookxposedinitproxy-%e6%8e%a5%e5%8f%a3)
  */
 interface YukiHookXposedInitProxy {
+
+    /**
+     * 用于接收 [IXposedHookZygoteInit.initZygote] 事件
+     *
+     * - ❗此方法主要用于获取模块启动信息 - 不能进行 Hook 操作
+     *
+     * 此方法可选 - 如果没有需求可以不覆写
+     */
+    fun onStartup(param: IXposedHookZygoteInit.StartupParam) {}
 
     /**
      * 配置 [YukiHookAPI.Configs] 的初始化方法

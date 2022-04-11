@@ -72,17 +72,6 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         private val xposedClassShortName = "_YukiHookXposedInit"
 
         /**
-         * 获取父类名称 - 只取最后一个
-         * @return [String]
-         */
-        private val KSClassDeclaration.superName
-            get() = try {
-                superTypes.last().element.toString()
-            } catch (_: Throwable) {
-                ""
-            }
-
-        /**
          * 创建一个环境方法体方便调用
          * @param ignoredError 是否忽略错误 - 默认否
          * @param env 方法体
@@ -128,7 +117,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (injectOnce)
-                            if (it.superName == "YukiHookXposedInitProxy") {
+                            // 允许无序继承其它类或接口
+                            if (it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" }) {
                                 injectAssets(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
@@ -232,15 +222,12 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         ("package $packageName\n" +
                                 "\n" +
                                 "import androidx.annotation.Keep\n" +
-                                "import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge\n" +
-                                "import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus\n" +
-                                "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
-                                "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
-                                "import de.robv.android.xposed.XC_MethodReplacement\n" +
-                                "import de.robv.android.xposed.XposedHelpers\n" +
-                                "import de.robv.android.xposed.XposedBridge\n" +
-                                "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
                                 "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
+                                "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
+                                "import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus\n" +
+                                "import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge\n" +
+                                "import de.robv.android.xposed.*\n" +
+                                "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
                                 "import $packageName.$className\n" +
                                 "\n" +
                                 "/**\n" +
@@ -258,12 +245,31 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 " */\n" +
                                 "@Keep\n" +
                                 "@YukiGenerateApi\n" +
-                                "class $className$xposedClassShortName : IXposedHookLoadPackage {\n" +
+                                "class $className$xposedClassShortName : IXposedHookZygoteInit, IXposedHookLoadPackage {\n" +
+                                "\n" +
+                                "    private val proxy = HookEntry()\n" +
+                                "    private var startupFailed = false\n" +
+                                "\n" +
+                                "    override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam?) {\n" +
+                                "        if (startupParam == null) return\n" +
+                                "        try {\n" +
+                                "            proxy.onStartup(startupParam)\n" +
+                                "            if (YukiHookXposedBridge.isXposedCallbackSetUp) {\n" +
+                                "                loggerE(\n" +
+                                "                    tag = \"YukiHookAPI\",\n" +
+                                "                    msg = \"You cannot loading a hooker in \\\"onStartup\\\" method! Aborted\"\n" +
+                                "                )\n" +
+                                "                startupFailed = true\n" +
+                                "            }\n" +
+                                "        } catch (e: Throwable) {\n" +
+                                "            loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = e)\n" +
+                                "        }\n" +
+                                "    }\n" +
                                 "\n" +
                                 "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
-                                "        if (lpparam == null) return\n" +
+                                "        if (lpparam == null || startupFailed) return\n" +
                                 "        try {\n" +
-                                "            $className().apply {\n" +
+                                "            proxy.apply {\n" +
                                 "                onInit()\n" +
                                 "                if (YukiHookXposedBridge.isXposedCallbackSetUp) {\n" +
                                 "                    loggerE(tag = \"YukiHookAPI\", msg = \"You cannot loading a hooker in \\\"onInit\\\" method! Aborted\")\n" +

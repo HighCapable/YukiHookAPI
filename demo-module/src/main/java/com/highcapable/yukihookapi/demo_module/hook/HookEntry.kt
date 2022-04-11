@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.demo_module.hook
 
 import android.app.AlertDialog
+import android.content.res.XModuleResources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo_module.data.DataConst
@@ -36,9 +37,16 @@ import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
 import com.highcapable.yukihookapi.hook.type.java.StringType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
+import de.robv.android.xposed.IXposedHookZygoteInit
 
 @InjectYukiHookWithXposed
 class HookEntry : YukiHookXposedInitProxy {
+
+    override fun onStartup(param: IXposedHookZygoteInit.StartupParam) {
+        // 获取模块 APK 路径，使用 XModuleResources 创建一个 Resources。
+        // 在被 Hook 的应用中使用该 Resources 可以访问本应用内资源（drawable / string / layout 等）。
+        XModuleResources.createInstance(param.modulePath, null)
+    }
 
     override fun onInit() {
         // 配置 YuKiHookAPI
