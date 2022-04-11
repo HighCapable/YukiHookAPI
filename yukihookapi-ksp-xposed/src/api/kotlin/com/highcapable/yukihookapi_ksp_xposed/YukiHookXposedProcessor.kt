@@ -72,17 +72,6 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         private val xposedClassShortName = "_YukiHookXposedInit"
 
         /**
-         * 获取父类名称 - 只取最后一个
-         * @return [String]
-         */
-        private val KSClassDeclaration.superName
-            get() = try {
-                superTypes.last().element.toString()
-            } catch (_: Throwable) {
-                ""
-            }
-
-        /**
          * 创建一个环境方法体方便调用
          * @param ignoredError 是否忽略错误 - 默认否
          * @param env 方法体
@@ -128,7 +117,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (injectOnce)
-                            if (it.superName == "YukiHookXposedInitProxy") {
+                            if (it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" }) {
                                 injectAssets(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
