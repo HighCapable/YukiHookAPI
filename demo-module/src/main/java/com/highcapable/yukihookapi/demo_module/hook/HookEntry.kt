@@ -102,7 +102,7 @@ class HookEntry : YukiHookXposedInitProxy {
                         // 在方法执行之前拦截
                         beforeHook {
                             // 设置 0 号 param
-                            args().set("I am hook method param")
+                            args().first().set("I am hook method param")
                         }
                     }
                     // 注入要 Hook 的方法
@@ -115,7 +115,7 @@ class HookEntry : YukiHookXposedInitProxy {
                         // 在方法执行之前拦截
                         beforeHook {
                             // 设置 0 号 param
-                            args().array<String>()[0] = "peach"
+                            args().first().array<String>()[0] = "peach"
                         }
                     }
                     // 注入要 Hook 的方法
@@ -151,7 +151,7 @@ class HookEntry : YukiHookXposedInitProxy {
                         // 在方法执行之前拦截
                         beforeHook {
                             // 设置 0 号 param
-                            args().set("I am hook constructor param")
+                            args().first().set("I am hook constructor param")
                         }
                     }
                     // 注入要 Hook 的方法

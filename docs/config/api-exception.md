@@ -438,11 +438,11 @@ class MainActivity : AppCompatActivity() {
 
 `YukiHookModulePrefs` 支持的类型只有 `String`、`Int`、`Float`、`Long`、`Boolean`，请传入支持的类型。
 
-!> `IllegalStateException` HookParam args is empty
+!> `IllegalStateException` HookParam Method args index must be >= 0
 
 <b>异常原因</b>
 
-在 `HookParam` 中调用 `firstArgs` 或 `lastArgs` 但原始 `param` 数组为空。
+在 `HookParam` 中调用 `args().last()` 但是目标 `param` 为空或 `args` 中的 `index` 设置了小于 0 的数值。
 
 > 示例如下
 
@@ -450,17 +450,17 @@ class MainActivity : AppCompatActivity() {
 injectMember {
     // ...
     afterHook {
-        // 调用了此变量
-        firstArgs...
-        // 调用了此变量
-        lastArgs...
+        // 假设 param 是空的
+        args().last()...
+        // 设置了小于 0 的 index
+        args(index = -5)...
     }
 }
 ```
 
 <b>解决方案</b>
 
-请确认你 Hook 的目标方法、构造方法的方法参数数量是否不为空，否则你无法使用此功能。
+请确认你 Hook 的目标方法、构造方法的方法参数数量是否不为空，且不能对 `args` 的下标设置小于 0 的数值。
 
 !> `IllegalStateException` HookParam instance got null! Is this a static member?
 

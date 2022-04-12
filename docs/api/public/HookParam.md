@@ -26,33 +26,25 @@ val args: Array<Any?>
 
 > 获取当前 Hook 对象 `member` 或 `constructor` 的参数对象数组。
 
-### firstArgs [field]
-
-```kotlin
-val firstArgs: Any?
-```
+### ~~firstArgs [field]~~
 
 <b>变更记录</b>
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+`v1.0.75` `移除`
 
-> 获取当前 Hook 对象 `member` 或 `constructor` 的参数对象数组第一位。
+请使用 `args(index = 0)` 或 `args().first()`
 
-### lastArgs [field]
-
-```kotlin
-val lastArgs: Any?
-```
+### ~~lastArgs [field]~~
 
 <b>变更记录</b>
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+`v1.0.75` `移除`
 
-> 获取当前 Hook 对象 `member` 或 `constructor` 的参数对象数组最后一位。
+请使用 `args().last()`
 
 ### instance [field]
 
@@ -126,33 +118,35 @@ var result: Any?
 
 > 获取、设置当前 Hook 对象的 `method` 或 `constructor` 的返回值。
 
-### firstArgs [method]
+### result [method]
 
 ```kotlin
-inline fun <reified T> firstArgs(): T?
+inline fun <reified T> result(): T?
 ```
+
+<b>变更记录</b>
+
+`v1.0.75` `新增`
+
+<b>功能描述</b>
+
+> 获取当前 Hook 对象的 `method` 或 `constructor` 的返回值 `T`。
+
+### ~~firstArgs [method]~~
 
 <b>变更记录</b>
 
 `v1.0.66` `新增`
 
-<b>功能描述</b>
+`v1.0.75` `移除`
 
-> 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组第一位 `T`。
-
-### lastArgs [method]
-
-```kotlin
-inline fun <reified T> lastArgs(): T?
-```
+### ~~lastArgs [method]~~
 
 <b>变更记录</b>
 
 `v1.0.66` `新增`
 
-<b>功能描述</b>
-
-> 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组最后一位 `T`。
+`v1.0.75` `移除`
 
 ### instance [method]
 
@@ -181,12 +175,30 @@ instance<Activity>().finish()
 ### args [method]
 
 ```kotlin
+fun args(): ArgsIndexCondition
+```
+
+<b>变更记录</b>
+
+`v1.0.75` `新增`
+
+<b>功能描述</b>
+
+> 获取当前 Hook 对象的 `method` or `constructor` 的参数数组下标实例化类。
+
+### args [method]
+
+```kotlin
 fun args(index: Int): ArgsModifyer
 ```
 
 <b>变更记录</b>
 
 `v1.0` `添加`
+
+`v1.0.75` `修改`
+
+默认值 `index = 0` 移动到新的使用方法 `args().first()`
 
 <b>功能描述</b>
 
@@ -196,8 +208,6 @@ fun args(index: Int): ArgsModifyer
 
 你可以通过 `args` 方法修改当前 Hook 实例的方法、构造方法的参数内容。
 
-`index` 的默认值为 `0`，如果只有一位 `param` 参数，你可以不写。
-
 你可以直接使用 `set` 方法设置 `param` 为你的目标实例，接受 `Any` 类型。
 
 !> 请确保 `param` 类型为你的目标实例类型。
@@ -205,7 +215,23 @@ fun args(index: Int): ArgsModifyer
 > 示例如下
 
 ```kotlin
-args().set("modify the value")
+args(index = 0).set("modify the value")
+```
+
+你可以这样直接设置第一位 `param` 的值。
+
+> 示例如下
+
+```kotlin
+args().first().set("modify the value")
+```
+
+你还可以直接设置最后一位 `param` 的值。
+
+> 示例如下
+
+```kotlin
+args().last().set("modify the value")
 ```
 
 你还可以使用 `setNull` 方法设置 `param` 为空。
@@ -223,7 +249,7 @@ args(index = 1).setNull()
 > 示例如下
 
 ```kotlin
-args(index = 2).setTrue()
+args(index = 1).setTrue()
 ```
 
 你还可以使用 `setFalse` 方法设置 `param` 为 `false`。
@@ -233,7 +259,7 @@ args(index = 2).setTrue()
 > 示例如下
 
 ```kotlin
-args(index = 3).setFalse()
+args(index = 1).setFalse()
 ```
 
 ### invokeOriginal [method]
@@ -305,6 +331,48 @@ fun resultNull()
 <b>功能描述</b>
 
 !> 此方法将强制设置 Hook 对象方法的 `result` 为 `null`。
+
+### ArgsIndexCondition [class]
+
+```kotlin
+inner class ArgsIndexCondition
+```
+
+<b>变更记录</b>
+
+`v1.0.75` `新增`
+
+<b>功能描述</b>
+
+> 对方法参数的数组下标进行实例化类。
+
+#### first [method]
+
+```kotlin
+fun first(): ArgsModifyer
+```
+
+<b>变更记录</b>
+
+`v1.0.75` `新增`
+
+<b>功能描述</b>
+
+> 获取当前 Hook 对象的 `method` or `constructor` 的参数数组第一位。
+
+#### last [method]
+
+```kotlin
+fun last(): ArgsModifyer
+```
+
+<b>变更记录</b>
+
+`v1.0.75` `新增`
+
+<b>功能描述</b>
+
+> 获取当前 Hook 对象的 `method` or `constructor` 的参数数组最后一位。
 
 ### ArgsModifyer [class]
 

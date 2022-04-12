@@ -49,20 +49,6 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
     val args get() = wrapper.args ?: arrayOf(0)
 
     /**
-     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组第一位
-     * @return [Any] or null
-     * @throws IllegalStateException 如果数组为空
-     */
-    val firstArgs get() = if (args.isNotEmpty()) args[0] else error("HookParam args is empty")
-
-    /**
-     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组最后一位
-     * @return [Any] or null
-     * @throws IllegalStateException 如果数组为空
-     */
-    val lastArgs get() = if (args.isNotEmpty()) args[args.lastIndex] else error("HookParam args is empty")
-
-    /**
      * 获取当前 Hook 实例的对象
      *
      * - ❗如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
@@ -102,18 +88,10 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
         }
 
     /**
-     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组第一位 [T]
+     * 获取当前 Hook 对象的 [method] or [constructor] 的返回值 [T]
      * @return [T] or null
-     * @throws IllegalStateException 如果数组为空
      */
-    inline fun <reified T> firstArgs() = firstArgs as? T?
-
-    /**
-     * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组最后一位 [T]
-     * @return [T] or null
-     * @throws IllegalStateException 如果数组为空
-     */
-    inline fun <reified T> lastArgs() = lastArgs as? T?
+    inline fun <reified T> result() = result as? T?
 
     /**
      * 获取当前 Hook 实例的对象 [T]
@@ -123,11 +101,17 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
     inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${T::class.java.name}")
 
     /**
+     * 获取当前 Hook 对象的 [method] or [constructor] 的参数数组下标实例化类
+     * @return [ArgsIndexCondition]
+     */
+    fun args() = ArgsIndexCondition()
+
+    /**
      * 获取当前 Hook 对象的 [method] or [constructor] 的参数实例化对象类
-     * @param index 参数对象数组下标 - 默认是 0
+     * @param index 参数对象数组下标
      * @return [ArgsModifyer]
      */
-    fun args(index: Int = 0) = ArgsModifyer(index)
+    fun args(index: Int) = ArgsModifyer(index)
 
     /**
      * 执行原始 [Member]
@@ -166,7 +150,29 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
     }
 
     /**
+     * 对方法参数的数组下标进行实例化类
+     *
+     * - ❗请使用第一个 [args] 方法来获取 [ArgsIndexCondition]
+     */
+    inner class ArgsIndexCondition {
+
+        /**
+         * 获取当前 Hook 对象的 [method] or [constructor] 的参数数组第一位
+         * @return [ArgsModifyer]
+         */
+        fun first() = args(index = 0)
+
+        /**
+         * 获取当前 Hook 对象的 [method] or [constructor] 的参数数组最后一位
+         * @return [ArgsModifyer]
+         */
+        fun last() = args(index = args.lastIndex)
+    }
+
+    /**
      * 对方法参数的修改进行实例化类
+     *
+     * - ❗请使用第二个 [args] 方法来获取 [ArgsModifyer]
      * @param index 参数对象数组下标
      */
     inner class ArgsModifyer(private val index: Int) {
@@ -271,6 +277,7 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
          * @throws IllegalStateException 如果目标方法参数对象数组为空或 [index] 下标不存在
          */
         fun <T> set(any: T?) {
+            if (index < 0) error("HookParam Method args index must be >= 0")
             if (args.isEmpty()) error("HookParam Method args is empty, mabe not has args")
             if (index > args.lastIndex) error("HookParam Method args index out of bounds, max is ${args.lastIndex}")
             wrapper.setArgs(index, any)
