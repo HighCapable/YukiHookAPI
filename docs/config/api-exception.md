@@ -11,7 +11,7 @@
 <b>异常原因</b>
 
 你尝试在继承 `YukiHookXposedInitProxy` 的 Hook 入口类的 `onInit` 方法中装载了 `encase` 方法。
-
+ 
 > 示例如下
 
 ```kotlin
@@ -632,7 +632,7 @@ encase {
 
 <b>解决方案</b>
 
-这种情况几乎不存在，除非 Android 系统结构损坏或 Xposed 框架自身存在问题，若真的发生了此问题，请携带详细日志进行反馈。
+`appContext` 在宿主环境初始化完成之前有大的概率可能是空的，请延迟获取或在宿主的 Hook 方法回调方法体内再使用此变量。
 
 !> `IllegalStateException` VariousClass match failed of those <b>CLASSES</b>
 
