@@ -28,7 +28,7 @@ var paramCount: Int
 
 <b>功能描述</b>
 
-> `Constructor` 参数个数。
+> 设置 `Constructor` 参数个数。
 
 你可以不使用 `param` 指定参数类型而是仅使用此变量指定参数个数。
 
@@ -46,11 +46,25 @@ fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Constructor` 筛选条件。
+> 设置 `Constructor` 标识符筛选条件。
 
 可不设置筛选条件，默认模糊查找并取第一个匹配的 `Constructor`。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
+
+### emptyParam [method]
+
+```kotlin
+fun emptyParam(): IndexTypeCondition
+```
+
+<b>变更记录</b>
+
+`v1.0.75` `新增`
+
+<b>功能描述</b>
+
+> 设置 `Constructor` 空参数、无参数。
 
 ### param [method]
 
@@ -64,13 +78,33 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Constructor` 参数。
+> 设置 `Constructor` 参数。
 
 如果同时使用了 `paramCount` 则 `paramTypes` 的数量必须与 `paramCount` 完全匹配。
 
-!> 无参 `Constructor` 不要使用此方法。
+!> 无参 `Constructor` 请使用 `emptyParam` 设置查询条件。
 
 !> 有参 `Constructor` 必须使用此方法设定参数或使用 `paramCount` 指定个数。
+
+!> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
+
+### paramCount [method]
+
+```kotlin
+fun paramCount(num: Int): IndexTypeCondition
+```
+
+<b>变更记录</b>
+
+`v1.0.70` `新增`
+
+<b>功能描述</b>
+
+> 设置 `Constructor` 参数个数。
+
+你可以不使用 `param` 指定参数类型而是仅使用此方法指定参数个数。
+
+若参数个数小于零则忽略并使用 `param`。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 

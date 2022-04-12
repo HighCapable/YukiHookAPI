@@ -40,7 +40,7 @@ var name: String
 
 <b>功能描述</b>
 
-> `Field` 名称。
+> 设置 `Field` 名称。
 
 !> 若不填写名称则必须存在一个其它条件。
 
@@ -56,7 +56,7 @@ var type: Any?
 
 <b>功能描述</b>
 
-> `Field` 类型。
+> 设置 `Field` 类型。
 
 可不填写类型，默认模糊查找并取第一个匹配的 `Field`。
 
@@ -72,7 +72,7 @@ fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Field` 筛选条件。
+> 设置 `Field` 标识符筛选条件。
 
 可不设置筛选条件，默认模糊查找并取第一个匹配的 `Field`。
 
@@ -104,7 +104,7 @@ fun name(value: String): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Field` 名称。
+> 设置 `Field` 名称。
 
 !> 若不填写名称则必须存在一个其它条件，默认模糊查找并取第一个匹配的 `Field`。
 
@@ -122,7 +122,7 @@ fun type(value: Any): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Field` 类型。
+> 设置 `Field` 类型。
 
 !> 可不填写类型，默认模糊查找并取第一个匹配的 `Field`。
 

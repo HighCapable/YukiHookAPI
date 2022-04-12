@@ -32,7 +32,7 @@ var name: String
 
 <b>功能描述</b>
 
-> `Method` 名称。
+> 设置 `Method` 名称。
 
 !> 若不填写名称则必须存在一个其它条件。
 
@@ -48,7 +48,7 @@ var paramCount: Int
 
 <b>功能描述</b>
 
-> `Method` 参数个数。
+> 设置 `Method` 参数个数。
 
 你可以不使用 `param` 指定参数类型而是仅使用此变量指定参数个数。
 
@@ -66,7 +66,7 @@ var returnType: Any?
 
 <b>功能描述</b>
 
-> `Method` 返回值，可不填写返回值，默认模糊查找并取第一个匹配的 `Method`。
+> 设置 `Method` 返回值，可不填写返回值，默认模糊查找并取第一个匹配的 `Method`。
 
 ### modifiers [method]
 
@@ -80,11 +80,25 @@ fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Method` 筛选条件。
+> 设置 `Method` 标识符筛选条件。
 
 可不设置筛选条件，默认模糊查找并取第一个匹配的 `Method`。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
+
+### emptyParam [method]
+
+```kotlin
+fun emptyParam(): IndexTypeCondition
+```
+
+<b>变更记录</b>
+
+`v1.0.75` `新增`
+
+<b>功能描述</b>
+
+> 设置 `Method` 空参数、无参数。
 
 ### param [method]
 
@@ -98,11 +112,11 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Method` 参数。
+> 设置 `Method` 参数。
 
 如果同时使用了 `paramCount` 则 `paramTypes` 的数量必须与 `paramCount` 完全匹配。
 
-!> 无参 `Method` 不要使用此方法。
+!> 无参 `Method` 请使用 `emptyParam` 设置查询条件。
 
 !> 有参 `Method` 必须使用此方法设定参数或使用 `paramCount` 指定个数。
 
@@ -134,7 +148,7 @@ fun name(value: String): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Method` 名称。
+> 设置 `Method` 名称。
 
 !> 若不填写名称则必须存在一个其它条件，默认模糊查找并取第一个匹配的 `Method`。
 
@@ -152,7 +166,7 @@ fun paramCount(num: Int): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Method` 参数个数。
+> 设置 `Method` 参数个数。
 
 你可以不使用 `param` 指定参数类型而是仅使用此方法指定参数个数。
 
@@ -172,7 +186,7 @@ fun returnType(value: Any): IndexTypeCondition
 
 <b>功能描述</b>
 
-> `Method` 返回值。
+> 设置 `Method` 返回值。
 
 可不填写返回值，默认模糊查找并取第一个匹配的 `Method`。
 

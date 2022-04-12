@@ -65,7 +65,7 @@ class ConstructorFinder(
     private var modifiers: ModifierRules? = null
 
     /**
-     * [Constructor] 参数个数
+     * 设置 [Constructor] 参数个数
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
      *
@@ -74,7 +74,7 @@ class ConstructorFinder(
     var paramCount = -1
 
     /**
-     * [Constructor] 筛选条件
+     * 设置 [Constructor] 标识符筛选条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
@@ -86,11 +86,18 @@ class ConstructorFinder(
     }
 
     /**
-     * [Constructor] 参数
+     * 设置 [Constructor] 空参数、无参数
+     *
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun emptyParam() = paramCount(num = 0)
+
+    /**
+     * 设置 [Constructor] 参数
      *
      * 如果同时使用了 [paramCount] 则 [paramTypes] 的数量必须与 [paramCount] 完全匹配
      *
-     * - ❗无参 [Constructor] 不要使用此方法
+     * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查询条件
      *
      * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      *
@@ -99,7 +106,7 @@ class ConstructorFinder(
      * @return [BaseFinder.IndexTypeCondition]
      */
     fun param(vararg paramType: Any): IndexTypeCondition {
-        if (paramType.isEmpty()) error("paramTypes is empty, please delete param() method")
+        if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         paramTypes = ArrayList<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
@@ -111,7 +118,7 @@ class ConstructorFinder(
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
     /**
-     * [Constructor] 参数个数
+     * 设置 [Constructor] 参数个数
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数
      *

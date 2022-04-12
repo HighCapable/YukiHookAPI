@@ -55,14 +55,14 @@ class FieldFinder(
     private var modifiers: ModifierRules? = null
 
     /**
-     * [Field] 名称
+     * 设置 [Field] 名称
      *
      * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Field]
      */
     var name = ""
 
     /**
-     * [Field] 类型
+     * 设置 [Field] 类型
      *
      * - ❗只能是 [Class]、[String]、[VariousClass]
      *
@@ -71,7 +71,7 @@ class FieldFinder(
     var type: Any? = null
 
     /**
-     * [Field] 筛选条件
+     * 设置 [Field] 标识符筛选条件
      *
      * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Field]
      *
@@ -91,7 +91,7 @@ class FieldFinder(
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
     /**
-     * [Field] 名称
+     * 设置 [Field] 名称
      *
      * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Field]
      *
@@ -105,7 +105,7 @@ class FieldFinder(
     }
 
     /**
-     * [Field] 类型
+     * 设置 [Field] 类型
      *
      * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
      *

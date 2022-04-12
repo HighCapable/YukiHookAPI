@@ -26,7 +26,7 @@ val args: Array<Any?>
 
 > 获取当前 Hook 对象 `member` 或 `constructor` 的参数对象数组。
 
-### ~~firstArgs [field]~~
+### ~~firstArgs [field]~~ <!-- {docsify-ignore} -->
 
 <b>变更记录</b>
 
@@ -36,7 +36,7 @@ val args: Array<Any?>
 
 请使用 `args(index = 0)` 或 `args().first()`
 
-### ~~lastArgs [field]~~
+### ~~lastArgs [field]~~ <!-- {docsify-ignore} -->
 
 <b>变更记录</b>
 
@@ -132,7 +132,7 @@ inline fun <reified T> result(): T?
 
 > 获取当前 Hook 对象的 `method` 或 `constructor` 的返回值 `T`。
 
-### ~~firstArgs [method]~~
+### ~~firstArgs [method]~~ <!-- {docsify-ignore} -->
 
 <b>变更记录</b>
 
@@ -140,7 +140,7 @@ inline fun <reified T> result(): T?
 
 `v1.0.75` `移除`
 
-### ~~lastArgs [method]~~
+### ~~lastArgs [method]~~ <!-- {docsify-ignore} -->
 
 <b>变更记录</b>
 

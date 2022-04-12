@@ -683,7 +683,7 @@ TargetClass.hook {
 
 你必须在 `hook` 方法体内加入至少一个 `injectMember` 方法。
 
-!> `IllegalStateException` paramTypes is empty, please delete param() method
+!> `IllegalStateException` paramTypes is empty, please use emptyParam() instead
 
 <b>异常原因</b>
 
@@ -693,11 +693,34 @@ TargetClass.hook {
 
 ```kotlin
 method {
-    // 没有填写任何参数
+    name = "test"
+    // 括号内没有填写任何参数
     param()
 }
 ```
 
 <b>解决方案</b>
 
-若要标识此方法、构造方法没有参数，你可以什么都不写或设置 `paramCount = 0` 即可。
+若要标识此方法、构造方法没有参数，你可以有如下设置方法。
+
+第一种，设置 `emptyParam` (推荐)
+
+> 示例如下
+
+```kotlin
+method {
+    name = "test"
+    emptyParam()
+}
+```
+
+第二种，设置 `paramCount = 0`
+
+> 示例如下
+
+```kotlin
+method {
+    name = "test"
+    paramCount = 0
+}
+```

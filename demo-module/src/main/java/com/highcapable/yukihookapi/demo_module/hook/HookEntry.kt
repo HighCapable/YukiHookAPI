@@ -73,6 +73,7 @@ class HookEntry : YukiHookXposedInitProxy {
                     injectMember {
                         method {
                             name = "getFirstText"
+                            emptyParam()
                             returnType = StringType
                         }
                         // 执行替换 Hook
@@ -122,6 +123,7 @@ class HookEntry : YukiHookXposedInitProxy {
                     injectMember {
                         method {
                             name = "toast"
+                            emptyParam()
                             returnType = UnitType
                         }
                         // 拦截整个方法
@@ -137,6 +139,7 @@ class HookEntry : YukiHookXposedInitProxy {
                     injectMember {
                         method {
                             name = "getDataText"
+                            emptyParam()
                             returnType = StringType
                         }
                         // 执行替换 Hook
