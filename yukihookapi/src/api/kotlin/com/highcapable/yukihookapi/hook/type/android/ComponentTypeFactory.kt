@@ -388,6 +388,18 @@ val WindowInsets_TypeClass get() = WindowInsets.Type::class.java
 val WindowManagerClass get() = WindowManager::class.java
 
 /**
+ * 获得 [WindowManager.LayoutParams] 类型
+ * @return [Class]
+ */
+val WindowManager_LayoutParamsClass get() = WindowManager.LayoutParams::class.java
+
+/**
+ * 获得 [ViewManager] 类型
+ * @return [Class]
+ */
+val ViewManagerClass get() = ViewManager::class.java
+
+/**
  * 获得 [Parcel] 类型
  * @return [Class]
  */
