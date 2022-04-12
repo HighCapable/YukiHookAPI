@@ -57,7 +57,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
  *
  * - ❗只能拥有一个 Hook 入口 - 若存在多个注解编译会报错
  *
- * 详情请参考 [InjectYukiHookWithXposed 注解](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=injectyukihookwithxposed-%e6%b3%a8%e9%87%8a)
+ * 详情请参考 [InjectYukiHookWithXposed 注解](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=injectyukihookwithxposed-%e6%b3%a8%e8%a7%a3)
  * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
  * @param modulePackageName 模块包名 - 使用标准路径可不填会自动生成
  */
