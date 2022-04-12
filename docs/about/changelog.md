@@ -2,6 +2,15 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.75 | 2022.04.13
+
+- 更正了自动处理程序的逻辑识别部分，感谢 [ApeaSuperz](https://github.com/ApeaSuperz) 的贡献
+- 修正一处文档注释的引用未更改的问题
+- `HookParam` 中删除了 `firstArgs` 与 `lastArgs` 方法，现在你可以使用 `args().first()` 与 `args().last()` 来取代它
+- `HookParam` 中删除了 `args()` 中的默认参数 `index = 0`，现在你可以使用 `args().first()` 或 `args(index = 0)` 来取代它
+- `HookParam` 中 `result` 功能增加了泛型匹配，现在你可以使用 `result<T>` 来匹配你的目标方法已知返回值类型了
+- 方法、构造方法查询功能新增 `emptyParam` 条件，并完善了文档相关需要注意的查询条件误区
+
 ### 1.0.73 | 2022.04.10
 
 - 修正几处文档的中文翻译错误，感谢 [WankkoRee](https://github.com/WankkoRee) 的贡献
