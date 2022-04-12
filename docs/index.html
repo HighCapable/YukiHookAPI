@@ -32,7 +32,9 @@
         name: 'YukiHookAPI',
         repo: 'https://github.com/fankes/YukiHookAPI',
         requestHeaders: {
-            'cache-control': 'max-age=0'
+            'cache-control': 'max-age=0',
+            'Pragma': 'no-cache',
+            'If-Modified-Since': 'Thu, 01 Jun 1970 00:00:00 GMT'
         },
         homepage: 'guide/home.md',
         coverpage: true,
