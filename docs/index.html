@@ -9,7 +9,9 @@
     <meta content="Description" name="description">
     <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
         name="viewport">
-    <meta content="never" name="referrer">
+    <meta http-equiv="pragram" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="expires" content="0" />
     <link href="//unpkg.com/docsify/lib/themes/vue.css" rel="stylesheet">
     <script src="sw.js"></script>
 </head>
@@ -32,8 +34,10 @@
         name: 'YukiHookAPI',
         repo: 'https://github.com/fankes/YukiHookAPI',
         requestHeaders: {
-            'cache-control': 'max-age=0',
+            'Cache': 'no-cache',
+            'Cache-Control': 'no-cache, must-revalidate',
             'Pragma': 'no-cache',
+            'Expires': '0',
             'If-Modified-Since': 'Thu, 01 Jun 1970 00:00:00 GMT'
         },
         homepage: 'guide/home.md',

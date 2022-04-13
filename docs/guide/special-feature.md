@@ -138,6 +138,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
     name = "getName"
+    emptyParam()
     returnType = StringType
 }.get(instance).string() // 得到方法的结果
 ```
@@ -152,6 +153,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
     name = "getName"
+    emptyParam()
 }.get(instance).string() // 得到方法的结果
 ```
 
@@ -217,6 +219,7 @@ Test::class.java.field {
 ```kotlin
 Test::class.java.method {
     name = "init"
+    emptyParam()
 }.get().call()
 ```
 
@@ -227,6 +230,7 @@ Test::class.java.method {
 ```kotlin
 Test::class.java.method {
     name = "init"
+    emptyParam()
     modifiers {
         // 标识查询的这个方法需要是静态
         asStatic()
@@ -336,6 +340,7 @@ instance.current {
     // 执行 stop 方法
     method {
         name = "stop"
+        emptyParam()
     }.call()
     // 得到 name
     val name = method { name = "getName" }.string()
@@ -435,6 +440,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
     name = "doTask"
+    emptyParam()
 }.remedys {
     method {
         name = "doTask"
@@ -495,6 +501,7 @@ val currentClass = if("com.demo.ATest".hasClass) classOf("com.demo.ATest") else 
 // 然后再查询这个方法并调用
 currentClass.method {
     name = "doTask"
+    emptyParam()
 }.get().call()
 ```
 
@@ -507,6 +514,7 @@ currentClass.method {
 ```kotlin
 VariousClass("com.demo.ATest", "com.demo.BTest").get().method {
     name = "doTask"
+    emptyParam()
 }.get().call()
 ```
 
