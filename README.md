@@ -2,7 +2,7 @@
 
 ![Blank](https://img.shields.io/badge/build-passing-brightgreen)
 ![Blank](https://img.shields.io/badge/license-MIT-blue)
-![Blank](https://img.shields.io/badge/version-v1.0.76-green)
+![Blank](https://img.shields.io/badge/version-v1.0.77-green)
 [![Telegram](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
@@ -24,7 +24,7 @@
 
 > 你或许可能会遇到浏览器缓存造成文档不是最新版本的问题，若已经查看过一次文档，请手动在每个页面上刷新，以获取最新版本或清除浏览器缓存。
 
-最新版本更新时间：2022-04-15 04:30
+最新版本更新时间：2022-04-15 04:57
 
 ## Contacts
 

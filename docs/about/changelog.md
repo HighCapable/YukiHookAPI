@@ -2,7 +2,7 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
-### 1.0.76 | 2022.04.15
+### 1.0.77 | 2022.04.15
 
 - `YukiHookModulePrefs` 新增 `clear` 方法，感谢 [WankkoRee](https://github.com/WankkoRee) 的建议
 - `YukiHookModulePrefs` 新增 `getStringSet`、`putStringSet`、`all` 方法
