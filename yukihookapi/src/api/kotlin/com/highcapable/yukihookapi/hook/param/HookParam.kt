@@ -256,6 +256,12 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
         fun boolean() = cast() ?: false
 
         /**
+         * 得到方法参数的实例对象 [Any]
+         * @return [Any] or null
+         */
+        fun any() = cast<Any?>()
+
+        /**
          * 得到方法参数的实例对象 [Array] - 每项类型 [T]
          *
          * - ❗请确认目标参数的类型 - 发生错误会返回空数组

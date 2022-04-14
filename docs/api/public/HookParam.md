@@ -560,6 +560,20 @@ fun boolean(): Boolean
 
 > 得到方法参数的实例对象 Boolean。
 
+#### any [method]
+
+```kotlin
+fun any(): Any?
+```
+
+<b>变更记录</b>
+
+`v1.0.76` `新增`
+
+<b>功能描述</b>
+
+> 得到方法参数的实例对象 Any。
+
 #### array [method]
 
 ```kotlin
