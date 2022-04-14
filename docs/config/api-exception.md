@@ -436,7 +436,7 @@ class MainActivity : AppCompatActivity() {
 
 <b>解决方案</b>
 
-`YukiHookModulePrefs` 支持的类型只有 `String`、`Int`、`Float`、`Long`、`Boolean`，请传入支持的类型。
+`YukiHookModulePrefs` 支持的类型只有 `String`、`Set<String>`、`Int`、`Float`、`Long`、`Boolean`，请传入支持的类型。
 
 !> `IllegalStateException` HookParam Method args index must be >= 0
 

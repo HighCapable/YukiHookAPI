@@ -90,6 +90,20 @@ fun getString(key: String, value: String): String
 
 > 获取 `String` 键值。
 
+### getStringSet [method]
+
+```kotlin
+fun getStringSet(key: String, value: Set<String>): Set<String>
+```
+
+<b>变更记录</b>
+
+`v1.0.76` `新增`
+
+<b>功能描述</b>
+
+> 获取 `Set<String>` 键值。
+
 ### getBoolean [method]
 
 ```kotlin
@@ -146,6 +160,24 @@ fun getFloat(key: String, value: Float): Float
 
 > 获取 `Float` 键值。
 
+### all [method]
+
+```kotlin
+fun all(): HashMap<String, Any?>
+```
+
+<b>变更记录</b>
+
+`v1.0.76` `新增`
+
+<b>功能描述</b>
+
+> 获取全部存储的键值数据。
+
+智能识别对应环境读取键值数据。
+
+!> 每次调用都会获取实时的数据，不受缓存控制，请勿在高并发场景中使用。
+
 ### remove [method]
 
 ```kotlin
@@ -178,6 +210,22 @@ inline fun <reified T> remove(prefs: PrefsData<T>)
 
 !> 在 `XSharedPreferences` 环境下只读，无法使用。
 
+### clear [method]
+
+```kotlin
+fun clear()
+```
+
+<b>变更记录</b>
+
+`v1.0.76` `新增`
+
+<b>功能描述</b>
+
+> 移除全部存储数据。
+
+!> 在 `XSharedPreferences` 环境下只读，无法使用。
+
 ### putString [method]
 
 ```kotlin
@@ -191,6 +239,22 @@ fun putString(key: String, value: String)
 <b>功能描述</b>
 
 > 存储 `String` 键值。
+
+!> 在 `XSharedPreferences` 环境下只读，无法使用。
+
+### putStringSet [method]
+
+```kotlin
+fun putStringSet(key: String, value: Set<String>)
+```
+
+<b>变更记录</b>
+
+`v1.0.76` `新增`
+
+<b>功能描述</b>
+
+> 存储 `Set<String>` 键值。
 
 !> 在 `XSharedPreferences` 环境下只读，无法使用。
 

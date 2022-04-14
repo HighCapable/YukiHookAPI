@@ -25,13 +25,14 @@
  *
  * This file is Created by fankes on 2022/2/8.
  */
-@file:Suppress("SetWorldReadable", "CommitPrefEdits", "DEPRECATION", "WorldReadableFiles", "unused")
+@file:Suppress("SetWorldReadable", "CommitPrefEdits", "DEPRECATION", "WorldReadableFiles", "unused", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.xposed.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import de.robv.android.xposed.XSharedPreferences
@@ -65,6 +66,9 @@ class YukiHookModulePrefs(private val context: Context? = null) {
 
     /** [XSharedPreferences] 缓存的 [String] 键值数据 */
     private var xPrefCacheKeyValueStrings = HashMap<String, String>()
+
+    /** [XSharedPreferences] 缓存的 [Set]<[String]> 键值数据 */
+    private var xPrefCacheKeyValueStringSets = HashMap<String, Set<String>>()
 
     /** [XSharedPreferences] 缓存的 [Boolean] 键值数据 */
     private var xPrefCacheKeyValueBooleans = HashMap<String, Boolean>()
@@ -172,6 +176,31 @@ class YukiHookModulePrefs(private val context: Context? = null) {
         }
 
     /**
+     * 获取 [Set]<[String]> 键值
+     *
+     * - 智能识别对应环境读取键值数据
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
+     * @param key 键值名称
+     * @param value 默认数据
+     * @return [Set]<[String]>
+     */
+    fun getStringSet(key: String, value: Set<String>) =
+        (if (isXposedEnvironment)
+            if (isUsingKeyValueCache)
+                xPrefCacheKeyValueStrings[key].let {
+                    (it ?: xPref.getStringSet(key, value) ?: value).let { value ->
+                        xPrefCacheKeyValueStringSets[key] = value as Set<String>
+                        value
+                    }
+                }
+            else resetCacheSet { xPref.getStringSet(key, value) ?: value }
+        else sPref.getStringSet(key, value) ?: value).let {
+            makeWorldReadable()
+            it
+        }
+
+    /**
      * 获取 [Boolean] 键值
      *
      * - 智能识别对应环境读取键值数据
@@ -272,6 +301,20 @@ class YukiHookModulePrefs(private val context: Context? = null) {
         }
 
     /**
+     *  获取全部存储的键值数据
+     *
+     * - 智能识别对应环境读取键值数据
+     *
+     * - ❗每次调用都会获取实时的数据 - 不受缓存控制 - 请勿在高并发场景中使用
+     * @return [HashMap] 全部类型的键值数组
+     */
+    fun all() = HashMap<String, Any?>().apply {
+        if (isXposedEnvironment)
+            xPref.all.forEach { (k, v) -> this[k] = v }
+        else sPref.all.forEach { (k, v) -> this[k] = v }
+    }
+
+    /**
      * 移除全部包含 [key] 的存储数据
      *
      * - 在模块 [Context] 环境中使用
@@ -279,8 +322,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
      * @param key 键值名称
      */
-    fun remove(key: String) {
-        if (isXposedEnvironment) return
+    fun remove(key: String) = moduleEnvironment {
         sPref.edit().remove(key).apply()
         makeWorldReadable()
     }
@@ -296,6 +338,18 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     inline fun <reified T> remove(prefs: PrefsData<T>) = remove(prefs.key)
 
     /**
+     * 移除全部存储数据
+     *
+     * - 在模块 [Context] 环境中使用
+     *
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     */
+    fun clear() = moduleEnvironment {
+        sPref.edit().clear().apply()
+        makeWorldReadable()
+    }
+
+    /**
      * 存储 [String] 键值
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
@@ -306,9 +360,24 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putString(key: String, value: String) {
-        if (isXposedEnvironment) return
+    fun putString(key: String, value: String) = moduleEnvironment {
         sPref.edit().putString(key, value).apply()
+        makeWorldReadable()
+    }
+
+    /**
+     * 存储 [Set]<[String]> 键值
+     *
+     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     *
+     * - 在模块 [Context] 环境中使用
+     *
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * @param key 键值名称
+     * @param value 键值数据
+     */
+    fun putStringSet(key: String, value: Set<String>) = moduleEnvironment {
+        sPref.edit().putStringSet(key, value).apply()
         makeWorldReadable()
     }
 
@@ -323,8 +392,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putBoolean(key: String, value: Boolean) {
-        if (isXposedEnvironment) return
+    fun putBoolean(key: String, value: Boolean) = moduleEnvironment {
         sPref.edit().putBoolean(key, value).apply()
         makeWorldReadable()
     }
@@ -340,8 +408,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putInt(key: String, value: Int) {
-        if (isXposedEnvironment) return
+    fun putInt(key: String, value: Int) = moduleEnvironment {
         sPref.edit().putInt(key, value).apply()
         makeWorldReadable()
     }
@@ -357,8 +424,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putFloat(key: String, value: Float) {
-        if (isXposedEnvironment) return
+    fun putFloat(key: String, value: Float) = moduleEnvironment {
         sPref.edit().putFloat(key, value).apply()
         makeWorldReadable()
     }
@@ -374,8 +440,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putLong(key: String, value: Long) {
-        if (isXposedEnvironment) return
+    fun putLong(key: String, value: Long) = moduleEnvironment {
         sPref.edit().putLong(key, value).apply()
         makeWorldReadable()
     }
@@ -388,6 +453,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = when (prefs.value) {
         is String -> getString(prefs.key, value as String) as T
+        is Set<*> -> getStringSet(prefs.key, value as? Set<String> ?: error("Key-Value type ${T::class.java.name} is not allowed")) as T
         is Int -> getInt(prefs.key, value as Int) as T
         is Float -> getFloat(prefs.key, value as Float) as T
         is Long -> getLong(prefs.key, value as Long) as T
@@ -406,6 +472,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     inline fun <reified T> put(prefs: PrefsData<T>, value: T) = when (prefs.value) {
         is String -> putString(prefs.key, value as String)
+        is Set<*> -> putStringSet(prefs.key, value as? Set<String> ?: error("Key-Value type ${T::class.java.name} is not allowed"))
         is Int -> putInt(prefs.key, value as Int)
         is Float -> putFloat(prefs.key, value as Float)
         is Long -> putLong(prefs.key, value as Long)
@@ -424,6 +491,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      */
     fun clearCache() {
         xPrefCacheKeyValueStrings.clear()
+        xPrefCacheKeyValueStringSets.clear()
         xPrefCacheKeyValueBooleans.clear()
         xPrefCacheKeyValueInts.clear()
         xPrefCacheKeyValueLongs.clear()
@@ -438,5 +506,16 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     private fun <T> resetCacheSet(result: () -> T): T {
         isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
         return result()
+    }
+
+    /**
+     * 仅在模块环境执行
+     *
+     * 非模块环境使用会打印警告信息
+     * @param initiate 在模块环境执行
+     */
+    private fun moduleEnvironment(initiate: () -> Unit) {
+        if (isXposedEnvironment.not()) initiate()
+        else yLoggerW(msg = "You cannot use write prefs function in Xposed Environment")
     }
 }
