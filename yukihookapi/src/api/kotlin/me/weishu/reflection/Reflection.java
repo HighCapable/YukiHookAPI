@@ -16,10 +16,10 @@ import java.lang.reflect.Method;
 import dalvik.system.DexFile;
 
 /**
- * @author weishu
- * @date 2018/6/7.
+ * author weishu
+ * date 2018/6/7.
  */
-@SuppressWarnings("ALL")
+@SuppressWarnings("unused")
 @Keep
 public class Reflection {
     private static final String TAG = "Reflection";
@@ -32,6 +32,7 @@ public class Reflection {
      * Begin
      *
      * @param context The Base Context
+     * @return int
      */
     public static int unseal(Context context) {
         if (SDK_INT < 28) {
@@ -50,6 +51,7 @@ public class Reflection {
         return -1;
     }
 
+    @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
     private static boolean unsealByDexFile(Context context) {
         byte[] bytes = Base64.decode(DEX, Base64.NO_WRAP);
         File codeCacheDir = getCodeCacheDir(context);
@@ -74,7 +76,6 @@ public class Reflection {
             return false;
         } finally {
             if (code.exists()) {
-                //noinspection ResultOfMethodCallIgnored
                 code.delete();
             }
         }

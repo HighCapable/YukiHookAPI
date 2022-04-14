@@ -10,10 +10,10 @@ import androidx.annotation.Keep;
 import java.lang.reflect.Method;
 
 /**
- * @author weishu
- * @date 2020/7/13.
+ * author weishu
+ * date 2020/7/13.
  */
-@SuppressWarnings("ALL")
+@SuppressWarnings("unused")
 @Keep
 public final class BootstrapClass {
 

@@ -98,7 +98,7 @@ fun getStringSet(key: String, value: Set<String>): Set<String>
 
 <b>变更记录</b>
 
-`v1.0.76` `新增`
+`v1.0.77` `新增`
 
 <b>功能描述</b>
 
@@ -168,7 +168,7 @@ fun all(): HashMap<String, Any?>
 
 <b>变更记录</b>
 
-`v1.0.76` `新增`
+`v1.0.77` `新增`
 
 <b>功能描述</b>
 
@@ -218,7 +218,7 @@ fun clear()
 
 <b>变更记录</b>
 
-`v1.0.76` `新增`
+`v1.0.77` `新增`
 
 <b>功能描述</b>
 
@@ -250,7 +250,7 @@ fun putStringSet(key: String, value: Set<String>)
 
 <b>变更记录</b>
 
-`v1.0.76` `新增`
+`v1.0.77` `新增`
 
 <b>功能描述</b>
 

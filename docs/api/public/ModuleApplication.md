@@ -6,7 +6,7 @@ open class ModuleApplication: Application()
 
 <b>变更记录</b>
 
-`v1.0.76` `新增`
+`v1.0.77` `新增`
 
 <b>功能描述</b>
 
@@ -69,7 +69,7 @@ val appContext: ModuleApplication
 
 <b>变更记录</b>
 
-`v1.0.76` `新增`
+`v1.0.77` `新增`
 
 <b>功能描述</b>
 
