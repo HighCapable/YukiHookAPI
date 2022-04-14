@@ -2,6 +2,15 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.76 | 2022.04.15
+
+- `YukiHookModulePrefs` 新增 `clear` 方法，感谢 [WankkoRee](https://github.com/WankkoRee) 的建议
+- `YukiHookModulePrefs` 新增 `getStringSet`、`putStringSet`、`all` 方法
+- `HookParam` 的 `args` 增加 `any` 方法
+- 新增 `ModuleApplication`，可在模块中继承此类实现更多功能
+- 对接全部的 `findClass` 功能到 Xposed API，在非宿主环境继续使用原生 `ClassLoader`
+- 修复了一些可能存在的 BUG
+
 ### 1.0.75 | 2022.04.13
 
 - 更正了自动处理程序的逻辑识别部分，感谢 [ApeaSuperz](https://github.com/ApeaSuperz) 的贡献
