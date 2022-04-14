@@ -24,7 +24,7 @@
 
 > 你或许可能会遇到浏览器缓存造成文档不是最新版本的问题，若已经查看过一次文档，请手动在每个页面上刷新，以获取最新版本或清除浏览器缓存。
 
-最新版本更新时间：2022-04-13 13:57
+最新版本更新时间：2022-04-15 04:30
 
 ## Contacts
 
@@ -48,6 +48,11 @@
 
 - 工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。<br/><br/>
   <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/wechat_code.jpg" width = "200" height = "200"/>
+
+## Third-Party Open Source Usage Statement
+
+- [Kotlin Symbol Processing API](https://github.com/google/ksp)
+- [FreeReflection](https://github.com/tiann/FreeReflection)
 
 ## License
 

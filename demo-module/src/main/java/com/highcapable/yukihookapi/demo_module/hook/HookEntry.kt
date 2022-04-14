@@ -45,7 +45,8 @@ class HookEntry : YukiHookXposedInitProxy {
         // 可简写为 configs {}
         YukiHookAPI.configs {
             // 全局调试用的 TAG
-            debugTag = "YukiHookAPI"
+            // 在 Logcat 控制台过滤此 TAG 可找到详细日志
+            debugTag = "YukiHookAPI-Demo"
             // 是否开启调试模式
             isDebug = true
             // 是否启用调试日志的输出功能

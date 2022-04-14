@@ -211,9 +211,49 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                             packageName.split(".hook")[0]
                         else error(msg = "Cannot identify your App's package name, please manually configure the package name")
                     }
+                val injectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
+                fun commentContent(name: String) = ("/**\n" +
+                        " * $name Inject Class\n" +
+                        " *\n" +
+                        " * Compiled from YukiHookXposedProcessor\n" +
+                        " *\n" +
+                        " * HookEntryClass: [$className]\n" +
+                        " *\n" +
+                        " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
+                        " *\n" +
+                        " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
+                        " *\n" +
+                        " * Project Address: [YukiHookAPI](https://github.com/fankes/YukiHookAPI)\n" +
+                        " */\n")
                 codeGenerator.createNewFile(
-                    Dependencies.ALL_FILES,
-                    packageName,
+                    dependencies = Dependencies.ALL_FILES,
+                    packageName = injectPackageName,
+                    fileName = "ModuleApplication_Injector"
+                ).apply {
+                    /** 插入 ModuleApplication_Injector 代码 */
+                    write(
+                        ("@file:Suppress(\"ClassName\")\n" +
+                                "\n" +
+                                "package $injectPackageName\n" +
+                                "\n" +
+                                "import $packageName.$className\n" +
+                                "\n" +
+                                commentContent(name = "ModuleApplication") +
+                                "object ModuleApplication_Injector {\n" +
+                                "\n" +
+                                "    @JvmStatic\n" +
+                                "    fun callApiInit() = try {\n" +
+                                "        $className().onInit()\n" +
+                                "    } catch (_: Throwable) {\n" +
+                                "    }\n" +
+                                "}").toByteArray()
+                    )
+                    flush()
+                    close()
+                }
+                codeGenerator.createNewFile(
+                    dependencies = Dependencies.ALL_FILES,
+                    packageName = packageName,
                     fileName = "$className$xposedClassShortName"
                 ).apply {
                     /** 插入 xposed_init 代码 */
@@ -232,19 +272,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
                                 "import $packageName.$className\n" +
                                 "\n" +
-                                "/**\n" +
-                                " * XposedInit Inject Class\n" +
-                                " *\n" +
-                                " * Compiled from YukiHookXposedProcessor\n" +
-                                " *\n" +
-                                " * HookEntryClass: [$className]\n" +
-                                " *\n" +
-                                " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
-                                " *\n" +
-                                " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
-                                " *\n" +
-                                " * Project Address: https://github.com/fankes/YukiHookAPI\n" +
-                                " */\n" +
+                                commentContent(name = "XposedInit") +
                                 "@Keep\n" +
                                 "@YukiGenerateApi\n" +
                                 "class $className$xposedClassShortName : IXposedHookLoadPackage {\n" +

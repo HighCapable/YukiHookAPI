@@ -18,6 +18,8 @@
 
 [filename](public/PrefsData.md ':include')
 
+[filename](public/ModuleApplication.md ':include')
+
 [filename](public/ComponentTypeFactory.md ':include')
 
 [filename](public/GraphicsTypeFactory.md ':include')

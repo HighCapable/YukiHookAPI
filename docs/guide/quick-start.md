@@ -104,6 +104,10 @@ class MainHook : YukiHookXposedInitProxy {
 }
 ```
 
+你还可以将你的模块 APP 的 `Application` 继承于 `ModuleApplication` 以实现更多功能。
+
+详情请参考 [ModuleApplication](api/document?id=moduleapplication-class)。
+
 然后，你就可以开始编写 Hook 代码了。
 
 有关作为 Xposed 模块使用的相关配置详细内容，你可以 [点击这里](config/xposed-using) 继续阅读。

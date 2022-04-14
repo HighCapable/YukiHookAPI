@@ -355,6 +355,23 @@ method {
 
 > 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
 
+!> `IllegalStateException` App is dead, You cannot call to appContext
+
+<b>异常原因</b>
+
+使用 `ModuleApplication` 时调用了 `appContext` 功能但是 APP 可能已经被销毁或没有正确启动。
+
+> 示例如下
+
+```kotlin
+// 调用了此变量但是 APP 可能已被销毁或没有正确启动
+ModuleApplication.appContext
+```
+
+<b>解决方案</b>
+
+这种情况基本不存在，由于 `appContext` 是在 `onCreate` 中被赋值的，除非遇到多进程并发启动或 APP 没有启动完成前被反射调用了父类的 `onCreate` 方法。
+
 !> `IllegalStateException` YukiHookModulePrefs not allowed in Custom Hook API
 
 <b>异常原因</b>

@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
@@ -36,6 +37,7 @@ import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import de.robv.android.xposed.XposedHelpers
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -71,8 +73,16 @@ val String.hasClass get() = hasClass(loader = null)
 fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
     val hashCode = ("[$name][$loader]").hashCode()
     return MemberCacheStore.findClass(hashCode) ?: run {
-        (if (loader == null) Class.forName(name)
-        else loader.loadClass(name)).also { MemberCacheStore.putClass(hashCode, it) }
+        when {
+            YukiHookAPI.hasXposedBridge ->
+                runCatching { XposedHelpers.findClassIfExists(name, loader) }.getOrNull()
+                    ?: when (loader) {
+                        null -> Class.forName(name)
+                        else -> loader.loadClass(name)
+                    }
+            loader == null -> Class.forName(name)
+            else -> loader.loadClass(name)
+        }.also { MemberCacheStore.putClass(hashCode, it) }
     }
 }
 
