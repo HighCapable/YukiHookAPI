@@ -4,6 +4,7 @@
   * [快速开始](guide/quick-start)
   * [用法示例](guide/example)
   * [特色功能](guide/special-feature)
+  * [从 Xposed API 迁移](guide/move-to-new-api)
 
 * 配置
   * [API 基本配置](config/api-example)

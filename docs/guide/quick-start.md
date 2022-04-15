@@ -112,6 +112,8 @@ class MainHook : YukiHookXposedInitProxy {
 
 有关作为 Xposed 模块使用的相关配置详细内容，你可以 [点击这里](config/xposed-using) 继续阅读。
 
+若你目前正在使用 Xposed API，你可以参考 [从 Xposed API 迁移](guide/move-to-new-api)。
+
 ## 作为 Hook API 使用
 
 ### 集成方式

@@ -359,16 +359,37 @@ method {
 
 <b>异常原因</b>
 
-使用 `ModuleApplication` 时调用了 `appContext` 功能但是 APP 可能已经被销毁或没有正确启动。
+> 第一种情况
+
+在被 Hook 的宿主内调用了 `ModuleApplication` 的 `appContext`。
+
+> 示例如下
+
+```kotlin
+encase {
+    // 调用了此变量
+    ModuleApplication.appContext...
+}
+```
+
+> 第二种情况
+
+使用 `ModuleApplication` 时调用了 `appContext` 但是 APP 可能已经被销毁或没有正确启动。
 
 > 示例如下
 
 ```kotlin
 // 调用了此变量但是 APP 可能已被销毁或没有正确启动
-ModuleApplication.appContext
+ModuleApplication.appContext...
 ```
 
 <b>解决方案</b>
+
+> 第一种情况
+
+你只能在模块内使用 `ModuleApplication` 的 `appContext`，在宿主内请使用 `PackageParam` 中的 `appContext`，请确认你使用的是否正确。
+
+> 第二种情况
 
 这种情况基本不存在，由于 `appContext` 是在 `onCreate` 中被赋值的，除非遇到多进程并发启动或 APP 没有启动完成前被反射调用了父类的 `onCreate` 方法。
 
