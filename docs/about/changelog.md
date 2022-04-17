@@ -2,6 +2,15 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.78 | 2022.04.18
+
+- `YukiHookModulePrefs` 新增 `isRunInNewXShareMode` 方法，可用于判断模块当前是否处于 `New XSharePreference` 模式
+- 修复 `YukiHookModulePrefs` 在 `New XSharePreference` 模式下工作的部分问题
+- 新增 `ModulePreferenceFragment`，现在，你可以完全替换掉 `PreferenceFragmentCompat` 并开始使用新的功能
+- 适配 `PreferenceFragmentCompat` 的 Sp 数据存储解决方案，感谢 [mahoshojoHCG](https://github.com/mahoshojoHCG) 的反馈
+- 更新自动处理程序以及 `Kotlin` 依赖到最新版本
+- 修正部分文档和代码注释中的错误
+
 ### 1.0.77 | 2022.04.15
 
 - `YukiHookModulePrefs` 新增 `clear` 方法，感谢 [WankkoRee](https://github.com/WankkoRee) 的建议
