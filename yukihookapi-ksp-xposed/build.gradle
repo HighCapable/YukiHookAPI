@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.google.devtools.ksp' version '1.6.10-1.0.4'
+    id 'com.google.devtools.ksp' version '1.6.20-1.0.5'
     id 'maven-publish'
     id 'signing'
 }
@@ -19,6 +19,12 @@ javadoc {
 }
 
 kotlin { sourceSets.main { kotlin.srcDir("src/api/kotlin") } }
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = 11
+    }
+}
 
 dependencies {
     implementation 'com.google.auto.service:auto-service-annotations:1.0.1'

@@ -32,6 +32,7 @@ kotlin {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {
+        jvmTarget = 11
         freeCompilerArgs += "-opt-in=com.highcapable.yukihookapi.annotation.YukiPrivateApi"
         freeCompilerArgs += "-opt-in=com.highcapable.yukihookapi.annotation.YukiGenerateApi"
     }
