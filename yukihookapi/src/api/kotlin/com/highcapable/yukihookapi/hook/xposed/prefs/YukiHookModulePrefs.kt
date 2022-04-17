@@ -58,6 +58,21 @@ import java.io.File
  */
 class YukiHookModulePrefs(private val context: Context? = null) {
 
+    internal companion object {
+
+        /**
+         * 设置全局可读可写
+         * @param context 实例
+         * @param prefsFileName Sp 文件名
+         */
+        internal fun makeWorldReadable(context: Context?, prefsFileName: String) = runCatching {
+            File(File(context!!.applicationInfo.dataDir, "shared_prefs"), prefsFileName).apply {
+                setReadable(true, false)
+                setExecutable(true, false)
+            }
+        }
+    }
+
     /** 存储名称 - 默认包名 + _preferences */
     private var prefsName = "${YukiHookXposedBridge.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
 
@@ -85,6 +100,9 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /** 是否使用键值缓存 */
     private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
 
+    /** 是否为新版存储方式 EdXposed/LSPosed */
+    private var isNewXSharePrefsMode = false
+
     /** 检查 API 装载状态 */
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
@@ -110,20 +128,17 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     private val sPref
         get() = try {
             checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
+            context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isNewXSharePrefsMode = true }
                 ?: error("If you want to use module prefs, you must set the context instance first")
         } catch (_: Throwable) {
             checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+            context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isNewXSharePrefsMode = false }
                 ?: error("If you want to use module prefs, you must set the context instance first")
         }
 
     /** 设置全局可读可写 */
     private fun makeWorldReadable() = runCatching {
-        File(File(context!!.applicationInfo.dataDir, "shared_prefs"), "$prefsName.xml").apply {
-            setReadable(true, false)
-            setExecutable(true, false)
-        }
+        if (isNewXSharePrefsMode.not()) makeWorldReadable(context, prefsFileName = "${prefsName}.xml")
     }
 
     /**
