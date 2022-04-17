@@ -151,7 +151,12 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * - 前提条件为当前 Xposed 模块已被激活
      * @return [Boolean] 仅限在模块中判断 - 在宿主 [XSharedPreferences] 环境中始终返回 false
      */
-    val isRunInNewXShareMode get() = isUsingNewXSharePrefs
+    val isRunInNewXShareMode
+        get() = runCatching {
+            /** 执行一次装载 */
+            sPref.edit()
+            isUsingNewXSharePrefs
+        }.getOrNull() ?: false
 
     /**
      * 自定义 Sp 存储名称

@@ -7,30 +7,103 @@
     android:orientation="vertical"
     tools:ignore="HardcodedText">
 
-    <TextView
-        android:id="@+id/module_demo_text"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
         android:layout_marginBottom="15dp"
-        android:gravity="center"
-        android:lineSpacingExtra="6dp"
-        android:text="sample"
-        android:textSize="20sp" />
+        android:gravity="center|start"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/module_demo_edit_text"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:hint="Please enter the text"
-        android:singleLine="true"
-        android:textSize="20sp"
-        tools:ignore="Autofill,LabelFor,TextFields" />
+        <TextView
+            android:id="@+id/module_demo_active_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:ellipsize="end"
+            android:gravity="center|start"
+            android:singleLine="true"
+            android:text="sample"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/module_demo_framework_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:ellipsize="end"
+            android:gravity="center|start"
+            android:singleLine="true"
+            android:text="sample"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/module_demo_api_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:ellipsize="end"
+            android:gravity="center|start"
+            android:singleLine="true"
+            android:text="sample"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/module_demo_yuki_hook_api_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:ellipsize="end"
+            android:gravity="center|start"
+            android:singleLine="true"
+            android:text="sample"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/module_demo_new_xshare_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:ellipsize="end"
+            android:gravity="center|start"
+            android:singleLine="true"
+            android:text="sample"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="15dp"
+            android:ellipsize="end"
+            android:gravity="center|start"
+            android:singleLine="true"
+            android:text="Leave something in there"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/module_demo_edit_text"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:hint="Please enter the text"
+            android:singleLine="true"
+            android:textSize="18sp"
+            tools:ignore="Autofill,LabelFor,TextFields" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/module_demo_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
         android:text="Save Test Data"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/module_demo_frg_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open PreferenceFragment"
         android:textAllCaps="false" />
 </LinearLayout>

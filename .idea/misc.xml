@@ -5,10 +5,25 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4169230769230769" />
         <entry key="app_demo/src/main/res/layout/activity_main.xml" value="0.4375" />
+        <entry key="demo-app/src/main/res/drawable/ic_launcher_background.xml" value="0.238" />
         <entry key="demo-app/src/main/res/layout/activity_main.xml" value="0.4375" />
+        <entry key="demo-module/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.238" />
+        <entry key="demo-module/src/main/res/drawable/ic_launcher_background.xml" value="0.238" />
         <entry key="demo-module/src/main/res/layout/activity_main.xml" value="0.4375" />
+        <entry key="demo-module/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.238" />
+        <entry key="demo-module/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.238" />
+        <entry key="demo-module/src/main/res/xml/settings_preference.xml" value="0.4359375" />
+        <entry key="demo-module/src/main/res/xml/settings_preferences.xml" value="0.43697916666666664" />
         <entry key="demo/src/main/res/layout/activity_main.xml" value="0.4375" />
         <entry key="module_demo/src/main/res/layout/activity_main.xml" value="0.4375" />
+        <entry key="yukihookapi-ui-component/src/main/kotlin/com/highcapable/yukihookapi/ui/view/ModuleActiveBannerView.kt" value="0.44074074074074077" />
+        <entry key="yukihookapi-ui-component/src/main/res/drawable-night/bg_dark_round.xml" value="0.238" />
+        <entry key="yukihookapi-ui-component/src/main/res/drawable/bg_button_round.xml" value="0.238" />
+        <entry key="yukihookapi-ui-component/src/main/res/drawable/bg_dark_round.xml" value="0.238" />
+        <entry key="yukihookapi-ui-component/src/main/res/drawable/bg_green_round.xml" value="0.238" />
+        <entry key="yukihookapi-ui-component/src/main/res/drawable/bg_orange_round.xml" value="0.238" />
+        <entry key="yukihookapi-ui-component/src/main/res/drawable/bg_yellow_round.xml" value="0.238" />
+        <entry key="yukihookapi-ui-component/src/main/res/layout/wgt_module_active_banner.xml" value="0.4359375" />
       </map>
     </option>
   </component>

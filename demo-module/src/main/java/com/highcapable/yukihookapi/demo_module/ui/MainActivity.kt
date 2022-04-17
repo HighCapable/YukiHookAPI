@@ -29,9 +29,11 @@
 
 package com.highcapable.yukihookapi.demo_module.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
@@ -44,9 +46,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivityMainBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            moduleDemoText.text = "Module is Active -> $isModuleActive\n" +
-                    "Hook Framework -> ${YukiHookModuleStatus.executorName}\n" +
-                    "API Version -> ${YukiHookModuleStatus.executorVersion}"
+            moduleDemoActiveText.text = "Module is Active：$isModuleActive"
+            moduleDemoFrameworkText.text = "Hook Framework：${YukiHookModuleStatus.executorName}"
+            moduleDemoApiVersionText.text = "API Version：${YukiHookModuleStatus.executorVersion}"
+            moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.API_VERSION_NAME}(${YukiHookAPI.API_VERSION_CODE})"
+            moduleDemoNewXshareText.text = "New XShare Mode：${modulePrefs.isRunInNewXShareMode}"
             moduleDemoEditText.also {
                 it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
                 moduleDemoButton.setOnClickListener { _ ->
@@ -56,6 +60,7 @@ class MainActivity : AppCompatActivity() {
                     } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
                 }
             }
+            moduleDemoFrgButton.setOnClickListener { startActivity(Intent(this@MainActivity, PreferenceActivity::class.java)) }
         }
     }
 }

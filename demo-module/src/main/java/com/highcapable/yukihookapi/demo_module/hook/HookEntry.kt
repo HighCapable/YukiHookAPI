@@ -93,6 +93,15 @@ class HookEntry : YukiHookXposedInitProxy {
                                 type = StringType
                             }.get(instance).set("I am hook result")
                         }
+                        // 在执行方法之后拦截
+                        afterHook {
+                            if (prefs.getBoolean("show_dialog_when_demo_app_opend"))
+                                AlertDialog.Builder(instance())
+                                    .setTitle("Hooked")
+                                    .setMessage("This App has been hooked!")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                        }
                     }
                     // 注入要 Hook 的方法
                     injectMember {
@@ -131,7 +140,7 @@ class HookEntry : YukiHookXposedInitProxy {
                         replaceUnit {
                             AlertDialog.Builder(instance())
                                 .setTitle("Hooked")
-                                .setMessage("I am hook your toast showing")
+                                .setMessage("I am hook your toast showing!")
                                 .setPositiveButton("OK", null)
                                 .show()
                         }
