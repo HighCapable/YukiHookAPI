@@ -43,6 +43,8 @@
 | [TSBattery](https://github.com/fankes/TSBattery)                                | [fankesyooni](https://github.com/fankes)        |
 | [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon)               | [fankesyooni](https://github.com/fankes)        |
 | [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon)               | [fankesyooni](https://github.com/fankes)        |
+| [自由屏幕旋转](https://github.com/Xposed-Modules-Repo/com.fankes.forcerotate)     | [fankesyooni](https://github.com/fankes)        |
+| [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness)| [fankesyooni](https://github.com/fankes)        |
 | [Enable WebView Debugging](https://github.com/WankkoRee/EnableWebViewDebugging) | [WankkoRee](https://github.com/WankkoRee)       |
 | [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)               | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
 
