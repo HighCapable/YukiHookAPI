@@ -60,7 +60,7 @@ open class ModuleApplication : Application() {
         private var currentContext: ModuleApplication? = null
 
         /**
-         * 全局静态 [Application] 实例
+         * 获取全局静态 [Application] 实例
          * @return [ModuleApplication]
          * @throws IllegalStateException 如果 [Application] 没有正确装载完成
          */
