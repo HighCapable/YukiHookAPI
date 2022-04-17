@@ -16,6 +16,8 @@
 
 [filename](public/YukiHookModulePrefs.md ':include')
 
+[filename](public/ModulePreferenceFragment.md ':include')
+
 [filename](public/PrefsData.md ':include')
 
 [filename](public/ModuleApplication.md ':include')

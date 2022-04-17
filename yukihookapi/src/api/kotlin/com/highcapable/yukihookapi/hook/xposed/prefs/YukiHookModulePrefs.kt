@@ -31,10 +31,12 @@ package com.highcapable.yukihookapi.hook.xposed.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
+import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 import de.robv.android.xposed.XSharedPreferences
 import java.io.File
 
@@ -52,6 +54,8 @@ import java.io.File
  * - 未使用 LSPosed 环境请将你的模块 API 降至 26 以下 - [YukiHookAPI] 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
  *
  * - ❗当你在模块中存取数据的时候 [context] 必须不能是空的
+ *
+ * - 若你正在使用 [PreferenceFragmentCompat] - 请迁移到 [ModulePreferenceFragment] 以适配上述功能特性
  *
  * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/#/api/document?id=yukihookmoduleprefs-class)
  * @param context 上下文实例 - 默认空
@@ -100,8 +104,8 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /** 是否使用键值缓存 */
     private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
 
-    /** 是否为新版存储方式 EdXposed/LSPosed */
-    private var isNewXSharePrefsMode = false
+    /** 是否使用新版存储方式 EdXposed/LSPosed */
+    private var isUsingNewXSharePrefs = false
 
     /** 检查 API 装载状态 */
     private fun checkApi() {
@@ -128,18 +132,26 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     private val sPref
         get() = try {
             checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isNewXSharePrefsMode = true }
+            context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharePrefs = true }
                 ?: error("If you want to use module prefs, you must set the context instance first")
         } catch (_: Throwable) {
             checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isNewXSharePrefsMode = false }
+            context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharePrefs = false }
                 ?: error("If you want to use module prefs, you must set the context instance first")
         }
 
     /** 设置全局可读可写 */
     private fun makeWorldReadable() = runCatching {
-        if (isNewXSharePrefsMode.not()) makeWorldReadable(context, prefsFileName = "${prefsName}.xml")
+        if (isUsingNewXSharePrefs.not()) makeWorldReadable(context, prefsFileName = "${prefsName}.xml")
     }
+
+    /**
+     * 获取 [YukiHookModulePrefs] 是否正处于 EdXposed/LSPosed 的最高权限运行
+     *
+     * - 前提条件为当前 Xposed 模块已被激活
+     * @return [Boolean] 仅限在模块中判断 - 在宿主 [XSharedPreferences] 环境中始终返回 false
+     */
+    val isRunInNewXShareMode get() = isUsingNewXSharePrefs
 
     /**
      * 自定义 Sp 存储名称

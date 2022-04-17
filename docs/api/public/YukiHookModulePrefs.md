@@ -26,6 +26,24 @@ class YukiHookModulePrefs(private val context: Context?)
 
 !> 当你在 Xposed 模块中存取数据的时候 `context` 必须不能是空的。
 
+若你正在使用 `PreferenceFragmentCompat`，请迁移到 `ModulePreferenceFragment` 以适配上述功能特性。
+
+### isRunInNewXShareMode [field]
+
+```kotlin
+val isRunInNewXShareMode: Boolean
+```
+
+**变更记录**
+
+`v1.0.78` `新增`
+
+**功能描述**
+
+> 获取 `YukiHookModulePrefs ` 是否正处于 EdXposed/LSPosed 的最高权限运行。
+
+前提条件为当前 Xposed 模块已被激活。
+
 ### name [method]
 
 ```kotlin
