@@ -37,12 +37,12 @@ class PreferenceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "PreferenceFragment"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         if (savedInstanceState == null)
             supportFragmentManager
                 .beginTransaction()
                 .replace(android.R.id.content, SettingsFragment())
                 .commitAllowingStateLoss()
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onSupportNavigateUp(): Boolean {
