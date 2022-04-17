@@ -4,11 +4,11 @@
 class YukiHookCreater(private val packageParam: PackageParam, private val hookClass: HookClass)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > `YukiHookAPI` 核心 Hook 实现类。
 
@@ -18,7 +18,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
 val instanceClass: Class<*>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -26,7 +26,7 @@ val instanceClass: Class<*>
 
 ~~`thisClass`~~ 更名为 `instanceClass`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到当前被 Hook 的 `Class`。
 
@@ -38,15 +38,15 @@ val instanceClass: Class<*>
 fun injectMember(tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 注入要 Hook 的方法、构造类。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以注入任意方法与构造类，使用 `injectMember` 即可创建一个 `Hook` 对象。
 
@@ -74,11 +74,11 @@ injectMember(tag = "KuriharaYuki") {
 inner class MemberHookCreater(var tag: String)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > Hook 核心功能实现类，查找和处理需要 Hook 的方法、构造类。
 
@@ -88,17 +88,17 @@ inner class MemberHookCreater(var tag: String)
 var member: Member?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 手动指定要 Hook 的方法、构造类。
 
 !> 不建议使用此方法设置目标需要 Hook 的 `Member` 对象，你可以使用 `method` 或 `constructor` 方法。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以调用 `instanceClass` 来手动查询要 Hook 的方法。
 
@@ -118,15 +118,15 @@ injectMember {
 fun allMethods(name: String)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找并 Hook 当前 `Class` 中指定 `name` 的全部方法。
 
-<b>功能示例</b>
+**功能示例**
 
 使用此方法可将当前类的全部同名方法进行批量 Hook。
 
@@ -148,15 +148,15 @@ injectMember {
 fun allConstructors()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找并 Hook 当前 `Class` 中的全部构造方法。
 
-<b>功能示例</b>
+**功能示例**
 
 使用此方法可将当前类的全部构造方法进行批量 Hook。
 
@@ -178,15 +178,15 @@ injectMember {
 fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找当前 `Class` 需要 Hook 的方法。
 
-<b>功能示例</b>
+**功能示例**
 
 你可参考 [MethodFinder](#methodfinder-class) 查看详细用法。
 
@@ -210,15 +210,15 @@ injectMember {
 fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找当前 `Class` 需要 Hook 的构造方法。
 
-<b>功能示例</b>
+**功能示例**
 
 你可参考 [ConstructorFinder](#constructorfinder-class) 查看详细用法。
 
@@ -238,15 +238,15 @@ injectMember {
 fun HookParam.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 使用当前 `hookClass` 查找并得到 `Field`。
 
-<b>功能示例</b>
+**功能示例**
 
 你可参考 [FieldFinder](#fieldfinder-class) 查看详细用法。
 
@@ -274,11 +274,11 @@ injectMember {
 fun HookParam.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 使用当前 `hookClass` 查找并得到方法。
 
@@ -288,11 +288,11 @@ fun HookParam.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 使用当前 `hookClass` 查找并得到构造方法。
 
@@ -302,11 +302,11 @@ fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFi
 fun beforeHook(initiate: HookParam.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 在方法执行完成前 Hook。
 
@@ -316,11 +316,11 @@ fun beforeHook(initiate: HookParam.() -> Unit)
 fun afterHook(initiate: HookParam.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 在方法执行完成后 Hook。
 
@@ -330,11 +330,11 @@ fun afterHook(initiate: HookParam.() -> Unit)
 fun replaceAny(initiate: HookParam.() -> Any?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 拦截并替换此方法内容，给出返回值。
 
@@ -344,11 +344,11 @@ fun replaceAny(initiate: HookParam.() -> Any?)
 fun replaceUnit(initiate: HookParam.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 拦截并替换此方法内容，没有返回值，可以称为 `Void`。
 
@@ -358,11 +358,11 @@ fun replaceUnit(initiate: HookParam.() -> Unit)
 fun replaceTo(any: Any?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 拦截并替换方法返回值。
 
@@ -372,11 +372,11 @@ fun replaceTo(any: Any?)
 fun replaceToTrue()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 拦截并替换方法返回值为 `true`。
 
@@ -388,11 +388,11 @@ fun replaceToTrue()
 fun replaceToFalse()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 拦截并替换方法返回值为 `false`。
 
@@ -404,11 +404,11 @@ fun replaceToFalse()
 fun intercept()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 拦截此方法。
 
@@ -420,11 +420,11 @@ fun intercept()
 inner class Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听 Hook 结果实现类。
 
@@ -434,7 +434,7 @@ inner class Result
 fun result(initiate: Result.() -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -442,11 +442,11 @@ fun result(initiate: Result.() -> Unit): Result
 
 ~~`failures`~~ 修改为 `result`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建监听失败事件方法体。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以使用此方法为 `Result` 类创建 `lambda` 方法体。
 
@@ -469,11 +469,11 @@ injectMember {
 fun by(initiate: () -> Boolean): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加执行 Hook 需要满足的条件，不满足条件将直接停止 Hook。
 
@@ -483,11 +483,11 @@ fun by(initiate: () -> Boolean): Result
 fun onHooked(initiate: (Member) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听 `member` Hook 成功的回调方法。
 
@@ -499,11 +499,11 @@ fun onHooked(initiate: (Member) -> Unit): Result
 fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听 `member` 不存在发生错误的回调方法。
 
@@ -513,11 +513,11 @@ fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result
 fun onConductFailure(initiate: (HookParam, Throwable) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听 Hook 进行过程中发生错误的回调方法。
 
@@ -527,11 +527,11 @@ fun onConductFailure(initiate: (HookParam, Throwable) -> Unit): Result
 fun onHookingFailure(initiate: (Throwable) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听 Hook 开始时发生的错误的回调方法。
 
@@ -541,11 +541,11 @@ fun onHookingFailure(initiate: (Throwable) -> Unit): Result
 fun onAllFailure(initiate: (Throwable) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听全部 Hook 过程发生错误的回调方法。
 
@@ -555,11 +555,11 @@ fun onAllFailure(initiate: (Throwable) -> Unit): Result
 fun ignoredNoSuchMemberFailure(): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略 `member` 不存在发生的错误。
 
@@ -569,11 +569,11 @@ fun ignoredNoSuchMemberFailure(): Result
 fun ignoredConductFailure(): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略 Hook 进行过程中发生的错误。
 
@@ -583,11 +583,11 @@ fun ignoredConductFailure(): Result
 fun ignoredHookingFailure(): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略 Hook 开始时发生的错误。
 
@@ -597,11 +597,11 @@ fun ignoredHookingFailure(): Result
 fun ignoredAllFailure(): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略全部 Hook 过程发生的错误。
 
@@ -611,11 +611,11 @@ fun ignoredAllFailure(): Result
 inner class Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.3` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听全部 Hook 结果实现类。
 
@@ -625,7 +625,7 @@ inner class Result
 fun result(initiate: Result.() -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.3` `新增`
 
@@ -633,7 +633,7 @@ fun result(initiate: Result.() -> Unit): Result
 
 ~~`failures`~~ 修改为 `result`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建监听事件方法体。
 
@@ -643,11 +643,11 @@ fun result(initiate: Result.() -> Unit): Result
 fun by(initiate: () -> Boolean): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加执行 Hook 需要满足的条件，不满足条件将直接停止 Hook。
 
@@ -657,11 +657,11 @@ fun by(initiate: () -> Boolean): Result
 fun onPrepareHook(initiate: () -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听 `hookClass` 存在时准备开始 Hook 的操作。
 
@@ -671,11 +671,11 @@ fun onPrepareHook(initiate: () -> Unit): Result
 fun onHookClassNotFoundFailure(initiate: (Throwable) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.3` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听 `hookClass` 找不到时发生错误的回调方法。
 
@@ -685,10 +685,10 @@ fun onHookClassNotFoundFailure(initiate: (Throwable) -> Unit): Result
 fun ignoredHookClassNotFoundFailure(): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.3` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略 `hookClass` 找不到时出现的错误。

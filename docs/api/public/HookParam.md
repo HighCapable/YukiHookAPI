@@ -4,11 +4,11 @@
 class HookParam(private​ ​val​ ​createrInstance​:​ ​YukiHookCreater​, private val wrapper: HookParamWrapper)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > Hook 方法、构造类的目标对象实现类。
 
@@ -18,17 +18,17 @@ class HookParam(private​ ​val​ ​createrInstance​:​ ​YukiHookCre
 val args: Array<Any?>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 在 `v1.0` 添加
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象 `member` 或 `constructor` 的参数对象数组。
 
 ### ~~firstArgs [field]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -38,7 +38,7 @@ val args: Array<Any?>
 
 ### ~~lastArgs [field]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -52,11 +52,11 @@ val args: Array<Any?>
 val instance: Any
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 实例的对象。
 
@@ -68,11 +68,11 @@ val instance: Any
 val instanceClass: Class<*>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 实例的类对象。
 
@@ -82,11 +82,11 @@ val instanceClass: Class<*>
 val method: Method
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象的方法。
 
@@ -96,11 +96,11 @@ val method: Method
 val constructor: Constructor
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象的构造方法。
 
@@ -110,11 +110,11 @@ val constructor: Constructor
 var result: Any?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取、设置当前 Hook 对象的 `method` 或 `constructor` 的返回值。
 
@@ -124,17 +124,17 @@ var result: Any?
 inline fun <reified T> result(): T?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.75` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象的 `method` 或 `constructor` 的返回值 `T`。
 
 ### ~~firstArgs [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -142,7 +142,7 @@ inline fun <reified T> result(): T?
 
 ### ~~lastArgs [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -154,15 +154,15 @@ inline fun <reified T> result(): T?
 inline fun <reified T> instance(): T
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 实例的对象 `T`。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以通过 `instance` 方法轻松使用泛型 `cast` 为目标对象的类型。
 
@@ -178,11 +178,11 @@ instance<Activity>().finish()
 fun args(): ArgsIndexCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.75` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象的 `method` or `constructor` 的参数数组下标实例化类。
 
@@ -192,7 +192,7 @@ fun args(): ArgsIndexCondition
 fun args(index: Int): ArgsModifyer
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -200,11 +200,11 @@ fun args(index: Int): ArgsModifyer
 
 默认值 `index = 0` 移动到新的使用方法 `args().first()`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象的 `method` 或 `constructor` 的参数实例化对象类。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以通过 `args` 方法修改当前 Hook 实例的方法、构造方法的参数内容。
 
@@ -268,15 +268,15 @@ args(index = 1).setFalse()
 fun <T> Member.invokeOriginal(vararg args: Any?): Any?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行原始 `Member`。
 
-<b>功能实例</b>
+**功能实例**
 
 此方法可以 `invoke` 原始未经 Hook 的 `Member` 对象，取决于原始 `Member` 的参数和类型。
 
@@ -292,11 +292,11 @@ member.invokeOriginal("test value")
 fun resultTrue()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置当前 Hook 对象方法的 `result` 返回值为 `true`。
 
@@ -308,11 +308,11 @@ fun resultTrue()
 fun resultFalse()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置当前 Hook 对象方法的 `result` 返回值为 `false`。
 
@@ -324,11 +324,11 @@ fun resultFalse()
 fun resultNull()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 !> 此方法将强制设置 Hook 对象方法的 `result` 为 `null`。
 
@@ -338,11 +338,11 @@ fun resultNull()
 inner class ArgsIndexCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.75` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 对方法参数的数组下标进行实例化类。
 
@@ -352,11 +352,11 @@ inner class ArgsIndexCondition
 fun first(): ArgsModifyer
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.75` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象的 `method` or `constructor` 的参数数组第一位。
 
@@ -366,11 +366,11 @@ fun first(): ArgsModifyer
 fun last(): ArgsModifyer
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.75` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 对象的 `method` or `constructor` 的参数数组最后一位。
 
@@ -380,11 +380,11 @@ fun last(): ArgsModifyer
 inner class ArgsModifyer(private val index: Int)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 对方法参数的修改进行实例化类。
 
@@ -394,7 +394,7 @@ inner class ArgsModifyer(private val index: Int)
 fun <T> cast(): T?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -402,7 +402,7 @@ fun <T> cast(): T?
 
 修改 ~~`of`~~ 为 `cast`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 `T`。
 
@@ -412,11 +412,11 @@ fun <T> cast(): T?
 fun byte(): Byte?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Byte。
 
@@ -426,7 +426,7 @@ fun byte(): Byte?
 fun int(): Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -434,7 +434,7 @@ fun int(): Int
 
 修改 ~~`ofInt`~~ 为 `int`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Int。
 
@@ -444,7 +444,7 @@ fun int(): Int
 fun long(): Long
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -452,7 +452,7 @@ fun long(): Long
 
 修改 ~~`ofLong`~~ 为 `long`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Long。
 
@@ -462,7 +462,7 @@ fun long(): Long
 fun short(): Short
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -470,7 +470,7 @@ fun short(): Short
 
 修改 ~~`ofShort`~~ 为 `short`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Short。
 
@@ -480,7 +480,7 @@ fun short(): Short
 fun double(): Double
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -488,7 +488,7 @@ fun double(): Double
 
 修改 ~~`ofDouble`~~ 为 `double`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Double。
 
@@ -498,7 +498,7 @@ fun double(): Double
 fun float(): Float
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -506,7 +506,7 @@ fun float(): Float
 
 修改 ~~`ofFloat`~~ 为 `float`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Float。
 
@@ -516,7 +516,7 @@ fun float(): Float
 fun string(): String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -524,7 +524,7 @@ fun string(): String
 
 修改 ~~`ofString`~~ 为 `string`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 String。
 
@@ -534,11 +534,11 @@ fun string(): String
 fun char(): Char
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Char。
 
@@ -548,7 +548,7 @@ fun char(): Char
 fun boolean(): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.66` `新增`
 
@@ -556,7 +556,7 @@ fun boolean(): Boolean
 
 修改 ~~`ofBoolean`~~ 为 `boolean`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Boolean。
 
@@ -566,11 +566,11 @@ fun boolean(): Boolean
 fun any(): Any?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.77` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Any。
 
@@ -580,11 +580,11 @@ fun any(): Any?
 inline fun <reified T> array(): Array<T>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 Array。
 
@@ -593,11 +593,11 @@ inline fun <reified T> array(): Array<T>
 inline fun <reified T> list(): List<T>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法参数的实例对象 List。
 
@@ -607,11 +607,11 @@ inline fun <reified T> list(): List<T>
 fun <T> set(any: T?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置方法参数的实例对象。
 
@@ -621,11 +621,11 @@ fun <T> set(any: T?)
 fun setNull()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置方法参数的实例对象为 `null`。
 
@@ -635,11 +635,11 @@ fun setNull()
 fun setTrue()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置方法参数的实例对象为 `true`。
 
@@ -651,11 +651,11 @@ fun setTrue()
 fun setFalse()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置方法参数的实例对象为 `false`。
 

@@ -4,7 +4,7 @@
 
 加入我们 [点击加入 Telegram 群组](https://t.me/YukiHookAPI)
 
-在<b>酷安</b>找到我 [@星夜不荟](http://www.coolapk.com/u/876977)
+在**酷安**找到我 [@星夜不荟](http://www.coolapk.com/u/876977)
 
 ## 助力维护
 

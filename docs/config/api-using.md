@@ -49,7 +49,7 @@ class MyApplication : Application() {
 
 ### [Pine](https://github.com/canyie/pine)
 
-> <b>所需 Xposed API 依赖</b> `top.canyie.pine:xposed`
+> **所需 Xposed API 依赖** `top.canyie.pine:xposed`
 
 > 示例如下
 
@@ -68,7 +68,7 @@ override fun attachBaseContext(base: Context?) {
 
 ### [SandHook](https://github.com/asLody/SandHook)
 
-> <b>所需 Xposed API 依赖</b> `com.swift.sandhook:xposedcompat` 或 `com.swift.sandhook:xposedcompat_new`
+> **所需 Xposed API 依赖** `com.swift.sandhook:xposedcompat` 或 `com.swift.sandhook:xposedcompat_new`
 
 > 示例如下
 
@@ -90,7 +90,7 @@ override fun attachBaseContext(base: Context?) {
 
 ### [Whale](https://github.com/asLody/whale)
 
-> <b>所需 Xposed API 依赖</b> `com.wind.xposed:xposed-on-whale`
+> **所需 Xposed API 依赖** `com.wind.xposed:xposed-on-whale`
 
 请参考 [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale)。
 

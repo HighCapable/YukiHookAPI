@@ -4,11 +4,11 @@
 open class PackageParam(private var wrapper: PackageParamWrapper?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 装载 Hook 的目标 APP 入口对象实现类。
 
@@ -18,11 +18,11 @@ open class PackageParam(private var wrapper: PackageParamWrapper?)
 val appClassLoader：ClassLoader
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook APP 的 `ClassLoader`。
 
@@ -32,11 +32,11 @@ val appClassLoader：ClassLoader
 val appInfo: ApplicationInfo
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook APP 的 `ApplicationInfo`。
 
@@ -46,11 +46,11 @@ val appInfo: ApplicationInfo
 val appContext: Application
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.72` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook APP 的 `Application`。
 
@@ -60,11 +60,11 @@ val appContext: Application
 val processName: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook APP 的进程名称。
 
@@ -74,11 +74,11 @@ val processName: String
 val packageName: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook APP 的包名。
 
@@ -88,11 +88,11 @@ val packageName: String
 val isFirstApplication: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook APP 是否为第一个 `Application`。
 
@@ -102,11 +102,11 @@ val isFirstApplication: Boolean
 val mainProcessName: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook APP 的主进程名称。
 
@@ -118,11 +118,11 @@ val mainProcessName: String
 val prefs: YukiHookModulePrefs
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获得当前使用的存取数据对象缓存实例。
 
@@ -132,11 +132,11 @@ val prefs: YukiHookModulePrefs
 fun prefs(name: String): YukiHookModulePrefs
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获得当前使用的存取数据对象缓存实例。
 
@@ -152,11 +152,11 @@ fun loadApp(name: String, initiate: PackageParam.() -> Unit)
 fun loadApp(name: String, hooker: YukiBaseHooker)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 装载并 Hook 指定包名的 APP。
 
@@ -172,11 +172,11 @@ fun withProcess(name: String, initiate: PackageParam.() -> Unit)
 fun withProcess(name: String, hooker: YukiBaseHooker)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 装载并 Hook APP 的指定进程。
 
@@ -188,11 +188,11 @@ fun withProcess(name: String, hooker: YukiBaseHooker)
 fun loadHooker(hooker: YukiBaseHooker)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 装载 Hook 子类。
 
@@ -208,15 +208,15 @@ val String.clazz: Class<*>
 val VariousClass.clazz: Class<*>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 字符串、`VariousClass` 转换为实体类。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以轻松地将 `String` 类型的 `Class` 包名转为 `Class` 实例。
 
@@ -250,15 +250,15 @@ VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").clazz
 val String.hasClass: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 通过字符串使用当前 `appClassLoader` 查找类是否存在。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以轻松的使用此方法判断字符串中的类是否存在。
 
@@ -280,7 +280,7 @@ fun findClass(name: String): HookClass
 fun findClass(vararg name: String): VariousClass
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -288,11 +288,11 @@ fun findClass(vararg name: String): VariousClass
 
 移除了 ~~`findClass(various: VariousClass)`~~ 方法
 
-<b>功能描述</b>
+**功能描述**
 
 > 通过完整包名+名称查找需要被 Hook 的 `Class`。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以使用三种方式查找你需要 Hook 的目标 `Class`。
 
@@ -338,7 +338,7 @@ fun VariousClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.()
 fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -358,11 +358,11 @@ fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() ->
 
 新增 `isUseAppClassLoader` 参数
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是一切 Hook 的入口创建方法，Hook 方法、构造类。
 
-<b>功能示例</b>
+**功能示例**
 
 如你所见，Hook 方法体的创建可使用 4 种方式。
 

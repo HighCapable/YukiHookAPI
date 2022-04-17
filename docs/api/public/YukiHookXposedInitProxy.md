@@ -4,11 +4,11 @@
 interface YukiHookXposedInitProxy
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > YukiHookAPI 的 Xposed 装载 API 调用接口。
 
@@ -18,11 +18,11 @@ interface YukiHookXposedInitProxy
 fun onInit()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 配置 `YukiHookAPI.Configs` 的初始化方法。
 
@@ -36,10 +36,10 @@ fun onInit()
 fun onHook()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > Xposed API 的模块装载调用入口方法。

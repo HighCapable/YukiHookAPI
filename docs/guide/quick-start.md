@@ -61,7 +61,7 @@ dependencies {
 }
 ```
 
-请将 <b>&lt;version&gt;</b> 修改为 [这里](about/changelog) 的最新版本。
+请将 **&lt;version&gt;** 修改为 [这里](about/changelog) 的最新版本。
 
 !> `YukiHookAPI` 的 `api` 与 `ksp-xposed` 依赖的版本必须一一对应，否则将会造成版本不匹配错误。
 

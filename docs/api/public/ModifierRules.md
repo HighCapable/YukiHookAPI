@@ -4,11 +4,11 @@
 class ModifierRules
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是一个 `Member` 描述符定义类。
 
@@ -20,11 +20,11 @@ class ModifierRules
 fun asPublic()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `public`。
 
@@ -34,11 +34,11 @@ fun asPublic()
 fun asPrivate()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `private`。
 
@@ -48,11 +48,11 @@ fun asPrivate()
 fun asProtected()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `protected`。
 
@@ -62,11 +62,11 @@ fun asProtected()
 fun asStatic()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `static`。
 
@@ -80,11 +80,11 @@ fun asStatic()
 fun asFinal()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `final`。
 
@@ -96,11 +96,11 @@ fun asFinal()
 fun asSynchronized()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `synchronized`。
 
@@ -110,11 +110,11 @@ fun asSynchronized()
 fun asVolatile()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `volatile`。
 
@@ -124,11 +124,11 @@ fun asVolatile()
 fun asTransient()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `transient`。
 
@@ -138,11 +138,11 @@ fun asTransient()
 fun asNative()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `native`。
 
@@ -154,11 +154,11 @@ fun asNative()
 fun asInterface()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `interface`。
 
@@ -168,11 +168,11 @@ fun asInterface()
 fun asAbstract()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `abstract`。
 
@@ -184,10 +184,10 @@ fun asAbstract()
 fun asStrict()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 添加描述 `Member` 类型包含 `strict`。

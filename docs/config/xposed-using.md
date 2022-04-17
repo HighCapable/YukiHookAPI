@@ -22,13 +22,13 @@ annotation class InjectYukiHookWithXposed(val sourcePath: String, val modulePack
 
 !> `@InjectYukiHookWithXposed` 注解的 `Class` 必须实现 `YukiHookXposedInitProxy` 接口。
 
-!> 在你当前项目中的所有 `Class` 标记中<b>只能存在一次</b>，若<b>存在多个声明自动处理程序<u>会在编译时抛出异常</u></b>，你可以自定义其相关参数。
+!> 在你当前项目中的所有 `Class` 标记中**只能存在一次**，若**存在多个声明自动处理程序<u>会在编译时抛出异常</u>**，你可以自定义其相关参数。
 
 #### sourcePath 参数
 
 `sourcePath` 参数决定了自动处理程序自动查找并匹配你当前项目路径的重要标识，此参数的内容为相对路径匹配，默认参数为 `src/main`。
 
-!> 如果你的项目不在 `...app/src/main...` 或你手动使用 `sourceSets` 设置了项目路径，你就需要手动设置 `sourcePath` 参数，<b>否则自动处理程序将无法识别你的项目路径并<u>会在编译时抛出异常</u></b>。
+!> 如果你的项目不在 `...app/src/main...` 或你手动使用 `sourceSets` 设置了项目路径，你就需要手动设置 `sourcePath` 参数，**否则自动处理程序将无法识别你的项目路径并<u>会在编译时抛出异常</u>**。
 
 > 示例如下
 

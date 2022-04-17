@@ -1,10 +1,10 @@
 ## YukiHookFactory [kt]
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是 `YukiHookAPI` 相关 `lambda` 方法的封装类以及部分 API 用法。
 
@@ -14,11 +14,11 @@
 fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.1` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 在 `YukiHookXposedInitProxy` 中配置 `Configs`。
 
@@ -32,11 +32,11 @@ fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit)
 fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 在 `YukiHookXposedInitProxy` 中装载 `YukiHookAPI`。
 
@@ -46,11 +46,11 @@ fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker)
 val Context.modulePrefs: YukiHookModulePrefs
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取模块的存取对象。
 
@@ -60,11 +60,11 @@ val Context.modulePrefs: YukiHookModulePrefs
 fun Context.modulePrefs(name: String): YukiHookModulePrefs
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取模块的存取对象，可设置 `name` 为自定义 Sp 存储名称。
 
@@ -74,11 +74,11 @@ fun Context.modulePrefs(name: String): YukiHookModulePrefs
 val Context.processName: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前进程名称。
 
@@ -88,11 +88,11 @@ val Context.processName: String
 val Context.isModuleActive: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.6` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 判断模块是否在 Xposed 或太极、无极中激活。
 
@@ -102,11 +102,11 @@ val Context.isModuleActive: Boolean
 val Any?.isXposedModuleActive: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.6` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 仅判断模块是否在 Xposed 中激活。
 
@@ -116,10 +116,10 @@ val Any?.isXposedModuleActive: Boolean
 val Context.isTaiChiModuleActive: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 仅判断模块是否在太极、无极中激活。

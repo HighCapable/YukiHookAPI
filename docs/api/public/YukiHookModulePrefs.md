@@ -4,11 +4,11 @@
 class YukiHookModulePrefs(private val context: Context?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 实现 Xposed 模块的数据存取，对接 `SharedPreferences` 和 `XSharedPreferences`。
 
@@ -32,15 +32,15 @@ class YukiHookModulePrefs(private val context: Context?)
 fun name(name: String): YukiHookModulePrefs
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 自定义 Sp 存储名称。
 
-<b>功能示例</b>
+**功能示例**
 
 在 `Activity` 中的使用方法。
 
@@ -64,11 +64,11 @@ prefs("custom_name").getString("custom_key")
 fun direct(): YukiHookModulePrefs
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略缓存直接读取键值。
 
@@ -82,11 +82,11 @@ fun direct(): YukiHookModulePrefs
 fun getString(key: String, value: String): String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取 `String` 键值。
 
@@ -96,11 +96,11 @@ fun getString(key: String, value: String): String
 fun getStringSet(key: String, value: Set<String>): Set<String>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.77` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取 `Set<String>` 键值。
 
@@ -110,11 +110,11 @@ fun getStringSet(key: String, value: Set<String>): Set<String>
 fun getBoolean(key: String, value: Boolean): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取 `Boolean` 键值。
 
@@ -124,11 +124,11 @@ fun getBoolean(key: String, value: Boolean): Boolean
 fun getInt(key: String, value: Int): Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取 `Int` 键值。
 
@@ -138,11 +138,11 @@ fun getInt(key: String, value: Int): Int
 fun getLong(key: String, value: Long): Long
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取 `Long` 键值。
 
@@ -152,11 +152,11 @@ fun getLong(key: String, value: Long): Long
 fun getFloat(key: String, value: Float): Float
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取 `Float` 键值。
 
@@ -166,11 +166,11 @@ fun getFloat(key: String, value: Float): Float
 fun all(): HashMap<String, Any?>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.77` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取全部存储的键值数据。
 
@@ -184,11 +184,11 @@ fun all(): HashMap<String, Any?>
 fun remove(key: String)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 移除全部包含 `key` 的存储数据。
 
@@ -200,11 +200,11 @@ fun remove(key: String)
 inline fun <reified T> remove(prefs: PrefsData<T>)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 移除 `PrefsData.key` 的存储数据。
 
@@ -216,11 +216,11 @@ inline fun <reified T> remove(prefs: PrefsData<T>)
 fun clear()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.77` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 移除全部存储数据。
 
@@ -232,11 +232,11 @@ fun clear()
 fun putString(key: String, value: String)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 存储 `String` 键值。
 
@@ -248,11 +248,11 @@ fun putString(key: String, value: String)
 fun putStringSet(key: String, value: Set<String>)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.77` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 存储 `Set<String>` 键值。
 
@@ -264,11 +264,11 @@ fun putStringSet(key: String, value: Set<String>)
 fun putBoolean(key: String, value: Boolean)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 存储 `Boolean` 键值。
 
@@ -280,11 +280,11 @@ fun putBoolean(key: String, value: Boolean)
 fun putInt(key: String, value: Int)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 存储 `Int` 键值。
 
@@ -296,11 +296,11 @@ fun putInt(key: String, value: Int)
 fun putLong(key: String, value: Long)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 存储 `Long` 键值。
 
@@ -312,11 +312,11 @@ fun putLong(key: String, value: Long)
 fun putFloat(key: String, value: Float)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 存储 `Float` 键值。
 
@@ -328,11 +328,11 @@ fun putFloat(key: String, value: Float)
 inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 智能获取指定类型的键值。
 
@@ -342,11 +342,11 @@ inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
 inline fun <reified T> put(prefs: PrefsData<T>, value: T)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 智能存储指定类型的键值。
 
@@ -358,11 +358,11 @@ inline fun <reified T> put(prefs: PrefsData<T>, value: T)
 fun clearCache()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 清除 `XSharedPreferences` 中缓存的键值数据。
 

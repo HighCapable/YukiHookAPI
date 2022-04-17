@@ -4,11 +4,11 @@
 abstract class YukiBaseHooker : PackageParam()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > `YukiHookAPI` 的子类 Hooker 实现。
 
@@ -18,10 +18,10 @@ abstract class YukiBaseHooker : PackageParam()
 fun onHook()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 子类 Hook 开始。

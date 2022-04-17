@@ -4,11 +4,11 @@
 class CurrentClass(private val instance: Class<*>, private val self: Any)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 当前实例的类操作对象。
 
@@ -18,11 +18,11 @@ class CurrentClass(private val instance: Class<*>, private val self: Any)
 fun field(initiate: FieldFinder.() -> Unit): FieldFinder.Result.Instance
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 调用当前实例中的变量。
 
@@ -32,10 +32,10 @@ fun field(initiate: FieldFinder.() -> Unit): FieldFinder.Result.Instance
 fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result.Instance
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 调用当前实例中的方法。

@@ -4,7 +4,7 @@
 class MethodFinder(override val hookInstance: YukiHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -12,7 +12,7 @@ class MethodFinder(override val hookInstance: YukiHookCreater.MemberHookCreater?
 
 合并到 `BaseFinder`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Method` 查找类。
 
@@ -22,7 +22,7 @@ class MethodFinder(override val hookInstance: YukiHookCreater.MemberHookCreater?
 var name: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -30,7 +30,7 @@ var name: String
 
 允许不填写名称
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 名称。
 
@@ -42,11 +42,11 @@ var name: String
 var paramCount: Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 参数个数。
 
@@ -60,11 +60,11 @@ var paramCount: Int
 var returnType: Any?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 返回值，可不填写返回值，默认模糊查找并取第一个匹配的 `Method`。
 
@@ -74,11 +74,11 @@ var returnType: Any?
 fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 标识符筛选条件。
 
@@ -92,11 +92,11 @@ fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 fun emptyParam(): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.75` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 空参数、无参数。
 
@@ -106,11 +106,11 @@ fun emptyParam(): IndexTypeCondition
 fun param(vararg paramType: Any): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 参数。
 
@@ -128,11 +128,11 @@ fun param(vararg paramType: Any): IndexTypeCondition
 fun order(): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 顺序筛选字节码的下标。
 
@@ -142,11 +142,11 @@ fun order(): IndexTypeCondition
 fun name(value: String): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 名称。
 
@@ -160,11 +160,11 @@ fun name(value: String): IndexTypeCondition
 fun paramCount(num: Int): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 参数个数。
 
@@ -180,11 +180,11 @@ fun paramCount(num: Int): IndexTypeCondition
 fun returnType(value: Any): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Method` 返回值。
 
@@ -198,11 +198,11 @@ fun returnType(value: Any): IndexTypeCondition
 inner class RemedyPlan
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Method` 重查找实现类，可累计失败次数直到查找成功。
 
@@ -212,11 +212,11 @@ inner class RemedyPlan
 fun method(initiate: MethodFinder.() -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建需要重新查找的 `Method`。
 
@@ -228,11 +228,11 @@ fun method(initiate: MethodFinder.() -> Unit): Result
 inner class Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.1` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > `RemedyPlan` 结果实现类。
 
@@ -242,15 +242,15 @@ inner class Result
 fun onFind(initiate: Method.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.1` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 当在 `RemedyPlan` 中找到结果时。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以方便地对重查找的 `Method` 实现 `onFind` 方法。
 
@@ -270,11 +270,11 @@ method {
 inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Method` 查找结果实现类。
 
@@ -284,15 +284,15 @@ inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
 fun result(initiate: Result.() -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建监听结果事件方法体。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以使用 `lambda` 形式创建 `Result` 类。
 
@@ -314,17 +314,17 @@ method {
 fun get(instance: Any?): Instance
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获得 `Method` 实例处理类。
 
 !> 若你设置了 `remedys` 请使用 `wait` 回调结果方法。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以通过获得方法所在实例来执行方法。
 
@@ -352,11 +352,11 @@ method {
 fun give(): Method?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到方法本身。
 
@@ -366,11 +366,11 @@ fun give(): Method?
 fun wait(instance: Any?, initiate: Instance.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获得 `Method` 实例处理类，配合 `RemedyPlan` 使用。
 
@@ -384,15 +384,15 @@ fun wait(instance: Any?, initiate: Instance.() -> Unit)
 fun remedys(initiate: RemedyPlan.() -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建方法重查找功能。
 
-<b>功能示例</b>
+**功能示例**
 
 当你遇到一种方法可能存在不同形式的存在时，可以使用 `RemedyPlan` 重新查找它，而没有必要使用 `onNoSuchMethod` 捕获异常二次查找方法。
 
@@ -419,11 +419,11 @@ method {
 fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听找不到方法时。
 
@@ -435,11 +435,11 @@ fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result
 fun ignoredError(): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.3` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略任何错误发出的警告。
 
@@ -451,11 +451,11 @@ fun ignoredError(): Result
 inner class Instance(private val instance: Any?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Method` 实例处理类。
 
@@ -465,11 +465,11 @@ inner class Instance(private val instance: Any?)
 fun call(vararg param: Any?): Any?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，不指定返回值类型。
 
@@ -479,11 +479,11 @@ fun call(vararg param: Any?): Any?
 fun <T> invoke(vararg param: Any?): T?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 `T` 返回值类型。
 
@@ -493,11 +493,11 @@ fun <T> invoke(vararg param: Any?): T?
 fun byte(vararg param: Any?): Byte?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Byte 返回值类型。
 
@@ -507,7 +507,7 @@ fun byte(vararg param: Any?): Byte?
 fun int(vararg param: Any?): Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.65` `新增`
 
@@ -515,7 +515,7 @@ fun int(vararg param: Any?): Int
 
 修改 ~~`callInt`~~ 为 `int`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Int 返回值类型。
 
@@ -525,7 +525,7 @@ fun int(vararg param: Any?): Int
 fun long(vararg param: Any?): Long
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.65` `新增`
 
@@ -533,7 +533,7 @@ fun long(vararg param: Any?): Long
 
 修改 ~~`callLong`~~ 为 `long`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Long 返回值类型。
 
@@ -543,7 +543,7 @@ fun long(vararg param: Any?): Long
 fun short(vararg param: Any?): Short
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.65` `新增`
 
@@ -551,7 +551,7 @@ fun short(vararg param: Any?): Short
 
 修改 ~~`callShort`~~ 为 `short`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Short 返回值类型。
 
@@ -561,7 +561,7 @@ fun short(vararg param: Any?): Short
 fun double(vararg param: Any?): Double
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.65` `新增`
 
@@ -569,7 +569,7 @@ fun double(vararg param: Any?): Double
 
 修改 ~~`callDouble`~~ 为 `double`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Double 返回值类型。
 
@@ -579,7 +579,7 @@ fun double(vararg param: Any?): Double
 fun float(vararg param: Any?): Float
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.65` `新增`
 
@@ -587,7 +587,7 @@ fun float(vararg param: Any?): Float
 
 修改 ~~`callFloat`~~ 为 `float`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Float 返回值类型。
 
@@ -597,7 +597,7 @@ fun float(vararg param: Any?): Float
 fun string(vararg param: Any?): String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.65` `新增`
 
@@ -605,7 +605,7 @@ fun string(vararg param: Any?): String
 
 修改 ~~`callString`~~ 为 `string`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 String 返回值类型。
 
@@ -615,11 +615,11 @@ fun string(vararg param: Any?): String
 fun char(vararg param: Any?): Char
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Char 返回值类型。
 
@@ -629,7 +629,7 @@ fun char(vararg param: Any?): Char
 fun boolean(vararg param: Any?): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.65` `新增`
 
@@ -637,7 +637,7 @@ fun boolean(vararg param: Any?): Boolean
 
 修改 ~~`callBoolean`~~ 为 `boolean`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Boolean 返回值类型。
 
@@ -647,11 +647,11 @@ fun boolean(vararg param: Any?): Boolean
 inline fun <reified T> array(vararg param: Any?): Array<T>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 Array 返回值类型。
 
@@ -661,10 +661,10 @@ inline fun <reified T> array(vararg param: Any?): Array<T>
 inline fun <reified T> list(vararg param: Any?): List<T>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行方法，指定 List 返回值类型。

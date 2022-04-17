@@ -4,11 +4,11 @@
 object YukiHookAPI
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是 `YukiHookAPI` 的 API 调用总类，Hook 相关功能的开始、Hook 相关功能的配置都在这里。
 
@@ -18,11 +18,11 @@ object YukiHookAPI
 const val API_VERSION_NAME: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.4` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 `YukiHookAPI` 的版本。
 
@@ -32,11 +32,11 @@ const val API_VERSION_NAME: String
 const val API_VERSION_CODE: Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.4` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 `YukiHookAPI` 的版本号。
 
@@ -46,11 +46,11 @@ const val API_VERSION_CODE: Int
 val executorName: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 框架的名称。
 
@@ -62,11 +62,11 @@ val executorName: String
 val executorVersion: Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 框架的版本。
 
@@ -78,11 +78,11 @@ val executorVersion: Int
 object Configs
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 对 API 相关功能的配置类。
 
@@ -92,11 +92,11 @@ object Configs
 var debugTag: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 模块在调用 `logger` 时打印的日志 `TAG` 名称。
 
@@ -108,11 +108,11 @@ var debugTag: String
 var isDebug: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 是否启用 DEBUG 模式。
 
@@ -124,11 +124,11 @@ var isDebug: Boolean
 var isAllowPrintingLogs: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.4` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 是否启用调试日志的输出功能。
 
@@ -140,11 +140,11 @@ var isAllowPrintingLogs: Boolean
 var isEnableModulePrefsCache: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 是否启用 `YukiHookModulePrefs` 的键值缓存功能。
 
@@ -158,11 +158,11 @@ var isEnableModulePrefsCache: Boolean
 var isEnableMemberCache: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.68` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 是否启用 `Member` 缓存功能。
 
@@ -182,17 +182,17 @@ var isEnableMemberCache: Boolean
 fun configs(initiate: Configs.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 对 `Configs` 类实现了一个 `lambda` 方法体。
 
 你可以轻松的调用它进行配置。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以在 `HookEntryClass` 的 `onInit` 方法中调用 `configs` 方法完成对 API 的功能配置，实时生效。
 
@@ -277,15 +277,15 @@ fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit)
 fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 装载 Hook 入口的核心方法。
 
-<b>功能示例</b>
+**功能示例**
 
 详情请参考
 

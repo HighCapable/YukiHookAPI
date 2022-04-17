@@ -4,7 +4,7 @@
 class ConstructorFinder(override val hookInstance: YukiHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -12,7 +12,7 @@ class ConstructorFinder(override val hookInstance: YukiHookCreater.MemberHookCre
 
 合并到 `BaseFinder`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Constructor` 查找类。
 
@@ -22,11 +22,11 @@ class ConstructorFinder(override val hookInstance: YukiHookCreater.MemberHookCre
 var paramCount: Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Constructor` 参数个数。
 
@@ -40,11 +40,11 @@ var paramCount: Int
 fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Constructor` 标识符筛选条件。
 
@@ -58,11 +58,11 @@ fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 fun emptyParam(): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.75` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Constructor` 空参数、无参数。
 
@@ -72,11 +72,11 @@ fun emptyParam(): IndexTypeCondition
 fun param(vararg paramType: Any): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Constructor` 参数。
 
@@ -94,11 +94,11 @@ fun param(vararg paramType: Any): IndexTypeCondition
 fun paramCount(num: Int): IndexTypeCondition
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置 `Constructor` 参数个数。
 
@@ -114,11 +114,11 @@ fun paramCount(num: Int): IndexTypeCondition
 inner class RemedyPlan
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Constructor` 重查找实现类，可累计失败次数直到查找成功。
 
@@ -128,11 +128,11 @@ inner class RemedyPlan
 fun constructor(initiate: ConstructorFinder.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建需要重新查找的 `Constructor`。
 
@@ -144,11 +144,11 @@ fun constructor(initiate: ConstructorFinder.() -> Unit)
 inner class Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.1` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > `RemedyPlan` 结果实现类。
 
@@ -158,15 +158,15 @@ inner class Result
 fun onFind(initiate: Constructor<*>.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.1` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 当在 `RemedyPlan` 中找到结果时。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以方便地对重查找的 `Constructor` 实现 `onFind` 方法。
 
@@ -186,11 +186,11 @@ constructor {
 inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Constructor` 查找结果实现类。
 
@@ -200,15 +200,15 @@ inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
 fun result(initiate: Result.() -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建监听结果事件方法体。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以使用 `lambda` 形式创建 `Result` 类。
 
@@ -230,17 +230,17 @@ constructor {
 fun get(): Instance
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获得 `Constructor` 实例处理类。
 
 !> 若你设置了 `remedys` 请使用 `wait` 回调结果方法。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以通过获得方法所在实例来执行构造方法创建新的实例对象。
 
@@ -278,11 +278,11 @@ constructor {
 fun give(): Constructor<*>?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到构造方法本身。
 
@@ -292,11 +292,11 @@ fun give(): Constructor<*>?
 fun wait(initiate: Instance.() -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获得 `Constructor` 实例处理类，配合 `RemedyPlan` 使用。
 
@@ -310,15 +310,15 @@ fun wait(initiate: Instance.() -> Unit)
 fun remedys(initiate: RemedyPlan.() -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建构造方法重查找功能。
 
-<b>功能示例</b>
+**功能示例**
 
 当你遇到一种构造方法可能存在不同形式的存在时，可以使用 `RemedyPlan` 重新查找它，而没有必要使用 `onNoSuchConstructor` 捕获异常二次查找构造方法。
 
@@ -345,11 +345,11 @@ constructor {
 fun onNoSuchConstructor(initiate: (Throwable) -> Unit): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 监听找不到构造方法时。
 
@@ -361,11 +361,11 @@ fun onNoSuchConstructor(initiate: (Throwable) -> Unit): Result
 fun ignoredError(): Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.3` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 忽略任何错误发出的警告。
 
@@ -377,11 +377,11 @@ fun ignoredError(): Result
 inner class Instance
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > `Constructor` 实例处理类。
 
@@ -391,11 +391,11 @@ inner class Instance
 fun call(vararg param: Any?): Any?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行构造方法创建目标实例，不指定目标实例类型。
 
@@ -405,10 +405,10 @@ fun call(vararg param: Any?): Any?
 fun <T> newInstance(vararg param: Any?): T?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 执行构造方法创建目标实例 ，指定 `T` 目标实例类型。

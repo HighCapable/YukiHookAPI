@@ -4,11 +4,11 @@
 open class ModuleApplication: Application()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.77` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是对使用 `YukiHookAPI` Xposed 模块实现中的一个扩展功能。
 
@@ -24,7 +24,7 @@ open class ModuleApplication: Application()
 
 - 在模块中使用系统隐藏 API，核心技术引用了开源项目 [FreeReflection](https://github.com/tiann/FreeReflection)
 
-<b>功能示例</b>
+**功能示例**
 
 将此类继承到你的自定义 `Application` 上。
 
@@ -67,10 +67,10 @@ class MyApplication: ModuleApplication() {
 val appContext: ModuleApplication
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.77` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
-> 全局静态 `Application` 实例。
+> 获取全局静态 `Application` 实例。

@@ -4,11 +4,11 @@
 class HookClass(var instance: Class<*>?, var name: String, var throwable: Throwable?)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 创建一个当前 Hook 的 `Class` 接管类。
 

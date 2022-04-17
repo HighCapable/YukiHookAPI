@@ -4,11 +4,11 @@
 class VariousClass(vararg var name: String)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是一个不确定性 `Class` 类名装载器，通过 `name` 装载 `Class` 名称数组。
 
@@ -18,11 +18,11 @@ class VariousClass(vararg var name: String)
 fun get(loader: ClassLoader? = null): Class<*>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取匹配的实体类。
 

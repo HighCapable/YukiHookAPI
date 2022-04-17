@@ -4,17 +4,17 @@
 data class PrefsData<T>(var key: String, var value: T)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 键值对存储构造类。
 
 这个类是对 `YukiHookModulePrefs` 的一个扩展用法。
 
-<b>功能示例</b>
+**功能示例**
 
 建立一个模板类定义模块与宿主需要使用的键值数据。
 

@@ -4,11 +4,11 @@
 inner class IndexTypeCondition(private val type: IndexConfigType)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 字节码下标筛选实现类。
 
@@ -18,11 +18,11 @@ inner class IndexTypeCondition(private val type: IndexConfigType)
 fun index(num: Int)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置下标。
 
@@ -36,11 +36,11 @@ fun index(num: Int)
 fun index(): IndexTypeConditionSort
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 得到下标。
 
@@ -50,11 +50,11 @@ fun index(): IndexTypeConditionSort
 inner class IndexTypeConditionSort
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 字节码下标排序实现类。
 
@@ -64,11 +64,11 @@ inner class IndexTypeConditionSort
 fun first()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置满足条件的第一个。
 
@@ -78,11 +78,11 @@ fun first()
 fun last()
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置满足条件的最后一个。
 
@@ -92,10 +92,10 @@ fun last()
 fun reverse(num: Int)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 设置倒序下标。

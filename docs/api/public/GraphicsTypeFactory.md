@@ -1,10 +1,10 @@
 ## GraphicsTypeFactory [kt]
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是一个预置 Hook 类型的常量类，主要为 `Android` 相关 `Graphics` 的 `Class` 内容，跟随版本更新会逐一进行增加。
 

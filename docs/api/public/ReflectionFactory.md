@@ -1,10 +1,10 @@
 ## ReflectionFactory [kt]
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是自定义 `Member` 和 `Class` 相关功能的查找匹配以及 `invoke` 的封装类。
 
@@ -14,15 +14,15 @@
 val String.hasClass: Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 通过字符串查找类是否存在。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以轻松的使用此方法判断字符串中的类是否存在。
 
@@ -42,11 +42,11 @@ if("com.example.demo.DemoClass".hasClass) {
 val Class<*>.hookClass: HookClass
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 将 `Class` 转换为 `HookClass`。
 
@@ -56,11 +56,11 @@ val Class<*>.hookClass: HookClass
 val HookClass.normalClass: Class<*>?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 将 `HookClass` 转换为 `Class`。
 
@@ -70,15 +70,15 @@ val HookClass.normalClass: Class<*>?
 fun classOf(name: String, loader: ClassLoader?): Class<*>
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 通过字符串使用指定的 `ClassLoader` 转换为实体类。
 
-<b>功能示例</b>
+**功能示例**
 
 你可以直接填写你要查找的目标 `Class`，必须在当前 `ClassLoader` 下存在。
 
@@ -102,11 +102,11 @@ classOf(name = "com.example.demo.DemoClass", classLoader)
 fun String.hasClass(loader: ClassLoader?): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 通过字符串使用指定的 `ClassLoader` 查找类是否存在。
 
@@ -116,7 +116,7 @@ fun String.hasClass(loader: ClassLoader?): Boolean
 fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.4` `新增`
 
@@ -124,7 +124,7 @@ fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
 
 合并到 `FieldFinder`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找变量是否存在。
 
@@ -134,7 +134,7 @@ fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
 fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -146,7 +146,7 @@ fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
 
 合并到 `MethodFinder`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找方法是否存在。
 
@@ -156,7 +156,7 @@ fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
 fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
@@ -164,7 +164,7 @@ fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
 
 合并到 `ConstructorFinder`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找构造方法是否存在。
 
@@ -174,17 +174,17 @@ fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
 fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.67` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查询 `Member` 中匹配的描述符。
 
 ### ~~obtainStaticFieldAny [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -192,7 +192,7 @@ fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 ### ~~obtainFieldAny [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -200,7 +200,7 @@ fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 ### ~~modifyStaticField [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -208,7 +208,7 @@ fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 ### ~~modifyField [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -220,11 +220,11 @@ fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 fun Class<*>.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.2` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找并得到变量。
 
@@ -234,7 +234,7 @@ fun Class<*>.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
 fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -248,7 +248,7 @@ fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 
 合并到 `MethodFinder` 方法体。
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找并得到方法。
 
@@ -258,7 +258,7 @@ fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -270,13 +270,13 @@ fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFin
 
 合并到 `ConstructorFinder` 方法体。
 
-<b>功能描述</b>
+**功能描述**
 
 > 查找并得到构造类。
 
 ### ~~callStatic [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -288,7 +288,7 @@ fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFin
 
 ### ~~call [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
@@ -304,11 +304,11 @@ fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFin
 inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获得当前实例的类操作对象。
 
@@ -318,11 +318,11 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
 fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): T?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 通过构造方法创建新实例，指定类型 `T`。
 
@@ -332,11 +332,11 @@ fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> U
 fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): Any?
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 通过构造方法创建新实例，任意类型 `Any`。
 
@@ -346,11 +346,11 @@ fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Un
 fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 遍历当前类中的所有方法。
 
@@ -360,11 +360,11 @@ fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit)
 fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 遍历当前类中的所有构造方法。
 
@@ -374,10 +374,10 @@ fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>)
 fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit)
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.70` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 遍历当前类中的所有变量。

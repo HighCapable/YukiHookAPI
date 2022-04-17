@@ -4,11 +4,11 @@
 object YukiHookModuleStatus
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 
-<b>功能描述</b>
+**功能描述**
 
 > 这是一个 Xposed 模块 Hook 状态类。
 
@@ -18,11 +18,11 @@ object YukiHookModuleStatus
 val executorName: String
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 框架的名称。
 
@@ -34,11 +34,11 @@ val executorName: String
 val executorVersion: Int
 ```
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0.5` `新增`
 
-<b>功能描述</b>
+**功能描述**
 
 > 获取当前 Hook 框架的版本。
 
@@ -46,7 +46,7 @@ val executorVersion: Int
 
 ### ~~isActive [method]~~ <!-- {docsify-ignore} -->
 
-<b>变更记录</b>
+**变更记录**
 
 `v1.0` `添加`
 

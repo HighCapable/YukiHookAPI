@@ -25,15 +25,15 @@ Xposed Framework
 
 我们可以在宿主(APP)运行时通过注入宿主(APP)来达到控制其行为的最终目的。
 
-Xposed 的这种运行方式被称为<b>寄生</b>，Xposed 模块跟随宿主的生命周期，在宿主的生命周期内完成自己的生命历程。
+Xposed 的这种运行方式被称为**寄生**，Xposed 模块跟随宿主的生命周期，在宿主的生命周期内完成自己的生命历程。
 
 我们可以通过反射的方式调用宿主的方法、变量、构造方法，以及使用 `XposedBridge` 所提供的 Hook 操作动态地在宿主(APP)要执行的方法前后插入自己的代码，或完全替换目标，甚至是拦截。
 
 ## 发展过程
 
-如今的 Xposed 管理器已完全被其衍生作品替代，而 <b>SuperSU</b> 的时代也已经落幕了，现在，借助 <b>Magisk</b> 使后面的一切又成为了可能。
+如今的 Xposed 管理器已完全被其衍生作品替代，而 **SuperSU** 的时代也已经落幕了，现在，借助 **Magisk** 使后面的一切又成为了可能。
 
-> 其发展史大致可分为 <b>Xposed(Dalvik)</b> → <b>Xposed(ART)</b> → <b>Xposed(Magisk)</b> → <b>EdXposed(Riru)</b>/<b>LSPosed(Riru/Zygisk)</b>
+> 其发展史大致可分为 **Xposed(Dalvik)** → **Xposed(ART)** → **Xposed(Magisk)** → **EdXposed(Riru)**/**LSPosed(Riru/Zygisk)**
 
 ## 衍生产品
 
@@ -46,13 +46,13 @@ App's Environment
         ...
 ```
 
-通过 Xposed 的运行原理，从而衍生了很多同类型框架，随着当今时代的移动设备获取 Root 权限甚至刷机越来越困难且不是刚需的时候，一些免 Root 框架也随之产生，例如<b>太极</b>。
+通过 Xposed 的运行原理，从而衍生了很多同类型框架，随着当今时代的移动设备获取 Root 权限甚至刷机越来越困难且不是刚需的时候，一些免 Root 框架也随之产生，例如**太极**。
 
 这些在 ART 层面上的 Hook 框架同样也可不借助 Xposed API 完成其和 Xposed 原理一样的 Hook 流程，免 Root 的运行原理为修改 APK 并将 Hook 进程注入宿主，通过外部模块对其进行控制。
 
-另外一种产品就是利用 Android 运行环境现有的功能虚拟出一个完全与当前设备系统一样的环境，并在其中运行 APP，这个就是虚拟 APP 技术 <b>VirtualApp</b>，后来衍生为 <b>VirtualXposed</b>。
+另外一种产品就是利用 Android 运行环境现有的功能虚拟出一个完全与当前设备系统一样的环境，并在其中运行 APP，这个就是虚拟 APP 技术 **VirtualApp**，后来衍生为 **VirtualXposed**。
 
-上述提到的免 Root 框架分别为<b>太极/无极</b>、<b>VirtualXposed/SandVXposed</b>。
+上述提到的免 Root 框架分别为**太极/无极**、**VirtualXposed/SandVXposed**。
 
 ## YukiHookAPI 做了什么
 
