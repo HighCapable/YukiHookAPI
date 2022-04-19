@@ -770,7 +770,7 @@ loggerE(msg = "This is an error")
 // 假设这就是被抛出的异常
 val e = Throwable(...)
 // 打印日志
-loggerE(msg = "This is an error", throwable = e)
+loggerE(msg = "This is an error", e = e)
 ```
 
 打印的结果为如下所示。
@@ -804,6 +804,10 @@ java.lang.Throwable
 我们需要存储模块的数据，以供宿主调用，这个时候会遇到原生 `Sp` 存储的数据互通阻碍。
 
 原生的 `Xposed` 给我们提供了一个 `XSharedPreferences` 用于读取模块的 `Sp` 数据。
+
+### 在 Activity 中使用
+
+> 这里描述了在 `Activity` 中装载 `YukiHookModulePrefs` 的场景。
 
 通常情况下我们可以这样在 Hook 内对其进行初始化。
 
@@ -860,3 +864,13 @@ val testName = prefs.name("specify_file_name").getString("test_name", "default_v
 若你的项目中有大量的固定数据需要存储和读取，推荐使用 `PrefsData` 来创建模板，详细用法可参考 [PrefsData](api/document?id=prefsdata-class)。
 
 更多用法可参考 [YukiHookModulePrefs](api/document?id=yukihookmoduleprefs-class)。
+
+### 在 PreferenceFragment 中使用
+
+> 这里描述了在 `PreferenceFragment` 中装载 `YukiHookModulePrefs` 的场景。
+
+若你的模块使用了 `PreferenceFragmentCompat`，你现在可以将其继承类开始迁移到 `ModulePreferenceFragment`。
+
+!> 你必须继承 `ModulePreferenceFragment` 才能实现 `YukiHookModulePrefs` 的模块存储功能。
+
+详情请参考 [ModulePreferenceFragment](api/document?id=modulepreferencefragment-class)。

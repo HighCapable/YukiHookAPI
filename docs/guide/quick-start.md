@@ -86,6 +86,11 @@ dependencies {
 <meta-data
     android:name="xposedminversion"
     android:value="93" />
+
+<!-- 可选：配置支持 New XSharePrefs 可无需调整 xposedminversion 为 93 -->
+<meta-data
+    android:name="xposedsharedprefs"
+    android:value="true"/>
 ```
 
 在你的项目中创建一个 Hook 入口类，继承于 `YukiHookXposedInitProxy` 并加入注解 `@InjectYukiHookWithXposed`。

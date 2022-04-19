@@ -47,8 +47,8 @@ class MyApplication: ModuleApplication() {
 
 ```xml
 <application
-        android:name="com.demo.MyApplication"
-        ...>
+    android:name="com.demo.MyApplication"
+    ...>
 ```
 
 如果你不需要自定义 `Application` 可以直接将 `ModuleApplication` 设置到 `AndroidManifest.xml` 的 `application` 标签中。
@@ -57,8 +57,8 @@ class MyApplication: ModuleApplication() {
 
 ```xml
 <application
-        android:name="com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication"
-        ...>
+    android:name="com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication"
+    ...>
 ```
 
 ### appContext [field]

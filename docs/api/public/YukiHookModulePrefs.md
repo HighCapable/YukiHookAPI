@@ -28,6 +28,20 @@ class YukiHookModulePrefs(private val context: Context?)
 
 若你正在使用 `PreferenceFragmentCompat`，请迁移到 `ModulePreferenceFragment` 以适配上述功能特性。
 
+**可选配置**
+
+若你不想将你的模块的 `xposedminversion` 最低设置为 `93`，你可以在 `AndroidManifest.xml` 中添加 `xposedsharedprefs` 来实现支持。
+
+详见 [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)。
+
+> 示例如下
+
+```xml
+<meta-data
+    android:name="xposedsharedprefs"
+    android:value="true"/>
+```
+
 ### isRunInNewXShareMode [field]
 
 ```kotlin
@@ -40,7 +54,7 @@ val isRunInNewXShareMode: Boolean
 
 **功能描述**
 
-> 获取 `YukiHookModulePrefs ` 是否正处于 EdXposed/LSPosed 的最高权限运行。
+> 获取 `YukiHookModulePrefs` 是否正处于 EdXposed/LSPosed 的最高权限运行。
 
 前提条件为当前 Xposed 模块已被激活。
 
