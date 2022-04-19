@@ -33,6 +33,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
@@ -123,6 +124,11 @@ class YukiHookModulePrefs(private val context: Context? = null) {
             checkApi()
             makeWorldReadable()
             reload()
+            /** 如果文件不可读 - 将打印警告 */
+            if (file.exists() && file.canRead().not()) loggerW(
+                msg = "Cannot reading Module XSharedPreference, " +
+                        "if you not using supported New XShare Hook API, you must changed the module API ≤ 26"
+            )
         }
 
     /**
