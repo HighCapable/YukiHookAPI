@@ -106,6 +106,7 @@ loadApp(name = "com.android.browser") {
         injectMember { 
             method { 
                 name = "onStart"
+                emptyParam()
                 returnType = UnitType
             }
             afterHook {

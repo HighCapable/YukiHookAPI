@@ -6,6 +6,16 @@
 
 > 这些异常不会导致 APP 停止运行(FC)，但是会在控制台打印 `E` 级别的日志，也可能会停止继续执行相关功能。
 
+!> `loggerE` Could not found XposedBridge in current space! Aborted
+
+**异常原因**
+
+你的 Hook Framework 未在工作或并未成功装载 `XposedBridge`。
+
+**解决方案**
+
+请确认你在正确的地方装载了 `YukiHookAPI` 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](config/xposed-using) 以及 [作为 Hook API 使用的相关配置](config/api-using)。
+
 !> `loggerE` You cannot loading a hooker in "onInit" method! Aborted
 
 **异常原因**
