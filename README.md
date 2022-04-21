@@ -50,11 +50,11 @@ The latest version update time/最新版本更新时间：2022-04-20 22:28
 
 ## Features
 
-If you like the `YukiHookAPI` project, we welcome you to make a PR in this project, any suggestions for improvement and new features.
+If you like the `YukiHookAPI` project, we welcome you to make a **PR** in this project, any suggestions for improvement and new features.
 
 **展望未来**
 
-如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码(PR/Pull Request)，可以是任何改进的建议以及新增的功能。
+如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码 **PR**，可以是任何改进的建议以及新增的功能。
 
 ## Cooperations
 
