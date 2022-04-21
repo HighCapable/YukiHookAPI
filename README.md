@@ -17,15 +17,21 @@
 - The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016)
 - Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced
 
+**这是什么**
+
 - 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
 - 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
 ## Get Started
 
-- [Click here/点击这里](https://fankes.github.io/YukiHookAPI)
-- Go to the documentation page for more detailed tutorials and content/前往文档页面查看更多详细教程和内容。
+- [Click here](https://fankes.github.io/YukiHookAPI) go to the documentation page for more detailed tutorials and content.
 - Only **Simplified Chinese** translations in this time, English ver is in future.
+
+**开始使用**
+
+- [点击这里](https://fankes.github.io/YukiHookAPI) 前往文档页面查看更多详细教程和内容。
+- 目前只有 **简体中文** 的翻译文档，English 版本将在日后根据需求更新。
 
 > You may encounter the problem that the document is not the latest version due to the browser cache.
 > If you have viewed the document once, please manually refresh it once on each page to synchronize the latest version, or clear the browser cache.
@@ -36,17 +42,25 @@ The latest version update time/最新版本更新时间：2022-04-20 22:28
 
 ## Contacts
 
-- [Follow me on Telegram/点击加入 Telegram 群组](https://t.me/YukiHookAPI)
+- [Follow us on Telegram](https://t.me/YukiHookAPI)
+
+**联系我们**
+
+- [点击加入 Telegram 群组](https://t.me/YukiHookAPI)
 
 ## Features
 
 If you like the `YukiHookAPI` project, we welcome you to make a PR in this project, any suggestions for improvement and new features.
+
+**展望未来**
 
 如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码(PR/Pull Request)，可以是任何改进的建议以及新增的功能。
 
 ## Cooperations
 
 The following are projects that have collaborated and are using `YukiHookAPI`.
+
+**合作项目**
 
 以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
 
