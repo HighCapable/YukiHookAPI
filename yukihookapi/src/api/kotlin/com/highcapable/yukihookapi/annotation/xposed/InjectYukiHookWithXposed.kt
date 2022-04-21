@@ -60,6 +60,11 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
  * 详情请参考 [InjectYukiHookWithXposed 注解](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=injectyukihookwithxposed-%e6%b3%a8%e8%a7%a3)
  * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
  * @param modulePackageName 模块包名 - 使用标准路径可不填会自动生成
+ * @param entryClassName 定义 [YukiHookAPI] 自动生成 Xposed 模块入口类的名称 - 不填默认使用 HookEntryClass_YukiHookXposedInit 进行生成
  */
 @Target(AnnotationTarget.CLASS)
-annotation class InjectYukiHookWithXposed(val sourcePath: String = "src/main", val modulePackageName: String = "")
+annotation class InjectYukiHookWithXposed(
+    val sourcePath: String = "src/main",
+    val modulePackageName: String = "",
+    val entryClassName: String = ""
+)

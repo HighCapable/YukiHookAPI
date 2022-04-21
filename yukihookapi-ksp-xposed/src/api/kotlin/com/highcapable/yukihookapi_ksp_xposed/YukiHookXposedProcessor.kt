@@ -37,6 +37,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 
 /**
  * 这是 [YukiHookAPI] 的自动生成处理类 - 核心基于 KSP
@@ -113,18 +114,21 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                  * 检索需要注入的类
                  * @param sourcePath 指定的 source 路径
                  * @param modulePackageName 模块包名
+                 * @param entryClassName 入口类名
                  */
-                fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String) {
+                fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String, entryClassName: String) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
+                                val ecName = entryClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
                                 injectAssets(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
                                     packageName = it.packageName.asString(),
                                     className = it.simpleName.asString(),
+                                    entryClassName = ecName
                                 )
-                                injectClass(it.packageName.asString(), it.simpleName.asString(), modulePackageName)
+                                injectClass(it.packageName.asString(), it.simpleName.asString(), modulePackageName, ecName)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
                                 error(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
@@ -139,19 +143,26 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     it.annotations.forEach { e ->
                         var sourcePath = ""
                         var modulePackageName = ""
+                        var entryClassName = ""
                         e.arguments.forEach { pease ->
                             if (pease.name?.asString() == "sourcePath")
                                 sourcePath = pease.value.toString()
                             if (pease.name?.asString() == "modulePackageName")
                                 modulePackageName = pease.value.toString()
+                            if (pease.name?.asString() == "entryClassName")
+                                entryClassName = pease.value.toString()
                         }
                         if ((modulePackageName.startsWith(".") ||
                                     modulePackageName.endsWith(".") ||
                                     modulePackageName.contains(".").not() ||
                                     modulePackageName.contains("..")) &&
                             modulePackageName.isNotEmpty()
-                        ) error(msg = "Invalid Module Package name \"$modulePackageName\"")
-                        else fetchKSClassDeclaration(sourcePath, modulePackageName)
+                        ) error(msg = "Invalid modulePackageName \"$modulePackageName\"")
+                        if ((Pattern.compile("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-+=<>]").matcher(entryClassName).find() ||
+                                    true.let { for (i in 0..9) if (entryClassName.startsWith(i.toString())) return@let true;false })
+                            && entryClassName.isNotEmpty()
+                        ) error(msg = "Invalid entryClassName \"$entryClassName\"")
+                        else fetchKSClassDeclaration(sourcePath, modulePackageName, entryClassName)
                     }
                 }
             }
@@ -163,8 +174,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param sourcePath 指定的 source 路径
          * @param packageName 包名
          * @param className 类名
+         * @param entryClassName 入口类名
          */
-        private fun injectAssets(codePath: String, sourcePath: String, packageName: String, className: String) =
+        private fun injectAssets(codePath: String, sourcePath: String, packageName: String, className: String, entryClassName: String) =
             environment {
                 if (codePath.isBlank()) error(msg = "Project CodePath not available")
                 if (sourcePath.isBlank()) error(msg = "Project SourcePath not available")
@@ -193,7 +205,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                             assFile.mkdirs()
                         }
                         File("${assFile.absolutePath}${separator}xposed_init")
-                            .writeText(text = "$packageName.$className$xposedClassShortName")
+                            .writeText(text = "$packageName.$entryClassName")
                         File("${assFile.absolutePath}${separator}yukihookapi_init")
                             .writeText(text = "$packageName.$className")
                     } else error(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
@@ -205,8 +217,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param packageName 包名
          * @param className 类名
          * @param modulePackageName 模块包名
+         * @param entryClassName 入口类名
          */
-        private fun injectClass(packageName: String, className: String, modulePackageName: String) =
+        private fun injectClass(packageName: String, className: String, modulePackageName: String, entryClassName: String) =
             environment(ignoredError = true) {
                 if (modulePackageName.isNotBlank()) warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
                 val realPackageName =
@@ -258,7 +271,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 codeGenerator.createNewFile(
                     dependencies = Dependencies.ALL_FILES,
                     packageName = packageName,
-                    fileName = "$className$xposedClassShortName"
+                    fileName = entryClassName
                 ).apply {
                     /** 插入 xposed_init 代码 */
                     write(
@@ -279,7 +292,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 commentContent(name = "XposedInit") +
                                 "@Keep\n" +
                                 "@YukiGenerateApi\n" +
-                                "class $className$xposedClassShortName : IXposedHookLoadPackage {\n" +
+                                "class $entryClassName : IXposedHookLoadPackage {\n" +
                                 "\n" +
                                 "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
                                 "        if (lpparam == null) return\n" +

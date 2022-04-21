@@ -15,20 +15,24 @@
 ### InjectYukiHookWithXposed 注解
 
 ```kotlin
-annotation class InjectYukiHookWithXposed(val sourcePath: String, val modulePackageName: String)
+annotation class InjectYukiHookWithXposed(
+    val sourcePath: String,
+    val modulePackageName: String,
+    val entryClassName: String
+)
 ```
 
 `@InjectYukiHookWithXposed` 注解是一个标记模块 Hook 入口的重要注解。
 
 !> `@InjectYukiHookWithXposed` 注解的 `Class` 必须实现 `IYukiHookXposedInit` 接口。
 
-!> 在你当前项目中的所有 `Class` 标记中**只能存在一次**，若**存在多个声明自动处理程序<u>会在编译时抛出异常</u>**，你可以自定义其相关参数。
+!> 在你当前项目中的所有 `Class` 标记中**只能存在一次**，若存在多个声明自动处理程序<u>会在编译时抛出异常</u>，你可以自定义其相关参数。
 
 #### sourcePath 参数
 
 `sourcePath` 参数决定了自动处理程序自动查找并匹配你当前项目路径的重要标识，此参数的内容为相对路径匹配，默认参数为 `src/main`。
 
-!> 如果你的项目不在 `...app/src/main...` 或你手动使用 `sourceSets` 设置了项目路径，你就需要手动设置 `sourcePath` 参数，**否则自动处理程序将无法识别你的项目路径并<u>会在编译时抛出异常</u>**。
+!> 如果你的项目不在 `...app/src/main...` 或你手动使用 `sourceSets` 设置了项目路径，你就需要手动设置 `sourcePath` 参数，否则自动处理程序将无法识别你的项目路径并<u>会在编译时抛出异常</u>。
 
 > 示例如下
 
@@ -73,6 +77,64 @@ annotation class InjectYukiHookWithXposed(val sourcePath: String, val modulePack
 ```
 You set the customize module package name to "com.example.demo", please check for yourself if it is correct
 ```
+
+#### entryClassName 参数
+
+`entryClassName` 决定了自动处理程序如何生成 `xposed_init` 中的入口类名，默认会使用你的入口类包名插入 `_YukiHookXposedInit` 后缀进行生成。
+
+假设这是你的入口类。
+
+> 示例如下
+
+```kotlin
+@InjectYukiHookWithXposed
+class HookEntry: IYukiHookXposedInit
+```
+
+Xposed 入口类处理如下。
+
+> 示例如下
+
+```kotlin
+class HookEntry_YukiHookXposedInit: IXposedHookLoadPackage, ...
+```
+
+编译后的类名结构如下。
+
+> 示例如下
+
+```
+...hook.HookEntry ← 你的入口类
+...hook.HookEntry_YukiHookXposedInit ← 自动生成的 Xposed 入口类
+```
+
+我们现在定义入口类名称为 `HookXposedEntry`。
+
+> 示例如下
+
+```kotlin
+@InjectYukiHookWithXposed(entryClassName = "HookXposedEntry")
+class HookEntry: IYukiHookXposedInit
+```
+
+Xposed 入口类处理如下。
+
+> 示例如下
+
+```kotlin
+class HookXposedEntry: IXposedHookLoadPackage, ...
+```
+
+编译后的类名结构如下。
+
+> 示例如下
+
+```
+...hook.HookEntry ← 你的入口类
+...hook.HookXposedEntry ← 自动生成的 Xposed 入口类
+```
+
+!> 你定义的 `entryClassName` 不可与 `xposed_init` 中的类名相同，否则自动处理程序<u>会在编译时抛出异常</u>。
 
 ### IYukiHookXposedInit 接口
 
