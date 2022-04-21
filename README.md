@@ -13,28 +13,40 @@
 
 ## What's this
 
+- This is an efficient Xposed Hook API rebuilt in Kotlin
+- The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016)
+- Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced
+
 - 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
-- 名称取自 <a href='https://www.bilibili.com/bangumi/play/ss5016/?from=search&seid=313229405371562533&spm_id_from=333.337.0.0'>
-  《ももくり》女主 栗原 雪(Yuki)</a>
+- 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
 ## Get Started
 
-- [点击这里](https://fankes.github.io/YukiHookAPI) 前往文档页面查看更多详细教程和内容。
+- [Click here/点击这里](https://fankes.github.io/YukiHookAPI)
+- Go to the documentation page for more detailed tutorials and content/前往文档页面查看更多详细教程和内容。
+- Only **Simplified Chinese** translations in this time, English ver is in future.
+
+> You may encounter the problem that the document is not the latest version due to the browser cache.
+> If you have viewed the document once, please manually refresh it once on each page to synchronize the latest version, or clear the browser cache.
 
 > 你大概率会遇到浏览器缓存造成文档不是最新版本的问题，若已经查看过一次文档，请手动在每个页面上刷新一次以同步最新版本，或清除浏览器缓存。
 
-最新版本更新时间：2022-04-20 22:28
+The latest version update time/最新版本更新时间：2022-04-20 22:28
 
 ## Contacts
 
-- [点击加入 Telegram 群组](https://t.me/YukiHookAPI)
+- [Follow me on Telegram/点击加入 Telegram 群组](https://t.me/YukiHookAPI)
 
 ## Features
 
-如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码，可以是任何改进的建议以及新增的功能。
+If you like the `YukiHookAPI` project, we welcome you to make a PR in this project, any suggestions for improvement and new features.
+
+如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码(PR/Pull Request)，可以是任何改进的建议以及新增的功能。
 
 ## Cooperations
+
+The following are projects that have collaborated and are using `YukiHookAPI`.
 
 以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
 
@@ -49,6 +61,8 @@
 | [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)               | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
 
 ## Donate
+
+- Like this project? Please use WeChat Pay for donate in China.
 
 - 工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。<br/><br/>
   <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/wechat_code.jpg" width = "200" height = "200"/>
