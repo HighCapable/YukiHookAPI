@@ -12,7 +12,7 @@
 
 [filename](public/InjectYukiHookWithXposed.md ':include')
 
-[filename](public/YukiHookXposedInitProxy.md ':include')
+[filename](public/IYukiHookXposedInit.md ':include')
 
 [filename](public/YukiHookModulePrefs.md ':include')
 

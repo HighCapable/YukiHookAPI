@@ -23,43 +23,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/3.
+ * This file is Created by fankes on 2022/2/2.
+ * This file is Modified by fankes on 2022/4/22.
  */
-package com.highcapable.yukihookapi.hook.entity
+@file:Suppress("unused")
+
+package com.highcapable.yukihookapi.hook.xposed.proxy
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.hook.factory.configs
+import com.highcapable.yukihookapi.hook.factory.encase
 
 /**
- * [YukiHookAPI] 的子类 Hooker 实现
+ * [YukiHookAPI] 的 Xposed 装载 API 调用接口
  *
- * 也许你的 Module 中存在多个 Hooker - 继承此类可以方便帮你管理每个 Hooker
+ * - ❗请在此类上添加注解 [InjectYukiHookWithXposed] 标记模块 Hook 入口
  *
- * 你可以继续继承此类进行自定义 Hooker 相关参数
+ * [YukiHookAPI] 初始化时将自动调用 [onInit] 方法
  *
- * 你可以在 [IYukiHookXposedInit] 的 [IYukiHookXposedInit.onHook] 中实现如下用法：
+ * Hook 开始时将自动调用 [onHook] 方法
  *
- * 1.调用 [YukiHookAPI.encase] encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
+ * 请在 [onInit] 中调用 [YukiHookAPI.configs] 或直接调用 [configs]
  *
- * 2.调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
+ * 请在 [onHook] 中调用 [YukiHookAPI.encase] 或直接调用 [encase]
  *
- * 更多请参考 [InjectYukiHookWithXposed] 中的注解内容
- *
- * 详情请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=%e9%80%9a%e8%bf%87%e8%87%aa%e5%ae%9a%e4%b9%89-hooker-%e5%88%9b%e5%bb%ba)
+ * 详情请参考 [IYukiHookXposedInit 接口](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=iyukihookxposedinit-%e6%8e%a5%e5%8f%a3)
  */
-abstract class YukiBaseHooker : PackageParam() {
+interface IYukiHookXposedInit {
 
     /**
-     * 赋值并克隆一个 [PackageParam]
-     * @param packageParam 需要使用的 [PackageParam]
+     * 配置 [YukiHookAPI.Configs] 的初始化方法
+     *
+     * - ❗在这里只能进行初始化配置 - 不能进行 Hook 操作
+     *
+     * 此方法可选 - 你也可以选择不对 [YukiHookAPI.Configs] 进行配置
      */
-    internal fun assignInstance(packageParam: PackageParam) {
-        baseAssignInstance(packageParam)
-        onHook()
-    }
+    fun onInit() {}
 
-    /** 子类 Hook 开始 */
-    abstract fun onHook()
+    /**
+     * 模块装载调用入口方法
+     *
+     * Xposed API
+     *
+     * 调用 [YukiHookAPI.encase] 或直接调用 [encase] 开始 Hook
+     */
+    fun onHook()
 }

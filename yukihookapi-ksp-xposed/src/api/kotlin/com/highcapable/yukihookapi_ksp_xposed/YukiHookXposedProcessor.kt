@@ -107,7 +107,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param resolver [Resolver]
          */
         private fun injectProcess(resolver: Resolver) = environment {
-            var injectOnce = true
+            var isInjectOnce = true
             resolver.getSymbolsWithAnnotation(annotationName).apply {
                 /**
                  * 检索需要注入的类
@@ -116,8 +116,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                  */
                 fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
-                        if (injectOnce)
-                            if (it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" }) {
+                        if (isInjectOnce) when {
+                            it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
                                 injectAssets(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
@@ -125,10 +125,14 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                     className = it.simpleName.asString(),
                                 )
                                 injectClass(it.packageName.asString(), it.simpleName.asString(), modulePackageName)
-                            } else error(msg = "HookEntryClass \"${it.simpleName.asString()}\" must be implements YukiHookXposedInitProxy")
+                            }
+                            it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
+                                error(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
+                            else -> error(msg = "HookEntryClass \"${it.simpleName.asString()}\" must be implements \"IYukiHookXposedInit\"")
+                        }
                         else error(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
                         /** 仅处理第一个标记的类 - 再次处理将拦截并报错 */
-                        injectOnce = false
+                        isInjectOnce = false
                     }
                 }
                 forEach {

@@ -11,7 +11,7 @@
 ### configs [method]
 
 ```kotlin
-fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit)
+fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit)
 ```
 
 **变更记录**
@@ -20,16 +20,16 @@ fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit)
 
 **功能描述**
 
-> 在 `YukiHookXposedInitProxy` 中配置 `Configs`。
+> 在 `IYukiHookXposedInit` 中配置 `Configs`。
 
 ### encase [method]
 
 ```kotlin
-fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit)
+fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit)
 ```
 
 ```kotlin
-fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker)
+fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker)
 ```
 
 **变更记录**
@@ -38,7 +38,7 @@ fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker)
 
 **功能描述**
 
-> 在 `YukiHookXposedInitProxy` 中装载 `YukiHookAPI`。
+> 在 `IYukiHookXposedInit` 中装载 `YukiHookAPI`。
 
 ### modulePrefs [field]
 

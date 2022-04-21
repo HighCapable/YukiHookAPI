@@ -25,47 +25,36 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "DeprecatedCallableAddReplaceWith")
 
 package com.highcapable.yukihookapi.hook.xposed.proxy
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.factory.configs
-import com.highcapable.yukihookapi.hook.factory.encase
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 
 /**
  * [YukiHookAPI] 的 Xposed 装载 API 调用接口
  *
- * - ❗请在此类上添加注解 [InjectYukiHookWithXposed] 标记模块 Hook 入口
+ * - ❗此接口名称已弃用 - 在不久的版本中将直接被删除
  *
- * [YukiHookAPI] 初始化时将自动调用 [onInit] 方法
- *
- * Hook 开始时将自动调用 [onHook] 方法
- *
- * 请在 [onInit] 中调用 [YukiHookAPI.configs] 或直接调用 [configs]
- *
- * 请在 [onHook] 中调用 [YukiHookAPI.encase] 或直接调用 [encase]
- *
- * 详情请参考 [YukiHookXposedInitProxy 接口](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=yukihookxposedinitproxy-%e6%8e%a5%e5%8f%a3)
+ * - ❗请现在转移到 [IYukiHookXposedInit] 否则此接口的声明将在自动处理程序中被拦截
  */
+@Deprecated(message = "此接口的命名已被弃用", ReplaceWith(expression = "IYukiHookXposedInit"))
 interface YukiHookXposedInitProxy {
 
     /**
      * 配置 [YukiHookAPI.Configs] 的初始化方法
      *
-     * - ❗在这里只能进行初始化配置 - 不能进行 Hook 操作
-     *
-     * 此方法可选 - 你也可以选择不对 [YukiHookAPI.Configs] 进行配置
+     * - ❗请将接口转移到 [IYukiHookXposedInit]
      */
-    fun onInit() {}
+    @Deprecated(message = "请将接口转移到 IYukiHookXposedInit")
+    fun onInit() = yLoggerW(msg = "YukiHookXposedInitProxy was deprecated")
 
     /**
      * 模块装载调用入口方法
      *
-     * Xposed API
-     *
-     * 调用 [YukiHookAPI.encase] 或直接调用 [encase] 开始 Hook
+     * - ❗请将接口转移到 [IYukiHookXposedInit]
      */
+    @Deprecated(message = "请将接口转移到 IYukiHookXposedInit")
     fun onHook()
 }

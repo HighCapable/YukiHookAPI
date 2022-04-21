@@ -35,10 +35,10 @@ import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
 import com.highcapable.yukihookapi.hook.type.java.StringType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
+import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 @InjectYukiHookWithXposed
-class HookEntry : YukiHookXposedInitProxy {
+class HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         // 配置 YuKiHookAPI

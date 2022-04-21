@@ -1,12 +1,18 @@
-## YukiHookXposedInitProxy [interface]
+## IYukiHookXposedInit [interface]
 
 ```kotlin
-interface YukiHookXposedInitProxy
+interface IYukiHookXposedInit
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改` `作废`
+
+作废了 ~~`YukiHookXposedInitProxy`~~ 名称但保留接口
+
+转移到 `IYukiHookXposedInit` 新名称
 
 **功能描述**
 

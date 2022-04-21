@@ -20,7 +20,7 @@ annotation class InjectYukiHookWithXposed(val sourcePath: String, val modulePack
 
 `@InjectYukiHookWithXposed` 注解是一个标记模块 Hook 入口的重要注解。
 
-!> `@InjectYukiHookWithXposed` 注解的 `Class` 必须实现 `YukiHookXposedInitProxy` 接口。
+!> `@InjectYukiHookWithXposed` 注解的 `Class` 必须实现 `IYukiHookXposedInit` 接口。
 
 !> 在你当前项目中的所有 `Class` 标记中**只能存在一次**，若**存在多个声明自动处理程序<u>会在编译时抛出异常</u>**，你可以自定义其相关参数。
 
@@ -74,10 +74,10 @@ annotation class InjectYukiHookWithXposed(val sourcePath: String, val modulePack
 You set the customize module package name to "com.example.demo", please check for yourself if it is correct
 ```
 
-### YukiHookXposedInitProxy 接口
+### IYukiHookXposedInit 接口
 
 ```kotlin
-interface YukiHookXposedInitProxy {
+interface IYukiHookXposedInit {
 
     fun onInit()
 
@@ -85,12 +85,12 @@ interface YukiHookXposedInitProxy {
 }
 ```
 
-`YukiHookXposedInitProxy` 接口为你的 `HookEntryClass` 必须实现的接口，这是你的模块开始 Hook 的起点。
+`IYukiHookXposedInit` 接口为你的 `HookEntryClass` 必须实现的接口，这是你的模块开始 Hook 的起点。
 
-若要了解更多可 [点击这里](api/document?id=yukihookxposedinitproxy-interface) 进行查看。
+若要了解更多可 [点击这里](api/document?id=iyukihookxposedinit-interface) 进行查看。
 
 当你的模块被 Xposed 装载后，`onHook` 方法将会被回调，你需要在此方法中开始使用 `YukiHookAPI`。
 
-> 基本的调用流程为 `_YukiHookXposedInit.handleLoadPackage` → `HookEntryClass.onInit` → `HookEntryClass.onHook` → `YukiHookAPI.onXposedLoaded`
+> 基本的调用流程为 `YukiHookInjectXposedInitClass.handleLoadPackage` → `HookEntryClass.onInit` → `HookEntryClass.onHook` → `YukiHookAPI.onXposedLoaded`
 
 详情请参考 [API 基本配置](config/api-example)。

@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "DEPRECATION", "DeprecatedCallableAddReplaceWith")
 
 package com.highcapable.yukihookapi.hook.factory
 
@@ -39,28 +39,38 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
+import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 
 /**
- * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI.Configs]
+ * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI.Configs]
  * @param initiate Hook 方法体
  */
-fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
+fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
 
 /**
- * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
+ * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI]
  * @param initiate Hook 方法体
  */
-fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
+fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
 
 /**
- * 在 [YukiHookXposedInitProxy] 中装载 [YukiHookAPI]
+ * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI]
  * @param hooker Hook 子类数组 - 必填不能为空
  * @throws IllegalStateException 如果 [hooker] 是空的
  */
+fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
+
+@Deprecated("请将接口转移到 IYukiHookXposedInit")
+fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
+
+@Deprecated("请将接口转移到 IYukiHookXposedInit")
+fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
+
+@Deprecated("请将接口转移到 IYukiHookXposedInit")
 fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
 
 /**

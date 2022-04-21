@@ -199,7 +199,7 @@ fun configs(initiate: Configs.() -> Unit)
 > 示例如下
 
 ```kotlin
-class HookEntryClass : YukiHookXposedInitProxy {
+class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() {
         YukiHookAPI.configs {
@@ -222,7 +222,7 @@ class HookEntryClass : YukiHookXposedInitProxy {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : YukiHookXposedInitProxy {
+class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() = configs {
         debugTag = "YukiHookAPI"
@@ -243,7 +243,7 @@ class HookEntryClass : YukiHookXposedInitProxy {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : YukiHookXposedInitProxy {
+class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() {
         YukiHookAPI.Configs.debugTag = "YukiHookAPI"

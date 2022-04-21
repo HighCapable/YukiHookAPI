@@ -93,7 +93,7 @@ dependencies {
     android:value="true"/>
 ```
 
-在你的项目中创建一个 Hook 入口类，继承于 `YukiHookXposedInitProxy` 并加入注解 `@InjectYukiHookWithXposed`。
+在你的项目中创建一个 Hook 入口类，继承于 `IYukiHookXposedInit` 并加入注解 `@InjectYukiHookWithXposed`。
 
 !> 在默认配置情况下，你的入口类需要建立在你的包名的 hook 子包名下，假设你的包名为 `com.example.demo`，入口类应为 `com.example.demo.hook.你的入口类名称`。
 
@@ -101,7 +101,7 @@ dependencies {
 
 ```kotlin
 @InjectYukiHookWithXposed
-class MainHook : YukiHookXposedInitProxy {
+class MainHook : IYukiHookXposedInit {
 
     override fun onHook() = YukiHookAPI.encase {
         // Your code here.

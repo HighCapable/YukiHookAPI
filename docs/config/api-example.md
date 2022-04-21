@@ -120,7 +120,7 @@ class CustomHooker : YukiBaseHooker() {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : YukiHookXposedInitProxy {
+class HookEntryClass : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadApp(name = "com.example.demo", ChildCustomHooker())
@@ -159,7 +159,7 @@ class FirstHooker : YukiBaseHooker() {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : YukiHookXposedInitProxy {
+class HookEntryClass : IYukiHookXposedInit {
 
     override fun onHook() = 
         YukiHookAPI.encase(FirstHooker(), SecondHooker(), ThirdHooker() ...)
@@ -171,7 +171,7 @@ class HookEntryClass : YukiHookXposedInitProxy {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : YukiHookXposedInitProxy {
+class HookEntryClass : IYukiHookXposedInit {
 
     override fun onHook() = encase(FirstHooker(), SecondHooker(), ThirdHooker() ...)
 }

@@ -20,12 +20,12 @@
 
 **异常原因**
 
-你尝试在继承 `YukiHookXposedInitProxy` 的 Hook 入口类的 `onInit` 方法中装载了 `encase` 方法。
- 
+你尝试在继承 `IYukiHookXposedInit` 的 Hook 入口类的 `onInit` 方法中装载了 `encase` 方法。
+
 > 示例如下
 
 ```kotlin
-class HookEntry : YukiHookXposedInitProxy {
+class HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         // ❗错误的使用方法
@@ -47,7 +47,7 @@ class HookEntry : YukiHookXposedInitProxy {
 > 示例如下
 
 ```kotlin
-class HookEntry : YukiHookXposedInitProxy {
+class HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         // 这里只能装载 configs 方法

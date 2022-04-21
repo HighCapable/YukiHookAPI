@@ -70,7 +70,7 @@
 
 ```kotlin
 @InjectYukiHookWithXposed
-class MainHook : YukiHookXposedInitProxy {
+class MainHook : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadApp(name = "com.android.browser") {

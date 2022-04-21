@@ -32,7 +32,7 @@ import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication.Companion.appContext
 import com.highcapable.yukihookapi.hook.xposed.application.inject.ModuleApplication_Injector
-import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
+import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import me.weishu.reflection.Reflection
 
 /**
@@ -78,6 +78,6 @@ open class ModuleApplication : Application() {
         callApiInit()
     }
 
-    /** 调用入口类的 [YukiHookXposedInitProxy.onInit] 方法 */
+    /** 调用入口类的 [IYukiHookXposedInit.onInit] 方法 */
     private fun callApiInit() = runCatching { ModuleApplication_Injector.callApiInit() }
 }
