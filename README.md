@@ -11,6 +11,14 @@
 ⛱️ An efficient Kotlin version of the Xposed Hook API.
 <br/>
 
+## Plan is in progress
+
+> `IXposedHookInitPackageResources` and `IXposedHookZygoteInit` are being adapted recently,let's stay tuned
+
+**计划进行中**
+
+> 近期正在适配 `IXposedHookInitPackageResources`、`IXposedHookZygoteInit` 敬请期待
+
 ## What's this
 
 - This is an efficient Xposed Hook API rebuilt in Kotlin
