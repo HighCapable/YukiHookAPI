@@ -24,7 +24,7 @@
  * SOFTWARE.
  *
  * This file is Created by weishu on 2018/6/7.
- * This file is forked from https://github.com/tiann/FreeReflection
+ * This file is Forked from https://github.com/tiann/FreeReflection
  */
 package me.weishu.reflection;
 
