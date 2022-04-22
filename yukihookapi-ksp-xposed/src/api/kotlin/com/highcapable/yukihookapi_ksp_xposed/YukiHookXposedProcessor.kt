@@ -121,6 +121,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
                                 val ecName = entryClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
+                                if (entryClassName == it.simpleName.asString()) error(msg = "Duplicate entryClassName \"$entryClassName\"")
                                 injectAssets(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
@@ -146,11 +147,11 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         var entryClassName = ""
                         e.arguments.forEach { pease ->
                             if (pease.name?.asString() == "sourcePath")
-                                sourcePath = pease.value.toString()
+                                sourcePath = pease.value.toString().trim()
                             if (pease.name?.asString() == "modulePackageName")
-                                modulePackageName = pease.value.toString()
+                                modulePackageName = pease.value.toString().trim()
                             if (pease.name?.asString() == "entryClassName")
-                                entryClassName = pease.value.toString()
+                                entryClassName = pease.value.toString().trim()
                         }
                         if ((modulePackageName.startsWith(".") ||
                                     modulePackageName.endsWith(".") ||
