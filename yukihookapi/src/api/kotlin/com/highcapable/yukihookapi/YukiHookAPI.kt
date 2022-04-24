@@ -160,7 +160,8 @@ object YukiHookAPI {
         var isEnableMemberCache = true
 
         /** 结束方法体 */
-        internal fun build() {}
+        @PublishedApi
+        internal fun build() = Unit
     }
 
     /**
@@ -176,7 +177,7 @@ object YukiHookAPI {
      * 详情请参考 [configs 方法](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=configs-%e6%96%b9%e6%b3%95)
      * @param initiate 方法体
      */
-    fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
+    inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
 
     /**
      * 作为模块装载调用入口方法 - Xposed API

@@ -162,6 +162,10 @@ var isEnableMemberCache: Boolean
 
 `v1.0.68` `新增`
 
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
 **功能描述**
 
 > 是否启用 `Member` 缓存功能。
@@ -179,7 +183,7 @@ var isEnableMemberCache: Boolean
 ### configs [method]
 
 ```kotlin
-fun configs(initiate: Configs.() -> Unit)
+inline fun configs(initiate: Configs.() -> Unit)
 ```
 
 **变更记录**

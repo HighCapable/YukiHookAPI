@@ -54,21 +54,23 @@ import java.lang.reflect.Member
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
-class YukiHookCreater(private val packageParam: PackageParam, private val hookClass: HookClass) {
+class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
 
     /**
      * Hook 模式定义
      */
     enum class HookMemberMode { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_CONVENTIONAL }
 
-    /** 是否对当前 [YukiHookCreater] 禁止执行 Hook 操作 */
-    private var isDisableCreaterRunHook = false
-
-    /** 设置要 Hook 的方法、构造类 */
-    private var hookMembers = HashSet<MemberHookCreater>()
-
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
+
+    /** 是否对当前 [YukiHookCreater] 禁止执行 Hook 操作 */
+    @PublishedApi
+    internal var isDisableCreaterRunHook = false
+
+    /** 设置要 Hook 的方法、构造类 */
+    @PublishedApi
+    internal var hookMembers = HashSet<MemberHookCreater>()
 
     /**
      * 得到当前被 Hook 的 [Class]
@@ -86,7 +88,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
      * @param initiate 方法体
      * @return [MemberHookCreater.Result]
      */
-    fun injectMember(tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
+    inline fun injectMember(tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
         MemberHookCreater(tag).apply(initiate).apply { hookMembers.add(this) }.build()
 
     /**
@@ -132,8 +134,11 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /** [afterHook] 回调 */
         private var afterHookCallback: (HookParam.() -> Unit)? = null
 
-        /** [replaceAny]、[replaceUnit]、[replaceTo] 等回调 */
+        /** [replaceAny]、[replaceUnit] 回调 */
         private var replaceHookCallback: (HookParam.() -> Any?)? = null
+
+        /** [replaceTo]、[replaceToTrue]、[replaceToFalse]、[intercept] 的值 */
+        private var replaceHookResult: Any? = null
 
         /** Hook 成功时回调 */
         private var onHookedCallback: ((Member) -> Unit)? = null
@@ -150,20 +155,27 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
         /** 全部错误回调 */
         private var onAllFailureCallback: ((Throwable) -> Unit)? = null
 
-        /** 查找过程中发生的异常 */
-        private var findingThrowable: Throwable? = null
-
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
 
-        /** 标识是否已经设置了要 Hook 的 [member] */
-        private var isHookMemberSetup = false
+        /** 是否为仅替换 Hook 结果模式 */
+        private var isReplaceHookOnlyResultMode = false
 
         /** 是否对当前 [MemberHookCreater] 禁止执行 Hook 操作 */
-        private var isDisableMemberRunHook = false
+        @PublishedApi
+        internal var isDisableMemberRunHook = false
+
+        /** 查找过程中发生的异常 */
+        @PublishedApi
+        internal var findingThrowable: Throwable? = null
+
+        /** 标识是否已经设置了要 Hook 的 [member] */
+        @PublishedApi
+        internal var isHookMemberSetup = false
 
         /** Hook 当前模式类型 */
-        private var hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
+        @PublishedApi
+        internal var hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
 
         /** 全部方法的名称 */
         private var allMethodsName = ""
@@ -219,7 +231,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [MethodFinder.Result]
          */
-        fun method(initiate: MethodFinder.() -> Unit) = try {
+        inline fun method(initiate: MethodFinder.() -> Unit) = try {
             hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
             MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
@@ -237,7 +249,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
-        fun constructor(initiate: ConstructorFinder.() -> Unit = {}) = try {
+        inline fun constructor(initiate: ConstructorFinder.() -> Unit = {}) = try {
             hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
             ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
@@ -251,7 +263,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [FieldFinder.Result]
          */
-        fun HookParam.field(initiate: FieldFinder.() -> Unit) =
+        inline fun HookParam.field(initiate: FieldFinder.() -> Unit) =
             if (hookClass.instance == null) FieldFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
             else FieldFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
@@ -260,7 +272,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [MethodFinder.Result]
          */
-        fun HookParam.method(initiate: MethodFinder.() -> Unit) =
+        inline fun HookParam.method(initiate: MethodFinder.() -> Unit) =
             if (hookClass.instance == null) MethodFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
             else MethodFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
@@ -269,7 +281,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
-        fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit) =
+        inline fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit) =
             if (hookClass.instance == null) ConstructorFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
             else ConstructorFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
@@ -303,6 +315,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun replaceAny(initiate: HookParam.() -> Any?) {
             isReplaceHookMode = true
+            isReplaceHookOnlyResultMode = false
             replaceHookCallback = initiate
         }
 
@@ -314,6 +327,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun replaceUnit(initiate: HookParam.() -> Unit) {
             isReplaceHookMode = true
+            isReplaceHookOnlyResultMode = false
             replaceHookCallback = initiate
         }
 
@@ -325,7 +339,8 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun replaceTo(any: Any?) {
             isReplaceHookMode = true
-            replaceHookCallback = { any }
+            isReplaceHookOnlyResultMode = true
+            replaceHookResult = any
         }
 
         /**
@@ -337,7 +352,8 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun replaceToTrue() {
             isReplaceHookMode = true
-            replaceHookCallback = { true }
+            isReplaceHookOnlyResultMode = true
+            replaceHookResult = true
         }
 
         /**
@@ -349,7 +365,8 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun replaceToFalse() {
             isReplaceHookMode = true
-            replaceHookCallback = { false }
+            isReplaceHookOnlyResultMode = true
+            replaceHookResult = false
         }
 
         /**
@@ -361,7 +378,8 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          */
         fun intercept() {
             isReplaceHookMode = true
-            replaceHookCallback = { null }
+            isReplaceHookOnlyResultMode = true
+            replaceHookResult = null
         }
 
         /**
@@ -395,9 +413,9 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
                     if (baseParam == null) return null
                     return HookParam(createrInstance = this@YukiHookCreater, HookParamWrapper(baseParam)).let { param ->
                         try {
-                            if (replaceHookCallback != null)
+                            if (replaceHookCallback != null || isReplaceHookOnlyResultMode)
                                 onHookLogMsg(msg = "Replace Hook Member [${member ?: "All Member $allMethodsName"}] done [$tag]")
-                            replaceHookCallback?.invoke(param)
+                            if (isReplaceHookOnlyResultMode) replaceHookResult else replaceHookCallback?.invoke(param)
                         } catch (e: Throwable) {
                             onConductFailureCallback?.invoke(param, e)
                             onAllFailureCallback?.invoke(e)
@@ -542,7 +560,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
              * @param initiate 方法体
              * @return [Result] 可继续向下监听
              */
-            fun result(initiate: Result.() -> Unit) = apply(initiate)
+            inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
             /**
              * 添加执行 Hook 需要满足的条件
@@ -551,7 +569,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
              * @param initiate 条件方法体
              * @return [Result] 可继续向下监听
              */
-            fun by(initiate: () -> Boolean): Result {
+            inline fun by(initiate: () -> Boolean): Result {
                 isDisableMemberRunHook = (runCatching { initiate() }.getOrNull() ?: false).not()
                 if (isDisableMemberRunHook) ignoredAllFailure()
                 return this
@@ -650,7 +668,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
-        fun result(initiate: Result.() -> Unit) = apply(initiate)
+        inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
          * 添加执行 Hook 需要满足的条件
@@ -659,7 +677,7 @@ class YukiHookCreater(private val packageParam: PackageParam, private val hookCl
          * @param initiate 条件方法体
          * @return [Result] 可继续向下监听
          */
-        fun by(initiate: () -> Boolean): Result {
+        inline fun by(initiate: () -> Boolean): Result {
             isDisableCreaterRunHook = (runCatching { initiate() }.getOrNull() ?: false).not()
             return this
         }

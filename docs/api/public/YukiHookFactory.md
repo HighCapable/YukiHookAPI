@@ -4,6 +4,10 @@
 
 `v1.0` `添加`
 
+`v1.0.80` `修改`
+
+合并到 `IYukiHookXposedInit`，将方法体进行 inline
+
 **功能描述**
 
 > 这是 `YukiHookAPI` 相关 `lambda` 方法的封装类以及部分 API 用法。
@@ -11,12 +15,16 @@
 ### configs [method]
 
 ```kotlin
-fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit)
+inline fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.1` `新增`
+
+`v1.0.80` `修改`
+
+合并到 `IYukiHookXposedInit`
 
 **功能描述**
 
@@ -35,6 +43,10 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker)
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+合并到 `IYukiHookXposedInit`
 
 **功能描述**
 

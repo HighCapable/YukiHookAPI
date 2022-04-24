@@ -115,11 +115,12 @@ abstract class BaseFinder(
         }
     }
 
+    /** 是否使用了重查找功能 */
+    @PublishedApi
+    internal var isUsingRemedyPlan = false
+
     /** 是否开启忽略错误警告功能 */
     internal var isShutErrorPrinting = false
-
-    /** 是否使用了重查找功能 */
-    internal var isUsingRemedyPlan = false
 
     /** 当前找到的 [Member] */
     internal var memberInstance: Member? = null

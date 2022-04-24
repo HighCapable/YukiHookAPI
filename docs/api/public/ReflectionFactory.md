@@ -113,7 +113,7 @@ fun String.hasClass(loader: ClassLoader?): Boolean
 ### hasField [method]
 
 ```kotlin
-fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
+inline fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
 ```
 
 **变更记录**
@@ -124,6 +124,10 @@ fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
 
 合并到 `FieldFinder`
 
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
 **功能描述**
 
 > 查找变量是否存在。
@@ -131,7 +135,7 @@ fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
 ### hasMethod [method]
 
 ```kotlin
-fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
+inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
 ```
 
 **变更记录**
@@ -146,6 +150,10 @@ fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
 
 合并到 `MethodFinder`
 
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
 **功能描述**
 
 > 查找方法是否存在。
@@ -153,7 +161,7 @@ fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
 ### hasConstructor [method]
 
 ```kotlin
-fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
+inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
 ```
 
 **变更记录**
@@ -164,6 +172,10 @@ fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
 
 合并到 `ConstructorFinder`
 
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
 **功能描述**
 
 > 查找构造方法是否存在。
@@ -171,12 +183,16 @@ fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
 ### hasModifiers [method]
 
 ```kotlin
-fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
+inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 ```
 
 **变更记录**
 
 `v1.0.67` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -217,12 +233,16 @@ fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 ### field [method]
 
 ```kotlin
-fun Class<*>.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
+inline fun Class<*>.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
 ```
 
 **变更记录**
 
 `v1.0.2` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -231,7 +251,7 @@ fun Class<*>.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
 ### method [method]
 
 ```kotlin
-fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
+inline fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 ```
 
 **变更记录**
@@ -246,7 +266,11 @@ fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 
 `v1.0.2` `修改`
 
-合并到 `MethodFinder` 方法体。
+合并到 `MethodFinder` 方法体
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -255,7 +279,7 @@ fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 ### constructor [method]
 
 ```kotlin
-fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
+inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
 ```
 
 **变更记录**
@@ -268,7 +292,11 @@ fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFin
 
 `v1.0.2` `修改`
 
-合并到 `ConstructorFinder` 方法体。
+合并到 `ConstructorFinder` 方法体
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -312,43 +340,55 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
 
 > 获得当前实例的类操作对象。
 
-### buildOf [method]
-
-```kotlin
-fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): T?
-```
-
-**变更记录**
-
-`v1.0.70` `新增`
-
-**功能描述**
-
-> 通过构造方法创建新实例，指定类型 `T`。
-
 ### buildOfAny [method]
 
 ```kotlin
-fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): Any?
+inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): Any?
 ```
 
 **变更记录**
 
 `v1.0.70` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
 > 通过构造方法创建新实例，任意类型 `Any`。
 
-### allMethods [method]
+### buildOf [method]
 
 ```kotlin
-fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit)
+inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): T?
 ```
 
 **变更记录**
 
 `v1.0.70` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
+**功能描述**
+
+> 通过构造方法创建新实例，指定类型 `T`。
+
+### allMethods [method]
+
+```kotlin
+inline fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.70` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -357,12 +397,16 @@ fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit)
 ### allConstructors [method]
 
 ```kotlin
-fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit)
+inline fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.70` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -371,12 +415,16 @@ fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>)
 ### allFields [method]
 
 ```kotlin
-fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit)
+inline fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.70` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 

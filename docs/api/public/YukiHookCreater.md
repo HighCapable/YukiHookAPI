@@ -1,12 +1,16 @@
 ## YukiHookCreater [class]
 
 ```kotlin
-class YukiHookCreater(private val packageParam: PackageParam, private val hookClass: HookClass)
+class YukiHookCreater(private val packageParam: PackageParam, internal val hookClass: HookClass)
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+对 `hookClass` 进行 inline 处理
 
 **功能描述**
 
@@ -35,12 +39,16 @@ val instanceClass: Class<*>
 ### injectMember [method]
 
 ```kotlin
-fun injectMember(tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
+inline fun injectMember(tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -175,12 +183,16 @@ injectMember {
 #### method [method]
 
 ```kotlin
-fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
+inline fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -207,12 +219,16 @@ injectMember {
 #### constructor [method]
 
 ```kotlin
-fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
+inline fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -235,12 +251,16 @@ injectMember {
 #### field [method]
 
 ```kotlin
-fun HookParam.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
+inline fun HookParam.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -271,12 +291,16 @@ injectMember {
 #### method [method]
 
 ```kotlin
-fun HookParam.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
+inline fun HookParam.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 ```
 
 **变更记录**
 
 `v1.0.2` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -285,12 +309,16 @@ fun HookParam.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
 #### constructor [method]
 
 ```kotlin
-fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
+inline fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
 ```
 
 **变更记录**
 
 `v1.0.2` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -431,7 +459,7 @@ inner class Result
 ##### result [method]
 
 ```kotlin
-fun result(initiate: Result.() -> Unit): Result
+inline fun result(initiate: Result.() -> Unit): Result
 ```
 
 **变更记录**
@@ -441,6 +469,10 @@ fun result(initiate: Result.() -> Unit): Result
 `v1.0.5` `修改`
 
 ~~`failures`~~ 修改为 `result`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -466,12 +498,16 @@ injectMember {
 ##### by [method]
 
 ```kotlin
-fun by(initiate: () -> Boolean): Result
+inline fun by(initiate: () -> Boolean): Result
 ```
 
 **变更记录**
 
 `v1.0.5` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -622,7 +658,7 @@ inner class Result
 #### result [method]
 
 ```kotlin
-fun result(initiate: Result.() -> Unit): Result
+inline fun result(initiate: Result.() -> Unit): Result
 ```
 
 **变更记录**
@@ -633,6 +669,10 @@ fun result(initiate: Result.() -> Unit): Result
 
 ~~`failures`~~ 修改为 `result`
 
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
 **功能描述**
 
 > 创建监听事件方法体。
@@ -640,12 +680,16 @@ fun result(initiate: Result.() -> Unit): Result
 #### by [method]
 
 ```kotlin
-fun by(initiate: () -> Boolean): Result
+inline fun by(initiate: () -> Boolean): Result
 ```
 
 **变更记录**
 
 `v1.0.5` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 

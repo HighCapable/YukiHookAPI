@@ -71,12 +71,16 @@ var returnType: Any?
 ### modifiers [method]
 
 ```kotlin
-fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
+inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 ```
 
 **变更记录**
 
 `v1.0.67` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -209,12 +213,16 @@ inner class RemedyPlan
 #### method [method]
 
 ```kotlin
-fun method(initiate: MethodFinder.() -> Unit): Result
+inline fun method(initiate: MethodFinder.() -> Unit): Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -281,12 +289,16 @@ inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
 #### result [method]
 
 ```kotlin
-fun result(initiate: Result.() -> Unit): Result
+inline fun result(initiate: Result.() -> Unit): Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -381,12 +393,16 @@ fun wait(instance: Any?, initiate: Instance.() -> Unit)
 #### remedys [method]
 
 ```kotlin
-fun remedys(initiate: RemedyPlan.() -> Unit): Result
+inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -416,12 +432,16 @@ method {
 #### onNoSuchMethod [method]
 
 ```kotlin
-fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result
+inline fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 

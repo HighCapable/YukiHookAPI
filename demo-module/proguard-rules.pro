@@ -20,7 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--dontwarn
 -ignorewarnings
 
 -optimizationpasses 10

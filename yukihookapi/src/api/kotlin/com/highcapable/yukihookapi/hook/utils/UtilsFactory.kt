@@ -38,19 +38,20 @@ import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 inline fun <R> runBlocking(block: () -> R): RunBlockResult {
     val start = System.currentTimeMillis()
     block()
-    return RunBlockResult(after = System.currentTimeMillis() - start)
+    return RunBlockResult(afterMs = System.currentTimeMillis() - start)
 }
 
 /**
  * 构造耗时计算结果类
- * @param after 耗时
+ * @param afterMs 耗时
  */
 @YukiPrivateApi
-class RunBlockResult(private val after: Long) {
+class RunBlockResult(@PublishedApi internal val afterMs: Long) {
 
     /**
      * 获取耗时计算结果
      * @param initiate 回调结果 - ([Long] 耗时)
      */
-    fun result(initiate: (Long) -> Unit) = initiate(after)
+    @YukiPrivateApi
+    inline fun result(initiate: (Long) -> Unit) = initiate(afterMs)
 }

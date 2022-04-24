@@ -136,6 +136,10 @@ fun prefs(name: String): YukiHookModulePrefs
 
 `v1.0` `添加`
 
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
 **功能描述**
 
 > 获得当前使用的存取数据对象缓存实例。
@@ -145,7 +149,7 @@ fun prefs(name: String): YukiHookModulePrefs
 ### loadApp [method]
 
 ```kotlin
-fun loadApp(name: String, initiate: PackageParam.() -> Unit)
+inline fun loadApp(name: String, initiate: PackageParam.() -> Unit)
 ```
 
 ```kotlin
@@ -156,6 +160,10 @@ fun loadApp(name: String, hooker: YukiBaseHooker)
 
 `v1.0` `添加`
 
+`v1.0.80` `修改`
+
+将方法体进行 inline
+
 **功能描述**
 
 > 装载并 Hook 指定包名的 APP。
@@ -165,7 +173,7 @@ fun loadApp(name: String, hooker: YukiBaseHooker)
 ### withProcess [method]
 
 ```kotlin
-fun withProcess(name: String, initiate: PackageParam.() -> Unit)
+inline fun withProcess(name: String, initiate: PackageParam.() -> Unit)
 ```
 
 ```kotlin
@@ -323,19 +331,19 @@ val variousClass = VariousClass("com.example.demo.DemoClass1", "com.example.demo
 ### hook [method]
 
 ```kotlin
-fun String.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun String.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
 ```
 
 ```kotlin
-fun Class<*>.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun Class<*>.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
 ```
 
 ```kotlin
-fun VariousClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun VariousClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
 ```
 
 ```kotlin
-fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
 ```
 
 **变更记录**
@@ -357,6 +365,10 @@ fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() ->
 `v1.0.70` `修改`
 
 新增 `isUseAppClassLoader` 参数
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -427,6 +439,7 @@ findClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook {
 > 示例如下
 
 ```kotlin
+// 这里的做法标识了 hook 不会再将 YourClass 重新与当前 appClassLoader 绑定
 YourClass.hook(isUseAppClassLoader = false) {
     // Your code here.
 }

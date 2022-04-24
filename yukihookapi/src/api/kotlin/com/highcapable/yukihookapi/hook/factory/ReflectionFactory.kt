@@ -103,49 +103,49 @@ fun String.hasClass(loader: ClassLoader?) = try {
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-fun Class<*>.hasField(initiate: FieldFinder.() -> Unit) = field(initiate).ignoredError().isNoSuch.not()
+inline fun Class<*>.hasField(initiate: FieldFinder.() -> Unit) = field(initiate).ignoredError().isNoSuch.not()
 
 /**
  * 查找方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit) = method(initiate).ignoredError().isNoSuch.not()
+inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit) = method(initiate).ignoredError().isNoSuch.not()
 
 /**
  * 查找构造方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit) = constructor(initiate).ignoredError().isNoSuch.not()
+inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit) = constructor(initiate).ignoredError().isNoSuch.not()
 
 /**
  * 查询 [Member] 中匹配的描述符
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
+inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
 
 /**
  * 查找并得到变量
  * @param initiate 查找方法体
  * @return [FieldFinder.Result]
  */
-fun Class<*>.field(initiate: FieldFinder.() -> Unit) = FieldFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.field(initiate: FieldFinder.() -> Unit) = FieldFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到方法
  * @param initiate 查找方法体
  * @return [MethodFinder.Result]
  */
-fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到构造类
  * @param initiate 查找方法体
  * @return [ConstructorFinder.Result]
  */
-fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit) = ConstructorFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
  * 获得当前实例的类操作对象
@@ -158,38 +158,39 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
 }
 
 /**
- * 通过构造方法创建新实例 - 指定类型 [T]
- * @param param 方法参数
- * @param initiate 查找方法体
- * @return [T] or null
- */
-fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = constructor(initiate).get().newInstance<T>(*param)
-
-/**
  * 通过构造方法创建新实例 - 任意类型 [Any]
  * @param param 方法参数
  * @param initiate 查找方法体
  * @return [Any] or null
  */
-fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = buildOf<Any?>(*param, initiate)
+inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = constructor(initiate).get().call(*param)
+
+/**
+ * 通过构造方法创建新实例 - 指定类型 [T]
+ * @param param 方法参数
+ * @param initiate 查找方法体
+ * @return [T] or null
+ */
+inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) =
+    constructor(initiate).get().newInstance<T>(*param)
 
 /**
  * 遍历当前类中的所有方法
  * @param callback 回调 - ([Int] 下标,[Method] 实例)
  */
-fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit) =
+inline fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit) =
     declaredMethods.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }
 
 /**
  * 遍历当前类中的所有构造方法
  * @param callback 回调 - ([Int] 下标,[Constructor] 实例)
  */
-fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit) =
+inline fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit) =
     declaredConstructors.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }
 
 /**
  * 遍历当前类中的所有变量
  * @param callback 回调 - ([Int] 下标,[Field] 实例)
  */
-fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit) =
+inline fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit) =
     declaredFields.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }

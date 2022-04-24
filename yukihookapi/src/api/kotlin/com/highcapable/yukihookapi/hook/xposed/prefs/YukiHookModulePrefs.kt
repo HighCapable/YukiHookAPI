@@ -25,7 +25,10 @@
  *
  * This file is Created by fankes on 2022/2/8.
  */
-@file:Suppress("SetWorldReadable", "CommitPrefEdits", "DEPRECATION", "WorldReadableFiles", "unused", "UNCHECKED_CAST")
+@file:Suppress(
+    "SetWorldReadable", "CommitPrefEdits", "DEPRECATION", "WorldReadableFiles",
+    "unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate"
+)
 
 package com.highcapable.yukihookapi.hook.xposed.prefs
 
@@ -489,15 +492,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param value 默认值 - 未指定默认为 [prefs] 中的 [PrefsData.value]
      * @return [T] 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
      */
-    inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = when (prefs.value) {
-        is String -> getString(prefs.key, value as String) as T
-        is Set<*> -> getStringSet(prefs.key, value as? Set<String> ?: error("Key-Value type ${T::class.java.name} is not allowed")) as T
-        is Int -> getInt(prefs.key, value as Int) as T
-        is Float -> getFloat(prefs.key, value as Float) as T
-        is Long -> getLong(prefs.key, value as Long) as T
-        is Boolean -> getBoolean(prefs.key, value as Boolean) as T
-        else -> error("Key-Value type ${T::class.java.name} is not allowed")
-    }
+    inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = getPrefsData(prefs.key, value) as T
 
     /**
      * 智能存储指定类型的键值
@@ -508,14 +503,47 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param prefs 键值实例
      * @param value 要存储的值 - 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
      */
-    inline fun <reified T> put(prefs: PrefsData<T>, value: T) = when (prefs.value) {
-        is String -> putString(prefs.key, value as String)
-        is Set<*> -> putStringSet(prefs.key, value as? Set<String> ?: error("Key-Value type ${T::class.java.name} is not allowed"))
-        is Int -> putInt(prefs.key, value as Int)
-        is Float -> putFloat(prefs.key, value as Float)
-        is Long -> putLong(prefs.key, value as Long)
-        is Boolean -> putBoolean(prefs.key, value as Boolean)
-        else -> error("Key-Value type ${T::class.java.name} is not allowed")
+    inline fun <reified T> put(prefs: PrefsData<T>, value: T) = putPrefsData(prefs.key, value)
+
+    /**
+     * 智能获取指定类型的键值
+     *
+     * 封装方法以调用内联方法
+     * @param key 键值
+     * @param value 默认值
+     * @return [Any]
+     */
+    @PublishedApi
+    internal fun getPrefsData(key: String, value: Any?): Any = when (value) {
+        is String -> getString(key, value)
+        is Set<*> -> getStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
+        is Int -> getInt(key, value)
+        is Float -> getFloat(key, value)
+        is Long -> getLong(key, value)
+        is Boolean -> getBoolean(key, value)
+        else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
+    }
+
+    /**
+     * 智能存储指定类型的键值
+     *
+     * 封装方法以调用内联方法
+     *
+     * - 在模块 [Context] 环境中使用
+     *
+     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * @param key 键值
+     * @param value 要存储的值 - 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
+     */
+    @PublishedApi
+    internal fun putPrefsData(key: String, value: Any?) = when (value) {
+        is String -> putString(key, value)
+        is Set<*> -> putStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
+        is Int -> putInt(key, value)
+        is Float -> putFloat(key, value)
+        is Long -> putLong(key, value)
+        is Boolean -> putBoolean(key, value)
+        else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
     }
 
     /**
@@ -541,7 +569,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @param result 回调方法体的结果
      * @return [T]
      */
-    private fun <T> resetCacheSet(result: () -> T): T {
+    private inline fun <T> resetCacheSet(result: () -> T): T {
         isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
         return result()
     }
@@ -552,7 +580,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * 非模块环境使用会打印警告信息
      * @param initiate 在模块环境执行
      */
-    private fun moduleEnvironment(initiate: () -> Unit) {
+    private inline fun moduleEnvironment(initiate: () -> Unit) {
         if (isXposedEnvironment.not()) initiate()
         else yLoggerW(msg = "You cannot use write prefs function in Xposed Environment")
     }

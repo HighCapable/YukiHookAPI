@@ -116,7 +116,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param anotherParam 另一个 [PackageParam]
      */
     internal fun baseAssignInstance(anotherParam: PackageParam) {
-        thisParam.wrapper = anotherParam.wrapper
+        this.wrapper = anotherParam.wrapper
     }
 
     /**
@@ -124,7 +124,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param name 包名
      * @param initiate 方法体
      */
-    fun loadApp(name: String, initiate: PackageParam.() -> Unit) {
+    inline fun loadApp(name: String, initiate: PackageParam.() -> Unit) {
         if (packageName == name) initiate(this)
     }
 
@@ -142,7 +142,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param name 进程名 - 若要指定主进程可填写 [mainProcessName] - 效果与 [isFirstApplication] 一致
      * @param initiate 方法体
      */
-    fun withProcess(name: String, initiate: PackageParam.() -> Unit) {
+    inline fun withProcess(name: String, initiate: PackageParam.() -> Unit) {
         if (processName == name) initiate(this)
     }
 
@@ -219,7 +219,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun String.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+    inline fun String.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
         findClass(name = this).hook(isUseAppClassLoader, initiate)
 
     /**
@@ -228,7 +228,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun Class<*>.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+    inline fun Class<*>.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
         hookClass.hook(isUseAppClassLoader, initiate)
 
     /**
@@ -237,7 +237,7 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun VariousClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+    inline fun VariousClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
         hookClass(if (isUseAppClassLoader) appClassLoader else null).hook(isUseAppClassLoader, initiate)
 
     /**
@@ -246,15 +246,16 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * @param initiate 方法体
      * @return [YukiHookCreater.Result]
      */
-    fun HookClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(packageParam = thisParam, hookClass = if (isUseAppClassLoader) bind() else this).apply(initiate).hook()
+    inline fun HookClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+        YukiHookCreater(packageParam = this@PackageParam, hookClass = if (isUseAppClassLoader) bind() else this).apply(initiate).hook()
 
     /**
      * [VariousClass] 转换为 [HookClass] 并绑定到 [appClassLoader]
      * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
      * @return [HookClass]
      */
-    private fun VariousClass.hookClass(loader: ClassLoader? = null) = try {
+    @PublishedApi
+    internal fun VariousClass.hookClass(loader: ClassLoader? = null) = try {
         get(loader).hookClass
     } catch (e: Throwable) {
         HookClass(name = "VariousClass", throwable = Throwable(e.message))
@@ -266,17 +267,12 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * - ❗请注意未绑定到 [appClassLoader] 的 [Class] 是不安全的 - 调用 [hook] 方法会根据设定自动绑定
      * @return [HookClass]
      */
-    private fun HookClass.bind() = try {
+    @PublishedApi
+    internal fun HookClass.bind() = try {
         name.clazz.hookClass
     } catch (e: Throwable) {
         HookClass(name = name, throwable = throwable ?: e)
     }
-
-    /**
-     * 返回自身实例
-     * @return [PackageParam]
-     */
-    private val thisParam get() = this
 
     override fun toString() = "PackageParam by $wrapper"
 }

@@ -48,7 +48,9 @@ import java.lang.reflect.Method
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class MethodFinder(
+    @property:YukiPrivateApi
     override val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    @property:YukiPrivateApi
     override val classSet: Class<*>? = null
 ) : BaseFinder(tag = "Method", hookInstance, classSet) {
 
@@ -62,7 +64,8 @@ class MethodFinder(
     private var paramTypes: Array<out Class<*>>? = null
 
     /** [ModifierRules] 实例 */
-    private var modifiers: ModifierRules? = null
+    @PublishedApi
+    internal var modifiers: ModifierRules? = null
 
     /**
      * 设置 [Method] 名称
@@ -98,7 +101,7 @@ class MethodFinder(
      * @param initiate 方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
-    fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
+    inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
         modifiers = ModifierRules().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
@@ -236,7 +239,8 @@ class MethodFinder(
     inner class RemedyPlan {
 
         /** 失败尝试次数数组 */
-        private val remedyPlans = HashSet<Pair<MethodFinder, Result>>()
+        @PublishedApi
+        internal val remedyPlans = HashSet<Pair<MethodFinder, Result>>()
 
         /**
          * 创建需要重新查找的 [Method]
@@ -247,7 +251,7 @@ class MethodFinder(
          * @param initiate 方法体
          * @return [Result] 结果
          */
-        fun method(initiate: MethodFinder.() -> Unit) =
+        inline fun method(initiate: MethodFinder.() -> Unit) =
             Result().apply { remedyPlans.add(Pair(MethodFinder(hookInstance, classSet).apply(initiate), this)) }
 
         /**
@@ -255,6 +259,7 @@ class MethodFinder(
          *
          * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
+        @PublishedApi
         @YukiPrivateApi
         internal fun build() {
             if (classSet == null) return
@@ -314,14 +319,14 @@ class MethodFinder(
      * @param isNoSuch 是否没有找到方法 - 默认否
      * @param e 错误信息
      */
-    inner class Result(internal val isNoSuch: Boolean = false, private val e: Throwable? = null) {
+    inner class Result(@PublishedApi internal val isNoSuch: Boolean = false, @PublishedApi internal val e: Throwable? = null) {
 
         /**
          * 创建监听结果事件方法体
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
-        fun result(initiate: Result.() -> Unit) = apply(initiate)
+        inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
          * 获得 [Method] 实例处理类
@@ -365,7 +370,7 @@ class MethodFinder(
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
-        fun remedys(initiate: RemedyPlan.() -> Unit): Result {
+        inline fun remedys(initiate: RemedyPlan.() -> Unit): Result {
             isUsingRemedyPlan = true
             if (isNoSuch) RemedyPlan().apply(initiate).build()
             return this
@@ -378,7 +383,7 @@ class MethodFinder(
          * @param initiate 回调错误
          * @return [Result] 可继续向下监听
          */
-        fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result {
+        inline fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result {
             if (isNoSuch) initiate(e ?: Throwable("Initialization Error"))
             return this
         }

@@ -49,7 +49,7 @@ import java.io.FileReader
  * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI.Configs]
  * @param initiate Hook 方法体
  */
-fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
+inline fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
 
 /**
  * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI]
@@ -65,7 +65,7 @@ fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.
 fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
 
 @Deprecated("请将接口转移到 IYukiHookXposedInit")
-fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
+inline fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
 
 @Deprecated("请将接口转移到 IYukiHookXposedInit")
 fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)

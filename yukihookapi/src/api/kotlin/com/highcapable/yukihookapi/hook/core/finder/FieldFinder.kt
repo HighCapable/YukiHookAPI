@@ -47,12 +47,15 @@ import java.lang.reflect.Field
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class FieldFinder(
+    @property:YukiPrivateApi
     override val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    @property:YukiPrivateApi
     override val classSet: Class<*>? = null
 ) : BaseFinder(tag = "Field", hookInstance, classSet) {
 
     /** [ModifierRules] 实例 */
-    private var modifiers: ModifierRules? = null
+    @PublishedApi
+    internal var modifiers: ModifierRules? = null
 
     /**
      * 设置 [Field] 名称
@@ -79,7 +82,7 @@ class FieldFinder(
      * @param initiate 方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
-    fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
+    inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
         modifiers = ModifierRules().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
@@ -159,14 +162,14 @@ class FieldFinder(
      * @param isNoSuch 是否没有找到变量 - 默认否
      * @param e 错误信息
      */
-    inner class Result(internal val isNoSuch: Boolean = false, private val e: Throwable? = null) {
+    inner class Result(@PublishedApi internal val isNoSuch: Boolean = false, private val e: Throwable? = null) {
 
         /**
          * 创建监听结果事件方法体
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
-        fun result(initiate: Result.() -> Unit) = apply(initiate)
+        inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
          * 得到变量实例处理类

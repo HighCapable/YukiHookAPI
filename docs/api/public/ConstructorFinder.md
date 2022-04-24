@@ -37,12 +37,16 @@ var paramCount: Int
 ### modifiers [method]
 
 ```kotlin
-fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
+inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 ```
 
 **变更记录**
 
 `v1.0.67` `新增`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -125,12 +129,16 @@ inner class RemedyPlan
 #### constructor [method]
 
 ```kotlin
-fun constructor(initiate: ConstructorFinder.() -> Unit)
+inline fun constructor(initiate: ConstructorFinder.() -> Unit)
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -183,7 +191,7 @@ constructor {
 ### Result [class]
 
 ```kotlin
-inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
+inner class Result(internal val isNoSuch: Boolean, internal val e: Throwable?)
 ```
 
 **变更记录**
@@ -197,12 +205,16 @@ inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
 #### result [method]
 
 ```kotlin
-fun result(initiate: Result.() -> Unit): Result
+inline fun result(initiate: Result.() -> Unit): Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -307,12 +319,16 @@ fun wait(initiate: Instance.() -> Unit)
 #### remedys [method]
 
 ```kotlin
-fun remedys(initiate: RemedyPlan.() -> Unit): Result
+inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 
@@ -342,12 +358,16 @@ constructor {
 #### onNoSuchConstructor [method]
 
 ```kotlin
-fun onNoSuchConstructor(initiate: (Throwable) -> Unit): Result
+inline fun onNoSuchConstructor(initiate: (Throwable) -> Unit): Result
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+将方法体进行 inline
 
 **功能描述**
 

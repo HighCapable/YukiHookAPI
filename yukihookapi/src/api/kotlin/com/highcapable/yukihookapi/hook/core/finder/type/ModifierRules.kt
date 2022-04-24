@@ -158,6 +158,7 @@ class ModifierRules {
      * @param member 实例
      * @return [Boolean] 是否符合条件
      */
+    @PublishedApi
     internal fun contains(member: Member): Boolean {
         var conditions = true
         if (isPublic) conditions = Modifier.isPublic(member.modifiers)
