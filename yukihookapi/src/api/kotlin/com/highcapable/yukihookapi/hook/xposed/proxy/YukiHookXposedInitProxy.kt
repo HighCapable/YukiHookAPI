@@ -35,7 +35,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 /**
  * [YukiHookAPI] 的 Xposed 装载 API 调用接口
  *
- * - ❗此接口名称已弃用 - 在不久的版本中将直接被删除
+ * - ❗此接口名称已弃用 - 在之后的版本中将直接被删除
  *
  * - ❗请现在转移到 [IYukiHookXposedInit] 否则此接口的声明将在自动处理程序中被拦截
  */
@@ -56,5 +56,5 @@ interface YukiHookXposedInitProxy {
      * - ❗请将接口转移到 [IYukiHookXposedInit]
      */
     @Deprecated(message = "请将接口转移到 IYukiHookXposedInit")
-    fun onHook()
+    fun onHook() = yLoggerW(msg = "YukiHookXposedInitProxy was deprecated")
 }
