@@ -81,6 +81,7 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness)| [fankesyooni](https://github.com/fankes)        |
 | [Enable WebView Debugging](https://github.com/WankkoRee/EnableWebViewDebugging) | [WankkoRee](https://github.com/WankkoRee)       |
 | [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)               | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
+| [RestoreSplashScreen](https://github.com/GSWXXN/RestoreSplashScreen)            | [GSWXXN](https://github.com/GSWXXN)             |
 
 ## Donate
 
