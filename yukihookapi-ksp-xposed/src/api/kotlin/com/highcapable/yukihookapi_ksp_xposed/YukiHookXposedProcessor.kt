@@ -212,13 +212,11 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             environment(ignoredError = true) {
                 if (modulePackageName.isNotBlank())
                     warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
-                val fModulePackageName =
-                    modulePackageName.ifBlank {
-                        if (packageName.contains(other = ".hook.") || packageName.endsWith(suffix = ".hook"))
-                            packageName.split(".hook")[0]
-                        else error(msg = "Cannot identify your Module App's package name, please manually configure the package name")
-                        modulePackageName
-                    }
+                val fModulePackageName = modulePackageName.ifBlank {
+                    if (packageName.contains(other = ".hook.") || packageName.endsWith(suffix = ".hook"))
+                        packageName.split(".hook")[0]
+                    else kotlin.error("Cannot identify your Module App's package name, please manually configure the package name")
+                }
                 val injectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
                 /** 插入 ModuleApplication_Injector 代码 */
                 codeGenerator.createNewFile(
