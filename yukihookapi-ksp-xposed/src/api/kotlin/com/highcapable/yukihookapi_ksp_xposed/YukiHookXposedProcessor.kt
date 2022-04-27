@@ -34,8 +34,8 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.highcapable.yukihookapi_ksp_xposed.sources.CodeSourceFileTemplate
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -48,18 +48,6 @@ import java.util.regex.Pattern
  */
 @AutoService(SymbolProcessorProvider::class)
 class YukiHookXposedProcessor : SymbolProcessorProvider {
-
-    companion object {
-
-        /** 定义 Jvm 方法名 */
-        private const val IS_ACTIVE_METHOD_NAME = "__--"
-
-        /** 定义 Jvm 方法名 */
-        private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
-
-        /** 定义 Jvm 方法名 */
-        private const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
-    }
 
     override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
 
@@ -114,22 +102,22 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                  * 检索需要注入的类
                  * @param sourcePath 指定的 source 路径
                  * @param modulePackageName 模块包名
-                 * @param entryClassName 入口类名
+                 * @param xInitClassName xposed_init 入口类名
                  */
-                fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String, entryClassName: String) {
+                fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String, xInitClassName: String) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
-                                val ecName = entryClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
-                                if (entryClassName == it.simpleName.asString()) error(msg = "Duplicate entryClassName \"$entryClassName\"")
+                                val xcName = xInitClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
+                                if (xInitClassName == it.simpleName.asString()) error(msg = "Duplicate entryClassName \"$xInitClassName\"")
                                 injectAssets(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
                                     packageName = it.packageName.asString(),
-                                    className = it.simpleName.asString(),
-                                    entryClassName = ecName
+                                    entryClassName = it.simpleName.asString(),
+                                    xInitClassName = xcName
                                 )
-                                injectClass(it.packageName.asString(), it.simpleName.asString(), modulePackageName, ecName)
+                                injectClass(it.packageName.asString(), modulePackageName, it.simpleName.asString(), xcName)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
                                 error(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
@@ -142,9 +130,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 }
                 forEach {
                     it.annotations.forEach { e ->
-                        var sourcePath = ""
-                        var modulePackageName = ""
-                        var entryClassName = ""
+                        var sourcePath = "" // 项目相对路径
+                        var modulePackageName = "" // 模块包名
+                        var entryClassName = "" // xposed_init 入口类名
                         e.arguments.forEach { pease ->
                             if (pease.name?.asString() == "sourcePath")
                                 sourcePath = pease.value.toString().trim()
@@ -174,10 +162,10 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param codePath 注解类的完整代码文件路径
          * @param sourcePath 指定的 source 路径
          * @param packageName 包名
-         * @param className 类名
          * @param entryClassName 入口类名
+         * @param xInitClassName xposed_init 入口类名
          */
-        private fun injectAssets(codePath: String, sourcePath: String, packageName: String, className: String, entryClassName: String) =
+        private fun injectAssets(codePath: String, sourcePath: String, packageName: String, entryClassName: String, xInitClassName: String) =
             environment {
                 if (codePath.isBlank()) error(msg = "Project CodePath not available")
                 if (sourcePath.isBlank()) error(msg = "Project SourcePath not available")
@@ -206,9 +194,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                             assFile.mkdirs()
                         }
                         File("${assFile.absolutePath}${separator}xposed_init")
-                            .writeText(text = "$packageName.$entryClassName")
+                            .writeText(text = "$packageName.$xInitClassName")
                         File("${assFile.absolutePath}${separator}yukihookapi_init")
-                            .writeText(text = "$packageName.$className")
+                            .writeText(text = "$packageName.$entryClassName")
                     } else error(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
                 }
             }
@@ -216,137 +204,39 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         /**
          * 注入并生成指定类
          * @param packageName 包名
-         * @param className 类名
          * @param modulePackageName 模块包名
          * @param entryClassName 入口类名
+         * @param xInitClassName xposed_init 入口类名
          */
-        private fun injectClass(packageName: String, className: String, modulePackageName: String, entryClassName: String) =
+        private fun injectClass(packageName: String, modulePackageName: String, entryClassName: String, xInitClassName: String) =
             environment(ignoredError = true) {
-                if (modulePackageName.isNotBlank()) warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
-                val realPackageName =
+                if (modulePackageName.isNotBlank())
+                    warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
+                val fModulePackageName =
                     modulePackageName.ifBlank {
-                        if (packageName.contains(".hook.") || packageName.endsWith(".hook"))
+                        if (packageName.contains(other = ".hook.") || packageName.endsWith(suffix = ".hook"))
                             packageName.split(".hook")[0]
-                        else error(msg = "Cannot identify your App's package name, please manually configure the package name")
+                        else error(msg = "Cannot identify your Module App's package name, please manually configure the package name")
+                        modulePackageName
                     }
                 val injectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
-                fun commentContent(name: String) = ("/**\n" +
-                        " * $name Inject Class\n" +
-                        " *\n" +
-                        " * Compiled from YukiHookXposedProcessor\n" +
-                        " *\n" +
-                        " * HookEntryClass: [$className]\n" +
-                        " *\n" +
-                        " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
-                        " *\n" +
-                        " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
-                        " *\n" +
-                        " * Project Address: [YukiHookAPI](https://github.com/fankes/YukiHookAPI)\n" +
-                        " */\n")
+                /** 插入 ModuleApplication_Injector 代码 */
                 codeGenerator.createNewFile(
                     dependencies = Dependencies.ALL_FILES,
                     packageName = injectPackageName,
                     fileName = "ModuleApplication_Injector"
                 ).apply {
-                    /** 插入 ModuleApplication_Injector 代码 */
-                    write(
-                        ("@file:Suppress(\"ClassName\")\n" +
-                                "\n" +
-                                "package $injectPackageName\n" +
-                                "\n" +
-                                "import $packageName.$className\n" +
-                                "\n" +
-                                commentContent(name = "ModuleApplication") +
-                                "object ModuleApplication_Injector {\n" +
-                                "\n" +
-                                "    @JvmStatic\n" +
-                                "    fun callApiInit() = try {\n" +
-                                "        $className().onInit()\n" +
-                                "    } catch (_: Throwable) {\n" +
-                                "    }\n" +
-                                "}").toByteArray()
-                    )
+                    write(CodeSourceFileTemplate.getModuleApplicationInjectorFileByteArray(injectPackageName, packageName, entryClassName))
                     flush()
                     close()
                 }
+                /** 插入 xposed_init 代码 */
                 codeGenerator.createNewFile(
                     dependencies = Dependencies.ALL_FILES,
                     packageName = packageName,
-                    fileName = entryClassName
+                    fileName = xInitClassName
                 ).apply {
-                    /** 插入 xposed_init 代码 */
-                    write(
-                        ("package $packageName\n" +
-                                "\n" +
-                                "import androidx.annotation.Keep\n" +
-                                "import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge\n" +
-                                "import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus\n" +
-                                "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
-                                "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
-                                "import de.robv.android.xposed.XC_MethodReplacement\n" +
-                                "import de.robv.android.xposed.XposedHelpers\n" +
-                                "import de.robv.android.xposed.XposedBridge\n" +
-                                "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
-                                "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
-                                "import $packageName.$className\n" +
-                                "\n" +
-                                commentContent(name = "XposedInit") +
-                                "@Keep\n" +
-                                "@YukiGenerateApi\n" +
-                                "class $entryClassName : IXposedHookLoadPackage {\n" +
-                                "\n" +
-                                "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
-                                "        if (lpparam == null) return\n" +
-                                "        try {\n" +
-                                "            $className().apply {\n" +
-                                "                onInit()\n" +
-                                "                if (YukiHookXposedBridge.isXposedCallbackSetUp) {\n" +
-                                "                    loggerE(tag = \"YukiHookAPI\", msg = \"You cannot loading a hooker in \\\"onInit\\\" method! Aborted\")\n" +
-                                "                    return\n" +
-                                "                }\n" +
-                                "                onHook()\n" +
-                                "            }\n" +
-                                "            YukiHookXposedBridge.callXposedInitialized()\n" +
-                                "        } catch (e: Throwable) {\n" +
-                                "            loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = e)\n" +
-                                "        }\n" +
-                                "        if (lpparam.packageName == \"$realPackageName\") {\n" +
-                                "            XposedHelpers.findAndHookMethod(\n" +
-                                "                YukiHookModuleStatus::class.java.name,\n" +
-                                "                lpparam.classLoader,\n" +
-                                "                \"$IS_ACTIVE_METHOD_NAME\",\n" +
-                                "                object : XC_MethodReplacement() {\n" +
-                                "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
-                                "                })\n" +
-                                "            XposedHelpers.findAndHookMethod(\n" +
-                                "                YukiHookModuleStatus::class.java.name,\n" +
-                                "                lpparam.classLoader,\n" +
-                                "                \"$GET_XPOSED_TAG_METHOD_NAME\",\n" +
-                                "                object : XC_MethodReplacement() {\n" +
-                                "                    override fun replaceHookedMethod(param: MethodHookParam?) = try {\n" +
-                                "                        XposedBridge::class.java.getDeclaredField(\"TAG\").apply { isAccessible = true }.get(null) as String\n" +
-                                "                    } catch (_: Throwable) {\n" +
-                                "                        \"invalid\"\n" +
-                                "                    }\n" +
-                                "                })\n" +
-                                "            XposedHelpers.findAndHookMethod(\n" +
-                                "                YukiHookModuleStatus::class.java.name,\n" +
-                                "                lpparam.classLoader,\n" +
-                                "                \"$GET_XPOSED_VERSION_METHOD_NAME\",\n" +
-                                "                object : XC_MethodReplacement() {\n" +
-                                "                    override fun replaceHookedMethod(param: MethodHookParam?) = try {\n" +
-                                "                        XposedBridge.getXposedVersion()\n" +
-                                "                    } catch (_: Throwable) {\n" +
-                                "                        -1\n" +
-                                "                    }\n" +
-                                "                })\n" +
-                                "            YukiHookXposedBridge.isModulePackageXposedEnv = true\n" +
-                                "        }\n" +
-                                "        YukiHookXposedBridge.modulePackageName = \"$realPackageName\"\n" +
-                                "        YukiHookXposedBridge.callXposedLoaded(lpparam)\n" +
-                                "    }\n" +
-                                "}").toByteArray()
-                    )
+                    write(CodeSourceFileTemplate.getXposedInitFileByteArray(packageName, fModulePackageName, entryClassName, xInitClassName))
                     flush()
                     close()
                 }
