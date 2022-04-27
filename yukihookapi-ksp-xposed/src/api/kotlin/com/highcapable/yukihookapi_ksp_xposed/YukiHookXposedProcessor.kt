@@ -74,7 +74,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * 终止并报错
          * @param msg 错误消息
          */
-        private fun SymbolProcessorEnvironment.error(msg: String) {
+        private fun SymbolProcessorEnvironment.problem(msg: String) {
             val helpMsg = "Looking for help? see https://fankes.github.io/YukiHookAPI/#/config/xposed-using"
             logger.error(message = "[$TAG] $msg\n$helpMsg")
             throw RuntimeException("[$TAG] $msg\n$helpMsg")
@@ -109,7 +109,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
                                 val xcName = xInitClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
-                                if (xInitClassName == it.simpleName.asString()) error(msg = "Duplicate entryClassName \"$xInitClassName\"")
+                                if (xInitClassName == it.simpleName.asString()) problem(msg = "Duplicate entryClassName \"$xInitClassName\"")
                                 injectAssets(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
@@ -120,10 +120,10 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 injectClass(it.packageName.asString(), modulePackageName, it.simpleName.asString(), xcName)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
-                                error(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
-                            else -> error(msg = "HookEntryClass \"${it.simpleName.asString()}\" must be implements \"IYukiHookXposedInit\"")
+                                problem(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
+                            else -> problem(msg = "HookEntryClass \"${it.simpleName.asString()}\" must be implements \"IYukiHookXposedInit\"")
                         }
-                        else error(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
+                        else problem(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
                         /** 仅处理第一个标记的类 - 再次处理将拦截并报错 */
                         isInjectOnce = false
                     }
@@ -146,11 +146,11 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                     modulePackageName.contains(".").not() ||
                                     modulePackageName.contains("..")) &&
                             modulePackageName.isNotEmpty()
-                        ) error(msg = "Invalid modulePackageName \"$modulePackageName\"")
+                        ) problem(msg = "Invalid modulePackageName \"$modulePackageName\"")
                         if ((Pattern.compile("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-+=<>]").matcher(entryClassName).find() ||
                                     true.let { for (i in 0..9) if (entryClassName.startsWith(i.toString())) return@let true;false })
                             && entryClassName.isNotEmpty()
-                        ) error(msg = "Invalid entryClassName \"$entryClassName\"")
+                        ) problem(msg = "Invalid entryClassName \"$entryClassName\"")
                         else fetchKSClassDeclaration(sourcePath, modulePackageName, entryClassName)
                     }
                 }
@@ -167,8 +167,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun injectAssets(codePath: String, sourcePath: String, packageName: String, entryClassName: String, xInitClassName: String) =
             environment {
-                if (codePath.isBlank()) error(msg = "Project CodePath not available")
-                if (sourcePath.isBlank()) error(msg = "Project SourcePath not available")
+                if (codePath.isBlank()) problem(msg = "Project CodePath not available")
+                if (sourcePath.isBlank()) problem(msg = "Project SourcePath not available")
                 /**
                  * Gradle 在这里自动处理了 Windows 和 Unix 下的反斜杠路径问题
                  * 为了防止万一还是做了一下反斜杠处理防止旧版本不支持此用法
@@ -176,16 +176,16 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 val separator = when {
                     codePath.contains("\\") -> "\\"
                     codePath.contains("/") -> "/"
-                    else -> kotlin.error("Unix File Separator unknown")
+                    else -> error("Unix File Separator unknown")
                 }
                 val projectPath = when {
                     codePath.contains("\\") -> sourcePath.replace("/", "\\")
                     codePath.contains("/") -> sourcePath.replace("\\", "/")
-                    else -> kotlin.error("Unix File Separator unknown")
+                    else -> error("Unix File Separator unknown")
                 }.let {
                     if (codePath.contains(it))
                         codePath.split(it)[0] + it
-                    else error(msg = "Project Source Path \"$it\" not matched")
+                    else problem(msg = "Project Source Path \"$it\" not matched")
                 }
                 File("$projectPath${separator}assets").also { assFile ->
                     if (File("$projectPath${separator}AndroidManifest.xml").exists()) {
@@ -197,7 +197,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                             .writeText(text = "$packageName.$xInitClassName")
                         File("${assFile.absolutePath}${separator}yukihookapi_init")
                             .writeText(text = "$packageName.$entryClassName")
-                    } else error(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
+                    } else problem(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
                 }
             }
 
@@ -215,7 +215,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 val fModulePackageName = modulePackageName.ifBlank {
                     if (packageName.contains(other = ".hook.") || packageName.endsWith(suffix = ".hook"))
                         packageName.split(".hook")[0]
-                    else kotlin.error("Cannot identify your Module App's package name, please manually configure the package name")
+                    else error("Cannot identify your Module App's package name, please manually configure the package name")
                 }
                 val injectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
                 /** 插入 ModuleApplication_Injector 代码 */
