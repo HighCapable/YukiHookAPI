@@ -59,7 +59,8 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
     /**
      * Hook 模式定义
      */
-    enum class HookMemberMode { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_CONVENTIONAL }
+    @PublishedApi
+    internal enum class HookMemberMode { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_CONVENTIONAL }
 
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
