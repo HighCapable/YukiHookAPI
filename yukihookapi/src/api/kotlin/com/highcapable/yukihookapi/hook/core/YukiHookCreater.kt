@@ -98,8 +98,9 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
      * @throws IllegalStateException 如果必要参数没有被设置
      * @return [Result]
      */
+    @PublishedApi
     @YukiPrivateApi
-    fun hook(): Result {
+    internal fun hook(): Result {
         if (YukiHookAPI.hasXposedBridge.not()) return Result()
         return if (hookMembers.isEmpty()) error("Hook Members is empty, hook aborted")
         else Result().also {
