@@ -388,16 +388,18 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
          * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          * @return [Result]
          */
+        @PublishedApi
         @YukiPrivateApi
-        fun build() = Result()
+        internal fun build() = Result()
 
         /**
          * Hook 执行入口
          *
          * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          */
+        @PublishedApi
         @YukiPrivateApi
-        fun hook() {
+        internal fun hook() {
             if (YukiHookAPI.hasXposedBridge.not() || isDisableMemberRunHook) return
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
