@@ -16,7 +16,7 @@
 
 请确认你在正确的地方装载了 `YukiHookAPI` 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](config/xposed-using) 以及 [作为 Hook API 使用的相关配置](config/api-using)。
 
-!> `loggerE` You cannot loading a hooker in "onInit" method! Aborted
+!> `loggerE` You cannot load a hooker in "onInit" method! Aborted
 
 **异常原因**
 
