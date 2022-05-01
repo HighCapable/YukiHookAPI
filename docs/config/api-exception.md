@@ -20,7 +20,7 @@
 
 **异常原因**
 
-你尝试在继承 `IYukiHookXposedInit` 的 Hook 入口类的 `onInit` 或 `onXposedEvent` 方法中装载了 `encase` 或 `resources` 方法。
+你尝试在继承 `IYukiHookXposedInit` 的 Hook 入口类的 `onInit` 或 `onXposedEvent` 方法中装载了 `encase` 方法。
 
 > 示例如下
 
