@@ -8,7 +8,7 @@
 
 ```
 Host Environment
-└── YukiHookCreater
+└── YukiMemberHookCreater
     └── Class
         └── MemberHookCreater
             └── Member
@@ -18,6 +18,15 @@ Host Environment
             └── Member
                 ├── Before
                 └── After
+            ...
+    YukiResourcesHookCreater
+    └── Resources
+        └── ResourcesHookCreater
+            └── Drawable
+                └── Replace
+            ResourcesHookCreater
+            └── Layout
+                └── Inject
             ...
 ```
 
@@ -37,6 +46,14 @@ TargetClass.hook {
         }
     }
 }
+resources().hook {
+    injectResource {
+        conditions {
+            // Your code here.
+        }
+        replaceTo(...)
+    }
+}
 ```
 
 ## Demo
@@ -50,6 +67,10 @@ TargetClass.hook {
 同时安装宿主和模块 Demo，通过激活模块来测试宿主中被 Hook 的功能。
 
 ## 一个简单的 Hook 例子
+
+> 这里给出了 Hook APP、Hook 系统框架与 Hook Resources 的例子，可供参考。
+
+### Hook APP
 
 假设，我们要 Hook `com.android.browser` 中的 `onCreate` 方法并弹出一个对话框。
 
@@ -171,6 +192,97 @@ TestClass.hook {
 }
 ```
 
+### Hook 系统框架
+
+在 `YukiHookAPI` 中，Hook 系统框架的实现非常简单。
+
+假设我们要全局 Hook 一个 `Activity` 的 `onCreate` 事件
+
+在 `encase` 方法体中添加代码。
+
+> 示例如下
+
+```kotlin
+loadZygote {
+    ActivityClass.hook { 
+        injectMember { 
+            method { 
+                name = "onCreate"
+                param(BundleClass)
+                returnType = UnitType
+            }
+            afterHook {
+                // Your code here.
+            }
+        }
+    }
+}
+```
+
+这样就实现了上述的 Hook 功能。
+
+!> `loadZygote` 与 `loadApp(name = "android")` 有直接性区别，`loadZygote` 会在 `initZygote` 中装载，若要 Hook 系统框架，建议使用 `loadZygote`。
+
+### Hook Resources
+
+假设，我们要 Hook `com.android.browser` 中 `string` 类型的 `app_name` 内容替换为 `123`。
+
+在 `encase` 方法体中添加代码。
+
+> 示例如下
+
+```kotlin
+loadApp(name = "com.android.browser") {
+    resources().hook {
+        injectResource {
+            conditions {
+                name = "app_name"
+                string()
+            }
+            replaceTo("123")
+        }
+    }
+}
+```
+
+若当前 APP 使用 `app_name` 设置了标题栏文本，则它就会变成我们的 `123`。
+
+你还可以使用当前 Xposed 模块的 Resources 替换 Hook APP 的 Resources。
+
+假设，我们要继续 Hook `com.android.browser` 中 `mipmap` 类型的 `ic_launcher`。
+
+> 示例如下
+
+```kotlin
+loadApp(name = "com.android.browser") {
+    resources().hook {
+        injectResource {
+            conditions {
+                name = "ic_launcher"
+                mipmap()
+            }
+            replaceToModuleResource(R.mipmap.ic_launcher)
+        }
+    }
+}
+```
+
+至此目标 APP 的图标将会被替换为我们设置的图标。
+
+若你想替换系统框架的资源，同样也可以这样实现，只需要把 `loadApp` 换成 `loadZygote` 即可。
+
+> 示例如下
+
+```kotlin
+loadZygote {
+    resources().hook {
+        // Your code here.
+    }
+}
+```
+
+更多功能请参考 [ResourcesHookCreater](api/document?id=resourceshookcreater-class)。
+
 ## 异常处理
 
 > `YukiHookAPI` 重新设计了对异常的监听，任何异常都不会在 Hook 过程中抛出，避免打断下一个 Hook 流程导致 Hook 进程“死掉”。
@@ -189,6 +301,20 @@ injectMember {
     onConductFailure { param, throwable -> }
     // 处理全部异常
     onAllFailure {}
+    // ...
+}
+```
+
+在 Resources Hook 时此方法同样适用。
+
+> 示例如下
+
+```kotlin
+injectResource {
+    // Your code here.
+}.result {
+    // 处理 Hook 时的任意异常
+    onHookingFailure {}
     // ...
 }
 ```

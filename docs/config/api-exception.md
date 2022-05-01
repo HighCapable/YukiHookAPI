@@ -16,11 +16,11 @@
 
 请确认你在正确的地方装载了 `YukiHookAPI` 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](config/xposed-using) 以及 [作为 Hook API 使用的相关配置](config/api-using)。
 
-!> `loggerE` You cannot load a hooker in "onInit" method! Aborted
+!> `loggerE` You cannot load a hooker in "onInit" or "onXposedEvent" method! Aborted
 
 **异常原因**
 
-你尝试在继承 `IYukiHookXposedInit` 的 Hook 入口类的 `onInit` 方法中装载了 `encase` 方法。
+你尝试在继承 `IYukiHookXposedInit` 的 Hook 入口类的 `onInit` 或 `onXposedEvent` 方法中装载了 `encase` 或 `resources` 方法。
 
 > 示例如下
 
@@ -28,6 +28,13 @@
 class HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
+        // ❗错误的使用方法
+        YukiHookAPI.encase {
+            // Your code here.
+        }
+    }
+
+    override fun onXposedEvent() {
         // ❗错误的使用方法
         YukiHookAPI.encase {
             // Your code here.
@@ -70,6 +77,16 @@ class HookEntry : IYukiHookXposedInit {
 **异常原因**
 
 `YukiHookAPI` 在尝试装载 Hook 入口类 `onInit` 或 `onHook` 方法时发生了不能处理的异常或找不到入口类。
+
+**解决方案**
+
+通常情况下这种错误不会轻易发生，若一旦发生此错误，请自行查看控制台打印的日志定位问题，确定并非自己的代码发生的问题后，可提交日志进行反馈。
+
+!> `loggerE` YukiHookAPI bind initZygote failed
+
+**异常原因**
+
+`YukiHookAPI` 在尝试装载 Xposed 原生接口 `initZygote` 方法时发生了不能处理的异常。
 
 **解决方案**
 
@@ -360,6 +377,50 @@ method {
 **解决方案**
 
 请检查查询条件中 `param` 的 `index` 号下标的 `Class` 是否存在，然后再试一次。
+
+!> `loggerE` Resources Hook condition name/type cannot be empty \[**TAG**\]
+
+**异常原因**
+
+在查找 Resources 时并未设置任何条件。
+
+> 示例如下
+
+```kotlin
+// 情况 1
+conditions {
+    // 这里没有设置任何条件
+}
+// 情况 2
+conditions {
+    name = "test"
+    // 这里缺少了 type 条件
+}
+```
+
+**解决方案**
+
+Resources 的 Hook 并非类似方法的 Hook，其必须拥有完整的名称和类型描述才能查询成功，请将查询条件补充完整并再试一次。
+
+!> `loggerE` Resources Hook type is invalid \[**TAG**\]
+
+**异常原因**
+
+在 Hook Resources 时发生了类型错误的异常。
+
+**解决方案**
+
+`YukiHookAPI` 会尝试在 `initZygote` 与 `handleInitPackageResources` 中装载 Resources Hook，若全部装载失败可能会发生此异常，当前 Hook Framework 需要支持并启用资源钩子(Resources Hook)功能，请检查后再试一次。
+
+!> `loggerE` Resources Hook got an Exception \[**TAG**\]
+
+**异常原因**
+
+在 Hook Resources 时发生了任意的异常。
+
+**解决方案**
+
+这是一个异常汇总，请自行向下查看日志具体的异常是什么，例如找不到 Resources Id 的问题。
 
 ## 阻断异常
 
@@ -682,6 +743,42 @@ encase {
 
 `appContext` 在宿主环境初始化完成之前有大的概率可能是空的，请延迟获取或在宿主的 Hook 方法回调方法体内再使用此变量。
 
+!> `IllegalStateException` Current Hook Framework not support moduleAppResources
+
+**异常原因**
+
+在 `PackageParam` 中调用了 `moduleAppResources` 变量但是无法获取到实例对象。
+
+> 示例如下
+
+```kotlin
+encase {
+    // 调用了此变量
+    moduleAppResources...
+}
+```
+
+**解决方案**
+
+`moduleAppResources` 需要当前 Hook Framework 支持 `initZygote` 功能，请检查后再试一次。
+
+!> `IllegalStateException` You cannot call to appResources in this time
+
+在 `PackageParam` 中调用了 `appResources` 变量但是无法获取到实例对象。
+
+> 示例如下
+
+```kotlin
+encase {
+    // 调用了此变量
+    appResources...
+}
+```
+
+**解决方案**
+
+`appResources` 不会在 `initZygote` 中装载，另外，这个功能需要当前 Hook Framework 支持并启用资源钩子(Resources Hook)功能，请检查后再试一次。
+
 !> `IllegalStateException` VariousClass match failed of those **CLASSES**
 
 **异常原因**
@@ -713,6 +810,48 @@ TargetClass.hook {
 
 详情请参考 [状态监听](guide/example?id=状态监听)。
 
+!> `IllegalStateException` LayoutInflatedParam View instance got null
+
+**异常原因**
+
+在布局 Hook 回调中调用了 `currentView` 但没取到实例对象。
+
+> 示例如下
+
+```kotlin
+injectResource {
+    conditions {
+        name = "activity_main"
+        layout()
+    }
+    injectAsLayout {
+        // 调用了此变量
+        currentView...
+    }
+}
+```
+
+**解决方案**
+
+这种情况基本上不存在，除非被 Hook 的宿主当前 `Activity` 已经销毁或 Hook Framework 自身存在问题。
+
+!> `IllegalStateException` XResForwarder is invalid
+
+**异常原因**
+
+在 `YukiResForwarder` 中调用了 `resources` 但没取到实例对象。
+
+> 示例如下
+
+```kotlin
+// 调用了此变量
+moduleAppResources.fwd(...).resources
+```
+
+**解决方案**
+
+这种情况基本上不存在，除非 Hook Framework 自身存在问题。
+
 !> `IllegalStateException` Hook Members is empty, hook aborted
 
 **异常原因**
@@ -730,6 +869,24 @@ TargetClass.hook {
 **解决方案**
 
 你必须在 `hook` 方法体内加入至少一个 `injectMember` 方法。
+
+!> `IllegalStateException` Hook Resources is empty, hook aborted
+
+**异常原因**
+
+使用了 `hook` 方法体但其中并没有填写内容。
+
+> 示例如下
+
+```kotlin
+resources().hook {
+    // 这里没有填写任何内容
+}
+```
+
+**解决方案**
+
+你必须在 `hook` 方法体内加入至少一个 `injectResources` 方法。
 
 !> `IllegalStateException` paramTypes is empty, please use emptyParam() instead
 
@@ -772,3 +929,13 @@ method {
     paramCount = 0
 }
 ```
+
+!> `IllegalStateException` Invalid YukiHookCallback type
+
+**异常原因**
+
+`YukiHookAPI` 的核心 Hook 功能发生故障。
+
+**解决方案**
+
+这种情况基本上不存在，若发生上述问题，确定并非自己的代码发生的问题后，可提交日志进行反馈。

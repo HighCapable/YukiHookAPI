@@ -26,15 +26,7 @@
 
 目前 API 只支持通过自动处理程序绑定到 `xposed_init`，若您不喜欢自动处理程序，一定要自己实现模块装载入口，未来会按照需求人数推出仅有 API 功能的 Lite 版本。
 
-### 支持资源 Hook 和注入系统框架
-
-**计划状态：近期** 
-
-目前的 API 仅支持 APP 内的功能 Hook，并不支持 `Resource` 的替换以及 Hook 系统框架。
-
-API 还未实现对 `handleInitPackageResources` 和 `initZygote` 的调用。
-
-在未来会根据使用和需求人数加上这个功能，如有需求你也可以向我们提交 Pull Request 来贡献你的代码。
+API 已经提供了 Xposed 原生 API 监听接口，你可以 [在这里](config/xposed-using?id=原生-xposed-api-事件) 找到或查看 Demo 的实现方法。
 
 ### 支持更多 Hook Framework
 

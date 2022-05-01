@@ -11,7 +11,26 @@
 ```java
 package com.demo;
 
-public class Test {
+public class BaseTest {
+
+    public BaseTest() {
+        // ...
+    }
+
+    public BaseTest(boolean isInit) {
+        // ...
+    }
+
+    private void doBaseTask(String taskName) {
+        // ...
+    }
+}
+```
+
+```java
+package com.demo;
+
+public class Test extends BaseTest {
 
     public Test() {
         // ...
@@ -61,7 +80,7 @@ public class Test {
 
 ### 查询与反射调用
 
-假设我们要得到 `doTask` 方法并执行，通常情况下，我们可以使用标准的反射 API 去查询这个方法。
+假设我们要得到 `Test`(以下统称“当前 `Class`”)的 `doTask` 方法并执行，通常情况下，我们可以使用标准的反射 API 去查询这个方法。
 
 > 示例如下
 
@@ -177,6 +196,54 @@ Test::class.java.method {
     paramCount = 3
 }.get(instance) // 得到这个方法
 ```
+
+### 在父类查询
+
+你会注意到 `Test` 继承于 `BaseTest`，现在我们想得到 `BaseTest` 的 `doBaseTask` 方法，在不知道父类名称的情况下，要怎么做呢？
+
+参照上面的查询条件，我们只需要在查询条件中加入一个 `superClass` 即可实现这个功能。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name = "doBaseTask"
+    param(StringType)
+    // 只需要添加这个条件
+    superClass()
+}.get(instance).call("task_name")
+```
+
+这个时候我们就可以在父类中取到这个方法了。
+
+`superClass` 有一个参数为 `isOnlySuperClass`，设置为 `true` 后，可以跳过当前 `Class` 仅查询当前 `Class` 的父类。
+
+由于我们现在已知 `doBaseTask` 方法只存在于父类，可以加上这个条件节省查询时间。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name = "doBaseTask"
+    param(StringType)
+    // 加入一个查询条件
+    superClass(isOnlySuperClass = true)
+}.get(instance).call("task_name")
+```
+
+这个时候我们同样可以得到父类中的这个方法。
+
+`superClass` 一旦设置就会自动循环向后查找全部继承的父类中是否有这个方法，直到查询到目标没有父类(继承关系为 `java.lang.Object`)为止。
+
+更多用法可参考 [superClass 方法](api/document?id=superclass-method)。
+
+!> 当前查询的 `Method` 除非指定 `superClass` 条件，否则只能查询到当前 `Class` 的 `Method`。
 
 ### 静态字节码
 
@@ -344,6 +411,23 @@ instance.current {
     }.call()
     // 得到 name
     val name = method { name = "getName" }.string()
+}
+```
+
+我们还可以用 `superClass` 调用当前 `Class` 父类的方法。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 假设这个 Class 是不能被直接得到的
+instance.current {
+    // 执行父类的 doBaseTask 方法
+    superClass().method {
+        name = "doBaseTask"
+        param(StringType)
+    }.call("task_name")
 }
 ```
 
@@ -768,9 +852,9 @@ loggerE(msg = "This is an error")
 
 ```kotlin
 // 假设这就是被抛出的异常
-val e = Throwable(...)
+val throwable = Throwable(...)
 // 打印日志
-loggerE(msg = "This is an error", e = e)
+loggerE(msg = "This is an error", e = throwable)
 ```
 
 打印的结果为如下所示。

@@ -11,14 +11,6 @@
 ⛱️ An efficient Kotlin version of the Xposed Hook API.
 <br/>
 
-## Plan is in progress
-
-> `IXposedHookInitPackageResources` and `IXposedHookZygoteInit` are being adapted recently,let's stay tuned
-
-**计划进行中**
-
-> 近期正在适配 `IXposedHookInitPackageResources`、`IXposedHookZygoteInit` 敬请期待
-
 ## What's this
 
 - This is an efficient Xposed Hook API rebuilt in Kotlin
@@ -30,6 +22,18 @@
 - 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
 - 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
+
+## Supports
+
+- Standard Hook
+- Zygote Hook
+- Resources Hook
+
+**支持的功能**
+
+- 标准 Hook
+- Zygote Hook
+- 资源钩子(Resources Hook)
 
 ## Get Started
 

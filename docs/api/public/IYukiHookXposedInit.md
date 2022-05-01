@@ -49,3 +49,41 @@ fun onHook()
 **功能描述**
 
 > Xposed API 的模块装载调用入口方法。
+
+### onXposedEvent [method]
+
+```kotlin
+fun onXposedEvent()
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 监听 Xposed 原生装载事件。
+
+若你的 Hook 事件中存在需要兼容的原生 Xposed 功能，可在这里实现。
+
+请在这里使用 `YukiXposedEvent` 创建回调事件监听。
+
+可监听的事件如下：
+
+`YukiXposedEvent.onInitZygote`
+
+`YukiXposedEvent.onHandleLoadPackage`
+
+`YukiXposedEvent.onHandleInitPackageResources`
+
+!> 此接口仅供监听和实现原生 Xposed API 的功能，请不要在这里操作 `YukiHookAPI`。
+
+## ~~YukiHookXposedInitProxy [interface]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0` `添加`
+
+`v1.0.80` `作废`
+
+请转移到 `IYukiHookXposedInit`

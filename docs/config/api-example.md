@@ -177,6 +177,57 @@ class HookEntryClass : IYukiHookXposedInit {
 }
 ```
 
+### 扩展特性
+
+如果你当前使用的 Hook Framework 支持并启用了资源钩子(Resources Hook)功能，你现在可以直接在 `encase` 中创建 Resources Hook。
+
+你完全不需要与之前在使用 Xposed API 那样区分 `initZygote`、`handleLoadPackage`、`handleInitPackageResources` 方法来执行不同的功能。
+
+在 `YukiHookAPI` 中，这些功能**是无缝的**。
+
+> 示例如下
+
+```kotlin
+encase {
+    loadApp(name = "com.example.demo") {
+        findClass(name = "$packageName.DemoClass").hook { 
+            // Your code here.
+        }
+        // 创建一个 Resources Hook (固定用法)
+        resources().hook {
+            // Your code here.
+        }
+    }
+}
+```
+
+你还可以同时使用 `loadZygote` 方法来装载系统框架。
+
+> 示例如下
+
+```kotlin
+encase {
+    loadZygote {
+        ActivityClass.hook { 
+            // Your code here.
+        }
+        // 在 Zygote 中创建 Resources Hook
+        resources().hook {
+            // Your code here.
+        }
+    }
+    loadApp(name = "com.example.demo") {
+        findClass(name = "$packageName.DemoClass").hook { 
+            // Your code here.
+        }
+        // 在 APP 中创建 Resources Hook
+        resources().hook {
+            // Your code here.
+        }
+    }
+}
+```
+
 ## 作为 Hook API 使用需要注意的地方
 
 若你作为 Hook API 使用，那么你只需要在入口处对 `encase` 方法进行区分。
@@ -197,3 +248,5 @@ fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker)
 此处的 `baseContext` 只需填入你在 `attachBaseContext` 处得到的 `Context` 即可，其它用法与上述内容完全一致。
 
 !> 切勿以 Xposed 方式使用 `encase` 方法而漏掉 `baseContext` 参数，否则你的 Hook 将完全不工作。
+
+!> Resources Hook 功能不支持作为 Hook API 使用。

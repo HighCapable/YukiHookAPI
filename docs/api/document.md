@@ -22,6 +22,14 @@
 
 [filename](public/ModuleApplication.md ':include')
 
+[filename](public/YukiModuleResources.md ':include')
+
+[filename](public/YukiResources.md ':include')
+
+[filename](public/YukiResForwarder.md ':include')
+
+[filename](public/YukiXposedEvent.md ':include')
+
 [filename](public/ComponentTypeFactory.md ':include')
 
 [filename](public/GraphicsTypeFactory.md ':include')
@@ -38,7 +46,9 @@
 
 [filename](public/YukiBaseHooker.md ':include')
 
-[filename](public/YukiHookCreater.md ':include')
+[filename](public/YukiMemberHookCreater.md ':include')
+
+[filename](public/YukiResourcesHookCreater.md ':include')
 
 [filename](public/MethodFinder.md ':include')
 
@@ -55,3 +65,5 @@
 [filename](public/VariousClass.md ':include')
 
 [filename](public/CurrentClass.md ':include')
+
+[filename](public/HookResources.md ':include')

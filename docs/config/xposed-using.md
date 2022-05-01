@@ -96,7 +96,7 @@ Xposed 入口类处理如下。
 > 示例如下
 
 ```kotlin
-class HookEntry_YukiHookXposedInit: IXposedHookLoadPackage, ...
+class HookEntry_YukiHookXposedInit: IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources
 ```
 
 编译后的类名结构如下。
@@ -105,6 +105,7 @@ class HookEntry_YukiHookXposedInit: IXposedHookLoadPackage, ...
 
 ```
 ...hook.HookEntry ← 你的入口类
+...hook.HookEntry_Impl ← 自动生成的 Impl 类
 ...hook.HookEntry_YukiHookXposedInit ← 自动生成的 Xposed 入口类
 ```
 
@@ -122,7 +123,7 @@ Xposed 入口类处理如下。
 > 示例如下
 
 ```kotlin
-class HookXposedEntry: IXposedHookLoadPackage, ...
+class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources
 ```
 
 编译后的类名结构如下。
@@ -131,6 +132,7 @@ class HookXposedEntry: IXposedHookLoadPackage, ...
 
 ```
 ...hook.HookEntry ← 你的入口类
+...hook.HookEntry_Impl ← 自动生成的 Impl 类
 ...hook.HookXposedEntry ← 自动生成的 Xposed 入口类
 ```
 
@@ -138,21 +140,47 @@ class HookXposedEntry: IXposedHookLoadPackage, ...
 
 ### IYukiHookXposedInit 接口
 
-```kotlin
-interface IYukiHookXposedInit {
-
-    fun onInit()
-
-    fun onHook()
-}
-```
-
 `IYukiHookXposedInit` 接口为你的 `HookEntryClass` 必须实现的接口，这是你的模块开始 Hook 的起点。
 
 若要了解更多可 [点击这里](api/document?id=iyukihookxposedinit-interface) 进行查看。
 
 当你的模块被 Xposed 装载后，`onHook` 方法将会被回调，你需要在此方法中开始使用 `YukiHookAPI`。
 
-> 基本的调用流程为 `YukiHookInjectXposedInitClass.handleLoadPackage` → `HookEntryClass.onInit` → `HookEntryClass.onHook` → `YukiHookAPI.onXposedLoaded`
+> 基本的调用流程为 `_YukiHookXposedInit` → `IYukiHookXposedInit.onXposedEvent` → `IYukiHookXposedInit.onInit` → `IYukiHookXposedInit.onHook`
 
 详情请参考 [API 基本配置](config/api-example)。
+
+## 原生 Xposed API 事件
+
+若你当前的 Xposed 模块使用了第三方的资源，但是短时间内可能无法转移它们，此时，你可以使用 `onXposedEvent` 实现监听原生 Xposed API 的全部装载事件。
+
+> 示例如下
+
+```kotlin
+@InjectYukiHookWithXposed
+class HookEntry: IYukiHookXposedInit {
+
+    override fun onHook() {
+        // Your code here.
+    }
+
+    override fun onXposedEvent() {
+        // 监听原生 Xposed API 的装载事件
+        YukiXposedEvent.events {
+            onInitZygote {
+                // it 对象即 [StartupParam]
+            }
+            onHandleLoadPackage {
+                // it 对象即 [LoadPackageParam]
+            }
+            onHandleInitPackageResources {
+                // it 对象即 [InitPackageResourcesParam]
+            }
+        }
+    }
+}
+```
+
+`onXposedEvent` 与 `onHook` 方法完全独立存在，互不影响，你可以继续在 `onHook` 方法中使用 `YukiHookAPI`。
+
+若要了解更多可 [点击这里](api/document?id=onxposedevent-method) 进行查看。

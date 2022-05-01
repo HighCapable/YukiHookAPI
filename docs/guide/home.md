@@ -62,6 +62,8 @@
 
 现在，我们只需要编写少量的代码，一切时间开销和花费交给自动化处理。
 
+借助 `Kotlin` 优雅的 `lambda` 写法以及 `YukiHookAPI`，可以让你的 Hook 逻辑更加美观清晰。
+
 > 示例如下
 
 <!-- tabs:start -->
@@ -70,9 +72,34 @@
 
 ```kotlin
 @InjectYukiHookWithXposed
-class MainHook : IYukiHookXposedInit {
+class HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
+        loadZygote {
+            ActivityClass.hook {
+                injectMember {
+                    method {
+                        name = "onCreate"
+                        param(BundleClass)
+                    }
+                    beforeHook {
+                        // Your code here.
+                    }
+                    afterHook {
+                        // Your code here.
+                    }
+                }
+            }
+            resources().hook {
+                injectResource {
+                    conditions {
+                        name = "sym_def_app_icon"
+                        mipmap()
+                    }
+                    replaceToModuleResource(R.mipmap.ic_launcher)
+                }
+            }
+        }
         loadApp(name = "com.android.browser") {
             ActivityClass.hook {
                 injectMember {
@@ -88,6 +115,15 @@ class MainHook : IYukiHookXposedInit {
                     }
                 }
             }
+            resources().hook {
+                injectResource {
+                    conditions {
+                        name = "ic_launcher"
+                        mipmap()
+                    }
+                    replaceToModuleResource(R.mipmap.ic_launcher)
+                }
+            }
         }
     }
 }
@@ -96,14 +132,16 @@ class MainHook : IYukiHookXposedInit {
 #### **Xposed API**
 
 ```kotlin
-class MainHook : IXposedHookLoadPackage {
+class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
-    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
-        if (lpparam.packageName == "com.android.browser")
-            XposedHelpers.findAndHookMethod(
+    private lateinit var moduleResources: XModuleResources
+
+    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam) {
+        moduleResources = XModuleResources.createInstance(sparam.modulePath, null)
+        XResources.setSystemWideReplacement("android", "mipmap", "sym_def_app_icon", moduleResources.fwd(R.mipmap.ic_launcher))
+        XposedHelpers.findAndHookMethod(
                 Activity::class.java.name,
-                lpparam.classLoader,
-                "onCreate",
+                null, "onCreate",
                 Bundle::class.java,
                 object : XC_MethodHook() {
                     override fun beforeHookedMethod(param: MethodHookParam?) {
@@ -115,14 +153,36 @@ class MainHook : IXposedHookLoadPackage {
                     }
                 })
     }
+
+    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
+        if (lpparam.packageName == "com.android.browser")
+            XposedHelpers.findAndHookMethod(
+                Activity::class.java.name,
+                lpparam.classLoader, "onCreate",
+                Bundle::class.java,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam?) {
+                        // Your code here.
+                    }
+
+                    override fun afterHookedMethod(param: MethodHookParam?) {
+                        // Your code here.
+                    }
+                })
+    }
+
+    override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam) {
+        if (resparam.packageName == "com.android.browser")
+            resparam.res.setReplacement("com.android.browser", "mipmap", "ic_launcher", moduleResources.fwd(R.mipmap.ic_launcher))
+    }
 }
 ```
 
 <!-- tabs:end -->
 
-是的，你没有看错，仅仅就需要这几行代码，就一切安排妥当。
+是的，你没有看错，仅仅就需要这些代码，就能完全取代 Xposed API 实现同样的功能。
 
-代码量少，逻辑清晰，借助高效强大的 `YukiHookAPI`，你就可以实现一个非常简单的 Xposed 模块。
+现在，借助高效强大的 `YukiHookAPI`，你就可以实现一个非常简单的 Xposed 模块。
 
 ## 支持的 Hook 框架
 
@@ -131,7 +191,7 @@ class MainHook : IXposedHookLoadPackage {
 | Hook Framework                                            | ST  | Describe                                                                                  |
 | --------------------------------------------------------- | --- | ----------------------------------------------------------------------------------------- |
 | [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅   | 多场景下稳定使用                                                                          |
-| [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ✅   | 部分兼容                                                                                  |
+| [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ❎   | 已停止维护，不再推荐使用                                                                  |
 | [Pine](https://github.com/canyie/pine)                    | ⭕   | 可以使用                                                                                  |
 | [SandHook](https://github.com/asLody/SandHook)            | ⭕   | 可以使用                                                                                  |
 | [Whale](https://github.com/asLody/whale)                  | ⭕   | 需要 [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale) |

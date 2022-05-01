@@ -22,15 +22,28 @@ override fun onHook() = encase {
     appInfo
     // 得到宿主 Application 生命周期
     appContext
-    // 创建 Hook
-    findClass("com.demo.Test").hook {
-        injectMember {
-            method {
-                name = "test"
-                param(BooleanType)
+    // Hook 指定的 APP
+    loadApp(name = "com.demo.test") {
+        // Class Hook
+        findClass("com.demo.test.TestClass").hook {
+            injectMember {
+                method {
+                    name = "test"
+                    param(BooleanType)
+                }
+                afterHook {
+                    // ...
+                }
             }
-            afterHook {
-                // ...
+        }
+        // Resources Hook (固定用法)
+        resources().hook {
+            injectResource {
+                conditions {
+                    name = "ic_launcher"
+                    mipmap()
+                }
+                replaceToModuleResource(R.mipmap.ic_launcher)
             }
         }
     }
@@ -40,6 +53,12 @@ override fun onHook() = encase {
 #### **Xposed API**
 
 ```kotlin
+private lateinit var moduleResources: XModuleResources
+
+override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam) {
+    moduleResources = XModuleResources.createInstance(sparam.modulePath, null)
+}
+
 override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
     // 得到当前 Hook 的包名
     lpparam.packageName
@@ -47,12 +66,20 @@ override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
     lpparam.applicationInfo
     // 得到宿主 Application 生命周期
     AndroidAppHelper.currentApplication()
+    // Class Hook
+    if(lpparam.packageName == "com.demo.test")
+        XposedHelpers.findAndHookMethod("com.demo.test.TestClass", lpparam.classLoader, "test", Boolean::class.java, object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                // ...
+            }
+        })
+}
+
+override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam) {
+    // 得到当前 Hook 的包名
+    resparam.packageName
     // 创建 Hook
-    XposedHelpers.findAndHookMethod("com.demo.Test", lpparam.classLoader, "test", Boolean::class.java, object : XC_MethodHook() {
-        override fun afterHookedMethod(param: MethodHookParam) {
-            // ...
-        }
-    })
+    resparam.res.setReplacement("com.demo.test", "mipmap", "ic_launcher", moduleResources.fwd(R.mipmap.ic_launcher))
 }
 ```
 

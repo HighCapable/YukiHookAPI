@@ -8,6 +8,34 @@
 
 > 这是自定义 `Member` 和 `Class` 相关功能的查找匹配以及 `invoke` 的封装类。
 
+### hookClass [field]
+
+```kotlin
+val Class<*>.hookClass: HookClass
+```
+
+**变更记录**
+
+`v1.0` `添加`
+
+**功能描述**
+
+> 将 `Class` 转换为 `HookClass`。
+
+### normalClass [field]
+
+```kotlin
+val HookClass.normalClass: Class<*>?
+```
+
+**变更记录**
+
+`v1.0` `添加`
+
+**功能描述**
+
+> 将 `HookClass` 转换为 `Class`。
+
 ### hasClass [field]
 
 ```kotlin
@@ -36,33 +64,19 @@ if("com.example.demo.DemoClass".hasClass) {
 }
 ```
 
-### hookClass [field]
+### hasExtends [field]
 
 ```kotlin
-val Class<*>.hookClass: HookClass
+val Class<*>.hasExtends: Boolean
 ```
 
 **变更记录**
 
-`v1.0` `添加`
+`v1.0.80` `新增`
 
 **功能描述**
 
-> 将 `Class` 转换为 `HookClass`。
-
-### normalClass [field]
-
-```kotlin
-val HookClass.normalClass: Class<*>?
-```
-
-**变更记录**
-
-`v1.0` `添加`
-
-**功能描述**
-
-> 将 `HookClass` 转换为 `Class`。
+> 当前 `Class` 是否有继承关系，父类是 `Any` 将被认为没有继承关系。
 
 ### classOf [method]
 

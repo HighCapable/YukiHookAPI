@@ -50,7 +50,21 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker)
 
 **功能描述**
 
-> 在 `IYukiHookXposedInit` 中装载 `YukiHookAPI`。
+> 在 `IYukiHookXposedInit` 中调用 `YukiHookAPI`。
+
+### resources [method]
+
+```kotlin
+fun IYukiHookXposedInit.resources(initiate: ResourcesParam.() -> Unit)
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 在 `IYukiHookXposedInit` 中调用 `YukiHookAPI.resources`。
 
 ### modulePrefs [field]
 
@@ -93,6 +107,20 @@ val Context.processName: String
 **功能描述**
 
 > 获取当前进程名称。
+
+### isSupportResourcesHook [field]
+
+```kotlin
+val Any?.isSupportResourcesHook: Boolean
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)。
 
 ### isModuleActive [field]
 

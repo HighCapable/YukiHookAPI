@@ -101,7 +101,7 @@ dependencies {
 
 ```kotlin
 @InjectYukiHookWithXposed
-class MainHook : IYukiHookXposedInit {
+class HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = YukiHookAPI.encase {
         // Your code here.
@@ -153,4 +153,4 @@ override fun attachBaseContext(base: Context?) {
 
 ### 特别说明
 
-!> 由于你使用了自定义的 Hook 框架而并非模块，~~`YukiHookModuleStatus`~~ ~~`YukiHookModulePrefs`~~ 功能将失效。
+!> 由于你使用了自定义的 Hook 框架而并非模块，~~`YukiHookModuleStatus`~~ ~~`YukiHookModulePrefs`~~ 以及 Resources Hook 功能将失效。

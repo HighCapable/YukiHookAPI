@@ -10,16 +10,7 @@
 
 > ~~如果你仍然在使用 `Proguard`，你需要做一些规则配置。~~
 
-~~在 `proguard-rules.pro` 添加如下代码即可。~~
-
-> ~~示例如下~~
-
-```proguard
--keep class com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus {*;}
--keep class 这里填你的 HookEntryClass 入口类完整包名_YukiHookXposedInit {*;}
-```
-
-!> Proguard 规则已被弃用，请不要再使用，自从 Android Gradle Plugin 4.2 后，拥有 Android Jetpack 套件最新版本的混淆处理程序默认均为 `R8`，基本可以不需要考虑混淆的问题。
+!> Proguard 规则已被弃用，请不要再使用，自从 Android Gradle Plugin 4.2 后，拥有 Android Jetpack 套件最新版本的混淆处理程序默认均为 `R8`，不再需要考虑混淆的问题。
 
 若要在任何版本下启用 `R8`，请在 `gradle.properties` 文件中加入如下规则，Android Gradle Plugin 7.0 及以上版本无需任何配置。
 

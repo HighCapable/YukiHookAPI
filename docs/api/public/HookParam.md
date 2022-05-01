@@ -1,7 +1,7 @@
 ## HookParam [class]
 
 ```kotlin
-class HookParam(private​ ​val​ ​createrInstance​:​ ​YukiHookCreater​, private val wrapper: HookParamWrapper)
+class HookParam(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper?)
 ```
 
 **变更记录**

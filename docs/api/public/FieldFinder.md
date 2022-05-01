@@ -1,7 +1,7 @@
 ## FieldFinder [class]
 
 ```kotlin
-class FieldFinder(override val hookInstance: YukiHookCreater.MemberHookCreater?, override val classSet: Class<*>?) : BaseFinder()
+class FieldFinder(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>?) : BaseFinder()
 ```
 
 **变更记录**
@@ -131,6 +131,22 @@ fun type(value: Any): IndexTypeCondition
 !> 可不填写类型，默认模糊查找并取第一个匹配的 `Field`。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
+
+### superClass [method]
+
+```kotlin
+fun superClass(isOnlySuperClass: Boolean)
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 设置在 `classSet` 的所有父类中查找当前 `Field`。
+
+!> 若当前 `classSet` 的父类较多可能会耗时，API 会自动循环到父类继承是 `Any` 前的最后一个类。
 
 ### Result [class]
 

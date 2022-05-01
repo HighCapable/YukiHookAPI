@@ -31,12 +31,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * 代码文件注入器
+ * 代码文件注入模板类
  */
 object CodeSourceFileTemplate {
 
     /** 定义 Jvm 方法名 */
     private const val IS_ACTIVE_METHOD_NAME = "__--"
+
+    /** 定义 Jvm 方法名 */
+    private const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
 
     /** 定义 Jvm 方法名 */
     private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
@@ -92,80 +95,150 @@ object CodeSourceFileTemplate {
     /**
      * 获得 xposed_init 注入文件
      * @param packageName 包名
-     * @param modulePackageName 模块包名
      * @param entryClassName 入口类名
      * @param xInitClassName xposed_init 入口类名
      * @return [ByteArray]
      */
-    fun getXposedInitFileByteArray(packageName: String, modulePackageName: String, entryClassName: String, xInitClassName: String) =
-        ("package $packageName\n" +
+    fun getXposedInitFileByteArray(packageName: String, entryClassName: String, xInitClassName: String) =
+        ("@file:Suppress(\"ClassName\")\n" +
+                "\n" +
+                "package $packageName\n" +
                 "\n" +
                 "import androidx.annotation.Keep\n" +
-                "import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge\n" +
-                "import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus\n" +
-                "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
-                "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
-                "import de.robv.android.xposed.XC_MethodReplacement\n" +
-                "import de.robv.android.xposed.XposedHelpers\n" +
-                "import de.robv.android.xposed.XposedBridge\n" +
-                "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
+                "import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent\n" +
                 "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
-                "import $packageName.$entryClassName\n" +
+                "import de.robv.android.xposed.IXposedHookInitPackageResources\n" +
+                "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
+                "import de.robv.android.xposed.IXposedHookZygoteInit\n" +
+                "import de.robv.android.xposed.callbacks.XC_InitPackageResources\n" +
+                "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
                 "\n" +
-                getCommentContent(entryClassName, currrentClassTag = "XposedInit") +
+                getCommentContent(entryClassName, currrentClassTag = "Xposed Init") +
                 "@Keep\n" +
                 "@YukiGenerateApi\n" +
-                "class $xInitClassName : IXposedHookLoadPackage {\n" +
+                "class $xInitClassName : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {\n" +
+                "\n" +
+                "    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +
+                "        ${entryClassName}_Impl.callInitZygote(sparam)\n" +
+                "        YukiXposedEvent.EventHandler.callInitZygote(sparam)\n" +
+                "    }\n" +
                 "\n" +
                 "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
-                "        if (lpparam == null) return\n" +
-                "        try {\n" +
-                "            $entryClassName().apply {\n" +
-                "                onInit()\n" +
-                "                if (YukiHookXposedBridge.isXposedCallbackSetUp) {\n" +
-                "                    loggerE(tag = \"YukiHookAPI\", msg = \"You cannot loading a hooker in \\\"onInit\\\" method! Aborted\")\n" +
-                "                    return\n" +
-                "                }\n" +
-                "                onHook()\n" +
+                "        ${entryClassName}_Impl.callHandleLoadPackage(lpparam)\n" +
+                "        YukiXposedEvent.EventHandler.callHandleLoadPackage(lpparam)\n" +
+                "    }\n" +
+                "\n" +
+                "    override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
+                "        ${entryClassName}_Impl.callHandleInitPackageResources(resparam)\n" +
+                "        YukiXposedEvent.EventHandler.callHandleInitPackageResources(resparam)\n" +
+                "    }\n" +
+                "}").toByteArray()
+
+    /**
+     * 获得 xposed_init_Impl 注入文件
+     * @param packageName 包名
+     * @param modulePackageName 模块包名
+     * @param entryClassName 入口类名
+     * @return [ByteArray]
+     */
+    fun getXposedInitImplFileByteArray(packageName: String, modulePackageName: String, entryClassName: String) =
+        ("@file:Suppress(\"ClassName\")\n" +
+                "\n" +
+                "package $packageName\n" +
+                "\n" +
+                "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
+                "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
+                "import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus\n" +
+                "import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge\n" +
+                "import de.robv.android.xposed.IXposedHookZygoteInit\n" +
+                "import de.robv.android.xposed.XC_MethodReplacement\n" +
+                "import de.robv.android.xposed.XposedHelpers\n" +
+                "import de.robv.android.xposed.callbacks.XC_InitPackageResources\n" +
+                "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
+                "\n" +
+                getCommentContent(entryClassName, currrentClassTag = "Xposed Init Impl") +
+                "@YukiGenerateApi\n" +
+                "object ${entryClassName}_Impl {\n" +
+                "\n" +
+                "    private const val modulePackageName = \"$modulePackageName\"\n" +
+                "    private val hookEntry = $entryClassName()\n" +
+                "    private var isZygoteBinded = false\n" +
+                "    private var lpparam: XC_LoadPackage.LoadPackageParam? = null\n" +
+                "\n" +
+                "    private fun callXposedLoaded(\n" +
+                "        isZygoteLoaded: Boolean = false,\n" +
+                "        lpparam: XC_LoadPackage.LoadPackageParam? = null,\n" +
+                "        resparam: XC_InitPackageResources.InitPackageResourcesParam? = null\n" +
+                "    ) {\n" +
+                "        if (isZygoteBinded.not()) runCatching {\n" +
+                "            hookEntry.onXposedEvent()\n" +
+                "            hookEntry.onInit()\n" +
+                "            if (YukiHookBridge.isXposedCallbackSetUp) {\n" +
+                "                loggerE(tag = \"YukiHookAPI\", msg = \"You cannot load a hooker in \\\"onInit\\\" or \\\"onXposedEvent\\\" method! Aborted\")\n" +
+                "                return\n" +
                 "            }\n" +
-                "            YukiHookXposedBridge.callXposedInitialized()\n" +
-                "        } catch (e: Throwable) {\n" +
-                "            loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = e)\n" +
-                "        }\n" +
-                "        if (lpparam.packageName == \"$modulePackageName\") {\n" +
+                "            hookEntry.onHook()\n" +
+                "            YukiHookBridge.callXposedInitialized()\n" +
+                "            YukiHookBridge.modulePackageName = modulePackageName\n" +
+                "        }.onFailure { loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it) }\n" +
+                "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
+                "    }\n" +
+                "\n" +
+                "    private fun hookModuleAppStatus(lpparam: XC_LoadPackage.LoadPackageParam? = this.lpparam, isHookResourcesStatus: Boolean = false) {\n" +
+                "        lpparam?.let { this.lpparam = it }\n" +
+                "        if (isHookResourcesStatus.not()) {\n" +
                 "            XposedHelpers.findAndHookMethod(\n" +
                 "                YukiHookModuleStatus::class.java.name,\n" +
-                "                lpparam.classLoader,\n" +
+                "                this.lpparam?.classLoader,\n" +
                 "                \"$IS_ACTIVE_METHOD_NAME\",\n" +
                 "                object : XC_MethodReplacement() {\n" +
                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
                 "                })\n" +
                 "            XposedHelpers.findAndHookMethod(\n" +
                 "                YukiHookModuleStatus::class.java.name,\n" +
-                "                lpparam.classLoader,\n" +
+                "                this.lpparam?.classLoader,\n" +
                 "                \"$GET_XPOSED_TAG_METHOD_NAME\",\n" +
                 "                object : XC_MethodReplacement() {\n" +
-                "                    override fun replaceHookedMethod(param: MethodHookParam?) = try {\n" +
-                "                        XposedBridge::class.java.getDeclaredField(\"TAG\").apply { isAccessible = true }.get(null) as String\n" +
-                "                    } catch (_: Throwable) {\n" +
-                "                        \"invalid\"\n" +
-                "                    }\n" +
+                "                    override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorName\n" +
                 "                })\n" +
                 "            XposedHelpers.findAndHookMethod(\n" +
                 "                YukiHookModuleStatus::class.java.name,\n" +
-                "                lpparam.classLoader,\n" +
+                "                this.lpparam?.classLoader,\n" +
                 "                \"$GET_XPOSED_VERSION_METHOD_NAME\",\n" +
                 "                object : XC_MethodReplacement() {\n" +
-                "                    override fun replaceHookedMethod(param: MethodHookParam?) = try {\n" +
-                "                        XposedBridge.getXposedVersion()\n" +
-                "                    } catch (_: Throwable) {\n" +
-                "                        -1\n" +
-                "                    }\n" +
+                "                    override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorVersion\n" +
                 "                })\n" +
-                "            YukiHookXposedBridge.isModulePackageXposedEnv = true\n" +
-                "        }\n" +
-                "        YukiHookXposedBridge.modulePackageName = \"$modulePackageName\"\n" +
-                "        YukiHookXposedBridge.callXposedLoaded(lpparam)\n" +
+                "        } else XposedHelpers.findAndHookMethod(\n" +
+                "            YukiHookModuleStatus::class.java.name,\n" +
+                "            this.lpparam?.classLoader,\n" +
+                "            \"$HAS_RESOURCES_HOOK_METHOD_NAME\",\n" +
+                "            object : XC_MethodReplacement() {\n" +
+                "                override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
+                "            })\n" +
+                "    }\n" +
+                "\n" +
+                "    @YukiGenerateApi\n" +
+                "    fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +
+                "        if (sparam == null) return\n" +
+                "        runCatching {\n" +
+                "            YukiHookBridge.callXposedZygoteLoaded(sparam)\n" +
+                "        }.onFailure { loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI bind initZygote failed\", e = it) }\n" +
+                "        callXposedLoaded(isZygoteLoaded = true)\n" +
+                "        isZygoteBinded = true\n" +
+                "    }\n" +
+                "\n" +
+                "    @YukiGenerateApi\n" +
+                "    fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
+                "        if (lpparam == null) return\n" +
+                "        if (lpparam.packageName == modulePackageName) hookModuleAppStatus(lpparam)\n" +
+                "        callXposedLoaded(lpparam = lpparam)\n" +
+                "    }\n" +
+                "\n" +
+                "    @YukiGenerateApi\n" +
+                "    fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
+                "        if (resparam == null) return\n" +
+                "        if (resparam.packageName == modulePackageName) hookModuleAppStatus(isHookResourcesStatus = true)\n" +
+                "        callXposedLoaded(resparam = resparam)\n" +
                 "    }\n" +
                 "}").toByteArray()
 }

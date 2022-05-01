@@ -1,7 +1,7 @@
-## YukiHookCreater [class]
+## YukiMemberHookCreater [class]
 
 ```kotlin
-class YukiHookCreater(private val packageParam: PackageParam, internal val hookClass: HookClass)
+class YukiMemberHookCreater(private val packageParam: PackageParam, internal val hookClass: HookClass)
 ```
 
 **变更记录**
@@ -14,7 +14,49 @@ class YukiHookCreater(private val packageParam: PackageParam, internal val hookC
 
 **功能描述**
 
-> `YukiHookAPI` 核心 Hook 实现类。
+> `YukiHookAPI` 的 `Member` 核心 Hook 实现类。
+
+### PRIORITY_DEFAULT [field]
+
+```kotlin
+val PRIORITY_DEFAULT: Int
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 默认 Hook 回调优先级。
+
+### PRIORITY_LOWEST [field]
+
+```kotlin
+val PRIORITY_LOWEST: Int
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 延迟回调 Hook 方法结果。
+
+### PRIORITY_HIGHEST [field]
+
+```kotlin
+val PRIORITY_HIGHEST: Int
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 更快回调 Hook 方法结果。
 
 ### instanceClass [field]
 
@@ -39,7 +81,7 @@ val instanceClass: Class<*>
 ### injectMember [method]
 
 ```kotlin
-inline fun injectMember(tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
+inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
 ```
 
 **变更记录**
@@ -49,6 +91,8 @@ inline fun injectMember(tag: String, initiate: MemberHookCreater.() -> Unit): Me
 `v1.0.80` `修改`
 
 将方法体进行 inline
+
+增加 `priority` Hook 优先级
 
 **功能描述**
 
@@ -76,15 +120,29 @@ injectMember(tag = "KuriharaYuki") {
 }
 ```
 
+你还可以自定义 `priority`，以控制当前 Hook 对象并列执行的优先级速度。
+
+> 示例如下
+
+```kotlin
+injectMember(priority = PRIORITY_HIGHEST) {
+    // Your code here.
+}
+```
+
 ### MemberHookCreater [class]
 
 ```kotlin
-inner class MemberHookCreater(var tag: String)
+inner class MemberHookCreater(private val priority: Int, internal val tag: String)
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.80` `修改`
+
+增加 `priority` Hook 优先级
 
 **功能描述**
 

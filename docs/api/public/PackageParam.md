@@ -1,7 +1,7 @@
 ## PackageParam [class]
 
 ```kotlin
-open class PackageParam(private var wrapper: PackageParamWrapper?)
+open class PackageParam(internal var wrapper: PackageParamWrapper?)
 ```
 
 **变更记录**
@@ -53,6 +53,24 @@ val appContext: Application
 **功能描述**
 
 > 获取当前 Hook APP 的 `Application`。
+
+!> 首次装载可能是空的，请延迟一段时间再获取。
+
+### appResources [field]
+
+```kotlin
+val appResources：Resources
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 获取当前 Hook APP 的 Resources。
+
+!> 你只能在 `HookResources.hook` 方法体内或 `appContext` 装载完毕时进行调用。
 
 ### processName [field]
 
@@ -112,6 +130,38 @@ val mainProcessName: String
 
 其对应的就是 `packageName`。
 
+### moduleAppFilePath [field]
+
+```kotlin
+val moduleAppFilePath: String
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 获取当前 Xposed 模块自身 APK 文件路径。
+
+!> 作为 Hook API 装载时无法使用，会获取到空字符串。
+
+### moduleAppResources [field]
+
+```kotlin
+val moduleAppResources: YukiModuleResources
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 获取当前 Xposed 模块自身 `Resources`。
+
+!> 作为 Hook API 或不支持的 Hook Framework 装载时无法使用，会抛出异常。
+
 ### prefs [field]
 
 ```kotlin
@@ -125,6 +175,8 @@ val prefs: YukiHookModulePrefs
 **功能描述**
 
 > 获得当前使用的存取数据对象缓存实例。
+
+!> 作为 Hook API 装载时无法使用，会抛出异常。
 
 ### prefs [method]
 
@@ -145,6 +197,24 @@ fun prefs(name: String): YukiHookModulePrefs
 > 获得当前使用的存取数据对象缓存实例。
 
 你可以通过 `name` 来自定义 Sp 存储的名称。
+
+!> 作为 Hook API 装载时无法使用，会抛出异常。
+
+### resources [method]
+
+```kotlin
+fun resources(): HookResources
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 获得当前 Hook APP 的 `YukiResources` 对象。
+
+请调用 `HookResources.hook` 方法开始 Hook。
 
 ### loadApp [method]
 
@@ -169,6 +239,28 @@ fun loadApp(name: String, hooker: YukiBaseHooker)
 > 装载并 Hook 指定包名的 APP。
 
 `name` 为 APP 的包名，后方的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
+
+装载并 Hook 指定、全部包名的 APP，若要 Hook 系统框架，请使用 `loadZygote`。
+
+### loadZygote [method]
+
+```kotlin
+inline fun loadZygote(initiate: PackageParam.() -> Unit)
+```
+
+```kotlin
+fun loadZygote(hooker: YukiBaseHooker)
+```
+
+**变更记录**
+
+`v1.0.80` `新增`
+
+**功能描述**
+
+> 装载并 Hook 系统框架。
+
+方法中的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
 
 ### withProcess [method]
 
@@ -331,19 +423,19 @@ val variousClass = VariousClass("com.example.demo.DemoClass1", "com.example.demo
 ### hook [method]
 
 ```kotlin
-inline fun String.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun String.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 ```kotlin
-inline fun Class<*>.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun Class<*>.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 ```kotlin
-inline fun VariousClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun VariousClass.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 ```kotlin
-inline fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreater.() -> Unit): YukiHookCreater.Result
+inline fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 **变更记录**
@@ -360,7 +452,7 @@ inline fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiHookCreate
 
 `v1.0.3` `修改`
 
-新增 `YukiHookCreater.Result` 返回值
+新增 `YukiMemberHookCreater.Result` 返回值
 
 `v1.0.70` `修改`
 
@@ -444,3 +536,33 @@ YourClass.hook(isUseAppClassLoader = false) {
     // Your code here.
 }
 ```
+
+### hook [method]
+
+```kotlin
+inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit)
+```
+
+**变更记录**
+
+`v1.0.80` `新增
+
+**功能描述**
+
+> Hook APP 的 Resources。
+
+**功能示例**
+
+Resources Hook 为固定用法，获取 `resources` 对象，然后调用 `hook` 方法开始 Hook。
+
+> 示例如下
+
+```kotlin
+resources().hook {
+    // Your code here.
+}
+```
+
+!> 这是固定用法，为了防止发生问题，你不可手动实现任何 `HookResources` 实例执行 `hook` 调用。
+
+将 Resources 的 Hook 设置为这样是为了与 `findClass(...).hook` 做到统一，使得调用起来逻辑不会混乱。
