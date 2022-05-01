@@ -534,7 +534,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = msg)
+            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "[${packageParam.packageName}] $msg")
         }
 
         /**
