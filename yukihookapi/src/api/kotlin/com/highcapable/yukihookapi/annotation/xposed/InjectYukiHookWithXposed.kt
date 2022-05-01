@@ -41,7 +41,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
  *
  * 例子：com.example.module.hook.MainHook、com.example.module.hook.inject.MainInject、com.example.module.hook.custom.CustomClass
  *
- * 你的 xposed_init 入口将被自动生成为 --> 你的模块APP包名/hook/...可允许子包名存在.../你的入口类_YukiHookXposedInit 或自定义 [entryClassName]
+ * 你的 xposed_init 入口将被自动生成为 --> 你的模块 APP 包名/hook/...可允许子包名存在.../你的入口类_YukiHookXposedInit 或自定义 [entryClassName]
  *
  * 例子：com.example.module.hook.MainHook_YukiHookXposedInit
  *

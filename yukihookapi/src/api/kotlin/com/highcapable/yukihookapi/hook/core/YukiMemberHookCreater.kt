@@ -25,13 +25,12 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused", "PropertyName")
 
 package com.highcapable.yukihookapi.hook.core
 
 import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
@@ -40,21 +39,29 @@ import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XC_MethodReplacement
-import de.robv.android.xposed.XposedBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 
 /**
- * [YukiHookAPI] 核心 Hook 实现类
+ * [YukiHookAPI] 的 [Member] 核心 Hook 实现类
  *
- * 这是一个 API 对接类 - 实现原生对接 [XposedBridge]
+ * 核心 API 对接 [YukiHookBridge.Hooker] 实现
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
-class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
+class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
+
+    /** 默认 Hook 回调优先级 */
+    val PRIORITY_DEFAULT = 50
+
+    /** 延迟回调 Hook 方法结果 */
+    val PRIORITY_LOWEST = -10000
+
+    /** 更快回调 Hook 方法结果 */
+    val PRIORITY_HIGHEST = 10000
 
     /**
      * Hook 模式定义
@@ -65,13 +72,13 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
 
-    /** 是否对当前 [YukiHookCreater] 禁止执行 Hook 操作 */
+    /** 是否对当前 [YukiMemberHookCreater] 禁止执行 Hook 操作 */
     @PublishedApi
     internal var isDisableCreaterRunHook = false
 
     /** 设置要 Hook 的方法、构造类 */
     @PublishedApi
-    internal var hookMembers = HashSet<MemberHookCreater>()
+    internal var preHookMembers = HashSet<MemberHookCreater>()
 
     /**
      * 得到当前被 Hook 的 [Class]
@@ -85,25 +92,25 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
 
     /**
      * 注入要 Hook 的方法、构造类
+     * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
      * @param tag 可设置标签 - 在发生错误时方便进行调试
      * @param initiate 方法体
      * @return [MemberHookCreater.Result]
      */
-    inline fun injectMember(tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(tag).apply(initiate).apply { hookMembers.add(this) }.build()
+    inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
+        MemberHookCreater(priority, tag).apply(initiate).apply { preHookMembers.add(this) }.build()
 
     /**
      * Hook 执行入口
-     *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @throws IllegalStateException 如果必要参数没有被设置
      * @return [Result]
      */
     @PublishedApi
-    @YukiPrivateApi
     internal fun hook(): Result {
-        if (YukiHookAPI.hasXposedBridge.not()) return Result()
-        return if (hookMembers.isEmpty()) error("Hook Members is empty, hook aborted")
+        if (YukiHookBridge.hasXposedBridge.not()) return Result()
+        /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] */
+        if (packageParam.wrapper?.type == HookEntryType.RESOURCES) return Result()
+        return if (preHookMembers.isEmpty()) error("Hook Members is empty, hook aborted")
         else Result().also {
             Thread {
                 /** 延迟使得方法取到返回值 */
@@ -111,7 +118,7 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
                 when {
                     isDisableCreaterRunHook.not() && hookClass.instance != null -> {
                         it.onPrepareHook?.invoke()
-                        hookMembers.forEach { m -> m.hook() }
+                        preHookMembers.forEach { m -> m.hook() }
                     }
                     isDisableCreaterRunHook.not() && hookClass.instance == null ->
                         if (onHookClassNotFoundFailureCallback == null)
@@ -126,9 +133,10 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
      * Hook 核心功能实现类
      *
      * 查找和处理需要 Hook 的方法、构造类
+     * @param priority Hook 优先级
      * @param tag 当前设置的标签
      */
-    inner class MemberHookCreater(var tag: String) {
+    inner class MemberHookCreater(private val priority: Int, internal val tag: String) {
 
         /** [beforeHook] 回调 */
         private var beforeHookCallback: (HookParam.() -> Unit)? = null
@@ -386,23 +394,15 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
 
         /**
          * Hook 创建入口
-         *
-         * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
          * @return [Result]
          */
         @PublishedApi
-        @YukiPrivateApi
         internal fun build() = Result()
 
-        /**
-         * Hook 执行入口
-         *
-         * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-         */
+        /** Hook 执行入口 */
         @PublishedApi
-        @YukiPrivateApi
         internal fun hook() {
-            if (YukiHookAPI.hasXposedBridge.not() || isDisableMemberRunHook) return
+            if (YukiHookBridge.hasXposedBridge.not() || isDisableMemberRunHook) return
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
                     onHookingFailureCallback?.invoke(it)
@@ -411,11 +411,13 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
                 }
                 return
             }
+            /** 定义替换 Hook 的 [HookParam] */
+            val replaceHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
+
             /** 定义替换 Hook 回调方法体 */
-            val replaceMent = object : XC_MethodReplacement() {
-                override fun replaceHookedMethod(baseParam: MethodHookParam?): Any? {
-                    if (baseParam == null) return null
-                    return HookParam(createrInstance = this@YukiHookCreater, HookParamWrapper(baseParam)).let { param ->
+            val replaceMent = object : YukiHookBridge.Hooker.YukiMemberReplacement(priority) {
+                override fun replaceHookedMember(wrapper: HookParamWrapper): Any? {
+                    return replaceHookParam.assign(wrapper).let { param ->
                         try {
                             if (replaceHookCallback != null || isReplaceHookOnlyResultMode)
                                 onHookLogMsg(msg = "Replace Hook Member [${member ?: "All Member $allMethodsName"}] done [$tag]")
@@ -430,11 +432,16 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
                 }
             }
 
+            /** 定义前 Hook 的 [HookParam] */
+            val beforeHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
+
+            /** 定义后 Hook 的 [HookParam] */
+            val afterHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
+
             /** 定义前后 Hook 回调方法体 */
-            val beforeAfterHook = object : XC_MethodHook() {
-                override fun beforeHookedMethod(baseParam: MethodHookParam?) {
-                    if (baseParam == null) return
-                    HookParam(createrInstance = this@YukiHookCreater, HookParamWrapper(baseParam)).also { param ->
+            val beforeAfterHook = object : YukiHookBridge.Hooker.YukiMemberHook(priority) {
+                override fun beforeHookedMember(wrapper: HookParamWrapper) {
+                    beforeHookParam.assign(wrapper).also { param ->
                         runCatching {
                             beforeHookCallback?.invoke(param)
                             if (beforeHookCallback != null)
@@ -447,9 +454,8 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
                     }
                 }
 
-                override fun afterHookedMethod(baseParam: MethodHookParam?) {
-                    if (baseParam == null) return
-                    HookParam(createrInstance = this@YukiHookCreater, HookParamWrapper(baseParam)).also { param ->
+                override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    afterHookParam.assign(wrapper).also { param ->
                         runCatching {
                             afterHookCallback?.invoke(param)
                             if (afterHookCallback != null)
@@ -467,9 +473,9 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
                     member.also { member ->
                         runCatching {
                             if (isReplaceHookMode)
-                                XposedBridge.hookMethod(member, replaceMent)?.hookedMethod?.also { onHookedCallback?.invoke(it) }
+                                YukiHookBridge.Hooker.hookMethod(member, replaceMent)?.also { onHookedCallback?.invoke(it) }
                                     ?: error("Hook Member [$member] failed")
-                            else XposedBridge.hookMethod(member, beforeAfterHook)?.hookedMethod?.also { onHookedCallback?.invoke(it) }
+                            else YukiHookBridge.Hooker.hookMethod(member, beforeAfterHook)?.also { onHookedCallback?.invoke(it) }
                                 ?: error("Hook Member [$member] failed")
                         }.onFailure {
                             onHookingFailureCallback?.invoke(it)
@@ -493,23 +499,23 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
                 when (hookMemberMode) {
                     HookMemberMode.HOOK_ALL_METHODS ->
                         if (isReplaceHookMode)
-                            XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, replaceMent).also {
+                            YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, replaceMent).also {
                                 if (it.isEmpty()) throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
-                                else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                                else it.forEach { e -> onHookedCallback?.invoke(e) }
                             }
-                        else XposedBridge.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook).also {
+                        else YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook).also {
                             if (it.isEmpty()) throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
-                            else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                            else it.forEach { e -> onHookedCallback?.invoke(e) }
                         }
                     HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
                         if (isReplaceHookMode)
-                            XposedBridge.hookAllConstructors(hookClass.instance, replaceMent).also {
+                            YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, replaceMent).also {
                                 if (it.isEmpty()) throw NoSuchMethodError("No Constructor matched")
-                                else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                                else it.forEach { e -> onHookedCallback?.invoke(e) }
                             }
-                        else XposedBridge.hookAllConstructors(hookClass.instance, beforeAfterHook).also {
+                        else YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, beforeAfterHook).also {
                             if (it.isEmpty()) throw NoSuchMethodError("No Constructor matched")
-                            else it.forEach { e -> onHookedCallback?.invoke(e.hookedMethod) }
+                            else it.forEach { e -> onHookedCallback?.invoke(e) }
                         }
                     else -> error("Hooked got a no error possible")
                 }
@@ -550,7 +556,7 @@ class YukiHookCreater(private val packageParam: PackageParam, @PublishedApi inte
          */
         internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
 
-        override fun toString() = "[tag] $tag [class] $hookClass [member] $member $allMethodsName [mode] $hookMemberMode"
+        override fun toString() = "[tag] $tag [priority] $priority [class] $hookClass [member] $member $allMethodsName [mode] $hookMemberMode"
 
         /**
          * 监听 Hook 结果实现类

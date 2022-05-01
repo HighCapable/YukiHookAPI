@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
-import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
@@ -37,6 +36,7 @@ import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import de.robv.android.xposed.XposedHelpers
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -64,6 +64,12 @@ val HookClass.normalClass get() = instance
 val String.hasClass get() = hasClass(loader = null)
 
 /**
+ * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
+ * @return [Boolean]
+ */
+val Class<*>.hasExtends get() = superclass.name != "java.lang.Object"
+
+/**
  * 通过字符串转换为实体类
  * @param name [Class] 的完整包名+名称
  * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
@@ -74,7 +80,7 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
     val hashCode = ("[$name][$loader]").hashCode()
     return MemberCacheStore.findClass(hashCode) ?: run {
         when {
-            YukiHookAPI.hasXposedBridge ->
+            YukiHookBridge.hasXposedBridge ->
                 runCatching { XposedHelpers.findClassIfExists(name, loader) }.getOrNull()
                     ?: when (loader) {
                         null -> Class.forName(name)

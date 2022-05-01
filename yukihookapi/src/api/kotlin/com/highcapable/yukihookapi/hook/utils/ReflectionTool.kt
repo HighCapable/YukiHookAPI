@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.utils
 
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Constructor
@@ -52,6 +53,7 @@ internal object ReflectionTool {
      * @param name 变量名称
      * @param modifiers 变量描述
      * @param type 变量类型
+     * @param isFindInSuperClass 是否在未找到后继续在当前 [classSet] 的父类中查找
      * @return [Field]
      * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [type] 目标类不存在
      * @throws NoSuchFieldError 如果找不到变量
@@ -62,7 +64,8 @@ internal object ReflectionTool {
         matchIndex: Pair<Int, Boolean>?,
         name: String,
         modifiers: ModifierRules?,
-        type: Class<*>?
+        type: Class<*>?,
+        isFindInSuperClass: Boolean
     ): Field {
         if (type == UndefinedType) error("Field match type class is not found")
         if (orderIndex == null && matchIndex == null && name.isBlank() && modifiers == null && type == null)
@@ -121,22 +124,25 @@ internal object ReflectionTool {
                 }
             } ?: error("Can't find this Field [$name] because classSet is null")
             field?.also { MemberCacheStore.putField(hashCode, field) }
-                ?: throw NoSuchFieldError(
+                ?: if (isFindInSuperClass && classSet.hasExtends)
+                    findField(
+                        classSet.superclass,
+                        orderIndex, matchIndex,
+                        name, modifiers,
+                        type, isFindInSuperClass = true
+                    )
+                else throw NoSuchFieldError(
                     "Can't find this Field --> " +
-                            "orderIndex:[${
-                                when {
-                                    orderIndex == null -> "unspecified"
-                                    orderIndex.second.not() -> "last"
-                                    else -> orderIndex.first
-                                }
-                            }] " +
-                            "matchIndex:[${
-                                when {
-                                    matchIndex == null -> "unspecified"
-                                    matchIndex.second.not() -> "last"
-                                    else -> matchIndex.first
-                                }
-                            }] " +
+                            when {
+                                orderIndex == null -> ""
+                                orderIndex.second.not() -> "orderIndex:[last] "
+                                else -> "orderIndex:[${orderIndex.first}] "
+                            } +
+                            when {
+                                matchIndex == null -> ""
+                                matchIndex.second.not() -> "matchIndex:[last] "
+                                else -> "matchIndex:[${matchIndex.first}] "
+                            } +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "type:[${type ?: "unspecified"}] " +
                             "modifiers:${modifiers ?: "[]"} " +
@@ -156,6 +162,7 @@ internal object ReflectionTool {
      * @param returnType 方法返回值
      * @param paramCount 方法参数个数
      * @param paramTypes 方法参数类型
+     * @param isFindInSuperClass 是否在未找到后继续在当前 [classSet] 的父类中查找
      * @return [Method]
      * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [paramTypes] 以及 [returnType] 目标类不存在
      * @throws NoSuchMethodError 如果找不到方法
@@ -168,7 +175,8 @@ internal object ReflectionTool {
         modifiers: ModifierRules?,
         returnType: Class<*>?,
         paramCount: Int,
-        paramTypes: Array<out Class<*>>?
+        paramTypes: Array<out Class<*>>?,
+        isFindInSuperClass: Boolean
     ): Method {
         if (returnType == UndefinedType) error("Method match returnType class is not found")
         paramTypes?.takeIf { it.isNotEmpty() }
@@ -257,22 +265,26 @@ internal object ReflectionTool {
                 }
             } ?: error("Can't find this Method [$name] because classSet is null")
             method?.also { MemberCacheStore.putMethod(hashCode, method) }
-                ?: throw NoSuchMethodError(
+                ?: if (isFindInSuperClass && classSet.hasExtends)
+                    findMethod(
+                        classSet.superclass,
+                        orderIndex, matchIndex,
+                        name, modifiers,
+                        returnType, paramCount,
+                        paramTypes, isFindInSuperClass = true
+                    )
+                else throw NoSuchMethodError(
                     "Can't find this Method --> " +
-                            "orderIndex:[${
-                                when {
-                                    orderIndex == null -> "unspecified"
-                                    orderIndex.second.not() -> "last"
-                                    else -> orderIndex.first
-                                }
-                            }] " +
-                            "matchIndex:[${
-                                when {
-                                    matchIndex == null -> "unspecified"
-                                    matchIndex.second.not() -> "last"
-                                    else -> matchIndex.first
-                                }
-                            }] " +
+                            when {
+                                orderIndex == null -> ""
+                                orderIndex.second.not() -> "orderIndex:[last] "
+                                else -> "orderIndex:[${orderIndex.first}] "
+                            } +
+                            when {
+                                matchIndex == null -> ""
+                                matchIndex.second.not() -> "matchIndex:[last] "
+                                else -> "matchIndex:[${matchIndex.first}] "
+                            } +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
                             "paramTypes:[${paramTypes.typeOfString()}] " +
@@ -292,6 +304,7 @@ internal object ReflectionTool {
      * @param modifiers 构造方法描述
      * @param paramCount 构造方法参数个数
      * @param paramTypes 构造方法参数类型
+     * @param isFindInSuperClass 是否在未找到后继续在当前 [classSet] 的父类中查找
      * @return [Constructor]
      * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [paramTypes] 目标类不存在
      * @throws NoSuchMethodError 如果找不到构造方法
@@ -302,7 +315,8 @@ internal object ReflectionTool {
         matchIndex: Pair<Int, Boolean>?,
         modifiers: ModifierRules?,
         paramCount: Int,
-        paramTypes: Array<out Class<*>>?
+        paramTypes: Array<out Class<*>>?,
+        isFindInSuperClass: Boolean
     ): Constructor<*> {
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
@@ -364,22 +378,25 @@ internal object ReflectionTool {
                 }
             } ?: error("Can't find this Constructor because classSet is null")
             return constructor?.also { MemberCacheStore.putConstructor(hashCode, constructor) }
-                ?: throw NoSuchMethodError(
+                ?: if (isFindInSuperClass && classSet.hasExtends)
+                    findConstructor(
+                        classSet.superclass,
+                        orderIndex, matchIndex,
+                        modifiers, paramCount,
+                        paramTypes, isFindInSuperClass = true
+                    )
+                else throw NoSuchMethodError(
                     "Can't find this Constructor --> " +
-                            "orderIndex:[${
-                                when {
-                                    orderIndex == null -> "unspecified"
-                                    orderIndex.second.not() -> "last"
-                                    else -> orderIndex.first
-                                }
-                            }] " +
-                            "matchIndex:[${
-                                when {
-                                    matchIndex == null -> "unspecified"
-                                    matchIndex.second.not() -> "last"
-                                    else -> matchIndex.first
-                                }
-                            }] " +
+                            when {
+                                orderIndex == null -> ""
+                                orderIndex.second.not() -> "orderIndex:[last] "
+                                else -> "orderIndex:[${orderIndex.first}] "
+                            } +
+                            when {
+                                matchIndex == null -> ""
+                                matchIndex.second.not() -> "matchIndex:[last] "
+                                else -> "matchIndex:[${matchIndex.first}] "
+                            } +
                             "paramCount:[${
                                 paramCountR.takeIf { it >= 0 || it == -2 }
                                     ?.toString()?.replace(oldValue = "-2", newValue = "last") ?: "unspecified"

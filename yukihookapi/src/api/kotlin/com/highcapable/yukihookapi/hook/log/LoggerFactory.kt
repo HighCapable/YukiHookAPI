@@ -35,8 +35,6 @@ import de.robv.android.xposed.XposedBridge
 
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - D
- *
- * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
@@ -46,8 +44,6 @@ internal fun yLoggerD(msg: String, isDisableLog: Boolean = false) {
 
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - I
- *
- * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
@@ -57,8 +53,6 @@ internal fun yLoggerI(msg: String, isDisableLog: Boolean = false) {
 
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - W
- *
- * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
@@ -68,8 +62,6 @@ internal fun yLoggerW(msg: String, isDisableLog: Boolean = false) {
 
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - E
- *
- * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
  * @param msg 日志打印的内容
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false

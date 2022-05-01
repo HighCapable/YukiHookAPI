@@ -40,9 +40,10 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Constructor
@@ -77,13 +78,9 @@ object YukiHookAPI {
      * 获取当前 Hook 框架的名称
      *
      * 从 [XposedBridge] 获取 TAG
-     * @return [String] 无法获取会返回 unknown - [hasXposedBridge] 不存在会返回 invalid
+     * @return [String] 无法获取会返回 unknown - [YukiHookBridge.hasXposedBridge] 不存在会返回 invalid
      */
-    val executorName
-        get() = runCatching {
-            (XposedBridge::class.java.getDeclaredField("TAG").apply { isAccessible = true }.get(null) as? String?)
-                ?.replace(oldValue = "Bridge", newValue = "")?.replace(oldValue = "-", newValue = "")?.trim() ?: "unknown"
-        }.getOrNull() ?: "invalid"
+    val executorName get() = YukiHookBridge.executorName
 
     /**
      * 获取当前 Hook 框架的版本
@@ -91,7 +88,7 @@ object YukiHookAPI {
      * 获取 [XposedBridge.getXposedVersion]
      * @return [Int] 无法获取会返回 -1
      */
-    val executorVersion get() = runCatching { XposedBridge.getXposedVersion() }.getOrNull() ?: -1
+    val executorVersion get() = YukiHookBridge.executorVersion
 
     /**
      * 配置 YukiHookAPI
@@ -169,7 +166,7 @@ object YukiHookAPI {
      * @param wrapper 代理包装 [PackageParamWrapper]
      */
     internal fun onXposedLoaded(wrapper: PackageParamWrapper) =
-        YukiHookXposedBridge.packageParamCallback?.invoke(PackageParam(wrapper).apply { printSplashLog() })
+        YukiHookBridge.packageParamCallback?.invoke(PackageParam(wrapper).apply { printSplashLog() })
 
     /**
      * 配置 [YukiHookAPI] 相关参数
@@ -189,8 +186,8 @@ object YukiHookAPI {
      */
     fun encase(initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = false
-        if (hasXposedBridge)
-            YukiHookXposedBridge.packageParamCallback = initiate
+        if (YukiHookBridge.hasXposedBridge)
+            YukiHookBridge.packageParamCallback = initiate
         else printNoXposedEnvLog()
     }
 
@@ -205,8 +202,8 @@ object YukiHookAPI {
      */
     fun encase(vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = false
-        if (hasXposedBridge)
-            YukiHookXposedBridge.packageParamCallback = {
+        if (YukiHookBridge.hasXposedBridge)
+            YukiHookBridge.packageParamCallback = {
                 if (hooker.isNotEmpty())
                     hooker.forEach { it.assignInstance(packageParam = this) }
                 else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty")
@@ -230,7 +227,7 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = true
         when {
-            hasXposedBridge && baseContext != null -> initiate.invoke(baseContext.packageParam.apply { printSplashLog() })
+            YukiHookBridge.hasXposedBridge && baseContext != null -> initiate.invoke(baseContext.packageParam.apply { printSplashLog() })
             else -> printNoXposedEnvLog()
         }
     }
@@ -251,7 +248,7 @@ object YukiHookAPI {
      */
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = true
-        if (hasXposedBridge)
+        if (YukiHookBridge.hasXposedBridge)
             (if (baseContext != null)
                 if (hooker.isNotEmpty()) {
                     printSplashLog()
@@ -262,7 +259,7 @@ object YukiHookAPI {
 
     /** 输出欢迎信息调试日志 */
     private fun printSplashLog() {
-        if (Configs.isDebug.not() || isShowSplashLogOnceTime.not() || YukiHookXposedBridge.isModulePackageXposedEnv) return
+        if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
         yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using $executorName API $executorVersion")
     }
@@ -274,11 +271,6 @@ object YukiHookAPI {
      * 通过 baseContext 创建 Hook 入口类
      * @return [PackageParam]
      */
-    private val Context.packageParam get() = PackageParam(PackageParamWrapper(packageName, processName, classLoader, applicationInfo))
-
-    /**
-     * 是否存在 [XposedBridge]
-     * @return [Boolean]
-     */
-    internal val hasXposedBridge get() = executorVersion >= 0
+    private val Context.packageParam
+        get() = PackageParam(PackageParamWrapper(HookEntryType.PACKAGE, packageName, processName, classLoader, applicationInfo))
 }

@@ -40,34 +40,44 @@ import java.lang.reflect.Member
  * @param baseParam 对接 [XC_MethodHook.MethodHookParam]
  */
 @YukiPrivateApi
-class HookParamWrapper(private val baseParam: XC_MethodHook.MethodHookParam) {
+class HookParamWrapper(private var baseParam: XC_MethodHook.MethodHookParam? = null) {
+
+    /**
+     * 在回调中设置 [HookParamWrapper] 使用的 [XC_MethodHook.MethodHookParam]
+     * @param baseParam 对接 [XC_MethodHook.MethodHookParam]
+     * @return [HookParamWrapper]
+     */
+    internal fun assign(baseParam: XC_MethodHook.MethodHookParam): HookParamWrapper {
+        this.baseParam = baseParam
+        return this
+    }
 
     /**
      * [Member] 实例
      * @return [Member] or null
      */
-    val member: Member? get() = baseParam.method
+    val member: Member? get() = baseParam?.method
 
     /**
      * 当前实例对象
      * @return [Any] or null
      */
-    val instance: Any? get() = baseParam.thisObject
+    val instance: Any? get() = baseParam?.thisObject
 
     /**
      * 方法、构造方法数组
      * @return [Array] or null
      */
-    val args: Array<Any?>? get() = baseParam.args
+    val args: Array<Any?>? get() = baseParam?.args
 
     /**
      * 方法、设置方法结果
      * @return [Any] or null
      */
     var result: Any?
-        get() = baseParam.result
+        get() = baseParam?.result
         set(value) {
-            baseParam.result = value
+            baseParam?.result = value
         }
 
     /**
@@ -75,9 +85,7 @@ class HookParamWrapper(private val baseParam: XC_MethodHook.MethodHookParam) {
      * @param index 数组下标
      * @param any 参数对象实例
      */
-    fun setArgs(index: Int, any: Any?) {
-        baseParam.args[index] = any
-    }
+    fun setArgs(index: Int, any: Any?) = baseParam?.args?.set(index, any)
 
     /**
      * 执行原始 [Member]
@@ -87,8 +95,7 @@ class HookParamWrapper(private val baseParam: XC_MethodHook.MethodHookParam) {
      * @param args 参数实例
      * @return [Any] or null
      */
-    fun invokeOriginalMember(member: Member, vararg args: Any?): Any? =
-        XposedBridge.invokeOriginalMethod(member, instance, args)
+    fun invokeOriginalMember(member: Member, vararg args: Any?): Any? = XposedBridge.invokeOriginalMethod(member, instance, args)
 
     override fun toString() = "HookParamWrapper[$baseParam]"
 }

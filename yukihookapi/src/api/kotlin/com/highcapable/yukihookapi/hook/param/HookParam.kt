@@ -29,7 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.param
 
-import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
@@ -37,16 +37,26 @@ import java.lang.reflect.Method
 
 /**
  * Hook 方法、构造类的目标对象实现类
- * @param createrInstance [YukiHookCreater] 的实例对象
+ * @param createrInstance [YukiMemberHookCreater] 的实例对象
  * @param wrapper [HookParam] 的参数包装类实例
  */
-class HookParam(private val createrInstance: YukiHookCreater, private val wrapper: HookParamWrapper) {
+class HookParam(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper? = null) {
+
+    /**
+     * 在回调中设置 [HookParam] 使用的 [HookParamWrapper]
+     * @param wrapper [HookParamWrapper] 实例
+     * @return [HookParam]
+     */
+    internal fun assign(wrapper: HookParamWrapper): HookParam {
+        this.wrapper = wrapper
+        return this
+    }
 
     /**
      * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组
      * @return [Array]
      */
-    val args get() = wrapper.args ?: arrayOf(0)
+    val args get() = wrapper?.args ?: arrayOf(0)
 
     /**
      * 获取当前 Hook 实例的对象
@@ -55,36 +65,36 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
      * @return [Any]
      * @throws IllegalStateException 如果对象为空
      */
-    val instance get() = wrapper.instance ?: error("HookParam instance got null! Is this a static member?")
+    val instance get() = wrapper?.instance ?: error("HookParam instance got null! Is this a static member?")
 
     /**
      * 获取当前 Hook 实例的类对象
      * @return [Class]
      */
-    val instanceClass get() = wrapper.instance?.javaClass ?: createrInstance.instanceClass
+    val instanceClass get() = wrapper?.instance?.javaClass ?: createrInstance.instanceClass
 
     /**
      * 获取当前 Hook 对象的方法
      * @return [Method]
      * @throws IllegalStateException 如果 [Method] 为空或方法类型不是 [Method]
      */
-    val method get() = wrapper.member as? Method? ?: error("Current hook Method type is wrong or null")
+    val method get() = wrapper?.member as? Method? ?: error("Current hook Method type is wrong or null")
 
     /**
      * 获取当前 Hook 对象的构造方法
      * @return [Constructor]
      * @throws IllegalStateException 如果 [Constructor] 为空或方法类型不是 [Constructor]
      */
-    val constructor get() = wrapper.member as? Constructor<*>? ?: error("Current hook Constructor type is wrong or null")
+    val constructor get() = wrapper?.member as? Constructor<*>? ?: error("Current hook Constructor type is wrong or null")
 
     /**
      * 获取、设置当前 Hook 对象的 [method] or [constructor] 的返回值
      * @return [Any] or null
      */
     var result: Any?
-        get() = wrapper.result
+        get() = wrapper?.result
         set(value) {
-            wrapper.result = value
+            wrapper?.result = value
         }
 
     /**
@@ -120,7 +130,7 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
      * @param args 参数实例
      * @return [T]
      */
-    fun <T> Member.invokeOriginal(vararg args: Any?) = wrapper.invokeOriginalMember(member = this, *args) as? T?
+    fun <T> Member.invokeOriginal(vararg args: Any?) = wrapper?.invokeOriginalMember(member = this, *args) as? T?
 
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 true
@@ -286,7 +296,7 @@ class HookParam(private val createrInstance: YukiHookCreater, private val wrappe
             if (index < 0) error("HookParam Method args index must be >= 0")
             if (args.isEmpty()) error("HookParam Method args is empty, mabe not has args")
             if (index > args.lastIndex) error("HookParam Method args index out of bounds, max is ${args.lastIndex}")
-            wrapper.setArgs(index, any)
+            wrapper?.setArgs(index, any)
         }
 
         /**

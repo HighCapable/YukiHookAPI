@@ -23,39 +23,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/7.
+ * This file is Created by fankes on 2022/4/29.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("DEPRECATION")
 
-package com.highcapable.yukihookapi.hook.param.wrapper
+package com.highcapable.yukihookapi.hook.xposed.bridge.dummy
 
-import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
-import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import android.content.res.Resources
+import android.content.res.XModuleResources
+import android.content.res.XResForwarder
 
 /**
- * 用于包装 [PackageParam]
- *
- * - ❗这是一个私有 API - 请不要在外部使用
- * @param type 当前正在进行的 Hook 类型
- * @param packageName 包名
- * @param processName 当前进程名
- * @param appClassLoader APP [ClassLoader]
- * @param appInfo APP [ApplicationInfo]
- * @param appResources APP [YukiResources]
+ * 对接 [XModuleResources] 的中间层实例
+ * @param baseInstance 原始实例
  */
-@YukiPrivateApi
-class PackageParamWrapper(
-    var type: HookEntryType,
-    var packageName: String,
-    var processName: String,
-    var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo? = null,
-    var appResources: YukiResources? = null
-) {
+class YukiModuleResources(private val baseInstance: XModuleResources) :
+    Resources(baseInstance.assets, baseInstance.displayMetrics, baseInstance.configuration) {
 
-    override fun toString() =
-        "PackageParamWrapper [type] $type [packageName] $packageName [processName] $processName [appInfo] $appInfo [appResources] $appResources"
+    companion object {
+
+        /**
+         * 对接 [XModuleResources.createInstance] 方法
+         *
+         * 创建 [YukiModuleResources] 与 [XModuleResources] 实例
+         * @param path Xposed 模块 APK 路径
+         * @return [YukiModuleResources]
+         */
+        fun createInstance(path: String) = YukiModuleResources(XModuleResources.createInstance(path, null))
+    }
+
+    /**
+     * 对接 [XModuleResources.fwd] 方法
+     *
+     * 创建 [YukiResForwarder] 与 [XResForwarder] 实例
+     * @param resId Resources Id
+     * @return [YukiResForwarder]
+     */
+    fun fwd(resId: Int) = YukiResForwarder(baseInstance.fwd(resId))
+
+    override fun toString() = "YukiModuleResources by $baseInstance"
 }

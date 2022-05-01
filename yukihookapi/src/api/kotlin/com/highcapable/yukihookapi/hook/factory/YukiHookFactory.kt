@@ -46,13 +46,13 @@ import java.io.File
 import java.io.FileReader
 
 /**
- * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI.Configs]
- * @param initiate Hook 方法体
+ * 在 [IYukiHookXposedInit] 中调用 [YukiHookAPI.configs]
+ * @param initiate 配置方法体
  */
 inline fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
 
 /**
- * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI]
+ * 在 [IYukiHookXposedInit] 中调用 [YukiHookAPI.encase]
  * @param initiate Hook 方法体
  */
 fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
@@ -101,6 +101,12 @@ val Context.processName
     } catch (_: Throwable) {
         packageName ?: ""
     }
+
+/**
+ * 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)
+ * @return [Boolean] 是否支持
+ */
+val Any?.isSupportResourcesHook get() = YukiHookModuleStatus.hasResourcesHook()
 
 /**
  * 判断模块是否在 Xposed 或太极、无极中激活

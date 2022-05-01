@@ -23,39 +23,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/7.
+ * This file is Created by fankes on 2022/5/1.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+package com.highcapable.yukihookapi.hook.bean
 
-package com.highcapable.yukihookapi.hook.param.wrapper
-
-import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
-import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 
 /**
- * 用于包装 [PackageParam]
- *
- * - ❗这是一个私有 API - 请不要在外部使用
- * @param type 当前正在进行的 Hook 类型
- * @param packageName 包名
- * @param processName 当前进程名
- * @param appClassLoader APP [ClassLoader]
- * @param appInfo APP [ApplicationInfo]
- * @param appResources APP [YukiResources]
+ * 创建一个当前 Hook 的 [YukiResources] 接管类
+ * @param instance 实例
  */
-@YukiPrivateApi
-class PackageParamWrapper(
-    var type: HookEntryType,
-    var packageName: String,
-    var processName: String,
-    var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo? = null,
-    var appResources: YukiResources? = null
-) {
+class HookResources(var instance: YukiResources? = null) {
 
-    override fun toString() =
-        "PackageParamWrapper [type] $type [packageName] $packageName [processName] $processName [appInfo] $appInfo [appResources] $appResources"
+    override fun toString() = "[instance] $instance"
 }

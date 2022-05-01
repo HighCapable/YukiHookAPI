@@ -29,8 +29,8 @@ package com.highcapable.yukihookapi.hook.xposed
 
 import android.app.Activity
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
+import com.highcapable.yukihookapi.hook.factory.isSupportResourcesHook
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.isXposedModuleActive
 import com.highcapable.yukihookapi.hook.log.yLoggerD
@@ -61,6 +61,9 @@ object YukiHookModuleStatus {
     private const val IS_ACTIVE_METHOD_NAME = "__--"
 
     /** 定义 Jvm 方法名 */
+    private const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
+
+    /** 定义 Jvm 方法名 */
     private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
 
     /** 定义 Jvm 方法名 */
@@ -87,15 +90,25 @@ object YukiHookModuleStatus {
      * 此方法经过 Hook 后返回 true 即模块已激活
      *
      * 请使用 [isModuleActive]、[isXposedModuleActive]、[isTaiChiModuleActive] 判断模块激活状态
-     *
-     * - ❗此方法为私有功能性 API - 你不应该手动调用此方法
      * @return [Boolean]
      */
     @Keep
-    @YukiPrivateApi
     @JvmName(IS_ACTIVE_METHOD_NAME)
     internal fun isActive(): Boolean {
         yLoggerD(msg = IS_ACTIVE_METHOD_NAME, isDisableLog = true)
+        return false
+    }
+
+    /**
+     * 此方法经过 Hook 后返回 true 即当前 Hook Framework 支持资源钩子(Resources Hook)
+     *
+     * 请使用 [isSupportResourcesHook] 判断支持状态
+     * @return [Boolean]
+     */
+    @Keep
+    @JvmName(HAS_RESOURCES_HOOK_METHOD_NAME)
+    internal fun hasResourcesHook(): Boolean {
+        yLoggerD(msg = HAS_RESOURCES_HOOK_METHOD_NAME, isDisableLog = true)
         return false
     }
 

@@ -32,9 +32,10 @@ package com.highcapable.yukihookapi.hook.core.finder
 import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
@@ -48,10 +49,16 @@ import java.lang.reflect.Field
  */
 class FieldFinder(
     @property:YukiPrivateApi
-    override val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    override val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
     @property:YukiPrivateApi
     override val classSet: Class<*>? = null
 ) : BaseFinder(tag = "Field", hookInstance, classSet) {
+
+    /** 当前使用的 [classSet] */
+    private var usedClassSet = classSet
+
+    /** 是否在未找到后继续在当前 [classSet] 的父类中查找 */
+    private var isFindInSuperClass = false
 
     /** [ModifierRules] 实例 */
     @PublishedApi
@@ -122,10 +129,21 @@ class FieldFinder(
     }
 
     /**
+     * 设置在 [classSet] 的所有父类中查找当前 [Field]
+     *
+     * - ❗若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
+     * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
+     */
+    fun superClass(isOnlySuperClass: Boolean = false) {
+        isFindInSuperClass = true
+        if (isOnlySuperClass && classSet?.hasExtends == true) usedClassSet = classSet.superclass
+    }
+
+    /**
      * 得到变量处理结果
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-     * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
+     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
      * @return [Result]
      * @throws IllegalStateException 如果 [name] 没有被设置
      */
@@ -133,7 +151,8 @@ class FieldFinder(
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
-                memberInstance = ReflectionTool.findField(classSet, orderIndex, matchIndex, name, modifiers, type.compat())
+                memberInstance =
+                    ReflectionTool.findField(usedClassSet, orderIndex, matchIndex, name, modifiers, type.compat(), isFindInSuperClass)
             }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))

@@ -31,9 +31,10 @@ package com.highcapable.yukihookapi.hook.core.finder
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.utils.ReflectionTool
@@ -44,17 +45,23 @@ import java.lang.reflect.Constructor
  * [Constructor] 查找类
  *
  * 可通过指定类型查找指定构造方法
- * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiHookCreater.MemberHookCreater.member]
+ * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreater.MemberHookCreater.member]
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class ConstructorFinder(
     @property:YukiPrivateApi
-    override val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    override val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
     @property:YukiPrivateApi
     override val classSet: Class<*>? = null
 ) : BaseFinder(tag = "Constructor", hookInstance, classSet) {
 
-    /** 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater] */
+    /** 当前使用的 [classSet] */
+    private var usedClassSet = classSet
+
+    /** 是否在未找到后继续在当前 [classSet] 的父类中查找 */
+    private var isFindInSuperClass = false
+
+    /** 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater] */
     private var isBindToHooker = false
 
     /** 当前重查找结果回调 */
@@ -137,15 +144,30 @@ class ConstructorFinder(
     }
 
     /**
+     * 设置在 [classSet] 的所有父类中查找当前 [Constructor]
+     *
+     * - ❗若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
+     * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
+     */
+    fun superClass(isOnlySuperClass: Boolean = false) {
+        isFindInSuperClass = true
+        if (isOnlySuperClass && classSet?.hasExtends == true) usedClassSet = classSet.superclass
+    }
+
+    /**
      * 得到构造方法
      * @return [Constructor]
      * @throws NoSuchMethodError 如果找不到构造方法
      */
-    private val result get() = ReflectionTool.findConstructor(classSet, orderIndex, matchIndex, modifiers, paramCount, paramTypes)
+    private val result
+        get() = ReflectionTool.findConstructor(
+            usedClassSet, orderIndex, matchIndex, modifiers,
+            paramCount, paramTypes, isFindInSuperClass
+        )
 
     /**
      * 设置实例
-     * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
+     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
      * @param constructor 当前找到的 [Constructor]
      */
     private fun setInstance(isBind: Boolean, constructor: Constructor<*>) {
@@ -205,13 +227,8 @@ class ConstructorFinder(
         inline fun constructor(initiate: ConstructorFinder.() -> Unit) =
             Result().apply { remedyPlans.add(Pair(ConstructorFinder(hookInstance, classSet).apply(initiate), this)) }
 
-        /**
-         * 开始重查找
-         *
-         * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-         */
+        /** 开始重查找 */
         @PublishedApi
-        @YukiPrivateApi
         internal fun build() {
             if (classSet == null) return
             if (remedyPlans.isNotEmpty()) run {

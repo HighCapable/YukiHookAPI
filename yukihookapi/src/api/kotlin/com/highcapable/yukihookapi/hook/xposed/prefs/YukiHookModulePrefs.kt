@@ -38,7 +38,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookXposedBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 import de.robv.android.xposed.XSharedPreferences
@@ -82,10 +82,10 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     }
 
     /** 存储名称 - 默认包名 + _preferences */
-    private var prefsName = "${YukiHookXposedBridge.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
+    private var prefsName = "${YukiHookBridge.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
 
     /** 是否为 Xposed 环境 */
-    private val isXposedEnvironment = YukiHookAPI.hasXposedBridge
+    private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
 
     /** [XSharedPreferences] 缓存的 [String] 键值数据 */
     private var xPrefCacheKeyValueStrings = HashMap<String, String>()
@@ -114,7 +114,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
     /** 检查 API 装载状态 */
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
-        if (YukiHookAPI.hasXposedBridge && YukiHookXposedBridge.modulePackageName.isBlank())
+        if (YukiHookBridge.hasXposedBridge && YukiHookBridge.modulePackageName.isBlank())
             error("Xposed modulePackageName load failed, please reset and rebuild it")
     }
 
@@ -123,7 +123,7 @@ class YukiHookModulePrefs(private val context: Context? = null) {
      * @return [XSharedPreferences]
      */
     private val xPref
-        get() = XSharedPreferences(YukiHookXposedBridge.modulePackageName, prefsName).apply {
+        get() = XSharedPreferences(YukiHookBridge.modulePackageName, prefsName).apply {
             checkApi()
             makeWorldReadable()
             reload()

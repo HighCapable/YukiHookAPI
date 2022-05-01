@@ -31,11 +31,12 @@ import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import java.lang.reflect.Member
 import kotlin.math.abs
 
@@ -47,7 +48,7 @@ import kotlin.math.abs
  */
 abstract class BaseFinder(
     private val tag: String,
-    open val hookInstance: YukiHookCreater.MemberHookCreater? = null,
+    open val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
     open val classSet: Class<*>? = null
 ) {
 
@@ -170,14 +171,14 @@ abstract class BaseFinder(
      * @param msg 调试日志内容
      */
     internal fun onHookLogMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && YukiHookAPI.hasXposedBridge) yLoggerI(msg = msg)
+        if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge) yLoggerI(msg = msg)
     }
 
     /**
      * 得到结果
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-     * @param isBind 是否将结果设置到目标 [YukiHookCreater.MemberHookCreater]
+     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
      * @return [Any]
      */
     @YukiPrivateApi

@@ -31,14 +31,21 @@ package com.highcapable.yukihookapi.hook.param
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
+import android.content.res.Resources
 import com.highcapable.yukihookapi.hook.bean.HookClass
+import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.YukiHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.hookClass
+import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
@@ -46,7 +53,7 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  * 装载 Hook 的目标 APP 入口对象实现类
  * @param wrapper [PackageParam] 的参数包装类实例 - 默认是空的
  */
-open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
+open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
 
     /**
      * 获取当前 Hook APP 的 [ClassLoader]
@@ -64,13 +71,6 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     val appInfo get() = wrapper?.appInfo ?: YukiHookAppHelper.currentApplicationInfo() ?: ApplicationInfo()
 
     /**
-     * 获取当前 Hook APP 的 [Application] 实例
-     * @return [Application]
-     * @throws IllegalStateException 如果 [Application] 是空的
-     */
-    val appContext get() = YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
-
-    /**
      * 获取当前 Hook APP 的进程名称
      *
      * 默认的进程名称是 [packageName]
@@ -85,10 +85,28 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     val packageName get() = wrapper?.packageName ?: YukiHookAppHelper.currentPackageName() ?: ""
 
     /**
+     * 获取当前 Hook APP 的 [Application] 实例
+     *
+     * - ❗首次装载可能是空的 - 请延迟一段时间再获取
+     * @return [Application]
+     * @throws IllegalStateException 如果 [Application] 是空的
+     */
+    val appContext get() = YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
+
+    /**
+     * 获取当前 Hook APP 的 Resources
+     *
+     * - ❗你只能在 [HookResources.hook] 方法体内或 [appContext] 装载完毕时进行调用
+     * @return [Resources]
+     * @throws IllegalStateException 如果当前处于 [loadZygote] 或 [appContext] 尚未加载
+     */
+    val appResources get() = wrapper?.appResources ?: appContext.resources ?: error("You cannot call to appResources in this time")
+
+    /**
      * 获取当前 Hook APP 是否为第一个 [Application]
      * @return [Boolean]
      */
-    val isFirstApplication get() = packageName == processName
+    val isFirstApplication get() = packageName.trim() == processName.trim()
 
     /**
      * 获取当前 Hook APP 的主进程名称
@@ -96,20 +114,49 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * 其对应的就是 [packageName]
      * @return [String]
      */
-    val mainProcessName get() = packageName
+    val mainProcessName get() = packageName.trim()
+
+    /**
+     * 获取当前 Xposed 模块自身 APK 文件路径
+     *
+     * - ❗作为 Hook API 装载时无法使用 - 会获取到空字符串
+     * @return [String]
+     */
+    val moduleAppFilePath get() = YukiHookBridge.moduleAppFilePath
+
+    /**
+     * 获取当前 Xposed 模块自身 [Resources]
+     *
+     * - ❗作为 Hook API 或不支持的 Hook Framework 装载时无法使用 - 会抛出异常
+     * @return [YukiModuleResources]
+     * @throws IllegalStateException 如果当前 Hook Framework 不支持此功能
+     */
+    val moduleAppResources get() = YukiHookBridge.moduleAppResources ?: error("Current Hook Framework not support moduleAppResources")
 
     /**
      * 获得当前使用的存取数据对象缓存实例
+     *
+     * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
      * @return [YukiHookModulePrefs]
      */
     val prefs by lazy { YukiHookModulePrefs() }
 
     /**
      * 获得当前使用的存取数据对象缓存实例
+     *
+     * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
      * @param name 自定义 Sp 存储名称
      * @return [YukiHookModulePrefs]
      */
     fun prefs(name: String) = prefs.name(name)
+
+    /**
+     * 获得当前 Hook APP 的 [YukiResources] 对象
+     *
+     * 请调用 [HookResources.hook] 方法开始 Hook
+     * @return [HookResources]
+     */
+    fun resources() = HookResources(wrapper?.appResources)
 
     /**
      * 赋值并克隆另一个 [PackageParam]
@@ -120,21 +167,41 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
     }
 
     /**
-     * 装载并 Hook 指定包名的 APP
-     * @param name 包名
+     * 装载并 Hook 指定、全部包名的 APP
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadZygote]
+     * @param name 包名 - 不填将过滤除了系统框架的全部 APP
      * @param initiate 方法体
      */
-    inline fun loadApp(name: String, initiate: PackageParam.() -> Unit) {
-        if (packageName == name) initiate(this)
+    inline fun loadApp(name: String = "", initiate: PackageParam.() -> Unit) {
+        if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) initiate(this)
     }
 
     /**
-     * 装载并 Hook 指定包名的 APP
-     * @param name 包名
+     * 装载并 Hook 指定、全部包名的 APP
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadZygote]
+     * @param name 包名 - 不填将过滤除了系统框架的全部 APP
      * @param hooker Hook 子类
      */
-    fun loadApp(name: String, hooker: YukiBaseHooker) {
-        if (packageName == name) loadHooker(hooker)
+    fun loadApp(name: String = "", hooker: YukiBaseHooker) {
+        if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) loadHooker(hooker)
+    }
+
+    /**
+     * 装载并 Hook 系统框架
+     * @param initiate 方法体
+     */
+    inline fun loadZygote(initiate: PackageParam.() -> Unit) {
+        if (wrapper?.type == HookEntryType.ZYGOTE) initiate(this)
+    }
+
+    /**
+     * 装载并 Hook 系统框架
+     * @param hooker Hook 子类
+     */
+    fun loadZygote(hooker: YukiBaseHooker) {
+        if (wrapper?.type == HookEntryType.ZYGOTE) loadHooker(hooker)
     }
 
     /**
@@ -217,37 +284,44 @@ open class PackageParam(private var wrapper: PackageParamWrapper? = null) {
      * - ❗为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
-     * @return [YukiHookCreater.Result]
+     * @return [YukiMemberHookCreater.Result]
      */
-    inline fun String.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+    inline fun String.hook(isUseAppClassLoader: Boolean = true, initiate: YukiMemberHookCreater.() -> Unit) =
         findClass(name = this).hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
-     * @return [YukiHookCreater.Result]
+     * @return [YukiMemberHookCreater.Result]
      */
-    inline fun Class<*>.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+    inline fun Class<*>.hook(isUseAppClassLoader: Boolean = true, initiate: YukiMemberHookCreater.() -> Unit) =
         hookClass.hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
-     * @return [YukiHookCreater.Result]
+     * @return [YukiMemberHookCreater.Result]
      */
-    inline fun VariousClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
+    inline fun VariousClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiMemberHookCreater.() -> Unit) =
         hookClass(if (isUseAppClassLoader) appClassLoader else null).hook(isUseAppClassLoader, initiate)
 
     /**
      * Hook 方法、构造类
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
-     * @return [YukiHookCreater.Result]
+     * @return [YukiMemberHookCreater.Result]
      */
-    inline fun HookClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiHookCreater.() -> Unit) =
-        YukiHookCreater(packageParam = this@PackageParam, hookClass = if (isUseAppClassLoader) bind() else this).apply(initiate).hook()
+    inline fun HookClass.hook(isUseAppClassLoader: Boolean = true, initiate: YukiMemberHookCreater.() -> Unit) =
+        YukiMemberHookCreater(packageParam = this@PackageParam, hookClass = if (isUseAppClassLoader) bind() else this).apply(initiate).hook()
+
+    /**
+     * Hook APP 的 Resources
+     * @param initiate 方法体
+     */
+    inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit) =
+        YukiResourcesHookCreater(packageParam = this@PackageParam, hookResources = this).apply(initiate).hook()
 
     /**
      * [VariousClass] 转换为 [HookClass] 并绑定到 [appClassLoader]

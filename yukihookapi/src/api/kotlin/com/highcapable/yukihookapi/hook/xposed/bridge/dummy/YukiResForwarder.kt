@@ -23,39 +23,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/7.
+ * This file is Created by fankes on 2022/4/29.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.param.wrapper
+package com.highcapable.yukihookapi.hook.xposed.bridge.dummy
 
-import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
-import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import android.content.res.Resources
+import android.content.res.XResForwarder
 
 /**
- * 用于包装 [PackageParam]
- *
- * - ❗这是一个私有 API - 请不要在外部使用
- * @param type 当前正在进行的 Hook 类型
- * @param packageName 包名
- * @param processName 当前进程名
- * @param appClassLoader APP [ClassLoader]
- * @param appInfo APP [ApplicationInfo]
- * @param appResources APP [YukiResources]
+ * 对接 [XResForwarder] 的中间层实例
+ * @param baseInstance 原始实例
  */
-@YukiPrivateApi
-class PackageParamWrapper(
-    var type: HookEntryType,
-    var packageName: String,
-    var processName: String,
-    var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo? = null,
-    var appResources: YukiResources? = null
-) {
+class YukiResForwarder(private val baseInstance: XResForwarder) {
 
-    override fun toString() =
-        "PackageParamWrapper [type] $type [packageName] $packageName [processName] $processName [appInfo] $appInfo [appResources] $appResources"
+    /**
+     * 获得 [XResForwarder] 实例
+     * @return [XResForwarder]
+     */
+    val instance get() = baseInstance
+
+    /**
+     * 获得当前 Resources Id
+     * @return [Int]
+     */
+    val id get() = baseInstance.id
+
+    /**
+     * 获得当前 Resources
+     * @return [Resources]
+     * @throws IllegalStateException 如果 [XResForwarder] 出现问题
+     */
+    val resources get() = baseInstance.resources ?: error("XResForwarder is invalid")
+
+    override fun toString() = "YukiResForwarder by $baseInstance"
 }

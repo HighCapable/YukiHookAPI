@@ -234,7 +234,17 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     packageName = packageName,
                     fileName = xInitClassName
                 ).apply {
-                    write(CodeSourceFileTemplate.getXposedInitFileByteArray(packageName, fModulePackageName, entryClassName, xInitClassName))
+                    write(CodeSourceFileTemplate.getXposedInitFileByteArray(packageName, entryClassName, xInitClassName))
+                    flush()
+                    close()
+                }
+                /** 插入 xposed_init_Impl 代码 */
+                codeGenerator.createNewFile(
+                    dependencies = Dependencies.ALL_FILES,
+                    packageName = packageName,
+                    fileName = "${entryClassName}_Impl"
+                ).apply {
+                    write(CodeSourceFileTemplate.getXposedInitImplFileByteArray(packageName, fModulePackageName, entryClassName))
                     flush()
                     close()
                 }
