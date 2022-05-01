@@ -2,6 +2,34 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.80 | 2022.05.01
+
+- `InjectYukiHookWithXposed` 注解新增 `entryClassName` 功能，可自定义生成的 `xposed_init` 入口类名
+- ~~`YukiHookXposedInitProxy`~~ 更名为 `IYukiHookXposedInit`，原接口名称已作废，将在后续版本中直接被删除
+- 新增 `initZygote` 与 Resources Hook 功能，支持 Hook Layout
+- 新增 `onXposedEvent` 方法，可监听原生 Xposed API 的全部事件
+- 对 Hook 功能的 `lambda` 进行 `inline` 处理，避免生成过碎的匿名类，提升编译后的运行性能
+- 修复 `PrefsData` 编译后的方法体复制过大的问题
+- 增加 `XSharePreference` 可读性测试，失败后会自动打印警告日志
+- `PackageParam` 新增 `appResources`、`moduleAppResources`、`moduleAppFilePath` 功能
+- `PackageParam` 的 `loadApp` 新增不写 `name` 功能，默认筛选全部 APP
+- `PackageParam` 新增 `loadZygote` 方法，可直接 Hook 系统框架
+- `PackageParam` 新增 `resources().hook` 功能
+- 优化方法、构造方法、变量查找功能，找不到的错误日志将优先显示已设置的查询条件
+- 增加 `hasExtends` 扩展方法，可判断当前 `Class` 是否有继承关系
+- 增加 `isSupportResourcesHook` 功能，判断当前是否支持资源钩子(Resources Hook)
+- `current` 功能新增 `superClass` 方法调用父类
+- 查找方法、构造方法、变量新增 `superClass` 查询条件，可继续在父类中查找
+- `YukiHookAPI` 大量方法与 Xposed API 解耦合
+- 新增 Xposed API 的原生 Hook 优先级功能
+- 修复 `isFirstApplication` 可能判断不准确的问题
+- 屏蔽 MIUI 系统上 MiuiCatcherPatch 重复调用 Hook 入口方法的问题
+- 优化 Hook 入口调用方法，避免因为 Hook Framework 问题导致多次调用
+- 修复 Hook `ClassLoader` 导致 Hook 卡死的问题，感谢 [WankkoRee](https://github.com/WankkoRee) 的反馈
+- 提升 `XC_Callback` 接口对接后的性能
+- Java `type` 新增 `ClassLoader` 类型
+- 优化 API 帮助文档，修复可能持续缓存页面的问题
+
 ### 1.0.78 | 2022.04.18
 
 - `YukiHookModulePrefs` 新增 `isRunInNewXShareMode` 方法，可用于判断模块当前是否处于 `New XSharePreference` 模式
