@@ -444,6 +444,12 @@ val SupplierClass get() = Supplier::class.java
 val JavaClass get() = Class::class.java
 
 /**
+ * 获得 [ClassLoader] 类型
+ * @return [ClassLoader]
+ */
+val JavaClassLoader get() = ClassLoader::class.java
+
+/**
  * 获得 [Method] 类型
  * @return [Class]
  */
