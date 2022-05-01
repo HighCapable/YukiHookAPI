@@ -25,16 +25,23 @@
  *
  * This file is Created by fankes on 2022/2/9.
  */
+@file:Suppress("SetTextI18n")
+
 package com.highcapable.yukihookapi.demo_module.hook
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.widget.Button
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
+import com.highcapable.yukihookapi.hook.type.android.ActivityClass
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
 import com.highcapable.yukihookapi.hook.type.java.StringType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 @InjectYukiHookWithXposed
@@ -51,6 +58,10 @@ class HookEntry : IYukiHookXposedInit {
             // 请注意 - 若作为发布版本请务必关闭调试功能防止对用户设备造成大量日志填充
             isDebug = true
             // 是否启用调试日志的输出功能
+            // 一旦关闭后除手动日志外 API 将停止全部日志的输出 - 建议不要随意关掉这个选项
+            // 虽然说对用户的设备写入大量日志是不正确的 - 但是没有日志你将无法调试
+            // 关于日志是否会影响设备的流畅度一直是一个伪命题
+            // 但是不设置这个选项可能会引起一些非议 - 建议不要关闭就是了
             isAllowPrintingLogs = true
             // 是否启用 [YukiHookModulePrefs] 的键值缓存功能
             // 若无和模块频繁交互数据在宿主重新启动之前建议开启
@@ -67,6 +78,36 @@ class HookEntry : IYukiHookXposedInit {
         // 开始你的 Hook
         // 可简写为 encase {}
         YukiHookAPI.encase {
+            // 装载到系统框架
+            loadZygote {
+                // 得到需要 Hook 的 Class
+                ActivityClass.hook {
+                    injectMember {
+                        method {
+                            name = "onCreate"
+                            param(BundleClass)
+                        }
+                        afterHook {
+                            // 在 [Activity] 标题后方加入文字
+                            instance<Activity>().apply { title = "$title [Active]" }
+                        }
+                    }
+                }
+                // 得到需要 Hook 的 Resources
+                resources().hook {
+                    // 注入要 Hook 的 Resources
+                    injectResource {
+                        // 设置条件
+                        conditions {
+                            name = "sym_def_app_icon"
+                            mipmap()
+                        }
+                        // 替换为当前模块的 Resources
+                        // 模块的 Resources 可以使用 R8 混淆 - 结果不受影响
+                        replaceToModuleResource(R.mipmap.ic_icon)
+                    }
+                }
+            }
             // 装载需要 Hook 的 APP
             loadApp(name = "com.highcapable.yukihookapi.demo_app") {
                 // 得到需要 Hook 的 Class
@@ -170,17 +211,91 @@ class HookEntry : IYukiHookXposedInit {
                     }
                     // 注入要 Hook 的方法
                     injectMember {
+                        method {
+                            name = "getSuperString"
+                            emptyParam()
+                            // 这个方法不在当前的 Class
+                            // 只需要设置此查找条件即可自动前往当前 Class 的父类查找
+                            // 由于演示的方法只会在父类存在 - 所以可以设置仅查找父类 isOnlySuperClass = true 节省时间
+                            // 如果想继续尝试查找当前 Class - 请删除 isOnlySuperClass = true
+                            superClass(isOnlySuperClass = true)
+                        }
+                        // 执行替换 Hook
+                        replaceTo(any = "I am hook super class method")
+                    }
+                    // 注入要 Hook 的方法
+                    injectMember {
                         allMethods(name = "getTestResultFirst")
                         // 执行替换 Hook
-                        replaceTo("I am hook all methods first")
+                        replaceTo(any = "I am hook all methods first")
                     }
                     // 注入要 Hook 的方法
                     injectMember {
                         allMethods(name = "getTestResultLast")
                         // 执行替换 Hook
-                        replaceTo("I am hook all methods last")
+                        replaceTo(any = "I am hook all methods last")
                     }
                 }
+                // 得到需要 Hook 的 Resources
+                resources().hook {
+                    // 注入要 Hook 的 Resources
+                    injectResource {
+                        // 设置条件
+                        conditions {
+                            name = "activity_main"
+                            layout()
+                        }
+                        // Hook 布局装载器
+                        injectAsLayout {
+                            // 替换布局中指定 Id 的按钮文本
+                            findViewByIdentifier<Button>(name = "app_demo_button")?.text = "Touch Me!"
+                        }
+                    }
+                    // 注入要 Hook 的 Resources
+                    injectResource {
+                        // 设置条件
+                        conditions {
+                            name = "test_string"
+                            string()
+                        }
+                        // 替换为指定的 Resources
+                        replaceTo(any = "I am hook to make your Happy")
+                    }
+                    // 注入要 Hook 的 Resources
+                    injectResource {
+                        // 设置条件
+                        conditions {
+                            name = "ic_face_unhappy"
+                            mipmap()
+                        }
+                        // 替换为当前模块的 Resources
+                        // 模块的 Resources 可以使用 R8 混淆 - 结果不受影响
+                        replaceToModuleResource(R.mipmap.ic_face_happy)
+                    }
+                }
+            }
+        }
+    }
+
+    // 可选的监听功能 - 如不需要你可以不重写这个方法
+    // Demo 中实现这个方法仅为了介绍它的功能
+    override fun onXposedEvent() {
+        // (可选) 监听原生 Xposed API 的装载事件
+        // 若你的 Hook 事件中存在需要兼容的原生 Xposed 功能 - 可在这里实现
+        // 不要在这里处理任何 YukiHookAPI 的事件 - 请在 onHook 中完成
+        YukiXposedEvent.events {
+            onInitZygote {
+                // 实现监听 initZygote 事件
+            }
+            onHandleLoadPackage {
+                // 实现监听 handleLoadPackage 事件
+                // 可调用原生 Xposed API 方法
+                // XposedHelpers.findAndHookMethod("className", it.classLoader, "methodName", object : XC_MethodHook())
+            }
+            onHandleInitPackageResources {
+                // 实现监听 handleInitPackageResources 事件
+                // 可调用原生 Xposed API 方法
+                // it.res.setReplacement(0x7f060001, "replaceMent")
             }
         }
     }

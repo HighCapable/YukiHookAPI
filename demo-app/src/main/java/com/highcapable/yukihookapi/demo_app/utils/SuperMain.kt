@@ -23,17 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/9.
+ * This file is Created by fankes on 2022/4/29.
  */
 package com.highcapable.yukihookapi.demo_app.utils
 
-class Main(override val content: String = "") : SuperMain(content) {
+open class SuperMain(open val content: String = "") {
 
-    fun getTestResultFirst() = "The world is beautiful"
+    fun getSuperString() = "The sea is blue"
 
-    fun getTestResultFirst(string: String) = string
-
-    fun getTestResultLast() = "The world is fantastic"
-
-    fun getTestResultLast(string: String) = string
+    fun getString() = content
 }

@@ -1,109 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
+    android:fillViewport="true"
+    android:scrollbars="none"
     tools:ignore="HardcodedText">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="15dp"
-        android:gravity="center|start"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/module_demo_active_text"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="center|start"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/module_demo_active_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/module_demo_active_zh_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:alpha="0.85"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/module_demo_framework_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/module_demo_framework_zh_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:alpha="0.85"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/module_demo_api_version_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/module_demo_api_version_zh_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:alpha="0.85"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/module_demo_yuki_hook_api_version_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/module_demo_yuki_hook_api_version_zh_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:alpha="0.85"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/module_demo_new_xshare_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/module_demo_new_xshare_zh_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:alpha="0.85"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/module_demo_res_hook_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/module_demo_res_hook_zh_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
+                android:alpha="0.85"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="sample"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="15dp"
+                android:ellipsize="end"
+                android:gravity="center|start"
+                android:singleLine="true"
+                android:text="Leave something in there"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/module_demo_edit_text"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:hint="Please enter the text"
+                android:singleLine="true"
+                android:textSize="18sp"
+                tools:ignore="Autofill,LabelFor,TextFields" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/module_demo_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:ellipsize="end"
-            android:gravity="center|start"
-            android:singleLine="true"
-            android:text="sample"
-            android:textSize="18sp" />
+            android:text="Save Test Data"
+            android:textAllCaps="false" />
 
-        <TextView
-            android:id="@+id/module_demo_framework_text"
+        <Button
+            android:id="@+id/module_demo_frg_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:ellipsize="end"
-            android:gravity="center|start"
-            android:singleLine="true"
-            android:text="sample"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/module_demo_api_version_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:ellipsize="end"
-            android:gravity="center|start"
-            android:singleLine="true"
-            android:text="sample"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/module_demo_yuki_hook_api_version_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:ellipsize="end"
-            android:gravity="center|start"
-            android:singleLine="true"
-            android:text="sample"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/module_demo_new_xshare_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="25dp"
-            android:ellipsize="end"
-            android:gravity="center|start"
-            android:singleLine="true"
-            android:text="sample"
-            android:textSize="18sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="15dp"
-            android:ellipsize="end"
-            android:gravity="center|start"
-            android:singleLine="true"
-            android:text="Leave something in there"
-            android:textSize="15sp" />
-
-        <EditText
-            android:id="@+id/module_demo_edit_text"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:hint="Please enter the text"
-            android:singleLine="true"
-            android:textSize="18sp"
-            tools:ignore="Autofill,LabelFor,TextFields" />
+            android:text="Open PreferenceFragment"
+            android:textAllCaps="false" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/module_demo_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="Save Test Data"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/module_demo_frg_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Open PreferenceFragment"
-        android:textAllCaps="false" />
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

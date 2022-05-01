@@ -1,96 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:ignore="HardcodedText">
+    android:fillViewport="true"
+    android:scrollbars="none"
+    tools:ignore="HardcodedText,ContentDescription">
 
-    <TextView
-        android:id="@+id/app_demo_first_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/app_demo_second_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="15dp"
+            android:src="@mipmap/ic_face_unhappy" />
 
-    <TextView
-        android:id="@+id/app_demo_third_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:text="@string/test_string"
+            android:textSize="17.5sp" />
 
-    <TextView
-        android:id="@+id/app_demo_fourth_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/app_demo_first_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
 
-    <TextView
-        android:id="@+id/app_demo_seventh_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/app_demo_second_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
 
-    <TextView
-        android:id="@+id/app_demo_eighth_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/app_demo_eleventh_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
 
-    <TextView
-        android:id="@+id/app_demo_ninth_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/app_demo_third_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
 
-    <TextView
-        android:id="@+id/app_demo_tenth_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/app_demo_fourth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
 
-    <TextView
-        android:id="@+id/app_demo_sixth_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/app_demo_seventh_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
 
-    <TextView
-        android:id="@+id/app_demo_fifth_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="sample"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/app_demo_eighth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
 
-    <Button
-        android:id="@+id/app_demo_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Click Me!"
-        android:textAllCaps="false" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/app_demo_ninth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
+
+        <TextView
+            android:id="@+id/app_demo_tenth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
+
+        <TextView
+            android:id="@+id/app_demo_sixth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
+
+        <TextView
+            android:id="@+id/app_demo_fifth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="sample"
+            android:textSize="17.5sp" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="15dp"
+            android:src="@android:mipmap/sym_def_app_icon" />
+
+        <Button
+            android:id="@+id/app_demo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click Me!"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

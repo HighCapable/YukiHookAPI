@@ -37,6 +37,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
+import com.highcapable.yukihookapi.hook.factory.isSupportResourcesHook
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 
@@ -47,10 +48,17 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater).apply {
             setContentView(root)
             moduleDemoActiveText.text = "Module is Active：$isModuleActive"
+            moduleDemoActiveZhText.text = "Xposed 模块激活状态"
             moduleDemoFrameworkText.text = "Hook Framework：${YukiHookModuleStatus.executorName}"
-            moduleDemoApiVersionText.text = "API Version：${YukiHookModuleStatus.executorVersion}"
+            moduleDemoFrameworkZhText.text = "当前的 Hook 框架"
+            moduleDemoApiVersionText.text = "Xposed API Version：${YukiHookModuleStatus.executorVersion}"
+            moduleDemoApiVersionZhText.text = "Xposed API 版本"
             moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.API_VERSION_NAME}(${YukiHookAPI.API_VERSION_CODE})"
+            moduleDemoYukiHookApiVersionZhText.text = "YukiHookAPI 版本"
             moduleDemoNewXshareText.text = "New XShare Mode：${modulePrefs.isRunInNewXShareMode}"
+            moduleDemoNewXshareZhText.text = "New XShare 模式支持状态"
+            moduleDemoResHookText.text = "Support Resources Hook：$isSupportResourcesHook"
+            moduleDemoResHookZhText.text = "资源钩子支持状态"
             moduleDemoEditText.also {
                 it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
                 moduleDemoButton.setOnClickListener { _ ->

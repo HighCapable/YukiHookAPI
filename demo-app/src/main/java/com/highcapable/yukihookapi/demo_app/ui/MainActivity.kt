@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             setContentView(root)
             appDemoFirstText.text = getFirstText()
             appDemoSecondText.text = secondText
-            appDemoThirdText.text = Main(string = "Feel real").getString()
+            appDemoThirdText.text = Main(content = "Feel real").getString()
             appDemoFourthText.text = getRegularText(string = "Have fun day")
             appDemoFifthText.text = getDataText()
             appDemoSixthText.text = getArray(arrayOf("apple", "banana")).let { "${it[0]}, ${it[1]}" }
@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             appDemoEighthText.text = Main().getTestResultFirst(string = "Find something interesting")
             appDemoNinthText.text = Main().getTestResultLast()
             appDemoTenthText.text = Main().getTestResultLast(string = "This is the last sentence")
+            appDemoEleventhText.text = Main().getSuperString()
             appDemoButton.setOnClickListener { toast() }
         }
     }
