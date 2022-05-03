@@ -185,8 +185,10 @@ abstract class BaseFinder(
 
     /** 存在日志时输出日志 */
     internal fun printLogIfExist() {
-        if (loggingContent == null) return
-        yLoggerE(msg = "NoSuch$tag happend in [$classSet] ${loggingContent?.first} [${hookTag}]", e = loggingContent?.second)
+        if (loggingContent != null) yLoggerE(
+            msg = "${hookInstance?.packageName?.let { "[$it] " } ?: ""}NoSuch$tag happend in [$classSet] ${loggingContent?.first} [${hookTag}]",
+            e = loggingContent?.second
+        )
         /** 仅输出一次 - 然后清掉日志 */
         loggingContent = null
     }
