@@ -531,7 +531,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 if (isMemberNotFound) onNoSuchMemberFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
                 if ((isNotIgnoredHookingFailure && isMemberNotFound.not()) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
-                    yLoggerE(msg = "[$packageName] Hooked All Members with an error in Class $hookClass [$tag]", e = it)
+                    yLoggerE(msg = "[$packageName] Hooked All Members with an error in $hookClass [$tag]", e = it)
             }
         }
 
