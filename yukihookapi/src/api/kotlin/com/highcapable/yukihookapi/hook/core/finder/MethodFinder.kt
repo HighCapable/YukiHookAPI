@@ -61,9 +61,6 @@ class MethodFinder(
     /** 是否在未找到后继续在当前 [classSet] 的父类中查找 */
     private var isFindInSuperClass = false
 
-    /** 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater] */
-    private var isBindToHooker = false
-
     /** 当前重查找结果回调 */
     private var remedyPlansCallback: (() -> Unit)? = null
 

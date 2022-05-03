@@ -1,7 +1,7 @@
 ## YukiMemberHookCreater [class]
 
 ```kotlin
-class YukiMemberHookCreater(private val packageParam: PackageParam, internal val hookClass: HookClass)
+class YukiMemberHookCreater(internal val packageParam: PackageParam, internal val hookClass: HookClass)
 ```
 
 **变更记录**
@@ -133,7 +133,7 @@ injectMember(priority = PRIORITY_HIGHEST) {
 ### MemberHookCreater [class]
 
 ```kotlin
-inner class MemberHookCreater(private val priority: Int, internal val tag: String)
+inner class MemberHookCreater(private val priority: Int, internal val tag: String, internal val packageName: String)
 ```
 
 **变更记录**
@@ -143,6 +143,10 @@ inner class MemberHookCreater(private val priority: Int, internal val tag: Strin
 `v1.0.80` `修改`
 
 增加 `priority` Hook 优先级
+
+`v1.0.81` `修改`
+
+增加 `packageName` 当前 Hook 的 APP 包名
 
 **功能描述**
 

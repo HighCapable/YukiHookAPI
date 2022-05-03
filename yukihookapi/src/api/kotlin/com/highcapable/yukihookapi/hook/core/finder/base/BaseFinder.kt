@@ -120,6 +120,9 @@ abstract class BaseFinder(
     @PublishedApi
     internal var isUsingRemedyPlan = false
 
+    /** 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater] */
+    internal var isBindToHooker = false
+
     /** 是否开启忽略错误警告功能 */
     internal var isShutErrorPrinting = false
 
@@ -137,6 +140,9 @@ abstract class BaseFinder(
      * @return [Boolean] 没有设置任何异常拦截
      */
     internal val isNotIgnoredNoSuchMemberFailure get() = hookInstance?.isNotIgnoredNoSuchMemberFailure ?: true
+
+    /** 需要输出的日志内容 */
+    private var loggingContent: Pair<String, Throwable?>? = null
 
     /**
      * 将目标类型转换为可识别的兼容类型
@@ -157,13 +163,32 @@ abstract class BaseFinder(
      * @param isAlwaysPrint 忽略条件每次都打印错误
      */
     internal fun onFailureMsg(msg: String = "", throwable: Throwable? = null, isAlwaysPrint: Boolean = false) {
-        fun print() = yLoggerE(msg = "NoSuch$tag happend in [$classSet] $msg [${hookTag}]", e = throwable)
-        if (isAlwaysPrint) print()
+        /** 创建日志 */
+        fun build() {
+            if (isNotIgnoredNoSuchMemberFailure && isUsingRemedyPlan.not() && isShutErrorPrinting.not())
+                loggingContent = Pair(msg, throwable)
+        }
+        /** 判断绑定到 Hooker 时仅创建日志 */
+        if (isBindToHooker) return Thread {
+            /** 延迟使得方法取到返回值 */
+            SystemClock.sleep(1)
+            build()
+        }.start()
+        /** 判断始终输出日志或等待结果后输出日志 */
+        if (isAlwaysPrint) build().run { printLogIfExist() }
         else Thread {
             /** 延迟使得方法取到返回值 */
             SystemClock.sleep(1)
-            if (isNotIgnoredNoSuchMemberFailure && isUsingRemedyPlan.not() && isShutErrorPrinting.not()) print()
+            build().run { printLogIfExist() }
         }.start()
+    }
+
+    /** 存在日志时输出日志 */
+    internal fun printLogIfExist() {
+        if (loggingContent == null) return
+        yLoggerE(msg = "NoSuch$tag happend in [$classSet] ${loggingContent?.first} [${hookTag}]", e = loggingContent?.second)
+        /** 仅输出一次 - 然后清掉日志 */
+        loggingContent = null
     }
 
     /**
@@ -171,7 +196,8 @@ abstract class BaseFinder(
      * @param msg 调试日志内容
      */
     internal fun onHookLogMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge) yLoggerI(msg = msg)
+        if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge)
+            hookInstance?.also { yLoggerI(msg = "[${it.packageName}] $msg") } ?: yLoggerI(msg = msg)
     }
 
     /**

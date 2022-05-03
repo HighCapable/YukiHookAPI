@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.param.HookParam
@@ -52,7 +53,7 @@ import java.lang.reflect.Member
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
-class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
+class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
 
     /** 默认 Hook 回调优先级 */
     val PRIORITY_DEFAULT = 50
@@ -98,7 +99,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
      * @return [MemberHookCreater.Result]
      */
     inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(priority, tag).apply(initiate).apply { preHookMembers.add(this) }.build()
+        MemberHookCreater(priority, tag, packageParam.packageName).apply(initiate).apply { preHookMembers.add(this) }.build()
 
     /**
      * Hook 执行入口
@@ -122,7 +123,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
                     }
                     isDisableCreaterRunHook.not() && hookClass.instance == null ->
                         if (onHookClassNotFoundFailureCallback == null)
-                            yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                            yLoggerE(msg = "[${packageParam.packageName}] HookClass [${hookClass.name}] not found", e = hookClass.throwable)
                         else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
                 }
             }.start()
@@ -135,8 +136,9 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
      * 查找和处理需要 Hook 的方法、构造类
      * @param priority Hook 优先级
      * @param tag 当前设置的标签
+     * @param packageName 当前 Hook 的 APP 包名
      */
-    inner class MemberHookCreater(private val priority: Int, internal val tag: String) {
+    inner class MemberHookCreater(private val priority: Int, internal val tag: String, internal val packageName: String) {
 
         /** [beforeHook] 回调 */
         private var beforeHookCallback: (HookParam.() -> Unit)? = null
@@ -186,6 +188,10 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
         /** Hook 当前模式类型 */
         @PublishedApi
         internal var hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
+
+        /** 当前的查找实例 */
+        @PublishedApi
+        internal var finder: BaseFinder? = null
 
         /** 全部方法的名称 */
         private var allMethodsName = ""
@@ -244,7 +250,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
         inline fun method(initiate: MethodFinder.() -> Unit) = try {
             hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
-            MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
+            MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.build(isBind = true)
         } catch (e: Throwable) {
             findingThrowable = e
             MethodFinder(hookInstance = this).failure(e)
@@ -262,7 +268,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
         inline fun constructor(initiate: ConstructorFinder.() -> Unit = {}) = try {
             hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
-            ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).build(isBind = true)
+            ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.build(isBind = true)
         } catch (e: Throwable) {
             findingThrowable = e
             ConstructorFinder(hookInstance = this).failure(e)
@@ -403,6 +409,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
         @PublishedApi
         internal fun hook() {
             if (YukiHookBridge.hasXposedBridge.not() || isDisableMemberRunHook) return
+            finder?.printLogIfExist()
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
                     onHookingFailureCallback?.invoke(it)
@@ -487,13 +494,12 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
                     onNoSuchMemberFailureCallback?.invoke(it)
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
-                    if (isNotIgnoredNoSuchMemberFailure)
-                        yLoggerE(
-                            msg = if (isHookMemberSetup)
-                                "Hooked Member with a finding error by $hookClass [$tag]"
-                            else "Hooked Member cannot be non-null by $hookClass [$tag]",
-                            e = findingThrowable ?: it
-                        )
+                    if (isNotIgnoredNoSuchMemberFailure) yLoggerE(
+                        msg = "[$packageName] " + (if (isHookMemberSetup)
+                            "Hooked Member with a finding error by $hookClass [$tag]"
+                        else "Hooked Member cannot be non-null by $hookClass [$tag]"),
+                        e = findingThrowable ?: it
+                    )
                 }
             else runCatching {
                 when (hookMemberMode) {
@@ -525,7 +531,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
                 if (isMemberNotFound) onNoSuchMemberFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
                 if ((isNotIgnoredHookingFailure && isMemberNotFound.not()) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
-                    yLoggerE(msg = "Hooked All Members with an error in Class [$hookClass] [$tag]", e = it)
+                    yLoggerE(msg = "[$packageName] Hooked All Members with an error in Class [$hookClass] [$tag]", e = it)
             }
         }
 
@@ -534,7 +540,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "[${packageParam.packageName}] $msg")
+            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "[$packageName] $msg")
         }
 
         /**
@@ -542,7 +548,7 @@ class YukiMemberHookCreater(private val packageParam: PackageParam, @PublishedAp
          * @param throwable 异常信息
          */
         private fun onHookFailureMsg(throwable: Throwable) =
-            yLoggerE(msg = "Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
+            yLoggerE(msg = "[$packageName] Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截
