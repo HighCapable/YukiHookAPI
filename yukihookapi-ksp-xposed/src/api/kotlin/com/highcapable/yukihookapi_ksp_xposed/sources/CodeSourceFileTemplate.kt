@@ -184,38 +184,39 @@ object CodeSourceFileTemplate {
                 "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
                 "    }\n" +
                 "\n" +
-                "    private fun hookModuleAppStatus(lpparam: XC_LoadPackage.LoadPackageParam? = this.lpparam, isHookResourcesStatus: Boolean = false) {\n" +
-                "        lpparam?.let { this.lpparam = it }\n" +
-                "        if (isHookResourcesStatus.not()) {\n" +
-                "            XposedHelpers.findAndHookMethod(\n" +
+                "    private fun hookModuleAppStatus(lpparam: XC_LoadPackage.LoadPackageParam? = this.lpparam, isHookResourcesStatus: Boolean = false) =\n" +
+                "        runCatching {\n" +
+                "            lpparam?.let { this.lpparam = it }\n" +
+                "            if (isHookResourcesStatus.not()) {\n" +
+                "                XposedHelpers.findAndHookMethod(\n" +
+                "                    YukiHookModuleStatus::class.java.name,\n" +
+                "                    this.lpparam?.classLoader,\n" +
+                "                    \"$IS_ACTIVE_METHOD_NAME\",\n" +
+                "                    object : XC_MethodReplacement() {\n" +
+                "                        override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
+                "                    })\n" +
+                "                XposedHelpers.findAndHookMethod(\n" +
+                "                    YukiHookModuleStatus::class.java.name,\n" +
+                "                    this.lpparam?.classLoader,\n" +
+                "                    \"$GET_XPOSED_TAG_METHOD_NAME\",\n" +
+                "                    object : XC_MethodReplacement() {\n" +
+                "                        override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorName\n" +
+                "                    })\n" +
+                "                XposedHelpers.findAndHookMethod(\n" +
+                "                    YukiHookModuleStatus::class.java.name,\n" +
+                "                    this.lpparam?.classLoader,\n" +
+                "                    \"$GET_XPOSED_VERSION_METHOD_NAME\",\n" +
+                "                    object : XC_MethodReplacement() {\n" +
+                "                        override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorVersion\n" +
+                "                    })\n" +
+                "            } else XposedHelpers.findAndHookMethod(\n" +
                 "                YukiHookModuleStatus::class.java.name,\n" +
                 "                this.lpparam?.classLoader,\n" +
-                "                \"$IS_ACTIVE_METHOD_NAME\",\n" +
+                "                \"$HAS_RESOURCES_HOOK_METHOD_NAME\",\n" +
                 "                object : XC_MethodReplacement() {\n" +
                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
                 "                })\n" +
-                "            XposedHelpers.findAndHookMethod(\n" +
-                "                YukiHookModuleStatus::class.java.name,\n" +
-                "                this.lpparam?.classLoader,\n" +
-                "                \"$GET_XPOSED_TAG_METHOD_NAME\",\n" +
-                "                object : XC_MethodReplacement() {\n" +
-                "                    override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorName\n" +
-                "                })\n" +
-                "            XposedHelpers.findAndHookMethod(\n" +
-                "                YukiHookModuleStatus::class.java.name,\n" +
-                "                this.lpparam?.classLoader,\n" +
-                "                \"$GET_XPOSED_VERSION_METHOD_NAME\",\n" +
-                "                object : XC_MethodReplacement() {\n" +
-                "                    override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorVersion\n" +
-                "                })\n" +
-                "        } else XposedHelpers.findAndHookMethod(\n" +
-                "            YukiHookModuleStatus::class.java.name,\n" +
-                "            this.lpparam?.classLoader,\n" +
-                "            \"$HAS_RESOURCES_HOOK_METHOD_NAME\",\n" +
-                "            object : XC_MethodReplacement() {\n" +
-                "                override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
-                "            })\n" +
-                "    }\n" +
+                "        }\n" +
                 "\n" +
                 "    @YukiGenerateApi\n" +
                 "    fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +

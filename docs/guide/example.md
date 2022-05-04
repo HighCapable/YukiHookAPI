@@ -219,13 +219,11 @@ loadZygote {
 }
 ```
 
-这样就实现了上述的 Hook 功能。
-
 ### Hook 系统框架
 
 在 `YukiHookAPI` 中，Hook 系统框架的实现非常简单。
 
-假设我们要全局 Hook 一个系统 `Activity` 的 `onCreate` 事件
+假设，你要得到 `ApplicationInfo` 与 `PackageInfo` 并对它们进行一些操作。
 
 在 `encase` 方法体中添加代码。
 
@@ -233,17 +231,11 @@ loadZygote {
 
 ```kotlin
 loadSystem {
-    ActivityClass.hook { 
-        injectMember { 
-            method { 
-                name = "onCreate"
-                param(BundleClass)
-                returnType = UnitType
-            }
-            afterHook {
-                // Your code here.
-            }
-        }
+    ApplicationInfoClass.hook {
+        // Your code here.
+    }
+    PackageInfoClass.hook {
+        // Your code here.
     }
 }
 ```

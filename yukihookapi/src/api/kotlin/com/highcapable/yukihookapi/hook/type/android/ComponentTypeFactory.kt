@@ -92,6 +92,18 @@ val ContextWrapperClass get() = ContextWrapper::class.java
 val ApplicationClass get() = Application::class.java
 
 /**
+ * 获得 [ApplicationInfo] 类型
+ * @return [Class]
+ */
+val ApplicationInfoClass get() = ApplicationInfo::class.java
+
+/**
+ * 获得 [PackageInfo] 类型
+ * @return [Class]
+ */
+val PackageInfoClass get() = PackageInfo::class.java
+
+/**
  * 获得 [ApplicationPackageManager] 类型
  * @return [Class]
  */
