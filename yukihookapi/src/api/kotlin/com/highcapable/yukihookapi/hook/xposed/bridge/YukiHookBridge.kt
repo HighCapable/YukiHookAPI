@@ -160,8 +160,8 @@ object YukiHookBridge {
      */
     private fun assignWrapper(
         type: HookEntryType,
-        packageName: String,
-        processName: String = "",
+        packageName: String?,
+        processName: String? = "",
         appClassLoader: ClassLoader? = null,
         appInfo: ApplicationInfo? = null,
         appResources: YukiResources? = null
@@ -169,16 +169,16 @@ object YukiHookBridge {
         if (packageParamWrappers[packageName] == null)
             PackageParamWrapper(
                 type = type,
-                packageName = packageName,
-                processName = processName,
+                packageName = packageName ?: SYSTEM_FRAMEWORK_NAME,
+                processName = processName ?: SYSTEM_FRAMEWORK_NAME,
                 appClassLoader = appClassLoader ?: XposedBridge.BOOTCLASSLOADER,
                 appInfo = appInfo,
                 appResources = appResources
-            ).also { packageParamWrappers[packageName] = it }
+            ).also { packageParamWrappers[packageName ?: SYSTEM_FRAMEWORK_NAME] = it }
         else packageParamWrappers[packageName]?.also {
             it.type = type
-            if (packageName.isNotBlank()) it.packageName = packageName
-            if (processName.isNotBlank()) it.processName = processName
+            if (packageName?.isNotBlank() == true) it.packageName = packageName
+            if (processName?.isNotBlank() == true) it.processName = processName
             if (appClassLoader != null) it.appClassLoader = appClassLoader
             if (appInfo != null) it.appInfo = appInfo
             if (appResources != null) it.appResources = appResources
@@ -230,22 +230,15 @@ object YukiHookBridge {
         resparam: XC_InitPackageResources.InitPackageResourcesParam? = null
     ) {
         if (isMiuiCatcherPatch(packageName = lpparam?.packageName ?: resparam?.packageName).not()) when {
-            isZygoteLoaded -> {
-                if (isPackageLoaded(SYSTEM_FRAMEWORK_NAME, HookEntryType.ZYGOTE).not())
-                    assignWrapper(HookEntryType.ZYGOTE, SYSTEM_FRAMEWORK_NAME, SYSTEM_FRAMEWORK_NAME)
+            isZygoteLoaded -> assignWrapper(HookEntryType.ZYGOTE, SYSTEM_FRAMEWORK_NAME, SYSTEM_FRAMEWORK_NAME)
+            lpparam != null ->
+                if (isPackageLoaded(lpparam.packageName, HookEntryType.PACKAGE).not())
+                    assignWrapper(HookEntryType.PACKAGE, lpparam.packageName, lpparam.processName, lpparam.classLoader, lpparam.appInfo)
                 else null
-            }
-            lpparam != null -> {
-                if (lpparam.packageName != null && lpparam.processName != null && lpparam.appInfo != null && lpparam.classLoader != null &&
-                    isPackageLoaded(lpparam.packageName, HookEntryType.PACKAGE).not()
-                ) assignWrapper(HookEntryType.PACKAGE, lpparam.packageName, lpparam.processName, lpparam.classLoader, lpparam.appInfo)
-                else null
-            }
-            resparam != null -> {
+            resparam != null ->
                 if (isPackageLoaded(resparam.packageName, HookEntryType.RESOURCES).not())
                     assignWrapper(HookEntryType.RESOURCES, resparam.packageName, appResources = YukiResources.createFromXResources(resparam.res))
                 else null
-            }
             else -> null
         }?.let { YukiHookAPI.onXposedLoaded(it) }
     }

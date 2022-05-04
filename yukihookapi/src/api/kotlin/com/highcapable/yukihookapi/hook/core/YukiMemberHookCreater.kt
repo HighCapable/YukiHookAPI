@@ -99,7 +99,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @return [MemberHookCreater.Result]
      */
     inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(priority, tag, packageParam.packageName).apply(initiate).apply { preHookMembers.add(this) }.build()
+        MemberHookCreater(priority, tag, packageParam.exhibitName).apply(initiate).apply { preHookMembers.add(this) }.build()
 
     /**
      * Hook 执行入口
@@ -123,7 +123,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                     }
                     isDisableCreaterRunHook.not() && hookClass.instance == null ->
                         if (onHookClassNotFoundFailureCallback == null)
-                            yLoggerE(msg = "[${packageParam.packageName}] HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                            yLoggerE(msg = "[${packageParam.exhibitName}] HookClass [${hookClass.name}] not found", e = hookClass.throwable)
                         else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
                 }
             }.start()

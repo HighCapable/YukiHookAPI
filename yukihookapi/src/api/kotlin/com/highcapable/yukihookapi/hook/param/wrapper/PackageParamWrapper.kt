@@ -56,6 +56,12 @@ class PackageParamWrapper(
     var appResources: YukiResources? = null
 ) {
 
+    /**
+     * 用于展示的 APP 包名
+     * @return [String]
+     */
+    internal val exhibitName get() = if (type == HookEntryType.ZYGOTE) "android-zygote" else packageName
+
     override fun toString() =
-        "PackageParamWrapper [type] $type [packageName] $packageName [processName] $processName [appInfo] $appInfo [appResources] $appResources"
+        "PackageParamWrapper [type] $type [packageName] $exhibitName [processName] $processName [appInfo] $appInfo [appResources] $appResources"
 }

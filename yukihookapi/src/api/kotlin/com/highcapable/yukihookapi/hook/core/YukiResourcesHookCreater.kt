@@ -226,7 +226,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "[${packageParam.packageName}] $msg")
+            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "[${packageParam.exhibitName}] $msg")
         }
 
         /**
