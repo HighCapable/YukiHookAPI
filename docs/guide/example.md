@@ -192,11 +192,11 @@ TestClass.hook {
 }
 ```
 
-### Hook 系统框架
+### Hook Zygote
 
-在 `YukiHookAPI` 中，Hook 系统框架的实现非常简单。
+在 APP 启动时，新的进程被 fork 后的第一个事件 `initZygote`。
 
-假设我们要全局 Hook 一个 `Activity` 的 `onCreate` 事件
+假设我们要全局 Hook 一个 APP `Activity` 的 `onCreate` 事件
 
 在 `encase` 方法体中添加代码。
 
@@ -221,7 +221,34 @@ loadZygote {
 
 这样就实现了上述的 Hook 功能。
 
-!> `loadZygote` 与 `loadApp(name = "android")` 有直接性区别，`loadZygote` 会在 `initZygote` 中装载，若要 Hook 系统框架，建议使用 `loadZygote`。
+### Hook 系统框架
+
+在 `YukiHookAPI` 中，Hook 系统框架的实现非常简单。
+
+假设我们要全局 Hook 一个系统 `Activity` 的 `onCreate` 事件
+
+在 `encase` 方法体中添加代码。
+
+> 示例如下
+
+```kotlin
+loadSystem {
+    ActivityClass.hook { 
+        injectMember { 
+            method { 
+                name = "onCreate"
+                param(BundleClass)
+                returnType = UnitType
+            }
+            afterHook {
+                // Your code here.
+            }
+        }
+    }
+}
+```
+
+!> `loadZygote` 与 `loadSystem` 有直接性区别，`loadZygote` 会在 `initZygote` 中装载，系统框架被视为一个单独的 APP 而存在，若要 Hook 系统框架，请使用 `loadSystem`。
 
 ### Hook Resources
 

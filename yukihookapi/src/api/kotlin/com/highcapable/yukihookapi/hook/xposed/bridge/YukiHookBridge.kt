@@ -56,7 +56,8 @@ import java.lang.reflect.Member
 object YukiHookBridge {
 
     /** Android 系统框架名称 */
-    private const val SYSTEM_FRAMEWORK_NAME = "android"
+    @PublishedApi
+    internal const val SYSTEM_FRAMEWORK_NAME = "android"
 
     /** Xposed 是否装载完成 */
     private var isXposedInitialized = false

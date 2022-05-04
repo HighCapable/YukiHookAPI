@@ -240,7 +240,11 @@ fun loadApp(name: String, hooker: YukiBaseHooker)
 
 `name` 为 APP 的包名，后方的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
 
-装载并 Hook 指定、全部包名的 APP，若要 Hook 系统框架，请使用 `loadZygote`。
+装载并 Hook 指定、全部包名的 APP。
+
+若要装载 APP Zygote 事件，请使用 `loadZygote`。
+
+若要 Hook 系统框架，请使用 `loadSystem`。
 
 ### loadZygote [method]
 
@@ -255,6 +259,26 @@ fun loadZygote(hooker: YukiBaseHooker)
 **变更记录**
 
 `v1.0.80` `新增`
+
+**功能描述**
+
+> 装载 APP Zygote 事件。
+
+方法中的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
+
+### loadSystem [method]
+
+```kotlin
+inline fun loadSystem(initiate: PackageParam.() -> Unit)
+```
+
+```kotlin
+fun loadSystem(hooker: YukiBaseHooker)
+```
+
+**变更记录**
+
+`v1.0.82` `新增`
 
 **功能描述**
 

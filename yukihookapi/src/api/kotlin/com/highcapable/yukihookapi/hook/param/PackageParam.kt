@@ -169,8 +169,10 @@ open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper?
     /**
      * 装载并 Hook 指定、全部包名的 APP
      *
-     * 若要 Hook 系统框架 - 请使用 [loadZygote]
-     * @param name 包名 - 不填将过滤除了系统框架的全部 APP
+     * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadSystem]
+     * @param name 包名 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
      * @param initiate 方法体
      */
     inline fun loadApp(name: String = "", initiate: PackageParam.() -> Unit) {
@@ -180,8 +182,10 @@ open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper?
     /**
      * 装载并 Hook 指定、全部包名的 APP
      *
-     * 若要 Hook 系统框架 - 请使用 [loadZygote]
-     * @param name 包名 - 不填将过滤除了系统框架的全部 APP
+     * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadSystem]
+     * @param name 包名 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
      * @param hooker Hook 子类
      */
     fun loadApp(name: String = "", hooker: YukiBaseHooker) {
@@ -192,12 +196,24 @@ open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper?
      * 装载并 Hook 系统框架
      * @param initiate 方法体
      */
+    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, initiate)
+
+    /**
+     * 装载并 Hook 系统框架
+     * @param hooker Hook 子类
+     */
+    fun loadSystem(hooker: YukiBaseHooker) = loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, hooker)
+
+    /**
+     * 装载 APP Zygote 事件
+     * @param initiate 方法体
+     */
     inline fun loadZygote(initiate: PackageParam.() -> Unit) {
         if (wrapper?.type == HookEntryType.ZYGOTE) initiate(this)
     }
 
     /**
-     * 装载并 Hook 系统框架
+     * 装载 APP Zygote 事件
      * @param hooker Hook 子类
      */
     fun loadZygote(hooker: YukiBaseHooker) {

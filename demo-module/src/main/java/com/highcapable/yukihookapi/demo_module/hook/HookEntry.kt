@@ -78,7 +78,7 @@ class HookEntry : IYukiHookXposedInit {
         // 开始你的 Hook
         // 可简写为 encase {}
         YukiHookAPI.encase {
-            // 装载到系统框架
+            // 装载 APP Zygote 事件
             loadZygote {
                 // 得到需要 Hook 的 Class
                 ActivityClass.hook {

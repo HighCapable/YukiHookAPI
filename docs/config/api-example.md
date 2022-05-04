@@ -201,7 +201,7 @@ encase {
 }
 ```
 
-你还可以同时使用 `loadZygote` 方法来装载系统框架。
+你还可以同时使用 `loadZygote` 方法来装载新的进程被 fork 后的第一个事件 `initZygote`。
 
 > 示例如下
 
