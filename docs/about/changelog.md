@@ -2,6 +2,11 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.85 | 2022.05.04
+
+- 修复无法 Hook 系统框架的严重问题，从 `1.0.80` 开始出现
+- 调试日志中新增区分 `initZygote` 装载的包名为 `android-zygote`，`packageName` 保持 `android` 不变
+
 ### 1.0.83 | 2022.05.04
 
 - 修复 `YukiHookModuleStatus` 在 `loadSystem` 后大量报错的问题
