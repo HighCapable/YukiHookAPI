@@ -184,7 +184,7 @@ object CodeSourceFileTemplate {
                 "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
                 "    }\n" +
                 "\n" +
-                "    private fun hookModuleAppStatus(lpparam: XC_LoadPackage.LoadPackageParam? = this.lpparam, isHookResourcesStatus: Boolean = false) =\n" +
+                "    private fun hookModuleAppStatus(lpparam: XC_LoadPackage.LoadPackageParam? = this.lpparam, isHookResourcesStatus: Boolean = false) {\n" +
                 "        runCatching {\n" +
                 "            lpparam?.let { this.lpparam = it }\n" +
                 "            if (isHookResourcesStatus.not()) {\n" +
@@ -217,6 +217,7 @@ object CodeSourceFileTemplate {
                 "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
                 "                })\n" +
                 "        }\n" +
+                "    }\n" +
                 "\n" +
                 "    @YukiGenerateApi\n" +
                 "    fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +
