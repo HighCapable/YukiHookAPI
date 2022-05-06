@@ -94,6 +94,7 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
                 // 得到需要 Hook 的 Resources
+                // 需要 Hook Framework 支持 Resources Hook(资源钩子) 才能成功
                 resources().hook {
                     // 注入要 Hook 的 Resources
                     injectResource {
@@ -237,6 +238,7 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
                 // 得到需要 Hook 的 Resources
+                // 需要 Hook Framework 支持 Resources Hook(资源钩子) 才能成功
                 resources().hook {
                     // 注入要 Hook 的 Resources
                     injectResource {
