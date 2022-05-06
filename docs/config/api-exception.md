@@ -92,6 +92,16 @@ class HookEntry : IYukiHookXposedInit {
 
 通常情况下这种错误不会轻易发生，若一旦发生此错误，请自行查看控制台打印的日志定位问题，确定并非自己的代码发生的问题后，可提交日志进行反馈。
 
+!> `loggerE` Failed to execute method "**NAME**", maybe your Hook Framework not support Resources Hook
+
+**异常原因**
+
+`YukiHookAPI` 在尝试进行 Resources Hook 时发生错误。
+
+**解决方案**
+
+通常这种情况不会发生，请仔细检查错误日志的详细信息，若发生 `ClassNotFound` 等情况可能是 Hook Framework 不支持 Resources Hook(资源钩子)。
+
 !> `loggerE` HookClass \[**NAME**\] not found
 
 **异常原因**
