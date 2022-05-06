@@ -38,7 +38,11 @@ import android.content.res.XResForwarder
  * @param baseInstance 原始实例
  */
 class YukiModuleResources(private val baseInstance: XModuleResources) :
-    Resources(baseInstance.assets, baseInstance.displayMetrics, baseInstance.configuration) {
+    Resources(
+        runCatching { baseInstance.assets }.getOrNull(),
+        runCatching { baseInstance.displayMetrics }.getOrNull(),
+        runCatching { baseInstance.configuration }.getOrNull()
+    ) {
 
     companion object {
 

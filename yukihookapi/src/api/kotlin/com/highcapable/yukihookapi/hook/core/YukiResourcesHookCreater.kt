@@ -184,16 +184,16 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
                                 hookResources.instance?.hookLayout(
                                     packageParam.packageName, conditions!!.type,
                                     conditions!!.name, layoutInstance!!
-                                ).run { onHookLogMsg(msg = "Hook Resources Layout $conditions done [$tag]") }
+                                ) { onHookLogMsg(msg = "Hook Resources Layout $conditions done [$tag]") }
                             else -> hookResources.instance?.setReplacement(
                                 packageParam.packageName, conditions!!.type,
                                 conditions!!.name, compat(replaceInstance)
-                            ).run { onHookLogMsg(msg = "Hook Resources Value $conditions done [$tag]") }
+                            ) { onHookLogMsg(msg = "Hook Resources Value $conditions done [$tag]") }
                         } else when {
                             layoutInstance != null -> hookResources.instance?.hookLayout(resourceId, layoutInstance!!)
-                                .run { onHookLogMsg(msg = "Hook Resources Layout Id $resourceId done [$tag]") }
+                            { onHookLogMsg(msg = "Hook Resources Layout Id $resourceId done [$tag]") }
                             else -> hookResources.instance?.setReplacement(resourceId, compat(replaceInstance))
-                                .run { onHookLogMsg(msg = "Hook Resources Value Id $resourceId done [$tag]") }
+                            { onHookLogMsg(msg = "Hook Resources Value Id $resourceId done [$tag]") }
                         }
                     packageParam.wrapper?.type == HookEntryType.ZYGOTE ->
                         if (resourceId == -1) when {
@@ -201,16 +201,16 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
                                 YukiResources.hookSystemWideLayout(
                                     packageParam.packageName, conditions!!.type,
                                     conditions!!.name, layoutInstance!!
-                                ).run { onHookLogMsg(msg = "Hook Wide Resources Layout $conditions done [$tag]") }
+                                ) { onHookLogMsg(msg = "Hook Wide Resources Layout $conditions done [$tag]") }
                             else -> YukiResources.setSystemWideReplacement(
                                 packageParam.packageName, conditions!!.type,
                                 conditions!!.name, compat(replaceInstance)
-                            ).run { onHookLogMsg(msg = "Hook Wide Resources Value $conditions done [$tag]") }
+                            ) { onHookLogMsg(msg = "Hook Wide Resources Value $conditions done [$tag]") }
                         } else when {
                             layoutInstance != null -> YukiResources.hookSystemWideLayout(resourceId, layoutInstance!!)
-                                .run { onHookLogMsg(msg = "Hook Wide Resources Layout Id $resourceId done [$tag]") }
+                            { onHookLogMsg(msg = "Hook Wide Resources Layout Id $resourceId done [$tag]") }
                             else -> YukiResources.setSystemWideReplacement(resourceId, compat(replaceInstance))
-                                .run { onHookLogMsg(msg = "Hook Wide Resources Value Id $resourceId done [$tag]") }
+                            { onHookLogMsg(msg = "Hook Wide Resources Value Id $resourceId done [$tag]") }
                         }
                     else -> yLoggerE(msg = "Resources Hook type is invalid [$tag]")
                 }
