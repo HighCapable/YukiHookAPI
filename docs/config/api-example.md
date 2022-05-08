@@ -164,7 +164,7 @@ object FirstHooker : YukiBaseHooker() {
 class HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = 
-        YukiHookAPI.encase(FirstHooker(), SecondHooker(), ThirdHooker() ...)
+        YukiHookAPI.encase(FirstHooker, SecondHooker, ThirdHooker ...)
 }
 ```
 
