@@ -68,7 +68,7 @@ If you like the `YukiHookAPI` project, we welcome you to make a **PR** in this p
 
 如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码 **PR**，可以是任何改进的建议以及新增的功能。
 
-## Cooperations
+## Cooperation's
 
 The following are projects that have collaborated and are using `YukiHookAPI`.
 
@@ -79,13 +79,14 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | Repository                                                                      | Developer                                       |
 |---------------------------------------------------------------------------------|-------------------------------------------------|
 | [TSBattery](https://github.com/fankes/TSBattery)                                | [fankesyooni](https://github.com/fankes)        |
-| [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon)               | [fankesyooni](https://github.com/fankes)        |
-| [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon)               | [fankesyooni](https://github.com/fankes)        |
-| [自由屏幕旋转](https://github.com/Xposed-Modules-Repo/com.fankes.forcerotate)     | [fankesyooni](https://github.com/fankes)        |
-| [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness)| [fankesyooni](https://github.com/fankes)        |
+| [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon)                   | [fankesyooni](https://github.com/fankes)        |
+| [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon)                   | [fankesyooni](https://github.com/fankes)        |
+| [自由屏幕旋转](https://github.com/Xposed-Modules-Repo/com.fankes.forcerotate)         | [fankesyooni](https://github.com/fankes)        |
+| [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness)    | [fankesyooni](https://github.com/fankes)        |
+| [AppErrorsTracking](https://github.com/KitsunePie/AppErrorsTracking)            | [fankesyooni](https://github.com/fankes)        |
 | [Enable WebView Debugging](https://github.com/WankkoRee/EnableWebViewDebugging) | [WankkoRee](https://github.com/WankkoRee)       |
 | [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)               | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
-| [RestoreSplashScreen](https://github.com/GSWXXN/RestoreSplashScreen)            | [GSWXXN](https://github.com/GSWXXN)             |
+| [MIUI遮罩进化](https://github.com/GSWXXN/RestoreSplashScreen)                       | [GSWXXN](https://github.com/GSWXXN)             |
 
 ## Donate
 
