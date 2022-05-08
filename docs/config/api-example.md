@@ -85,7 +85,7 @@ fun encase(vararg hooker: YukiBaseHooker)
 > 示例如下
 
 ```kotlin
-class CustomHooker : YukiBaseHooker() {
+object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         // Your code here.
@@ -93,12 +93,14 @@ class CustomHooker : YukiBaseHooker() {
 }
 ```
 
+子 Hooker **建议使用**单例 `object` 创建，你也可以使用 `class` 但不推荐。
+
 !> 你无需再在继承于 `YukiBaseHooker` 的 `onHook` 方法中重新调用 `encase`，这是错误的，你应该直接开始编写你的 Hook 代码。
 
 > 示例如下
 
 ```kotlin
-class CustomHooker : YukiBaseHooker() {
+object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         loadApp(name = "com.example.demo1") {
@@ -120,14 +122,14 @@ class CustomHooker : YukiBaseHooker() {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : IYukiHookXposedInit {
+class HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
-        loadApp(name = "com.example.demo", ChildCustomHooker())
+        loadApp(name = "com.example.demo", ChildCustomHooker)
     }
 }
 
-class ChildCustomHooker : YukiBaseHooker() {
+object ChildCustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         findClass(name = "$packageName.DemoClass").hook { 
@@ -142,14 +144,14 @@ class ChildCustomHooker : YukiBaseHooker() {
 > 示例如下
 
 ```kotlin
-class FirstHooker : YukiBaseHooker() {
+object FirstHooker : YukiBaseHooker() {
 
     override fun onHook() {
         findClass(name = "$packageName.DemoClass").hook { 
             // Your code here.
         }
-        loadHooker(SecondHooker())
-        loadHooker(ThirdHooker())
+        loadHooker(SecondHooker)
+        loadHooker(ThirdHooker)
     }
 }
 ```
@@ -159,7 +161,7 @@ class FirstHooker : YukiBaseHooker() {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : IYukiHookXposedInit {
+class HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = 
         YukiHookAPI.encase(FirstHooker(), SecondHooker(), ThirdHooker() ...)
@@ -171,9 +173,9 @@ class HookEntryClass : IYukiHookXposedInit {
 > 示例如下
 
 ```kotlin
-class HookEntryClass : IYukiHookXposedInit {
+class HookEntry : IYukiHookXposedInit {
 
-    override fun onHook() = encase(FirstHooker(), SecondHooker(), ThirdHooker() ...)
+    override fun onHook() = encase(FirstHooker, SecondHooker, ThirdHooker ...)
 }
 ```
 

@@ -50,7 +50,7 @@
 
 > 你大概率会遇到浏览器缓存造成文档不是最新版本的问题，若已经查看过一次文档，请手动在每个页面上刷新一次以同步最新版本，或清除浏览器缓存。
 
-The latest version update time/最新版本更新时间：2022-05-06 14:48
+The latest version update time/最新版本更新时间：2022-05-08 15:25
 
 ## Contacts
 
