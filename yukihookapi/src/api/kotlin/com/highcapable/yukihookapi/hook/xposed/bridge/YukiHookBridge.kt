@@ -78,6 +78,12 @@ object YukiHookBridge {
     internal var moduleAppResources: YukiModuleResources? = null
 
     /**
+     * 获取当前 Xposed 模块自身动态 [Resources]
+     * @return [YukiModuleResources] or null
+     */
+    internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.createInstance(moduleAppFilePath) }.getOrNull()
+
+    /**
      * 模块是否装载了 Xposed 回调方法
      *
      * - ❗装载代码将自动生成 - 请勿手动修改 - 会引发未知异常
@@ -185,6 +191,11 @@ object YukiHookBridge {
         }
     }
 
+    /** 刷新当前 Xposed 模块自身 [Resources] */
+    internal fun refreshModuleAppResources() {
+        dynamicModuleAppResources?.let { moduleAppResources = it }
+    }
+
     /**
      * 标识 Xposed API 装载完成
      *
@@ -204,7 +215,7 @@ object YukiHookBridge {
     @YukiGenerateApi
     fun callXposedZygoteLoaded(sparam: IXposedHookZygoteInit.StartupParam) {
         moduleAppFilePath = sparam.modulePath
-        moduleAppResources = YukiModuleResources.createInstance(moduleAppFilePath)
+        refreshModuleAppResources()
     }
 
     /**

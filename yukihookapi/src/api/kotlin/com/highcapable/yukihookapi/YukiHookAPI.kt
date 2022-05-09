@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi
 
 import android.app.Application
 import android.content.Context
+import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
@@ -138,6 +139,17 @@ object YukiHookAPI {
          * 你可以手动在 [YukiHookModulePrefs] 中自由开启和关闭缓存功能以及清除缓存
          */
         var isEnableModulePrefsCache = true
+
+        /**
+         * 是否启用当前 Xposed 模块自身 [Resources] 缓存功能
+         *
+         * - 为防止内存复用过高问题 - 此功能默认启用
+         *
+         * - ❗关闭后每次使用 [PackageParam.moduleAppResources] 都会重新创建 - 可能会造成运行缓慢
+         *
+         * 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
+         */
+        var isEnableModuleAppResourcesCache = true
 
         /**
          * 是否启用 [Member] 缓存功能

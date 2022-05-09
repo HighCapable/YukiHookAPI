@@ -152,12 +152,32 @@ var isEnableModulePrefsCache: Boolean
 
 你可以手动在 `YukiHookModulePrefs` 中自由开启和关闭缓存功能以及清除缓存。
 
+#### isEnableModuleAppResourcesCache [field]
+
+```kotlin
+var isEnableModuleAppResourcesCache: Boolean
+```
+
+**变更记录**
+
+`v1.0.87` `新增`
+
+**功能描述**
+
+> 是否启用当前 Xposed 模块自身 `Resources` 缓存功能。
+
+为防止内存复用过高问题，此功能默认启用。
+
+你可以手动调用 `PackageParam.refreshModuleAppResources` 来刷新缓存。
+
+!> 关闭后每次使用 `PackageParam.moduleAppResources` 都会重新创建，可能会造成运行缓慢。
+
 #### isEnableMemberCache [field]
 
 ```kotlin
 var isEnableMemberCache: Boolean
 ```
-
+ø
 **变更记录**
 
 `v1.0.68` `新增`
@@ -211,6 +231,7 @@ class HookEntryClass : IYukiHookXposedInit {
             isDebug = true
             isAllowPrintingLogs = true
             isEnableModulePrefsCache = true
+            isEnableModuleAppResourcesCache = true
             isEnableMemberCache = true
         }
     }
@@ -233,6 +254,7 @@ class HookEntryClass : IYukiHookXposedInit {
         isDebug = true
         isAllowPrintingLogs = true
         isEnableModulePrefsCache = true
+        isEnableModuleAppResourcesCache = true
         isEnableMemberCache = true
     }
 
@@ -254,6 +276,7 @@ class HookEntryClass : IYukiHookXposedInit {
         YukiHookAPI.Configs.isDebug = true
         YukiHookAPI.Configs.isAllowPrintingLogs = true
         YukiHookAPI.Configs.isEnableModulePrefsCache = true
+        YukiHookAPI.Configs.isEnableModuleAppResourcesCache = true
         YukiHookAPI.Configs.isEnableMemberCache = true
     }
 

@@ -67,6 +67,11 @@ class HookEntry : IYukiHookXposedInit {
             // 若无和模块频繁交互数据在宿主重新启动之前建议开启
             // 若需要实时交互数据建议关闭或从 [YukiHookModulePrefs] 中进行动态配置
             isEnableModulePrefsCache = true
+            // 是否启用当前 Xposed 模块自身 [Resources] 缓存功能
+            // 一般情况下模块的 Resources 是不会改变的 - 但是在语言区域更改、分辨率更改等情况下 - 就需要刷新缓存
+            // 若无上述需求 - 在宿主重新启动之前建议开启
+            // 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
+            isEnableModuleAppResourcesCache = true
             // 是否启用 [Member] 缓存功能
             // 为防止 [Member] 复用过高造成的系统 GC 问题 - 此功能默认启用
             // 除非缓存的 [Member] 发生了混淆的问题 - 否则建议启用

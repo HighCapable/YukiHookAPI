@@ -216,6 +216,20 @@ fun resources(): HookResources
 
 请调用 `HookResources.hook` 方法开始 Hook。
 
+### refreshModuleAppResources [method]
+
+```kotlin
+fun refreshModuleAppResources()
+```
+
+**变更记录**
+
+`v1.0.87` `新增`
+
+**功能描述**
+
+> 刷新当前 Xposed 模块自身 `Resources`。
+
 ### loadApp [method]
 
 ```kotlin

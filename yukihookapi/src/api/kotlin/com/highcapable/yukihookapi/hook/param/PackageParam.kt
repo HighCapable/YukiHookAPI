@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.param
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import android.content.res.Resources
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
@@ -139,7 +140,9 @@ open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper?
      * @return [YukiModuleResources]
      * @throws IllegalStateException 如果当前 Hook Framework 不支持此功能
      */
-    val moduleAppResources get() = YukiHookBridge.moduleAppResources ?: error("Current Hook Framework not support moduleAppResources")
+    val moduleAppResources
+        get() = (if (YukiHookAPI.Configs.isEnableModuleAppResourcesCache) YukiHookBridge.moduleAppResources
+        else YukiHookBridge.dynamicModuleAppResources) ?: error("Current Hook Framework not support moduleAppResources")
 
     /**
      * 获得当前使用的存取数据对象缓存实例
@@ -173,6 +176,9 @@ open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper?
     internal fun baseAssignInstance(anotherParam: PackageParam) {
         this.wrapper = anotherParam.wrapper
     }
+
+    /** 刷新当前 Xposed 模块自身 [Resources] */
+    fun refreshModuleAppResources() = YukiHookBridge.refreshModuleAppResources()
 
     /**
      * 装载并 Hook 指定、全部包名的 APP
