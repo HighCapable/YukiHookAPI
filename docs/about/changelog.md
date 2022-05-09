@@ -2,6 +2,11 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.87 | 2022.05.10
+
+- 新增 `refreshModuleAppResources` 功能，以适配语言区域、字体大小、分辨率改变等情况下的 Resources 刷新
+- 新增 `isEnableModuleAppResourcesCache` 功能，可自行设置是否自动缓存当前模块的 Resources
+
 ### 1.0.86 | 2022.05.06
 
 - 修复不支持 Resources Hook(资源钩子) 的情况下在 `initZygote` 时持续报错的问题，复现在 **ZUI**/**LSPosed CI(1.8.3-6550)**
