@@ -16,6 +16,8 @@
 
 - Gradle 7.0 及以上
 
+- Jvm 11 及以上 (Since API `1.0.80`)
+
 ## 集成依赖
 
 在你的项目 `build.gradle` 中添加依赖。
@@ -61,9 +63,27 @@ dependencies {
 }
 ```
 
-请将 **&lt;version&gt;** 修改为 [这里](about/changelog) 的最新版本。
+请将 **&lt;version&gt;** 修改为 [这里](about/changelog) 的最新版本 **(请打开后再次刷新页面确保获取最新数据)**。
 
 !> `YukiHookAPI` 的 `api` 与 `ksp-xposed` 依赖的版本必须一一对应，否则将会造成版本不匹配错误。
+
+在你的 app `build.gradle` 中修改 `Kotlin` 的 Jvm 版本为 11 及以上。
+
+> 示例如下
+
+```gradle
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+}
+```
+
+!> 自 API `1.0.80` 版本后 Jvm 版本默认为 11，不再支持 1.8 及以下版本。
 
 ## 作为 Xposed 模块使用
 
