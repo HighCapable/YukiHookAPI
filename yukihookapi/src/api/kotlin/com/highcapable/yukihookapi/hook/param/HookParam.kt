@@ -30,6 +30,8 @@
 package com.highcapable.yukihookapi.hook.param
 
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
+import com.highcapable.yukihookapi.hook.core.finder.FieldFinder.Result.Instance
+import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
@@ -122,6 +124,25 @@ class HookParam(private val createrInstance: YukiMemberHookCreater, private var 
      * @return [ArgsModifyer]
      */
     fun args(index: Int) = ArgsModifyer(index)
+
+    /**
+     * 根据名称获取实例 的 Filed 实例处理类
+     *
+     * 需要获取 Field 的实例
+     * @param fieldName Field 名称
+     * @return [Instance]
+     */
+    fun Any.getField(fieldName : String) = this.javaClass.field { name = fieldName }.get(this)
+
+    /**
+     * 根据名称设置实例 的 Filed 实例内容
+     *
+     * 需要设置 Field 的实例
+     * @param fieldName Field 名称
+     * @param value 设置的实例内容
+     */
+    fun Any.setField(fieldName : String, value : Any?) =
+        this.javaClass.field { name = fieldName }.get(this).set(value)
 
     /**
      * 执行原始 [Member]
