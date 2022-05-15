@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
+import com.highcapable.yukihookapi.hook.utils.putIfAbsentCompat
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 
@@ -49,7 +50,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
 
     /** 设置要 Hook 的 Resources */
     @PublishedApi
-    internal var preHookResources = HashSet<ResourcesHookCreater>()
+    internal var preHookResources = HashMap<String, ResourcesHookCreater>()
 
     /**
      * 注入要 Hook 的 Resources
@@ -58,7 +59,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
      * @return [ResourcesHookCreater.Result]
      */
     inline fun injectResource(tag: String = "Default", initiate: ResourcesHookCreater.() -> Unit) =
-        ResourcesHookCreater(tag).apply(initiate).apply { preHookResources.add(this) }.build()
+        ResourcesHookCreater(tag).apply(initiate).apply { preHookResources.putIfAbsentCompat(toString(), this) }.build()
 
     /**
      * Hook 执行入口
@@ -70,7 +71,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
         /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.RESOURCES] */
         if (packageParam.wrapper?.type == HookEntryType.PACKAGE) return
         if (preHookResources.isEmpty()) error("Hook Resources is empty, hook aborted")
-        preHookResources.forEach { it.hook() }
+        preHookResources.forEach { (_, r) -> r.hook() }
     }
 
     /**
@@ -80,6 +81,9 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
      * @param tag 当前设置的标签
      */
     inner class ResourcesHookCreater(private val tag: String) {
+
+        /** 是否已经执行 Hook */
+        private var isHooked = false
 
         /**
          * 模块 APP Resources 替换实例
@@ -174,6 +178,8 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
         /** Hook 执行入口 */
         @PublishedApi
         internal fun hook() {
+            if (isHooked) return
+            isHooked = true
             if (isDisableCreaterRunHook.not()) runCatching {
                 when {
                     conditions == null -> yLoggerE(msg = "You must set the conditions before hook a Resources [$tag]")

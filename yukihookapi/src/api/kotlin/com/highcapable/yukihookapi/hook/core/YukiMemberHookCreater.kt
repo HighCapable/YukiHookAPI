@@ -42,6 +42,7 @@ import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
+import com.highcapable.yukihookapi.hook.utils.putIfAbsentCompat
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -79,7 +80,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
 
     /** 设置要 Hook 的方法、构造类 */
     @PublishedApi
-    internal var preHookMembers = HashSet<MemberHookCreater>()
+    internal var preHookMembers = HashMap<String, MemberHookCreater>()
 
     /**
      * 得到当前被 Hook 的 [Class]
@@ -99,7 +100,8 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @return [MemberHookCreater.Result]
      */
     inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(priority, tag, packageParam.exhibitName).apply(initiate).apply { preHookMembers.add(this) }.build()
+        MemberHookCreater(priority, tag, packageParam.exhibitName)
+            .apply(initiate).apply { preHookMembers.putIfAbsentCompat(toString(), this) }.build()
 
     /**
      * Hook 执行入口
@@ -109,8 +111,8 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     @PublishedApi
     internal fun hook(): Result {
         if (YukiHookBridge.hasXposedBridge.not()) return Result()
-        /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] */
-        if (packageParam.wrapper?.type == HookEntryType.RESOURCES) return Result()
+        /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] 或 [PackageParam.isHookParamCallback] 已被执行 */
+        if (packageParam.wrapper?.type == HookEntryType.RESOURCES && packageParam.isHookParamCallback.not()) return Result()
         return if (preHookMembers.isEmpty()) error("Hook Members is empty, hook aborted")
         else Result().also {
             Thread {
@@ -119,7 +121,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 when {
                     isDisableCreaterRunHook.not() && hookClass.instance != null -> {
                         it.onPrepareHook?.invoke()
-                        preHookMembers.forEach { m -> m.hook() }
+                        preHookMembers.forEach { (_, m) -> m.hook() }
                     }
                     isDisableCreaterRunHook.not() && hookClass.instance == null ->
                         if (onHookClassNotFoundFailureCallback == null)
@@ -139,6 +141,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @param packageName 当前 Hook 的 APP 包名
      */
     inner class MemberHookCreater(private val priority: Int, internal val tag: String, internal val packageName: String) {
+
+        /** 是否已经执行 Hook */
+        private var isHooked = false
 
         /** [beforeHook] 回调 */
         private var beforeHookCallback: (HookParam.() -> Unit)? = null
@@ -302,6 +307,19 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             else ConstructorFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
         /**
+         * 注入要 Hook 的方法、构造类 (嵌套 Hook)
+         * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
+         * @param tag 可设置标签 - 在发生错误时方便进行调试
+         * @param initiate 方法体
+         * @return [MemberHookCreater.Result]
+         */
+        inline fun HookParam.injectMember(
+            priority: Int = PRIORITY_DEFAULT,
+            tag: String = "InnerDefault",
+            initiate: MemberHookCreater.() -> Unit
+        ) = this@YukiMemberHookCreater.injectMember(priority, tag, initiate).also { this@YukiMemberHookCreater.hook() }
+
+        /**
          * 在方法执行完成前 Hook
          *
          * 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
@@ -408,7 +426,8 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /** Hook 执行入口 */
         @PublishedApi
         internal fun hook() {
-            if (YukiHookBridge.hasXposedBridge.not() || isDisableMemberRunHook) return
+            if (YukiHookBridge.hasXposedBridge.not() || isHooked || isDisableMemberRunHook) return
+            isHooked = true
             finder?.printLogIfExist()
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
@@ -453,6 +472,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             beforeHookCallback?.invoke(param)
                             if (beforeHookCallback != null)
                                 onHookLogMsg(msg = "Before Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
+                            packageParam.isHookParamCallback = true
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
@@ -467,6 +487,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             afterHookCallback?.invoke(param)
                             if (afterHookCallback != null)
                                 onHookLogMsg(msg = "After Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
+                            packageParam.isHookParamCallback = true
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
@@ -479,11 +500,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 if (member != null)
                     member.also { member ->
                         runCatching {
-                            if (isReplaceHookMode)
+                            (if (isReplaceHookMode)
                                 YukiHookBridge.Hooker.hookMethod(member, replaceMent)?.also { onHookedCallback?.invoke(it) }
                                     ?: error("Hook Member [$member] failed")
                             else YukiHookBridge.Hooker.hookMethod(member, beforeAfterHook)?.also { onHookedCallback?.invoke(it) }
-                                ?: error("Hook Member [$member] failed")
+                                ?: error("Hook Member [$member] failed")).run { packageParam.isHookParamCallback = true }
                         }.onFailure {
                             onHookingFailureCallback?.invoke(it)
                             onAllFailureCallback?.invoke(it)

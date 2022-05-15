@@ -56,6 +56,9 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  */
 open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
 
+    /** [HookParam] 是否已经执行回调事件 */
+    internal var isHookParamCallback = false
+
     /**
      * 用于展示的 APP 包名
      * @return [String]

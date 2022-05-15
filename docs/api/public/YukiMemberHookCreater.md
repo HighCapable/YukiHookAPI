@@ -386,6 +386,20 @@ inline fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit): Constr
 
 > 使用当前 `hookClass` 查找并得到构造方法。
 
+#### injectMember [method]
+
+```kotlin
+inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 注入要 Hook 的方法、构造类 (嵌套 Hook)。
+
 #### beforeHook [method]
 
 ```kotlin
