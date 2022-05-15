@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.utils
 
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -52,6 +53,7 @@ internal object ReflectionTool {
      * @param matchIndex 字节码筛选下标
      * @param name 变量名称
      * @param modifiers 变量描述
+     * @param nameConditions 名称查找条件
      * @param type 变量类型
      * @param isFindInSuperClass 是否在未找到后继续在当前 [classSet] 的父类中查找
      * @return [Field]
@@ -64,6 +66,7 @@ internal object ReflectionTool {
         matchIndex: Pair<Int, Boolean>?,
         name: String,
         modifiers: ModifierRules?,
+        nameConditions: NameConditions?,
         type: Class<*>?,
         isFindInSuperClass: Boolean
     ): Field {
@@ -77,9 +80,11 @@ internal object ReflectionTool {
                 var typeIndex = -1
                 var nameIndex = -1
                 var modifyIndex = -1
+                var nameCdsIndex = -1
                 val typeLastIndex = if (type != null && matchIndex != null) filter { type == it.type }.lastIndex else -1
                 val nameLastIndex = if (name.isNotBlank() && matchIndex != null) filter { name == it.name }.lastIndex else -1
                 val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
+                val nameCdsLastIndex = if (nameConditions != null && matchIndex != null) filter { nameConditions.contains(it) }.lastIndex else -1
                 forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
@@ -113,6 +118,16 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
                                     (modifyLastIndex == modifyIndex && matchIndex.second.not()))
                         }
+                    if (nameConditions != null)
+                        conditions = (conditions && nameConditions.contains(it)).let {
+                            if (it) nameCdsIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
+                                    (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                        }
                     if (orderIndex != null) conditions =
                         (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
                                 (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
@@ -128,7 +143,7 @@ internal object ReflectionTool {
                     findField(
                         classSet.superclass,
                         orderIndex, matchIndex,
-                        name, modifiers,
+                        name, modifiers, nameConditions,
                         type, isFindInSuperClass = true
                     )
                 else throw NoSuchFieldError(
@@ -142,6 +157,10 @@ internal object ReflectionTool {
                                 matchIndex == null -> ""
                                 matchIndex.second.not() -> "matchIndex:[last] "
                                 else -> "matchIndex:[${matchIndex.first}] "
+                            } +
+                            when (nameConditions) {
+                                null -> ""
+                                else -> "nameConditions:$nameConditions "
                             } +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "type:[${type ?: "unspecified"}] " +
@@ -159,6 +178,7 @@ internal object ReflectionTool {
      * @param matchIndex 字节码筛选下标
      * @param name 方法名称
      * @param modifiers 方法描述
+     * @param nameConditions 名称查找条件
      * @param returnType 方法返回值
      * @param paramCount 方法参数个数
      * @param paramTypes 方法参数类型
@@ -173,6 +193,7 @@ internal object ReflectionTool {
         matchIndex: Pair<Int, Boolean>?,
         name: String,
         modifiers: ModifierRules?,
+        nameConditions: NameConditions?,
         returnType: Class<*>?,
         paramCount: Int,
         paramTypes: Array<out Class<*>>?,
@@ -193,6 +214,7 @@ internal object ReflectionTool {
                 var paramCountIndex = -1
                 var nameIndex = -1
                 var modifyIndex = -1
+                var nameCdsIndex = -1
                 val returnTypeLastIndex =
                     if (returnType != null && matchIndex != null) filter { returnType == it.returnType }.lastIndex else -1
                 val paramCountLastIndex =
@@ -201,6 +223,7 @@ internal object ReflectionTool {
                     if (paramTypes != null && matchIndex != null) filter { arrayContentsEq(paramTypes, it.parameterTypes) }.lastIndex else -1
                 val nameLastIndex = if (name.isNotBlank() && matchIndex != null) filter { name == it.name }.lastIndex else -1
                 val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
+                val nameCdsLastIndex = if (nameConditions != null && matchIndex != null) filter { nameConditions.contains(it) }.lastIndex else -1
                 forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
@@ -254,6 +277,16 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
                                     (modifyLastIndex == modifyIndex && matchIndex.second.not()))
                         }
+                    if (nameConditions != null)
+                        conditions = (conditions && nameConditions.contains(it)).let {
+                            if (it) nameCdsIndex++
+                            isMatched = true
+                            it && (matchIndex == null ||
+                                    (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
+                                    (matchIndex.first < 0 &&
+                                            abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
+                                    (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                        }
                     if (orderIndex != null) conditions =
                         (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
                                 (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
@@ -269,7 +302,7 @@ internal object ReflectionTool {
                     findMethod(
                         classSet.superclass,
                         orderIndex, matchIndex,
-                        name, modifiers,
+                        name, modifiers, nameConditions,
                         returnType, paramCount,
                         paramTypes, isFindInSuperClass = true
                     )
@@ -284,6 +317,10 @@ internal object ReflectionTool {
                                 matchIndex == null -> ""
                                 matchIndex.second.not() -> "matchIndex:[last] "
                                 else -> "matchIndex:[${matchIndex.first}] "
+                            } +
+                            when (nameConditions) {
+                                null -> ""
+                                else -> "nameConditions:$nameConditions "
                             } +
                             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
                             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +

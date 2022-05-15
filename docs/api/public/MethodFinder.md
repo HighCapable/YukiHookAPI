@@ -158,6 +158,24 @@ fun name(value: String): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
+### name [method]
+
+```kotlin
+inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 设置 `Method` 名称条件。
+
+!> 若不填写名称则必须存在一个其它条件，默认模糊查找并取第一个匹配的 `Method`。
+
+!> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
+
 ### paramCount [method]
 
 ```kotlin

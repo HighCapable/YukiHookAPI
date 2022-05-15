@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
@@ -63,6 +64,10 @@ class FieldFinder(
     /** [ModifierRules] 实例 */
     @PublishedApi
     internal var modifiers: ModifierRules? = null
+
+    /** [NameConditions] 实例 */
+    @PublishedApi
+    internal var nameConditions: NameConditions? = null
 
     /**
      * 设置 [Field] 名称
@@ -115,6 +120,20 @@ class FieldFinder(
     }
 
     /**
+     * 设置 [Field] 名称条件
+     *
+     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Field]
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param initiate 方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition {
+        nameConditions = NameConditions().apply(initiate)
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
      * 设置 [Field] 类型
      *
      * - 可不填写类型 - 默认模糊查找并取第一个匹配的 [Field]
@@ -151,8 +170,12 @@ class FieldFinder(
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
             runBlocking {
-                memberInstance =
-                    ReflectionTool.findField(usedClassSet, orderIndex, matchIndex, name, modifiers, type.compat(), isFindInSuperClass)
+                memberInstance = ReflectionTool.findField(
+                    usedClassSet, orderIndex,
+                    matchIndex, name,
+                    modifiers, nameConditions,
+                    type.compat(), isFindInSuperClass
+                )
             }.result { onHookLogMsg(msg = "Find Field [${memberInstance}] takes ${it}ms [${hookTag}]") }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))

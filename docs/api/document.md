@@ -60,6 +60,8 @@
 
 [filename](public/ModifierRules.md ':include')
 
+[filename](public/NameConditions.md ':include')
+
 [filename](public/HookClass.md ':include')
 
 [filename](public/VariousClass.md ':include')

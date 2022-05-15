@@ -245,6 +245,86 @@ Test::class.java.method {
 
 !> 当前查询的 `Method` 除非指定 `superClass` 条件，否则只能查询到当前 `Class` 的 `Method`。
 
+### 模糊查询
+
+如果我们想查询一个方法名称，但是又不确定它在每个版本中是否发生变化，此时我们就可以使用模糊查询功能。
+
+假设我们要得到 `Class` 中的 `doTask` 方法，可以使用如下实现。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name {
+        // 设置名称不区分大小写
+        equalsOf(other = "dotask", isIgnoreCase = true)
+    }
+    param(StringType)
+}.get(instance).call("task_name")
+```
+
+已知当前 `Class` 中仅有一个 `doTask` 方法，我们还可以判断方法名称仅包含其中指定的字符。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name {
+        // 仅包含 oTas
+        contains(other = "oTas")
+    }
+    param(StringType)
+}.get(instance).call("task_name")
+```
+
+我们还可以根据首尾字符串进行判断。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name {
+        // 开头包含 do
+        startsWith(prefix = "do")
+        // 结尾包含 Task
+        endsWith(suffix = "Task")
+    }
+    param(StringType)
+}.get(instance).call("task_name")
+```
+
+通过观察发现这个方法名称中只包含字母，我们还可以再增加一个精确的查询条件。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name {
+        // 开头包含 do
+        startsWith(prefix = "do")
+        // 结尾包含 Task
+        endsWith(suffix = "Task")
+        // 仅包含字母
+        onlyLetters()
+    }
+    param(StringType)
+}.get(instance).call("task_name")
+```
+
+更多用法可参考 [NameConditions](api/document?id=nameconditions-class)。
+
 ### 静态字节码
 
 有些方法和变量在 `Class` 中是静态的实现，这个时候，我们不需要传入实例就可以调用它们。

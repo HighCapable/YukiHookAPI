@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -70,6 +71,10 @@ class MethodFinder(
     /** [ModifierRules] 实例 */
     @PublishedApi
     internal var modifiers: ModifierRules? = null
+
+    /** [NameConditions] 实例 */
+    @PublishedApi
+    internal var nameConditions: NameConditions? = null
 
     /**
      * 设置 [Method] 名称
@@ -157,6 +162,20 @@ class MethodFinder(
     }
 
     /**
+     * 设置 [Method] 名称条件
+     *
+     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Method]
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param initiate 方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition {
+        nameConditions = NameConditions().apply(initiate)
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
      * 设置 [Method] 参数个数
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数
@@ -204,8 +223,8 @@ class MethodFinder(
      */
     private val result
         get() = ReflectionTool.findMethod(
-            usedClassSet, orderIndex, matchIndex,
-            name, modifiers, returnType.compat(),
+            usedClassSet, orderIndex, matchIndex, name,
+            modifiers, nameConditions, returnType.compat(),
             paramCount, paramTypes, isFindInSuperClass
         )
 
