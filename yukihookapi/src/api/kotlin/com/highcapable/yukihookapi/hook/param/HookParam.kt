@@ -42,6 +42,17 @@ import java.lang.reflect.Method
  */
 class HookParam(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper? = null) {
 
+    internal companion object {
+
+        /** [HookParam] 是否已经执行首次回调事件 */
+        internal var isCallbackCalled = false
+
+        /** 设置 [HookParam] 执行首次回调事件 */
+        internal fun invoke() {
+            isCallbackCalled = true
+        }
+    }
+
     /**
      * 在回调中设置 [HookParam] 使用的 [HookParamWrapper]
      * @param wrapper [HookParamWrapper] 实例

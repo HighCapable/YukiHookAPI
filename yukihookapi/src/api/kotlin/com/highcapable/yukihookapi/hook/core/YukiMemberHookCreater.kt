@@ -111,8 +111,8 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     @PublishedApi
     internal fun hook(): Result {
         if (YukiHookBridge.hasXposedBridge.not()) return Result()
-        /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] 或 [PackageParam.isHookParamCallback] 已被执行 */
-        if (packageParam.wrapper?.type == HookEntryType.RESOURCES && packageParam.isHookParamCallback.not()) return Result()
+        /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] 或 [HookParam.isCallbackCalled] 已被执行 */
+        if (packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not()) return Result()
         return if (preHookMembers.isEmpty()) error("Hook Members is empty, hook aborted")
         else Result().also {
             Thread {
@@ -472,7 +472,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             beforeHookCallback?.invoke(param)
                             if (beforeHookCallback != null)
                                 onHookLogMsg(msg = "Before Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
-                            packageParam.isHookParamCallback = true
+                            HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
@@ -487,7 +487,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             afterHookCallback?.invoke(param)
                             if (afterHookCallback != null)
                                 onHookLogMsg(msg = "After Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
-                            packageParam.isHookParamCallback = true
+                            HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
@@ -504,7 +504,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                                 YukiHookBridge.Hooker.hookMethod(member, replaceMent)?.also { onHookedCallback?.invoke(it) }
                                     ?: error("Hook Member [$member] failed")
                             else YukiHookBridge.Hooker.hookMethod(member, beforeAfterHook)?.also { onHookedCallback?.invoke(it) }
-                                ?: error("Hook Member [$member] failed")).run { packageParam.isHookParamCallback = true }
+                                ?: error("Hook Member [$member] failed")).run { HookParam.invoke() }
                         }.onFailure {
                             onHookingFailureCallback?.invoke(it)
                             onAllFailureCallback?.invoke(it)
