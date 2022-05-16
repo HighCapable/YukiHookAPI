@@ -77,7 +77,7 @@ class YukiHookModulePrefs(private var context: Context? = null) {
          * @return [YukiHookModulePrefs]
          */
         internal fun instance(context: Context? = null) =
-            instance?.apply { this.context = context } ?: YukiHookModulePrefs(context).apply { instance = this }
+            instance?.apply { if (context != null) this.context = context } ?: YukiHookModulePrefs(context).apply { instance = this }
 
         /**
          * 设置全局可读可写
