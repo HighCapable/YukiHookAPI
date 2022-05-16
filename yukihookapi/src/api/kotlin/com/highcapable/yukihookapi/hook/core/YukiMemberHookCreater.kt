@@ -447,7 +447,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                         try {
                             if (replaceHookCallback != null || isReplaceHookOnlyResultMode)
                                 onHookLogMsg(msg = "Replace Hook Member [${member ?: "All Member $allMethodsName"}] done [$tag]")
-                            if (isReplaceHookOnlyResultMode) replaceHookResult else replaceHookCallback?.invoke(param)
+                            (if (isReplaceHookOnlyResultMode) replaceHookResult else replaceHookCallback?.invoke(param)).also { HookParam.invoke() }
                         } catch (e: Throwable) {
                             onConductFailureCallback?.invoke(param, e)
                             onAllFailureCallback?.invoke(e)
@@ -504,7 +504,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                                 YukiHookBridge.Hooker.hookMethod(member, replaceMent)?.also { onHookedCallback?.invoke(it) }
                                     ?: error("Hook Member [$member] failed")
                             else YukiHookBridge.Hooker.hookMethod(member, beforeAfterHook)?.also { onHookedCallback?.invoke(it) }
-                                ?: error("Hook Member [$member] failed")).run { HookParam.invoke() }
+                                ?: error("Hook Member [$member] failed"))
                         }.onFailure {
                             onHookingFailureCallback?.invoke(it)
                             onAllFailureCallback?.invoke(it)
