@@ -64,7 +64,7 @@ class CurrentClass(@PublishedApi internal val instance: Class<*>, @PublishedApi 
      *
      * - ❗请使用 [superClass] 方法来获取 [SuperClass]
      */
-    inner class SuperClass {
+    inner class SuperClass internal constructor() {
 
         /**
          * 调用父类实例中的变量

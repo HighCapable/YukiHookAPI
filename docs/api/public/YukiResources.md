@@ -1,7 +1,7 @@
 ## YukiResources [class]
 
 ```kotlin
-class YukiResources(private val baseInstance: XResources) : Resources
+class YukiResources private constructor(private val baseInstance: XResources) : Resources
 ```
 
 **变更记录**

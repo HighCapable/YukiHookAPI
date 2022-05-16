@@ -36,7 +36,7 @@ import android.content.res.XResForwarder
  * 对接 [XResForwarder] 的中间层实例
  * @param baseInstance 原始实例
  */
-class YukiResForwarder(private val baseInstance: XResForwarder) {
+class YukiResForwarder internal constructor(private val baseInstance: XResForwarder) {
 
     /**
      * 获得 [XResForwarder] 实例

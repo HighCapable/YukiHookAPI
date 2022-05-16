@@ -133,7 +133,7 @@ injectMember(priority = PRIORITY_HIGHEST) {
 ### MemberHookCreater [class]
 
 ```kotlin
-inner class MemberHookCreater(private val priority: Int, internal val tag: String, internal val packageName: String)
+inner class MemberHookCreater internal constructor(private val priority: Int, internal val tag: String, internal val packageName: String)
 ```
 
 **变更记录**
@@ -521,7 +521,7 @@ fun intercept()
 #### Result [class]
 
 ```kotlin
-inner class Result
+inner class Result internal constructor()
 ```
 
 **变更记录**
@@ -720,7 +720,7 @@ fun ignoredAllFailure(): Result
 ### Result [class]
 
 ```kotlin
-inner class Result
+inner class Result internal constructor()
 ```
 
 **变更记录**

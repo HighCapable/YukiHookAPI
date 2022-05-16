@@ -1,7 +1,7 @@
 ## HookParam [class]
 
 ```kotlin
-class HookParam(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper?)
+class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper?)
 ```
 
 **变更记录**
@@ -335,7 +335,7 @@ fun resultNull()
 ### ArgsIndexCondition [class]
 
 ```kotlin
-inner class ArgsIndexCondition
+inner class ArgsIndexCondition internal constructor()
 ```
 
 **变更记录**
@@ -377,7 +377,7 @@ fun last(): ArgsModifyer
 ### ArgsModifyer [class]
 
 ```kotlin
-inner class ArgsModifyer(private val index: Int)
+inner class ArgsModifyer internal constructor(private val index: Int)
 ```
 
 **变更记录**

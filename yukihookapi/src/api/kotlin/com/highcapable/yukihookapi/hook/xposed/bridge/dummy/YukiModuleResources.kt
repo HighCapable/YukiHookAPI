@@ -37,14 +37,14 @@ import android.content.res.XResForwarder
  * 对接 [XModuleResources] 的中间层实例
  * @param baseInstance 原始实例
  */
-class YukiModuleResources(private val baseInstance: XModuleResources) :
+class YukiModuleResources private constructor(private val baseInstance: XModuleResources) :
     Resources(
         runCatching { baseInstance.assets }.getOrNull(),
         runCatching { baseInstance.displayMetrics }.getOrNull(),
         runCatching { baseInstance.configuration }.getOrNull()
     ) {
 
-    companion object {
+    internal companion object {
 
         /**
          * 对接 [XModuleResources.createInstance] 方法

@@ -41,14 +41,14 @@ import de.robv.android.xposed.callbacks.XC_LayoutInflated
  * 对接 [XResources] 的中间层实例
  * @param baseInstance 原始实例
  */
-class YukiResources(private val baseInstance: XResources) :
+class YukiResources private constructor(private val baseInstance: XResources) :
     Resources(
         runCatching { baseInstance.assets }.getOrNull(),
         runCatching { baseInstance.displayMetrics }.getOrNull(),
         runCatching { baseInstance.configuration }.getOrNull()
     ) {
 
-    companion object {
+    internal companion object {
 
         /**
          * 从 [XResources] 创建 [YukiResources] 实例

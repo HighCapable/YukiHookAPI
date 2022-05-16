@@ -64,7 +64,7 @@ import java.io.File
  * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/#/api/document?id=yukihookmoduleprefs-class)
  * @param context 上下文实例 - 默认空
  */
-class YukiHookModulePrefs(private var context: Context? = null) {
+class YukiHookModulePrefs private constructor(private var context: Context? = null) {
 
     internal companion object {
 

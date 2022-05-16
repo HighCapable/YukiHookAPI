@@ -131,7 +131,7 @@ fun superClass(isOnlySuperClass: Boolean)
 ### RemedyPlan [class]
 
 ```kotlin
-inner class RemedyPlan
+inner class RemedyPlan internal constructor()
 ```
 
 **变更记录**
@@ -165,7 +165,7 @@ inline fun constructor(initiate: ConstructorFinder.() -> Unit)
 #### Result [class]
 
 ```kotlin
-inner class Result
+inner class Result internal constructor()
 ```
 
 **变更记录**
@@ -207,7 +207,7 @@ constructor {
 ### Result [class]
 
 ```kotlin
-inner class Result(internal val isNoSuch: Boolean, internal val e: Throwable?)
+inner class Result internal constructor(internal val isNoSuch: Boolean, internal val e: Throwable?)
 ```
 
 **变更记录**
@@ -410,7 +410,7 @@ fun ignoredError(): Result
 #### Instance [class]
 
 ```kotlin
-inner class Instance
+inner class Instance internal constructor()
 ```
 
 **变更记录**

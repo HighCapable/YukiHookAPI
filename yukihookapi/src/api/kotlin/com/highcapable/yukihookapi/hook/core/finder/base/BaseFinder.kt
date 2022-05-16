@@ -55,7 +55,8 @@ abstract class BaseFinder(
     /**
      * 字节码下标筛选数据类型
      */
-    enum class IndexConfigType { ORDER, MATCH }
+    @PublishedApi
+    internal enum class IndexConfigType { ORDER, MATCH }
 
     /** 字节码顺序下标 */
     internal var orderIndex: Pair<Int, Boolean>? = null
@@ -67,7 +68,7 @@ abstract class BaseFinder(
      * 字节码下标筛选实现类
      * @param type 类型
      */
-    inner class IndexTypeCondition(private val type: IndexConfigType) {
+    inner class IndexTypeCondition @PublishedApi internal constructor(private val type: IndexConfigType) {
 
         /**
          * 设置下标
@@ -93,7 +94,7 @@ abstract class BaseFinder(
          *
          * - ❗请使用 [index] 方法来获取 [IndexTypeConditionSort]
          */
-        inner class IndexTypeConditionSort {
+        inner class IndexTypeConditionSort internal constructor() {
 
             /** 设置满足条件的第一个*/
             fun first() = index(num = 0)

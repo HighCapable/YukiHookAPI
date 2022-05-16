@@ -51,7 +51,7 @@ injectResource(tag = "KuriharaYuki") {
 ### ResourcesHookCreater [class]
 
 ```kotlin
-inner class ResourcesHookCreater(private val tag: String)
+inner class ResourcesHookCreater internal constructor(private val tag: String)
 ```
 
 **变更记录**
@@ -305,7 +305,7 @@ injectResource {
 #### ConditionFinder [class]
 
 ```kotlin
-inner class ConditionFinder
+inner class ConditionFinder internal constructor()
 ```
 
 **变更记录**
@@ -501,7 +501,7 @@ fun mipmap()
 #### Result [class]
 
 ```kotlin
-inner class Result
+inner class Result internal constructor()
 ```
 
 **变更记录**

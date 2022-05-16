@@ -1,7 +1,7 @@
 ## YukiResForwarder [class]
 
 ```kotlin
-class YukiResForwarder(private val baseInstance: XResForwarder)
+class YukiResForwarder internal constructor(private val baseInstance: XResForwarder)
 ```
 
 **变更记录**

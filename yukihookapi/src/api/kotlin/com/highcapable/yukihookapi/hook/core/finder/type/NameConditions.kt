@@ -38,7 +38,7 @@ import java.lang.reflect.Method
  *
  * 可对 R8 混淆后的 [Member] 进行更加详细的定位
  */
-class NameConditions {
+class NameConditions @PublishedApi internal constructor() {
 
     /** 完全字符匹配条件 */
     private var cdsEqualsOf: Pair<String, Boolean>? = null

@@ -140,7 +140,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @param tag 当前设置的标签
      * @param packageName 当前 Hook 的 APP 包名
      */
-    inner class MemberHookCreater(private val priority: Int, internal val tag: String, internal val packageName: String) {
+    inner class MemberHookCreater @PublishedApi internal constructor(
+        private val priority: Int,
+        internal val tag: String,
+        internal val packageName: String
+    ) {
 
         /** 是否已经执行 Hook */
         private var isHooked = false
@@ -590,7 +594,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * 可在这里处理失败事件监听
          */
-        inner class Result {
+        inner class Result internal constructor() {
 
             /**
              * 创建监听事件方法体
@@ -695,7 +699,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      *
      * 可在这里处理失败事件监听
      */
-    inner class Result {
+    inner class Result internal constructor() {
 
         /** Hook 开始时的监听事件回调 */
         internal var onPrepareHook: (() -> Unit)? = null

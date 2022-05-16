@@ -169,7 +169,7 @@ fun superClass(isOnlySuperClass: Boolean)
 ### Result [class]
 
 ```kotlin
-inner class Result(internal val isNoSuch: Boolean, private val e: Throwable?)
+inner class Result internal constructor(internal val isNoSuch: Boolean, private val e: Throwable?)
 ```
 
 **变更记录**
@@ -298,7 +298,7 @@ fun ignoredError(): Result
 #### Instance [class]
 
 ```kotlin
-inner class Instance(private val instance: Any?, val self: Any?)
+inner class Instance internal constructor(private val instance: Any?, val self: Any?)
 ```
 
 **变更记录**

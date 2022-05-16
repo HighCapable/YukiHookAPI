@@ -57,7 +57,7 @@ inline fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result.Instan
 ### SuperClass [class]
 
 ```kotlin
-inner class SuperClass
+inner class SuperClass internal constructor()
 ```
 
 **变更记录**

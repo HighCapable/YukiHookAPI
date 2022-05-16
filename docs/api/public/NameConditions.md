@@ -1,7 +1,7 @@
 ## NameConditions [class]
 
 ```kotlin
-class NameConditions
+class NameConditions internal constructor()
 ```
 
 **变更记录**

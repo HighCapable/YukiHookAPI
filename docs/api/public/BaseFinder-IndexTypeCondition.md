@@ -1,7 +1,7 @@
 ## BaseFinder.IndexTypeCondition [class]
 
 ```kotlin
-inner class IndexTypeCondition(private val type: IndexConfigType)
+inner class IndexTypeCondition internal constructor(private val type: IndexConfigType)
 ```
 
 **变更记录**
@@ -47,7 +47,7 @@ fun index(): IndexTypeConditionSort
 ### IndexTypeConditionSort [class]
 
 ```kotlin
-inner class IndexTypeConditionSort
+inner class IndexTypeConditionSort internal constructor()
 ```
 
 **变更记录**

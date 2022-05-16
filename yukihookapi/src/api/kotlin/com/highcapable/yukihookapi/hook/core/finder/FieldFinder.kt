@@ -204,7 +204,7 @@ class FieldFinder(
      * @param isNoSuch 是否没有找到变量 - 默认否
      * @param e 错误信息
      */
-    inner class Result(@PublishedApi internal val isNoSuch: Boolean = false, private val e: Throwable? = null) {
+    inner class Result internal constructor(@PublishedApi internal val isNoSuch: Boolean = false, private val e: Throwable? = null) {
 
         /**
          * 创建监听结果事件方法体
@@ -261,7 +261,7 @@ class FieldFinder(
          * @param instance 当前 [Field] 所在类的实例对象
          * @param self 当前 [Field] 自身的实例对象
          */
-        inner class Instance(private val instance: Any?, val self: Any?) {
+        inner class Instance internal constructor(private val instance: Any?, val self: Any?) {
 
             /**
              * 得到变量实例

@@ -274,7 +274,7 @@ class MethodFinder(
      *
      * 可累计失败次数直到查找成功
      */
-    inner class RemedyPlan {
+    inner class RemedyPlan @PublishedApi internal constructor() {
 
         /** 失败尝试次数数组 */
         @PublishedApi
@@ -332,7 +332,7 @@ class MethodFinder(
          *
          * 可在这里处理是否成功的回调
          */
-        inner class Result {
+        inner class Result @PublishedApi internal constructor() {
 
             /** 找到结果时的回调 */
             internal var onFindCallback: (Method.() -> Unit)? = null
@@ -352,7 +352,10 @@ class MethodFinder(
      * @param isNoSuch 是否没有找到方法 - 默认否
      * @param e 错误信息
      */
-    inner class Result(@PublishedApi internal val isNoSuch: Boolean = false, @PublishedApi internal val e: Throwable? = null) {
+    inner class Result internal constructor(
+        @PublishedApi internal val isNoSuch: Boolean = false,
+        @PublishedApi internal val e: Throwable? = null
+    ) {
 
         /**
          * 创建监听结果事件方法体
@@ -438,7 +441,7 @@ class MethodFinder(
          * - ❗请使用 [get] 或 [wait] 方法来获取 [Instance]
          * @param instance 当前 [Method] 所在类的实例对象
          */
-        inner class Instance(private val instance: Any?) {
+        inner class Instance internal constructor(private val instance: Any?) {
 
             /**
              * 执行方法

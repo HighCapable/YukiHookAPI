@@ -54,7 +54,7 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  * 装载 Hook 的目标 APP 入口对象实现类
  * @param wrapper [PackageParam] 的参数包装类实例 - 默认是空的
  */
-open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
+open class PackageParam internal constructor(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
 
     /**
      * 用于展示的 APP 包名

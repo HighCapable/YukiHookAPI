@@ -37,7 +37,7 @@ import java.lang.reflect.Modifier
  *
  * 可对 R8 混淆后的 [Member] 进行更加详细的定位
  */
-class ModifierRules {
+class ModifierRules @PublishedApi internal constructor() {
 
     /** 描述声明使用 */
     private var isPublic = false

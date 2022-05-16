@@ -47,7 +47,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
  * @param appResources APP [YukiResources]
  */
 @YukiPrivateApi
-class PackageParamWrapper(
+class PackageParamWrapper internal constructor(
     var type: HookEntryType,
     var packageName: String,
     var processName: String,

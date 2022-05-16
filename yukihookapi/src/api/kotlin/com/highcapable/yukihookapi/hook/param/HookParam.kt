@@ -40,7 +40,7 @@ import java.lang.reflect.Method
  * @param createrInstance [YukiMemberHookCreater] 的实例对象
  * @param wrapper [HookParam] 的参数包装类实例
  */
-class HookParam(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper? = null) {
+class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper? = null) {
 
     internal companion object {
 
@@ -175,7 +175,7 @@ class HookParam(private val createrInstance: YukiMemberHookCreater, private var 
      *
      * - ❗请使用第一个 [args] 方法来获取 [ArgsIndexCondition]
      */
-    inner class ArgsIndexCondition {
+    inner class ArgsIndexCondition internal constructor() {
 
         /**
          * 获取当前 Hook 对象的 [method] or [constructor] 的参数数组第一位
@@ -196,7 +196,7 @@ class HookParam(private val createrInstance: YukiMemberHookCreater, private var 
      * - ❗请使用第二个 [args] 方法来获取 [ArgsModifyer]
      * @param index 参数对象数组下标
      */
-    inner class ArgsModifyer(private val index: Int) {
+    inner class ArgsModifyer internal constructor(private val index: Int) {
 
         /**
          * 得到方法参数的实例对象 [T]

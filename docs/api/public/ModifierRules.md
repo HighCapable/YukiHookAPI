@@ -1,7 +1,7 @@
 ## ModifierRules [class]
 
 ```kotlin
-class ModifierRules
+class ModifierRules internal constructor()
 ```
 
 **变更记录**

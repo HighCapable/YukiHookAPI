@@ -1,7 +1,7 @@
 ## PackageParam [class]
 
 ```kotlin
-open class PackageParam(internal var wrapper: PackageParamWrapper?)
+open class PackageParam internal constructor(internal var wrapper: PackageParamWrapper?)
 ```
 
 **变更记录**

@@ -40,7 +40,7 @@ import java.lang.reflect.Member
  * @param baseParam 对接 [XC_MethodHook.MethodHookParam]
  */
 @YukiPrivateApi
-class HookParamWrapper(private var baseParam: XC_MethodHook.MethodHookParam? = null) {
+class HookParamWrapper internal constructor(private var baseParam: XC_MethodHook.MethodHookParam? = null) {
 
     /**
      * 在回调中设置 [HookParamWrapper] 使用的 [XC_MethodHook.MethodHookParam]

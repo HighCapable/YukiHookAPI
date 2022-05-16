@@ -80,7 +80,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
      * 查找和处理需要 Hook 的 Resources
      * @param tag 当前设置的标签
      */
-    inner class ResourcesHookCreater(private val tag: String) {
+    inner class ResourcesHookCreater @PublishedApi internal constructor(private val tag: String) {
 
         /** 是否已经执行 Hook */
         private var isHooked = false
@@ -238,7 +238,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
         /**
          * Resources 查找条件实现类
          */
-        inner class ConditionFinder {
+        inner class ConditionFinder @PublishedApi internal constructor() {
 
             /** Resources 类型 */
             internal var type = ""
@@ -328,7 +328,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
          *
          * 可在这里处理失败事件监听
          */
-        inner class Result {
+        inner class Result internal constructor() {
 
             /**
              * 创建监听事件方法体

@@ -1,7 +1,7 @@
 ## YukiModuleResources [class]
 
 ```kotlin
-class YukiModuleResources(private val baseInstance: XModuleResources) : Resources
+class YukiModuleResources private constructor(private val baseInstance: XModuleResources) : Resources
 ```
 
 **变更记录**
