@@ -1,7 +1,7 @@
 ## YukiHookModulePrefs [class]
 
 ```kotlin
-class YukiHookModulePrefs(private val context: Context?)
+class YukiHookModulePrefs(private var context: Context?)
 ```
 
 **变更记录**

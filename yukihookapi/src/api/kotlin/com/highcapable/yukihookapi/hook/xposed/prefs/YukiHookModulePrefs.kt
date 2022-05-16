@@ -27,7 +27,7 @@
  */
 @file:Suppress(
     "SetWorldReadable", "CommitPrefEdits", "DEPRECATION", "WorldReadableFiles",
-    "unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate"
+    "unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate", "StaticFieldLeak"
 )
 
 package com.highcapable.yukihookapi.hook.xposed.prefs
@@ -64,19 +64,34 @@ import java.io.File
  * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/#/api/document?id=yukihookmoduleprefs-class)
  * @param context 上下文实例 - 默认空
  */
-class YukiHookModulePrefs(private val context: Context? = null) {
+class YukiHookModulePrefs(private var context: Context? = null) {
 
     internal companion object {
+
+        /** 当前 [YukiHookModulePrefs] 单例 */
+        private var instance: YukiHookModulePrefs? = null
+
+        /**
+         * 获取 [YukiHookModulePrefs] 单例
+         * @param context 实例 - Xposed 环境为空
+         * @return [YukiHookModulePrefs]
+         */
+        internal fun instance(context: Context? = null) =
+            instance?.apply { this.context = context } ?: YukiHookModulePrefs(context).apply { instance = this }
 
         /**
          * 设置全局可读可写
          * @param context 实例
          * @param prefsFileName Sp 文件名
          */
-        internal fun makeWorldReadable(context: Context?, prefsFileName: String) = runCatching {
-            File(File(context!!.applicationInfo.dataDir, "shared_prefs"), prefsFileName).apply {
-                setReadable(true, false)
-                setExecutable(true, false)
+        internal fun makeWorldReadable(context: Context?, prefsFileName: String) {
+            runCatching {
+                context?.also {
+                    File(File(it.applicationInfo.dataDir, "shared_prefs"), prefsFileName).apply {
+                        setReadable(true, false)
+                        setExecutable(true, false)
+                    }
+                }
             }
         }
     }

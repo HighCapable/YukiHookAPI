@@ -539,7 +539,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 可以使用但是不推荐
+        // ❗为防止存在多个实例 - 不要这样使用
         YukiHookModulePrefs(this).getBoolean("test_data")
         // ✅ 推荐的使用方法
         modulePrefs.getBoolean("test_data")

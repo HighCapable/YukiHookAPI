@@ -77,14 +77,14 @@ fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.
  * 获取模块的存取对象
  * @return [YukiHookModulePrefs]
  */
-val Context.modulePrefs get() = YukiHookModulePrefs(context = this)
+val Context.modulePrefs get() = YukiHookModulePrefs.instance(context = this)
 
 /**
  * 获取模块的存取对象
  * @param name 自定义 Sp 存储名称
  * @return [YukiHookModulePrefs]
  */
-fun Context.modulePrefs(name: String) = YukiHookModulePrefs(context = this).name(name)
+fun Context.modulePrefs(name: String) = YukiHookModulePrefs.instance(context = this).name(name)
 
 /**
  * 获取当前进程名称

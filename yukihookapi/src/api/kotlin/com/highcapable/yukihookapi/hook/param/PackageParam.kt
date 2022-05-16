@@ -150,7 +150,7 @@ open class PackageParam(@PublishedApi internal var wrapper: PackageParamWrapper?
      * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
      * @return [YukiHookModulePrefs]
      */
-    val prefs by lazy { YukiHookModulePrefs() }
+    val prefs get() = YukiHookModulePrefs.instance()
 
     /**
      * 获得当前使用的存取数据对象缓存实例
