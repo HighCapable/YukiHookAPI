@@ -35,6 +35,20 @@
 - Zygote Hook
 - 资源钩子(Resources Hook)
 
+## Extensions
+
+- Automatic Xposed Module Build (No need to create `assets/xposed_init` by yourself)
+- [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module) Supports
+- DataChannel (Host ←→ Module)
+- Simple and quick Obfuscated Member Reflection
+
+**扩展功能**
+
+- 自动化 Xposed 模块构建 (完全无需自行创建 `assets/xposed_init`)
+- [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module) 支持
+- DataChannel (宿主 ←→ 模块) 无序广播通讯通道功能
+- 简单快捷地实现混淆的字节码反射、查找功能
+
 ## Get Started
 
 - [Click here](https://fankes.github.io/YukiHookAPI) go to the documentation page for more detailed tutorials and content.
