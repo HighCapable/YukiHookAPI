@@ -58,16 +58,16 @@ import de.robv.android.xposed.XposedBridge
 object YukiHookModuleStatus {
 
     /** 定义 Jvm 方法名 */
-    private const val IS_ACTIVE_METHOD_NAME = "__--"
+    internal const val IS_ACTIVE_METHOD_NAME = "__--"
 
     /** 定义 Jvm 方法名 */
-    private const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
+    internal const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
 
     /** 定义 Jvm 方法名 */
-    private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
+    internal const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
 
     /** 定义 Jvm 方法名 */
-    private const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
+    internal const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
 
     /**
      * 获取当前 Hook 框架的名称

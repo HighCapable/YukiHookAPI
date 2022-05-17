@@ -38,12 +38,16 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_InitPackageResources
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import java.lang.reflect.Field
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * 这是一个对接 Xposed Hook 入口与 [XposedBridge] 的装载类实现桥
@@ -67,6 +71,9 @@ object YukiHookBridge {
 
     /** 当前 [PackageParamWrapper] 实例数组 */
     private var packageParamWrappers = HashMap<String, PackageParamWrapper>()
+
+    /** 已在 [YukiHookDataChannel] 注册的包名数组 */
+    private val dataChannelRegisters = HashSet<String>()
 
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
@@ -105,14 +112,11 @@ object YukiHookBridge {
      * 获取当前 Hook 框架的名称
      *
      * 从 [XposedBridge] 获取 TAG
-     *
-     * - ❗装载代码将自动生成 - 若要调用请使用 [YukiHookAPI.executorName]
      * @return [String] 无法获取会返回 unknown - [hasXposedBridge] 不存在会返回 invalid
      */
-    @YukiGenerateApi
-    val executorName
+    internal val executorName
         get() = runCatching {
-            (XposedBridge::class.java.getDeclaredField("TAG").apply { isAccessible = true }.get(null) as? String?)
+            (Hooker.findField(XposedBridge::class.java, name = "TAG").get(null) as? String?)
                 ?.replace(oldValue = "Bridge", newValue = "")?.replace(oldValue = "-", newValue = "")?.trim() ?: "unknown"
         }.getOrNull() ?: "invalid"
 
@@ -120,13 +124,9 @@ object YukiHookBridge {
      * 获取当前 Hook 框架的版本
      *
      * 获取 [XposedBridge.getXposedVersion]
-     *
-     * - ❗装载代码将自动生成 - 若要调用请使用 [YukiHookAPI.executorVersion]
      * @return [Int] 无法获取会返回 -1
      */
-    @YukiGenerateApi
-    val executorVersion
-        get() = runCatching { XposedBridge.getXposedVersion() }.getOrNull() ?: -1
+    internal val executorVersion get() = runCatching { XposedBridge.getXposedVersion() }.getOrNull() ?: -1
 
     /**
      * 是否存在 [XposedBridge]
@@ -197,6 +197,37 @@ object YukiHookBridge {
     }
 
     /**
+     * Hook 模块自身激活状态和 Resources Hook 支持状态
+     *
+     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
+     * @param classLoader 模块的 [ClassLoader]
+     * @param isHookResourcesStatus 是否 Hook Resources 支持状态
+     */
+    @YukiGenerateApi
+    fun hookModuleAppStatus(classLoader: ClassLoader?, isHookResourcesStatus: Boolean = false) {
+        Hooker.findClass(classLoader, YukiHookModuleStatus::class.java).also { statusClass ->
+            if (isHookResourcesStatus.not()) {
+                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME),
+                    object : Hooker.YukiMemberReplacement() {
+                        override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                    })
+                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME),
+                    object : Hooker.YukiMemberReplacement() {
+                        override fun replaceHookedMember(wrapper: HookParamWrapper) = executorName
+                    })
+                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME),
+                    object : Hooker.YukiMemberReplacement() {
+                        override fun replaceHookedMember(wrapper: HookParamWrapper) = executorVersion
+                    })
+            } else
+                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME),
+                    object : Hooker.YukiMemberReplacement() {
+                        override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                    })
+        }
+    }
+
+    /**
      * 标识 Xposed API 装载完成
      *
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
@@ -251,7 +282,7 @@ object YukiHookBridge {
                     assignWrapper(HookEntryType.RESOURCES, resparam.packageName, appResources = YukiResources.createFromXResources(resparam.res))
                 else null
             else -> null
-        }?.let { YukiHookAPI.onXposedLoaded(it) }
+        }?.also { YukiHookAPI.onXposedLoaded(it) }
     }
 
     /**
@@ -260,6 +291,45 @@ object YukiHookBridge {
      * 对接 [XposedBridge] 实现 Hook 功能
      */
     internal object Hooker {
+
+        /** 默认 Hook 回调优先级 */
+        internal const val PRIORITY_DEFAULT = 50
+
+        /** 延迟回调 Hook 方法结果 */
+        internal const val PRIORITY_LOWEST = -10000
+
+        /** 更快回调 Hook 方法结果 */
+        internal const val PRIORITY_HIGHEST = 10000
+
+        /**
+         * 查找 [Class]
+         * @param classLoader 当前 [ClassLoader]
+         * @param baseClass 当前类
+         * @return [Field]
+         * @throws IllegalStateException 如果 [ClassLoader] 为空
+         */
+        internal fun findClass(classLoader: ClassLoader?, baseClass: Class<*>) =
+            classLoader?.loadClass(baseClass.name) ?: error("ClassLoader is null")
+
+        /**
+         * 查找变量
+         * @param baseClass 所在类
+         * @param name 变量名称
+         * @return [Field]
+         * @throws NoSuchFieldError 如果找不到变量
+         */
+        internal fun findField(baseClass: Class<*>, name: String) = baseClass.getDeclaredField(name).apply { isAccessible = true }
+
+        /**
+         * 查找方法
+         * @param baseClass 所在类
+         * @param name 方法名称
+         * @param paramTypes 方法参数
+         * @return [Method]
+         * @throws NoSuchMethodError 如果找不到方法
+         */
+        internal fun findMethod(baseClass: Class<*>, name: String, vararg paramTypes: Class<*>) =
+            baseClass.getDeclaredMethod(name, *paramTypes).apply { isAccessible = true }
 
         /**
          * Hook 方法
@@ -338,28 +408,28 @@ object YukiHookBridge {
 
         /**
          * Hook 方法回调接口
-         * @param priority Hook 优先级
+         * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
          */
-        internal abstract class YukiMemberHook(override val priority: Int) : YukiHookCallback(priority) {
+        internal abstract class YukiMemberHook(override val priority: Int = PRIORITY_DEFAULT) : YukiHookCallback(priority) {
 
             /**
              * 在方法执行之前注入
              * @param wrapper 包装实例
              */
-            abstract fun beforeHookedMember(wrapper: HookParamWrapper)
+            open fun beforeHookedMember(wrapper: HookParamWrapper) {}
 
             /**
              * 在方法执行之后注入
              * @param wrapper 包装实例
              */
-            abstract fun afterHookedMember(wrapper: HookParamWrapper)
+            open fun afterHookedMember(wrapper: HookParamWrapper) {}
         }
 
         /**
          * Hook 替换方法回调接口
-         * @param priority Hook 优先级
+         * @param priority Hook 优先级- 默认 [PRIORITY_DEFAULT]
          */
-        internal abstract class YukiMemberReplacement(override val priority: Int) : YukiHookCallback(priority) {
+        internal abstract class YukiMemberReplacement(override val priority: Int = PRIORITY_DEFAULT) : YukiHookCallback(priority) {
 
             /**
              * 拦截替换为指定结果

@@ -35,18 +35,6 @@ import java.util.*
  */
 object CodeSourceFileTemplate {
 
-    /** 定义 Jvm 方法名 */
-    private const val IS_ACTIVE_METHOD_NAME = "__--"
-
-    /** 定义 Jvm 方法名 */
-    private const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
-
-    /** 定义 Jvm 方法名 */
-    private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
-
-    /** 定义 Jvm 方法名 */
-    private const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
-
     /**
      * 获得文件注释
      * @param entryClassName 入口类名
@@ -148,11 +136,8 @@ object CodeSourceFileTemplate {
                 "\n" +
                 "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
                 "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
-                "import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus\n" +
                 "import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge\n" +
                 "import de.robv.android.xposed.IXposedHookZygoteInit\n" +
-                "import de.robv.android.xposed.XC_MethodReplacement\n" +
-                "import de.robv.android.xposed.XposedHelpers\n" +
                 "import de.robv.android.xposed.callbacks.XC_InitPackageResources\n" +
                 "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
                 "\n" +
@@ -161,9 +146,11 @@ object CodeSourceFileTemplate {
                 "object ${entryClassName}_Impl {\n" +
                 "\n" +
                 "    private const val modulePackageName = \"$modulePackageName\"\n" +
+                "\n" +
                 "    private val hookEntry = $entryClassName()\n" +
+                "\n" +
+                "    private var moduleClassLoader: ClassLoader? = null\n" +
                 "    private var isZygoteBinded = false\n" +
-                "    private var lpparam: XC_LoadPackage.LoadPackageParam? = null\n" +
                 "\n" +
                 "    private fun callXposedLoaded(\n" +
                 "        isZygoteLoaded: Boolean = false,\n" +
@@ -184,39 +171,9 @@ object CodeSourceFileTemplate {
                 "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
                 "    }\n" +
                 "\n" +
-                "    private fun hookModuleAppStatus(lpparam: XC_LoadPackage.LoadPackageParam? = this.lpparam, isHookResourcesStatus: Boolean = false) {\n" +
-                "        runCatching {\n" +
-                "            lpparam?.let { this.lpparam = it }\n" +
-                "            if (isHookResourcesStatus.not()) {\n" +
-                "                XposedHelpers.findAndHookMethod(\n" +
-                "                    YukiHookModuleStatus::class.java.name,\n" +
-                "                    this.lpparam?.classLoader,\n" +
-                "                    \"$IS_ACTIVE_METHOD_NAME\",\n" +
-                "                    object : XC_MethodReplacement() {\n" +
-                "                        override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
-                "                    })\n" +
-                "                XposedHelpers.findAndHookMethod(\n" +
-                "                    YukiHookModuleStatus::class.java.name,\n" +
-                "                    this.lpparam?.classLoader,\n" +
-                "                    \"$GET_XPOSED_TAG_METHOD_NAME\",\n" +
-                "                    object : XC_MethodReplacement() {\n" +
-                "                        override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorName\n" +
-                "                    })\n" +
-                "                XposedHelpers.findAndHookMethod(\n" +
-                "                    YukiHookModuleStatus::class.java.name,\n" +
-                "                    this.lpparam?.classLoader,\n" +
-                "                    \"$GET_XPOSED_VERSION_METHOD_NAME\",\n" +
-                "                    object : XC_MethodReplacement() {\n" +
-                "                        override fun replaceHookedMethod(param: MethodHookParam?) = YukiHookBridge.executorVersion\n" +
-                "                    })\n" +
-                "            } else XposedHelpers.findAndHookMethod(\n" +
-                "                YukiHookModuleStatus::class.java.name,\n" +
-                "                this.lpparam?.classLoader,\n" +
-                "                \"$HAS_RESOURCES_HOOK_METHOD_NAME\",\n" +
-                "                object : XC_MethodReplacement() {\n" +
-                "                    override fun replaceHookedMethod(param: MethodHookParam?) = true\n" +
-                "                })\n" +
-                "        }\n" +
+                "    private fun hookModuleAppStatus(classLoader: ClassLoader? = null, isHookResourcesStatus: Boolean = false) {\n" +
+                "        classLoader?.let { moduleClassLoader = it }\n" +
+                "        runCatching { YukiHookBridge.hookModuleAppStatus(moduleClassLoader, isHookResourcesStatus) }\n" +
                 "    }\n" +
                 "\n" +
                 "    @YukiGenerateApi\n" +
@@ -232,7 +189,7 @@ object CodeSourceFileTemplate {
                 "    @YukiGenerateApi\n" +
                 "    fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
                 "        if (lpparam == null) return\n" +
-                "        if (lpparam.packageName == modulePackageName) hookModuleAppStatus(lpparam)\n" +
+                "        if (lpparam.packageName == modulePackageName) hookModuleAppStatus(lpparam.classLoader)\n" +
                 "        callXposedLoaded(lpparam = lpparam)\n" +
                 "    }\n" +
                 "\n" +

@@ -57,13 +57,13 @@ import java.lang.reflect.Member
 class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
 
     /** 默认 Hook 回调优先级 */
-    val PRIORITY_DEFAULT = 50
+    val PRIORITY_DEFAULT = YukiHookBridge.Hooker.PRIORITY_DEFAULT
 
     /** 延迟回调 Hook 方法结果 */
-    val PRIORITY_LOWEST = -10000
+    val PRIORITY_LOWEST = YukiHookBridge.Hooker.PRIORITY_LOWEST
 
     /** 更快回调 Hook 方法结果 */
-    val PRIORITY_HIGHEST = 10000
+    val PRIORITY_HIGHEST = YukiHookBridge.Hooker.PRIORITY_HIGHEST
 
     /**
      * Hook 模式定义
