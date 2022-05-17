@@ -48,7 +48,7 @@ import java.lang.reflect.Field
  * @param hookInstance 当前 Hook 实例
  * @param classSet 当前需要查找的 [Class] 实例
  */
-class FieldFinder(
+class FieldFinder @PublishedApi internal constructor(
     @property:YukiPrivateApi
     override val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
     @property:YukiPrivateApi

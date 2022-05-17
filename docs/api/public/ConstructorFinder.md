@@ -1,7 +1,7 @@
 ## ConstructorFinder [class]
 
 ```kotlin
-class ConstructorFinder(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
+class ConstructorFinder internal constructor(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
 ```
 
 **变更记录**

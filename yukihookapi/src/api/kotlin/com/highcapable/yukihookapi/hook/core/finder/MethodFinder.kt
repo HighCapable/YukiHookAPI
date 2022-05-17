@@ -49,7 +49,7 @@ import java.lang.reflect.Method
  * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreater.MemberHookCreater.member]
  * @param classSet 当前需要查找的 [Class] 实例
  */
-class MethodFinder(
+class MethodFinder @PublishedApi internal constructor(
     @property:YukiPrivateApi
     override val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
     @property:YukiPrivateApi

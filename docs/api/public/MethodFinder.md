@@ -1,7 +1,7 @@
 ## MethodFinder [class]
 
 ```kotlin
-class MethodFinder(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
+class MethodFinder internal constructor(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
 ```
 
 **变更记录**
