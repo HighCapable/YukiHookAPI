@@ -98,6 +98,12 @@ val ApplicationClass get() = Application::class.java
 val ApplicationInfoClass get() = ApplicationInfo::class.java
 
 /**
+ * 获得 [Instrumentation] 类型
+ * @return [Class]
+ */
+val InstrumentationClass get() = Instrumentation::class.java
+
+/**
  * 获得 [PackageInfo] 类型
  * @return [Class]
  */
