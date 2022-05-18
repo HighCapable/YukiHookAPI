@@ -217,14 +217,25 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         packageName.split(".hook")[0]
                     else error("Cannot identify your Module App's package name, please manually configure the package name")
                 }
-                val injectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
+                val mdAppInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
+                val ykBridgeInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.bridge.inject"
                 /** 插入 ModuleApplication_Injector 代码 */
                 codeGenerator.createNewFile(
                     dependencies = Dependencies.ALL_FILES,
-                    packageName = injectPackageName,
+                    packageName = mdAppInjectPackageName,
                     fileName = "ModuleApplication_Injector"
                 ).apply {
-                    write(CodeSourceFileTemplate.getModuleApplicationInjectorFileByteArray(injectPackageName, packageName, entryClassName))
+                    write(CodeSourceFileTemplate.getModuleApplicationInjectorFileByteArray(mdAppInjectPackageName, packageName, entryClassName))
+                    flush()
+                    close()
+                }
+                /** 插入 YukiHookBridge_Injector 代码 */
+                codeGenerator.createNewFile(
+                    dependencies = Dependencies.ALL_FILES,
+                    packageName = ykBridgeInjectPackageName,
+                    fileName = "YukiHookBridge_Injector"
+                ).apply {
+                    write(CodeSourceFileTemplate.getYukiHookBridgeInjectorFileByteArray(ykBridgeInjectPackageName, entryClassName))
                     flush()
                     close()
                 }

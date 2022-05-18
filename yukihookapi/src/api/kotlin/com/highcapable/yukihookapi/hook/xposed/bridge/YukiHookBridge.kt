@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/4/3.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "StaticFieldLeak")
 
 package com.highcapable.yukihookapi.hook.xposed.bridge
 
@@ -41,7 +41,7 @@ import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
-import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
 import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_InitPackageResources
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -72,9 +72,6 @@ object YukiHookBridge {
     /** 当前 [PackageParamWrapper] 实例数组 */
     private var packageParamWrappers = HashMap<String, PackageParamWrapper>()
 
-    /** 已在 [YukiHookDataChannel] 注册的包名数组 */
-    private val dataChannelRegisters = HashSet<String>()
-
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
 
@@ -89,6 +86,12 @@ object YukiHookBridge {
      * @return [YukiModuleResources] or null
      */
     internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.createInstance(moduleAppFilePath) }.getOrNull()
+
+    /**
+     * 自动生成的 Xposed 模块构建版本号
+     * @return [String]
+     */
+    internal val moduleGeneratedVersion get() = YukiHookBridge_Injector.getModuleGeneratedVersion()
 
     /**
      * 模块是否装载了 Xposed 回调方法

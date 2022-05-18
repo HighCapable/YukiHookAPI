@@ -81,6 +81,24 @@ object CodeSourceFileTemplate {
                 "}").toByteArray()
 
     /**
+     * 获得 YukiHookBridge_Injector 注入文件
+     * @param packageName 包名
+     * @param entryClassName 入口类名
+     * @return [ByteArray]
+     */
+    fun getYukiHookBridgeInjectorFileByteArray(packageName: String, entryClassName: String) =
+        ("@file:Suppress(\"ClassName\")\n" +
+                "\n" +
+                "package $packageName\n" +
+                "\n" +
+                getCommentContent(entryClassName, currrentClassTag = "YukiHookBridge") +
+                "object YukiHookBridge_Injector {\n" +
+                "\n" +
+                "    @JvmStatic\n" +
+                "    fun getModuleGeneratedVersion() = \"${System.currentTimeMillis()}\"\n" +
+                "}").toByteArray()
+
+    /**
      * 获得 xposed_init 注入文件
      * @param packageName 包名
      * @param entryClassName 入口类名
