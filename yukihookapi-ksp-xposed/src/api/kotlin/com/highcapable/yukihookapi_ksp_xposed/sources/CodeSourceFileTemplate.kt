@@ -37,18 +37,17 @@ object CodeSourceFileTemplate {
 
     /**
      * 获得文件注释
-     * @param entryClassName 入口类名
+     * @param entryClassName 入口类名 - 空则不生成
      * @param currrentClassTag 当前注入类标签
      * @return [String]
      */
-    private fun getCommentContent(entryClassName: String, currrentClassTag: String) =
+    private fun getCommentContent(entryClassName: String = "", currrentClassTag: String) =
         ("/**\n" +
                 " * $currrentClassTag Inject Class\n" +
                 " *\n" +
                 " * Compiled from YukiHookXposedProcessor\n" +
                 " *\n" +
-                " * HookEntryClass: [$entryClassName]\n" +
-                " *\n" +
+                (if (entryClassName.isNotBlank()) " * HookEntryClass: [$entryClassName]\n *\n" else "") +
                 " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
                 " *\n" +
                 " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
@@ -83,15 +82,14 @@ object CodeSourceFileTemplate {
     /**
      * 获得 YukiHookBridge_Injector 注入文件
      * @param packageName 包名
-     * @param entryClassName 入口类名
      * @return [ByteArray]
      */
-    fun getYukiHookBridgeInjectorFileByteArray(packageName: String, entryClassName: String) =
+    fun getYukiHookBridgeInjectorFileByteArray(packageName: String) =
         ("@file:Suppress(\"ClassName\")\n" +
                 "\n" +
                 "package $packageName\n" +
                 "\n" +
-                getCommentContent(entryClassName, currrentClassTag = "YukiHookBridge") +
+                getCommentContent(currrentClassTag = "YukiHookBridge") +
                 "object YukiHookBridge_Injector {\n" +
                 "\n" +
                 "    @JvmStatic\n" +

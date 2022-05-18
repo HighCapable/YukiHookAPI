@@ -235,7 +235,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     packageName = ykBridgeInjectPackageName,
                     fileName = "YukiHookBridge_Injector"
                 ).apply {
-                    write(CodeSourceFileTemplate.getYukiHookBridgeInjectorFileByteArray(ykBridgeInjectPackageName, entryClassName))
+                    write(CodeSourceFileTemplate.getYukiHookBridgeInjectorFileByteArray(ykBridgeInjectPackageName))
                     flush()
                     close()
                 }
