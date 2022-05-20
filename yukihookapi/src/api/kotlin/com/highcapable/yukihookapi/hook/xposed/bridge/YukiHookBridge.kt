@@ -29,7 +29,10 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge
 
+import android.app.Application
+import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
@@ -38,10 +41,16 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.type.android.ApplicationClass
+import com.highcapable.yukihookapi.hook.type.android.ConfigurationClass
+import com.highcapable.yukihookapi.hook.type.android.ContextClass
+import com.highcapable.yukihookapi.hook.type.android.InstrumentationClass
+import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
+import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_InitPackageResources
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -66,6 +75,9 @@ object YukiHookBridge {
     /** Xposed 是否装载完成 */
     private var isXposedInitialized = false
 
+    /** [YukiHookDataChannel] 是否已经注册 */
+    private var isDataChannelRegister = false
+
     /** 已在 [PackageParam] 中被装载的 APP 包名 */
     private val loadedPackageNames = HashSet<String>()
 
@@ -74,6 +86,13 @@ object YukiHookBridge {
 
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
+
+    /**
+     * 当前 Hook APP (宿主) 的全局生命周期 [Application]
+     *
+     * 需要 [YukiHookAPI.Configs.isEnableDataChannel] 或 [AppLifecycleCallback.isCallbackSetUp] 才会生效
+     */
+    internal var hostApplication: Application? = null
 
     /** 当前 Xposed 模块自身 APK 路径 */
     internal var moduleAppFilePath = ""
@@ -194,6 +213,67 @@ object YukiHookBridge {
         }
     }
 
+    /**
+     * 注入当前 Hook APP (宿主) 全局生命周期
+     * @param packageName 包名
+     */
+    private fun registerToAppLifecycle(packageName: String) {
+        /** Hook [Application] 装载方法 */
+        runCatching {
+            if (AppLifecycleCallback.isCallbackSetUp) {
+                Hooker.hookMethod(Hooker.findMethod(ApplicationClass, name = "attach", ContextClass), object : Hooker.YukiMemberHook() {
+                    override fun beforeHookedMember(wrapper: HookParamWrapper) {
+                        (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
+                    }
+
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
+                    }
+                })
+                Hooker.hookMethod(Hooker.findMethod(ApplicationClass, name = "onTerminate"), object : Hooker.YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
+                    }
+                })
+                Hooker.hookMethod(Hooker.findMethod(ApplicationClass, name = "onLowMemory"), object : Hooker.YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
+                    }
+                })
+                Hooker.hookMethod(Hooker.findMethod(ApplicationClass, name = "onTrimMemory", IntType), object : Hooker.YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        val self = wrapper.instance as? Application? ?: return
+                        val type = wrapper.args?.get(0) as? Int ?: return
+                        AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
+                    }
+                })
+                Hooker.hookMethod(
+                    Hooker.findMethod(ApplicationClass, name = "onConfigurationChanged", ConfigurationClass),
+                    object : Hooker.YukiMemberHook() {
+                        override fun afterHookedMember(wrapper: HookParamWrapper) {
+                            val self = wrapper.instance as? Application? ?: return
+                            val config = wrapper.args?.get(0) as? Configuration? ?: return
+                            AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
+                        }
+                    })
+            }
+            if (YukiHookAPI.Configs.isEnableDataChannel || AppLifecycleCallback.isCallbackSetUp)
+                Hooker.hookMethod(
+                    Hooker.findMethod(InstrumentationClass, name = "callApplicationOnCreate", ApplicationClass),
+                    object : Hooker.YukiMemberHook() {
+                        override fun afterHookedMember(wrapper: HookParamWrapper) {
+                            (wrapper.args?.get(0) as? Application)?.also {
+                                hostApplication = it
+                                AppLifecycleCallback.onCreateCallback?.invoke(it)
+                                if (isDataChannelRegister) return
+                                isDataChannelRegister = true
+                                runCatching { YukiHookDataChannel.instance().register(it, packageName) }
+                            }
+                        }
+                    })
+        }
+    }
+
     /** 刷新当前 Xposed 模块自身 [Resources] */
     internal fun refreshModuleAppResources() {
         dynamicModuleAppResources?.let { moduleAppResources = it }
@@ -208,26 +288,27 @@ object YukiHookBridge {
      */
     @YukiGenerateApi
     fun hookModuleAppStatus(classLoader: ClassLoader?, isHookResourcesStatus: Boolean = false) {
-        Hooker.findClass(classLoader, YukiHookModuleStatus::class.java).also { statusClass ->
-            if (isHookResourcesStatus.not()) {
-                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME),
-                    object : Hooker.YukiMemberReplacement() {
-                        override fun replaceHookedMember(wrapper: HookParamWrapper) = true
-                    })
-                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME),
-                    object : Hooker.YukiMemberReplacement() {
-                        override fun replaceHookedMember(wrapper: HookParamWrapper) = executorName
-                    })
-                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME),
-                    object : Hooker.YukiMemberReplacement() {
-                        override fun replaceHookedMember(wrapper: HookParamWrapper) = executorVersion
-                    })
-            } else
-                Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME),
-                    object : Hooker.YukiMemberReplacement() {
-                        override fun replaceHookedMember(wrapper: HookParamWrapper) = true
-                    })
-        }
+        if (YukiHookAPI.Configs.isEnableHookModuleStatus)
+            Hooker.findClass(classLoader, YukiHookModuleStatus::class.java).also { statusClass ->
+                if (isHookResourcesStatus.not()) {
+                    Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME),
+                        object : Hooker.YukiMemberReplacement() {
+                            override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                        })
+                    Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME),
+                        object : Hooker.YukiMemberReplacement() {
+                            override fun replaceHookedMember(wrapper: HookParamWrapper) = executorName
+                        })
+                    Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME),
+                        object : Hooker.YukiMemberReplacement() {
+                            override fun replaceHookedMember(wrapper: HookParamWrapper) = executorVersion
+                        })
+                } else
+                    Hooker.hookMethod(Hooker.findMethod(statusClass, YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME),
+                        object : Hooker.YukiMemberReplacement() {
+                            override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                        })
+            }
     }
 
     /**
@@ -285,7 +366,37 @@ object YukiHookBridge {
                     assignWrapper(HookEntryType.RESOURCES, resparam.packageName, appResources = YukiResources.createFromXResources(resparam.res))
                 else null
             else -> null
-        }?.also { YukiHookAPI.onXposedLoaded(it) }
+        }?.also {
+            YukiHookAPI.onXposedLoaded(it)
+            if (it.type == HookEntryType.PACKAGE) registerToAppLifecycle(it.packageName)
+        }
+    }
+
+    /**
+     * 当前 Hook APP (宿主) 的生命周期回调处理类
+     */
+    internal object AppLifecycleCallback {
+
+        /** 是否已设置回调 */
+        internal var isCallbackSetUp = false
+
+        /** [Application.attachBaseContext] 回调 */
+        internal var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null
+
+        /** [Application.onCreate] 回调 */
+        internal var onCreateCallback: (Application.() -> Unit)? = null
+
+        /** [Application.onTerminate] 回调 */
+        internal var onTerminateCallback: (Application.() -> Unit)? = null
+
+        /** [Application.onLowMemory] 回调 */
+        internal var onLowMemoryCallback: (Application.() -> Unit)? = null
+
+        /** [Application.onTrimMemory] 回调 */
+        internal var onTrimMemoryCallback: ((Application, Int) -> Unit)? = null
+
+        /** [Application.onConfigurationChanged] 回调 */
+        internal var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
     }
 
     /**

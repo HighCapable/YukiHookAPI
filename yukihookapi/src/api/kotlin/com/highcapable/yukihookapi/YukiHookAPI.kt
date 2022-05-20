@@ -44,7 +44,10 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Constructor
@@ -150,6 +153,24 @@ object YukiHookAPI {
          * 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
          */
         var isEnableModuleAppResourcesCache = true
+
+        /**
+         * 是否启用 Hook Xposed 模块激活等状态功能
+         *
+         * - 为原生支持 Xposed 模块激活状态检测 - 此功能默认启用
+         *
+         *  ❗关闭后你将不能再使用 [YukiHookModuleStatus] 中的功能
+         */
+        var isEnableHookModuleStatus = true
+
+        /**
+         * 是否启用当前 Xposed 模块与宿主交互的 [YukiHookDataChannel] 功能
+         *
+         * 请确保 Xposed 模块的 [Application] 继承于 [ModuleApplication] 才能有效
+         *
+         * - 此功能默认启用 - 关闭后将不会在功能初始化的时候装载 [YukiHookDataChannel]
+         */
+        var isEnableDataChannel = true
 
         /**
          * 是否启用 [Member] 缓存功能

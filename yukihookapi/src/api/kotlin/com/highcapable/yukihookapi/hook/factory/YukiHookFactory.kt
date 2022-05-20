@@ -38,9 +38,9 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import com.highcapable.yukihookapi.hook.xposed.proxy.YukiHookXposedInitProxy
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -64,15 +64,6 @@ fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.
  */
 fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
 
-@Deprecated("请将接口转移到 IYukiHookXposedInit")
-inline fun YukiHookXposedInitProxy.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
-
-@Deprecated("请将接口转移到 IYukiHookXposedInit")
-fun YukiHookXposedInitProxy.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
-
-@Deprecated("请将接口转移到 IYukiHookXposedInit")
-fun YukiHookXposedInitProxy.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
-
 /**
  * 获取模块的存取对象
  * @return [YukiHookModulePrefs]
@@ -84,23 +75,28 @@ val Context.modulePrefs get() = YukiHookModulePrefs.instance(context = this)
  * @param name 自定义 Sp 存储名称
  * @return [YukiHookModulePrefs]
  */
-fun Context.modulePrefs(name: String) = YukiHookModulePrefs.instance(context = this).name(name)
+fun Context.modulePrefs(name: String) = modulePrefs.name(name)
+
+/**
+ * 获取模块的数据通讯桥命名空间对象
+ * @param packageName 目标 Hook APP (宿主) 包名
+ * @return [YukiHookDataChannel.NameSpace]
+ */
+fun Context.dataChannel(packageName: String) = YukiHookDataChannel.instance().nameSpace(context = this, packageName)
 
 /**
  * 获取当前进程名称
  * @return [String]
  */
 val Context.processName
-    get() = try {
+    get() = runCatching {
         BufferedReader(FileReader(File("/proc/${Process.myPid()}/cmdline"))).let { buff ->
             buff.readLine().trim { it <= ' ' }.let {
                 buff.close()
                 it
             }
         }
-    } catch (_: Throwable) {
-        packageName ?: ""
-    }
+    }.getOrNull() ?: packageName ?: ""
 
 /**
  * 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)

@@ -30,7 +30,9 @@
 package com.highcapable.yukihookapi.hook.param
 
 import android.app.Application
+import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -47,6 +49,7 @@ import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
@@ -96,11 +99,11 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     /**
      * 获取当前 Hook APP 的 [Application] 实例
      *
-     * - ❗首次装载可能是空的 - 请延迟一段时间再获取
+     * - ❗首次装载可能是空的 - 请延迟一段时间再获取或通过设置 [onAppLifecycle] 监听来完成
      * @return [Application]
      * @throws IllegalStateException 如果 [Application] 是空的
      */
-    val appContext get() = YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
+    val appContext get() = YukiHookBridge.hostApplication ?: YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
 
     /**
      * 获取当前 Hook APP 的 Resources
@@ -162,12 +165,16 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun prefs(name: String) = prefs.name(name)
 
     /**
-     * 获得当前 Hook APP 的 [YukiResources] 对象
+     * 获得当前使用的数据通讯桥命名空间对象
      *
-     * 请调用 [HookResources.hook] 方法开始 Hook
-     * @return [HookResources]
+     * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
+     * @return [YukiHookDataChannel.NameSpace]
+     * @throws IllegalStateException 如果在 [HookEntryType.ZYGOTE] 装载
      */
-    fun resources() = HookResources(wrapper?.appResources)
+    val dataChannel
+        get() = if (wrapper?.type != HookEntryType.ZYGOTE)
+            YukiHookDataChannel.instance().nameSpace(packageName = packageName)
+        else error("YukiHookDataChannel cannot used in zygote")
 
     /**
      * 赋值并克隆另一个 [PackageParam]
@@ -177,8 +184,24 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         this.wrapper = anotherParam.wrapper
     }
 
+    /**
+     * 获得当前 Hook APP 的 [YukiResources] 对象
+     *
+     * 请调用 [HookResources.hook] 方法开始 Hook
+     * @return [HookResources]
+     */
+    fun resources() = HookResources(wrapper?.appResources)
+
     /** 刷新当前 Xposed 模块自身 [Resources] */
     fun refreshModuleAppResources() = YukiHookBridge.refreshModuleAppResources()
+
+    /**
+     * 监听当前 Hook APP 生命周期装载事件
+     *
+     * - ❗在 [loadZygote] 中不会被装载 - 仅会在 [loadSystem]、[loadApp] 中装载
+     * @param initiate 方法体
+     */
+    inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit) = AppLifecycle().apply(initiate).build()
 
     /**
      * 装载并 Hook 指定、全部包名的 APP
@@ -376,6 +399,68 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         name.clazz.hookClass
     } catch (e: Throwable) {
         HookClass(name = name, throwable = throwable ?: e)
+    }
+
+    /**
+     * 当前 Hook APP 的生命周期实例处理类
+     *
+     * - ❗请使用 [onAppLifecycle] 方法来获取 [AppLifecycle]
+     */
+    inner class AppLifecycle @PublishedApi internal constructor() {
+
+        /**
+         * 监听当前 Hook APP 装载 [Application.attachBaseContext]
+         * @param initiate 回调 - ([Context] baseContext,[Boolean] 是否已执行 super)
+         */
+        fun attachBaseContext(initiate: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.attachBaseContextCallback = initiate
+        }
+
+        /**
+         * 监听当前 Hook APP 装载 [Application.onCreate]
+         * @param initiate 方法体
+         */
+        fun onCreate(initiate: Application.() -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.onCreateCallback = initiate
+        }
+
+        /**
+         * 监听当前 Hook APP 装载 [Application.onTerminate]
+         * @param initiate 方法体
+         */
+        fun onTerminate(initiate: Application.() -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.onTerminateCallback = initiate
+        }
+
+        /**
+         * 监听当前 Hook APP 装载 [Application.onLowMemory]
+         * @param initiate 方法体
+         */
+        fun onLowMemory(initiate: Application.() -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.onLowMemoryCallback = initiate
+        }
+
+        /**
+         * 监听当前 Hook APP 装载 [Application.onTrimMemory]
+         * @param initiate 回调 - ([Application] 当前实例,[Int] 类型)
+         */
+        fun onTrimMemory(initiate: (self: Application, level: Int) -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.onTrimMemoryCallback = initiate
+        }
+
+        /**
+         * 监听当前 Hook APP 装载 [Application.onConfigurationChanged]
+         * @param initiate 回调 - ([Application] 当前实例,[Configuration] 配置实例)
+         */
+        fun onConfigurationChanged(initiate: (self: Application, config: Configuration) -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.onConfigurationChangedCallback = initiate
+        }
+
+        /** 设置创建生命周期监听回调 */
+        @PublishedApi
+        internal fun build() {
+            YukiHookBridge.AppLifecycleCallback.isCallbackSetUp = true
+        }
     }
 
     override fun toString() = "PackageParam by $wrapper"

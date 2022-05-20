@@ -32,6 +32,7 @@ import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication.Companion.appContext
 import com.highcapable.yukihookapi.hook.xposed.application.inject.ModuleApplication_Injector
+import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import me.weishu.reflection.Reflection
 
@@ -47,6 +48,8 @@ import me.weishu.reflection.Reflection
  * - 全局共享模块中静态的 [appContext]
  *
  * - 在模块与宿主中装载 [YukiHookAPI.Configs] 以确保 [YukiHookAPI.Configs.debugTag] 不需要重复定义
+ *
+ * - 在模块与宿主中使用 [YukiHookDataChannel] 进行通讯
  *
  * - 在模块中使用系统隐藏 API - 核心技术引用了开源项目 [FreeReflection](https://github.com/tiann/FreeReflection)
  *
@@ -76,6 +79,7 @@ open class ModuleApplication : Application() {
         super.onCreate()
         currentContext = this
         callApiInit()
+        YukiHookDataChannel.instance().register(context = this)
     }
 
     /** 调用入口类的 [IYukiHookXposedInit.onInit] 方法 */
