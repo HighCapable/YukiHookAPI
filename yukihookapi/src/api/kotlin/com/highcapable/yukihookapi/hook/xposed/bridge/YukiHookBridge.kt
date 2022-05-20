@@ -243,7 +243,7 @@ object YukiHookBridge {
                 Hooker.hookMethod(Hooker.findMethod(ApplicationClass, name = "onTrimMemory", IntType), object : Hooker.YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
                         val self = wrapper.instance as? Application? ?: return
-                        val type = wrapper.args?.get(0) as? Int ?: return
+                        val type = wrapper.args?.get(0) as? Int? ?: return
                         AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
                     }
                 })
@@ -262,7 +262,7 @@ object YukiHookBridge {
                     Hooker.findMethod(InstrumentationClass, name = "callApplicationOnCreate", ApplicationClass),
                     object : Hooker.YukiMemberHook() {
                         override fun afterHookedMember(wrapper: HookParamWrapper) {
-                            (wrapper.args?.get(0) as? Application)?.also {
+                            (wrapper.args?.get(0) as? Application?)?.also {
                                 hostApplication = it
                                 AppLifecycleCallback.onCreateCallback?.invoke(it)
                                 if (isDataChannelRegister) return
