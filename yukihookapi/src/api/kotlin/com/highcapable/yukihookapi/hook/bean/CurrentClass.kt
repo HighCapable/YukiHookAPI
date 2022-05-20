@@ -37,7 +37,7 @@ import com.highcapable.yukihookapi.hook.factory.method
  * @param instance 当前实例的 [Class]
  * @param self 当前实例本身
  */
-class CurrentClass(@PublishedApi internal val instance: Class<*>, @PublishedApi internal val self: Any) {
+class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val instance: Class<*>, @PublishedApi internal val self: Any) {
 
     /**
      * 调用父类实例

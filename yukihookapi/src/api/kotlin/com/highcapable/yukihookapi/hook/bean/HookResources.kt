@@ -33,7 +33,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
  * 创建一个当前 Hook 的 [YukiResources] 接管类
  * @param instance 实例
  */
-class HookResources(var instance: YukiResources? = null) {
+class HookResources internal constructor(var instance: YukiResources? = null) {
 
     override fun toString() = "[instance] $instance"
 }

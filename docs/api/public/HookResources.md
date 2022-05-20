@@ -1,7 +1,7 @@
 ## HookResources [class]
 
 ```kotlin
-class HookResources(var instance: YukiResources?)
+class HookResources internal constructor(var instance: YukiResources?)
 ```
 
 **变更记录**

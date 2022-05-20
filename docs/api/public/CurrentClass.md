@@ -1,7 +1,7 @@
 ## CurrentClass [class]
 
 ```kotlin
-class CurrentClass(internal val instance: Class<*>, internal val self: Any)
+class CurrentClass internal constructor(internal val instance: Class<*>, internal val self: Any)
 ```
 
 **变更记录**
