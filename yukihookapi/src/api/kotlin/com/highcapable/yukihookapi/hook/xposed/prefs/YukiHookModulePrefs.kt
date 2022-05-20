@@ -68,6 +68,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
 
     internal companion object {
 
+        /** 是否为 Xposed 环境 */
+        private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
+
         /** 当前 [YukiHookModulePrefs] 单例 */
         private var instance: YukiHookModulePrefs? = null
 
@@ -98,9 +101,6 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
 
     /** 存储名称 - 默认包名 + _preferences */
     private var prefsName = "${YukiHookBridge.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
-
-    /** 是否为 Xposed 环境 */
-    private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
 
     /** [XSharedPreferences] 缓存的 [String] 键值数据 */
     private var xPrefCacheKeyValueStrings = HashMap<String, String>()
