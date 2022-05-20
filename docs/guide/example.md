@@ -490,4 +490,6 @@ if(isModuleActive) {
 
 若要了解更多可 [点击这里](api/document?id=ismoduleactive-field) 进行查看。
 
+!> 需要确保 `YukiHookAPI.Configs.isEnableHookModuleStatus` 是启用状态。
+
 !> 除了提供标准 API 的 Hook 框架之外，其它情况下模块可能都将无法判断自己是否被激活。

@@ -20,6 +20,10 @@
 
 [filename](public/PrefsData.md ':include')
 
+[filename](public/YukiHookDataChannel.md ':include')
+
+[filename](public/ChannelData.md ':include')
+
 [filename](public/ModuleApplication.md ':include')
 
 [filename](public/YukiModuleResources.md ':include')

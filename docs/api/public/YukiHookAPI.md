@@ -172,12 +172,48 @@ var isEnableModuleAppResourcesCache: Boolean
 
 !> 关闭后每次使用 `PackageParam.moduleAppResources` 都会重新创建，可能会造成运行缓慢。
 
+#### isEnableHookModuleStatus [field]
+
+```kotlin
+var isEnableHookModuleStatus: Boolean
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 是否启用 Hook Xposed 模块激活等状态功能.
+
+为原生支持 Xposed 模块激活状态检测，此功能默认启用。
+
+!> 关闭后你将不能再使用 `YukiHookModuleStatus` 中的功能。
+
+#### isEnableDataChannel [field]
+
+```kotlin
+var isEnableDataChannel: Boolean
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 是否启用当前 Xposed 模块与宿主交互的 `YukiHookDataChannel` 功能。
+
+请确保 Xposed 模块的 `Application` 继承于 `ModuleApplication` 才能有效。
+
+此功能默认启用，关闭后将不会在功能初始化的时候装载 `YukiHookDataChannel`。
+
 #### isEnableMemberCache [field]
 
 ```kotlin
 var isEnableMemberCache: Boolean
 ```
-ø
+
 **变更记录**
 
 `v1.0.68` `新增`
@@ -228,10 +264,12 @@ class HookEntryClass : IYukiHookXposedInit {
     override fun onInit() {
         YukiHookAPI.configs {
             debugTag = "YukiHookAPI"
-            isDebug = true
+            isDebug = BuildConfig.DEBUG
             isAllowPrintingLogs = true
             isEnableModulePrefsCache = true
             isEnableModuleAppResourcesCache = true
+            isEnableHookModuleStatus = true
+            isEnableDataChannel = true
             isEnableMemberCache = true
         }
     }
@@ -251,10 +289,12 @@ class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() = configs {
         debugTag = "YukiHookAPI"
-        isDebug = true
+        isDebug = BuildConfig.DEBUG
         isAllowPrintingLogs = true
         isEnableModulePrefsCache = true
         isEnableModuleAppResourcesCache = true
+        isEnableHookModuleStatus = true
+        isEnableDataChannel = true
         isEnableMemberCache = true
     }
 
@@ -273,10 +313,12 @@ class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() {
         YukiHookAPI.Configs.debugTag = "YukiHookAPI"
-        YukiHookAPI.Configs.isDebug = true
+        YukiHookAPI.Configs.isDebug = BuildConfig.DEBUG
         YukiHookAPI.Configs.isAllowPrintingLogs = true
         YukiHookAPI.Configs.isEnableModulePrefsCache = true
         YukiHookAPI.Configs.isEnableModuleAppResourcesCache = true
+        YukiHookAPI.Configs.isEnableHookModuleStatus = true
+        YukiHookAPI.Configs.isEnableDataChannel = true
         YukiHookAPI.Configs.isEnableMemberCache = true
     }
 

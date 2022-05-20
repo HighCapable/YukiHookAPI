@@ -63,7 +63,7 @@ dependencies {
 }
 ```
 
-请将 **&lt;version&gt;** 修改为 [这里](about/changelog) 的最新版本 **(请打开后再次刷新页面确保获取最新数据)**。
+请将 **&lt;version&gt;** 修改为 [这里](about/changelog) 的最新版本。 **← 请打开后再次刷新页面确保获取最新数据**
 
 !> `YukiHookAPI` 的 `api` 与 `ksp-xposed` 依赖的版本必须一一对应，否则将会造成版本不匹配错误。
 
@@ -173,4 +173,4 @@ override fun attachBaseContext(base: Context?) {
 
 ### 特别说明
 
-!> 由于你使用了自定义的 Hook 框架而并非模块，~~`YukiHookModuleStatus`~~ ~~`YukiHookModulePrefs`~~ 以及 Resources Hook 功能将失效。
+!> 由于你使用了自定义的 Hook 框架而并非模块，~~`YukiHookModuleStatus`~~ ~~`YukiHookModulePrefs`~~~ ~~`YukiHookDataChannel`~~ 以及 Resources Hook 功能将失效。

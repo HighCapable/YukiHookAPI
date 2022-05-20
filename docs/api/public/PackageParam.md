@@ -54,7 +54,7 @@ val appContext: Application
 
 > 获取当前 Hook APP 的 `Application`。
 
-!> 首次装载可能是空的，请延迟一段时间再获取。
+!> 首次装载可能是空的，请延迟一段时间再获取或通过设置 `onAppLifecycle` 监听来完成。
 
 ### appResources [field]
 
@@ -200,6 +200,22 @@ fun prefs(name: String): YukiHookModulePrefs
 
 !> 作为 Hook API 装载时无法使用，会抛出异常。
 
+### dataChannel [field]
+
+```kotlin
+val dataChannel: YukiHookDataChannel.NameSpace
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 获得当前使用的数据通讯桥命名空间对象。
+
+!> 作为 Hook API 装载时无法使用，会抛出异常。
+
 ### resources [method]
 
 ```kotlin
@@ -229,6 +245,22 @@ fun refreshModuleAppResources()
 **功能描述**
 
 > 刷新当前 Xposed 模块自身 `Resources`。
+
+### onAppLifecycle [method]
+
+```kotlin
+inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 监听当前 Hook APP 生命周期装载事件。
+
+!> 在 `loadZygote` 中不会被装载，仅会在 `loadSystem`、`loadApp` 中装载。
 
 ### loadApp [method]
 
@@ -604,3 +636,101 @@ resources().hook {
 !> 这是固定用法，为了防止发生问题，你不可手动实现任何 `HookResources` 实例执行 `hook` 调用。
 
 将 Resources 的 Hook 设置为这样是为了与 `findClass(...).hook` 做到统一，使得调用起来逻辑不会混乱。
+
+### onAppLifecycle [class]
+
+```kotlin
+inner class AppLifecycle internal constructor()
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 当前 Hook APP 的生命周期实例处理类。
+
+#### attachBaseContext [method]
+
+```kotlin
+fun attachBaseContext(initiate: (baseContext: Context, hasCalledSuper: Boolean) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 监听当前 Hook APP 装载 `Application.attachBaseContext`。
+
+#### onCreate [method]
+
+```kotlin
+fun onCreate(initiate: Application.() -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 监听当前 Hook APP 装载 `Application.onCreate`。
+
+#### onTerminate [method]
+
+```kotlin
+fun onTerminate(initiate: Application.() -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 监听当前 Hook APP 装载 `Application.onTerminate`。
+
+#### onLowMemory [method]
+
+```kotlin
+fun onLowMemory(initiate: Application.() -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 监听当前 Hook APP 装载 `Application.onLowMemory`。
+
+#### onTrimMemory [method]
+
+```kotlin
+fun onTrimMemory(initiate: (self: Application, level: Int) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 监听当前 Hook APP 装载 `Application.onTrimMemory`。
+
+#### onConfigurationChanged [method]
+
+```kotlin
+fun onConfigurationChanged(initiate: (self: Application, config: Configuration) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 监听当前 Hook APP 装载 `Application.onConfigurationChanged`。

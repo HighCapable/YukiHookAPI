@@ -499,11 +499,36 @@ class MyApplication : Application() {
 
 你只能在 [作为 Xposed 模块使用](config/xposed-using) 时使用 `YukiHookModulePrefs`，在 Hook 自身 APP 中请使用原生的 `Sp` 存储。
 
+!> `IllegalStateException` YukiHookDataChannel not allowed in Custom Hook API
+
+**异常原因**
+
+在 Hook 自身 APP(非 Xposed 模块) 中使用了 `YukiHookDataChannel`。
+
+> 示例如下
+
+```kotlin
+class MyApplication : Application() {
+
+    override fun attachBaseContext(base: Context?) {
+        YukiHookAPI.encase(base) {
+            // ❗不能在这种情况下使用 channel
+            channel.get("test_data", "default_data")
+        }
+        super.attachBaseContext(base)
+    }
+}
+```
+
+**解决方案**
+
+你只能在 [作为 Xposed 模块使用](config/xposed-using) 时使用 `YukiHookDataChannel`。
+
 !> `IllegalStateException` Xposed modulePackageName load failed, please reset and rebuild it
 
 **异常原因**
 
-在 Hook 过程中使用 `YukiHookModulePrefs` 时无法读取装载时的 `modulePackageName` 导致不能确定自身模块的包名。
+在 Hook 过程中使用 `YukiHookModulePrefs` 或 `YukiHookDataChannel` 时无法读取装载时的 `modulePackageName` 导致不能确定自身模块的包名。
 
 **解决方案**
 
@@ -523,6 +548,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // ❗错误的使用方法
+        // 构造方法已在 API 1.0.88 及以后的版本中设置为 private
         YukiHookModulePrefs().getBoolean("test_data")
     }
 }
@@ -539,9 +565,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // ❗为防止存在多个实例 - 不要这样使用
-        YukiHookModulePrefs(this).getBoolean("test_data")
-        // ✅ 推荐的使用方法
+        // ✅ 正确的使用方法
         modulePrefs.getBoolean("test_data")
     }
 }
@@ -551,11 +575,32 @@ class MainActivity : AppCompatActivity() {
 
 **异常原因**
 
-在使用 `YukiHookModulePrefs` 的 `get` 或 `put` 方法时传入了不支持的存储类型。
+在使用 `YukiHookModulePrefs` 的 `get` 或 `put` 方法或 `YukiHookDataChannel` 的 `wait` 或 `put` 方法时传入了不支持的存储类型。
 
 **解决方案**
 
 `YukiHookModulePrefs` 支持的类型只有 `String`、`Set<String>`、`Int`、`Float`、`Long`、`Boolean`，请传入支持的类型。
+
+`YukiHookDataChannel` 支持的类型为 `Intent.putExtra` 限制的类型，请传入支持的类型。
+
+!> `IllegalStateException` YukiHookDataChannel cannot used in zygote
+
+**异常原因**
+
+在 `loadZygote` 中使用了 `YukiHookDataChannel`。
+
+> 示例如下
+
+```kotlin
+loadZygote {
+    // 调用了此变量
+    dataChannel...
+}
+```
+
+**解决方案**
+
+`YukiHookDataChannel` 只能在 `loadSystem`、`loadApp` 中使用。
 
 !> `IllegalStateException` HookParam Method args index must be >= 0
 

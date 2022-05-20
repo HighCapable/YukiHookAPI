@@ -22,6 +22,8 @@ open class ModuleApplication: Application()
 
 - 在模块与宿主中装载 `YukiHookAPI.Config` 以确保 `YukiHookAPI.Configs.debugTag` 不需要重复定义
 
+- 在模块与宿主中使用 `YukiHookDataChannel` 进行通讯
+
 - 在模块中使用系统隐藏 API，核心技术引用了开源项目 [FreeReflection](https://github.com/tiann/FreeReflection)
 
 **功能示例**

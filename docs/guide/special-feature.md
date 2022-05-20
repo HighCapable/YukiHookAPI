@@ -1038,3 +1038,23 @@ val testName = prefs.name("specify_file_name").getString("test_name", "default_v
 !> 你必须继承 `ModulePreferenceFragment` 才能实现 `YukiHookModulePrefs` 的模块存储功能。
 
 详情请参考 [ModulePreferenceFragment](api/document?id=modulepreferencefragment-class)。
+
+## Xposed 模块与宿主通讯桥功能
+
+> 这是一个使用系统无序广播在模块与宿主之间发送和接收数据的解决方案。
+
+!> 需要满足的条件：模块与宿主需要保持存活状态，否则无法建立通讯。
+
+### 基本用法
+
+请 [点击这里](api/document?id=put-method-1) 查看详细的使用方法示例。
+
+### 判断模块与宿主版本是否匹配
+
+> 通过通讯桥功能，`YukiHookAPI` 还为你提供了在用户更新模块后，判断模块是否与宿主版本匹配的解决方案。
+
+我们只需要调用 `checkingVersionEquals` 方法，即可实现这个功能。
+
+在模块与宿主中可进行双向判断。
+
+请 [点击这里](api/document?id=checkingversionequals-method) 查看详细的使用方法示例。

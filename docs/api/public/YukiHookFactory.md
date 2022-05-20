@@ -52,20 +52,6 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker)
 
 > 在 `IYukiHookXposedInit` 中调用 `YukiHookAPI`。
 
-### resources [method]
-
-```kotlin
-fun IYukiHookXposedInit.resources(initiate: ResourcesParam.() -> Unit)
-```
-
-**变更记录**
-
-`v1.0.80` `新增`
-
-**功能描述**
-
-> 在 `IYukiHookXposedInit` 中调用 `YukiHookAPI.resources`。
-
 ### modulePrefs [field]
 
 ```kotlin
@@ -93,6 +79,20 @@ fun Context.modulePrefs(name: String): YukiHookModulePrefs
 **功能描述**
 
 > 获取模块的存取对象，可设置 `name` 为自定义 Sp 存储名称。
+
+### dataChannel [method]
+
+```kotlin
+fun Context.dataChannel(packageName: String): YukiHookDataChannel.NameSpace
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 获取模块的数据通讯桥命名空间对象。
 
 ### processName [field]
 
