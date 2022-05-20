@@ -72,6 +72,16 @@ class HookEntry : IYukiHookXposedInit {
             // 若无上述需求 - 在宿主重新启动之前建议开启
             // 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
             isEnableModuleAppResourcesCache = true
+            // 是否启用 Hook Xposed 模块激活等状态功能
+            // 为原生支持 Xposed 模块激活状态检测 - 此功能默认启用
+            // 关闭后你将不能再使用 [YukiHookModuleStatus] 中的功能
+            // 功能启用后 - 将会在宿主启动时自动 Hook [YukiHookModuleStatus]
+            isEnableHookModuleStatus = true
+            // 是否启用当前 Xposed 模块与宿主交互的 [YukiHookDataChannel] 功能
+            // 请确保 Xposed 模块的 [Application] 继承于 [ModuleApplication] 才能有效
+            // 此功能默认启用 - 关闭后将不会在功能初始化的时候装载 [YukiHookDataChannel]
+            // 功能启用后 - 将会在宿主启动时自动 Hook [Application] 的生命周期方法进行注册
+            isEnableDataChannel = true
             // 是否启用 [Member] 缓存功能
             // 为防止 [Member] 复用过高造成的系统 GC 问题 - 此功能默认启用
             // 除非缓存的 [Member] 发生了混淆的问题 - 否则建议启用
@@ -190,7 +200,9 @@ class HookEntry : IYukiHookXposedInit {
                                 .setTitle("Hooked")
                                 .setMessage("I am hook your toast showing!")
                                 .setPositiveButton("OK", null)
-                                .show()
+                                .setNegativeButton("SEND MSG TO MODULE") { _, _ ->
+                                    dataChannel.put(DataConst.TEST_CN_DATA, value = "I am host, can you hear me?")
+                                }.show()
                         }
                     }
                     // 注入要 Hook 的方法

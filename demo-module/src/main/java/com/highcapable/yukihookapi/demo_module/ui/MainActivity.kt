@@ -36,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
+import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.isModuleActive
 import com.highcapable.yukihookapi.hook.factory.isSupportResourcesHook
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
@@ -47,6 +48,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivityMainBinding.inflate(layoutInflater).apply {
             setContentView(root)
+            dataChannel(packageName = "com.highcapable.yukihookapi.demo_app").with {
+                wait(DataConst.TEST_CN_DATA) {
+                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                }
+            }
             moduleDemoActiveText.text = "Module is Active：$isModuleActive"
             moduleDemoActiveZhText.text = "Xposed 模块激活状态"
             moduleDemoFrameworkText.text = "Hook Framework：${YukiHookModuleStatus.executorName}"
