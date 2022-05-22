@@ -177,13 +177,13 @@ object CodeSourceFileTemplate {
                 "            hookEntry.onXposedEvent()\n" +
                 "            hookEntry.onInit()\n" +
                 "            if (YukiHookBridge.isXposedCallbackSetUp) {\n" +
-                "                loggerE(tag = \"YukiHookAPI\", msg = \"You cannot load a hooker in \\\"onInit\\\" or \\\"onXposedEvent\\\" method! Aborted\")\n" +
+                "                loggerE(msg = \"You cannot load a hooker in \\\"onInit\\\" or \\\"onXposedEvent\\\" method! Aborted\")\n" +
                 "                return\n" +
                 "            }\n" +
                 "            hookEntry.onHook()\n" +
                 "            YukiHookBridge.callXposedInitialized()\n" +
                 "            YukiHookBridge.modulePackageName = modulePackageName\n" +
-                "        }.onFailure { loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it) }\n" +
+                "        }.onFailure { loggerE(msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it) }\n" +
                 "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
                 "    }\n" +
                 "\n" +
@@ -197,7 +197,7 @@ object CodeSourceFileTemplate {
                 "        if (sparam == null) return\n" +
                 "        runCatching {\n" +
                 "            YukiHookBridge.callXposedZygoteLoaded(sparam)\n" +
-                "        }.onFailure { loggerE(tag = \"YukiHookAPI\", msg = \"YukiHookAPI bind initZygote failed\", e = it) }\n" +
+                "        }.onFailure { loggerE(msg = \"YukiHookAPI bind initZygote failed\", e = it) }\n" +
                 "        callXposedLoaded(isZygoteLoaded = true)\n" +
                 "        isZygoteBinded = true\n" +
                 "    }\n" +
