@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.param
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -46,6 +47,8 @@ import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.hookClass
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.utils.putIfAbsentCompat
+import com.highcapable.yukihookapi.hook.utils.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
@@ -454,6 +457,16 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          */
         fun onConfigurationChanged(initiate: (self: Application, config: Configuration) -> Unit) {
             YukiHookBridge.AppLifecycleCallback.onConfigurationChangedCallback = initiate
+        }
+
+        /**
+         * 注册系统广播监听
+         * @param action 系统广播 Action
+         * @param initiate 回调 - ([Context] 当前上下文,[Intent] 当前 Intent)
+         */
+        fun registerReceiver(vararg action: String, initiate: (context: Context, intent: Intent) -> Unit) {
+            if (action.isNotEmpty())
+                YukiHookBridge.AppLifecycleCallback.onReceiversCallback.putIfAbsentCompat(action.value(), Pair(action, initiate))
         }
 
         /** 设置创建生命周期监听回调 */

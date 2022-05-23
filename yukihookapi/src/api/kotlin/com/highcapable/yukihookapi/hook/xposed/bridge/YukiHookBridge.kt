@@ -30,7 +30,10 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge
 
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -265,6 +268,14 @@ object YukiHookBridge {
                             (wrapper.args?.get(0) as? Application?)?.also {
                                 hostApplication = it
                                 AppLifecycleCallback.onCreateCallback?.invoke(it)
+                                AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
+                                    if (e.first.isNotEmpty()) it.registerReceiver(object : BroadcastReceiver() {
+                                        override fun onReceive(context: Context?, intent: Intent?) {
+                                            if (context == null || intent == null) return
+                                            if (e.first.any { a -> a == intent.action }) e.second(context, intent)
+                                        }
+                                    }, IntentFilter().apply { e.first.forEach { a -> addAction(a) } })
+                                }
                                 if (isDataChannelRegister) return
                                 isDataChannelRegister = true
                                 runCatching { YukiHookDataChannel.instance().register(it, packageName) }
@@ -397,6 +408,9 @@ object YukiHookBridge {
 
         /** [Application.onConfigurationChanged] 回调 */
         internal var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
+
+        /** 系统广播监听回调 */
+        internal val onReceiversCallback = HashMap<String, Pair<Array<out String>, (Context, Intent) -> Unit>>()
     }
 
     /**

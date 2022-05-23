@@ -734,3 +734,17 @@ fun onConfigurationChanged(initiate: (self: Application, config: Configuration) 
 **功能描述**
 
 > 监听当前 Hook APP 装载 `Application.onConfigurationChanged`。
+
+#### registerReceiver [method]
+
+```kotlin
+fun registerReceiver(vararg action: String, initiate: (context: Context, intent: Intent) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.88` `新增`
+
+**功能描述**
+
+> 注册系统广播监听。

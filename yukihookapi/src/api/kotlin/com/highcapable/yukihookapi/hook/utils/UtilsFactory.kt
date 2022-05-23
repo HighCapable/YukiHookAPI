@@ -31,6 +31,17 @@ import android.os.Build
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 
 /**
+ * 获取数组内容依次列出的字符串表示
+ * @return [String]
+ */
+@YukiPrivateApi
+inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
+    var value = ""
+    forEach { value += it.toString() + ", " }
+    "[${value.trim().let { it.substring(0, it.lastIndex) }}]"
+} else "[]"
+
+/**
  * 不重复写入 [HashMap]
  *
  * 兼容旧版本 Android
