@@ -262,6 +262,8 @@ inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit)
 
 !> 在 `loadZygote` 中不会被装载，仅会在 `loadSystem`、`loadApp` 中装载。
 
+!> 作为 Hook API 装载时请使用原生的 `Application` 实现生命周期监听。
+
 ### loadApp [method]
 
 ```kotlin
