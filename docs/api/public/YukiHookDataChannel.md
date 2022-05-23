@@ -68,34 +68,6 @@ fun put(vararg data: ChannelData<*>)
 
 > 发送键值数据。
 
-**功能示例**
-
-通过使用 `dataChannel` 来实现模块与宿主之间的通讯桥，原理为发送接收系统无序广播。
-
-> 模块示例如下
-
-```kotlin
-// 从指定包名的宿主获取
-dataChannel(packageName = "com.example.demo").wait<String>(key = "key_from_host") { value ->
-    // Your code here.
-}
-// 发送给指定包名的宿主
-dataChannel(packageName = "com.example.demo").put(key = "key_from_module", value = "I am module")
-```
-
-> 宿主示例如下
-
-```kotlin
-// 从模块获取
-dataChannel.wait<String>(key = "key_from_module") { value ->
-    // Your code here.
-}
-// 发送给模块
-dataChannel.put(key = "key_from_host", value = "I am host")
-```
-
-!> 接收方需要保持存活状态才能收到通讯数据。
-
 #### put [method]
 
 ```kotlin
@@ -109,34 +81,6 @@ fun put(key: String)
 **功能描述**
 
 > 仅发送键值监听，使用默认值 `VALUE_WAIT_FOR_LISTENER` 发送键值数据。
-
-**功能示例**
-
-你可以不设置 `dataChannel` 的 `value` 来达到仅通知模块或宿主回调 `wait` 方法。
-
-> 模块示例如下
-
-```kotlin
-// 从指定包名的宿主获取
-dataChannel(packageName = "com.example.demo").wait(key = "listener_from_host") {
-    // Your code here.
-}
-// 发送给指定包名的宿主
-dataChannel(packageName = "com.example.demo").put(key = "listener_from_module")
-```
-
-> 宿主示例如下
-
-```kotlin
-// 从模块获取
-dataChannel.wait(key = "listener_from_module") {
-    // Your code here.
-}
-// 发送给模块
-dataChannel.put(key = "listener_from_host")
-```
- 
-!> 接收方需要保持存活状态才能收到通讯数据。
 
 #### wait [method]
 
@@ -156,10 +100,6 @@ fun <T> wait(data: ChannelData<T>, value: T?, result: (value: T) -> Unit)
 
 > 获取键值数据。
 
-**功能示例**
-
-参考第一个 `put` 方法的功能示例。
-
 #### wait [method]
 
 ```kotlin
@@ -176,10 +116,6 @@ fun wait(key: String, result: () -> Unit)
 
 !> 仅限使用 `VALUE_WAIT_FOR_LISTENER` 发送的监听才能被接收。
 
-**功能示例**
-
-参考第二个 `put` 方法的功能示例。
-
 #### checkingVersionEquals [method]
 
 ```kotlin
@@ -195,29 +131,3 @@ fun checkingVersionEquals(result: (Boolean) -> Unit)
 > 获取模块与宿主的版本是否匹配。
 
 通过此方法可原生判断 Xposed 模块更新后宿主并未重新装载造成两者不匹配的情况。
-
-**功能示例**
-
-你可以在模块中判断指定包名的宿主是否与当前模块的版本匹配。
-
-> 示例如下
-
-```kotlin
-// 从指定包名的宿主获取
-dataChannel(packageName = "com.example.demo").checkingVersionEquals { isEquals ->
-    // Your code here.
-}
-```
-
-你还可以在宿主中判断是否自身与当前模块的版本匹配。
-
-> 示例如下
-
-```kotlin
-// 从模块获取
-dataChannel.checkingVersionEquals { isEquals ->
-    // Your code here.
-}
-```
-
-!> 方法回调的条件为宿主、模块保持存活状态，并在激活模块后重启了作用域中的 Hook 目标宿主对象。

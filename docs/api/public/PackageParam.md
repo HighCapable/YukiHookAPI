@@ -637,7 +637,7 @@ resources().hook {
 
 将 Resources 的 Hook 设置为这样是为了与 `findClass(...).hook` 做到统一，使得调用起来逻辑不会混乱。
 
-### onAppLifecycle [class]
+### AppLifecycle [class]
 
 ```kotlin
 inner class AppLifecycle internal constructor()

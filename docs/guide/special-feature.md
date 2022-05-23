@@ -1047,7 +1047,59 @@ val testName = prefs.name("specify_file_name").getString("test_name", "default_v
 
 ### 基本用法
 
-请 [点击这里](api/document?id=put-method-1) 查看详细的使用方法示例。
+> 这里描述了 `wait` 与 `put` 方法的基本使用方法。
+
+通过使用 `dataChannel` 来实现模块与宿主之间的通讯桥，原理为发送接收系统无序广播。
+
+> 模块示例如下
+
+```kotlin
+// 从指定包名的宿主获取
+dataChannel(packageName = "com.example.demo").wait<String>(key = "key_from_host") { value ->
+    // Your code here.
+}
+// 发送给指定包名的宿主
+dataChannel(packageName = "com.example.demo").put(key = "key_from_module", value = "I am module")
+```
+
+> 宿主示例如下
+
+```kotlin
+// 从模块获取
+dataChannel.wait<String>(key = "key_from_module") { value ->
+    // Your code here.
+}
+// 发送给模块
+dataChannel.put(key = "key_from_host", value = "I am host")
+```
+
+你可以不设置 `dataChannel` 的 `value` 来达到仅通知模块或宿主回调 `wait` 方法。
+
+> 模块示例如下
+
+```kotlin
+// 从指定包名的宿主获取
+dataChannel(packageName = "com.example.demo").wait(key = "listener_from_host") {
+    // Your code here.
+}
+// 发送给指定包名的宿主
+dataChannel(packageName = "com.example.demo").put(key = "listener_from_module")
+```
+
+> 宿主示例如下
+
+```kotlin
+// 从模块获取
+dataChannel.wait(key = "listener_from_module") {
+    // Your code here.
+}
+// 发送给模块
+dataChannel.put(key = "listener_from_host")
+```
+
+!> 接收方需要保持存活状态才能收到通讯数据。
+
+详情请参考 [YukiHookDataChannel](api/document?id=yukihookdatachannel-class)。
 
 ### 判断模块与宿主版本是否匹配
 
@@ -1057,4 +1109,103 @@ val testName = prefs.name("specify_file_name").getString("test_name", "default_v
 
 在模块与宿主中可进行双向判断。
 
-请 [点击这里](api/document?id=checkingversionequals-method) 查看详细的使用方法示例。
+你可以在模块中判断指定包名的宿主是否与当前模块的版本匹配。
+
+> 示例如下
+
+```kotlin
+// 从指定包名的宿主获取
+dataChannel(packageName = "com.example.demo").checkingVersionEquals { isEquals ->
+    // Your code here.
+}
+```
+
+你还可以在宿主中判断是否自身与当前模块的版本匹配。
+
+> 示例如下
+
+```kotlin
+// 从模块获取
+dataChannel.checkingVersionEquals { isEquals ->
+    // Your code here.
+}
+```
+
+!> 方法回调的条件为宿主、模块保持存活状态，并在激活模块后重启了作用域中的 Hook 目标宿主对象。
+
+详情请参考 [YukiHookDataChannel](api/document?id=yukihookdatachannel-class)。
+
+## 宿主生命周期扩展功能
+
+> 这是一个自动 Hook 宿主 APP 生命周期的扩展功能。
+
+### 监听生命周期
+
+> 通过自动化 Hook 宿主 APP 的生命周期方法，来实现监听功能。
+
+我们需要监听宿主 `Application` 的启动和生命周期方法，只需要使用以下方式实现。
+
+> 示例如下
+
+```kotlin
+loadApp(name = "com.example.demo") {
+    // 注册生命周期监听
+    onAppLifecycle {
+        // 你可以在这里实现 Application 中的生命周期方法监听
+        attachBaseContext { baseContext, hasCalledSuper ->
+            // 通过判断 hasCalledSuper 来确定是否已执行 super.attachBaseContext(base) 方法
+            // ...
+        }
+        onCreate {
+            // 通过 this 得到当前 Application 实例
+            // ...
+        }
+        onTerminate {
+            // 通过 this 得到当前 Application 实例
+            // ...
+        }
+        onLowMemory {
+            // 通过 this 得到当前 Application 实例
+            // ...
+        }
+        onTrimMemory { self, level ->
+            // 可在这里判断 APP 是否已切换到后台
+            if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+                // ...
+            }
+            // ...
+        }
+        onConfigurationChanged { self, config ->
+            // ...
+        }
+    }
+}
+```
+
+详情请参考 [AppLifecycle](api/document?id=applifecycle-class)。
+
+### 注册系统广播
+
+> 通过 `Application.onCreate` 方法注册系统广播，来实现对系统广播的监听。
+
+我们还可以在宿主 `Application` 中注册系统广播。
+
+> 示例如下
+
+```kotlin
+loadApp(name = "com.example.demo") {
+    // 注册生命周期监听
+    onAppLifecycle {
+        // 注册用户解锁时的广播监听
+        registerReceiver(Intent.ACTION_USER_PRESENT) { context, intent ->
+            // ...
+        }
+        // 注册多个广播监听 - 会同时回调多次
+        registerReceiver(Intent.ACTION_PACKAGE_CHANGED, Intent.ACTION_TIME_TICK) { context, intent ->
+            // ...
+        }
+    }
+}
+```
+
+详情请参考 [AppLifecycle](api/document?id=applifecycle-class)。
