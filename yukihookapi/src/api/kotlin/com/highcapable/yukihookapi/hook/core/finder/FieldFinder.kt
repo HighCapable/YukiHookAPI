@@ -36,8 +36,8 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
+import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.factory.hasExtends
-import com.highcapable.yukihookapi.hook.utils.ReflectionTool
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
 

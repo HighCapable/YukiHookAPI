@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/3/27.
  */
-package com.highcapable.yukihookapi.hook.utils
+package com.highcapable.yukihookapi.hook.core.reflex.tools
 
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
