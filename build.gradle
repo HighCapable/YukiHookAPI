@@ -31,11 +31,15 @@ ext {
  * @return [String]
  */
 static String getFileContent(String name) {
-    FileReader reader = new FileReader("/Users/fankes/Project/Android/Xposed/YukiHookAPI/.gradle/" + name)
-    BufferedReader buff = new BufferedReader(reader)
-    String result = buff.readLine()
-    buff.close()
-    reader.close()
+    String result = ""
+    try {
+        FileReader reader = new FileReader("/Users/fankes/Project/Android/Xposed/YukiHookAPI/.gradle/" + name)
+        BufferedReader buff = new BufferedReader(reader)
+        result = buff.readLine()
+        buff.close()
+        reader.close()
+    } catch (Throwable ignored) {
+    }
     return result
 }
 
