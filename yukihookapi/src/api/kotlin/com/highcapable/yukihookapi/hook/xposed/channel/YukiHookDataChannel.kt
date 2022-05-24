@@ -37,10 +37,12 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcelable
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.utils.putIfAbsentCompat
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
+import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import java.io.Serializable
 
 /**
@@ -147,7 +149,7 @@ class YukiHookDataChannel private constructor() {
      */
     internal fun nameSpace(context: Context? = null, packageName: String): NameSpace {
         checkApi()
-        return NameSpace(context = context ?: receiverContext, packageName)
+        return NameSpace(context = context ?: receiverContext ?: YukiHookAppHelper.currentApplication(), packageName)
     }
 
     /**
@@ -279,7 +281,10 @@ class YukiHookDataChannel private constructor() {
                         else -> error("Key-Value type ${it.value?.javaClass?.name} is not allowed")
                     }
                 }
-            })
+            }) ?: yLoggerW(
+                msg = "Failed to sendBroadcast like \"${data.takeIf { it.isNotEmpty() }?.get(0)?.key ?: "unknown"}\", " +
+                        "because got non-null context in \"$packageName\""
+            )
         }
     }
 }
