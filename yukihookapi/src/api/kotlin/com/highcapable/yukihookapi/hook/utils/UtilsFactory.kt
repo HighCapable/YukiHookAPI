@@ -29,6 +29,25 @@ package com.highcapable.yukihookapi.hook.utils
 
 import android.os.Build
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
+/**
+ * 进行一次并行计算的 ForEach 操作
+ * @param action 回调内容方法体
+ */
+@YukiPrivateApi
+inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
+    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()).apply {
+        val iterator = iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            execute { runCatching { action(item) } }
+        }
+        shutdown()
+        awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
+    }
+}
 
 /**
  * 获取数组内容依次列出的字符串表示
