@@ -2,6 +2,25 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.88 | 2022.05.25
+
+- 对 Xposed API 完全解耦合
+- 增加了 `type` 中的 `android` 类型
+- 将 `YukiHookModuleStatus` 从自动生成代码中分离，并加入 `isEnableHookModuleStatus` 的开关，由你决定是否启用
+- 对 API 大量类的构造方法进行了 internal 闭包处理
+- 将 `YukiHookModulePrefs` 设置为单例运行，防止重复创建浪费系统资源
+- 修复自 `1.0.80` 版本后无法嵌套 Hook 的 BUG，并优化嵌套 Hook 相关功能
+- 修改 Hooker 存储方案由 HashSet 到 HashMap，防止重复添加 Hooker 的问题
+- 修改 Hook 核心实现方法，加入查重，避免重复 Hook 多次回调 `HookParam` 方法
+- `MethodFinder` 与 `FieldFinder` 加入查找模糊方法、变量名称功能，可调用 `name { ... }` 来设置查找条件，支持正则
+- 优化并修改 `appContext` 的获取方式，降低会取到空的问题的可能性
+- 修改自动生成的代码中 `logger` 的打印 `TAG` 默认为你自定义的名称，方便进行调试
+- 优化 `YukiHookBridge` 的 `Hooker` 实现方式，提升 Hook 性能
+- `PackageParam` 增加 `onAppLifecycle` 方法，可原生监听宿主的生命周期以及实现注册系统广播功能
+- 新增 `YukiHookDataChannel` 功能，可在模块与宿主保持存活的情况下使用系统无序广播进行通讯
+- `YukiHookDataChannel` 增加 `checkingVersionEquals` 方法，可通过监听来验证模块更新后宿主并未更新版本不匹配问题
+- `demo-module` 的示例代码中新增 Java 版本的示例，仅供参考
+
 ### 1.0.87 | 2022.05.10
 
 - 新增 `refreshModuleAppResources` 功能，以适配语言区域、字体大小、分辨率改变等情况下的 Resources 刷新
