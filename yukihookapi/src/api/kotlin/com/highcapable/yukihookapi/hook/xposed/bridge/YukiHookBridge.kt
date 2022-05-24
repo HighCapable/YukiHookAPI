@@ -39,6 +39,8 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
+import com.highcapable.yukihookapi.hook.factory.allConstructors
+import com.highcapable.yukihookapi.hook.factory.allMethods
 import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
@@ -57,6 +59,7 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_InitPackageResources
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -420,6 +423,15 @@ object YukiHookBridge {
      */
     internal object Hooker {
 
+        /** 已经 Hook 的 [Member] 数组 */
+        private val hookedMembers = HashSet<String>()
+
+        /** 已经 Hook 的全部 [Method] 数组 */
+        private val hookedAllMethods = HashSet<String>()
+
+        /** 已经 Hook 的全部 [Constructor] 数组 */
+        private val hookedAllConstructors = HashSet<String>()
+
         /** 默认 Hook 回调优先级 */
         internal const val PRIORITY_DEFAULT = 50
 
@@ -467,8 +479,11 @@ object YukiHookBridge {
          * @param callback 回调
          * @return [Member] or null
          */
-        internal fun hookMethod(hookMethod: Member?, callback: YukiHookCallback) =
-            XposedBridge.hookMethod(hookMethod, compatCallback(callback))?.hookedMethod
+        internal fun hookMethod(hookMethod: Member?, callback: YukiHookCallback): Member? {
+            if (hookedMembers.contains(hookMethod.toString())) return hookMethod
+            hookedMembers.add(hookMethod.toString())
+            return XposedBridge.hookMethod(hookMethod, compatCallback(callback))?.hookedMethod
+        }
 
         /**
          * Hook 当前 [hookClass] 所有 [methodName] 的方法
@@ -480,6 +495,12 @@ object YukiHookBridge {
          * @return [HashSet] 成功 Hook 的方法数组
          */
         internal fun hookAllMethods(hookClass: Class<*>?, methodName: String, callback: YukiHookCallback) = HashSet<Member>().also {
+            val allMethodsName = "$hookClass$methodName"
+            if (hookedAllMethods.contains(allMethodsName)) {
+                hookClass?.allMethods { _, method -> if (method.name == methodName) it.add(method) }
+                return@also
+            }
+            hookedAllMethods.add(allMethodsName)
             XposedBridge.hookAllMethods(hookClass, methodName, compatCallback(callback)).takeIf { it.isNotEmpty() }
                 ?.forEach { e -> it.add(e.hookedMethod) }
         }
@@ -493,6 +514,12 @@ object YukiHookBridge {
          * @return [HashSet] 成功 Hook 的构造方法数组
          */
         internal fun hookAllConstructors(hookClass: Class<*>?, callback: YukiHookCallback) = HashSet<Member>().also {
+            val allConstructorsName = "$hookClass<init>"
+            if (hookedAllConstructors.contains(allConstructorsName)) {
+                hookClass?.allConstructors { _, constructor -> it.add(constructor) }
+                return@also
+            }
+            hookedAllConstructors.add(allConstructorsName)
             XposedBridge.hookAllConstructors(hookClass, compatCallback(callback)).takeIf { it.isNotEmpty() }
                 ?.forEach { e -> it.add(e.hookedMethod) }
         }
