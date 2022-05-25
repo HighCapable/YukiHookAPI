@@ -2,6 +2,14 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.89 | 2022.05.26
+
+- 修复 `YukiHookDataChannel` 不能重复设置监听的问题，并加入在模块不同 `Activity` 中重复响应和自动跟随 `Activity` 销毁监听功能
+- 新增 `YukiHookDataChannel` 重复监听用例说明文档
+- 加入 `onAlreadyHooked` 方法，可判断当前方法是否被重复 Hook
+- 修改部分重复添加 HashMap 的逻辑，移除 `putIfAbsent` 方法，允许覆盖添加
+- 修复了几处可能的 BUG
+
 ### 1.0.88 | 2022.05.25
 
 - 对 Xposed API 完全解耦合
