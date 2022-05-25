@@ -477,12 +477,12 @@ object YukiHookBridge {
          * 对接 [XposedBridge.hookMethod]
          * @param hookMethod 需要 Hook 的方法、构造方法
          * @param callback 回调
-         * @return [Member] or null
+         * @return [Pair] - ([Member] or null,[Boolean] 是否已经 Hook)
          */
-        internal fun hookMethod(hookMethod: Member?, callback: YukiHookCallback): Member? {
-            if (hookedMembers.contains(hookMethod.toString())) return hookMethod
+        internal fun hookMethod(hookMethod: Member?, callback: YukiHookCallback): Pair<Member?, Boolean> {
+            if (hookedMembers.contains(hookMethod.toString())) return Pair(hookMethod, true)
             hookedMembers.add(hookMethod.toString())
-            return XposedBridge.hookMethod(hookMethod, compatCallback(callback))?.hookedMethod
+            return Pair(XposedBridge.hookMethod(hookMethod, compatCallback(callback))?.hookedMethod, false)
         }
 
         /**
@@ -492,17 +492,22 @@ object YukiHookBridge {
          * @param hookClass 当前 Hook 的 [Class]
          * @param methodName 方法名
          * @param callback 回调
-         * @return [HashSet] 成功 Hook 的方法数组
+         * @return [Pair] - ([HashSet] 成功 Hook 的方法数组,[Boolean] 是否已经 Hook)
          */
-        internal fun hookAllMethods(hookClass: Class<*>?, methodName: String, callback: YukiHookCallback) = HashSet<Member>().also {
-            val allMethodsName = "$hookClass$methodName"
-            if (hookedAllMethods.contains(allMethodsName)) {
-                hookClass?.allMethods { _, method -> if (method.name == methodName) it.add(method) }
-                return@also
+        internal fun hookAllMethods(hookClass: Class<*>?, methodName: String, callback: YukiHookCallback): Pair<HashSet<Member>, Boolean> {
+            var isAlreadyHook = false
+            val hookedMembers = HashSet<Member>().also {
+                val allMethodsName = "$hookClass$methodName"
+                if (hookedAllMethods.contains(allMethodsName)) {
+                    isAlreadyHook = true
+                    hookClass?.allMethods { _, method -> if (method.name == methodName) it.add(method) }
+                    return@also
+                }
+                hookedAllMethods.add(allMethodsName)
+                XposedBridge.hookAllMethods(hookClass, methodName, compatCallback(callback)).takeIf { it.isNotEmpty() }
+                    ?.forEach { e -> it.add(e.hookedMethod) }
             }
-            hookedAllMethods.add(allMethodsName)
-            XposedBridge.hookAllMethods(hookClass, methodName, compatCallback(callback)).takeIf { it.isNotEmpty() }
-                ?.forEach { e -> it.add(e.hookedMethod) }
+            return Pair(hookedMembers, isAlreadyHook)
         }
 
         /**
@@ -511,17 +516,22 @@ object YukiHookBridge {
          * 对接 [XposedBridge.hookAllConstructors]
          * @param hookClass 当前 Hook 的 [Class]
          * @param callback 回调
-         * @return [HashSet] 成功 Hook 的构造方法数组
+         * @return [Pair] - ([HashSet] 成功 Hook 的构造方法数组,[Boolean] 是否已经 Hook)
          */
-        internal fun hookAllConstructors(hookClass: Class<*>?, callback: YukiHookCallback) = HashSet<Member>().also {
-            val allConstructorsName = "$hookClass<init>"
-            if (hookedAllConstructors.contains(allConstructorsName)) {
-                hookClass?.allConstructors { _, constructor -> it.add(constructor) }
-                return@also
+        internal fun hookAllConstructors(hookClass: Class<*>?, callback: YukiHookCallback): Pair<HashSet<Member>, Boolean> {
+            var isAlreadyHook = false
+            val hookedMembers = HashSet<Member>().also {
+                val allConstructorsName = "$hookClass<init>"
+                if (hookedAllConstructors.contains(allConstructorsName)) {
+                    isAlreadyHook = true
+                    hookClass?.allConstructors { _, constructor -> it.add(constructor) }
+                    return@also
+                }
+                hookedAllConstructors.add(allConstructorsName)
+                XposedBridge.hookAllConstructors(hookClass, compatCallback(callback)).takeIf { it.isNotEmpty() }
+                    ?.forEach { e -> it.add(e.hookedMethod) }
             }
-            hookedAllConstructors.add(allConstructorsName)
-            XposedBridge.hookAllConstructors(hookClass, compatCallback(callback)).takeIf { it.isNotEmpty() }
-                ?.forEach { e -> it.add(e.hookedMethod) }
+            return Pair(hookedMembers, isAlreadyHook)
         }
 
         /**

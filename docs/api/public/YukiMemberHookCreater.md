@@ -565,6 +565,7 @@ injectMember {
     // Your code here.
 }.result {
     onHooked {}
+    onAlreadyHooked {}
     ignoredConductFailure()
     onHookingFailure {}
     // ...
@@ -604,6 +605,24 @@ fun onHooked(initiate: (Member) -> Unit): Result
 > 监听 `member` Hook 成功的回调方法。
 
 在首次 Hook 成功后回调。
+
+在重复 Hook 时会回调 `onAlreadyHooked`。
+
+##### onAlreadyHooked [method]
+
+```kotlin
+fun onAlreadyHooked(initiate: (Member) -> Unit): Result
+```
+
+**变更记录**
+
+`v1.0.89` `新增`
+
+**功能描述**
+
+> 监听 `member` 重复 Hook 的回调方法。
+
+!> 同一个 `hookClass` 中的同一个 `member` 不会被 API 重复 Hook，若由于各种原因重复 Hook 会回调此方法。
 
 ##### onNoSuchMemberFailure [method]
 

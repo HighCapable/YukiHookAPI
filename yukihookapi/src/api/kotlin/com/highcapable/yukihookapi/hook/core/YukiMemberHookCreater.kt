@@ -162,6 +162,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /** Hook 成功时回调 */
         private var onHookedCallback: ((Member) -> Unit)? = null
 
+        /** 重复 Hook 时回调 */
+        private var onAlreadyHookedCallback: ((Member) -> Unit)? = null
+
         /** 找不到 [member] 出现错误回调 */
         private var onNoSuchMemberFailureCallback: ((Throwable) -> Unit)? = null
 
@@ -502,11 +505,14 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 if (member != null)
                     member.also { member ->
                         runCatching {
-                            (if (isReplaceHookMode)
-                                YukiHookBridge.Hooker.hookMethod(member, replaceMent)?.also { onHookedCallback?.invoke(it) }
-                                    ?: error("Hook Member [$member] failed")
-                            else YukiHookBridge.Hooker.hookMethod(member, beforeAfterHook)?.also { onHookedCallback?.invoke(it) }
-                                ?: error("Hook Member [$member] failed"))
+                            (if (isReplaceHookMode) YukiHookBridge.Hooker.hookMethod(member, replaceMent)
+                            else YukiHookBridge.Hooker.hookMethod(member, beforeAfterHook)).also {
+                                when {
+                                    it.first == null -> error("Hook Member [$member] failed")
+                                    it.second -> onAlreadyHookedCallback?.invoke(it.first!!)
+                                    else -> onHookedCallback?.invoke(it.first!!)
+                                }
+                            }
                         }.onFailure {
                             onHookingFailureCallback?.invoke(it)
                             onAllFailureCallback?.invoke(it)
@@ -527,24 +533,22 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             else runCatching {
                 when (hookMemberMode) {
                     HookMemberMode.HOOK_ALL_METHODS ->
-                        if (isReplaceHookMode)
-                            YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, replaceMent).also {
-                                if (it.isEmpty()) throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
-                                else it.forEach { e -> onHookedCallback?.invoke(e) }
+                        (if (isReplaceHookMode) YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, replaceMent)
+                        else YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook)).also {
+                            when {
+                                it.first.isEmpty() -> throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
+                                it.second -> it.first.forEach { e -> onAlreadyHookedCallback?.invoke(e) }
+                                else -> it.first.forEach { e -> onHookedCallback?.invoke(e) }
                             }
-                        else YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook).also {
-                            if (it.isEmpty()) throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
-                            else it.forEach { e -> onHookedCallback?.invoke(e) }
                         }
                     HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
-                        if (isReplaceHookMode)
-                            YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, replaceMent).also {
-                                if (it.isEmpty()) throw NoSuchMethodError("No Constructor matched")
-                                else it.forEach { e -> onHookedCallback?.invoke(e) }
+                        (if (isReplaceHookMode) YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, replaceMent)
+                        else YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, beforeAfterHook)).also {
+                            when {
+                                it.first.isEmpty() -> throw NoSuchMethodError("No Constructor matched")
+                                it.second -> it.first.forEach { e -> onAlreadyHookedCallback?.invoke(e) }
+                                else -> it.first.forEach { e -> onHookedCallback?.invoke(e) }
                             }
-                        else YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, beforeAfterHook).also {
-                            if (it.isEmpty()) throw NoSuchMethodError("No Constructor matched")
-                            else it.forEach { e -> onHookedCallback?.invoke(e) }
                         }
                     else -> error("Hooked got a no error possible")
                 }
@@ -618,11 +622,25 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
              * 监听 [member] Hook 成功的回调方法
              *
              * 在首次 Hook 成功后回调
+             *
+             * 在重复 Hook 时会回调 [onAlreadyHooked]
              * @param initiate 回调被 Hook 的 [Member]
              * @return [Result] 可继续向下监听
              */
             fun onHooked(initiate: (Member) -> Unit): Result {
                 onHookedCallback = initiate
+                return this
+            }
+
+            /**
+             * 监听 [member] 重复 Hook 的回调方法
+             *
+             * - ❗同一个 [hookClass] 中的同一个 [member] 不会被 API 重复 Hook - 若由于各种原因重复 Hook 会回调此方法
+             * @param initiate 回调被重复 Hook 的 [Member]
+             * @return [Result] 可继续向下监听
+             */
+            fun onAlreadyHooked(initiate: (Member) -> Unit): Result {
+                onAlreadyHookedCallback = initiate
                 return this
             }
 
