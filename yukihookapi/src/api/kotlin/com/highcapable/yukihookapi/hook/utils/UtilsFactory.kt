@@ -27,7 +27,6 @@
  */
 package com.highcapable.yukihookapi.hook.utils
 
-import android.os.Build
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -59,20 +58,6 @@ inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
     forEach { value += it.toString() + ", " }
     "[${value.trim().let { it.substring(0, it.lastIndex) }}]"
 } else "[]"
-
-/**
- * 不重复写入 [HashMap]
- *
- * 兼容旧版本 Android
- * @param key Key
- * @param value Value
- */
-@YukiPrivateApi
-inline fun <reified K, V> HashMap<K, V>.putIfAbsentCompat(key: K, value: V) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        putIfAbsent(key, value)
-    else get(key) ?: put(key, value)
-}
 
 /**
  * 计算方法执行耗时

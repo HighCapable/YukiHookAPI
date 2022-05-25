@@ -36,7 +36,6 @@ import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.utils.putIfAbsentCompat
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 
@@ -59,7 +58,7 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
      * @return [ResourcesHookCreater.Result]
      */
     inline fun injectResource(tag: String = "Default", initiate: ResourcesHookCreater.() -> Unit) =
-        ResourcesHookCreater(tag).apply(initiate).apply { preHookResources.putIfAbsentCompat(toString(), this) }.build()
+        ResourcesHookCreater(tag).apply(initiate).apply { preHookResources[toString()] = this }.build()
 
     /**
      * Hook 执行入口

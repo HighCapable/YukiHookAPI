@@ -42,7 +42,6 @@ import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
-import com.highcapable.yukihookapi.hook.utils.putIfAbsentCompat
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -100,8 +99,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @return [MemberHookCreater.Result]
      */
     inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(priority, tag, packageParam.exhibitName)
-            .apply(initiate).apply { preHookMembers.putIfAbsentCompat(toString(), this) }.build()
+        MemberHookCreater(priority, tag, packageParam.exhibitName).apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
     /**
      * Hook 执行入口
