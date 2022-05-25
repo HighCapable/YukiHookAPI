@@ -42,6 +42,22 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
     android:value="true"/>
 ```
 
+### isXSharePrefsReadable [field]
+
+```kotlin
+val isXSharePrefsReadable: Boolean
+```
+
+**变更记录**
+
+`v1.0.90` `新增`
+
+**功能描述**
+
+> 获取 `XSharedPreferences` 是否可读。
+
+!> 只能在 `isXposedEnvironment` 中使用，模块环境中始终返回 false。
+
 ### isRunInNewXShareMode [field]
 
 ```kotlin

@@ -36,7 +36,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
@@ -142,11 +141,6 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
             checkApi()
             makeWorldReadable()
             reload()
-            /** 如果文件不可读 - 将打印警告 */
-            if (file.exists() && file.canRead().not()) loggerW(
-                msg = "Cannot reading Module XSharedPreference, " +
-                        "if you not using supported New XShare Hook API, you must changed the module API ≤ 26"
-            )
         }
 
     /**
@@ -168,6 +162,14 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     private fun makeWorldReadable() = runCatching {
         if (isUsingNewXSharePrefs.not()) makeWorldReadable(context, prefsFileName = "${prefsName}.xml")
     }
+
+    /**
+     * 获取 [XSharedPreferences] 是否可读
+     *
+     * - ❗只能在 [isXposedEnvironment] 中使用 - 模块环境中始终返回 false
+     * @return [Boolean] 是否可读
+     */
+    val isXSharePrefsReadable get() = runCatching { xPref.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false
 
     /**
      * 获取 [YukiHookModulePrefs] 是否正处于 EdXposed/LSPosed 的最高权限运行
