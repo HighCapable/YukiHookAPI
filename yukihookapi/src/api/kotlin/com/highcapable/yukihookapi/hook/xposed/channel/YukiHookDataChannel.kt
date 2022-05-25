@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.xposed.channel
 
+import android.app.Activity
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -38,7 +39,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.utils.putIfAbsentCompat
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
@@ -83,7 +83,7 @@ class YukiHookDataChannel private constructor() {
     }
 
     /** 注册广播回调数组 */
-    private var receiverCallbacks = HashMap<String, ((String, Intent) -> Unit)>()
+    private var receiverCallbacks = HashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
 
     /** 当前注册广播的 [Context] */
     private var receiverContext: Context? = null
@@ -93,7 +93,17 @@ class YukiHookDataChannel private constructor() {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent == null) return
-                intent.action?.also { action -> receiverCallbacks.takeIf { it.isNotEmpty() }?.forEach { (_, it) -> it(action, intent) } }
+                intent.action?.also { action ->
+                    receiverCallbacks.takeIf { it.isNotEmpty() }?.apply {
+                        val destroyedCallbacks = arrayListOf<String>()
+                        forEach { (key, it) ->
+                            if (it.first is Activity && (it.first as? Activity?)?.isDestroyed == true)
+                                destroyedCallbacks.add(key)
+                            else it.second(action, intent)
+                        }
+                        destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
+                    }
+                }
             }
         }
     }
@@ -201,7 +211,7 @@ class YukiHookDataChannel private constructor() {
          * @param result 回调结果数据
          */
         fun <T> wait(key: String, value: T? = null, result: (value: T) -> Unit) {
-            receiverCallbacks.putIfAbsentCompat(key) { action, intent ->
+            receiverCallbacks[key + "_single_" + context?.javaClass?.name] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
                     (intent.extras?.get(key) as? T?).also { if (it != null || value != null) (it ?: value)?.let { e -> result(e) } }
             }
@@ -214,7 +224,7 @@ class YukiHookDataChannel private constructor() {
          * @param result 回调结果数据
          */
         fun <T> wait(data: ChannelData<T>, value: T? = data.value, result: (value: T) -> Unit) {
-            receiverCallbacks.putIfAbsentCompat(data.key) { action, intent ->
+            receiverCallbacks[data.key + "_cdata_" + context?.javaClass?.name] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
                     (intent.extras?.get(data.key) as? T?).also { if (it != null || value != null) (it ?: value)?.let { e -> result(e) } }
             }
@@ -228,7 +238,7 @@ class YukiHookDataChannel private constructor() {
          * @param result 回调结果
          */
         fun wait(key: String, result: () -> Unit) {
-            receiverCallbacks.putIfAbsentCompat(key) { action, intent ->
+            receiverCallbacks[key + "_vwfl_" + context?.javaClass?.name] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
                     if (intent.getStringExtra(key) == VALUE_WAIT_FOR_LISTENER) result()
             }

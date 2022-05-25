@@ -1135,6 +1135,48 @@ dataChannel.checkingVersionEquals { isEquals ->
 
 详情请参考 [YukiHookDataChannel](api/document?id=yukihookdatachannel-class)。
 
+### 重复创建回调事件的规则
+
+!> 在模块和宿主中，每一个 `dataChannel` 对应的 `key` 的回调事件**都不允许重复创建**，若重复，之前的回调事件会被新增加的回调事件替换，若在模块中使用，在同一个 `Activity` 中不可以重复，不同的 `Activity` 中相同的 `key` 允许重复。
+
+这里只列出了在模块中使用的例子，在宿主中相同的 `key` 始终不允许重复创建。
+
+> 示例如下
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 回调事件 A
+        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+            // Your code here.
+        }
+        // 回调事件 B
+        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+            // Your code here.
+        }
+        // 回调事件 C
+        dataChannel(packageName = "com.example.demo").wait(key = "other_test_key") {
+            // Your code here.
+        }
+    }
+}
+
+class OtherActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 回调事件 D
+        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+            // Your code here.
+        }
+    }
+}
+```
+
+在上述示例中，回调事件 A 会被回调事件 B 替换掉，回调事件 C 的 `key` 不与其它重复，回调事件 D 在另一个 Activity 中，所以最终回调事件 B、C、D 都可被创建成功。
+
 ## 宿主生命周期扩展功能
 
 > 这是一个自动 Hook 宿主 APP 生命周期的扩展功能。
