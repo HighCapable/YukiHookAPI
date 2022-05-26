@@ -2,6 +2,14 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.90 | 2022.05.27
+
+- 修复 `YukiHookDataChannel` 在模块设置监听回调时闪退的问题
+- 修复 `YukiHookDataChannel` 在非当前 `Activity` 情况下依然会回调的问题
+- 移除 `YukiHookDataChannel` 回调事件的默认值，没有即不回调
+- 移除 `YukiHookModulePrefs` 在 XShare 不可读的情况下打印的警告
+- 新增 `YukiHookModulePrefs` 中的 `isXSharePrefsReadable` 方法，可判断当前的 XShare 是否可用
+
 ### 1.0.89 | 2022.05.26
 
 - 修复 `YukiHookDataChannel` 不能重复设置监听的问题，并加入在模块不同 `Activity` 中重复响应和自动跟随 `Activity` 销毁监听功能
