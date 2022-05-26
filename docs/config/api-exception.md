@@ -532,8 +532,10 @@ class MyApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         YukiHookAPI.encase(base) {
-            // ❗不能在这种情况下使用 channel
-            channel.get("test_data", "default_data")
+            // ❗不能在这种情况下使用 dataChannel
+            dataChannel.wait(key = "test_data") {
+                // ...
+            }
         }
         super.attachBaseContext(base)
     }
