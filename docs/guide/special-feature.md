@@ -1135,7 +1135,7 @@ dataChannel.checkingVersionEquals { isEquals ->
 
 详情请参考 [YukiHookDataChannel](api/document?id=yukihookdatachannel-class)。
 
-### 重复创建回调事件的规则
+### 回调事件响应的规则
 
 !> 在模块和宿主中，每一个 `dataChannel` 对应的 `key` 的回调事件**都不允许重复创建**，若重复，之前的回调事件会被新增加的回调事件替换，若在模块中使用，在同一个 `Activity` 中不可以重复，不同的 `Activity` 中相同的 `key` 允许重复。
 
@@ -1177,8 +1177,14 @@ class OtherActivity : AppCompatActivity() {
 
 在上述示例中，回调事件 A 会被回调事件 B 替换掉，回调事件 C 的 `key` 不与其它重复，回调事件 D 在另一个 Activity 中，所以最终回调事件 B、C、D 都可被创建成功。
 
-## 宿主生命周期扩展功能
+!> 一个相同 `key` 的回调事件只会回调当前模块正在显示的 `Activity` 中注册的回调事件，例如上述中的 `test_key`，如果 `OtherActivity` 正在显示，那么 `MainActivity` 中的 `test_key` 就不会被回调。
 
+!> 请特别注意，相同的 `key` 在同一个 `Activity` 不同的 `Fragment` 中注册 `dataChannel`，它们依然会在当前 `Activity` 中同时被回调。 
+
+!> 在模块中，你只能使用 `Activity` 的 `Context` 注册 `dataChannel`，你不能在 `Application` 以及 `Service` 等地方使用 `dataChannel`，若要在 `Fragment` 中使用 `dataChannel`，请使用 `activity?.dataChannel(...)`。
+
+## 宿主生命周期扩展功能
+ 
 > 这是一个自动 Hook 宿主 APP 生命周期的扩展功能。
 
 ### 监听生命周期

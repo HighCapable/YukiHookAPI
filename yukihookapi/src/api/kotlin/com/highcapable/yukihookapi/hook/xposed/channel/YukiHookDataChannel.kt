@@ -25,25 +25,30 @@
  *
  * This file is Created by fankes on 2022/5/16.
  */
-@file:Suppress("StaticFieldLeak", "UNCHECKED_CAST", "unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("StaticFieldLeak", "UNCHECKED_CAST", "unused", "MemberVisibilityCanBePrivate", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.xposed.channel
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcelable
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.log.loggerW
+import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import java.io.Serializable
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 实现 Xposed 模块的数据通讯桥
@@ -82,8 +87,13 @@ class YukiHookDataChannel private constructor() {
         internal fun instance() = instance ?: YukiHookDataChannel().apply { instance = this }
     }
 
+    /**
+     * 键值回调的监听类型定义
+     */
+    private enum class CallbackKeyType { SINGLE, CDATA, VMFL }
+
     /** 注册广播回调数组 */
-    private var receiverCallbacks = HashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
+    private var receiverCallbacks = ConcurrentHashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
 
     /** 当前注册广播的 [Context] */
     private var receiverContext: Context? = null
@@ -94,15 +104,19 @@ class YukiHookDataChannel private constructor() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent == null) return
                 intent.action?.also { action ->
-                    receiverCallbacks.takeIf { it.isNotEmpty() }?.apply {
-                        val destroyedCallbacks = arrayListOf<String>()
-                        forEach { (key, it) ->
-                            if (it.first is Activity && (it.first as? Activity?)?.isDestroyed == true)
-                                destroyedCallbacks.add(key)
-                            else it.second(action, intent)
+                    runCatching {
+                        receiverCallbacks.takeIf { it.isNotEmpty() }?.apply {
+                            arrayListOf<String>().also { destroyedCallbacks ->
+                                forEach { (key, it) ->
+                                    when {
+                                        (it.first as? Activity?)?.isDestroyed == true -> destroyedCallbacks.add(key)
+                                        isCurrentBroadcast(it.first) -> it.second(action, intent)
+                                    }
+                                }
+                                destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
+                            }
                         }
-                        destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
-                    }
+                    }.onFailure { loggerE(msg = "Received action \"$action\" failed", e = it) }
                 }
             }
         }
@@ -114,6 +128,16 @@ class YukiHookDataChannel private constructor() {
         if (YukiHookBridge.hasXposedBridge && YukiHookBridge.modulePackageName.isBlank())
             error("Xposed modulePackageName load failed, please reset and rebuild it")
     }
+
+    /**
+     * 是否为当前正在使用的广播回调事件
+     * @param context 当前实例
+     * @return [Boolean]
+     */
+    private fun isCurrentBroadcast(context: Context?) = runCatching {
+        isXposedEnvironment || context?.javaClass?.name == ((context ?: receiverContext)
+            ?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager?)?.getRunningTasks(1)?.get(0)?.topActivity?.className
+    }.getOrNull() ?: loggerW(msg = "Couldn't got current Activity status because a SecurityException blocked it").let { false }
 
     /**
      * 获取宿主广播 Action 名称
@@ -146,8 +170,8 @@ class YukiHookDataChannel private constructor() {
             }
         )
         /** 注册监听模块与宿主的版本是否匹配 */
-        nameSpace(context, packageName).wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
-            nameSpace(context, fromPackageName).put(RESULT_MODULE_GENERATED_VERSION, YukiHookBridge.moduleGeneratedVersion)
+        nameSpace(context, packageName, isSecure = false).wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
+            nameSpace(context, fromPackageName, isSecure = false).put(RESULT_MODULE_GENERATED_VERSION, YukiHookBridge.moduleGeneratedVersion)
         }
     }
 
@@ -155,11 +179,12 @@ class YukiHookDataChannel private constructor() {
      * 获取命名空间
      * @param context 上下文实例
      * @param packageName 目标 Hook APP (宿主) 的包名
+     * @param isSecure 是否启用安全检查 - 默认是
      * @return [NameSpace]
      */
-    internal fun nameSpace(context: Context? = null, packageName: String): NameSpace {
+    internal fun nameSpace(context: Context? = null, packageName: String, isSecure: Boolean = true): NameSpace {
         checkApi()
-        return NameSpace(context = context ?: receiverContext ?: YukiHookAppHelper.currentApplication(), packageName)
+        return NameSpace(context = context ?: receiverContext, packageName, isSecure)
     }
 
     /**
@@ -168,8 +193,16 @@ class YukiHookDataChannel private constructor() {
      * - ❗请使用 [nameSpace] 方法来获取 [NameSpace]
      * @param context 上下文实例
      * @param packageName 目标 Hook APP (宿主) 的包名
+     * @param isSecure 是否启用安全检查
      */
-    inner class NameSpace internal constructor(private val context: Context?, private val packageName: String) {
+    inner class NameSpace internal constructor(private val context: Context?, private val packageName: String, private val isSecure: Boolean) {
+
+        /**
+         * 键值尾部名称
+         * @param type 类型
+         * @return [String]
+         */
+        private fun keyShortName(type: CallbackKeyType) = "_${if (isXposedEnvironment) "X" else context?.javaClass?.name ?: "M"}_${type.ordinal}"
 
         /**
          * 创建一个调用空间
@@ -207,26 +240,24 @@ class YukiHookDataChannel private constructor() {
         /**
          * 获取键值数据
          * @param key 键值名称
-         * @param value 默认值 - 不填则在值为空的时候不回调 [result]
          * @param result 回调结果数据
          */
-        fun <T> wait(key: String, value: T? = null, result: (value: T) -> Unit) {
-            receiverCallbacks[key + "_single_" + context?.javaClass?.name] = Pair(context) { action, intent ->
+        fun <T> wait(key: String, result: (value: T) -> Unit) {
+            receiverCallbacks[key + keyShortName(CallbackKeyType.SINGLE)] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    (intent.extras?.get(key) as? T?).also { if (it != null || value != null) (it ?: value)?.let { e -> result(e) } }
+                    (intent.extras?.get(key) as? T?)?.let { result(it) }
             }
         }
 
         /**
          * 获取键值数据
          * @param data 键值实例
-         * @param value 默认值 - 未指定为 [ChannelData.value]
          * @param result 回调结果数据
          */
-        fun <T> wait(data: ChannelData<T>, value: T? = data.value, result: (value: T) -> Unit) {
-            receiverCallbacks[data.key + "_cdata_" + context?.javaClass?.name] = Pair(context) { action, intent ->
+        fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit) {
+            receiverCallbacks[data.key + keyShortName(CallbackKeyType.CDATA)] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    (intent.extras?.get(data.key) as? T?).also { if (it != null || value != null) (it ?: value)?.let { e -> result(e) } }
+                    (intent.extras?.get(data.key) as? T?)?.let { result(it) }
             }
         }
 
@@ -238,7 +269,7 @@ class YukiHookDataChannel private constructor() {
          * @param result 回调结果
          */
         fun wait(key: String, result: () -> Unit) {
-            receiverCallbacks[key + "_vwfl_" + context?.javaClass?.name] = Pair(context) { action, intent ->
+            receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
                     if (intent.getStringExtra(key) == VALUE_WAIT_FOR_LISTENER) result()
             }
@@ -261,7 +292,11 @@ class YukiHookDataChannel private constructor() {
          */
         private fun pushReceiver(vararg data: ChannelData<*>) {
             if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
-            context?.sendBroadcast(Intent().apply {
+            /** 在 [isSecure] 启用的情况下 - 在模块环境中只能使用 [Activity] 发送广播 */
+            if (isSecure && context != null) if (isXposedEnvironment.not() && context !is Activity)
+                error("YukiHookDataChannel only support used on an Activity, but this current context is \"${context.javaClass.name}\"")
+            /** 发送广播 */
+            (context ?: YukiHookAppHelper.currentApplication())?.sendBroadcast(Intent().apply {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
                 data.takeIf { it.isNotEmpty() }?.forEach {
                     when (it.value) {
@@ -291,9 +326,9 @@ class YukiHookDataChannel private constructor() {
                         else -> error("Key-Value type ${it.value?.javaClass?.name} is not allowed")
                     }
                 }
-            }) ?: yLoggerW(
+            }) ?: yLoggerE(
                 msg = "Failed to sendBroadcast like \"${data.takeIf { it.isNotEmpty() }?.get(0)?.key ?: "unknown"}\", " +
-                        "because got non-null context in \"$packageName\""
+                        "because got null context in \"$packageName\""
             )
         }
     }

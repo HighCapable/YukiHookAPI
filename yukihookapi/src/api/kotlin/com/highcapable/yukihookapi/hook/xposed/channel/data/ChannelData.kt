@@ -36,6 +36,6 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
  *
  * - 详情请参考 [API 文档 - ChannelData](https://fankes.github.io/YukiHookAPI/#/api/document?id=channeldata-class)
  * @param key 键值
- * @param value 默认值 - 可空
+ * @param value 键值数据 - 作为接收数据时可空
  */
 data class ChannelData<T>(var key: String, var value: T? = null)

@@ -21,12 +21,16 @@ class YukiHookDataChannel private constructor()
 ### NameSpace [class]
 
 ```kotlin
-inner class NameSpace internal constructor(private val context: Context?, private val packageName: String)
+inner class NameSpace internal constructor(private val context: Context?, private val packageName: String, private val isSecure: Boolean)
 ```
 
 **变更记录**
 
 `v1.0.88` `新增`
+
+`v1.0.90` `修改`
+
+新增 `isSecure` 参数
 
 **功能描述**
 
@@ -85,16 +89,20 @@ fun put(key: String)
 #### wait [method]
 
 ```kotlin
-fun <T> wait(key: String, value: T?, result: (value: T) -> Unit)
+fun <T> wait(key: String, result: (value: T) -> Unit)
 ```
 
 ```kotlin
-fun <T> wait(data: ChannelData<T>, value: T?, result: (value: T) -> Unit)
+fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.88` `新增`
+
+`v1.0.90` `修改`
+
+移除默认值 `value`
 
 **功能描述**
 
