@@ -235,7 +235,7 @@ injectResource {
         name = "test_string"
         string()
     }
-    replaceToModuleResource(R.id.module_string)
+    replaceToModuleResource(R.string.module_string)
 }
 ```
 
