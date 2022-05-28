@@ -56,6 +56,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import dalvik.system.PathClassLoader
 import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_InitPackageResources
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -184,6 +185,8 @@ object YukiHookBridge {
 
     /**
      * 创建、修改 [PackageParamWrapper]
+     *
+     * 忽略在 [type] 不为 [HookEntryType.ZYGOTE] 时 [appClassLoader] 为空导致首次使用 [XposedBridge.BOOTCLASSLOADER] 装载的问题
      * @param type 当前正在进行的 Hook 类型
      * @param packageName 包名
      * @param processName 当前进程名
@@ -201,19 +204,21 @@ object YukiHookBridge {
         appResources: YukiResources? = null
     ) = run {
         if (packageParamWrappers[packageName] == null)
-            PackageParamWrapper(
-                type = type,
-                packageName = packageName ?: SYSTEM_FRAMEWORK_NAME,
-                processName = processName ?: SYSTEM_FRAMEWORK_NAME,
-                appClassLoader = appClassLoader ?: XposedBridge.BOOTCLASSLOADER,
-                appInfo = appInfo,
-                appResources = appResources
-            ).also { packageParamWrappers[packageName ?: SYSTEM_FRAMEWORK_NAME] = it }
+            if (type == HookEntryType.ZYGOTE || appClassLoader != null)
+                PackageParamWrapper(
+                    type = type,
+                    packageName = packageName ?: SYSTEM_FRAMEWORK_NAME,
+                    processName = processName ?: SYSTEM_FRAMEWORK_NAME,
+                    appClassLoader = appClassLoader ?: XposedBridge.BOOTCLASSLOADER,
+                    appInfo = appInfo,
+                    appResources = appResources
+                ).also { packageParamWrappers[packageName ?: SYSTEM_FRAMEWORK_NAME] = it }
+            else null
         else packageParamWrappers[packageName]?.also {
             it.type = type
             if (packageName?.isNotBlank() == true) it.packageName = packageName
             if (processName?.isNotBlank() == true) it.processName = processName
-            if (appClassLoader != null) it.appClassLoader = appClassLoader
+            if (appClassLoader != null && (type == HookEntryType.ZYGOTE || appClassLoader is PathClassLoader)) it.appClassLoader = appClassLoader
             if (appInfo != null) it.appInfo = appInfo
             if (appResources != null) it.appResources = appResources
         }
