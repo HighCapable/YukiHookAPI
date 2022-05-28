@@ -74,6 +74,8 @@ val isRunInNewXShareMode: Boolean
 
 前提条件为当前 Xposed 模块已被激活。
 
+!> 只能在模块环境中使用，`isXposedEnvironment` 环境中始终返回 false
+
 ### name [method]
 
 ```kotlin

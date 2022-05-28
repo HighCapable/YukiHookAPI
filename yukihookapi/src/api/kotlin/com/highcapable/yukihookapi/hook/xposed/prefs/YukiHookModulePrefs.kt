@@ -175,6 +175,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * 获取 [YukiHookModulePrefs] 是否正处于 EdXposed/LSPosed 的最高权限运行
      *
      * - 前提条件为当前 Xposed 模块已被激活
+     *
+     * - ❗只能在模块环境中使用 - [isXposedEnvironment] 环境中始终返回 false
      * @return [Boolean] 仅限在模块中判断 - 在宿主 [XSharedPreferences] 环境中始终返回 false
      */
     val isRunInNewXShareMode
