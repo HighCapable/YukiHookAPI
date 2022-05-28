@@ -2,6 +2,12 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.91 | 2022.05.29
+
+- 修复部分设备的定制系统在 LSPosed 环境下开机启动获取的 `ClassLoader` 错误的问题，感谢 [Luckyzyx](https://github.com/luckyzyx) 的反馈
+- 修复 `YukiHookDataChannel` 在 **ZUI** 以及低于 **Android 12** 的系统上不能回调当前 `Activity` 广播的问题
+- 整合 `YukiHookModuleStatus` 功能到 `YukiHookAPI.Status`，重写了大量方法，现在你可以在模块与宿主中双向判断模块激活等状态信息
+
 ### 1.0.90 | 2022.05.27
 
 - 修复 `YukiHookDataChannel` 在模块设置监听回调时闪退的问题
