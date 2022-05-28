@@ -8,8 +8,6 @@
 
 [filename](public/HookParam.md ':include')
 
-[filename](public/YukiHookModuleStatus.md ':include')
-
 [filename](public/InjectYukiHookWithXposed.md ':include')
 
 [filename](public/IYukiHookXposedInit.md ':include')

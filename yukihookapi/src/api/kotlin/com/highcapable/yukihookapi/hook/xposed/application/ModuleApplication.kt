@@ -53,6 +53,8 @@ import me.weishu.reflection.Reflection
  *
  * - 在模块中使用系统隐藏 API - 核心技术引用了开源项目 [FreeReflection](https://github.com/tiann/FreeReflection)
  *
+ * - 在模块中使用 [YukiHookAPI.Status.isTaiChiModuleActive] 判断太极、无极激活状态
+ *
  * 详情请参考 [ModuleApplication](https://fankes.github.io/YukiHookAPI/#/api/document?id=moduleapplication-class)
  */
 open class ModuleApplication : Application() {
@@ -60,7 +62,7 @@ open class ModuleApplication : Application() {
     companion object {
 
         /** 全局静态 [Application] 实例 */
-        private var currentContext: ModuleApplication? = null
+        internal var currentContext: ModuleApplication? = null
 
         /**
          * 获取全局静态 [Application] 实例

@@ -40,7 +40,41 @@ const val API_VERSION_CODE: Int
 
 > 获取当前 `YukiHookAPI` 的版本号。
 
-### executorName [field]
+### ~~executorName [field]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.5` `新增`
+
+`v1.0.91` `移除`
+
+请转移到 `Status.executorName`
+
+### ~~executorVersion [field]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.5` `新增`
+
+`v1.0.91` `移除`
+
+请转移到 `Status.executorVersion`
+
+### Status [object]
+
+```kotlin
+object Status
+```
+
+**变更记录**
+
+`v1.0.91` `新增`
+
+**功能描述**
+
+> 当前 `YukiHookAPI` 的状态。
+
+#### executorName [field]
 
 ```kotlin
 val executorName: String
@@ -48,7 +82,7 @@ val executorName: String
 
 **变更记录**
 
-`v1.0.5` `新增`
+`v1.0.91` `新增`
 
 **功能描述**
 
@@ -56,7 +90,9 @@ val executorName: String
 
 无法获取会返回 `unknown`，`XposedBridge` 不存在会返回 `invalid`。
 
-### executorVersion [field]
+!> 在模块环境中需要启用 `Configs.isEnableHookModuleStatus`。
+
+#### executorVersion [field]
 
 ```kotlin
 val executorVersion: Int
@@ -64,13 +100,89 @@ val executorVersion: Int
 
 **变更记录**
 
-`v1.0.5` `新增`
+`v1.0.91` `新增`
 
 **功能描述**
 
 > 获取当前 Hook 框架的版本。
 
 无法获取会返回 `-1`。
+
+!> 在模块环境中需要启用 `Configs.isEnableHookModuleStatus`。
+
+#### isModuleActive [field]
+
+```kotlin
+val isModuleActive: Boolean
+```
+
+**变更记录**
+
+`v1.0.91` `新增`
+
+**功能描述**
+
+> 判断模块是否在 Xposed 或太极、无极中激活。
+
+!> 在模块环境中你需要将 `Application` 继承于 `ModuleApplication`。
+
+!> 在模块环境中需要启用 `Configs.isEnableHookModuleStatus`。
+
+!> 在 Xposed 环境中仅返回非 `isTaiChiModuleActive` 的激活状态。
+
+#### isXposedModuleActive [field]
+
+```kotlin
+val isXposedModuleActive: Boolean
+```
+
+**变更记录**
+
+`v1.0.91` `新增`
+
+**功能描述**
+
+> 仅判断模块是否在 Xposed 中激活。
+
+!> 在模块环境中需要启用 `Configs.isEnableHookModuleStatus`。
+
+!> 在 Xposed 环境中始终返回 true。
+
+#### isTaiChiModuleActive [field]
+
+```kotlin
+val isTaiChiModuleActive: Boolean
+```
+
+**变更记录**
+
+`v1.0.91` `新增`
+
+**功能描述**
+
+> 仅判断模块是否在太极、无极中激活。
+
+!> 在模块环境中你需要将 `Application` 继承于 `ModuleApplication`。
+
+!> 在 Xposed 环境中始终返回 false。
+
+#### isSupportResourcesHook [field]
+
+```kotlin
+val isSupportResourcesHook: Boolean
+```
+
+**变更记录**
+
+`v1.0.91` `新增`
+
+**功能描述**
+
+> 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)。
+
+!> 在模块环境中需要启用 `Configs.isEnableHookModuleStatus`。
+
+!> 在 Xposed 环境中可能会延迟等待事件回调后才会返回 true。
 
 ### Configs [object]
 
@@ -188,7 +300,7 @@ var isEnableHookModuleStatus: Boolean
 
 为原生支持 Xposed 模块激活状态检测，此功能默认启用。
 
-!> 关闭后你将不能再使用 `YukiHookModuleStatus` 中的功能。
+!> 关闭后你将不能再在模块环境中使用 `YukiHookAPI.Status` 中的功能。
 
 #### isEnableDataChannel [field]
 

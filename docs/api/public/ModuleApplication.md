@@ -26,6 +26,8 @@ open class ModuleApplication: Application()
 
 - 在模块中使用系统隐藏 API，核心技术引用了开源项目 [FreeReflection](https://github.com/tiann/FreeReflection)
 
+- 在模块中使用 `YukiHookAPI.Status.isTaiChiModuleActive` 判断太极、无极激活状态
+
 **功能示例**
 
 将此类继承到你的自定义 `Application` 上。

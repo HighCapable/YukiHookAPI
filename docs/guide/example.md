@@ -454,41 +454,43 @@ override fun onHook() = encase {
 
 在 `YukiHookAPI` 中你完全不需要再这么做了，`YukiHookAPI` 已经帮你封装好了这个操作，你可以直接进行使用。
 
-现在，你可以直接使用 `isXposedModuleActive` 在模块中判断自身是否被激活。
+现在，你可以直接使用 `YukiHookAPI.Status.isXposedModuleActive` 在模块中判断自身是否被激活。
 
 > 示例如下
 
 ```kotlin
-if(isXposedModuleActive) {
+if(YukiHookAPI.Status.isXposedModuleActive) {
     // Your code here.
 }
 ```
 
 由于一些特殊原因，在太极、无极中的模块无法使用标准方法检测激活状态。
 
-此时你可以在 `Activity` 中使用 `isTaiChiModuleActive` 判断自身是否被激活。
+此时你可以使用 `YukiHookAPI.Status.isTaiChiModuleActive` 判断自身是否被激活。
 
 > 示例如下
 
 ```kotlin
-if(isTaiChiModuleActive) {
+if(YukiHookAPI.Status.isTaiChiModuleActive) {
     // Your code here.
 }
 ```
 
 若你想使用两者得兼的判断方案，`YukiHookAPI` 同样为你封装了便捷的方式。
 
-此时你可以在 `Activity` 中使用 `isModuleActive` 判断自身是否在 Xposed 或太极、无极中被激活。
+此时你可以使用 `YukiHookAPI.Status.isModuleActive` 判断自身是否在 Xposed 或太极、无极中被激活。
 
 > 示例如下
 
 ```kotlin
-if(isModuleActive) {
+if(YukiHookAPI.Status.isModuleActive) {
     // Your code here.
 }
 ```
 
-若要了解更多可 [点击这里](api/document?id=ismoduleactive-field) 进行查看。
+若要了解更多可 [点击这里](api/document?id=status-object) 进行查看。
+
+!> 新版本的 API 修改了激活逻辑判断方式，现在你可以在模块与 Hook APP(宿主)中同时使用此 API。
 
 !> 需要确保 `YukiHookAPI.Configs.isEnableHookModuleStatus` 是启用状态。
 

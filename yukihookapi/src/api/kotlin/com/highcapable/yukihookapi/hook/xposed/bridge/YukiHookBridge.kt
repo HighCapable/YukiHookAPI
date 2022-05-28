@@ -51,10 +51,10 @@ import com.highcapable.yukihookapi.hook.type.android.ConfigurationClass
 import com.highcapable.yukihookapi.hook.type.android.ContextClass
 import com.highcapable.yukihookapi.hook.type.android.InstrumentationClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
-import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import dalvik.system.PathClassLoader
 import de.robv.android.xposed.*
@@ -93,6 +93,9 @@ object YukiHookBridge {
 
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
+
+    /** 当前 Hook Framework 是否支持 Resources Hook */
+    internal var isSupportResourcesHook = false
 
     /**
      * 当前 Hook APP (宿主) 的全局生命周期 [Application]
@@ -388,6 +391,7 @@ object YukiHookBridge {
         }?.also {
             YukiHookAPI.onXposedLoaded(it)
             if (it.type == HookEntryType.PACKAGE) registerToAppLifecycle(it.packageName)
+            if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
         }
     }
 

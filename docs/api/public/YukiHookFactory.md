@@ -108,58 +108,52 @@ val Context.processName: String
 
 > 获取当前进程名称。
 
-### isSupportResourcesHook [field]
-
-```kotlin
-val Any?.isSupportResourcesHook: Boolean
-```
+### ~~isSupportResourcesHook [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0.80` `新增`
 
-**功能描述**
+`v1.0.91` `移除`
 
-> 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)。
+请转移到 `YukiHookAPI.Status.isSupportResourcesHook`
 
-### isModuleActive [field]
-
-```kotlin
-val Context.isModuleActive: Boolean
-```
+### ~~isModuleActive [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0.6` `新增`
 
-**功能描述**
+`v1.0.91` `移除`
 
-> 判断模块是否在 Xposed 或太极、无极中激活。
+请转移到 `YukiHookAPI.Status.isModuleActive`
 
-### isXposedModuleActive [field]
-
-```kotlin
-val Any?.isXposedModuleActive: Boolean
-```
+### ~~isXposedModuleActive [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0.6` `新增`
 
-**功能描述**
+`v1.0.91` `移除`
 
-> 仅判断模块是否在 Xposed 中激活。
+请转移到 `YukiHookAPI.Status.isXposedModuleActive`
 
-### isTaiChiModuleActive [field]
-
-```kotlin
-val Context.isTaiChiModuleActive: Boolean
-```
+### ~~isTaiChiModuleActive [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
 
-**功能描述**
+`v1.0.91` `移除`
 
-> 仅判断模块是否在太极、无极中激活。
+请转移到 `YukiHookAPI.Status.isTaiChiModuleActive`
+
+## ~~YukiHookModuleStatus [class]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0` `添加`
+
+`v1.0.91` `作废`
+
+请转移到 `YukiHookAPI.Status`

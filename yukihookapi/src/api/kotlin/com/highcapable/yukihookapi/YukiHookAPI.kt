@@ -38,15 +38,16 @@ import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
-import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import de.robv.android.xposed.XposedBridge
@@ -79,23 +80,77 @@ object YukiHookAPI {
     const val API_VERSION_CODE = 31
 
     /**
-     * 获取当前 Hook 框架的名称
-     *
-     * 从 [XposedBridge] 获取 TAG
-     * @return [String] 无法获取会返回 unknown - [YukiHookBridge.hasXposedBridge] 不存在会返回 invalid
+     * 当前 [YukiHookAPI] 的状态
      */
-    val executorName get() = YukiHookBridge.executorName
+    object Status {
+
+        /**
+         * 获取当前 Hook 框架的名称
+         *
+         * 从 [XposedBridge] 获取 TAG
+         *
+         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * @return [String] 无法获取会返回 unknown - [YukiHookBridge.hasXposedBridge] 不存在会返回 invalid
+         */
+        val executorName get() = if (YukiHookBridge.hasXposedBridge) YukiHookBridge.executorName else YukiHookModuleStatus.executorName
+
+        /**
+         * 获取当前 Hook 框架的版本
+         *
+         * 获取 [XposedBridge.getXposedVersion]
+         *
+         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * @return [Int] 无法获取会返回 -1
+         */
+        val executorVersion get() = if (YukiHookBridge.hasXposedBridge) YukiHookBridge.executorVersion else YukiHookModuleStatus.executorVersion
+
+        /**
+         * 判断模块是否在 Xposed 或太极、无极中激活
+         *
+         * - ❗在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
+         *
+         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         *
+         * - ❗在 Xposed 环境中仅返回非 [isTaiChiModuleActive] 的激活状态
+         * @return [Boolean] 是否激活
+         */
+        val isModuleActive get() = YukiHookBridge.hasXposedBridge || YukiHookModuleStatus.isActive() || isTaiChiModuleActive
+
+        /**
+         * 仅判断模块是否在 Xposed 中激活
+         *
+         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         *
+         * - ❗在 Xposed 环境中始终返回 true
+         * @return [Boolean] 是否激活
+         */
+        val isXposedModuleActive get() = YukiHookBridge.hasXposedBridge || YukiHookModuleStatus.isActive()
+
+        /**
+         * 仅判断模块是否在太极、无极中激活
+         *
+         * - ❗在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
+         *
+         * - ❗在 Xposed 环境中始终返回 false
+         * @return [Boolean] 是否激活
+         */
+        val isTaiChiModuleActive
+            get() = YukiHookBridge.hasXposedBridge.not() && (ModuleApplication.currentContext?.isTaiChiModuleActive ?: false)
+
+        /**
+         * 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)
+         *
+         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         *
+         * - ❗在 Xposed 环境中可能会延迟等待事件回调后才会返回 true
+         * @return [Boolean] 是否支持
+         */
+        val isSupportResourcesHook
+            get() = if (YukiHookBridge.hasXposedBridge) YukiHookBridge.isSupportResourcesHook else YukiHookModuleStatus.hasResourcesHook()
+    }
 
     /**
-     * 获取当前 Hook 框架的版本
-     *
-     * 获取 [XposedBridge.getXposedVersion]
-     * @return [Int] 无法获取会返回 -1
-     */
-    val executorVersion get() = YukiHookBridge.executorVersion
-
-    /**
-     * 配置 YukiHookAPI
+     * 配置 [YukiHookAPI]
      */
     object Configs {
 
@@ -159,7 +214,7 @@ object YukiHookAPI {
          *
          * - 为原生支持 Xposed 模块激活状态检测 - 此功能默认启用
          *
-         *  ❗关闭后你将不能再使用 [YukiHookModuleStatus] 中的功能
+         * - ❗关闭后你将不能再在模块环境中使用 [YukiHookAPI.Status] 中的功能
          */
         var isEnableHookModuleStatus = true
 
@@ -294,7 +349,7 @@ object YukiHookAPI {
     private fun printSplashLog() {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
-        yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using $executorName API $executorVersion")
+        yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using ${Status.executorName} API ${Status.executorVersion}")
     }
 
     /** 输出找不到 [XposedBridge] 的错误日志 */

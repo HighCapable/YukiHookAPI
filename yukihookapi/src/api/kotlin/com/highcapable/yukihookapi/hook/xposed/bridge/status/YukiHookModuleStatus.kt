@@ -25,17 +25,11 @@
  *
  * This file is Created by fankes on 2022/2/3.
  */
-package com.highcapable.yukihookapi.hook.xposed
+package com.highcapable.yukihookapi.hook.xposed.bridge.status
 
-import android.app.Activity
 import androidx.annotation.Keep
-import com.highcapable.yukihookapi.hook.factory.isModuleActive
-import com.highcapable.yukihookapi.hook.factory.isSupportResourcesHook
-import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
-import com.highcapable.yukihookapi.hook.factory.isXposedModuleActive
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.yLoggerD
-import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorName
-import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus.executorVersion
 import de.robv.android.xposed.XposedBridge
 
 /**
@@ -43,19 +37,19 @@ import de.robv.android.xposed.XposedBridge
  *
  * 我们需要监听自己的模块是否被激活 - 可使用以下方法调用
  *
- * 在 [Activity] 中调用 [isModuleActive] 或 [isTaiChiModuleActive]
+ * 调用 [YukiHookAPI.Status.isModuleActive] 或 [YukiHookAPI.Status.isTaiChiModuleActive]
  *
- * 在任意地方调用 [isXposedModuleActive]
+ * 调用 [YukiHookAPI.Status.isXposedModuleActive]
  *
  * 你还可以使用以下方法获取当前 Hook 框架的详细信息
  *
- * 调用 [executorName] 来获取当前 Hook 框架的名称
+ * 调用 [YukiHookAPI.Status.executorName] 来获取当前 Hook 框架的名称
  *
- * 调用 [executorVersion] 来获取当前 Hook 框架的版本
+ * 调用 [YukiHookAPI.Status.executorVersion] 来获取当前 Hook 框架的版本
  *
  * 详情请参考 [Xposed 模块判断自身激活状态](https://fankes.github.io/YukiHookAPI/#/guide/example?id=xposed-%e6%a8%a1%e5%9d%97%e5%88%a4%e6%96%ad%e8%87%aa%e8%ba%ab%e6%bf%80%e6%b4%bb%e7%8a%b6%e6%80%81)
  */
-object YukiHookModuleStatus {
+internal object YukiHookModuleStatus {
 
     /** 定义 Jvm 方法名 */
     internal const val IS_ACTIVE_METHOD_NAME = "__--"
@@ -73,23 +67,27 @@ object YukiHookModuleStatus {
      * 获取当前 Hook 框架的名称
      *
      * 从 [XposedBridge] 获取 TAG
+     *
+     * 请使用 [YukiHookAPI.Status.executorName] 获取
      * @return [String] 模块未激活会返回 unknown
      */
-    val executorName
+    internal val executorName
         get() = getXposedBridgeTag().replace(oldValue = "Bridge", newValue = "").replace(oldValue = "-", newValue = "").trim()
 
     /**
      * 获取当前 Hook 框架的版本
      *
      * 获取 [XposedBridge.getXposedVersion]
+     *
+     * 请使用 [YukiHookAPI.Status.executorVersion] 获取
      * @return [Int] 模块未激活会返回 -1
      */
-    val executorVersion get() = getXposedVersion()
+    internal val executorVersion get() = getXposedVersion()
 
     /**
      * 此方法经过 Hook 后返回 true 即模块已激活
      *
-     * 请使用 [isModuleActive]、[isXposedModuleActive]、[isTaiChiModuleActive] 判断模块激活状态
+     * 请使用 [YukiHookAPI.Status.isModuleActive]、[YukiHookAPI.Status.isXposedModuleActive]、[YukiHookAPI.Status.isTaiChiModuleActive] 判断模块激活状态
      * @return [Boolean]
      */
     @Keep
@@ -102,7 +100,7 @@ object YukiHookModuleStatus {
     /**
      * 此方法经过 Hook 后返回 true 即当前 Hook Framework 支持资源钩子(Resources Hook)
      *
-     * 请使用 [isSupportResourcesHook] 判断支持状态
+     * 请使用 [YukiHookAPI.Status.isSupportResourcesHook] 判断支持状态
      * @return [Boolean]
      */
     @Keep

@@ -37,7 +37,6 @@ import android.os.Process
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.xposed.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
@@ -99,32 +98,14 @@ val Context.processName
     }.getOrNull() ?: packageName ?: ""
 
 /**
- * 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)
- * @return [Boolean] 是否支持
- */
-val Any?.isSupportResourcesHook get() = YukiHookModuleStatus.hasResourcesHook()
-
-/**
- * 判断模块是否在 Xposed 或太极、无极中激活
- * @return [Boolean] 是否激活
- */
-val Context.isModuleActive get() = YukiHookModuleStatus.isActive() || isTaiChiModuleActive
-
-/**
- * 仅判断模块是否在 Xposed 中激活
- * @return [Boolean] 是否激活
- */
-val Any?.isXposedModuleActive get() = YukiHookModuleStatus.isActive()
-
-/**
  * 仅判断模块是否在太极、无极中激活
  *
- * 此处的实现代码来自太极官方文档封装和改进
+ * 此处的实现代码来自太极官方文档中示例代码的封装与改进
  *
  * 详情请参考太极开发指南中的 [如何判断模块是否激活了？](https://taichi.cool/zh/doc/for-xposed-dev.html#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E6%A8%A1%E5%9D%97%E6%98%AF%E5%90%A6%E6%BF%80%E6%B4%BB%E4%BA%86%EF%BC%9F)
  * @return [Boolean] 是否激活
  */
-val Context.isTaiChiModuleActive: Boolean
+internal val Context.isTaiChiModuleActive: Boolean
     get() {
         var isModuleActive = false
         runCatching {

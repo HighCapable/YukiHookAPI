@@ -74,7 +74,7 @@ class HookEntry : IYukiHookXposedInit {
             isEnableModuleAppResourcesCache = true
             // 是否启用 Hook Xposed 模块激活等状态功能
             // 为原生支持 Xposed 模块激活状态检测 - 此功能默认启用
-            // 关闭后你将不能再使用 [YukiHookModuleStatus] 中的功能
+            // 关闭后你将不能再在模块环境中使用 [YukiHookAPI.Status] 中的功能
             // 功能启用后 - 将会在宿主启动时自动 Hook [YukiHookModuleStatus]
             isEnableHookModuleStatus = true
             // 是否启用当前 Xposed 模块与宿主交互的 [YukiHookDataChannel] 功能
@@ -156,7 +156,12 @@ class HookEntry : IYukiHookXposedInit {
                             if (prefs.getBoolean("show_dialog_when_demo_app_opend"))
                                 AlertDialog.Builder(instance())
                                     .setTitle("Hooked")
-                                    .setMessage("This App has been hooked!")
+                                    .setMessage(
+                                        "This App has been hooked!\n\n" +
+                                                "Hook Framework: ${YukiHookAPI.Status.executorName}\n\n" +
+                                                "Xposed API Version: ${YukiHookAPI.Status.executorVersion}\n\n" +
+                                                "Support Resources Hook: ${YukiHookAPI.Status.isSupportResourcesHook}"
+                                    )
                                     .setPositiveButton("OK", null)
                                     .show()
                         }
