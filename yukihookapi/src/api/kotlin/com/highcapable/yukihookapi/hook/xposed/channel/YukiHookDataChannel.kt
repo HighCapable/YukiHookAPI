@@ -136,7 +136,8 @@ class YukiHookDataChannel private constructor() {
      */
     private fun isCurrentBroadcast(context: Context?) = runCatching {
         isXposedEnvironment || context?.javaClass?.name == ((context ?: receiverContext)
-            ?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager?)?.getRunningTasks(1)?.get(0)?.topActivity?.className
+            ?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager?)
+            ?.getRunningTasks(9999)?.let { it[it.lastIndex]?.topActivity?.className }
     }.getOrNull() ?: loggerW(msg = "Couldn't got current Activity status because a SecurityException blocked it").let { false }
 
     /**
