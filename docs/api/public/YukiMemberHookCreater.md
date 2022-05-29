@@ -575,7 +575,7 @@ injectMember {
 ##### by [method]
 
 ```kotlin
-inline fun by(initiate: () -> Boolean): Result
+inline fun by(condition: () -> Boolean): Result
 ```
 
 **变更记录**
@@ -593,7 +593,7 @@ inline fun by(initiate: () -> Boolean): Result
 ##### onHooked [method]
 
 ```kotlin
-fun onHooked(initiate: (Member) -> Unit): Result
+fun onHooked(result: (Member) -> Unit): Result
 ```
 
 **变更记录**
@@ -611,7 +611,7 @@ fun onHooked(initiate: (Member) -> Unit): Result
 ##### onAlreadyHooked [method]
 
 ```kotlin
-fun onAlreadyHooked(initiate: (Member) -> Unit): Result
+fun onAlreadyHooked(result: (Member) -> Unit): Result
 ```
 
 **变更记录**
@@ -627,7 +627,7 @@ fun onAlreadyHooked(initiate: (Member) -> Unit): Result
 ##### onNoSuchMemberFailure [method]
 
 ```kotlin
-fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result
+fun onNoSuchMemberFailure(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**
@@ -641,7 +641,7 @@ fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result
 ##### onConductFailure [method]
 
 ```kotlin
-fun onConductFailure(initiate: (HookParam, Throwable) -> Unit): Result
+fun onConductFailure(result: (HookParam, Throwable) -> Unit): Result
 ```
 
 **变更记录**
@@ -655,7 +655,7 @@ fun onConductFailure(initiate: (HookParam, Throwable) -> Unit): Result
 ##### onHookingFailure [method]
 
 ```kotlin
-fun onHookingFailure(initiate: (Throwable) -> Unit): Result
+fun onHookingFailure(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**
@@ -669,7 +669,7 @@ fun onHookingFailure(initiate: (Throwable) -> Unit): Result
 ##### onAllFailure [method]
 
 ```kotlin
-fun onAllFailure(initiate: (Throwable) -> Unit): Result
+fun onAllFailure(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**
@@ -775,7 +775,7 @@ inline fun result(initiate: Result.() -> Unit): Result
 #### by [method]
 
 ```kotlin
-inline fun by(initiate: () -> Boolean): Result
+inline fun by(condition: () -> Boolean): Result
 ```
 
 **变更记录**
@@ -793,7 +793,7 @@ inline fun by(initiate: () -> Boolean): Result
 #### onPrepareHook [method]
 
 ```kotlin
-fun onPrepareHook(initiate: () -> Unit): Result
+fun onPrepareHook(callback: () -> Unit): Result
 ```
 
 **变更记录**
@@ -807,7 +807,7 @@ fun onPrepareHook(initiate: () -> Unit): Result
 #### onHookClassNotFoundFailure [method]
 
 ```kotlin
-fun onHookClassNotFoundFailure(initiate: (Throwable) -> Unit): Result
+fun onHookClassNotFoundFailure(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**

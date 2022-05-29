@@ -466,7 +466,7 @@ method {
 #### onNoSuchMethod [method]
 
 ```kotlin
-inline fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result
+inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**

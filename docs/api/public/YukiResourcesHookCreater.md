@@ -529,7 +529,7 @@ inline fun result(initiate: Result.() -> Unit): Result
 ##### by [method]
 
 ```kotlin
-inline fun by(initiate: () -> Boolean): Result
+inline fun by(condition: () -> Boolean): Result
 ```
 
 **变更记录**
@@ -543,7 +543,7 @@ inline fun by(initiate: () -> Boolean): Result
 #### onHookingFailure [method]
 
 ```kotlin
-fun onHookingFailure(initiate: (Throwable) -> Unit): Result
+fun onHookingFailure(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**

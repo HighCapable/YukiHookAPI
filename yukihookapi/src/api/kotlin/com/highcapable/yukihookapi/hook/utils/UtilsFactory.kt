@@ -80,8 +80,8 @@ class RunBlockResult(@PublishedApi internal val afterMs: Long) {
 
     /**
      * 获取耗时计算结果
-     * @param initiate 回调结果 - ([Long] 耗时)
+     * @param result 回调结果 - ([Long] 耗时)
      */
     @YukiPrivateApi
-    inline fun result(initiate: (Long) -> Unit) = initiate(afterMs)
+    inline fun result(result: (Long) -> Unit) = result(afterMs)
 }

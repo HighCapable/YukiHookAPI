@@ -111,7 +111,7 @@ fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit)
 #### wait [method]
 
 ```kotlin
-fun wait(key: String, result: () -> Unit)
+fun wait(key: String, callback: () -> Unit)
 ```
 
 **变更记录**

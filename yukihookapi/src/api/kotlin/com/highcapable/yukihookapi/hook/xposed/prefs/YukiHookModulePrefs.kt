@@ -597,10 +597,10 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * 仅在模块环境执行
      *
      * 非模块环境使用会打印警告信息
-     * @param initiate 在模块环境执行
+     * @param callback 在模块环境执行
      */
-    private inline fun moduleEnvironment(initiate: () -> Unit) {
-        if (isXposedEnvironment.not()) initiate()
+    private inline fun moduleEnvironment(callback: () -> Unit) {
+        if (isXposedEnvironment.not()) callback()
         else yLoggerW(msg = "You cannot use write prefs function in Xposed Environment")
     }
 }

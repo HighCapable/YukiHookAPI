@@ -416,11 +416,11 @@ class MethodFinder @PublishedApi internal constructor(
          * 监听找不到方法时
          *
          * 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
-         * @param initiate 回调错误
+         * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
-        inline fun onNoSuchMethod(initiate: (Throwable) -> Unit): Result {
-            if (isNoSuch) initiate(e ?: Throwable("Initialization Error"))
+        inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result {
+            if (isNoSuch) result(e ?: Throwable("Initialization Error"))
             return this
         }
 

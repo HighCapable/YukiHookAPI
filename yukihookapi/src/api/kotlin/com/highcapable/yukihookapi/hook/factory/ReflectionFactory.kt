@@ -182,21 +182,21 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.
 
 /**
  * 遍历当前类中的所有方法
- * @param callback 回调 - ([Int] 下标,[Method] 实例)
+ * @param result 回调 - ([Int] 下标,[Method] 实例)
  */
-inline fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit) =
-    declaredMethods.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }
+inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit) =
+    declaredMethods.forEachIndexed { p, it -> result(p, it.apply { isAccessible = true }) }
 
 /**
  * 遍历当前类中的所有构造方法
- * @param callback 回调 - ([Int] 下标,[Constructor] 实例)
+ * @param result 回调 - ([Int] 下标,[Constructor] 实例)
  */
-inline fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit) =
-    declaredConstructors.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }
+inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructor<*>) -> Unit) =
+    declaredConstructors.forEachIndexed { p, it -> result(p, it.apply { isAccessible = true }) }
 
 /**
  * 遍历当前类中的所有变量
- * @param callback 回调 - ([Int] 下标,[Field] 实例)
+ * @param result 回调 - ([Int] 下标,[Field] 实例)
  */
-inline fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit) =
-    declaredFields.forEachIndexed { p, it -> callback(p, it.apply { isAccessible = true }) }
+inline fun Class<*>.allFields(result: (index: Int, field: Field) -> Unit) =
+    declaredFields.forEachIndexed { p, it -> result(p, it.apply { isAccessible = true }) }

@@ -267,12 +267,12 @@ class YukiHookDataChannel private constructor() {
          *
          * - ❗仅限使用 [VALUE_WAIT_FOR_LISTENER] 发送的监听才能被接收
          * @param key 键值名称
-         * @param result 回调结果
+         * @param callback 回调结果
          */
-        fun wait(key: String, result: () -> Unit) {
+        fun wait(key: String, callback: () -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    if (intent.getStringExtra(key) == VALUE_WAIT_FOR_LISTENER) result()
+                    if (intent.getStringExtra(key) == VALUE_WAIT_FOR_LISTENER) callback()
             }
         }
 

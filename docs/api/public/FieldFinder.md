@@ -268,7 +268,7 @@ fun give(): Field?
 #### onNoSuchField [method]
 
 ```kotlin
-fun onNoSuchField(initiate: (Throwable) -> Unit): Result
+fun onNoSuchField(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**

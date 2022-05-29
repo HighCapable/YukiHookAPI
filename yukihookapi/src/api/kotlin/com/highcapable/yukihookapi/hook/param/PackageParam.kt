@@ -414,10 +414,10 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
 
         /**
          * 监听当前 Hook APP 装载 [Application.attachBaseContext]
-         * @param initiate 回调 - ([Context] baseContext,[Boolean] 是否已执行 super)
+         * @param result 回调 - ([Context] baseContext,[Boolean] 是否已执行 super)
          */
-        fun attachBaseContext(initiate: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.attachBaseContextCallback = initiate
+        fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.attachBaseContextCallback = result
         }
 
         /**
@@ -446,27 +446,27 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
 
         /**
          * 监听当前 Hook APP 装载 [Application.onTrimMemory]
-         * @param initiate 回调 - ([Application] 当前实例,[Int] 类型)
+         * @param result 回调 - ([Application] 当前实例,[Int] 类型)
          */
-        fun onTrimMemory(initiate: (self: Application, level: Int) -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.onTrimMemoryCallback = initiate
+        fun onTrimMemory(result: (self: Application, level: Int) -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.onTrimMemoryCallback = result
         }
 
         /**
          * 监听当前 Hook APP 装载 [Application.onConfigurationChanged]
-         * @param initiate 回调 - ([Application] 当前实例,[Configuration] 配置实例)
+         * @param result 回调 - ([Application] 当前实例,[Configuration] 配置实例)
          */
-        fun onConfigurationChanged(initiate: (self: Application, config: Configuration) -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.onConfigurationChangedCallback = initiate
+        fun onConfigurationChanged(result: (self: Application, config: Configuration) -> Unit) {
+            YukiHookBridge.AppLifecycleCallback.onConfigurationChangedCallback = result
         }
 
         /**
          * 注册系统广播监听
          * @param action 系统广播 Action
-         * @param initiate 回调 - ([Context] 当前上下文,[Intent] 当前 Intent)
+         * @param result 回调 - ([Context] 当前上下文,[Intent] 当前 Intent)
          */
-        fun registerReceiver(vararg action: String, initiate: (context: Context, intent: Intent) -> Unit) {
-            if (action.isNotEmpty()) YukiHookBridge.AppLifecycleCallback.onReceiversCallback[action.value()] = Pair(action, initiate)
+        fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit) {
+            if (action.isNotEmpty()) YukiHookBridge.AppLifecycleCallback.onReceiversCallback[action.value()] = Pair(action, result)
         }
 
         /** 设置创建生命周期监听回调 */

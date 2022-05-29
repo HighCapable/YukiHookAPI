@@ -393,7 +393,7 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.
 ### allMethods [method]
 
 ```kotlin
-inline fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit)
+inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit)
 ```
 
 **变更记录**
@@ -411,7 +411,7 @@ inline fun Class<*>.allMethods(callback: (index: Int, method: Method) -> Unit)
 ### allConstructors [method]
 
 ```kotlin
-inline fun Class<*>.allConstructors(callback: (index: Int, constructor: Constructor<*>) -> Unit)
+inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructor<*>) -> Unit)
 ```
 
 **变更记录**
@@ -429,7 +429,7 @@ inline fun Class<*>.allConstructors(callback: (index: Int, constructor: Construc
 ### allFields [method]
 
 ```kotlin
-inline fun Class<*>.allFields(callback: (index: Int, field: Field) -> Unit)
+inline fun Class<*>.allFields(result: (index: Int, field: Field) -> Unit)
 ```
 
 **变更记录**

@@ -29,7 +29,7 @@ inline fun events(initiate: YukiXposedEvent.() -> Unit)
 ### onInitZygote [method]
 
 ```kotlin
-fun onInitZygote(initiate: (StartupParam) -> Unit)
+fun onInitZygote(result: (StartupParam) -> Unit)
 ```
 
 **变更记录**
@@ -43,7 +43,7 @@ fun onInitZygote(initiate: (StartupParam) -> Unit)
 ### onHandleLoadPackage [method]
 
 ```kotlin
-fun onHandleLoadPackage(initiate: (LoadPackageParam) -> Unit)
+fun onHandleLoadPackage(result: (LoadPackageParam) -> Unit)
 ```
 
 **变更记录**
@@ -57,7 +57,7 @@ fun onHandleLoadPackage(initiate: (LoadPackageParam) -> Unit)
 ### onHandleInitPackageResources [method]
 
 ```kotlin
-fun onHandleInitPackageResources(initiate: (InitPackageResourcesParam) -> Unit)
+fun onHandleInitPackageResources(result: (InitPackageResourcesParam) -> Unit)
 ```
 
 **变更记录**

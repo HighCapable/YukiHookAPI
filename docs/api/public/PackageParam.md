@@ -656,7 +656,7 @@ inner class AppLifecycle internal constructor()
 #### attachBaseContext [method]
 
 ```kotlin
-fun attachBaseContext(initiate: (baseContext: Context, hasCalledSuper: Boolean) -> Unit)
+fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) -> Unit)
 ```
 
 **变更记录**
@@ -712,7 +712,7 @@ fun onLowMemory(initiate: Application.() -> Unit)
 #### onTrimMemory [method]
 
 ```kotlin
-fun onTrimMemory(initiate: (self: Application, level: Int) -> Unit)
+fun onTrimMemory(result: (self: Application, level: Int) -> Unit)
 ```
 
 **变更记录**
@@ -726,7 +726,7 @@ fun onTrimMemory(initiate: (self: Application, level: Int) -> Unit)
 #### onConfigurationChanged [method]
 
 ```kotlin
-fun onConfigurationChanged(initiate: (self: Application, config: Configuration) -> Unit)
+fun onConfigurationChanged(result: (self: Application, config: Configuration) -> Unit)
 ```
 
 **变更记录**
@@ -740,7 +740,7 @@ fun onConfigurationChanged(initiate: (self: Application, config: Configuration) 
 #### registerReceiver [method]
 
 ```kotlin
-fun registerReceiver(vararg action: String, initiate: (context: Context, intent: Intent) -> Unit)
+fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit)
 ```
 
 **变更记录**

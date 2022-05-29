@@ -235,11 +235,11 @@ class FieldFinder @PublishedApi internal constructor(
 
         /**
          * 监听找不到变量时
-         * @param initiate 回调错误
+         * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
-        fun onNoSuchField(initiate: (Throwable) -> Unit): Result {
-            if (isNoSuch) initiate(e ?: Throwable())
+        fun onNoSuchField(result: (Throwable) -> Unit): Result {
+            if (isNoSuch) result(e ?: Throwable())
             return this
         }
 

@@ -609,11 +609,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
              * 添加执行 Hook 需要满足的条件
              *
              * 不满足条件将直接停止 Hook
-             * @param initiate 条件方法体
+             * @param condition 条件方法体
              * @return [Result] 可继续向下监听
              */
-            inline fun by(initiate: () -> Boolean): Result {
-                isDisableMemberRunHook = (runCatching { initiate() }.getOrNull() ?: false).not()
+            inline fun by(condition: () -> Boolean): Result {
+                isDisableMemberRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
                 if (isDisableMemberRunHook) ignoredAllFailure()
                 return this
             }
@@ -624,11 +624,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
              * 在首次 Hook 成功后回调
              *
              * 在重复 Hook 时会回调 [onAlreadyHooked]
-             * @param initiate 回调被 Hook 的 [Member]
+             * @param result 回调被 Hook 的 [Member]
              * @return [Result] 可继续向下监听
              */
-            fun onHooked(initiate: (Member) -> Unit): Result {
-                onHookedCallback = initiate
+            fun onHooked(result: (Member) -> Unit): Result {
+                onHookedCallback = result
                 return this
             }
 
@@ -636,21 +636,21 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
              * 监听 [member] 重复 Hook 的回调方法
              *
              * - ❗同一个 [hookClass] 中的同一个 [member] 不会被 API 重复 Hook - 若由于各种原因重复 Hook 会回调此方法
-             * @param initiate 回调被重复 Hook 的 [Member]
+             * @param result 回调被重复 Hook 的 [Member]
              * @return [Result] 可继续向下监听
              */
-            fun onAlreadyHooked(initiate: (Member) -> Unit): Result {
-                onAlreadyHookedCallback = initiate
+            fun onAlreadyHooked(result: (Member) -> Unit): Result {
+                onAlreadyHookedCallback = result
                 return this
             }
 
             /**
              * 监听 [member] 不存在发生错误的回调方法
-             * @param initiate 回调错误
+             * @param result 回调错误
              * @return [Result] 可继续向下监听
              */
-            fun onNoSuchMemberFailure(initiate: (Throwable) -> Unit): Result {
-                onNoSuchMemberFailureCallback = initiate
+            fun onNoSuchMemberFailure(result: (Throwable) -> Unit): Result {
+                onNoSuchMemberFailureCallback = result
                 return this
             }
 
@@ -662,11 +662,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
 
             /**
              * 监听 Hook 进行过程中发生错误的回调方法
-             * @param initiate 回调错误 - ([HookParam] 当前 Hook 实例,[Throwable] 异常)
+             * @param result 回调错误 - ([HookParam] 当前 Hook 实例,[Throwable] 异常)
              * @return [Result] 可继续向下监听
              */
-            fun onConductFailure(initiate: (HookParam, Throwable) -> Unit): Result {
-                onConductFailureCallback = initiate
+            fun onConductFailure(result: (HookParam, Throwable) -> Unit): Result {
+                onConductFailureCallback = result
                 return this
             }
 
@@ -678,11 +678,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
 
             /**
              * 监听 Hook 开始时发生错误的回调方法
-             * @param initiate 回调错误
+             * @param result 回调错误
              * @return [Result] 可继续向下监听
              */
-            fun onHookingFailure(initiate: (Throwable) -> Unit): Result {
-                onHookingFailureCallback = initiate
+            fun onHookingFailure(result: (Throwable) -> Unit): Result {
+                onHookingFailureCallback = result
                 return this
             }
 
@@ -694,11 +694,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
 
             /**
              * 监听全部 Hook 过程发生错误的回调方法
-             * @param initiate 回调错误
+             * @param result 回调错误
              * @return [Result] 可继续向下监听
              */
-            fun onAllFailure(initiate: (Throwable) -> Unit): Result {
-                onAllFailureCallback = initiate
+            fun onAllFailure(result: (Throwable) -> Unit): Result {
+                onAllFailureCallback = result
                 return this
             }
 
@@ -731,31 +731,31 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * 添加执行 Hook 需要满足的条件
          *
          * 不满足条件将直接停止 Hook
-         * @param initiate 条件方法体
+         * @param condition 条件方法体
          * @return [Result] 可继续向下监听
          */
-        inline fun by(initiate: () -> Boolean): Result {
-            isDisableCreaterRunHook = (runCatching { initiate() }.getOrNull() ?: false).not()
+        inline fun by(condition: () -> Boolean): Result {
+            isDisableCreaterRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
             return this
         }
 
         /**
          * 监听 [hookClass] 存在时准备开始 Hook 的操作
-         * @param initiate 条件方法体
+         * @param callback 准备开始 Hook 后回调
          * @return [Result] 可继续向下监听
          */
-        fun onPrepareHook(initiate: () -> Unit): Result {
-            onPrepareHook = initiate
+        fun onPrepareHook(callback: () -> Unit): Result {
+            onPrepareHook = callback
             return this
         }
 
         /**
          * 监听 [hookClass] 找不到时发生错误的回调方法
-         * @param initiate 回调错误
+         * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
-        fun onHookClassNotFoundFailure(initiate: (Throwable) -> Unit): Result {
-            onHookClassNotFoundFailureCallback = initiate
+        fun onHookClassNotFoundFailure(result: (Throwable) -> Unit): Result {
+            onHookClassNotFoundFailureCallback = result
             return this
         }
 

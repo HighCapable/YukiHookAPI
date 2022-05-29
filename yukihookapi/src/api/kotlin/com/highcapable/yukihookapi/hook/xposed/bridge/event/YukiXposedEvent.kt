@@ -58,26 +58,26 @@ object YukiXposedEvent {
 
     /**
      * 设置 initZygote 事件监听
-     * @param initiate 回调方法体
+     * @param result 回调方法体
      */
-    fun onInitZygote(initiate: (StartupParam) -> Unit) {
-        initZygoteCallback = initiate
+    fun onInitZygote(result: (StartupParam) -> Unit) {
+        initZygoteCallback = result
     }
 
     /**
      * 设置 handleLoadPackage 事件监听
-     * @param initiate 回调方法体
+     * @param result 回调方法体
      */
-    fun onHandleLoadPackage(initiate: (LoadPackageParam) -> Unit) {
-        handleLoadPackageCallback = initiate
+    fun onHandleLoadPackage(result: (LoadPackageParam) -> Unit) {
+        handleLoadPackageCallback = result
     }
 
     /**
      * 设置 handleInitPackageResources 事件监听
-     * @param initiate 回调方法体
+     * @param result 回调方法体
      */
-    fun onHandleInitPackageResources(initiate: (InitPackageResourcesParam) -> Unit) {
-        handleInitPackageResourcesCallback = initiate
+    fun onHandleInitPackageResources(result: (InitPackageResourcesParam) -> Unit) {
+        handleInitPackageResourcesCallback = result
     }
 
     /**

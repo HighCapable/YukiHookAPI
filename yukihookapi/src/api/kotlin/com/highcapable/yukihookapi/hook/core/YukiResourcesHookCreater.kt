@@ -340,21 +340,21 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
              * 添加执行 Hook 需要满足的条件
              *
              * 不满足条件将直接停止 Hook
-             * @param initiate 条件方法体
+             * @param condition 条件方法体
              * @return [Result] 可继续向下监听
              */
-            inline fun by(initiate: () -> Boolean): Result {
-                isDisableCreaterRunHook = (runCatching { initiate() }.getOrNull() ?: false).not()
+            inline fun by(condition: () -> Boolean): Result {
+                isDisableCreaterRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
                 return this
             }
 
             /**
              * 监听 Hook 过程发生错误的回调方法
-             * @param initiate 回调错误
+             * @param result 回调错误
              * @return [Result] 可继续向下监听
              */
-            fun onHookingFailure(initiate: (Throwable) -> Unit): Result {
-                onHookFailureCallback = initiate
+            fun onHookingFailure(result: (Throwable) -> Unit): Result {
+                onHookFailureCallback = result
                 return this
             }
 

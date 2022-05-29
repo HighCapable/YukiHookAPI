@@ -374,7 +374,7 @@ constructor {
 #### onNoSuchConstructor [method]
 
 ```kotlin
-inline fun onNoSuchConstructor(initiate: (Throwable) -> Unit): Result
+inline fun onNoSuchConstructor(result: (Throwable) -> Unit): Result
 ```
 
 **变更记录**
