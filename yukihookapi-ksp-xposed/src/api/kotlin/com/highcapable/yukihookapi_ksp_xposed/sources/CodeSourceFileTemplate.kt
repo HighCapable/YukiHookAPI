@@ -101,9 +101,10 @@ object CodeSourceFileTemplate {
      * @param packageName 包名
      * @param entryClassName 入口类名
      * @param xInitClassName xposed_init 入口类名
+     * @param isUsingResourcesHook 是否启用 Resources Hook
      * @return [ByteArray]
      */
-    fun getXposedInitFileByteArray(packageName: String, entryClassName: String, xInitClassName: String) =
+    fun getXposedInitFileByteArray(packageName: String, entryClassName: String, xInitClassName: String, isUsingResourcesHook: Boolean) =
         ("@file:Suppress(\"ClassName\")\n" +
                 "\n" +
                 "package $packageName\n" +
@@ -111,16 +112,17 @@ object CodeSourceFileTemplate {
                 "import androidx.annotation.Keep\n" +
                 "import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent\n" +
                 "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
-                "import de.robv.android.xposed.IXposedHookInitPackageResources\n" +
+                (if (isUsingResourcesHook) "import de.robv.android.xposed.IXposedHookInitPackageResources\n" else "") +
                 "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
                 "import de.robv.android.xposed.IXposedHookZygoteInit\n" +
-                "import de.robv.android.xposed.callbacks.XC_InitPackageResources\n" +
+                (if (isUsingResourcesHook) "import de.robv.android.xposed.callbacks.XC_InitPackageResources\n" else "") +
                 "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
                 "\n" +
                 getCommentContent(entryClassName, currrentClassTag = "Xposed Init") +
                 "@Keep\n" +
                 "@YukiGenerateApi\n" +
-                "class $xInitClassName : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {\n" +
+                "class $xInitClassName : IXposedHookZygoteInit, IXposedHookLoadPackage" +
+                "${if (isUsingResourcesHook) ", IXposedHookInitPackageResources" else ""} {\n" +
                 "\n" +
                 "    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +
                 "        ${entryClassName}_Impl.callInitZygote(sparam)\n" +
@@ -131,11 +133,11 @@ object CodeSourceFileTemplate {
                 "        ${entryClassName}_Impl.callHandleLoadPackage(lpparam)\n" +
                 "        YukiXposedEvent.EventHandler.callHandleLoadPackage(lpparam)\n" +
                 "    }\n" +
-                "\n" +
-                "    override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
-                "        ${entryClassName}_Impl.callHandleInitPackageResources(resparam)\n" +
-                "        YukiXposedEvent.EventHandler.callHandleInitPackageResources(resparam)\n" +
-                "    }\n" +
+                (if (isUsingResourcesHook)
+                    ("\n    override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
+                            "        ${entryClassName}_Impl.callHandleInitPackageResources(resparam)\n" +
+                            "        YukiXposedEvent.EventHandler.callHandleInitPackageResources(resparam)\n" +
+                            "    }\n") else "") +
                 "}").toByteArray()
 
     /**

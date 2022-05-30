@@ -103,8 +103,14 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                  * @param sourcePath 指定的 source 路径
                  * @param modulePackageName 模块包名
                  * @param xInitClassName xposed_init 入口类名
+                 * @param isUsingResourcesHook 是否启用 Resources Hook
                  */
-                fun fetchKSClassDeclaration(sourcePath: String, modulePackageName: String, xInitClassName: String) {
+                fun fetchKSClassDeclaration(
+                    sourcePath: String,
+                    modulePackageName: String,
+                    xInitClassName: String,
+                    isUsingResourcesHook: Boolean
+                ) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
@@ -117,7 +123,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                     entryClassName = it.simpleName.asString(),
                                     xInitClassName = xcName
                                 )
-                                injectClass(it.packageName.asString(), modulePackageName, it.simpleName.asString(), xcName)
+                                injectClass(it.packageName.asString(), modulePackageName, it.simpleName.asString(), xcName, isUsingResourcesHook)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
                                 problem(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
@@ -133,6 +139,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                         var sourcePath = "" // 项目相对路径
                         var modulePackageName = "" // 模块包名
                         var entryClassName = "" // xposed_init 入口类名
+                        var isUsingResourcesHook = false // 是否启用 Resources Hook
                         e.arguments.forEach { pease ->
                             if (pease.name?.asString() == "sourcePath")
                                 sourcePath = pease.value.toString().trim()
@@ -140,6 +147,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 modulePackageName = pease.value.toString().trim()
                             if (pease.name?.asString() == "entryClassName")
                                 entryClassName = pease.value.toString().trim()
+                            if (pease.name?.asString() == "isUsingResourcesHook")
+                                isUsingResourcesHook = pease.value as Boolean
                         }
                         if ((modulePackageName.startsWith(".") ||
                                     modulePackageName.endsWith(".") ||
@@ -151,7 +160,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                     true.let { for (i in 0..9) if (entryClassName.startsWith(i.toString())) return@let true;false })
                             && entryClassName.isNotEmpty()
                         ) problem(msg = "Invalid entryClassName \"$entryClassName\"")
-                        else fetchKSClassDeclaration(sourcePath, modulePackageName, entryClassName)
+                        else fetchKSClassDeclaration(sourcePath, modulePackageName, entryClassName, isUsingResourcesHook)
                     }
                 }
             }
@@ -207,58 +216,64 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param modulePackageName 模块包名
          * @param entryClassName 入口类名
          * @param xInitClassName xposed_init 入口类名
+         * @param isUsingResourcesHook 是否启用 Resources Hook
          */
-        private fun injectClass(packageName: String, modulePackageName: String, entryClassName: String, xInitClassName: String) =
-            environment(ignoredError = true) {
-                if (modulePackageName.isNotBlank())
-                    warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
-                val fModulePackageName = modulePackageName.ifBlank {
-                    if (packageName.contains(other = ".hook.") || packageName.endsWith(suffix = ".hook"))
-                        packageName.split(".hook")[0]
-                    else error("Cannot identify your Module App's package name, please manually configure the package name")
-                }
-                val mdAppInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
-                val ykBridgeInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.bridge.inject"
-                /** 插入 ModuleApplication_Injector 代码 */
-                codeGenerator.createNewFile(
-                    dependencies = Dependencies.ALL_FILES,
-                    packageName = mdAppInjectPackageName,
-                    fileName = "ModuleApplication_Injector"
-                ).apply {
-                    write(CodeSourceFileTemplate.getModuleApplicationInjectorFileByteArray(mdAppInjectPackageName, packageName, entryClassName))
-                    flush()
-                    close()
-                }
-                /** 插入 YukiHookBridge_Injector 代码 */
-                codeGenerator.createNewFile(
-                    dependencies = Dependencies.ALL_FILES,
-                    packageName = ykBridgeInjectPackageName,
-                    fileName = "YukiHookBridge_Injector"
-                ).apply {
-                    write(CodeSourceFileTemplate.getYukiHookBridgeInjectorFileByteArray(ykBridgeInjectPackageName))
-                    flush()
-                    close()
-                }
-                /** 插入 xposed_init 代码 */
-                codeGenerator.createNewFile(
-                    dependencies = Dependencies.ALL_FILES,
-                    packageName = packageName,
-                    fileName = xInitClassName
-                ).apply {
-                    write(CodeSourceFileTemplate.getXposedInitFileByteArray(packageName, entryClassName, xInitClassName))
-                    flush()
-                    close()
-                }
-                /** 插入 xposed_init_Impl 代码 */
-                codeGenerator.createNewFile(
-                    dependencies = Dependencies.ALL_FILES,
-                    packageName = packageName,
-                    fileName = "${entryClassName}_Impl"
-                ).apply {
-                    write(CodeSourceFileTemplate.getXposedInitImplFileByteArray(packageName, fModulePackageName, entryClassName))
-                    flush()
-                    close()
-                }
+        private fun injectClass(
+            packageName: String,
+            modulePackageName: String,
+            entryClassName: String,
+            xInitClassName: String,
+            isUsingResourcesHook: Boolean
+        ) = environment(ignoredError = true) {
+            if (modulePackageName.isNotBlank())
+                warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
+            val fModulePackageName = modulePackageName.ifBlank {
+                if (packageName.contains(other = ".hook.") || packageName.endsWith(suffix = ".hook"))
+                    packageName.split(".hook")[0]
+                else error("Cannot identify your Module App's package name, please manually configure the package name")
             }
+            val mdAppInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
+            val ykBridgeInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.bridge.inject"
+            /** 插入 ModuleApplication_Injector 代码 */
+            codeGenerator.createNewFile(
+                dependencies = Dependencies.ALL_FILES,
+                packageName = mdAppInjectPackageName,
+                fileName = "ModuleApplication_Injector"
+            ).apply {
+                write(CodeSourceFileTemplate.getModuleApplicationInjectorFileByteArray(mdAppInjectPackageName, packageName, entryClassName))
+                flush()
+                close()
+            }
+            /** 插入 YukiHookBridge_Injector 代码 */
+            codeGenerator.createNewFile(
+                dependencies = Dependencies.ALL_FILES,
+                packageName = ykBridgeInjectPackageName,
+                fileName = "YukiHookBridge_Injector"
+            ).apply {
+                write(CodeSourceFileTemplate.getYukiHookBridgeInjectorFileByteArray(ykBridgeInjectPackageName))
+                flush()
+                close()
+            }
+            /** 插入 xposed_init 代码 */
+            codeGenerator.createNewFile(
+                dependencies = Dependencies.ALL_FILES,
+                packageName = packageName,
+                fileName = xInitClassName
+            ).apply {
+                write(CodeSourceFileTemplate.getXposedInitFileByteArray(packageName, entryClassName, xInitClassName, isUsingResourcesHook))
+                flush()
+                close()
+            }
+            /** 插入 xposed_init_Impl 代码 */
+            codeGenerator.createNewFile(
+                dependencies = Dependencies.ALL_FILES,
+                packageName = packageName,
+                fileName = "${entryClassName}_Impl"
+            ).apply {
+                write(CodeSourceFileTemplate.getXposedInitImplFileByteArray(packageName, fModulePackageName, entryClassName))
+                flush()
+                close()
+            }
+        }
     }
 }

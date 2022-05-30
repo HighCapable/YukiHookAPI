@@ -623,6 +623,8 @@ inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit)
 
 > Hook APP 的 Resources。
 
+!> 请注意你需要确保当前 Hook Framework 支持且 `InjectYukiHookWithXposed.isUsingResourcesHook` 已启用。
+
 **功能示例**
 
 Resources Hook 为固定用法，获取 `resources` 对象，然后调用 `hook` 方法开始 Hook。

@@ -110,6 +110,7 @@ class HookEntry : IYukiHookXposedInit {
                 }
                 // 得到需要 Hook 的 Resources
                 // 需要 Hook Framework 支持 Resources Hook(资源钩子) 才能成功
+                // 在 Zygote 中的 Resources Hook 只需要 Hook Framework 支持 - 无需启用此功能
                 resources().hook {
                     // 注入要 Hook 的 Resources
                     injectResource {
@@ -260,7 +261,7 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
                 // 得到需要 Hook 的 Resources
-                // 需要 Hook Framework 支持 Resources Hook(资源钩子) 才能成功
+                // 需要 Hook Framework 支持 Resources Hook(资源钩子) 且启用此功能才能成功
                 resources().hook {
                     // 注入要 Hook 的 Resources
                     injectResource {

@@ -36,6 +36,7 @@ import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
@@ -375,6 +376,8 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
 
     /**
      * Hook APP 的 Resources
+     *
+     * - ❗请注意你需要确保当前 Hook Framework 支持且 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用
      * @param initiate 方法体
      */
     inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit) =

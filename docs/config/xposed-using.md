@@ -18,7 +18,8 @@
 annotation class InjectYukiHookWithXposed(
     val sourcePath: String,
     val modulePackageName: String,
-    val entryClassName: String
+    val entryClassName: String,
+    val isUsingResourcesHook: Boolean
 )
 ```
 
@@ -96,7 +97,7 @@ Xposed 入口类处理如下。
 > 示例如下
 
 ```kotlin
-class HookEntry_YukiHookXposedInit: IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources
+class HookEntry_YukiHookXposedInit: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 ```
 
 编译后的类名结构如下。
@@ -123,7 +124,7 @@ Xposed 入口类处理如下。
 > 示例如下
 
 ```kotlin
-class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources
+class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 ```
 
 编译后的类名结构如下。
@@ -137,6 +138,56 @@ class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHoo
 ```
 
 !> 你定义的 `entryClassName` 不可与 `xposed_init` 中的类名相同，否则自动处理程序<u>会在编译时抛出异常</u>。
+
+#### isUsingResourcesHook 参数
+
+`isUsingResourcesHook` 决定了自动处理程序是否生成针对 Resources Hook 的相关代码，此功能默认是启用的。
+
+启用后生成的入口类将为如下所示。
+
+> 示例如下
+
+```kotlin
+class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
+
+    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
+        // ...
+    }
+
+    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
+        // ...
+    }
+
+    override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {
+        // ...
+    }
+}
+```
+
+若你当前的项目并不需要用到 Reources Hook，可以设置 `isUsingResourcesHook = false` 来关闭自动生成。
+
+>  示例如下
+
+```kotlin
+@InjectYukiHookWithXposed(isUsingResourcesHook = false)
+```
+
+关闭后生成的入口类将为如下所示。
+
+> 示例如下
+
+```kotlin
+class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
+
+    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
+        // ...
+    }
+
+    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
+        // ...
+    }
+}
+```
 
 ### IYukiHookXposedInit 接口
 

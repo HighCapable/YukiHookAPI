@@ -184,6 +184,8 @@ val isSupportResourcesHook: Boolean
 
 !> 在 Xposed 环境中可能会延迟等待事件回调后才会返回 true。
 
+!> 请注意你需要确保 `InjectYukiHookWithXposed.isUsingResourcesHook` 已启用，否则始终返回 false。
+
 ### Configs [object]
 
 ```kotlin

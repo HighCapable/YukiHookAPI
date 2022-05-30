@@ -34,6 +34,7 @@ import android.content.Context
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
@@ -143,6 +144,8 @@ object YukiHookAPI {
          * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          *
          * - ❗在 Xposed 环境中可能会延迟等待事件回调后才会返回 true
+         *
+         * - ❗请注意你需要确保 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用 - 否则始终返回 false
          * @return [Boolean] 是否支持
          */
         val isSupportResourcesHook
