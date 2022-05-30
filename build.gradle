@@ -10,7 +10,7 @@ ext {
     devUser = "fankesyooni"
     userEmail = "qzmmcn@163.com"
     groupId = "com.highcapable.yukihookapi"
-    apiVersion = "1.0.91"
+    apiVersion = "1.0.92"
     repoName = "YukiHookAPI"
     repoDescription = "An efficient Kotlin version of the Xposed Hook API."
     licenceName = "MIT License"

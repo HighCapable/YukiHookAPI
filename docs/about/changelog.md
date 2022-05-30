@@ -2,6 +2,12 @@
 
 > 这里记录了 `YukiHookAPI` 的版本更新历史。
 
+### 1.0.92 | 2022.05.31
+
+- 修正了大量方法中 callback 的命名方法
+- 更换方案再次修复 `YukiHookDataChannel` 在低于 **Android 12** 的设备上不能回调当前 `Activity` 广播的问题
+- `InjectYukiHookWithXposed` 注解新增 `isUsingResourcesHook` 功能，现在你可以选择性关闭自动生成 `IXposedHookInitPackageResources` 的依赖接口了
+
 ### 1.0.91 | 2022.05.29
 
 - 修复部分设备的定制系统在 LSPosed 环境下开机启动获取的 `ClassLoader` 错误的问题，感谢 [Luckyzyx](https://github.com/luckyzyx) 的反馈

@@ -75,10 +75,10 @@ object YukiHookAPI {
     internal var isLoadedFromBaseContext = false
 
     /** 获取当前 [YukiHookAPI] 的版本 */
-    const val API_VERSION_NAME = "1.0.91"
+    const val API_VERSION_NAME = "1.0.92"
 
     /** 获取当前 [YukiHookAPI] 的版本号 */
-    const val API_VERSION_CODE = 32
+    const val API_VERSION_CODE = 33
 
     /**
      * 当前 [YukiHookAPI] 的状态
