@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.6.21-1.0.5'
+    id 'com.google.devtools.ksp' version '1.7.0-1.0.6'
 }
 
 android {
@@ -16,12 +16,12 @@ android {
         }
     }
 
-    compileSdk 31
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.highcapable.yukihookapi.demo_module"
-        minSdk 22
-        targetSdk 31
+        minSdk 21
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -60,9 +60,9 @@ dependencies {
     // Implementation Processor
     ksp project(':yukihookapi-ksp-xposed')
     implementation 'androidx.preference:preference-ktx:1.2.0'
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
