@@ -305,6 +305,11 @@ class YukiResourcesHookCreater(private val packageParam: PackageParam, @Publishe
                 type = "mipmap"
             }
 
+            /** 设置 Resources 类型为数组(Array) */
+            fun array() {
+                type = "array"
+            }
+
             /**
              * 创建查找对象实例
              * @return [ConditionFinder]
