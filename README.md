@@ -105,6 +105,8 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [MIUI遮罩进化](https://github.com/GSWXXN/RestoreSplashScreen)                          | [GSWXXN](https://github.com/GSWXXN)             |
 | [Color OS Installer Plus](https://github.com/NextAlone/ColorOSInstallerPlus)       | [NextAlone](https://github.com/NextAlone)       |
 | [Auto NFC](https://github.com/GSWXXN/AutoNFC)                                    | [GSWXXN](https://github.com/GSWXXN)             |
+| [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                        | [WankkoRee](https://github.com/WankkoRee)       |
+| [QDReadHook](https://github.com/xihan123/QDReadHook)                              | [xihan123](https://github.com/xihan123)       |
 
 ## Donate
 
