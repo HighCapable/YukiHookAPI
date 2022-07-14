@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.google.devtools.ksp' version '1.7.0-1.0.6'
+    id 'com.google.devtools.ksp' version '1.7.10-1.0.6'
     id 'maven-publish'
     id 'signing'
 }
@@ -28,7 +28,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 
 dependencies {
     implementation 'com.google.auto.service:auto-service-annotations:1.0.1'
-    compileOnly 'com.google.devtools.ksp:symbol-processing-api:1.7.0-1.0.6'
+    compileOnly 'com.google.devtools.ksp:symbol-processing-api:1.7.10-1.0.6'
     ksp 'dev.zacsweers.autoservice:auto-service-ksp:1.0.0'
 }
 
