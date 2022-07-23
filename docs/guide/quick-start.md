@@ -18,7 +18,17 @@
 
 - Jvm 11 及以上 (Since API `1.0.80`)
 
-## 集成依赖
+## 自动构建项目
+
+`YukiHookAPI` 提供了一个自动化构建工具，它可以帮助你快速构建一个拥有 Xposed 模块依赖的 Android 标准项目模板，使用构建好的模板即可直接开始下一步工作。
+
+你可以 [点击这里](tools/yukihookapi-projectbuilder) 进行查看。
+
+## 手动配置项目
+
+若你不想使用自动化构建工具，你依然可以按照以下方式手动配置项目依赖。
+
+### 集成依赖
 
 在你的项目 `build.gradle` 中添加依赖。
 
@@ -85,7 +95,7 @@ android {
 
 !> 自 API `1.0.80` 版本后 Jvm 版本默认为 11，不再支持 1.8 及以下版本。
 
-## 作为 Xposed 模块使用
+### 作为 Xposed 模块使用
 
 在你的 `AndroidManifest.xml` 中添加基础代码。
 
@@ -139,9 +149,9 @@ class HookEntry : IYukiHookXposedInit {
 
 若你目前正在使用 Xposed API，你可以参考 [从 Xposed API 迁移](guide/move-to-new-api)。
 
-## 作为 Hook API 使用
+### 作为 Hook API 使用
 
-### 集成方式
+#### 集成方式
 
 创建你的自定义 `Application`。
 
@@ -171,6 +181,6 @@ override fun attachBaseContext(base: Context?) {
 
 有关作为 Hook API 使用的相关配置详细内容，你可以 [点击这里](config/api-using) 继续阅读。
 
-### 特别说明
+#### 特别说明
 
 !> 由于你使用了自定义的 Hook 框架而并非模块，~~`YukiHookModuleStatus`~~ ~~`YukiHookModulePrefs`~~ ~~`YukiHookDataChannel`~~ 以及 Resources Hook 功能将失效。

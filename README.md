@@ -66,7 +66,7 @@
 
 > 面向中国大陆开发者的提示：若打开页面发生 404 问题，可能是由于你的 DNS 受到了污染，请科学上网后清除浏览器缓存再试一次。
 
-The latest version update time/最新版本更新时间：2022-05-31 01:35
+The latest version update time/最新版本更新时间：2022-07-23 22:33
 
 ## Contacts
 

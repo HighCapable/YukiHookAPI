@@ -13,6 +13,9 @@
   * [作为 Hook API 使用的相关配置](config/api-using)
   * [R8 与 Proguard 混淆](config/r8-proguard)
 
+* 工具
+  * [YukiHookAPI 构建工具](tools/yukihookapi-projectbuilder) 
+
 * API 文档
   * [文档介绍](api/home)
   * [Public API](api/document)

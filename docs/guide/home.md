@@ -193,6 +193,7 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
 | Hook Framework                                            | ST  | Describe                                                                                  |
 | --------------------------------------------------------- | --- | ----------------------------------------------------------------------------------------- |
 | [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅   | 多场景下稳定使用                                                                          |
+| [LSPatch](https://github.com/LSPosed/LSPatch)             | ⭕   | 将在此项目完善后逐渐加入 API 支持                                                         |
 | [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ❎   | 已停止维护，不再推荐使用                                                                  |
 | [Pine](https://github.com/canyie/pine)                    | ⭕   | 可以使用                                                                                  |
 | [SandHook](https://github.com/asLody/SandHook)            | ⭕   | 可以使用                                                                                  |
