@@ -2,7 +2,7 @@
 
 > 这是一个使用 YukiHookAPI 作为核心的 Xposed 模块自动构建工具，实现自动化搜索依赖快速搭建一个包含 Xposed 模块环境的 Android 项目模板。
 
-<img src="https://github.com/fankes/YukiHookAPI/blob/master/docs/img-src/yukihookapi-projectbuilder.png" width = "720"/>
+<img src="https://raw.githubusercontent.com/fankes/YukiHookAPI/master/docs/img-src/yukihookapi-projectbuilder.png" width = "720"/>
 
 ## 获取项目
 
