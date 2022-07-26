@@ -123,7 +123,8 @@ inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit) = method(initia
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit) = constructor(initiate).ignoredError().isNoSuch.not()
+inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
+    constructor(initiate).ignoredError().isNoSuch.not()
 
 /**
  * 查询 [Member] 中匹配的描述符
@@ -151,7 +152,8 @@ inline fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(cla
  * @param initiate 查找方法体
  * @return [ConstructorFinder.Result]
  */
-inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit) = ConstructorFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
+    ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
  * 获得当前实例的类操作对象
@@ -169,7 +171,8 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
  * @param initiate 查找方法体
  * @return [Any] or null
  */
-inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) = constructor(initiate).get().call(*param)
+inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
+    constructor(initiate).get().call(*param)
 
 /**
  * 通过构造方法创建新实例 - 指定类型 [T]
@@ -177,7 +180,7 @@ inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.(
  * @param initiate 查找方法体
  * @return [T] or null
  */
-inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = {}) =
+inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
     constructor(initiate).get().newInstance<T>(*param)
 
 /**

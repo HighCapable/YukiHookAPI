@@ -275,7 +275,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
-        inline fun constructor(initiate: ConstructorFinder.() -> Unit = {}) = try {
+        inline fun constructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) = try {
             hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
             ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.build(isBind = true)
@@ -307,7 +307,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
-        inline fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit) =
+        inline fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
             if (hookClass.instance == null) ConstructorFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
             else ConstructorFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
