@@ -8,48 +8,52 @@
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
 <br/>
 <br/>
-⛱️ An efficient Kotlin version of the Xposed Hook API.
+⛱️ 一个使用 Kotlin 重新构建的高效 Xposed Hook API。
 <br/>
 
-English | [简体中文](https://github.com/fankes/YukiHookAPI/blob/master/README-zh-CN.md)
+[English](https://github.com/fankes/YukiHookAPI/blob/master/README.md) | 简体中文
 
-## What's this
+## 这是什么
 
-- This is an efficient Xposed Hook API rebuilt in Kotlin
-- The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016)
-- Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced
+- 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
+- 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)
+- 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
-## Supports
+## 支持的功能
 
-- Standard Hook
+- 标准 Hook
 - Zygote Hook
-- Resources Hook
+- 资源钩子(Resources Hook)
 
-## Extensions
+## 扩展功能
 
-- Automatic Xposed Module Build (No need to create `assets/xposed_init` by yourself)
-- [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module) Supports
-- DataChannel (Host ←→ Module)
-- Simple and quick Obfuscated Member Reflection
+- 自动化 Xposed 模块构建 (完全无需自行创建 `assets/xposed_init`)
+- [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module) 支持
+- DataChannel (宿主 ←→ 模块) 无序广播通讯通道功能
+- 简单快捷地实现混淆的字节码反射、查找功能
 
-## Get Started
+## 开始使用
 
-- [Click here](https://fankes.github.io/YukiHookAPI) go to the documentation page for more detailed tutorials and content.
-- Only **Simplified Chinese** translations in this time, English ver is in future.
+- [点击这里](https://fankes.github.io/YukiHookAPI) 前往文档页面查看更多详细教程和内容。
+- 目前只有 **简体中文** 的翻译文档，English 版本将在日后根据需求更新。
 
-The latest version update time: 2022-07-23 22:33
+> 你大概率会遇到浏览器缓存造成文档不是最新版本的问题，若已经查看过一次文档，请手动在每个页面上刷新一次以同步最新版本，或清除浏览器缓存。
 
-## Contacts
+> 面向中国大陆开发者的提示：若打开页面发生 404 问题，可能是由于你的 DNS 受到了污染，请科学上网后清除浏览器缓存再试一次。
 
-- [Follow us on Telegram](https://t.me/YukiHookAPI)
+最新版本更新时间：2022-07-23 22:33
 
-## Features
+## 联系我们
 
-If you like the `YukiHookAPI` project, we welcome you to make a **PR** in this project, any suggestions for improvement and new features.
+- [点击加入 Telegram 群组](https://t.me/YukiHookAPI)
 
-## Cooperations
+## 展望未来
 
-The following are projects that have collaborated and are using `YukiHookAPI`.
+如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码 **PR**，可以是任何改进的建议以及新增的功能。
+
+## 合作项目
+
+以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
 
 | Repository                                                                         | Developer                                       |
 |------------------------------------------------------------------------------------|-------------------------------------------------|
@@ -67,15 +71,19 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                        | [WankkoRee](https://github.com/WankkoRee)       |
 | [QDReadHook](https://github.com/xihan123/QDReadHook)                              | [xihan123](https://github.com/xihan123)       |
 
-Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private repositories do not need to indicate web
-links).
+你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表(私有仓库可以不需要注明网页链接)。
 
-## Third-Party Open Source Usage Statement
+## 捐赠支持
+
+- 工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。<br/><br/>
+  <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/wechat_code.jpg" width = "200" height = "200"/>
+
+## 第三方开源使用声明
 
 - [Kotlin Symbol Processing API](https://github.com/google/ksp)
 - [FreeReflection](https://github.com/tiann/FreeReflection)
 
-## License
+## 许可证
 
 - [MIT](https://choosealicense.com/licenses/mit)
 
@@ -103,4 +111,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-Copyright © 2019-2022 HighCapable
+版权所有 © 2019-2022 HighCapable
