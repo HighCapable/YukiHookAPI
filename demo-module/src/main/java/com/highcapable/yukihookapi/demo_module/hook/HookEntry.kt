@@ -223,7 +223,7 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
                 // 得到需要 Hook 的 Class
-                findClass(name = "$packageName.utils.Main").hook {
+                findClass(name = "$packageName.test.Main").hook {
                     // 注入要 Hook 的方法
                     injectMember {
                         constructor { param(StringType) }

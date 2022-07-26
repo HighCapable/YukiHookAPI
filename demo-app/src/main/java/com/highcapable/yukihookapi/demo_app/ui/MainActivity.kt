@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/9.
  */
-@file:Suppress("SameParameterValue")
+@file:Suppress("SameParameterValue", "UsePropertyAccessSyntax")
 
 package com.highcapable.yukihookapi.demo_app.ui
 
@@ -33,7 +33,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.demo_app.databinding.ActivityMainBinding
-import com.highcapable.yukihookapi.demo_app.utils.Main
+import com.highcapable.yukihookapi.demo_app.test.Main
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,14 +43,14 @@ class MainActivity : AppCompatActivity() {
             setContentView(root)
             appDemoFirstText.text = getFirstText()
             appDemoSecondText.text = secondText
-            appDemoThirdText.text = Main(content = "Feel real").getString()
-            appDemoFourthText.text = getRegularText(string = "Have fun day")
+            appDemoThirdText.text = Main("Feel real").getString()
+            appDemoFourthText.text = getRegularText("Have fun day")
             appDemoFifthText.text = getDataText()
             appDemoSixthText.text = getArray(arrayOf("apple", "banana")).let { "${it[0]}, ${it[1]}" }
             appDemoSeventhText.text = Main().getTestResultFirst()
-            appDemoEighthText.text = Main().getTestResultFirst(string = "Find something interesting")
+            appDemoEighthText.text = Main().getTestResultFirst("Find something interesting")
             appDemoNinthText.text = Main().getTestResultLast()
-            appDemoTenthText.text = Main().getTestResultLast(string = "This is the last sentence")
+            appDemoTenthText.text = Main().getTestResultLast("This is the last sentence")
             appDemoEleventhText.text = Main().getSuperString()
             appDemoButton.setOnClickListener { toast() }
         }
