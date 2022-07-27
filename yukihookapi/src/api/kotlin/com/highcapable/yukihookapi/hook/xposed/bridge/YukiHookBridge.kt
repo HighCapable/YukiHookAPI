@@ -659,12 +659,16 @@ object YukiHookBridge {
 
             /** 解除 Hook */
             internal fun unhook() {
-                instance.unhook()
-                runCatching {
-                    if (tag.isNotBlank()) {
-                        hookedAllMethods.remove(tag)
-                        hookedAllConstructors.remove(tag)
-                    } else hookedMembers.remove(this)
+                if (tag.isNotBlank()) runCatching {
+                    if (hookedAllMethods.contains(tag))
+                        hookedAllMethods[tag]?.takeIf { it.isNotEmpty() }?.forEach { it.instance.unhook() }
+                    if (hookedAllConstructors.contains(tag))
+                        hookedAllConstructors[tag]?.takeIf { it.isNotEmpty() }?.forEach { it.instance.unhook() }
+                    hookedAllMethods.remove(tag)
+                    hookedAllConstructors.remove(tag)
+                } else {
+                    instance.unhook()
+                    runCatching { hookedMembers.remove(this) }
                 }
             }
         }
