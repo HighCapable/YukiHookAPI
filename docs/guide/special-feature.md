@@ -949,6 +949,36 @@ loggerD(tag = "YukiHookAPI", msg = "This is a log")
 [YukiHookAPI][D]--> This is a log
 ```
 
+你还可以使用 `LoggerType` 自定义日志打印的类型，可选择使用 `android.util.Log` 还是 `XposedBridge.log` 来打印日志。
+
+默认类型为 `LoggerType.BOTH`，含义为同时使用这两个方法来打印日志。
+
+比如我们仅使用 `android.util.Log` 来打印日志。
+
+> 示例如下
+
+```kotlin
+loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.LOGD)
+```
+
+或又仅使用 `XposedBridge.log` 来打印日志，此方法仅可在 (Xposed) 宿主环境使用。
+
+> 示例如下
+
+```kotlin
+loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.XPOSEDBRIDGE)
+```
+
+若你想智能区分 (Xposed) 宿主环境与模块环境，可以写为如下形式。
+
+> 示例如下
+
+```kotlin
+loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.SCOPE)
+```
+
+这样 API 就会在不同环境智能选择指定的方法类型去打印这条日志。
+
 更多用法可参考 [loggerD](api/document?id=loggerd-method)、[loggerI](api/document?id=loggeri-method) 及 [loggerW](api/document?id=loggerw-method) 方法。
 
 ### 错误日志
@@ -995,6 +1025,8 @@ java.lang.Throwable
         at a.a.a(...) 
         ... 3 more
 ```
+
+在错误日志中，你同样也可以使用 `LoggerType` 来指定当前打印日志所用到的方法类型。
 
 更多用法可参考 [loggerE](api/document?id=loggere-method) 方法。
 
