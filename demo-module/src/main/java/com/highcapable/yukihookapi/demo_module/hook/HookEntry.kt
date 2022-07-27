@@ -208,6 +208,8 @@ class HookEntry : IYukiHookXposedInit {
                                 .setPositiveButton("OK", null)
                                 .setNegativeButton("SEND MSG TO MODULE") { _, _ ->
                                     dataChannel.put(DataConst.TEST_CN_DATA, value = "I am host, can you hear me?")
+                                }.setNeutralButton("REMOVE HOOK") { _, _ ->
+                                    removeSelf()
                                 }.show()
                         }
                     }
