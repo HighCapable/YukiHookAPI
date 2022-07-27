@@ -518,6 +518,22 @@ fun intercept()
 
 !> 这将会禁止此方法执行并返回 `null`。
 
+#### removeSelf [method]
+
+```kotlin
+fun removeSelf(result: (Boolean) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 移除当前注入的 Hook 方法、构造方法 (解除 Hook)。
+
+!> 你只能在 Hook 回调方法中使用此功能。
+
 #### Result [class]
 
 ```kotlin
@@ -735,6 +751,22 @@ fun ignoredAllFailure(): Result
 **功能描述**
 
 > 忽略全部 Hook 过程发生的错误。
+
+##### remove [method]
+
+```kotlin
+fun remove(result: (Boolean) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 移除当前注入的 Hook 方法、构造方法 (解除 Hook)。
+
+!> 你只能在 Hook 成功后才能解除 Hook，可监听 `onHooked` 事件。
 
 ### Result [class]
 

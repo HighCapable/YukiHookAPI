@@ -302,6 +302,48 @@ loadZygote {
 
 更多功能请参考 [ResourcesHookCreater](api/document?id=resourceshookcreater-class)。
 
+### 解除 Hook
+
+原生的 Xposed 为我们提供了一个 `XC_MethodHook.Unhook` 功能，可以从 Hook 队列中将当前 Hook 移除，`YukiHookAPI` 同样可以实现此功能。
+
+第一种方法，保存当前注入对象的 `Result` 实例，在适当的时候和地方调用 `remove` 即可解除该注入对象。
+
+> 示例如下
+
+```kotlin
+// 设置一个变量保存当前实例
+val hookResult = injectMember { 
+    method { 
+        name = "test"
+        returnType = UnitType
+    }
+    afterHook {
+        // ...
+    }
+}
+// 在适当的时候调用如下方法即可
+hookResult.remove()
+```
+
+第二种方法，在 Hook 回调方法中调用 `removeSelf` 移除自身。
+
+> 示例如下
+
+```kotlin
+injectMember { 
+    method { 
+        name = "test"
+        returnType = UnitType
+    }
+    afterHook {
+        // 直接调用如下方法即可
+        removeSelf()
+    }
+}
+```
+
+更多功能请参考 [MemberHookCreater](api/document?id=memberhookcreater-class)。
+
 ## 异常处理
 
 > `YukiHookAPI` 重新设计了对异常的监听，任何异常都不会在 Hook 过程中抛出，避免打断下一个 Hook 流程导致 Hook 进程“死掉”。
