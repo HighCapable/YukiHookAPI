@@ -53,7 +53,7 @@ class YukiModuleResources private constructor(private val baseInstance: XModuleR
          * @param path Xposed 模块 APK 路径
          * @return [YukiModuleResources]
          */
-        internal fun createInstance(path: String) = YukiModuleResources(XModuleResources.createInstance(path, null))
+        internal fun wrapper(path: String) = YukiModuleResources(XModuleResources.createInstance(path, null))
     }
 
     /**

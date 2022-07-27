@@ -109,7 +109,7 @@ object YukiHookBridge {
      * 获取当前 Xposed 模块自身动态 [Resources]
      * @return [YukiModuleResources] or null
      */
-    internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.createInstance(moduleAppFilePath) }.getOrNull()
+    internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.wrapper(moduleAppFilePath) }.getOrNull()
 
     /**
      * 自动生成的 Xposed 模块构建版本号
@@ -391,7 +391,7 @@ object YukiHookBridge {
                 else null
             resparam != null ->
                 if (isPackageLoaded(resparam.packageName, HookEntryType.RESOURCES).not())
-                    assignWrapper(HookEntryType.RESOURCES, resparam.packageName, appResources = YukiResources.createFromXResources(resparam.res))
+                    assignWrapper(HookEntryType.RESOURCES, resparam.packageName, appResources = YukiResources.wrapper(resparam.res))
                 else null
             else -> null
         }?.also {

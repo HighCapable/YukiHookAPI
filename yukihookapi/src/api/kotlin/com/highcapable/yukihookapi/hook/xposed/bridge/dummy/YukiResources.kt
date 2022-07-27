@@ -55,7 +55,7 @@ class YukiResources private constructor(private val baseInstance: XResources) :
          * @param baseInstance [XResources] 实例
          * @return [YukiResources]
          */
-        internal fun createFromXResources(baseInstance: XResources) = YukiResources(baseInstance)
+        internal fun wrapper(baseInstance: XResources) = YukiResources(baseInstance)
 
         /**
          * 兼容对接替换 Resources
