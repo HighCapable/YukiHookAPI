@@ -46,10 +46,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.type.android.ApplicationClass
-import com.highcapable.yukihookapi.hook.type.android.ConfigurationClass
-import com.highcapable.yukihookapi.hook.type.android.ContextClass
-import com.highcapable.yukihookapi.hook.type.android.InstrumentationClass
+import com.highcapable.yukihookapi.hook.type.android.*
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
@@ -121,6 +118,17 @@ object YukiHookBridge {
      * @return [String]
      */
     internal val moduleGeneratedVersion get() = YukiHookBridge_Injector.getModuleGeneratedVersion()
+
+    /**
+     * 获取当前系统框架的 [Context]
+     * @return [Context] ContextImpl 实例对象
+     * @throws IllegalStateException 如果获取不到系统框架的 [Context]
+     */
+    internal val systemContext
+        get() = runCatching {
+            Hooker.findMethod(ActivityThreadClass, name = "getSystemContext")
+                .invoke(Hooker.findMethod(ActivityThreadClass, name = "currentActivityThread").invoke(null)) as? Context?
+        }.getOrNull() ?: error("Failed to got SystemContext")
 
     /**
      * 模块是否装载了 Xposed 回调方法

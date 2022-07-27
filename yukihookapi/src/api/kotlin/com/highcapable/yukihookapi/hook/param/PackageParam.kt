@@ -86,20 +86,6 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     val appInfo get() = wrapper?.appInfo ?: YukiHookAppHelper.currentApplicationInfo() ?: ApplicationInfo()
 
     /**
-     * 获取当前 Hook APP 的进程名称
-     *
-     * 默认的进程名称是 [packageName]
-     * @return [String]
-     */
-    val processName get() = wrapper?.processName ?: YukiHookAppHelper.currentProcessName() ?: packageName
-
-    /**
-     * 获取当前 Hook APP 的包名
-     * @return [String]
-     */
-    val packageName get() = wrapper?.packageName ?: YukiHookAppHelper.currentPackageName() ?: ""
-
-    /**
      * 获取当前 Hook APP 的 [Application] 实例
      *
      * - ❗首次装载可能是空的 - 请延迟一段时间再获取或通过设置 [onAppLifecycle] 监听来完成
@@ -116,6 +102,27 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @throws IllegalStateException 如果当前处于 [loadZygote] 或 [appContext] 尚未加载
      */
     val appResources get() = wrapper?.appResources ?: appContext.resources ?: error("You cannot call to appResources in this time")
+
+    /**
+     * 获取当前系统框架的 [Context]
+     * @return [Context] ContextImpl 实例对象
+     * @throws IllegalStateException 如果获取不到系统框架的 [Context]
+     */
+    val systemContext get() = YukiHookBridge.systemContext
+
+    /**
+     * 获取当前 Hook APP 的进程名称
+     *
+     * 默认的进程名称是 [packageName]
+     * @return [String]
+     */
+    val processName get() = wrapper?.processName ?: YukiHookAppHelper.currentProcessName() ?: packageName
+
+    /**
+     * 获取当前 Hook APP 的包名
+     * @return [String]
+     */
+    val packageName get() = wrapper?.packageName ?: YukiHookAppHelper.currentPackageName() ?: ""
 
     /**
      * 获取当前 Hook APP 是否为第一个 [Application]

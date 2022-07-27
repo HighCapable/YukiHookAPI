@@ -72,6 +72,20 @@ val appResources：Resources
 
 !> 你只能在 `HookResources.hook` 方法体内或 `appContext` 装载完毕时进行调用。
 
+### systemContext [field]
+
+```kotlin
+val systemContext: Context
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获取当前系统框架的 `Context`。
+
 ### processName [field]
 
 ```kotlin
