@@ -65,7 +65,7 @@ class YukiHookDataChannel private constructor() {
 
     internal companion object {
 
-        /** 是否为 Xposed 环境 */
+        /** 是否为 (Xposed) 宿主环境 */
         private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
 
         /** 模块构建版本号获取标签 */

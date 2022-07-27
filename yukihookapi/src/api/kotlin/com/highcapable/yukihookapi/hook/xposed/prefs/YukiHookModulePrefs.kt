@@ -67,7 +67,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
 
     internal companion object {
 
-        /** 是否为 Xposed 环境 */
+        /** 是否为 (Xposed) 宿主环境 */
         private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
 
         /** 当前 [YukiHookModulePrefs] 单例 */
@@ -75,7 +75,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
 
         /**
          * 获取 [YukiHookModulePrefs] 单例
-         * @param context 实例 - Xposed 环境为空
+         * @param context 实例 -  (Xposed) 宿主环境为空
          * @return [YukiHookModulePrefs]
          */
         internal fun instance(context: Context? = null) =
@@ -166,7 +166,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 获取 [XSharedPreferences] 是否可读
      *
-     * - ❗只能在 [isXposedEnvironment] 中使用 - 模块环境中始终返回 false
+     * - ❗只能在 (Xposed) 宿主环境中使用 - 模块环境中始终返回 false
      * @return [Boolean] 是否可读
      */
     val isXSharePrefsReadable get() = runCatching { xPref.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false
@@ -176,8 +176,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 前提条件为当前 Xposed 模块已被激活
      *
-     * - ❗只能在模块环境中使用 - [isXposedEnvironment] 环境中始终返回 false
-     * @return [Boolean] 仅限在模块中判断 - 在宿主 [XSharedPreferences] 环境中始终返回 false
+     * - ❗只能在模块环境中使用 - (Xposed) 宿主环境中始终返回 false
+     * @return [Boolean] 仅限在模块中判断 - 在 (Xposed) 宿主环境中始终返回 false
      */
     val isRunInNewXShareMode
         get() = runCatching {
@@ -377,9 +377,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 移除全部包含 [key] 的存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值名称
      */
     fun remove(key: String) = moduleEnvironment {
@@ -390,9 +390,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 移除 [PrefsData.key] 的存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param prefs 键值实例
      */
     inline fun <reified T> remove(prefs: PrefsData<T>) = remove(prefs.key)
@@ -400,9 +400,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 移除全部存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      */
     fun clear() = moduleEnvironment {
         sPref.edit().clear().apply()
@@ -414,9 +414,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -430,9 +430,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -446,9 +446,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -462,9 +462,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -478,9 +478,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -494,9 +494,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -516,9 +516,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 智能存储指定类型的键值
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param prefs 键值实例
      * @param value 要存储的值 - 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
      */
@@ -548,9 +548,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * 封装方法以调用内联方法
      *
-     * - 在模块 [Context] 环境中使用
+     * - 在模块环境中使用
      *
-     * - ❗在 [XSharedPreferences] 环境下只读 - 无法使用
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值
      * @param value 要存储的值 - 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
      */
@@ -573,6 +573,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * 调用此方法将清除当前存储的全部键值缓存
      *
      * 下次将从 [XSharedPreferences] 重新读取
+     *
+     * - 在 (Xposed) 宿主环境中使用
      */
     fun clearCache() {
         xPrefCacheKeyValueStrings.clear()

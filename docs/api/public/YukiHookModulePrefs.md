@@ -56,7 +56,7 @@ val isXSharePrefsReadable: Boolean
 
 > 获取 `XSharedPreferences` 是否可读。
 
-!> 只能在 `isXposedEnvironment` 中使用，模块环境中始终返回 false。
+!> 只能在 (Xposed) 宿主环境中使用，模块环境中始终返回 false。
 
 ### isRunInNewXShareMode [field]
 
@@ -74,7 +74,7 @@ val isRunInNewXShareMode: Boolean
 
 前提条件为当前 Xposed 模块已被激活。
 
-!> 只能在模块环境中使用，`isXposedEnvironment` 环境中始终返回 false
+!> 只能在模块环境中使用，(Xposed) 宿主环境中始终返回 false
 
 ### name [method]
 
@@ -100,7 +100,7 @@ fun name(name: String): YukiHookModulePrefs
 modulePrefs("custom_name").getString("custom_key")
 ```
 
-在 Xposed 模块环境 `PackageParam` 中的使用方法。
+在 (Xposed) 宿主环境 `PackageParam` 中的使用方法。
 
 > 示例如下
 
@@ -242,7 +242,7 @@ fun remove(key: String)
 
 > 移除全部包含 `key` 的存储数据。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### remove [method]
 
@@ -258,7 +258,7 @@ inline fun <reified T> remove(prefs: PrefsData<T>)
 
 > 移除 `PrefsData.key` 的存储数据。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### clear [method]
 
@@ -274,7 +274,7 @@ fun clear()
 
 > 移除全部存储数据。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### putString [method]
 
@@ -290,7 +290,7 @@ fun putString(key: String, value: String)
 
 > 存储 `String` 键值。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### putStringSet [method]
 
@@ -306,7 +306,7 @@ fun putStringSet(key: String, value: Set<String>)
 
 > 存储 `Set<String>` 键值。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### putBoolean [method]
 
@@ -322,7 +322,7 @@ fun putBoolean(key: String, value: Boolean)
 
 > 存储 `Boolean` 键值。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### putInt [method]
 
@@ -338,7 +338,7 @@ fun putInt(key: String, value: Int)
 
 > 存储 `Int` 键值。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### putLong [method]
 
@@ -354,7 +354,7 @@ fun putLong(key: String, value: Long)
 
 > 存储 `Long` 键值。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### putFloat [method]
 
@@ -370,7 +370,7 @@ fun putFloat(key: String, value: Float)
 
 > 存储 `Float` 键值。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### get [method]
 
@@ -400,7 +400,7 @@ inline fun <reified T> put(prefs: PrefsData<T>, value: T)
 
 > 智能存储指定类型的键值。
 
-!> 在 `XSharedPreferences` 环境下只读，无法使用。
+!> 在 (Xposed) 宿主环境下只读，无法使用。
 
 ### clearCache [method]
 
@@ -421,3 +421,5 @@ fun clearCache()
 调用此方法将清除当前存储的全部键值缓存。
 
 下次将从 `XSharedPreferences` 重新读取。
+
+在 (Xposed) 宿主环境中使用。

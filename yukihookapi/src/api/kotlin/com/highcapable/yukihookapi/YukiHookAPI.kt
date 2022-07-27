@@ -112,7 +112,7 @@ object YukiHookAPI {
          *
          * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          *
-         * - ❗在 Xposed 环境中仅返回非 [isTaiChiModuleActive] 的激活状态
+         * - ❗在 (Xposed) 宿主环境中仅返回非 [isTaiChiModuleActive] 的激活状态
          * @return [Boolean] 是否激活
          */
         val isModuleActive get() = YukiHookBridge.hasXposedBridge || YukiHookModuleStatus.isActive() || isTaiChiModuleActive
@@ -122,7 +122,7 @@ object YukiHookAPI {
          *
          * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          *
-         * - ❗在 Xposed 环境中始终返回 true
+         * - ❗在 (Xposed) 宿主环境中始终返回 true
          * @return [Boolean] 是否激活
          */
         val isXposedModuleActive get() = YukiHookBridge.hasXposedBridge || YukiHookModuleStatus.isActive()
@@ -132,7 +132,7 @@ object YukiHookAPI {
          *
          * - ❗在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
          *
-         * - ❗在 Xposed 环境中始终返回 false
+         * - ❗在 (Xposed) 宿主环境中始终返回 false
          * @return [Boolean] 是否激活
          */
         val isTaiChiModuleActive
@@ -143,7 +143,7 @@ object YukiHookAPI {
          *
          * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          *
-         * - ❗在 Xposed 环境中可能会延迟等待事件回调后才会返回 true
+         * - ❗在 (Xposed) 宿主环境中可能会延迟等待事件回调后才会返回 true
          *
          * - ❗请注意你需要确保 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用 - 否则始终返回 false
          * @return [Boolean] 是否支持
