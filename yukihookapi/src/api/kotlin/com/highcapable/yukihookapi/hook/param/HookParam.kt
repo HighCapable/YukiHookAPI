@@ -36,7 +36,7 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * Hook 方法、构造类的目标对象实现类
+ * Hook 方法、构造方法的目标对象实现类
  * @param createrInstance [YukiMemberHookCreater] 的实例对象
  * @param wrapper [HookParam] 的参数包装类实例
  */

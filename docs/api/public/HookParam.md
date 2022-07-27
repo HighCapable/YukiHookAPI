@@ -10,7 +10,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
 
 **功能描述**
 
-> Hook 方法、构造类的目标对象实现类。
+> Hook 方法、构造方法的目标对象实现类。
 
 ### args [field]
 

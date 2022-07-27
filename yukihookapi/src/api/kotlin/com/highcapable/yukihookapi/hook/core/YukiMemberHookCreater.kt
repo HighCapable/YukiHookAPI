@@ -77,7 +77,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     @PublishedApi
     internal var isDisableCreaterRunHook = false
 
-    /** 设置要 Hook 的方法、构造类 */
+    /** 设置要 Hook 的方法、构造方法 */
     @PublishedApi
     internal var preHookMembers = HashMap<String, MemberHookCreater>()
 
@@ -92,7 +92,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         get() = hookClass.instance ?: error("Cannot get hook class \"${hookClass.name}\" cause ${hookClass.throwable?.message}")
 
     /**
-     * 注入要 Hook 的方法、构造类
+     * 注入要 Hook 的方法、构造方法
      * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
      * @param tag 可设置标签 - 在发生错误时方便进行调试
      * @param initiate 方法体
@@ -133,7 +133,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     /**
      * Hook 核心功能实现类
      *
-     * 查找和处理需要 Hook 的方法、构造类
+     * 查找和处理需要 Hook 的方法、构造方法
      * @param priority Hook 优先级
      * @param tag 当前设置的标签
      * @param packageName 当前 Hook 的 APP 包名
@@ -207,7 +207,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         private var allMethodsName = ""
 
         /**
-         * 手动指定要 Hook 的方法、构造类
+         * 手动指定要 Hook 的方法、构造方法
          *
          * 你可以调用 [instanceClass] 来手动查询要 Hook 的方法
          */
@@ -312,7 +312,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             else ConstructorFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
         /**
-         * 注入要 Hook 的方法、构造类 (嵌套 Hook)
+         * 注入要 Hook 的方法、构造方法 (嵌套 Hook)
          * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
          * @param tag 可设置标签 - 在发生错误时方便进行调试
          * @param initiate 方法体

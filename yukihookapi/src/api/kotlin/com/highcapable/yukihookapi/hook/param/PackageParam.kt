@@ -344,7 +344,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun findClass(vararg name: String) = VariousClass(*name)
 
     /**
-     * Hook 方法、构造类
+     * Hook 方法、构造方法
      *
      * - ❗为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
@@ -355,7 +355,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         findClass(name = this).hook(isUseAppClassLoader, initiate)
 
     /**
-     * Hook 方法、构造类
+     * Hook 方法、构造方法
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
      * @return [YukiMemberHookCreater.Result]
@@ -364,7 +364,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         hookClass.hook(isUseAppClassLoader, initiate)
 
     /**
-     * Hook 方法、构造类
+     * Hook 方法、构造方法
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
      * @return [YukiMemberHookCreater.Result]
@@ -373,7 +373,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         hookClass(if (isUseAppClassLoader) appClassLoader else null).hook(isUseAppClassLoader, initiate)
 
     /**
-     * Hook 方法、构造类
+     * Hook 方法、构造方法
      * @param isUseAppClassLoader 是否使用 [appClassLoader] 重新绑定当前 [Class] - 默认启用
      * @param initiate 方法体
      * @return [YukiMemberHookCreater.Result]

@@ -550,7 +550,7 @@ inline fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHook
 
 **功能描述**
 
-> 这是一切 Hook 的入口创建方法，Hook 方法、构造类。
+> 这是一切 Hook 的入口创建方法，Hook 方法、构造方法。
 
 **功能示例**
 

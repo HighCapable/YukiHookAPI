@@ -314,7 +314,7 @@ inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): Constru
 
 **功能描述**
 
-> 查找并得到构造类。
+> 查找并得到构造方法。
 
 ### ~~callStatic [method]~~ <!-- {docsify-ignore} -->
 

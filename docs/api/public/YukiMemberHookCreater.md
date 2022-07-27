@@ -96,11 +96,11 @@ inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreater.
 
 **功能描述**
 
-> 注入要 Hook 的方法、构造类。
+> 注入要 Hook 的方法、构造方法。
 
 **功能示例**
 
-你可以注入任意方法与构造类，使用 `injectMember` 即可创建一个 `Hook` 对象。
+你可以注入任意方法与构造方法，使用 `injectMember` 即可创建一个 `Hook` 对象。
 
 > 示例如下
 
@@ -150,7 +150,7 @@ inner class MemberHookCreater internal constructor(private val priority: Int, in
 
 **功能描述**
 
-> Hook 核心功能实现类，查找和处理需要 Hook 的方法、构造类。
+> Hook 核心功能实现类，查找和处理需要 Hook 的方法、构造方法。
 
 #### member [field]
 
@@ -164,7 +164,7 @@ var member: Member?
 
 **功能描述**
 
-> 手动指定要 Hook 的方法、构造类。
+> 手动指定要 Hook 的方法、构造方法。
 
 !> 不建议使用此方法设置目标需要 Hook 的 `Member` 对象，你可以使用 `method` 或 `constructor` 方法。
 
@@ -398,7 +398,7 @@ inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHo
 
 **功能描述**
 
-> 注入要 Hook 的方法、构造类 (嵌套 Hook)。
+> 注入要 Hook 的方法、构造方法 (嵌套 Hook)。
 
 #### beforeHook [method]
 

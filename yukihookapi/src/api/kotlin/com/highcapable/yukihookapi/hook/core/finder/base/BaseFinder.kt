@@ -137,7 +137,7 @@ abstract class BaseFinder(
     internal val hookTag get() = hookInstance?.tag ?: "FinderMode"
 
     /**
-     * 判断是否没有设置 Hook 过程中 方法、构造类、变量 找不到的任何异常拦截
+     * 判断是否没有设置 Hook 过程中 方法、构造方法、变量 找不到的任何异常拦截
      * @return [Boolean] 没有设置任何异常拦截
      */
     internal val isNotIgnoredNoSuchMemberFailure get() = hookInstance?.isNotIgnoredNoSuchMemberFailure ?: true

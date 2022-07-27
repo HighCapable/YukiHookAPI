@@ -148,7 +148,7 @@ inline fun Class<*>.field(initiate: FieldFinder.() -> Unit) = FieldFinder(classS
 inline fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
- * 查找并得到构造类
+ * 查找并得到构造方法
  * @param initiate 查找方法体
  * @return [ConstructorFinder.Result]
  */
