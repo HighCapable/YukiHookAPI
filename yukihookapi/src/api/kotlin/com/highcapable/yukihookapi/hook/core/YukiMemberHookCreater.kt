@@ -43,26 +43,30 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookPriority
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 
 /**
  * [YukiHookAPI] 的 [Member] 核心 Hook 实现类
  *
- * 核心 API 对接 [YukiHookBridge.Hooker] 实现
+ * 核心 API 对接 [YukiHookHelper] 实现
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
 class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
 
     /** 默认 Hook 回调优先级 */
-    val PRIORITY_DEFAULT = YukiHookBridge.Hooker.PRIORITY_DEFAULT
+    val PRIORITY_DEFAULT = YukiHookPriority.PRIORITY_DEFAULT
 
     /** 延迟回调 Hook 方法结果 */
-    val PRIORITY_LOWEST = YukiHookBridge.Hooker.PRIORITY_LOWEST
+    val PRIORITY_LOWEST = YukiHookPriority.PRIORITY_LOWEST
 
     /** 更快回调 Hook 方法结果 */
-    val PRIORITY_HIGHEST = YukiHookBridge.Hooker.PRIORITY_HIGHEST
+    val PRIORITY_HIGHEST = YukiHookPriority.PRIORITY_HIGHEST
 
     /**
      * Hook 模式定义
@@ -208,7 +212,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         private var allMethodsName = ""
 
         /** 当前被 Hook 的方法、构造方法实例 */
-        private var hookedMember: YukiHookBridge.Hooker.YukiHookedMember? = null
+        private var memberUnhook: YukiMemberHook.Unhook? = null
 
         /**
          * 手动指定要 Hook 的方法、构造方法
@@ -458,7 +462,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             val replaceHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
 
             /** 定义替换 Hook 回调方法体 */
-            val replaceMent = object : YukiHookBridge.Hooker.YukiMemberReplacement(priority) {
+            val replaceMent = object : YukiMemberReplacement(priority) {
                 override fun replaceHookedMember(wrapper: HookParamWrapper): Any? {
                     return replaceHookParam.assign(wrapper).let { param ->
                         try {
@@ -482,7 +486,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             val afterHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
 
             /** 定义前后 Hook 回调方法体 */
-            val beforeAfterHook = object : YukiHookBridge.Hooker.YukiMemberHook(priority) {
+            val beforeAfterHook = object : YukiMemberHook(priority) {
                 override fun beforeHookedMember(wrapper: HookParamWrapper) {
                     beforeHookParam.assign(wrapper).also { param ->
                         runCatching {
@@ -517,13 +521,13 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 if (member != null)
                     member.also { member ->
                         runCatching {
-                            (if (isReplaceHookMode) YukiHookBridge.Hooker.hookMethod(member, replaceMent)
-                            else YukiHookBridge.Hooker.hookMethod(member, beforeAfterHook)).also {
+                            (if (isReplaceHookMode) YukiHookHelper.hookMethod(member, replaceMent)
+                            else YukiHookHelper.hookMethod(member, beforeAfterHook)).also {
                                 when {
                                     it.first.member == null -> error("Hook Member [$member] failed")
                                     it.second -> onAlreadyHookedCallback?.invoke(it.first.member!!)
                                     else -> {
-                                        hookedMember = it.first
+                                        memberUnhook = it.first
                                         onHookedCallback?.invoke(it.first.member!!)
                                     }
                                 }
@@ -548,25 +552,25 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             else runCatching {
                 when (hookMemberMode) {
                     HookMemberMode.HOOK_ALL_METHODS ->
-                        (if (isReplaceHookMode) YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, replaceMent)
-                        else YukiHookBridge.Hooker.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook)).also {
+                        (if (isReplaceHookMode) YukiHookHelper.hookAllMethods(hookClass.instance, allMethodsName, replaceMent)
+                        else YukiHookHelper.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook)).also {
                             when {
                                 it.first.isEmpty() -> throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
                                 it.second -> it.first.forEach { e -> if (e.member != null) onAlreadyHookedCallback?.invoke(e.member!!) }
                                 else -> {
-                                    hookedMember = it.first.first()
+                                    memberUnhook = it.first.first()
                                     it.first.forEach { e -> if (e.member != null) onHookedCallback?.invoke(e.member!!) }
                                 }
                             }
                         }
                     HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
-                        (if (isReplaceHookMode) YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, replaceMent)
-                        else YukiHookBridge.Hooker.hookAllConstructors(hookClass.instance, beforeAfterHook)).also {
+                        (if (isReplaceHookMode) YukiHookHelper.hookAllConstructors(hookClass.instance, replaceMent)
+                        else YukiHookHelper.hookAllConstructors(hookClass.instance, beforeAfterHook)).also {
                             when {
                                 it.first.isEmpty() -> throw NoSuchMethodError("No Constructor matched")
                                 it.second -> it.first.forEach { e -> if (e.member != null) onAlreadyHookedCallback?.invoke(e.member!!) }
                                 else -> {
-                                    hookedMember = it.first.first()
+                                    memberUnhook = it.first.first()
                                     it.first.forEach { e -> if (e.member != null) onHookedCallback?.invoke(e.member!!) }
                                 }
                             }
@@ -736,10 +740,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
              * @param result 回调是否成功
              */
             fun remove(result: (Boolean) -> Unit = {}) {
-                hookedMember?.unhook()
+                memberUnhook?.remove()
                 runCatching { preHookMembers.remove(this@MemberHookCreater.toString()) }
-                result(hookedMember != null)
-                hookedMember = null
+                if (memberUnhook != null) onHookLogMsg(msg = "Remove Hooked Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
+                result(memberUnhook != null)
+                memberUnhook = null
             }
         }
     }
