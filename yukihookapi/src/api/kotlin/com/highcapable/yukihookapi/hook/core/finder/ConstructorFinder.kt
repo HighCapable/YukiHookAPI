@@ -377,10 +377,7 @@ class ConstructorFinder @PublishedApi internal constructor(
              * @param param 构造方法参数
              * @return [Any] or null
              */
-            private fun baseCall(vararg param: Any?) =
-                if (param.isNotEmpty())
-                    (memberInstance as? Constructor<*>?)?.newInstance(*param)
-                else (memberInstance as? Constructor<*>?)?.newInstance()
+            private fun baseCall(vararg param: Any?) = (memberInstance as? Constructor<*>?)?.newInstance(*param)
 
             /**
              * 执行构造方法创建目标实例 - 不指定目标实例类型
