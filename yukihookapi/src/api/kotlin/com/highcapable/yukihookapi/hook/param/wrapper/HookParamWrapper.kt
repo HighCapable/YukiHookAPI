@@ -71,7 +71,7 @@ class HookParamWrapper internal constructor(private var baseParam: XC_MethodHook
     val args: Array<Any?>? get() = baseParam?.args
 
     /**
-     * 方法、设置方法结果
+     * 获取、设置方法结果
      * @return [Any] or null
      */
     var result: Any?
@@ -79,6 +79,29 @@ class HookParamWrapper internal constructor(private var baseParam: XC_MethodHook
         set(value) {
             baseParam?.result = value
         }
+
+    /**
+     * 判断是否存在设置过的方法调用抛出异常
+     * @return [Boolean]
+     */
+    val hasThrowable get() = baseParam?.hasThrowable() ?: false
+
+    /**
+     * 获取、设置方法调用抛出的异常
+     * @return [Throwable] or null
+     * @throws Throwable
+     */
+    var throwable: Throwable?
+        get() = baseParam?.throwable
+        set(value) {
+            baseParam?.throwable = value
+        }
+
+    /**
+     * 获取 [result] 或 [throwable] - 存在 [throwable] 时优先返回
+     * @return [Any] or null
+     */
+    val resultOrThrowable get() = baseParam?.resultOrThrowable
 
     /**
      * 设置方法参数

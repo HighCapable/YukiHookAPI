@@ -118,6 +118,54 @@ var result: Any?
 
 > 获取、设置当前 Hook 对象的 `method` 或 `constructor` 的返回值。
 
+### hasThrowable [field]
+
+```kotlin
+var hasThrowable: Boolean
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 判断是否存在设置过的方法调用抛出异常。
+
+### throwable [field]
+
+```kotlin
+var throwable: Throwable?
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获取、设置方法调用抛出的异常。
+
+仅会在回调方法的 `MemberHookCreater.beforeHook` or `MemberHookCreater.afterHook` 中生效。
+
+你可以使用 `hasThrowable` 判断当前是否存在被抛出的异常。
+
+!> 设置后会同时执行 `resultNull` 方法并将异常抛出给当前宿主 APP。
+
+### resultOrThrowable [field]
+
+```kotlin
+var resultOrThrowable: Any?
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获取 `result` 或 `throwable`，存在 `throwable` 时优先返回。
+
 ### result [method]
 
 ```kotlin

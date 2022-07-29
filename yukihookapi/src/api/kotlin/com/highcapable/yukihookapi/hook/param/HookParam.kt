@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.hook.param
 
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater.MemberHookCreater
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
@@ -107,6 +108,35 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
         set(value) {
             wrapper?.result = value
         }
+
+    /**
+     * 判断是否存在设置过的方法调用抛出异常
+     * @return [Boolean]
+     */
+    val hasThrowable get() = wrapper?.hasThrowable
+
+    /**
+     * 获取、设置方法调用抛出的异常
+     *
+     * 仅会在回调方法的 [MemberHookCreater.beforeHook] or [MemberHookCreater.afterHook] 中生效
+     *
+     * 你可以使用 [hasThrowable] 判断当前是否存在被抛出的异常
+     *
+     * - ❗设置后会同时执行 [resultNull] 方法并将异常抛出给当前宿主 APP
+     * @return [Throwable] or null
+     * @throws Throwable
+     */
+    var throwable: Throwable?
+        get() = wrapper?.throwable
+        set(value) {
+            wrapper?.throwable = value
+        }
+
+    /**
+     * 获取 [result] 或 [throwable] - 存在 [throwable] 时优先返回
+     * @return [Any] or [Throwable] or null
+     */
+    val resultOrThrowable get() = wrapper?.resultOrThrowable
 
     /**
      * 获取当前 Hook 对象的 [method] or [constructor] 的返回值 [T]
