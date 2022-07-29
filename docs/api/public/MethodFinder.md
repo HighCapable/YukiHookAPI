@@ -513,6 +513,24 @@ inner class Instance internal constructor(private val instance: Any?)
 
 > `Method` 实例处理类。
 
+##### original [method]
+
+```kotlin
+fun original(): Instance
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 标识需要调用当前 `Method` 未经 Hook 的原始方法。
+
+若当前 `Method` 并未 Hook 则会使用原始的 `Method.invoke` 方法调用。
+
+!> 你只能在 (Xposed) 宿主环境中使用此功能。
+
 ##### call [method]
 
 ```kotlin

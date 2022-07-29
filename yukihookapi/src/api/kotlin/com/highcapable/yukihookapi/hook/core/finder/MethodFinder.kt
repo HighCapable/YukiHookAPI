@@ -40,6 +40,7 @@ import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.utils.runBlocking
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import java.lang.reflect.Method
 
 /**
@@ -443,15 +444,32 @@ class MethodFinder @PublishedApi internal constructor(
          */
         inner class Instance internal constructor(private val instance: Any?) {
 
+            /** 标识需要调用当前 [Method] 未经 Hook 的原始方法 */
+            private var isCallOriginal = false
+
+            /**
+             * 标识需要调用当前 [Method] 未经 Hook 的原始方法
+             *
+             * 若当前 [Method] 并未 Hook 则会使用原始的 [Method.invoke] 方法调用
+             *
+             * - ❗你只能在 (Xposed) 宿主环境中使用此功能
+             * @return [Instance] 可继续向下监听
+             */
+            fun original(): Instance {
+                isCallOriginal = true
+                return this
+            }
+
             /**
              * 执行方法
              * @param param 方法参数
              * @return [Any] or null
              */
-            private fun baseCall(vararg param: Any?) =
-                if (param.isNotEmpty())
-                    (memberInstance as? Method?)?.invoke(instance, *param)
-                else (memberInstance as? Method?)?.invoke(instance)
+            private fun baseCall(vararg param: Any?) = (memberInstance as? Method?)?.let {
+                if (isCallOriginal)
+                    YukiHookHelper.invokeOriginalMember(it, instance, *param) ?: it.invoke(instance, *param)
+                else it.invoke(instance, *param)
+            }
 
             /**
              * 执行方法 - 不指定返回值类型

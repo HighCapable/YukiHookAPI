@@ -174,6 +174,23 @@ internal object YukiHookHelper {
     }
 
     /**
+     * 执行原始 [Member]
+     *
+     * 未进行 Hook 的 [Member]
+     * @param member 实例
+     * @param args 参数实例
+     * @return [Any] or null
+     */
+    internal fun invokeOriginalMember(member: Member, instance: Any?, vararg args: Any?): Any? {
+        val isHookedMember = YukiHookedMembers.hookedMembers.any { it.member.toString() == member.toString() }
+        val isQueueMethod = YukiHookedMembers.hookedQueueMethods.any { it.value.any { e -> e.member.toString() == member.toString() } }
+        val isQueueConstructor = YukiHookedMembers.hookedQueueConstructors.any { it.value.any { e -> e.member.toString() == member.toString() } }
+        return if (isHookedMember || isQueueMethod || isQueueConstructor)
+            XposedBridge.invokeOriginalMethod(member, instance, args)
+        else null
+    }
+
+    /**
      * 兼容对接 Hook 回调接口
      * @return [XC_MethodHook] 原始接口
      */

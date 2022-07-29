@@ -29,8 +29,8 @@ package com.highcapable.yukihookapi.hook.param.wrapper
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.param.HookParam
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Member
 
 /**
@@ -95,7 +95,7 @@ class HookParamWrapper internal constructor(private var baseParam: XC_MethodHook
      * @param args 参数实例
      * @return [Any] or null
      */
-    fun invokeOriginalMember(member: Member, vararg args: Any?): Any? = XposedBridge.invokeOriginalMethod(member, instance, args)
+    fun invokeOriginalMember(member: Member, vararg args: Any?): Any? = YukiHookHelper.invokeOriginalMember(member, instance, args)
 
     override fun toString() = "HookParamWrapper[$baseParam]"
 }
