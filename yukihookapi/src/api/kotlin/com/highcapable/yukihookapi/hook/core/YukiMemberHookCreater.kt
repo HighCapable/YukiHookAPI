@@ -524,11 +524,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             (if (isReplaceHookMode) YukiHookHelper.hookMethod(member, replaceMent)
                             else YukiHookHelper.hookMethod(member, beforeAfterHook)).also {
                                 when {
-                                    it.first.member == null -> error("Hook Member [$member] failed")
-                                    it.second -> onAlreadyHookedCallback?.invoke(it.first.member!!)
+                                    it.first?.member == null -> error("Hook Member [$member] failed")
+                                    it.second -> onAlreadyHookedCallback?.invoke(it.first?.member!!)
                                     else -> {
                                         memberUnhook = it.first
-                                        onHookedCallback?.invoke(it.first.member!!)
+                                        onHookedCallback?.invoke(it.first?.member!!)
                                     }
                                 }
                             }

@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.factory
 
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Constructor
@@ -108,18 +109,20 @@ internal object YukiHookHelper {
      * 对接 [XposedBridge.hookMethod]
      * @param hookMethod 需要 Hook 的方法、构造方法
      * @param callback 回调
-     * @return [Pair] - ([YukiMemberHook.Unhook],[Boolean] 是否已经 Hook)
+     * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
      */
-    internal fun hookMethod(hookMethod: Member?, callback: YukiHookCallback): Pair<YukiMemberHook.Unhook, Boolean> {
+    internal fun hookMethod(hookMethod: Member?, callback: YukiHookCallback): Pair<YukiMemberHook.Unhook?, Boolean> {
         runCatching {
             YukiHookedMembers.hookedMembers.takeIf { it.isNotEmpty() }?.forEach {
                 if (it.member.toString() == hookMethod.toString()) return@runCatching it
             }
         }
-        return YukiMemberHook.Unhook.wrapper(XposedBridge.hookMethod(hookMethod, callback.compat())).let {
-            YukiHookedMembers.hookedMembers.add(it)
-            Pair(it, false)
-        }
+        return if (YukiHookBridge.hasXposedBridge)
+            YukiMemberHook.Unhook.wrapper(XposedBridge.hookMethod(hookMethod, callback.compat())).let {
+                YukiHookedMembers.hookedMembers.add(it)
+                Pair(it, false)
+            }
+        else Pair(null, false)
     }
 
     /**
@@ -142,6 +145,7 @@ internal object YukiHookHelper {
                 YukiHookedMembers.hookedQueueMethods[allMethodsName]?.forEach { e -> it.add(e) }
                 return@also
             }
+            if (YukiHookBridge.hasXposedBridge.not()) return@also
             XposedBridge.hookAllMethods(hookClass, methodName, callback.compat()).takeIf { e -> e.isNotEmpty() }
                 ?.forEach { e -> it.add(YukiMemberHook.Unhook.wrapper(e, allMethodsName)) }
             YukiHookedMembers.hookedQueueMethods[allMethodsName] = it
@@ -166,6 +170,7 @@ internal object YukiHookHelper {
                 YukiHookedMembers.hookedQueueConstructors[allConstructorsName]?.forEach { e -> it.add(e) }
                 return@also
             }
+            if (YukiHookBridge.hasXposedBridge.not()) return@also
             XposedBridge.hookAllConstructors(hookClass, callback.compat()).takeIf { e -> e.isNotEmpty() }
                 ?.forEach { e -> it.add(YukiMemberHook.Unhook.wrapper(e, allConstructorsName)) }
             YukiHookedMembers.hookedQueueConstructors[allConstructorsName] = it
@@ -185,7 +190,7 @@ internal object YukiHookHelper {
         val isHookedMember = YukiHookedMembers.hookedMembers.any { it.member.toString() == member.toString() }
         val isQueueMethod = YukiHookedMembers.hookedQueueMethods.any { it.value.any { e -> e.member.toString() == member.toString() } }
         val isQueueConstructor = YukiHookedMembers.hookedQueueConstructors.any { it.value.any { e -> e.member.toString() == member.toString() } }
-        return if (isHookedMember || isQueueMethod || isQueueConstructor)
+        return if (YukiHookBridge.hasXposedBridge && (isHookedMember || isQueueMethod || isQueueConstructor))
             XposedBridge.invokeOriginalMethod(member, instance, args)
         else null
     }
@@ -308,6 +313,7 @@ internal abstract class YukiMemberHook(override val priority: Int = YukiHookPrio
          * @param isNeedRemove 是否需要从 [YukiHookedMembers.hookedMembers] 中移除
          */
         private fun unhook(isNeedRemove: Boolean = true) {
+            if (YukiHookBridge.hasXposedBridge.not()) return
             instance.unhook()
             if (isNeedRemove) runCatching { YukiHookedMembers.hookedMembers.remove(this) }
         }
