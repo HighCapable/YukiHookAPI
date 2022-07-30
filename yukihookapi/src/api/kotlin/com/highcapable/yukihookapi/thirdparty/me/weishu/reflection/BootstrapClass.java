@@ -26,7 +26,7 @@
  * This file is Created by weishu on 2020/7/13.
  * This file is Forked from https://github.com/tiann/FreeReflection
  */
-package me.weishu.reflection;
+package com.highcapable.yukihookapi.thirdparty.me.weishu.reflection;
 
 import static android.os.Build.VERSION.SDK_INT;
 
