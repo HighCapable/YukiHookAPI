@@ -189,8 +189,8 @@ object CodeSourceFileTemplate {
                 "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
                 "    }\n" +
                 "\n" +
-                "    private fun hookModuleAppStatus(classLoader: ClassLoader? = null, isHookResourcesStatus: Boolean = false) {\n" +
-                "        classLoader?.let { moduleClassLoader = it }\n" +
+                "    private fun hookModuleAppStatus(loader: ClassLoader? = null, isHookResourcesStatus: Boolean = false) {\n" +
+                "        loader?.let { moduleClassLoader = it }\n" +
                 "        runCatching { YukiHookBridge.hookModuleAppStatus(moduleClassLoader, isHookResourcesStatus) }\n" +
                 "    }\n" +
                 "\n" +

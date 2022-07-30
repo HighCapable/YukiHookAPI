@@ -75,13 +75,12 @@ internal object YukiHookHelper {
 
     /**
      * 查找 [Class]
-     * @param classLoader 当前 [ClassLoader]
+     * @param loader 当前 [ClassLoader]
      * @param baseClass 当前类
      * @return [Field]
      * @throws IllegalStateException 如果 [ClassLoader] 为空
      */
-    internal fun findClass(classLoader: ClassLoader?, baseClass: Class<*>) =
-        classLoader?.loadClass(baseClass.name) ?: error("ClassLoader is null")
+    internal fun findClass(loader: ClassLoader?, baseClass: Class<*>) = loader?.loadClass(baseClass.name) ?: error("ClassLoader is null")
 
     /**
      * 查找变量

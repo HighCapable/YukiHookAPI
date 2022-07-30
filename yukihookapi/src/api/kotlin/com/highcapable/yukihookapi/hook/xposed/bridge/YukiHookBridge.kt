@@ -314,13 +314,13 @@ object YukiHookBridge {
      * Hook 模块自身激活状态和 Resources Hook 支持状态
      *
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
-     * @param classLoader 模块的 [ClassLoader]
+     * @param loader 模块的 [ClassLoader]
      * @param isHookResourcesStatus 是否 Hook Resources 支持状态
      */
     @YukiGenerateApi
-    fun hookModuleAppStatus(classLoader: ClassLoader?, isHookResourcesStatus: Boolean = false) {
+    fun hookModuleAppStatus(loader: ClassLoader?, isHookResourcesStatus: Boolean = false) {
         if (YukiHookAPI.Configs.isEnableHookModuleStatus)
-            YukiHookHelper.findClass(classLoader, YukiHookModuleStatus::class.java).also { statusClass ->
+            YukiHookHelper.findClass(loader, YukiHookModuleStatus::class.java).also { statusClass ->
                 if (isHookResourcesStatus.not()) {
                     YukiHookHelper.hookMethod(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME),
                         object : YukiMemberReplacement() {
