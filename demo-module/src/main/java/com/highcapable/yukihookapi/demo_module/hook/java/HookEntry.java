@@ -60,7 +60,7 @@ public class HookEntry implements IYukiHookXposedInit {
         // 在 Java 中调用 Kotlin 的 lambda 在 Unit 情况下也需要 return null
         YukiHookAPI.INSTANCE.encase(e -> {
             e.loadZygote(l -> {
-                l.hook(Activity.class, true, h -> {
+                l.hook(Activity.class, h -> {
                     h.injectMember(h.getPRIORITY_DEFAULT(), "Default", i -> {
                         i.method(m -> {
                             m.setName("onCreate");
