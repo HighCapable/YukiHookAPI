@@ -1,12 +1,16 @@
 ## HookClass [class]
 
 ```kotlin
-class HookClass internal constructor(var instance: Class<*>?, var name: String, var throwable: Throwable?)
+class HookClass internal constructor(internal var instance: Class<*>?, internal var name: String, internal var throwable: Throwable?)
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.93` `修改`
+
+`HookClass` 相关功能不再对外开放
 
 **功能描述**
 

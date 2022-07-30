@@ -180,7 +180,7 @@ object YukiHookBridge {
      * @return [Boolean] 是否存在
      */
     private fun isMiuiCatcherPatch(packageName: String?) =
-        (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") && ("android.miui.R").hasClass
+        (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") && ("android.miui.R").hasClass()
 
     /**
      * 当前包名是否已在指定的 [HookEntryType] 被装载

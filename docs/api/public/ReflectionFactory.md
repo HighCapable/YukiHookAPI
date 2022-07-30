@@ -8,61 +8,35 @@
 
 > 这是自定义 `Member` 和 `Class` 相关功能的查找匹配以及 `invoke` 的封装类。
 
-### hookClass [field]
-
-```kotlin
-val Class<*>.hookClass: HookClass
-```
+### ~~hookClass [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
 
-**功能描述**
+`v1.0.93` `移除`
 
-> 将 `Class` 转换为 `HookClass`。
+`HookClass` 相关功能不再对外开放
 
-### normalClass [field]
-
-```kotlin
-val HookClass.normalClass: Class<*>?
-```
+### ~~normalClass [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
 
-**功能描述**
+`v1.0.93` `移除`
 
-> 将 `HookClass` 转换为 `Class`。
+`HookClass` 相关功能不再对外开放
 
-### hasClass [field]
-
-```kotlin
-val String.hasClass: Boolean
-```
+### ~~hasClass [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
 
-**功能描述**
+`v1.0.93` `移除`
 
-> 通过字符串查找类是否存在。
-
-**功能示例**
-
-你可以轻松的使用此方法判断字符串中的类是否存在。
-
-!> 此查找仅限使用当前的 `ClassLoader`，若要指定 `ClassLoader` 请使用下方的 `hasClass` 同名方法。
-
-> 示例如下
-
-```kotlin
-if("com.example.demo.DemoClass".hasClass) {
-    // Your code here.
-}
-```
+请直接使用 `hasClass()` 无参方法
 
 ### hasExtends [field]
 
@@ -120,9 +94,36 @@ fun String.hasClass(loader: ClassLoader?): Boolean
 
 `v1.0` `添加`
 
+`v1.0.93` `修改`
+
+支持直接使用空参数方法使用默认 `ClassLoader` 进行判断
+
 **功能描述**
 
 > 通过字符串使用指定的 `ClassLoader` 查找类是否存在。
+
+**功能示例**
+
+你可以轻松的使用此方法判断字符串中的类是否存在，效果等同于直接使用 `Class.forName`。
+
+> 示例如下
+
+```kotlin
+if("com.example.demo.DemoClass".hasClass()) {
+    // Your code here.
+}
+```
+
+填入方法中的 `loader` 参数可判断指定的 `ClassLoader` 中的 `Class` 是否存在。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+if("com.example.demo.DemoClass".hasClass(customClassloader)) {
+    // Your code here.
+}
+```
 
 ### hasField [method]
 

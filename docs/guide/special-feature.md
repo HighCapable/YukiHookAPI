@@ -682,6 +682,29 @@ VariousClass("com.demo.ATest", "com.demo.BTest").get().method {
 }.get().call()
 ```
 
+若当前 `Class` 在指定的 `ClassLoader` 中存在，你可以在 `get` 中填入你的 `ClassLoader`。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+VariousClass("com.demo.ATest", "com.demo.BTest").get(customClassLoader).method {
+    name = "doTask"
+    emptyParam()
+}.get().call()
+```
+
+若你正在 `PackageParam` 中操作 (Xposed) 宿主环境的 `Class`，可以直接使用 `clazz` 进行设置。
+
+> 示例如下
+
+```kotlin
+VariousClass("com.demo.ATest", "com.demo.BTest").clazz.method {
+    name = "doTask"
+    emptyParam()
+}.get().call()
+```
+
 更多用法可参考 [VariousClass](api/document?id=variousclass-class)。
 
 若在创建 Hook 的时候使用，可以更加方便，还可以自动拦截找不到 `Class` 的异常。

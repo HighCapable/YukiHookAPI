@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi.hook.factory
 
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
-import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
@@ -42,26 +41,6 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
-
-/**
- * [Class] 转换为 [HookClass]
- * @return [HookClass]
- */
-val Class<*>.hookClass get() = HookClass(instance = this, name)
-
-/**
- * [HookClass] 转换为 [Class]
- * @return [Class] or null
- */
-val HookClass.normalClass get() = instance
-
-/**
- * 通过字符串查找类是否存在
- *
- * - ❗仅限使用当前的 [ClassLoader]
- * @return [Boolean] 是否存在
- */
-val String.hasClass get() = hasClass(loader = null)
 
 /**
  * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
@@ -94,10 +73,10 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
 
 /**
  * 通过字符串查找类是否存在
- * @param loader [Class] 所在的 [ClassLoader]
+ * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
  * @return [Boolean] 是否存在
  */
-fun String.hasClass(loader: ClassLoader?) = try {
+fun String.hasClass(loader: ClassLoader? = null) = try {
     classOf(name = this, loader)
     true
 } catch (_: Throwable) {

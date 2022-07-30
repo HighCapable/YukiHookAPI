@@ -402,6 +402,8 @@ val VariousClass.clazz: Class<*>
 
 > 字符串、`VariousClass` 转换为实体类。
 
+使用当前 `appClassLoader` 装载目标 `Class`。
+
 **功能示例**
 
 你可以轻松地将 `String` 类型的 `Class` 包名转为 `Class` 实例。
@@ -459,11 +461,11 @@ if("com.example.demo.DemoClass".hasClass) {
 ### findClass [method]
 
 ```kotlin
-fun findClass(name: String): HookClass
+fun findClass(name: String, loader: ClassLoader?): HookClass
 ```
 
 ```kotlin
-fun findClass(vararg name: String): VariousClass
+fun findClass(vararg name: String, loader: ClassLoader?): VariousClass
 ```
 
 **变更记录**
@@ -474,9 +476,15 @@ fun findClass(vararg name: String): VariousClass
 
 移除了 ~~`findClass(various: VariousClass)`~~ 方法
 
+`v1.0.93` `修改`
+
+新增 `loader` 参数
+
 **功能描述**
 
 > 通过完整包名+名称查找需要被 Hook 的 `Class`。
+
+!> 使用此方法会得到一个 `HookClass` 仅用于 Hook，若想查找 `Class` 请使用 `classOf`、`clazz` 功能。
 
 **功能示例**
 
@@ -506,22 +514,40 @@ findClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2", "com.exa
 val variousClass = VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2", "com.example.demo.DemoClass3")
 ```
 
+若你当前需要查找的 `Class` 不属于 `appClassLoader`，你可以使用 `loader` 参数指定你要装载的 `ClassLoader`。
+
+> 示例如下
+
+```kotlin
+val outsideLoader: ClassLoader? = ... // 假设这就是你的 ClassLoader
+findClass(name = "com.example.demo.OutsideClass", loader = outsideLoader)
+```
+
+同样地，在不确定多个版本的 `Class` 以及不同名称时，也可以使用 `loader` 参数指定你要装载的 `ClassLoader`。
+
+> 示例如下
+
+```kotlin
+val outsideLoader: ClassLoader? = ... // 假设这就是你的 ClassLoader
+findClass("com.example.demo.OutsideClass1", "com.example.demo.OutsideClass2", "com.example.demo.OutsideClass3", loader = outsideLoader)
+```
+
 ### hook [method]
 
 ```kotlin
-inline fun String.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun String.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 ```kotlin
-inline fun Class<*>.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun Class<*>.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 ```kotlin
-inline fun VariousClass.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun VariousClass.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 ```kotlin
-inline fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun HookClass.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
 ```
 
 **变更记录**
@@ -547,6 +573,10 @@ inline fun HookClass.hook(isUseAppClassLoader: Boolean, initiate: YukiMemberHook
 `v1.0.80` `修改`
 
 将方法体进行 inline
+
+`v1.0.93` `修改`
+
+移除了 ~~`isUseAppClassLoader`~~ 参数
 
 **功能描述**
 
@@ -578,10 +608,12 @@ findClass(name = "com.example.demo.DemoClass").hook {
 
 使用 `stub` 或直接拿到 `Class` 实例进行创建。
 
+默认情况下 API 会将 `Class` 实例转换为类名并绑定到 `appClassLoader`，若失败，则会使用原始 `Class` 实例直接进行 Hook。
+
 > 示例如下
 
 ```kotlin
-Activity::class.java.hook {
+Stub::class.java.hook {
     // Your code here.
 }
 ```
@@ -602,23 +634,6 @@ VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook 
 
 ```kotlin
 findClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook {
-    // Your code here.
-}
-```
-
-!> 以下是关于 Hook 目标 Class 的一个特殊情况说明。
-
-若你 Hook 的 `Class` 实例的 `ClassLoader` 并不是当前的 `appClassLoader`，那么你需要做一下小的调整。
-
-在 `hook` 方法中加入 `isUseAppClassLoader = false`，这样，你的 `Class` 就不会被重新绑定到 `appClassLoader` 了。
-
-此方案适用于目标 `Class` 无法在当前 `appClassLoader` 中被得到但可以得到 `Class` 实例的情况。
-
-> 示例如下
-
-```kotlin
-// 这里的做法标识了 hook 不会再将 YourClass 重新与当前 appClassLoader 绑定
-YourClass.hook(isUseAppClassLoader = false) {
     // Your code here.
 }
 ```
