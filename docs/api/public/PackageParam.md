@@ -631,7 +631,7 @@ inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit)
 
 **变更记录**
 
-`v1.0.80` `新增
+`v1.0.80` `新增`
 
 **功能描述**
 
