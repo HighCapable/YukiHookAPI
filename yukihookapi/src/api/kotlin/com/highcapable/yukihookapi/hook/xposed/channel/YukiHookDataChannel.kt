@@ -299,6 +299,7 @@ class YukiHookDataChannel private constructor() {
             /** 发送广播 */
             (context ?: YukiHookAppHelper.currentApplication())?.sendBroadcast(Intent().apply {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
+                setPackage(if (isXposedEnvironment) YukiHookBridge.modulePackageName else packageName)
                 data.takeIf { it.isNotEmpty() }?.forEach {
                     when (it.value) {
                         null -> Unit

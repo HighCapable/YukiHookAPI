@@ -1275,6 +1275,12 @@ class OtherActivity : AppCompatActivity() {
 
 !> 在模块中，你只能使用 `Activity` 的 `Context` 注册 `dataChannel`，你不能在 `Application` 以及 `Service` 等地方使用 `dataChannel`，若要在 `Fragment` 中使用 `dataChannel`，请使用 `activity?.dataChannel(...)`。
 
+### 安全性说明
+
+!> 在模块环境中，你只能接收<u>**指定包名的宿主**</u>发送的通讯数据且只能发送给<u>**指定包名的宿主**</u>。
+
+为了进一步防止广播滥用，通讯数据中 API 会自动指定宿主和模块的包名，防止其它 APP 监听并利用广播做出超限行为。
+
 ## 宿主生命周期扩展功能
  
 > 这是一个自动 Hook 宿主 APP 生命周期的扩展功能。
