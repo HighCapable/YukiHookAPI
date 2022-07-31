@@ -1,7 +1,7 @@
 ## YukiResourcesHookCreater [class]
 
 ```kotlin
-class YukiResourcesHookCreater(private val packageParam: PackageParam, internal val hookResources: HookResources)
+class YukiResourcesHookCreater(internal val packageParam: PackageParam, internal val hookResources: HookResources)
 ```
 
 **变更记录**
@@ -51,7 +51,7 @@ injectResource(tag = "KuriharaYuki") {
 ### ResourcesHookCreater [class]
 
 ```kotlin
-inner class ResourcesHookCreater internal constructor(private val tag: String)
+inner class ResourcesHookCreater internal constructor(private val tag: String, private val packageName: String)
 ```
 
 **变更记录**
@@ -497,6 +497,20 @@ fun mipmap()
 **功能描述**
 
 > 设置 Resources 类型为位图(Mipmap)。
+
+##### array [method]
+
+```kotlin
+fun array()
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 设置 Resources 类型为数组(Array)。
 
 #### Result [class]
 

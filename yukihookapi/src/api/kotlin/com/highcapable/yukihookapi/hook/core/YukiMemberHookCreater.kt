@@ -543,7 +543,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
                     if (isNotIgnoredNoSuchMemberFailure) yLoggerE(
-                        msg = "[$packageName] " + (if (isHookMemberSetup)
+                        msg = "$hostTagName " + (if (isHookMemberSetup)
                             "Hooked Member with a finding error by $hookClass [$tag]"
                         else "Hooked Member cannot be non-null by $hookClass [$tag]"),
                         e = findingThrowable ?: it
@@ -583,7 +583,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 if (isMemberNotFound) onNoSuchMemberFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
                 if ((isNotIgnoredHookingFailure && isMemberNotFound.not()) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
-                    yLoggerE(msg = "[$packageName] Hooked All Members with an error in $hookClass [$tag]", e = it)
+                    yLoggerE(msg = "$hostTagName Hooked All Members with an error in $hookClass [$tag]", e = it)
             }
         }
 
@@ -592,7 +592,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "[$packageName] $msg")
+            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "$hostTagName $msg")
         }
 
         /**
@@ -600,7 +600,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @param throwable 异常信息
          */
         private fun onHookFailureMsg(throwable: Throwable) =
-            yLoggerE(msg = "[$packageName] Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
+            yLoggerE(msg = "$hostTagName Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截
@@ -613,6 +613,12 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @return [Boolean] 没有设置任何异常拦截
          */
         internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
+
+        /**
+         * 获取 Hook APP (宿主) 标签
+         * @return [String]
+         */
+        internal val hostTagName get() = if (packageParam.appUserId != 0) "[$packageName][${packageParam.appUserId}]" else "[$packageName]"
 
         override fun toString() = "[tag] $tag [priority] $priority [class] $hookClass [member] $member $allMethodsName [mode] $hookMemberMode"
 

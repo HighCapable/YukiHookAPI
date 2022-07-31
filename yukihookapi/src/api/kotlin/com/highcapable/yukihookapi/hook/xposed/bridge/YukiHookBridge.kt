@@ -35,6 +35,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
@@ -173,6 +174,18 @@ object YukiHookBridge {
      * @return [Boolean]
      */
     internal val hasXposedBridge get() = executorVersion >= 0
+
+    /**
+     * 获取指定 [packageName] 的用户 ID
+     *
+     * 机主为 0 - 应用双开 (分身) 或工作资料因系统环境不同 ID 也各不相同
+     * @param packageName 当前包名
+     * @return [Int]
+     */
+    internal fun findUserId(packageName: String) = runCatching {
+        YukiHookHelper.findMethod(UserHandleClass, name = "getUserId", IntType)
+            .invoke(null, systemContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES).uid) as? Int ?: 0
+    }.getOrNull() ?: 0
 
     /**
      * 自动忽略 MIUI 系统可能出现的日志收集注入实例

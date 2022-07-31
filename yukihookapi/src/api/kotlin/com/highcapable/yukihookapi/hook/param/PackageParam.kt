@@ -85,6 +85,14 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     val appInfo get() = wrapper?.appInfo ?: YukiHookAppHelper.currentApplicationInfo() ?: ApplicationInfo()
 
     /**
+     * 获取当前 Hook APP 的用户 ID
+     *
+     * 机主为 0 - 应用双开 (分身) 或工作资料因系统环境不同 ID 也各不相同
+     * @return [Int]
+     */
+    val appUserId get() = YukiHookBridge.findUserId(packageName)
+
+    /**
      * 获取当前 Hook APP 的 [Application] 实例
      *
      * - ❗首次装载可能是空的 - 请延迟一段时间再获取或通过设置 [onAppLifecycle] 监听来完成

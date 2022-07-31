@@ -40,6 +40,22 @@ val appInfo: ApplicationInfo
 
 > 获取当前 Hook APP 的 `ApplicationInfo`。
 
+### appUserId [field]
+
+```kotlin
+val appUserId: Int
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获取当前 Hook APP 的用户 ID。
+
+机主为 `0`，应用双开 (分身) 或工作资料因系统环境不同 ID 也各不相同。
+
 ### appContext [field]
 
 ```kotlin

@@ -187,7 +187,7 @@ abstract class BaseFinder(
     /** 存在日志时输出日志 */
     internal fun printLogIfExist() {
         if (loggingContent != null) yLoggerE(
-            msg = "${hookInstance?.packageName?.let { "[$it] " } ?: ""}NoSuch$tag happend in [$classSet] ${loggingContent?.first} [${hookTag}]",
+            msg = "${hookInstance?.hostTagName?.let { "$it " } ?: ""}NoSuch$tag happend in [$classSet] ${loggingContent?.first} [${hookTag}]",
             e = loggingContent?.second
         )
         /** 仅输出一次 - 然后清掉日志 */
@@ -200,7 +200,7 @@ abstract class BaseFinder(
      */
     internal fun onHookLogMsg(msg: String) {
         if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge)
-            hookInstance?.also { yLoggerI(msg = "[${it.packageName}] $msg") } ?: yLoggerI(msg = msg)
+            hookInstance?.also { yLoggerI(msg = "${it.hostTagName} $msg") } ?: yLoggerI(msg = msg)
     }
 
     /**
