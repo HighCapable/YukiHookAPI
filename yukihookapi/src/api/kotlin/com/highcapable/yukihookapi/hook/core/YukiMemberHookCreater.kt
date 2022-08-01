@@ -38,10 +38,12 @@ import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
+import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookPriority
@@ -111,12 +113,13 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @return [Result]
      */
     @PublishedApi
-    internal fun hook(): Result {
-        if (YukiHookBridge.hasXposedBridge.not()) return Result()
+    internal fun hook() = when {
+        YukiHookBridge.hasXposedBridge.not() -> Result()
         /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] 或 [HookParam.isCallbackCalled] 已被执行 */
-        if (packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not()) return Result()
-        return if (preHookMembers.isEmpty()) error("Hook Members is empty, hook aborted")
-        else Result().also {
+        packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
+        preHookMembers.isEmpty() -> error("Hook Members is empty, hook aborted")
+        else -> Result().also {
+            warnTerribleHookClass()
             Thread {
                 /** 延迟使得方法取到返回值 */
                 SystemClock.sleep(1)
@@ -131,6 +134,25 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                         else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
                 }
             }.start()
+        }
+    }
+
+    /** 打印不应该被 Hook 警告范围内的 [HookClass] 对象 */
+    private fun warnTerribleHookClass() {
+        when (hookClass.name) {
+            AnyType.name -> yLoggerW(
+                msg = "Hook [Object] Class is a dangerous behavior! " +
+                        "This is the parent Class of all objects, if you hook it, it may cause a lot of memory leaks"
+            )
+            JavaClassLoader.name -> yLoggerW(
+                msg = "Hook [ClassLoader] Class is a dangerous behavior! " +
+                        "If you only want to listen to \"loadClass\" use \"ClassLoader.fetching\" instead it"
+            )
+            JavaClass.name, JavaMethodClass.name, JavaFieldClass.name,
+            JavaConstructorClass.name, JavaMemberClass.name -> yLoggerW(
+                msg = "Hook [Class/Method/Field/Constructor/Member] Class is a dangerous behavior! " +
+                        "Those Class should not be hooked, it may cause StackOverflow errors"
+            )
         }
     }
 
