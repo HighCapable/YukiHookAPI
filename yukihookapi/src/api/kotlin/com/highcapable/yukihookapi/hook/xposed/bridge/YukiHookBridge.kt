@@ -41,12 +41,16 @@ import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.factory.hasClass
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.type.android.*
+import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
+import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
+import com.highcapable.yukihookapi.hook.type.java.StringType
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
@@ -321,6 +325,24 @@ object YukiHookBridge {
     /** 刷新当前 Xposed 模块自身 [Resources] */
     internal fun refreshModuleAppResources() {
         dynamicModuleAppResources?.let { moduleAppResources = it }
+    }
+
+    /**
+     * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
+     * @param loader 当前 [ClassLoader]
+     * @param result 回调 - ([Class] 实例对象,[Boolean] 是否 resolve)
+     */
+    internal fun hookClassLoader(loader: ClassLoader?, result: (clazz: Class<*>, resolve: Boolean) -> Unit) {
+        runCatching {
+            YukiHookHelper.hookMethod(
+                YukiHookHelper.findMethod(JavaClassLoader, name = "loadClass", StringType, BooleanType),
+                object : YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        if (wrapper.instance?.javaClass?.name == loader?.javaClass?.name)
+                            (wrapper.result as? Class<*>?)?.also { result(it, wrapper.args?.get(1) as? Boolean ?: false) }
+                    }
+                })
+        }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
     }
 
     /**
