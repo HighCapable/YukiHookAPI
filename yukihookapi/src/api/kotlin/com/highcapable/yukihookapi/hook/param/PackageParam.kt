@@ -45,12 +45,19 @@ import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreater
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.hasClass
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
+import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.type.java.BooleanType
+import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
+import com.highcapable.yukihookapi.hook.type.java.StringType
 import com.highcapable.yukihookapi.hook.utils.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
@@ -355,6 +362,27 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [HookClass]
      */
     fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name).hookClass(loader)
+
+    /**
+     * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
+     *
+     * - ❗请注意只有当前 [ClassLoader] 有主动使用 [ClassLoader.loadClass] 事件时才能被捕获
+     *
+     * - ❗这是一个实验性功能 - 一般情况下不会用到此方法 - 不保证不会发生错误
+     * @param result 回调 - ([Class] 实例对象,[Boolean] 是否 resolve)
+     */
+    fun ClassLoader.fetching(result: (clazz: Class<*>, resolve: Boolean) -> Unit) {
+        runCatching {
+            YukiHookHelper.hookMethod(
+                YukiHookHelper.findMethod(JavaClassLoader, name = "loadClass", StringType, BooleanType),
+                object : YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        if (wrapper.instance?.javaClass?.name == this@fetching.javaClass.name)
+                            (wrapper.result as? Class<*>?)?.also { result(it, wrapper.args?.get(1) as? Boolean ?: false) }
+                    }
+                })
+        }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
+    }
 
     /**
      * Hook 方法、构造方法

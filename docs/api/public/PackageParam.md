@@ -548,6 +548,69 @@ val outsideLoader: ClassLoader? = ... // 假设这就是你的 ClassLoader
 findClass("com.example.demo.OutsideClass1", "com.example.demo.OutsideClass2", "com.example.demo.OutsideClass3", loader = outsideLoader)
 ```
 
+### fetching [method]
+
+```kotlin
+fun ClassLoader.fetching(result: (clazz: Class<*>, resolve: Boolean) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 监听并 Hook 当前 `ClassLoader` 的 `ClassLoader.loadClass` 方法。
+
+!> 请注意只有当前 `ClassLoader` 有主动使用 `ClassLoader.loadClass` 事件时才能被捕获。
+
+!> 这是一个实验性功能，一般情况下不会用到此方法，不保证不会发生错误。
+
+**功能示例**
+
+针对一些使用特定 `ClassLoader` 装载 `Class` 的宿主应用，你可以使用此方法来监听 `Class` 加载情况。
+
+!> 为了防止发生问题，你需要<u>**得到一个存在的 `ClassLoader` 实例**</u>来使用此功能。
+
+比如我们使用 `appClassLoader`。
+
+> 示例如下
+
+```kotlin
+appClassLoader.fetching { clazz, resolve ->
+    // 得到 clazz 即加载对象
+    clazz... // 这里进行你需要的操作
+    // resolve 为 loadClass 的第二位参数，可参考官方文档的说明，一般情况下用不到
+    resolve // 类型为 Boolean
+}
+```
+
+或使用你得到的存在的 `ClassLoader` 实例，可以通过 Hook 获取。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+customClassLoader?.fetching { clazz, resolve ->
+    // ...
+}
+```
+
+在判断到这个 `Class` 被装载成功时，开始执行你的 Hook 功能。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+customClassLoader?.fetching { clazz, resolve ->
+    if(clazz.name == /** 你需要的 Class 名称 */) {
+        clazz.hook {
+            // ...
+        }
+    }
+}
+```
+
 ### hook [method]
 
 ```kotlin
