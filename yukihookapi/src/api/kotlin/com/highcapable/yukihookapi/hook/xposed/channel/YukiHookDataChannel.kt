@@ -40,9 +40,8 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcelable
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.log.loggerE
-import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
@@ -116,7 +115,7 @@ class YukiHookDataChannel private constructor() {
                                 destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
                             }
                         }
-                    }.onFailure { loggerE(msg = "Received action \"$action\" failed", e = it) }
+                    }.onFailure { yLoggerE(msg = "Received action \"$action\" failed", e = it) }
                 }
             }
         }
@@ -138,7 +137,7 @@ class YukiHookDataChannel private constructor() {
         isXposedEnvironment || (((context ?: receiverContext)
             ?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager?)
             ?.getRunningTasks(9999)?.filter { context?.javaClass?.name == it?.topActivity?.className }?.size ?: 0) > 0
-    }.getOrNull() ?: loggerW(msg = "Couldn't got current Activity status because a SecurityException blocked it").let { false }
+    }.getOrNull() ?: yLoggerW(msg = "Couldn't got current Activity status because a SecurityException blocked it").let { false }
 
     /**
      * 获取宿主广播 Action 名称
