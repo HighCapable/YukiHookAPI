@@ -81,3 +81,6 @@ App's Environment
 - 掌握 Kotlin 语言，学会灵活运用 [Kotlin Lambda](https://blog.ketal.icu/2022/01/01/kotlin-lambda%E5%85%A5%E9%97%A8/) **(友情链接)**
 
 - 掌握并了解 Kotlin 与 Java 混编、互相调用以及 Kotlin 生成的 Java 字节码
+
+<br/><br/>
+[浏览下一篇 ➡️](guide/quick-start.md)

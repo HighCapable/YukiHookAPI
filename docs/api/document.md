@@ -71,3 +71,6 @@
 [filename](public/CurrentClass.md ':include')
 
 [filename](public/HookResources.md ':include')
+
+<br/><br/>
+[浏览下一篇 ➡️](about/changelog.md)

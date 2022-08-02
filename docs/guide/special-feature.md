@@ -1355,3 +1355,6 @@ loadApp(name = "com.example.demo") {
 ```
 
 详情请参考 [AppLifecycle](api/document?id=applifecycle-class)。
+
+<br/><br/>
+[浏览下一篇 ➡️](guide/move-to-new-api.md)

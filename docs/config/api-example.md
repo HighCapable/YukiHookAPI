@@ -252,3 +252,6 @@ fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker)
 !> 切勿以 Xposed 方式使用 `encase` 方法而漏掉 `baseContext` 参数，否则你的 Hook 将完全不工作。
 
 !> Resources Hook 功能不支持作为 Hook API 使用。
+
+<br/><br/>
+[浏览下一篇 ➡️](config/api-exception.md)

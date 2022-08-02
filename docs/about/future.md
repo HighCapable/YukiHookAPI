@@ -33,3 +33,6 @@ API 已经提供了 Xposed 原生 API 监听接口，你可以 [在这里](confi
 作为 API 来讲，目前仅仅对接 `XposedBridge` 作为兼容层，还是有一定的局限性。
 
 大部分 `inline hook` 没有 `Java` 兼容层，后期可能会考虑 `native hook` 的 `Java` 兼容层适配。
+
+<br/><br/>
+[浏览下一篇 ➡️](about/contacts.md)

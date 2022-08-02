@@ -235,3 +235,6 @@ class HookEntry: IYukiHookXposedInit {
 `onXposedEvent` 与 `onHook` 方法完全独立存在，互不影响，你可以继续在 `onHook` 方法中使用 `YukiHookAPI`。
 
 若要了解更多可 [点击这里](api/document?id=onxposedevent-method) 进行查看。
+
+<br/><br/>
+[浏览下一篇 ➡️](config/api-using.md)

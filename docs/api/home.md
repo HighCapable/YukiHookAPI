@@ -22,6 +22,5 @@
 
 后期被删除的功能将标记为 `v$version` `移除` 并会标注删除线。
 
-## 正文
-
-> 你可以从侧边栏找到 `Public API` 或 [点击这里](api/document) 进入 API 文档。
+<br/><br/>
+[浏览下一篇 ➡️](api/document)

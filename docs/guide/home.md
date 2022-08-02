@@ -203,3 +203,6 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
 | [Epic](https://github.com/tiann/epic)                     | ❗   | 需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)                              |
 | [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕   | 可以作为模块使用                                                                          |
 | [Xposed](https://github.com/rovo89/Xposed)                | ❎   | 未测试，不再推荐使用                                                                      |
+
+<br/><br/>
+[浏览下一篇 ➡️](guide/knowledge.md)

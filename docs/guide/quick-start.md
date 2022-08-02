@@ -184,3 +184,6 @@ override fun attachBaseContext(base: Context?) {
 #### 特别说明
 
 !> 由于你使用了自定义的 Hook 框架而并非模块，~~`YukiHookModuleStatus`~~ ~~`YukiHookModulePrefs`~~ ~~`YukiHookDataChannel`~~ 以及 Resources Hook 功能将失效。
+
+<br/><br/>
+[浏览下一篇 ➡️](guide/example.md)
