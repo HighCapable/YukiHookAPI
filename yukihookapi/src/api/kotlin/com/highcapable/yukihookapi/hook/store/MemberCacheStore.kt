@@ -45,14 +45,14 @@ internal object MemberCacheStore {
     /** 缓存的 [Class] */
     private val classCacheDatas = HashMap<Int, Class<*>?>()
 
-    /** 缓存的 [Method] */
-    private val methodCacheDatas = HashMap<Int, Method?>()
+    /** 缓存的 [Method] 数组 */
+    private val methodsCacheDatas = HashMap<Int, HashSet<Method>>()
 
-    /** 缓存的 [Constructor] */
-    private val constructorCacheDatas = HashMap<Int, Constructor<*>?>()
+    /** 缓存的 [Constructor] 数组 */
+    private val constructorsCacheDatas = HashMap<Int, HashSet<Constructor<*>>>()
 
-    /** 缓存的 [Field] */
-    private val fieldCacheDatas = HashMap<Int, Field?>()
+    /** 缓存的 [Field] 数组 */
+    private val fieldsCacheDatas = HashMap<Int, HashSet<Field>>()
 
     /**
      * 查找缓存中的 [Class]
@@ -62,25 +62,25 @@ internal object MemberCacheStore {
     internal fun findClass(hashCode: Int) = classCacheDatas[hashCode]
 
     /**
-     * 查找缓存中的 [Method]
+     * 查找缓存中的 [Method] 数组
      * @param hashCode 标识符
-     * @return [Method] or null
+     * @return [HashSet]<[Method]>
      */
-    internal fun findMethod(hashCode: Int) = methodCacheDatas[hashCode]
+    internal fun findMethods(hashCode: Int) = methodsCacheDatas[hashCode]
 
     /**
-     * 查找缓存中的 [Constructor]
+     * 查找缓存中的 [Constructor] 数组
      * @param hashCode 标识符
-     * @return [Constructor] or null
+     * @return [HashSet]<[Constructor]>
      */
-    internal fun findConstructor(hashCode: Int) = constructorCacheDatas[hashCode]
+    internal fun findConstructors(hashCode: Int) = constructorsCacheDatas[hashCode]
 
     /**
-     * 查找缓存中的 [Field]
+     * 查找缓存中的 [Field] 数组
      * @param hashCode 标识符
-     * @return [Field] or null
+     * @return [HashSet]<[Field]>
      */
-    internal fun findField(hashCode: Int) = fieldCacheDatas[hashCode]
+    internal fun findFields(hashCode: Int) = fieldsCacheDatas[hashCode]
 
     /**
      * 写入 [Class] 到缓存
@@ -93,32 +93,32 @@ internal object MemberCacheStore {
     }
 
     /**
-     * 写入 [Method] 到缓存
+     * 写入 [Method] 数组到缓存
      * @param hashCode 标识符
-     * @param instance 实例
+     * @param instances 实例数组
      */
-    internal fun putMethod(hashCode: Int, instance: Method?) {
+    internal fun putMethods(hashCode: Int, instances: HashSet<Method>) {
         if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
-        methodCacheDatas[hashCode] = instance
+        methodsCacheDatas[hashCode] = instances
     }
 
     /**
-     * 写入 [Constructor] 到缓存
+     * 写入 [Constructor] 数组到缓存
      * @param hashCode 标识符
-     * @param instance 实例
+     * @param instances 实例数组
      */
-    internal fun putConstructor(hashCode: Int, instance: Constructor<*>?) {
+    internal fun putConstructors(hashCode: Int, instances: HashSet<Constructor<*>>) {
         if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
-        constructorCacheDatas[hashCode] = instance
+        constructorsCacheDatas[hashCode] = instances
     }
 
     /**
-     * 写入 [Field] 到缓存
+     * 写入 [Field] 数组到缓存
      * @param hashCode 标识符
-     * @param instance 实例
+     * @param instances 实例数组
      */
-    internal fun putField(hashCode: Int, instance: Field?) {
+    internal fun putFields(hashCode: Int, instances: HashSet<Field>) {
         if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
-        fieldCacheDatas[hashCode] = instance
+        fieldsCacheDatas[hashCode] = instances
     }
 }

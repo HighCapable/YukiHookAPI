@@ -325,6 +325,58 @@ Test::class.java.method {
 
 更多用法可参考 [NameConditions](api/document?id=nameconditions-class)。
 
+### 多重查询
+
+有些时候，我们可能需要查询一个 `Class` 中具有相同特征的一组方法、构造方法、变量，这个时候，我们就可以利用相对条件匹配来完成。
+
+在查询条件结果的基础上，我们只需要把 `get` 换为 `all` 即可得到匹配条件的全部字节码。
+
+假设这次我们要得到 `Class` 中方法参数个数范围在 `1..3` 的全部方法，可以使用如下实现。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    paramCount(1..3)
+}.all(instance).forEach { instance ->
+    // 调用执行每个方法
+    instance.call(...)
+}
+```
+
+上述示例可完美匹配到如下 3 个方法。
+
+`private void doTask(String taskName)`
+
+`private void release(Release release, Function<boolean, String> function, Task task)`
+
+`private void b(String a)`
+
+通过观察 `Class` 中有两个名称为 `b` 的方法，可以使用如下实现。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name = "b"
+}.all(instance).forEach { instance ->
+    // 调用执行每个方法
+    instance.call(...)
+}
+```
+
+上述示例可完美匹配到如下 2 个方法。
+
+`private void b()`
+
+`private void b(String a)`
+
 ### 静态字节码
 
 有些方法和变量在 `Class` 中是静态的实现，这个时候，我们不需要传入实例就可以调用它们。
@@ -625,7 +677,7 @@ Test::class.java.method {
 
 !> 特别注意使用了 `RemedyPlan` 的方法查询结果不能再使用 `get` 的方式得到方法实例，应当使用 `wait` 方法。
 
-更多用法可参考 [Method RemedyPlan](api/document?id=remedyplan-class) 以及 [Constructor RemedyPlan](api/document?id=remedyplan-class-1)。
+更多用法可参考 [Method RemedyPlan](api/document?id=remedyplan-class)、[Constructor RemedyPlan](api/document?id=remedyplan-class-1)、[Field RemedyPlan](api/document?id=remedyplan-class-2)。
 
 ### 相对匹配
 

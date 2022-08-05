@@ -46,8 +46,8 @@ import java.lang.reflect.Method
 /**
  * [Method] 查找类
  *
- * 可通过指定类型查找指定方法
- * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreater.MemberHookCreater.member]
+ * 可通过指定类型查找指定方法或一组方法
+ * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreater.MemberHookCreater.members]
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class MethodFinder @PublishedApi internal constructor(
@@ -69,6 +69,9 @@ class MethodFinder @PublishedApi internal constructor(
     /** [Method] 参数数组 */
     private var paramTypes: Array<out Class<*>>? = null
 
+    /** [Method] 参数个数范围 */
+    private var paramCountRange = IntRange.EMPTY
+
     /** [ModifierRules] 实例 */
     @PublishedApi
     internal var modifiers: ModifierRules? = null
@@ -80,7 +83,7 @@ class MethodFinder @PublishedApi internal constructor(
     /**
      * 设置 [Method] 名称
      *
-     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Method]
+     * - ❗若不填写名称则必须存在一个其它条件
      */
     var name = ""
 
@@ -98,14 +101,14 @@ class MethodFinder @PublishedApi internal constructor(
      *
      * - ❗只能是 [Class]、[String]、[VariousClass]
      *
-     * - 可不填写返回值 - 默认模糊查找并取第一个匹配的 [Method]
+     * - 可不填写返回值
      */
     var returnType: Any? = null
 
     /**
      * 设置 [Method] 标识符筛选条件
      *
-     * 可不设置筛选条件 - 默认模糊查找并取第一个匹配的 [Method]
+     * - 可不设置筛选条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
@@ -151,7 +154,7 @@ class MethodFinder @PublishedApi internal constructor(
     /**
      * 设置 [Method] 名称
      *
-     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Method]
+     * - ❗若不填写名称则必须存在一个其它条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 名称
@@ -165,7 +168,7 @@ class MethodFinder @PublishedApi internal constructor(
     /**
      * 设置 [Method] 名称条件
      *
-     * - ❗若不填写名称则必须存在一个其它条件 - 默认模糊查找并取第一个匹配的 [Method]
+     * - ❗若不填写名称则必须存在一个其它条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
@@ -193,9 +196,23 @@ class MethodFinder @PublishedApi internal constructor(
     }
 
     /**
+     * 设置 [Method] 参数个数范围
+     *
+     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数范围
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param numRange 个数范围
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun paramCount(numRange: IntRange): IndexTypeCondition {
+        paramCountRange = numRange
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
      * 设置 [Method] 返回值
      *
-     * 可不填写返回值 - 默认模糊查找并取第一个匹配的 [Method]
+     * - 可不填写返回值
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 个数
@@ -218,29 +235,33 @@ class MethodFinder @PublishedApi internal constructor(
     }
 
     /**
-     * 得到方法
-     * @return [Method]
+     * 得到方法或一组方法
+     * @return [HashSet]<[Method]>
      * @throws NoSuchMethodError 如果找不到方法
      */
     private val result
-        get() = ReflectionTool.findMethod(
+        get() = ReflectionTool.findMethods(
             usedClassSet, orderIndex, matchIndex, name,
             modifiers, nameConditions, returnType.compat(),
-            paramCount, paramTypes, isFindInSuperClass
+            paramCount, paramCountRange, paramTypes, isFindInSuperClass
         )
 
     /**
      * 设置实例
      * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
-     * @param method 当前找到的 [Method]
+     * @param methods 当前找到的 [Method] 数组
      */
-    private fun setInstance(isBind: Boolean, method: Method) {
-        memberInstance = method
-        if (isBind) hookInstance?.member = method
+    private fun setInstance(isBind: Boolean, methods: HashSet<Method>) {
+        memberInstances.clear()
+        val result = methods.takeIf { it.isNotEmpty() }?.onEach { memberInstances.add(it) }?.first()
+        if (isBind) hookInstance?.members?.apply {
+            clear()
+            result?.also { add(it) }
+        }
     }
 
     /**
-     * 得到方法结果
+     * 得到 [Method] 结果
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
@@ -252,7 +273,9 @@ class MethodFinder @PublishedApi internal constructor(
             runBlocking {
                 isBindToHooker = isBind
                 setInstance(isBind, result)
-            }.result { onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]") }
+            }.result { ms ->
+                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
+            }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))
     } catch (e: Throwable) {
@@ -284,7 +307,7 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * 创建需要重新查找的 [Method]
          *
-         * 你可以添加多个备选方法 - 直到成功为止
+         * 你可以添加多个备选 [Method] - 直到成功为止
          *
          * 若最后依然失败 - 将停止查找并输出错误日志
          * @param initiate 方法体
@@ -304,13 +327,15 @@ class MethodFinder @PublishedApi internal constructor(
                     runCatching {
                         runBlocking {
                             setInstance(isBindToHooker, it.first.result)
-                        }.result {
-                            onHookLogMsg(msg = "Find Method [${memberInstance}] takes ${it}ms [${hookTag}]")
+                        }.result { ms ->
+                            memberInstances.takeIf { it.isNotEmpty() }
+                                ?.forEach { onHookLogMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
                         }
                         isFindSuccess = true
-                        it.second.onFindCallback?.invoke(memberInstance as Method)
+                        it.second.onFindCallback?.invoke(memberInstances.methods())
                         remedyPlansCallback?.invoke()
-                        onHookLogMsg(msg = "Method [${memberInstance}] trying ${p + 1} times success by RemedyPlan [${hookTag}]")
+                        memberInstances.takeIf { it.isNotEmpty() }
+                            ?.forEach { onHookLogMsg(msg = "Method [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
                         return@run
                     }.onFailure {
                         lastError = it
@@ -336,13 +361,13 @@ class MethodFinder @PublishedApi internal constructor(
         inner class Result @PublishedApi internal constructor() {
 
             /** 找到结果时的回调 */
-            internal var onFindCallback: (Method.() -> Unit)? = null
+            internal var onFindCallback: (HashSet<Method>.() -> Unit)? = null
 
             /**
              * 当找到结果时
              * @param initiate 回调
              */
-            fun onFind(initiate: Method.() -> Unit) {
+            fun onFind(initiate: HashSet<Method>.() -> Unit) {
                 onFindCallback = initiate
             }
         }
@@ -351,12 +376,12 @@ class MethodFinder @PublishedApi internal constructor(
     /**
      * [Method] 查找结果实现类
      * @param isNoSuch 是否没有找到方法 - 默认否
-     * @param e 错误信息
+     * @param throwable 错误信息
      */
     inner class Result internal constructor(
         @PublishedApi internal val isNoSuch: Boolean = false,
-        @PublishedApi internal val e: Throwable? = null
-    ) {
+        @PublishedApi internal val throwable: Throwable? = null
+    ) : BaseResult {
 
         /**
          * 创建监听结果事件方法体
@@ -368,22 +393,59 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * 获得 [Method] 实例处理类
          *
-         * - ❗在 [memberInstance] 结果为空时使用此方法将无法获得对象
+         * - 若有多个 [Method] 结果只会返回第一个
+         *
+         * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
          *
          * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
          * @param instance 所在实例
          * @return [Instance]
          */
-        fun get(instance: Any? = null) = Instance(instance)
+        fun get(instance: Any? = null) = Instance(instance, give())
 
         /**
-         * 得到方法本身
+         * 获得 [Method] 实例处理类数组
+         *
+         * - 返回全部查询条件匹配的多个 [Method] 实例结果并在 [isBindToHooker] 时设置到 [hookInstance]
+         *
+         * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
+         *
+         * - ❗若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
+         * @param instance 所在实例
+         * @return [ArrayList]<[Instance]>
+         */
+        fun all(instance: Any? = null): ArrayList<Instance> {
+            if (isBindToHooker) memberInstances.takeIf { it.isNotEmpty() }?.apply {
+                hookInstance?.members?.clear()
+                forEach { hookInstance?.members?.add(it) }
+            }
+            return arrayListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
+        }
+
+        /**
+         * 得到 [Method] 本身
+         *
+         * - 若有多个 [Method] 结果只会返回第一个
+         *
+         * - 在查询条件找不到任何结果的时候将返回 null
          * @return [Method] or null
          */
-        fun give() = memberInstance as? Method?
+        fun give() = giveAll().takeIf { it.isNotEmpty() }?.first()
+
+        /**
+         * 得到 [Method] 本身数组
+         *
+         * - 返回全部查询条件匹配的多个 [Method] 实例
+         *
+         * - 在查询条件找不到任何结果的时候将返回空的 [HashSet]
+         * @return [HashSet]<[Method]>
+         */
+        fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.methods() ?: HashSet()
 
         /**
          * 获得 [Method] 实例处理类
+         *
+         * - 若有多个 [Method] 结果只会返回第一个
          *
          * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
          *
@@ -392,16 +454,32 @@ class MethodFinder @PublishedApi internal constructor(
          * @param initiate 回调 [Instance]
          */
         fun wait(instance: Any? = null, initiate: Instance.() -> Unit) {
-            if (memberInstance != null) initiate(get(instance))
+            if (memberInstances.isNotEmpty()) initiate(get(instance))
             else remedyPlansCallback = { initiate(get(instance)) }
         }
 
         /**
-         * 创建方法重查找功能
+         * 获得 [Method] 实例处理类数组
          *
-         * 当你遇到一种方法可能存在不同形式的存在时
+         * - 返回全部查询条件匹配的多个 [Method] 实例结果
          *
-         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchMethod] 捕获异常二次查找方法
+         * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         *
+         * - ❗若你没有设置 [remedys] 此方法将不会被回调
+         * @param instance 所在实例
+         * @param initiate 回调 [ArrayList]<[Instance]>
+         */
+        fun waitAll(instance: Any? = null, initiate: ArrayList<Instance>.() -> Unit) {
+            if (memberInstances.isNotEmpty()) initiate(all(instance))
+            else remedyPlansCallback = { initiate(all(instance)) }
+        }
+
+        /**
+         * 创建 [Method] 重查找功能
+         *
+         * 当你遇到一种 [Method] 可能存在不同形式的存在时
+         *
+         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchMethod] 捕获异常二次查找 [Method]
          *
          * 若第一次查找失败了 - 你还可以在这里继续添加此方法体直到成功为止
          * @param initiate 方法体
@@ -414,14 +492,14 @@ class MethodFinder @PublishedApi internal constructor(
         }
 
         /**
-         * 监听找不到方法时
+         * 监听找不到 [Method] 时
          *
-         * 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
+         * - 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
          * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
         inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result {
-            if (isNoSuch) result(e ?: Throwable("Initialization Error"))
+            if (isNoSuch) result(throwable ?: Throwable("Initialization Error"))
             return this
         }
 
@@ -439,10 +517,11 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * [Method] 实例处理类
          *
-         * - ❗请使用 [get] 或 [wait] 方法来获取 [Instance]
+         * - ❗请使用 [get]、[wait]、[all]、[waitAll] 方法来获取 [Instance]
          * @param instance 当前 [Method] 所在类的实例对象
+         * @param method 当前 [Method] 实例对象
          */
-        inner class Instance internal constructor(private val instance: Any?) {
+        inner class Instance internal constructor(private val instance: Any?, private val method: Method?) {
 
             /** 标识需要调用当前 [Method] 未经 Hook 的原始方法 */
             private var isCallOriginal = false
@@ -465,11 +544,10 @@ class MethodFinder @PublishedApi internal constructor(
              * @param param 方法参数
              * @return [Any] or null
              */
-            private fun baseCall(vararg param: Any?) = (memberInstance as? Method?)?.let {
+            private fun baseCall(vararg param: Any?) =
                 if (isCallOriginal)
-                    YukiHookHelper.invokeOriginalMember(it, instance, *param) ?: it.invoke(instance, *param)
-                else it.invoke(instance, *param)
-            }
+                    method?.let { YukiHookHelper.invokeOriginalMember(it, instance, *param) ?: it.invoke(instance, *param) }
+                else method?.invoke(instance, *param)
 
             /**
              * 执行方法 - 不指定返回值类型
@@ -578,8 +656,7 @@ class MethodFinder @PublishedApi internal constructor(
              */
             inline fun <reified T> list(vararg param: Any?) = invoke(*param) ?: listOf<T>()
 
-            override fun toString() =
-                "[${(memberInstance as? Method?)?.name ?: "<empty>"}] in [${instance?.javaClass?.name ?: "<empty>"}]"
+            override fun toString() = "[${method?.name ?: "<empty>"}] in [${instance?.javaClass?.name ?: "<empty>"}]"
         }
     }
 }

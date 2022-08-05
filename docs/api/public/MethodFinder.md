@@ -16,6 +16,8 @@ class MethodFinder internal constructor(override val hookInstance: YukiMemberHoo
 
 > `Method` 查找类。
 
+可通过指定类型查找指定方法或一组方法。
+
 ### name [field]
 
 ```kotlin
@@ -66,7 +68,7 @@ var returnType: Any?
 
 **功能描述**
 
-> 设置 `Method` 返回值，可不填写返回值，默认模糊查找并取第一个匹配的 `Method`。
+> 设置 `Method` 返回值，可不填写返回值。
 
 ### modifiers [method]
 
@@ -86,7 +88,7 @@ inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 
 > 设置 `Method` 标识符筛选条件。
 
-可不设置筛选条件，默认模糊查找并取第一个匹配的 `Method`。
+可不设置筛选条件。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
@@ -154,7 +156,7 @@ fun name(value: String): IndexTypeCondition
 
 > 设置 `Method` 名称。
 
-!> 若不填写名称则必须存在一个其它条件，默认模糊查找并取第一个匹配的 `Method`。
+!> 若不填写名称则必须存在一个其它条件。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
@@ -172,7 +174,7 @@ inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition
 
 > 设置 `Method` 名称条件。
 
-!> 若不填写名称则必须存在一个其它条件，默认模糊查找并取第一个匹配的 `Method`。
+!> 若不填写名称则必须存在一个其它条件。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
@@ -196,6 +198,24 @@ fun paramCount(num: Int): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
+### paramCount [method]
+
+```kotlin
+fun paramCount(numRange: IntRange): IndexTypeCondition
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 设置 `Method` 参数个数范围。
+
+你可以不使用 `param` 指定参数类型而是仅使用此方法指定参数个数范围。
+
+!> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
+
 ### returnType [method]
 
 ```kotlin
@@ -210,7 +230,7 @@ fun returnType(value: Any): IndexTypeCondition
 
 > 设置 `Method` 返回值。
 
-可不填写返回值，默认模糊查找并取第一个匹配的 `Method`。
+可不填写返回值。
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
@@ -262,7 +282,7 @@ inline fun method(initiate: MethodFinder.() -> Unit): Result
 
 > 创建需要重新查找的 `Method`。
 
-你可以添加多个备选方法，直到成功为止，若最后依然失败，将停止查找并输出错误日志。
+你可以添加多个备选 `Method`，直到成功为止，若最后依然失败，将停止查找并输出错误日志。
 
 #### Result [class]
 
@@ -281,12 +301,16 @@ inner class Result internal constructor()
 ##### onFind [method]
 
 ```kotlin
-fun onFind(initiate: Method.() -> Unit)
+fun onFind(initiate: HashSet<Method>.() -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.1` `新增`
+
+`v1.0.93` `修改`
+
+`initiate` 参数 `Method` 变为 `HashSet<Method>`
 
 **功能描述**
 
@@ -309,12 +333,16 @@ method {
 ### Result [class]
 
 ```kotlin
-inner class Result internal constructor(internal val isNoSuch: Boolean, private val e: Throwable?)
+inner class Result internal constructor(internal val isNoSuch: Boolean, private val throwable: Throwable?) : BaseResult
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.93` `修改`
+
+继承到接口 `BaseResult`
 
 **功能描述**
 
@@ -349,6 +377,7 @@ method {
     // Your code here.
 }.result {
     get(instance).call()
+    all(instance)
     remedys {}
     onNoSuchMethod {}
 }
@@ -367,6 +396,8 @@ fun get(instance: Any?): Instance
 **功能描述**
 
 > 获得 `Method` 实例处理类。
+
+若有多个 `Method` 结果只会返回第一个。
 
 !> 若你设置了 `remedys` 请使用 `wait` 回调结果方法。
 
@@ -392,6 +423,36 @@ method {
 }.get().call()
 ```
 
+#### all [method]
+
+```kotlin
+fun all(instance: Any?): ArrayList<Instance>
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获得 `Method` 实例处理类数组。
+
+返回全部查询条件匹配的多个 `Method` 实例结果并在 `isBindToHooker` 时设置到 `hookInstance`。
+
+**功能示例**
+
+你可以通过此方法来获得当前条件结果中匹配的全部 `Method`，其方法所在实例用法与 `get` 相同。
+
+> 示例如下
+
+```kotlin
+method {
+    // Your code here.
+}.all(instance).forEach { instance ->
+    instance.call(...)
+}
+```
+
 #### give [method]
 
 ```kotlin
@@ -404,7 +465,29 @@ fun give(): Method?
 
 **功能描述**
 
-> 得到方法本身。
+> 得到 `Method` 本身。
+
+若有多个 `Method` 结果只会返回第一个。
+
+在查询条件找不到任何结果的时候将返回 `null`。
+
+#### giveAll [method]
+
+```kotlin
+fun giveAll(): HashSet<Method>
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 得到 `Method` 本身数组。
+
+返回全部查询条件匹配的多个 `Method` 实例。
+
+在查询条件找不到任何结果的时候将返回空的 `HashSet`。
 
 #### wait [method]
 
@@ -419,6 +502,28 @@ fun wait(instance: Any?, initiate: Instance.() -> Unit)
 **功能描述**
 
 > 获得 `Method` 实例处理类，配合 `RemedyPlan` 使用。
+
+若有多个 `Method` 结果只会返回第一个。
+
+!> 若你设置了 `remedys` 必须使用此方法才能获得结果。
+
+!> 若你没有设置 `remedys` 此方法将不会被回调。
+
+#### waitAll [method]
+
+```kotlin
+fun waitAll(instance: Any?, initiate: ArrayList<Instance>.() -> Unit)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获得 `Method` 实例处理类数组，配合 `RemedyPlan` 使用。
+
+返回全部查询条件匹配的多个 `Method` 实例结果。
 
 !> 若你设置了 `remedys` 必须使用此方法才能获得结果。
 
@@ -440,11 +545,11 @@ inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
 
 **功能描述**
 
-> 创建方法重查找功能。
+> 创建 `Method` 重查找功能。
 
 **功能示例**
 
-当你遇到一种方法可能存在不同形式的存在时，可以使用 `RemedyPlan` 重新查找它，而没有必要使用 `onNoSuchMethod` 捕获异常二次查找方法。
+当你遇到一种 `Method` 可能存在不同形式的存在时，可以使用 `RemedyPlan` 重新查找它，而没有必要使用 `onNoSuchMethod` 捕获异常二次查找 `Method`。
 
 若第一次查找失败了，你还可以在这里继续添加此方法体直到成功为止。
 
@@ -479,7 +584,7 @@ inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result
 
 **功能描述**
 
-> 监听找不到方法时。
+> 监听找不到 `Method` 时。
 
 只会返回第一次的错误信息，不会返回 `RemedyPlan` 的错误信息。
 
@@ -502,12 +607,16 @@ fun ignoredError(): Result
 #### Instance [class]
 
 ```kotlin
-inner class Instance internal constructor(private val instance: Any?)
+inner class Instance internal constructor(private val instance: Any?, private val method: Method?)
 ```
 
 **变更记录**
 
 `v1.0.2` `新增`
+
+`v1.0.93` `修改`
+
+新增 `method` 参数
 
 **功能描述**
 

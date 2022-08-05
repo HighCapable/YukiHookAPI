@@ -44,8 +44,8 @@ import java.lang.reflect.Constructor
 /**
  * [Constructor] 查找类
  *
- * 可通过指定类型查找指定构造方法
- * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreater.MemberHookCreater.member]
+ * 可通过指定类型查找指定构造方法或一组构造方法
+ * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreater.MemberHookCreater.members]
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class ConstructorFinder @PublishedApi internal constructor(
@@ -66,6 +66,9 @@ class ConstructorFinder @PublishedApi internal constructor(
 
     /** [Constructor] 参数数组 */
     private var paramTypes: Array<out Class<*>>? = null
+
+    /** [Constructor] 参数个数范围 */
+    private var paramCountRange = IntRange.EMPTY
 
     /** [ModifierRules] 实例 */
     @PublishedApi
@@ -141,6 +144,20 @@ class ConstructorFinder @PublishedApi internal constructor(
     }
 
     /**
+     * 设置 [Constructor] 参数个数范围
+     *
+     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数范围
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param numRange 个数范围
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun paramCount(numRange: IntRange): IndexTypeCondition {
+        paramCountRange = numRange
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
      * 设置在 [classSet] 的所有父类中查找当前 [Constructor]
      *
      * - ❗若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
@@ -152,30 +169,35 @@ class ConstructorFinder @PublishedApi internal constructor(
     }
 
     /**
-     * 得到构造方法
-     * @return [Constructor]
+     * 得到构造方法或一组构造方法
+     * @return [HashSet]<[Constructor]>
      * @throws NoSuchMethodError 如果找不到构造方法
      */
     private val result
-        get() = ReflectionTool.findConstructor(
+        get() = ReflectionTool.findConstructors(
             usedClassSet, orderIndex, matchIndex, modifiers,
-            paramCount, paramTypes, isFindInSuperClass
+            paramCount, paramCountRange, paramTypes, isFindInSuperClass
         )
 
     /**
      * 设置实例
      * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
-     * @param constructor 当前找到的 [Constructor]
+     * @param constructors 当前找到的 [Constructor] 数组
      */
-    private fun setInstance(isBind: Boolean, constructor: Constructor<*>) {
-        memberInstance = constructor
-        if (isBind) hookInstance?.member = constructor
+    private fun setInstance(isBind: Boolean, constructors: HashSet<Constructor<*>>) {
+        memberInstances.clear()
+        val result = constructors.takeIf { it.isNotEmpty() }?.onEach { memberInstances.add(it) }?.first()
+        if (isBind) hookInstance?.members?.apply {
+            clear()
+            result?.also { add(it) }
+        }
     }
 
     /**
-     * 得到构造方法结果
+     * 得到 [Constructor] 结果
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
      * @return [Result]
      */
     @YukiPrivateApi
@@ -184,7 +206,9 @@ class ConstructorFinder @PublishedApi internal constructor(
             runBlocking {
                 isBindToHooker = isBind
                 setInstance(isBind, result)
-            }.result { onHookLogMsg(msg = "Find Constructor [${memberInstance}] takes ${it}ms [${hookTag}]") }
+            }.result { ms ->
+                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Constructor [$it] takes ${ms}ms [${hookTag}]") }
+            }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))
     } catch (e: Throwable) {
@@ -216,7 +240,7 @@ class ConstructorFinder @PublishedApi internal constructor(
         /**
          * 创建需要重新查找的 [Constructor]
          *
-         * 你可以添加多个备选构造方法 - 直到成功为止
+         * 你可以添加多个备选 [Constructor] - 直到成功为止
          *
          * 若最后依然失败 - 将停止查找并输出错误日志
          * @param initiate 方法体
@@ -235,13 +259,15 @@ class ConstructorFinder @PublishedApi internal constructor(
                     runCatching {
                         runBlocking {
                             setInstance(isBindToHooker, it.first.result)
-                        }.result {
-                            onHookLogMsg(msg = "Find Constructor [${memberInstance}] takes ${it}ms [${hookTag}]")
+                        }.result { ms ->
+                            memberInstances.takeIf { it.isNotEmpty() }
+                                ?.forEach { onHookLogMsg(msg = "Find Constructor [$it] takes ${ms}ms [${hookTag}]") }
                         }
                         isFindSuccess = true
-                        it.second.onFindCallback?.invoke(memberInstance as Constructor<*>)
+                        it.second.onFindCallback?.invoke(memberInstances.constructors())
                         remedyPlansCallback?.invoke()
-                        onHookLogMsg(msg = "Constructor [${memberInstance}] trying ${p + 1} times success by RemedyPlan [${hookTag}]")
+                        memberInstances.takeIf { it.isNotEmpty() }
+                            ?.forEach { onHookLogMsg(msg = "Constructor [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
                         return@run
                     }.onFailure {
                         lastError = it
@@ -267,13 +293,13 @@ class ConstructorFinder @PublishedApi internal constructor(
         inner class Result @PublishedApi internal constructor() {
 
             /** 找到结果时的回调 */
-            internal var onFindCallback: (Constructor<*>.() -> Unit)? = null
+            internal var onFindCallback: (HashSet<Constructor<*>>.() -> Unit)? = null
 
             /**
              * 当找到结果时
              * @param initiate 回调
              */
-            fun onFind(initiate: Constructor<*>.() -> Unit) {
+            fun onFind(initiate: HashSet<Constructor<*>>.() -> Unit) {
                 onFindCallback = initiate
             }
         }
@@ -282,12 +308,12 @@ class ConstructorFinder @PublishedApi internal constructor(
     /**
      * [Constructor] 查找结果实现类
      * @param isNoSuch 是否没有找到构造方法 - 默认否
-     * @param e 错误信息
+     * @param throwable 错误信息
      */
     inner class Result internal constructor(
         @PublishedApi internal val isNoSuch: Boolean = false,
-        @PublishedApi internal val e: Throwable? = null
-    ) {
+        @PublishedApi internal val throwable: Throwable? = null
+    ) : BaseResult {
 
         /**
          * 创建监听结果事件方法体
@@ -299,21 +325,57 @@ class ConstructorFinder @PublishedApi internal constructor(
         /**
          * 获得 [Constructor] 实例处理类
          *
-         * - ❗在 [memberInstance] 结果为空时使用此方法将无法获得对象
+         * - 若有多个 [Constructor] 结果只会返回第一个
+         *
+         * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
          *
          * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
          * @return [Instance]
          */
-        fun get() = Instance()
+        fun get() = Instance(give())
 
         /**
-         * 得到构造方法本身
+         * 获得 [Constructor] 实例处理类数组
+         *
+         * - 返回全部查询条件匹配的多个 [Constructor] 实例结果并在 [isBindToHooker] 时设置到 [hookInstance]
+         *
+         * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
+         *
+         * - ❗若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
+         * @return [ArrayList]<[Instance]>
+         */
+        fun all(): ArrayList<Instance> {
+            if (isBindToHooker) memberInstances.takeIf { it.isNotEmpty() }?.apply {
+                hookInstance?.members?.clear()
+                forEach { hookInstance?.members?.add(it) }
+            }
+            return arrayListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(it)) } }
+        }
+
+        /**
+         * 得到 [Constructor] 本身
+         *
+         * - 若有多个 [Constructor] 结果只会返回第一个
+         *
+         * - 在查询条件找不到任何结果的时候将返回 null
          * @return [Constructor] or null
          */
-        fun give() = memberInstance as? Constructor<*>?
+        fun give() = giveAll().takeIf { it.isNotEmpty() }?.first()
+
+        /**
+         * 得到 [Constructor] 本身数组
+         *
+         * - 返回全部查询条件匹配的多个 [Constructor] 实例
+         *
+         * - 在查询条件找不到任何结果的时候将返回空的 [HashSet]
+         * @return [HashSet]<[Constructor]>
+         */
+        fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.constructors() ?: HashSet()
 
         /**
          * 获得 [Constructor] 实例处理类
+         *
+         * - 若有多个 [Constructor] 结果只会返回第一个
          *
          * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
          *
@@ -321,16 +383,31 @@ class ConstructorFinder @PublishedApi internal constructor(
          * @param initiate 回调 [Instance]
          */
         fun wait(initiate: Instance.() -> Unit) {
-            if (memberInstance != null) initiate(get())
+            if (memberInstances.isNotEmpty()) initiate(get())
             else remedyPlansCallback = { initiate(get()) }
         }
 
         /**
-         * 创建构造方法重查找功能
+         * 获得 [Constructor] 实例处理类数组
          *
-         * 当你遇到一种构造方法可能存在不同形式的存在时
+         * - 返回全部查询条件匹配的多个 [Constructor] 实例结果
          *
-         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchConstructor] 捕获异常二次查找构造方法
+         * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         *
+         * - ❗若你没有设置 [remedys] 此方法将不会被回调
+         * @param initiate 回调 [ArrayList]<[Instance]>
+         */
+        fun waitAll(initiate: ArrayList<Instance>.() -> Unit) {
+            if (memberInstances.isNotEmpty()) initiate(all())
+            else remedyPlansCallback = { initiate(all()) }
+        }
+
+        /**
+         * 创建 [Constructor] 重查找功能
+         *
+         * 当你遇到一种 [Constructor] 可能存在不同形式的存在时
+         *
+         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchConstructor] 捕获异常二次查找 [Constructor]
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
@@ -341,14 +418,14 @@ class ConstructorFinder @PublishedApi internal constructor(
         }
 
         /**
-         * 监听找不到构造方法时
+         * 监听找不到 [Constructor] 时
          *
-         * 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
+         * - 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
          * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
         inline fun onNoSuchConstructor(result: (Throwable) -> Unit): Result {
-            if (isNoSuch) result(e ?: Throwable())
+            if (isNoSuch) result(throwable ?: Throwable("Initialization Error"))
             return this
         }
 
@@ -368,32 +445,33 @@ class ConstructorFinder @PublishedApi internal constructor(
          *
          * 调用与创建目标实例类对象
          *
-         * - ❗请使用 [get] 或 [wait] 方法来获取 [Instance]
+         * - ❗请使用 [get]、[wait]、[all]、[waitAll] 方法来获取 [Instance]
+         * @param constructor 当前 [Constructor] 实例对象
          */
-        inner class Instance internal constructor() {
+        inner class Instance internal constructor(private val constructor: Constructor<*>?) {
 
             /**
-             * 执行构造方法创建目标实例
+             * 执行 [Constructor] 创建目标实例
              * @param param 构造方法参数
              * @return [Any] or null
              */
-            private fun baseCall(vararg param: Any?) = (memberInstance as? Constructor<*>?)?.newInstance(*param)
+            private fun baseCall(vararg param: Any?) = constructor?.newInstance(*param)
 
             /**
-             * 执行构造方法创建目标实例 - 不指定目标实例类型
+             * 执行 [Constructor] 创建目标实例 - 不指定目标实例类型
              * @param param 构造方法参数
              * @return [Any] or null
              */
             fun call(vararg param: Any?) = baseCall(*param)
 
             /**
-             * 执行构造方法创建目标实例 - 指定 [T] 目标实例类型
+             * 执行 [Constructor] 创建目标实例 - 指定 [T] 目标实例类型
              * @param param 构造方法参数
              * @return [T] or null
              */
             fun <T> newInstance(vararg param: Any?) = baseCall(*param) as? T?
 
-            override fun toString() = "[${(memberInstance as? Constructor<*>?)?.name ?: "<empty>"}]"
+            override fun toString() = "[${constructor?.name ?: "<empty>"}]"
         }
     }
 }

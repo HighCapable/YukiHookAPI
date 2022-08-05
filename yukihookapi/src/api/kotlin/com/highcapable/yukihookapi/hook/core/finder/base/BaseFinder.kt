@@ -37,7 +37,10 @@ import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import java.lang.reflect.Constructor
+import java.lang.reflect.Field
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 import kotlin.math.abs
 
 /**
@@ -46,7 +49,7 @@ import kotlin.math.abs
  * @param hookInstance 当前 Hook 实例
  * @param classSet 当前需要查找的 [Class] 实例
  */
-abstract class BaseFinder(
+abstract class BaseFinder internal constructor(
     private val tag: String,
     open val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
     open val classSet: Class<*>? = null
@@ -127,8 +130,8 @@ abstract class BaseFinder(
     /** 是否开启忽略错误警告功能 */
     internal var isShutErrorPrinting = false
 
-    /** 当前找到的 [Member] */
-    internal var memberInstance: Member? = null
+    /** 当前找到的 [Member] 数组 */
+    internal var memberInstances = HashSet<Member>()
 
     /**
      * 获取当前使用的 TAG
@@ -144,6 +147,27 @@ abstract class BaseFinder(
 
     /** 需要输出的日志内容 */
     private var loggingContent: Pair<String, Throwable?>? = null
+
+    /**
+     * 将 [HashSet]<[Member]> 转换为 [HashSet]<[Field]>
+     * @return [HashSet]<[Field]>
+     */
+    internal fun HashSet<Member>.fields() =
+        hashSetOf<Field>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Field?)?.also { f -> it.add(f) } } }
+
+    /**
+     * 将 [HashSet]<[Member]> 转换为 [HashSet]<[Method]>
+     * @return [HashSet]<[Method]>
+     */
+    internal fun HashSet<Member>.methods() =
+        hashSetOf<Method>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Method?)?.also { m -> it.add(m) } } }
+
+    /**
+     * 将 [HashSet]<[Member]> 转换为 [HashSet]<[Constructor]>
+     * @return [HashSet]<[Constructor]>
+     */
+    internal fun HashSet<Member>.constructors() =
+        hashSetOf<Constructor<*>>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Constructor<*>?)?.also { c -> it.add(c) } } }
 
     /**
      * 将目标类型转换为可识别的兼容类型
@@ -208,18 +232,26 @@ abstract class BaseFinder(
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
-     * @return [Any]
+     * @return [BaseResult]
      */
     @YukiPrivateApi
-    abstract fun build(isBind: Boolean = false): Any
+    abstract fun build(isBind: Boolean = false): BaseResult
 
     /**
      * 创建一个异常结果
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param throwable 异常
-     * @return [Any]
+     * @return [BaseResult]
      */
     @YukiPrivateApi
-    abstract fun failure(throwable: Throwable?): Any
+    abstract fun failure(throwable: Throwable?): BaseResult
+
+    /**
+     * 查找结果实现类接口
+     *
+     * - ❗此功能交由方法体自动完成 - 你不应该手动继承此接口
+     */
+    @YukiPrivateApi
+    interface BaseResult
 }
