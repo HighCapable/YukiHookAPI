@@ -2,6 +2,8 @@
 
 > 异常是在开发过程经常遇到的主要问题，这里介绍了 `YukiHookAPI` 在使用过程中可能遇到的常见异常以及处理方式。
 
+这里的异常说明只会同步最新的 API 版本，较旧的 API 版本的异常将不会再进行说明，请始终保持 API 版本为最新。
+
 ## 非阻断异常
 
 > 这些异常不会导致 APP 停止运行(FC)，但是会在控制台打印 `E` 级别的日志，也可能会停止继续执行相关功能。
@@ -187,16 +189,6 @@ injectMember {
 
 请确认当前 `Class` 是否存在至少一个构造方法。
 
-!> `loggerE` Hooked All Members with an error in Class \[**NAME**\]
-
-**异常原因**
-
-在 Hook 过程中发生了任意的异常。
-
-**解决方案**
-
-这是一个异常汇总提醒，只要 Hook 方法体内发生了异常就会打印此日志，请仔细查看从这里往上的具体异常是什么。
-
 !> `loggerE` Try to hook **NAME**\[**NAME**\] got an Exception
 
 **异常原因**
@@ -269,29 +261,11 @@ field {
 
 **异常原因**
 
-使用 `RemedyPlan` 重新查找方法、构造方法时依然没有找到方法、构造方法。
+使用 `RemedyPlan` 重新查找方法、构造方法、变量时依然没有找到方法、构造方法、变量。
 
 **解决方案**
 
 请确认你设置的 `RemedyPlan` 参数以及宿主内存在的 `Class`，再试一次。
-
-!> `loggerE` Try to get field instance failed
-
-**异常原因**
-
-在使用变量查询结果的 `get` 方法后并没有成功得到对应的实例。
-
-> 示例如下
-
-```kotlin
-field {
-    // ...
-}.get(instance)...
-```
-
-**解决方案**
-
-请确认当前变量所在的实例是静态的还是动态的，并查看错误日志检查传入的实例类型是否正确。
 
 !> `loggerE` You must set a condition when finding a Method/Constructor/Field
 
@@ -329,6 +303,25 @@ TargetClass.method {
 **解决方案**
 
 这种情况比较少见，请检查你要查询的目标 `Class` 是否被正确赋值并检查整个 Hook 流程和使用范围。
+
+!> `loggerE` Can't find this Method/Constructor/Field --> **TYPE** in \[**CLASS**\] by YukiHookAPI#ReflectionTool
+
+**异常原因**
+
+通过指定条件找不到需要查找的方法、构造方法以及变量。
+
+> 示例如下
+
+```kotlin
+TargetClass.method {
+    name = "test"
+    param(BooleanType)
+}
+```
+
+**解决方案**
+
+这是一个安全异常，请检查你设置的条件，使用相关工具查看所在 `Class` 中的字节码对象特征，并再试一次。
 
 !> `loggerE` Field match type class is not found
 
@@ -653,6 +646,28 @@ loadZygote {
 
 `YukiHookDataChannel` 只能在 `loadSystem`、`loadApp` 中使用。
 
+!> `IllegalStateException` Custom Hooking Members is empty
+
+**异常原因**
+
+在 `MemberHookCreater` 中调用 `members()` 但是未设置需要 Hook 的 `Member` 实例。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    // 括号里的方法参数被留空了
+    members()
+    afterHook {
+        // ...
+    }
+}
+```
+
+**解决方案**
+
+若要使用 `members()` 设置自定义 Hook 方法，你必须保证其方法参数里的 `Member` 数组对象不能为空。
+
 !> `IllegalStateException` HookParam Method args index must be >= 0
 
 **异常原因**
@@ -700,6 +715,28 @@ injectMember {
 **解决方案**
 
 请确认你 Hook 的方法是否为静态类型，静态类型的方法没有实例，不能使用此功能，若非静态方法，请检查实例是否已经销毁。
+
+!> `IllegalStateException` Current hook Member is null
+
+**异常原因**
+
+在 `HookParam` 中调用 `member` 变量但获取不到当前实例的方法、构造方法实例。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    // ...
+    afterHook {
+        // 调用了此变量
+        member...
+    }
+}
+```
+
+**解决方案**
+
+这种问题一般不会发生，真的发生了此问题，请携带详细日志进行反馈。
 
 !> `IllegalStateException` Current hook Method type is wrong or null
 
