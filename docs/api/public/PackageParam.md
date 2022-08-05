@@ -324,6 +324,34 @@ fun loadApp(name: String, hooker: YukiBaseHooker)
 
 若要 Hook 系统框架，请使用 `loadSystem`。
 
+**功能示例**
+
+你可以使用 `loadApp` 的 `lambda` 方法体形式或直接装载一个 Hooker。
+
+> 示例如下
+
+```kotlin
+// 使用 lambda
+loadApp(name = "com.example.test") {
+    // Your code here.
+}
+// 使用 Hooker
+loadApp(name = "com.example.test", CustomHooker)
+```
+
+若不指定 `name` 参数，则此方法体默认会过滤当前系统中全部可被 Hook 的 APP。
+
+> 示例如下
+
+```kotlin
+// 使用 lambda
+loadApp {
+    // Your code here.
+}
+// 使用 Hooker
+loadApp(hooker = CustomHooker)
+```
+
 ### loadZygote [method]
 
 ```kotlin

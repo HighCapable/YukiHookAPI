@@ -230,6 +230,115 @@ encase {
 }
 ```
 
+### 注意事项
+
+!> 无论使用 `encase` 创建 `lambda` 方法体还是直接使用 Hooker 形式，你都不应该直接在首个 `onHook` 事件中直接装载 Hooker 或直接开始 Hook。
+
+直接装载 Hooker 或直接开始 Hook 是错误的，`encase` 事件在被 Hook Framework 装载后，会经历三次回调。
+
+- 装载 `initZygote` → `encase`
+
+- 装载 `handleLoadPackage` → `encase`
+
+- 装载 `handleInitPackageResources` → `encase`
+
+在这个过程中，你需要使用 `loadApp`、`loadSystem`、`loadZygote` 来区分每一次装载代码的作用域，否则你的代码就会被<u>**多次执行造成错误**</u>。
+
+下面是两个**错误**示例。
+
+> 示例代码 1
+
+```kotlin
+encase {
+    // ❗错误的使用方法，不能直接装载 Hooker
+    loadHooker(CustomHooker)
+    // ❗错误的使用方法，不能直接开始 Hook
+    findClass(name = "com.example.demo.DemoClass").hook {
+        // ...
+    }
+    // ❗错误的使用方法，不能直接开始 Hook
+    resources().hook {
+        // ...
+    }
+}
+```
+
+> 示例代码 2
+
+```kotlin
+class HookEntry : IYukiHookXposedInit {
+
+    override fun onHook() {
+        encase(CustomHooker)
+    }
+}
+
+object CustomHooker : YukiBaseHooker() {
+
+    override fun onHook() {
+        // ❗错误的使用方法，由于外层没有任何判断对象，不能直接开始 Hook
+        findClass(name = "com.example.demo.DemoClass").hook {
+            // ...
+        }
+    }
+}
+```
+
+下面是上述错误示例的**正确**示例。
+
+> 示例代码 1
+
+```kotlin
+encase {
+    // ✅ 正确的使用方法，在 Zygote 中装载
+    loadZygote(CustomHooker)
+     // ✅ 正确的使用方法，在 Zygote 中装载
+    loadZygote {
+        // ✅ 正确的使用方法，在 Zygote 内 Hook
+        resources().hook {
+            // ...
+        }
+    }
+    // ✅ 正确的使用方法，使用 APP 作用域装载
+    loadApp(/** name 参数可选 */, hooker = CustomHooker)
+    // ✅ 正确的使用方法，判断 APP 作用域后再装载 Hooker
+    loadApp(/** name 参数可选 */) {
+        loadHooker(CustomHooker)
+         // ✅ 正确的使用方法，在 APP 作用域内 Hook
+        findClass(name = "com.example.demo.DemoClass").hook {
+            // ...
+        }
+        // ✅ 正确的使用方法，在 APP 作用域内 Hook
+        resources().hook {
+            // ...
+        }
+    }
+}
+```
+
+> 示例代码 2
+
+```kotlin
+class HookEntry : IYukiHookXposedInit {
+
+    override fun onHook() {
+        encase(CustomHooker)
+    }
+}
+
+object CustomHooker : YukiBaseHooker() {
+
+    override fun onHook() {
+        // ✅ 正确的使用方法，由于外层没有任何判断对象，需要判断 APP 作用域后再进行 Hook
+        loadApp(/** name 参数可选 */) {
+            findClass(name = "com.example.demo.DemoClass").hook {
+                // ...
+            }
+        }
+    }
+}
+```
+
 ## 作为 Hook API 使用需要注意的地方
 
 若你作为 Hook API 使用，那么你只需要在入口处对 `encase` 方法进行区分。
