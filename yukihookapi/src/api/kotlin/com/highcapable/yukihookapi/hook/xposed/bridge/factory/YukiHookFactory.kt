@@ -31,7 +31,6 @@ import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
-import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -58,12 +57,6 @@ internal object YukiHookedMembers {
 
     /** 已经 Hook 的 [Member] 数组 */
     internal val hookedMembers = HashSet<YukiMemberHook.Unhook>()
-
-    /** 已经 Hook 的成组 [Method] 数组 */
-    internal val hookedQueueMethods = HashMap<String, HashSet<YukiMemberHook.Unhook>>()
-
-    /** 已经 Hook 的成组 [Constructor] 数组 */
-    internal val hookedQueueConstructors = HashMap<String, HashSet<YukiMemberHook.Unhook>>()
 }
 
 /**
@@ -125,59 +118,6 @@ internal object YukiHookHelper {
     }
 
     /**
-     * Hook 当前 [hookClass] 所有 [methodName] 的方法
-     *
-     * 对接 [XposedBridge.hookAllMethods]
-     * @param hookClass 当前 Hook 的 [Class]
-     * @param methodName 方法名
-     * @param callback 回调
-     * @return [Pair] - ([HashSet] 成功 Hook 的 [YukiMemberHook.Unhook] 数组,[Boolean] 是否已经 Hook)
-     */
-    internal fun hookAllMethods(
-        hookClass: Class<*>?, methodName: String, callback: YukiHookCallback
-    ): Pair<HashSet<YukiMemberHook.Unhook>, Boolean> {
-        var isAlreadyHook = false
-        val hookedMembers = HashSet<YukiMemberHook.Unhook>().also {
-            val allMethodsName = "$hookClass$methodName"
-            if (YukiHookedMembers.hookedQueueMethods.contains(allMethodsName)) {
-                isAlreadyHook = true
-                YukiHookedMembers.hookedQueueMethods[allMethodsName]?.forEach { e -> it.add(e) }
-                return@also
-            }
-            if (YukiHookBridge.hasXposedBridge.not()) return@also
-            XposedBridge.hookAllMethods(hookClass, methodName, callback.compat()).takeIf { e -> e.isNotEmpty() }
-                ?.forEach { e -> it.add(YukiMemberHook.Unhook.wrapper(e, allMethodsName)) }
-            YukiHookedMembers.hookedQueueMethods[allMethodsName] = it
-        }
-        return Pair(hookedMembers, isAlreadyHook)
-    }
-
-    /**
-     * Hook 当前 [hookClass] 所有构造方法
-     *
-     * 对接 [XposedBridge.hookAllConstructors]
-     * @param hookClass 当前 Hook 的 [Class]
-     * @param callback 回调
-     * @return [Pair] - ([HashSet] 成功 Hook 的 [YukiMemberHook.Unhook] 数组,[Boolean] 是否已经 Hook)
-     */
-    internal fun hookAllConstructors(hookClass: Class<*>?, callback: YukiHookCallback): Pair<HashSet<YukiMemberHook.Unhook>, Boolean> {
-        var isAlreadyHook = false
-        val hookedMembers = HashSet<YukiMemberHook.Unhook>().also {
-            val allConstructorsName = "$hookClass<init>"
-            if (YukiHookedMembers.hookedQueueConstructors.contains(allConstructorsName)) {
-                isAlreadyHook = true
-                YukiHookedMembers.hookedQueueConstructors[allConstructorsName]?.forEach { e -> it.add(e) }
-                return@also
-            }
-            if (YukiHookBridge.hasXposedBridge.not()) return@also
-            XposedBridge.hookAllConstructors(hookClass, callback.compat()).takeIf { e -> e.isNotEmpty() }
-                ?.forEach { e -> it.add(YukiMemberHook.Unhook.wrapper(e, allConstructorsName)) }
-            YukiHookedMembers.hookedQueueConstructors[allConstructorsName] = it
-        }
-        return Pair(hookedMembers, isAlreadyHook)
-    }
-
-    /**
      * 执行原始 [Member]
      *
      * 未进行 Hook 的 [Member]
@@ -185,14 +125,10 @@ internal object YukiHookHelper {
      * @param args 参数实例
      * @return [Any] or null
      */
-    internal fun invokeOriginalMember(member: Member, instance: Any?, vararg args: Any?): Any? {
-        val isHookedMember = YukiHookedMembers.hookedMembers.any { it.member.toString() == member.toString() }
-        val isQueueMethod = YukiHookedMembers.hookedQueueMethods.any { it.value.any { e -> e.member.toString() == member.toString() } }
-        val isQueueConstructor = YukiHookedMembers.hookedQueueConstructors.any { it.value.any { e -> e.member.toString() == member.toString() } }
-        return if (YukiHookBridge.hasXposedBridge && (isHookedMember || isQueueMethod || isQueueConstructor))
+    internal fun invokeOriginalMember(member: Member, instance: Any?, vararg args: Any?) =
+        if (YukiHookBridge.hasXposedBridge && YukiHookedMembers.hookedMembers.any { it.member.toString() == member.toString() })
             XposedBridge.invokeOriginalMethod(member, instance, args)
         else null
-    }
 
     /**
      * 兼容对接 Hook 回调接口
@@ -263,19 +199,17 @@ internal abstract class YukiMemberHook(override val priority: Int = YukiHookPrio
     /**
      * 已经 Hook 且可被解除 Hook 的 [Member] 实现类
      * @param instance 对接 [XC_MethodHook.Unhook]
-     * @param tag 标识多个 [Member] Hook 的标签 - 例如 [YukiHookHelper.hookAllMethods]、[YukiHookHelper.hookAllConstructors]
      */
-    internal class Unhook private constructor(private val instance: XC_MethodHook.Unhook, private val tag: String) {
+    internal class Unhook private constructor(private val instance: XC_MethodHook.Unhook) {
 
         companion object {
 
             /**
              * 从 [XC_MethodHook.Unhook] 创建 [Unhook] 实例
              * @param instance [XC_MethodHook.Unhook] 实例
-             * @param tag 标识多个 [Member] Hook 的标签 - 默认空
              * @return [Unhook]
              */
-            internal fun wrapper(instance: XC_MethodHook.Unhook, tag: String = "") = Unhook(instance, tag)
+            internal fun wrapper(instance: XC_MethodHook.Unhook) = Unhook(instance)
         }
 
         /**
@@ -284,37 +218,11 @@ internal abstract class YukiMemberHook(override val priority: Int = YukiHookPrio
          */
         internal val member: Member? get() = instance.hookedMethod
 
-        /**
-         * 解除 Hook 并从
-         * [YukiHookedMembers.hookedMembers]、
-         * [YukiHookedMembers.hookedQueueMethods]、
-         * [YukiHookedMembers.hookedQueueConstructors]
-         * 缓存数组中移除
-         */
+        /** 解除 [instance] 的 Hook 并从 [YukiHookedMembers.hookedMembers] 缓存数组中移除 */
         internal fun remove() {
-            if (tag.isNotBlank()) runCatching {
-                when {
-                    YukiHookedMembers.hookedQueueMethods.contains(tag) -> {
-                        YukiHookedMembers.hookedQueueMethods[tag]?.takeIf { it.isNotEmpty() }?.forEach { it.unhook(isNeedRemove = false) }
-                        YukiHookedMembers.hookedQueueMethods.remove(tag)
-                    }
-                    YukiHookedMembers.hookedQueueConstructors.contains(tag) -> {
-                        YukiHookedMembers.hookedQueueConstructors[tag]?.takeIf { it.isNotEmpty() }?.forEach { it.unhook(isNeedRemove = false) }
-                        YukiHookedMembers.hookedQueueConstructors.remove(tag)
-                    }
-                    else -> unhook()
-                }
-            } else unhook()
-        }
-
-        /**
-         * 解除 [instance] 的 Hook
-         * @param isNeedRemove 是否需要从 [YukiHookedMembers.hookedMembers] 中移除
-         */
-        private fun unhook(isNeedRemove: Boolean = true) {
             if (YukiHookBridge.hasXposedBridge.not()) return
             instance.unhook()
-            if (isNeedRemove) runCatching { YukiHookedMembers.hookedMembers.remove(this) }
+            runCatching { YukiHookedMembers.hookedMembers.remove(this) }
         }
     }
 }

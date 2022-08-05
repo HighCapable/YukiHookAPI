@@ -152,15 +152,25 @@ inner class MemberHookCreater internal constructor(private val priority: Int, in
 
 > Hook 核心功能实现类，查找和处理需要 Hook 的方法、构造方法。
 
-#### member [field]
-
-```kotlin
-var member: Member?
-```
+#### ~~member [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.93` `移除`
+
+请转移到 `members`
+
+#### members [method]
+
+```kotlin
+fun members(vararg member: Member?)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
 
 **功能描述**
 
@@ -176,71 +186,63 @@ var member: Member?
 
 ```kotlin
 injectMember {
-    member = instanceClass.getMethod("test", StringType)
+    members(instanceClass.getMethod("test", StringType))
     beforeHook {}
     afterHook {}
 }
 ```
 
-#### allMethods [method]
-
-```kotlin
-fun allMethods(name: String)
-```
-
-**变更记录**
-
-`v1.0` `添加`
-
-**功能描述**
-
-> 查找并 Hook 当前 `Class` 中指定 `name` 的全部方法。
-
-**功能示例**
-
-使用此方法可将当前类的全部同名方法进行批量 Hook。
-
-!> 无法准确处理每个方法的 `param`，建议使用 `method` 对每个方法单独 Hook。
+同样地，你也可以传入一组方法同时进行 Hook。
 
 > 示例如下
 
 ```kotlin
 injectMember {
-    allMethods(name = "test")
+    members(
+        instanceClass.getMethod("test1", StringType),
+        instanceClass.getMethod("test2", StringType),
+        instanceClass.getMethod("test3", StringType)
+    )
     beforeHook {}
     afterHook {}
 }
 ```
 
-#### allConstructors [method]
-
-```kotlin
-fun allConstructors()
-```
+#### ~~allMethods [method]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
 
-**功能描述**
+`v1.0.93` `作废`
 
-> 查找并 Hook 当前 `Class` 中的全部构造方法。
+请使用 `method { name = /** name */ }.all()` 来取代它
 
-**功能示例**
+#### ~~allConstructors [method]~~ <!-- {docsify-ignore} -->
 
-使用此方法可将当前类的全部构造方法进行批量 Hook。
+**变更记录**
 
-!> 无法准确处理每个构造方法的 `param`，建议使用 `constructor` 对每个构造方法单独 Hook。
+`v1.0` `添加`
 
-> 示例如下
+`v1.0.93` `作废`
+
+请使用 `constructor().all()` 来取代它
+
+#### allMembers [method]
 
 ```kotlin
-injectMember {
-    allConstructors()
-    beforeHook {}
-    afterHook {}
-}
+fun allMembers()
 ```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 查找并 Hook `hookClass` 中的全部方法、构造方法。
+
+!> 警告：无法准确处理每个方法的返回值和 `param`，建议使用 `method` or `constructor` 对每个方法单独 Hook。
 
 #### method [method]
 
@@ -618,7 +620,7 @@ fun onHooked(result: (Member) -> Unit): Result
 
 **功能描述**
 
-> 监听 `member` Hook 成功的回调方法。
+> 监听 `members` Hook 成功的回调方法。
 
 在首次 Hook 成功后回调。
 
@@ -636,9 +638,9 @@ fun onAlreadyHooked(result: (Member) -> Unit): Result
 
 **功能描述**
 
-> 监听 `member` 重复 Hook 的回调方法。
+> 监听 `members` 重复 Hook 的回调方法。
 
-!> 同一个 `hookClass` 中的同一个 `member` 不会被 API 重复 Hook，若由于各种原因重复 Hook 会回调此方法。
+!> 同一个 `hookClass` 中的同一个 `members` 不会被 API 重复 Hook，若由于各种原因重复 Hook 会回调此方法。
 
 ##### onNoSuchMemberFailure [method]
 
@@ -652,7 +654,7 @@ fun onNoSuchMemberFailure(result: (Throwable) -> Unit): Result
 
 **功能描述**
 
-> 监听 `member` 不存在发生错误的回调方法。
+> 监听 `members` 不存在发生错误的回调方法。
 
 ##### onConductFailure [method]
 
@@ -708,7 +710,7 @@ fun ignoredNoSuchMemberFailure(): Result
 
 **功能描述**
 
-> 忽略 `member` 不存在发生的错误。
+> 忽略 `members` 不存在发生的错误。
 
 ##### ignoredConductFailure [method]
 

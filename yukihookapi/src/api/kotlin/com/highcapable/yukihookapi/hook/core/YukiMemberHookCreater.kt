@@ -36,6 +36,8 @@ import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
+import com.highcapable.yukihookapi.hook.factory.allConstructors
+import com.highcapable.yukihookapi.hook.factory.allMethods
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.log.yLoggerW
@@ -69,12 +71,6 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
 
     /** 更快回调 Hook 方法结果 */
     val PRIORITY_HIGHEST = YukiHookPriority.PRIORITY_HIGHEST
-
-    /**
-     * Hook 模式定义
-     */
-    @PublishedApi
-    internal enum class HookMemberMode { HOOK_ALL_METHODS, HOOK_ALL_CONSTRUCTORS, HOOK_CONVENTIONAL }
 
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
@@ -183,16 +179,13 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /** [replaceAny]、[replaceUnit] 回调 */
         private var replaceHookCallback: (HookParam.() -> Any?)? = null
 
-        /** [replaceTo]、[replaceToTrue]、[replaceToFalse]、[intercept] 的值 */
-        private var replaceHookResult: Any? = null
-
         /** Hook 成功时回调 */
         private var onHookedCallback: ((Member) -> Unit)? = null
 
         /** 重复 Hook 时回调 */
         private var onAlreadyHookedCallback: ((Member) -> Unit)? = null
 
-        /** 找不到 [member] 出现错误回调 */
+        /** 找不到 [members] 出现错误回调 */
         private var onNoSuchMemberFailureCallback: ((Throwable) -> Unit)? = null
 
         /** Hook 过程中出现错误回调 */
@@ -207,9 +200,6 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
 
-        /** 是否为仅替换 Hook 结果模式 */
-        private var isReplaceHookOnlyResultMode = false
-
         /** 是否对当前 [MemberHookCreater] 禁止执行 Hook 操作 */
         @PublishedApi
         internal var isDisableMemberRunHook = false
@@ -218,77 +208,84 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         @PublishedApi
         internal var findingThrowable: Throwable? = null
 
-        /** 标识是否已经设置了要 Hook 的 [member] */
+        /** 标识是否已经设置了要 Hook 的 [members] */
         @PublishedApi
         internal var isHookMemberSetup = false
-
-        /** Hook 当前模式类型 */
-        @PublishedApi
-        internal var hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
 
         /** 当前的查找实例 */
         @PublishedApi
         internal var finder: BaseFinder? = null
 
-        /** 全部方法的名称 */
-        private var allMethodsName = ""
+        /** 当前被 Hook 的方法、构造方法实例数组 */
+        private val memberUnhooks = HashSet<YukiMemberHook.Unhook>()
 
-        /** 当前被 Hook 的方法、构造方法实例 */
-        private var memberUnhook: YukiMemberHook.Unhook? = null
+        /** 当前需要 Hook 的方法、构造方法 */
+        internal val members = HashSet<Member>()
 
         /**
          * 手动指定要 Hook 的方法、构造方法
          *
          * 你可以调用 [instanceClass] 来手动查询要 Hook 的方法
+         *
+         * - ❗不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] 或 [constructor] 方法
+         *
+         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+         * @param member 要指定的 [Member] 或 [Member] 数组
+         * @throws IllegalStateException 如果 [member] 参数为空
          */
-        var member: Member? = null
+        fun members(vararg member: Member?) {
+            if (member.isEmpty()) error("Custom Hooking Members is empty")
+            members.clear()
+            member.forEach { it?.also { members.add(it) } }
+        }
 
         /**
          * 查找并 Hook [hookClass] 中指定 [name] 的全部方法
          *
-         * 在同一个 [injectMember] 中
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
-         *
-         * - ❗警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] 对每个方法单独 Hook
-         *
-         * - ❗如果 [hookClass] 中没有方法可能会发生错误
+         * - ❗请现在转移到 [MethodFinder]
          * @param name 方法名称
+         * @return [ArrayList]<[MethodFinder.Result.Instance]>
          */
-        fun allMethods(name: String) {
-            allMethodsName = name
-            hookMemberMode = HookMemberMode.HOOK_ALL_METHODS
-            isHookMemberSetup = true
-        }
+        @Deprecated("请使用新方式来实现 Hook 所有方法", ReplaceWith(expression = "method { this.name = name }.all()"))
+        fun allMethods(name: String) = method { this.name = name }.all()
 
         /**
          * 查找并 Hook [hookClass] 中的全部构造方法
          *
-         * 在同一个 [injectMember] 中
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
-         *
-         * - ❗警告：无法准确处理每个构造方法的 param - 建议使用 [constructor] 对每个构造方法单独 Hook
-         *
-         * - ❗如果 [hookClass] 中没有构造方法可能会发生错误
+         * - ❗请现在转移到 [ConstructorFinder]
+         * @return [ArrayList]<[ConstructorFinder.Result.Instance]>
          */
-        fun allConstructors() {
-            allMethodsName = "<init>"
-            hookMemberMode = HookMemberMode.HOOK_ALL_CONSTRUCTORS
+        @Deprecated("请使用新方式来实现 Hook 所有构造方法", ReplaceWith(expression = "constructor().all()"))
+        fun allConstructors() = constructor().all()
+
+        /**
+         * 查找并 Hook [hookClass] 中的全部方法、构造方法
+         *
+         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+         *
+         * - ❗警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] or [constructor] 对每个方法单独 Hook
+         *
+         * - ❗如果 [hookClass] 中没有方法可能会发生错误
+         */
+        fun allMembers() {
+            members.clear()
+            hookClass.instance?.allConstructors { _, constructor -> members.add(constructor) }
+            hookClass.instance?.allMethods { _, method -> members.add(method) }
             isHookMemberSetup = true
         }
 
         /**
          * 查找 [hookClass] 需要 Hook 的方法
          *
-         * 在同一个 [injectMember] 中
-         *
-         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
+         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          * @return [MethodFinder.Result]
          */
         inline fun method(initiate: MethodFinder.() -> Unit) = try {
-            hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
             MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.build(isBind = true)
         } catch (e: Throwable) {
@@ -299,14 +296,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /**
          * 查找 [hookClass] 需要 Hook 的构造方法
          *
-         * 在同一个 [injectMember] 中
-         *
-         * 你只能使用一次 [allMethods]、[allConstructors]、[method]、[constructor] 方法 - 否则结果会被替换
+         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
         inline fun constructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) = try {
-            hookMemberMode = HookMemberMode.HOOK_CONVENTIONAL
             isHookMemberSetup = true
             ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.build(isBind = true)
         } catch (e: Throwable) {
@@ -357,7 +351,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /**
          * 在方法执行完成前 Hook
          *
-         * 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
+         * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
          * @param initiate [HookParam] 方法体
          */
         fun beforeHook(initiate: HookParam.() -> Unit) {
@@ -368,7 +362,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /**
          * 在方法执行完成后 Hook
          *
-         * 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
+         * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
          * @param initiate [HookParam] 方法体
          */
         fun afterHook(initiate: HookParam.() -> Unit) {
@@ -379,37 +373,34 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /**
          * 拦截并替换此方法内容 - 给出返回值
          *
-         * 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [beforeHook]、[afterHook] 同时使用
          * @param initiate [HookParam] 方法体
          */
         fun replaceAny(initiate: HookParam.() -> Any?) {
             isReplaceHookMode = true
-            isReplaceHookOnlyResultMode = false
             replaceHookCallback = initiate
         }
 
         /**
          * 拦截并替换此方法内容 - 没有返回值 ([Unit])
          *
-         * 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [beforeHook]、[afterHook] 同时使用
          * @param initiate [HookParam] 方法体
          */
         fun replaceUnit(initiate: HookParam.() -> Unit) {
             isReplaceHookMode = true
-            isReplaceHookOnlyResultMode = false
             replaceHookCallback = initiate
         }
 
         /**
          * 拦截并替换方法返回值
          *
-         * 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [beforeHook]、[afterHook] 同时使用
          * @param any 要替换为的返回值对象
          */
         fun replaceTo(any: Any?) {
             isReplaceHookMode = true
-            isReplaceHookOnlyResultMode = true
-            replaceHookResult = any
+            replaceHookCallback = { any }
         }
 
         /**
@@ -417,12 +408,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗确保替换方法的返回对象为 [Boolean]
          *
-         * 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
         fun replaceToTrue() {
             isReplaceHookMode = true
-            isReplaceHookOnlyResultMode = true
-            replaceHookResult = true
+            replaceHookCallback = { true }
         }
 
         /**
@@ -430,12 +420,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗确保替换方法的返回对象为 [Boolean]
          *
-         * 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
         fun replaceToFalse() {
             isReplaceHookMode = true
-            isReplaceHookOnlyResultMode = true
-            replaceHookResult = false
+            replaceHookCallback = { false }
         }
 
         /**
@@ -443,12 +432,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗这将会禁止此方法执行并返回 null
          *
-         * 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
         fun intercept() {
             isReplaceHookMode = true
-            isReplaceHookOnlyResultMode = true
-            replaceHookResult = null
+            replaceHookCallback = { null }
         }
 
         /**
@@ -480,17 +468,51 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 }
                 return
             }
+            members.takeIf { it.isNotEmpty() }?.forEach { member ->
+                runCatching {
+                    member.hook().also {
+                        when {
+                            it.first?.member == null -> error("Hook Member [$member] failed")
+                            it.second -> onAlreadyHookedCallback?.invoke(it.first?.member!!)
+                            else -> it.first?.also { e ->
+                                memberUnhooks.add(e)
+                                onHookedCallback?.invoke(e.member!!)
+                            }
+                        }
+                    }
+                }.onFailure {
+                    onHookingFailureCallback?.invoke(it)
+                    onAllFailureCallback?.invoke(it)
+                    if (isNotIgnoredHookingFailure) onHookFailureMsg(it, member)
+                }
+            } ?: Throwable("Finding Error isSetUpMember [$isHookMemberSetup] [$tag]").also {
+                onNoSuchMemberFailureCallback?.invoke(it)
+                onHookingFailureCallback?.invoke(it)
+                onAllFailureCallback?.invoke(it)
+                if (isNotIgnoredNoSuchMemberFailure) yLoggerE(
+                    msg = "$hostTagName " + (if (isHookMemberSetup)
+                        "Hooked Member with a finding error by $hookClass [$tag]"
+                    else "Hooked Member cannot be non-null by $hookClass [$tag]"),
+                    e = findingThrowable ?: it
+                )
+            }
+        }
+
+        /**
+         * Hook 方法、构造方法
+         * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
+         */
+        private fun Member.hook(): Pair<YukiMemberHook.Unhook?, Boolean> {
             /** 定义替换 Hook 的 [HookParam] */
             val replaceHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
 
             /** 定义替换 Hook 回调方法体 */
             val replaceMent = object : YukiMemberReplacement(priority) {
-                override fun replaceHookedMember(wrapper: HookParamWrapper): Any? {
-                    return replaceHookParam.assign(wrapper).let { param ->
+                override fun replaceHookedMember(wrapper: HookParamWrapper) =
+                    replaceHookParam.assign(wrapper).let { param ->
                         try {
-                            if (replaceHookCallback != null || isReplaceHookOnlyResultMode)
-                                onHookLogMsg(msg = "Replace Hook Member [${member ?: "All Member $allMethodsName"}] done [$tag]")
-                            (if (isReplaceHookOnlyResultMode) replaceHookResult else replaceHookCallback?.invoke(param)).also { HookParam.invoke() }
+                            if (replaceHookCallback != null) onHookLogMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
+                            replaceHookCallback?.invoke(param).also { HookParam.invoke() }
                         } catch (e: Throwable) {
                             onConductFailureCallback?.invoke(param, e)
                             onAllFailureCallback?.invoke(e)
@@ -498,7 +520,6 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             null
                         }
                     }
-                }
             }
 
             /** 定义前 Hook 的 [HookParam] */
@@ -513,8 +534,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                     beforeHookParam.assign(wrapper).also { param ->
                         runCatching {
                             beforeHookCallback?.invoke(param)
-                            if (beforeHookCallback != null)
-                                onHookLogMsg(msg = "Before Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
+                            if (beforeHookCallback != null) onHookLogMsg(msg = "Before Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
@@ -528,8 +548,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                     afterHookParam.assign(wrapper).also { param ->
                         runCatching {
                             afterHookCallback?.invoke(param)
-                            if (afterHookCallback != null)
-                                onHookLogMsg(msg = "After Hook Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
+                            if (afterHookCallback != null) onHookLogMsg(msg = "After Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(param, it)
@@ -539,74 +558,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                     }
                 }
             }
-            if (hookMemberMode == HookMemberMode.HOOK_CONVENTIONAL)
-                if (member != null)
-                    member.also { member ->
-                        runCatching {
-                            (if (isReplaceHookMode) YukiHookHelper.hookMethod(member, replaceMent)
-                            else YukiHookHelper.hookMethod(member, beforeAfterHook)).also {
-                                when {
-                                    it.first?.member == null -> error("Hook Member [$member] failed")
-                                    it.second -> onAlreadyHookedCallback?.invoke(it.first?.member!!)
-                                    else -> {
-                                        memberUnhook = it.first
-                                        onHookedCallback?.invoke(it.first?.member!!)
-                                    }
-                                }
-                            }
-                        }.onFailure {
-                            onHookingFailureCallback?.invoke(it)
-                            onAllFailureCallback?.invoke(it)
-                            if (isNotIgnoredHookingFailure) onHookFailureMsg(it)
-                        }
-                    }
-                else Throwable("Finding Error isSetUpMember [$isHookMemberSetup] [$tag]").also {
-                    onNoSuchMemberFailureCallback?.invoke(it)
-                    onHookingFailureCallback?.invoke(it)
-                    onAllFailureCallback?.invoke(it)
-                    if (isNotIgnoredNoSuchMemberFailure) yLoggerE(
-                        msg = "$hostTagName " + (if (isHookMemberSetup)
-                            "Hooked Member with a finding error by $hookClass [$tag]"
-                        else "Hooked Member cannot be non-null by $hookClass [$tag]"),
-                        e = findingThrowable ?: it
-                    )
-                }
-            else runCatching {
-                when (hookMemberMode) {
-                    HookMemberMode.HOOK_ALL_METHODS ->
-                        (if (isReplaceHookMode) YukiHookHelper.hookAllMethods(hookClass.instance, allMethodsName, replaceMent)
-                        else YukiHookHelper.hookAllMethods(hookClass.instance, allMethodsName, beforeAfterHook)).also {
-                            when {
-                                it.first.isEmpty() -> throw NoSuchMethodError("No Method name \"$allMethodsName\" matched")
-                                it.second -> it.first.forEach { e -> if (e.member != null) onAlreadyHookedCallback?.invoke(e.member!!) }
-                                else -> {
-                                    memberUnhook = it.first.first()
-                                    it.first.forEach { e -> if (e.member != null) onHookedCallback?.invoke(e.member!!) }
-                                }
-                            }
-                        }
-                    HookMemberMode.HOOK_ALL_CONSTRUCTORS ->
-                        (if (isReplaceHookMode) YukiHookHelper.hookAllConstructors(hookClass.instance, replaceMent)
-                        else YukiHookHelper.hookAllConstructors(hookClass.instance, beforeAfterHook)).also {
-                            when {
-                                it.first.isEmpty() -> throw NoSuchMethodError("No Constructor matched")
-                                it.second -> it.first.forEach { e -> if (e.member != null) onAlreadyHookedCallback?.invoke(e.member!!) }
-                                else -> {
-                                    memberUnhook = it.first.first()
-                                    it.first.forEach { e -> if (e.member != null) onHookedCallback?.invoke(e.member!!) }
-                                }
-                            }
-                        }
-                    else -> error("Hooked got a no error possible")
-                }
-            }.onFailure {
-                val isMemberNotFound = it.message?.lowercase()?.contains(other = "nosuch") == true ||
-                        it is NoSuchMethodError || it is NoSuchFieldError
-                if (isMemberNotFound) onNoSuchMemberFailureCallback?.invoke(it)
-                onAllFailureCallback?.invoke(it)
-                if ((isNotIgnoredHookingFailure && isMemberNotFound.not()) || (isNotIgnoredNoSuchMemberFailure && isMemberNotFound))
-                    yLoggerE(msg = "$hostTagName Hooked All Members with an error in $hookClass [$tag]", e = it)
-            }
+            return YukiHookHelper.hookMethod(hookMethod = this, if (isReplaceHookMode) replaceMent else beforeAfterHook)
         }
 
         /**
@@ -620,9 +572,12 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /**
          * Hook 失败但未设置 [onAllFailureCallback] 将默认输出失败信息
          * @param throwable 异常信息
+         * @param member 异常 [Member] - 可空
          */
-        private fun onHookFailureMsg(throwable: Throwable) =
-            yLoggerE(msg = "$hostTagName Try to hook ${hookClass.instance ?: hookClass.name}[$member] got an Exception [$tag]", e = throwable)
+        private fun onHookFailureMsg(throwable: Throwable, member: Member? = null) = yLoggerE(
+            msg = "$hostTagName Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]",
+            e = throwable
+        )
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截
@@ -631,7 +586,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         private val isNotIgnoredHookingFailure get() = onHookingFailureCallback == null && onAllFailureCallback == null
 
         /**
-         * 判断是否没有设置 Hook 过程中 [member] 找不到的任何异常拦截
+         * 判断是否没有设置 Hook 过程中 [members] 找不到的任何异常拦截
          * @return [Boolean] 没有设置任何异常拦截
          */
         internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
@@ -642,7 +597,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          */
         internal val hostTagName get() = if (packageParam.appUserId != 0) "[$packageName][${packageParam.appUserId}]" else "[$packageName]"
 
-        override fun toString() = "[tag] $tag [priority] $priority [class] $hookClass [member] $member $allMethodsName [mode] $hookMemberMode"
+        override fun toString() = "[tag] $tag [priority] $priority [class] $hookClass [members] $members"
 
         /**
          * 监听 Hook 结果实现类
@@ -672,7 +627,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             }
 
             /**
-             * 监听 [member] Hook 成功的回调方法
+             * 监听 [members] Hook 成功的回调方法
              *
              * 在首次 Hook 成功后回调
              *
@@ -686,9 +641,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             }
 
             /**
-             * 监听 [member] 重复 Hook 的回调方法
+             * 监听 [members] 重复 Hook 的回调方法
              *
-             * - ❗同一个 [hookClass] 中的同一个 [member] 不会被 API 重复 Hook - 若由于各种原因重复 Hook 会回调此方法
+             * - ❗同一个 [hookClass] 中的同一个 [members] 不会被 API 重复 Hook - 若由于各种原因重复 Hook 会回调此方法
              * @param result 回调被重复 Hook 的 [Member]
              * @return [Result] 可继续向下监听
              */
@@ -698,7 +653,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             }
 
             /**
-             * 监听 [member] 不存在发生错误的回调方法
+             * 监听 [members] 不存在发生错误的回调方法
              * @param result 回调错误
              * @return [Result] 可继续向下监听
              */
@@ -708,7 +663,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             }
 
             /**
-             * 忽略 [member] 不存在发生的错误
+             * 忽略 [members] 不存在发生的错误
              * @return [Result] 可继续向下监听
              */
             fun ignoredNoSuchMemberFailure() = onNoSuchMemberFailure {}
@@ -768,11 +723,15 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
              * @param result 回调是否成功
              */
             fun remove(result: (Boolean) -> Unit = {}) {
-                memberUnhook?.remove()
-                runCatching { preHookMembers.remove(this@MemberHookCreater.toString()) }
-                if (memberUnhook != null) onHookLogMsg(msg = "Remove Hooked Member [${member ?: "All of \"$allMethodsName\""}] done [$tag]")
-                result(memberUnhook != null)
-                memberUnhook = null
+                memberUnhooks.takeIf { it.isNotEmpty() }?.apply {
+                    forEach {
+                        it.remove()
+                        onHookLogMsg(msg = "Remove Hooked Member [${it.member}] done [$tag]")
+                    }
+                    runCatching { preHookMembers.remove(this@MemberHookCreater.toString()) }
+                    clear()
+                    result(true)
+                } ?: result(false)
             }
         }
     }
