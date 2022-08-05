@@ -86,6 +86,15 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
     val instanceClass get() = wrapper?.instance?.javaClass ?: createrInstance.instanceClass
 
     /**
+     * 获取当前 Hook 对象的 [Member]
+     *
+     * 在不确定 [Member] 类型为 [Method] 或 [Constructor] 时可以使用此方法
+     * @return [Member]
+     * @throws IllegalStateException 如果 [Member] 为空
+     */
+    val member get() = wrapper?.member ?: error("Current hook Member is null")
+
+    /**
      * 获取当前 Hook 对象的方法
      * @return [Method]
      * @throws IllegalStateException 如果 [Method] 为空或方法类型不是 [Method]

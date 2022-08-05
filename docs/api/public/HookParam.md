@@ -76,6 +76,22 @@ val instanceClass: Class<*>
 
 > 获取当前 Hook 实例的类对象。
 
+### member [field]
+
+```kotlin
+val member: Member
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获取当前 Hook 对象的 `Member`。
+
+在不确定 `Member` 类型为 `Method` 或 `Constructor` 时可以使用此方法。
+
 ### method [field]
 
 ```kotlin
