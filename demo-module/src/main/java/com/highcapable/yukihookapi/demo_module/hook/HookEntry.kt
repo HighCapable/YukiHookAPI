@@ -251,13 +251,13 @@ class HookEntry : IYukiHookXposedInit {
                     }
                     // 注入要 Hook 的方法
                     injectMember {
-                        allMethods(name = "getTestResultFirst")
+                        method { name = "getTestResultFirst" }.all()
                         // 执行替换 Hook
                         replaceTo(any = "I am hook all methods first")
                     }
                     // 注入要 Hook 的方法
                     injectMember {
-                        allMethods(name = "getTestResultLast")
+                        method { name = "getTestResultLast" }.all()
                         // 执行替换 Hook
                         replaceTo(any = "I am hook all methods last")
                     }
