@@ -137,7 +137,7 @@ var result: Any?
 ### hasThrowable [field]
 
 ```kotlin
-var hasThrowable: Boolean
+val hasThrowable: Boolean
 ```
 
 **变更记录**
@@ -151,7 +151,7 @@ var hasThrowable: Boolean
 ### throwable [field]
 
 ```kotlin
-var throwable: Throwable?
+val throwable: Throwable?
 ```
 
 **变更记录**
@@ -160,27 +160,50 @@ var throwable: Throwable?
 
 **功能描述**
 
-> 获取、设置方法调用抛出的异常。
+> 获取设置的方法调用抛出异常。
+
+### throwToApp [method]
+
+```kotlin
+fun Throwable.throwToApp()
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 向 Hook APP 抛出异常。
+
+使用 `hasThrowable` 判断当前是否存在被抛出的异常。
+
+使用 `throwable` 获取当前设置的方法调用抛出异常。
 
 仅会在回调方法的 `MemberHookCreater.beforeHook` or `MemberHookCreater.afterHook` 中生效。
 
-你可以使用 `hasThrowable` 判断当前是否存在被抛出的异常。
+!> 设置后会同时执行 `resultNull` 方法并将异常抛出给当前 Hook APP。
 
-!> 设置后会同时执行 `resultNull` 方法并将异常抛出给当前宿主 APP。
+**功能示例**
 
-### resultOrThrowable [field]
+Hook 过程中的异常仅会作用于 (Xposed) 宿主环境，目标 Hook APP 不会受到影响。
+
+若想将异常抛给 Hook APP，可以直接使用如下方法。
+
+> 示例如下
 
 ```kotlin
-var resultOrThrowable: Any?
+injectMember {
+    method {
+        // ...
+    }
+    beforeHook {
+        RuntimeException("Test Exception").throwToApp()
+    }
+}
 ```
 
-**变更记录**
-
-`v1.0.93` `新增`
-
-**功能描述**
-
-> 获取 `result` 或 `throwable`，存在 `throwable` 时优先返回。
+!> 向 Hook APP 抛出异常<u>**会对其暴露被 Hook 的事实**</u>，是不安全的，容易被检测，请按实际场景合理使用。
 
 ### result [method]
 

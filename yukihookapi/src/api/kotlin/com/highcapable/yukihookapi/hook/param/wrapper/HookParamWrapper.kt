@@ -98,12 +98,6 @@ class HookParamWrapper internal constructor(private var baseParam: XC_MethodHook
         }
 
     /**
-     * 获取 [result] 或 [throwable] - 存在 [throwable] 时优先返回
-     * @return [Any] or null
-     */
-    val resultOrThrowable get() = baseParam?.resultOrThrowable
-
-    /**
      * 设置方法参数
      * @param index 数组下标
      * @param any 参数对象实例

@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.param
 
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater.MemberHookCreater
+import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
@@ -90,23 +91,23 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      *
      * 在不确定 [Member] 类型为 [Method] 或 [Constructor] 时可以使用此方法
      * @return [Member]
-     * @throws IllegalStateException 如果 [Member] 为空
+     * @throws IllegalStateException 如果 [member] 为空
      */
-    val member get() = wrapper?.member ?: error("Current hook Member is null")
+    val member get() = wrapper?.member ?: error("Current hooked Member is null")
 
     /**
      * 获取当前 Hook 对象的方法
      * @return [Method]
-     * @throws IllegalStateException 如果 [Method] 为空或方法类型不是 [Method]
+     * @throws IllegalStateException 如果 [member] 类型不是 [Method]
      */
-    val method get() = wrapper?.member as? Method? ?: error("Current hook Method type is wrong or null")
+    val method get() = member as? Method? ?: error("Current hooked Member is not a Method")
 
     /**
      * 获取当前 Hook 对象的构造方法
      * @return [Constructor]
-     * @throws IllegalStateException 如果 [Constructor] 为空或方法类型不是 [Constructor]
+     * @throws IllegalStateException 如果 [member] 类型不是 [Constructor]
      */
-    val constructor get() = wrapper?.member as? Constructor<*>? ?: error("Current hook Constructor type is wrong or null")
+    val constructor get() = member as? Constructor<*>? ?: error("Current hooked Member is not a Constructor")
 
     /**
      * 获取、设置当前 Hook 对象的 [method] or [constructor] 的返回值
@@ -125,27 +126,28 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
     val hasThrowable get() = wrapper?.hasThrowable
 
     /**
-     * 获取、设置方法调用抛出的异常
+     * 获取设置的方法调用抛出异常
+     * @return [Throwable] or null
+     */
+    val throwable get() = wrapper?.throwable
+
+    /**
+     * 向 Hook APP 抛出异常
      *
-     * 仅会在回调方法的 [MemberHookCreater.beforeHook] or [MemberHookCreater.afterHook] 中生效
+     * 使用 [hasThrowable] 判断当前是否存在被抛出的异常
      *
-     * 你可以使用 [hasThrowable] 判断当前是否存在被抛出的异常
+     * 使用 [throwable] 获取当前设置的方法调用抛出异常
      *
-     * - ❗设置后会同时执行 [resultNull] 方法并将异常抛出给当前宿主 APP
+     * - 仅会在回调方法的 [MemberHookCreater.beforeHook] or [MemberHookCreater.afterHook] 中生效
+     *
+     * - ❗设置后会同时执行 [resultNull] 方法并将异常抛出给当前 Hook APP
      * @return [Throwable] or null
      * @throws Throwable
      */
-    var throwable: Throwable?
-        get() = wrapper?.throwable
-        set(value) {
-            wrapper?.throwable = value
-        }
-
-    /**
-     * 获取 [result] 或 [throwable] - 存在 [throwable] 时优先返回
-     * @return [Any] or [Throwable] or null
-     */
-    val resultOrThrowable get() = wrapper?.resultOrThrowable
+    fun Throwable.throwToApp() {
+        wrapper?.throwable = this
+        yLoggerE(msg = message ?: "$this", e = this)
+    }
 
     /**
      * 获取当前 Hook 对象的 [method] or [constructor] 的返回值 [T]
