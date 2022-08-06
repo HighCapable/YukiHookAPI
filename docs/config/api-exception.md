@@ -716,7 +716,7 @@ injectMember {
 
 请确认你 Hook 的方法是否为静态类型，静态类型的方法没有实例，不能使用此功能，若非静态方法，请检查实例是否已经销毁。
 
-!> `IllegalStateException` Current hook Member is null
+!> `IllegalStateException` Current hooked Member is null
 
 **异常原因**
 
@@ -738,7 +738,7 @@ injectMember {
 
 这种问题一般不会发生，真的发生了此问题，请携带详细日志进行反馈。
 
-!> `IllegalStateException` Current hook Method type is wrong or null
+!> `IllegalStateException` Current hooked Member is not a Method
 
 **异常原因**
 
@@ -758,9 +758,9 @@ injectMember {
 
 **解决方案**
 
-请确认你 Hook 的方法是构造方法还是普通方法并使用对应类型的方法获取指定的实例。
+请确认你 Hook 的方法是构造方法还是普通方法并使用对应类型的方法获取指定的实例，若不知道字节码的类型可以直接使用 `member` 来获取。
 
-!> `IllegalStateException` Current hook Constructor type is wrong or null
+!> `IllegalStateException` Current hooked Member is not a Constructor
 
 **异常原因**
 
@@ -780,7 +780,7 @@ injectMember {
 
 **解决方案**
 
-请确认你 Hook 的方法是普通方法还是构造方法并使用对应类型的方法获取指定的实例。
+请确认你 Hook 的方法是普通方法还是构造方法并使用对应类型的方法获取指定的实例，若不知道字节码的类型可以直接使用 `member` 来获取。
 
 !> `IllegalStateException` HookParam instance cannot cast to **TYPE**
 
