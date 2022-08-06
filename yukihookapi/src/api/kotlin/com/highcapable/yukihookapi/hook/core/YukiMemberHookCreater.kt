@@ -53,6 +53,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
 import java.lang.reflect.Field
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * [YukiHookAPI] 的 [Member] 核心 Hook 实现类
@@ -432,6 +433,8 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗这将会禁止此方法执行并返回 null
          *
+         * - ❗注意：例如 [Int]、[Long]、[Boolean] 常量返回值的方法一旦被设置为 null 可能会造成 Hook APP 抛出异常
+         *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
         fun intercept() {
@@ -511,13 +514,17 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 override fun replaceHookedMember(wrapper: HookParamWrapper) =
                     replaceHookParam.assign(wrapper).let { param ->
                         try {
-                            if (replaceHookCallback != null) onHookLogMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
-                            replaceHookCallback?.invoke(param).also { HookParam.invoke() }
+                            replaceHookCallback?.invoke(param).also {
+                                checkingReturnType((wrapper.member as? Method?)?.returnType, it?.javaClass)
+                                if (replaceHookCallback != null) onHookLogMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
+                                HookParam.invoke()
+                            }
                         } catch (e: Throwable) {
                             onConductFailureCallback?.invoke(param, e)
                             onAllFailureCallback?.invoke(e)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
-                            null
+                            /** 若发生异常则会自动调用未经 Hook 的原始方法保证 Hook APP 正常运行 */
+                            wrapper.member?.also { wrapper.invokeOriginalMember(it, wrapper.args) }
                         }
                     }
             }
@@ -534,6 +541,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                     beforeHookParam.assign(wrapper).also { param ->
                         runCatching {
                             beforeHookCallback?.invoke(param)
+                            checkingReturnType((wrapper.member as? Method?)?.returnType, wrapper.result?.javaClass)
                             if (beforeHookCallback != null) onHookLogMsg(msg = "Before Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
@@ -559,6 +567,19 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                 }
             }
             return YukiHookHelper.hookMethod(hookMethod = this, if (isReplaceHookMode) replaceMent else beforeAfterHook)
+        }
+
+        /**
+         * 检查被 Hook 方法的返回值
+         * @param origin 原始返回值
+         * @param target 目标返回值
+         * @throws IllegalStateException 如果返回值不正确
+         */
+        private fun checkingReturnType(origin: Class<*>?, target: Class<*>?) {
+            if (origin == null || target == null) return
+            val originName = origin.name.replace(Unit.toString(), newValue = "void")
+            val targetName = target.name.replace(Unit.toString(), newValue = "void")
+            if (originName != targetName) error("Hooked method return type match failed, required [$originName] but got [$targetName]")
         }
 
         /**

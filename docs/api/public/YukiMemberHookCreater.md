@@ -520,6 +520,8 @@ fun intercept()
 
 !> 这将会禁止此方法执行并返回 `null`。
 
+!> 注意：例如 `Int`、`Long`、`Boolean` 常量返回值的方法一旦被设置为 null 可能会造成 Hook APP 抛出异常。
+
 #### removeSelf [method]
 
 ```kotlin
