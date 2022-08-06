@@ -169,25 +169,46 @@ injectMember {
 }
 ```
 
-!> `loggerE` No Method name "**NAME**" matched
+!> `loggerE` Hooked method return type match failed, required \[**TYPE**\] but got \[**TYPE**\]
 
 **异常原因**
 
-在使用 `allMethods` 查询需要 Hook 的方法时一个也没有找到。
+在 Hook 回调方法体中设置了 `HookParam.result` 或使用了 `replaceHook` 但是被 Hook 的方法返回值类型与原返回值类型不匹配。
+
+> 示例如下
+
+假设这个是被 Hook 的方法。
+
+```java
+private boolean test()
+```
+
+下面是一个错误的案列。
+
+```kotlin
+injectMember {
+    method {
+        name = "test"
+        emptyParam()
+    }
+    // <情景1> 设置了错误的类型，原类型为 Boolean
+    beforeHook {
+        result = 0
+    }
+    // <情景2> 返回了错误的类型，原类型为 Boolean
+    replaceAny {
+        0
+    }
+    // <情景3> 直接使用了错误的类型，原类型为 Boolean
+    replaceTo(any = 0)
+}
+```
+
+!> 若上述场景在 `beforeHook` 或 `afterHook` 中发生，则会造成被 Hook 的 APP (宿主) 由 `XposedBridge` 抛出异常。
 
 **解决方案**
 
-请确认当前 `Class` 中一定存在一个可以匹配此方法名称的方法。
-
-!> `loggerE` No Constructor matched
-
-**异常原因**
-
-在使用 `allConstructors` 查询需要 Hook 的构造方法时一个也没有找到。
-
-**解决方案**
-
-请确认当前 `Class` 是否存在至少一个构造方法。
+请确认当前被 Hook 方法的正确返回值类型，修改后再试一次。
 
 !> `loggerE` Try to hook **NAME**\[**NAME**\] got an Exception
 
