@@ -125,6 +125,8 @@ afterHook {
     result = ...
     // 删除返回值内容
     resultNull()
+    // 向 Hook APP 抛出异常
+    Throwable("Fatal").throwToApp()
     // 执行未经 Hook 的原始方法
     method.invokeOriginal(...)
 }
@@ -158,6 +160,8 @@ override fun afterHookedMethod(param: MethodHookParam) {
     param.result = ...
     // 删除返回值内容
     param.result = null
+    // 向 Hook APP 抛出异常
+    param.throwable = Throwable("Fatal")
     // 执行未经 Hook 的原始方法
     XposedBridge.invokeOriginalMethod(param.method, param.thisObject, ...)
 }
