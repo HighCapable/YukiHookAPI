@@ -51,12 +51,16 @@ injectResource(tag = "KuriharaYuki") {
 ### ResourcesHookCreater [class]
 
 ```kotlin
-inner class ResourcesHookCreater internal constructor(private val tag: String, private val packageName: String)
+inner class ResourcesHookCreater internal constructor(private val tag: String)
 ```
 
 **变更记录**
 
 `v1.0.80` `新增`
+
+`v1.0.93` `修改`
+
+移除 `packageName`
 
 **功能描述**
 

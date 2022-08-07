@@ -297,7 +297,7 @@ object YukiHookAPI {
             YukiHookBridge.packageParamCallback = {
                 if (hooker.isNotEmpty())
                     hooker.forEach { it.assignInstance(packageParam = this) }
-                else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty")
+                else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isShowProcessName = false)
             }
         else printNoXposedEnvLog()
     }
@@ -344,7 +344,7 @@ object YukiHookAPI {
                 if (hooker.isNotEmpty()) {
                     printSplashLog()
                     hooker.forEach { it.assignInstance(packageParam = baseContext.packageParam) }
-                } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty"))
+                } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isShowProcessName = false))
         else printNoXposedEnvLog()
     }
 
@@ -352,11 +352,14 @@ object YukiHookAPI {
     private fun printSplashLog() {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
-        yLoggerI(msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using ${Status.executorName} API ${Status.executorVersion}")
+        yLoggerI(
+            msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using ${Status.executorName} API ${Status.executorVersion}",
+            isShowProcessName = false
+        )
     }
 
     /** 输出找不到 [XposedBridge] 的错误日志 */
-    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted")
+    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted", isShowProcessName = false)
 
     /**
      * 通过 baseContext 创建 Hook 入口类

@@ -133,7 +133,7 @@ injectMember(priority = PRIORITY_HIGHEST) {
 ### MemberHookCreater [class]
 
 ```kotlin
-inner class MemberHookCreater internal constructor(private val priority: Int, internal val tag: String, internal val packageName: String)
+inner class MemberHookCreater internal constructor(private val priority: Int, internal val tag: String)
 ```
 
 **变更记录**
@@ -147,6 +147,10 @@ inner class MemberHookCreater internal constructor(private val priority: Int, in
 `v1.0.81` `修改`
 
 增加 `packageName` 当前 Hook 的 APP 包名
+
+`v1.0.93` `修改`
+
+移除 `packageName`
 
 **功能描述**
 

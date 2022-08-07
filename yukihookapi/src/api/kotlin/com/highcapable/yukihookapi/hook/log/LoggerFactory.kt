@@ -76,8 +76,9 @@ enum class LoggerType {
  * @param tag 日志打印的标签
  * @param msg 日志打印的内容
  * @param e 异常堆栈信息
+ * @param isShowProcessName 是否显示当前进程名称 - 仅限 [XposedBridge.log]
  */
-private fun baseLogger(format: String, type: LoggerType, tag: String, msg: String, e: Throwable? = null) {
+private fun baseLogger(format: String, type: LoggerType, tag: String, msg: String, e: Throwable? = null, isShowProcessName: Boolean = true) {
     /** 打印到 [Log] */
     fun loggerInLogd() = when (format) {
         "D" -> Log.d(tag, msg)
@@ -89,8 +90,11 @@ private fun baseLogger(format: String, type: LoggerType, tag: String, msg: Strin
 
     /** 打印到 [XposedBridge.log] */
     fun loggerInXposed() = runCatching {
-        XposedBridge.log("[$tag][$format]--> $msg")
-        e?.also { XposedBridge.log(it) }
+        YukiHookBridge.hostProcessName.also {
+            val appUserId = YukiHookBridge.findUserId(it)
+            XposedBridge.log("[$tag][$format]${if (isShowProcessName) (if (appUserId != 0) "[$it][$appUserId]" else "[$it]") else ""}--> $msg")
+            e?.also { e -> XposedBridge.log(e) }
+        }
     }
     when (type) {
         LoggerType.LOGD -> loggerInLogd()
@@ -106,38 +110,46 @@ private fun baseLogger(format: String, type: LoggerType, tag: String, msg: Strin
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - D
  * @param msg 日志打印的内容
+ * @param isShowProcessName 是否显示当前进程名称 - 仅限 [XposedBridge.log]
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerD(msg: String, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerD(msg = msg)
+internal fun yLoggerD(msg: String, isShowProcessName: Boolean = true, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs.not() || isDisableLog) return
+    baseLogger(format = "D", LoggerType.BOTH, YukiHookAPI.Configs.debugTag, msg, isShowProcessName = isShowProcessName)
 }
 
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - I
  * @param msg 日志打印的内容
+ * @param isShowProcessName 是否显示当前进程名称 - 仅限 [XposedBridge.log]
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerI(msg: String, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerI(msg = msg)
+internal fun yLoggerI(msg: String, isShowProcessName: Boolean = true, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs.not() || isDisableLog) return
+    baseLogger(format = "I", LoggerType.BOTH, YukiHookAPI.Configs.debugTag, msg, isShowProcessName = isShowProcessName)
 }
 
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - W
  * @param msg 日志打印的内容
+ * @param isShowProcessName 是否显示当前进程名称 - 仅限 [XposedBridge.log]
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerW(msg: String, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerW(msg = msg)
+internal fun yLoggerW(msg: String, isShowProcessName: Boolean = true, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs.not() || isDisableLog) return
+    baseLogger(format = "W", LoggerType.BOTH, YukiHookAPI.Configs.debugTag, msg, isShowProcessName = isShowProcessName)
 }
 
 /**
  * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - E
  * @param msg 日志打印的内容
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
+ * @param isShowProcessName 是否显示当前进程名称 - 仅限 [XposedBridge.log]
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerE(msg: String, e: Throwable? = null, isDisableLog: Boolean = false) {
-    if (YukiHookAPI.Configs.isAllowPrintingLogs) if (isDisableLog.not()) loggerE(msg = msg, e = e)
+internal fun yLoggerE(msg: String, e: Throwable? = null, isShowProcessName: Boolean = true, isDisableLog: Boolean = false) {
+    if (YukiHookAPI.Configs.isAllowPrintingLogs.not() || isDisableLog) return
+    baseLogger(format = "E", LoggerType.BOTH, YukiHookAPI.Configs.debugTag, msg, e, isShowProcessName)
 }
 
 /**

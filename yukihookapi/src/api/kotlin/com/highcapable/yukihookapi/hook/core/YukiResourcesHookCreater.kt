@@ -58,7 +58,7 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
      * @return [ResourcesHookCreater.Result]
      */
     inline fun injectResource(tag: String = "Default", initiate: ResourcesHookCreater.() -> Unit) =
-        ResourcesHookCreater(tag, packageParam.exhibitName).apply(initiate).apply { preHookResources[toString()] = this }.build()
+        ResourcesHookCreater(tag).apply(initiate).apply { preHookResources[toString()] = this }.build()
 
     /**
      * Hook 执行入口
@@ -78,9 +78,8 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
      *
      * 查找和处理需要 Hook 的 Resources
      * @param tag 当前设置的标签
-     * @param packageName 当前 Hook 的 APP 包名
      */
-    inner class ResourcesHookCreater @PublishedApi internal constructor(private val tag: String, private val packageName: String) {
+    inner class ResourcesHookCreater @PublishedApi internal constructor(private val tag: String) {
 
         /** 是否已经执行 Hook */
         private var isHooked = false
@@ -232,14 +231,8 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = "$hostTagName $msg")
+            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = msg)
         }
-
-        /**
-         * 获取 Hook APP (宿主) 标签
-         * @return [String]
-         */
-        private val hostTagName get() = if (packageParam.appUserId != 0) "[$packageName][${packageParam.appUserId}]" else "[$packageName]"
 
         /**
          * Resources 查找条件实现类

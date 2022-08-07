@@ -60,6 +60,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacem
 import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import dalvik.system.PathClassLoader
 import de.robv.android.xposed.IXposedHookInitPackageResources
 import de.robv.android.xposed.IXposedHookLoadPackage
@@ -87,6 +88,9 @@ object YukiHookBridge {
 
     /** [YukiHookDataChannel] 是否已经注册 */
     private var isDataChannelRegister = false
+
+    /** 当前 Hook 进程是否正处于 [IXposedHookZygoteInit.initZygote] */
+    private var isInitializingZygote = false
 
     /** 已在 [PackageParam] 中被装载的 APP 包名 */
     private val loadedPackageNames = HashSet<String>()
@@ -127,6 +131,12 @@ object YukiHookBridge {
      * @return [String]
      */
     internal val moduleGeneratedVersion get() = YukiHookBridge_Injector.getModuleGeneratedVersion()
+
+    /**
+     * 当前宿主正在进行的 Hook 进程标识名称
+     * @return [String]
+     */
+    internal val hostProcessName get() = if (isInitializingZygote) "android-zygote" else YukiHookAppHelper.currentPackageName() ?: "unknown"
 
     /**
      * 获取当前系统框架的 [Context]
@@ -235,6 +245,7 @@ object YukiHookBridge {
         appInfo: ApplicationInfo? = null,
         appResources: YukiResources? = null
     ) = run {
+        isInitializingZygote = type == HookEntryType.ZYGOTE
         if (packageParamWrappers[packageName] == null)
             if (type == HookEntryType.ZYGOTE || appClassLoader != null)
                 PackageParamWrapper(

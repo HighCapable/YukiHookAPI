@@ -197,8 +197,8 @@ class FieldFinder @PublishedApi internal constructor(
         if (classSet != null) {
             runBlocking {
                 setInstance(result)
-            }.result {
-                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Field [$it] takes ${it}ms [${hookTag}]") }
+            }.result { ms ->
+                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
             }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))

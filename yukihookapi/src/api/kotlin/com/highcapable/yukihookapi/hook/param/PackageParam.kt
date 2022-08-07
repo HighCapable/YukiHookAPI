@@ -62,14 +62,6 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 open class PackageParam internal constructor(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
 
     /**
-     * 用于展示的 APP 包名
-     * @return [String]
-     */
-    @PublishedApi
-    internal val exhibitName
-        get() = wrapper?.exhibitName ?: "unknown"
-
-    /**
      * 获取当前 Hook APP 的 [ClassLoader]
      * @return [ClassLoader]
      * @throws IllegalStateException 如果 [ClassLoader] 是空的
