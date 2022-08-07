@@ -368,7 +368,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * - ❗每次调用都会获取实时的数据 - 不受缓存控制 - 请勿在高并发场景中使用
      * @return [HashMap] 全部类型的键值数组
      */
-    fun all() = HashMap<String, Any?>().apply {
+    fun all() = hashMapOf<String, Any?>().apply {
         if (isXposedEnvironment)
             xPref.all.forEach { (k, v) -> this[k] = v }
         else sPref.all.forEach { (k, v) -> this[k] = v }

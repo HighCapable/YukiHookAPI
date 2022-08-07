@@ -318,7 +318,7 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = true
         when {
-            YukiHookBridge.hasXposedBridge && baseContext != null -> initiate.invoke(baseContext.packageParam.apply { printSplashLog() })
+            YukiHookBridge.hasXposedBridge && baseContext != null -> initiate(baseContext.packageParam.apply { printSplashLog() })
             else -> printNoXposedEnvLog()
         }
     }
