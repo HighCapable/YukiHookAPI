@@ -108,6 +108,80 @@ val Context.processName: String
 
 > 获取当前进程名称。
 
+### injectModuleAppResources [method]
+
+```kotlin
+fun Context.injectModuleAppResources()
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 向 Hook APP (宿主) `Context` 注入当前 Xposed 模块的资源。
+
+注入成功后，你就可以直接使用例如 `ImageView.setImageResource` 或 `Resources.getString` 装载当前 Xposed 模块的资源 ID。
+
+注入的资源作用域仅限当前 `Context`，你需要在每个用到宿主 `Context` 的地方重复调用此方法进行注入才能使用。
+
+为防止资源 ID 互相冲突，你需要在当前 Xposed 模块项目的 `build.gradle` 中修改资源 ID。
+
+- Kotlin Gradle DSL
+
+```kotlin
+androidResources.additionalParameters("--allow-reserved-package-id", "--package-id", "0x64")
+```
+
+- Groovy
+
+```groovy
+aaptOptions.additionalParameters '--allow-reserved-package-id', '--package-id', '0x64'
+```
+
+!> 提供的示例资源 ID 值仅供参考，为了防止当前宿主存在多个 Xposed 模块，建议自定义你自己的资源 ID。
+
+!> 只能在 (Xposed) 宿主环境使用此功能，其它环境下使用将不生效且会打印警告信息。
+
+**功能示例**
+
+在 Hook 宿主之后，我们可以直接在 Hooker 中得到的 `Context` 注入当前模块资源。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        name = "onCreate"
+        param(BundleClass)
+    }
+    afterHook {
+        instance<Activity>().also {
+            // 注入模块资源
+            it.injectModuleAppResources()
+            // 直接使用模块资源 ID
+            it.getString(R.id.app_name)
+        }
+    }
+}
+```
+
+你还可以直接在 `AppLifecycle` 中注入当前模块资源。
+
+> 示例如下
+
+```kotlin
+onAppLifecycle {
+    onCreate {
+        // 全局注入模块资源，但仅限于全局生命周期，类似 ImageView.setImageResource 这样的方法在 Activity 中需要单独注入
+        injectModuleAppResources()
+        // 直接使用模块资源 ID
+        getString(R.id.app_name)
+    }
+}
+```
+
 ### ~~isSupportResourcesHook [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**

@@ -41,6 +41,7 @@ import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.factory.hasClass
+import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
@@ -91,7 +92,10 @@ object YukiHookBridge {
     private val loadedPackageNames = HashSet<String>()
 
     /** 当前 [PackageParamWrapper] 实例数组 */
-    private var packageParamWrappers = HashMap<String, PackageParamWrapper>()
+    private val packageParamWrappers = HashMap<String, PackageParamWrapper>()
+
+    /** 已被注入到宿主 [Context] 中的当前 Xposed 模块资源 HashCode 数组 */
+    private val injectedHostContextHashCodes = HashSet<Int>()
 
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
@@ -320,6 +324,21 @@ object YukiHookBridge {
                         }
                     })
         }
+    }
+
+    /**
+     * 向 Hook APP (宿主) [Context] 注入当前 Xposed 模块的资源
+     * @param context 需要注入的 [Context]
+     */
+    internal fun injectModuleAppResources(context: Context) {
+        if (injectedHostContextHashCodes.contains(context.hashCode())) return
+        if (hasXposedBridge)
+            runCatching {
+                YukiHookHelper.findMethod(AssetManagerClass, name = "addAssetPath", StringType)
+                    .invoke(context.resources.assets, moduleAppFilePath)
+                injectedHostContextHashCodes.add(context.hashCode())
+            }.onFailure { yLoggerE(msg = "Failed to inject module resources in context [$context]", e = it) }
+        else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
     }
 
     /** 刷新当前 Xposed 模块自身 [Resources] */
