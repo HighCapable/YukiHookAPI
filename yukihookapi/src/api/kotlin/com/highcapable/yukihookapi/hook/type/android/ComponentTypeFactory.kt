@@ -38,10 +38,7 @@ import android.content.*
 import android.content.Intent.ShortcutIconResource
 import android.content.pm.*
 import android.content.pm.LauncherApps.ShortcutQuery
-import android.content.res.ColorStateList
-import android.content.res.Configuration
-import android.content.res.Resources
-import android.content.res.TypedArray
+import android.content.res.*
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.drawable.*
 import android.icu.text.SimpleDateFormat
@@ -708,6 +705,12 @@ val KeyboardShortcutGroupClass get() = KeyboardShortcutGroup::class.java
  * @return [Class]
  */
 val ShortcutIconResourceClass get() = ShortcutIconResource::class.java
+
+/**
+ * 获得 [AssetManager] 类型
+ * @return [Class]
+ */
+val AssetManagerClass get() = AssetManager::class.java
 
 /**
  * 获得 [AppWidgetManager] 类型
