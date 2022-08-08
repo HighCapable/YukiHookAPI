@@ -275,7 +275,7 @@ object YukiHookBridge {
         /** Hook [Application] 装载方法 */
         runCatching {
             if (AppLifecycleCallback.isCallbackSetUp) {
-                YukiHookHelper.hookMethod(YukiHookHelper.findMethod(ApplicationClass, name = "attach", ContextClass), object : YukiMemberHook() {
+                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "attach", ContextClass), object : YukiMemberHook() {
                     override fun beforeHookedMember(wrapper: HookParamWrapper) {
                         (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
                     }
@@ -284,17 +284,17 @@ object YukiHookBridge {
                         (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
                     }
                 })
-                YukiHookHelper.hookMethod(YukiHookHelper.findMethod(ApplicationClass, name = "onTerminate"), object : YukiMemberHook() {
+                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "onTerminate"), object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
                         (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
                     }
                 })
-                YukiHookHelper.hookMethod(YukiHookHelper.findMethod(ApplicationClass, name = "onLowMemory"), object : YukiMemberHook() {
+                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "onLowMemory"), object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
                         (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
                     }
                 })
-                YukiHookHelper.hookMethod(
+                YukiHookHelper.hookMember(
                     YukiHookHelper.findMethod(ApplicationClass, name = "onTrimMemory", IntType),
                     object : YukiMemberHook() {
                         override fun afterHookedMember(wrapper: HookParamWrapper) {
@@ -303,7 +303,7 @@ object YukiHookBridge {
                             AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
                         }
                     })
-                YukiHookHelper.hookMethod(YukiHookHelper.findMethod(ApplicationClass, name = "onConfigurationChanged", ConfigurationClass),
+                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "onConfigurationChanged", ConfigurationClass),
                     object : YukiMemberHook() {
                         override fun afterHookedMember(wrapper: HookParamWrapper) {
                             val self = wrapper.instance as? Application? ?: return
@@ -313,7 +313,7 @@ object YukiHookBridge {
                     })
             }
             if (YukiHookAPI.Configs.isEnableDataChannel || AppLifecycleCallback.isCallbackSetUp)
-                YukiHookHelper.hookMethod(
+                YukiHookHelper.hookMember(
                     YukiHookHelper.findMethod(InstrumentationClass, name = "callApplicationOnCreate", ApplicationClass),
                     object : YukiMemberHook() {
                         override fun afterHookedMember(wrapper: HookParamWrapper) {
@@ -364,7 +364,7 @@ object YukiHookBridge {
      */
     internal fun hookClassLoader(loader: ClassLoader?, result: (clazz: Class<*>, resolve: Boolean) -> Unit) {
         runCatching {
-            YukiHookHelper.hookMethod(
+            YukiHookHelper.hookMember(
                 YukiHookHelper.findMethod(JavaClassLoader, name = "loadClass", StringType, BooleanType),
                 object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
@@ -387,20 +387,20 @@ object YukiHookBridge {
         if (YukiHookAPI.Configs.isEnableHookModuleStatus)
             YukiHookHelper.findClass(loader, YukiHookModuleStatus::class.java).also { statusClass ->
                 if (isHookResourcesStatus.not()) {
-                    YukiHookHelper.hookMethod(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME),
+                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME),
                         object : YukiMemberReplacement() {
                             override fun replaceHookedMember(wrapper: HookParamWrapper) = true
                         })
-                    YukiHookHelper.hookMethod(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME),
+                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME),
                         object : YukiMemberReplacement() {
                             override fun replaceHookedMember(wrapper: HookParamWrapper) = executorName
                         })
-                    YukiHookHelper.hookMethod(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME),
+                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME),
                         object : YukiMemberReplacement() {
                             override fun replaceHookedMember(wrapper: HookParamWrapper) = executorVersion
                         })
                 } else
-                    YukiHookHelper.hookMethod(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME),
+                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME),
                         object : YukiMemberReplacement() {
                             override fun replaceHookedMember(wrapper: HookParamWrapper) = true
                         })

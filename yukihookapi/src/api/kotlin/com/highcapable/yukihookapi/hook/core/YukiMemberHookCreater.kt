@@ -563,7 +563,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                     }
                 }
             }
-            return YukiHookHelper.hookMethod(hookMethod = this, if (isReplaceHookMode) replaceMent else beforeAfterHook)
+            return YukiHookHelper.hookMember(member = this, if (isReplaceHookMode) replaceMent else beforeAfterHook)
         }
 
         /**

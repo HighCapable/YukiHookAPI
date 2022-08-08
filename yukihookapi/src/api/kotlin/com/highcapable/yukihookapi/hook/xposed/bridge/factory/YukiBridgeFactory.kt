@@ -76,7 +76,7 @@ internal object YukiHookHelper {
     internal fun findClass(loader: ClassLoader?, baseClass: Class<*>) = loader?.loadClass(baseClass.name) ?: error("ClassLoader is null")
 
     /**
-     * 查找变量
+     * 查找 [Field]
      * @param baseClass 所在类
      * @param name 变量名称
      * @return [Field]
@@ -85,7 +85,7 @@ internal object YukiHookHelper {
     internal fun findField(baseClass: Class<*>, name: String) = baseClass.getDeclaredField(name).apply { isAccessible = true }
 
     /**
-     * 查找方法
+     * 查找 [Method]
      * @param baseClass 所在类
      * @param name 方法名称
      * @param paramTypes 方法参数
@@ -96,21 +96,21 @@ internal object YukiHookHelper {
         baseClass.getDeclaredMethod(name, *paramTypes).apply { isAccessible = true }
 
     /**
-     * Hook 方法
+     * Hook [Member]
      *
      * 对接 [XposedBridge.hookMethod]
-     * @param hookMethod 需要 Hook 的方法、构造方法
+     * @param member 需要 Hook 的方法、构造方法
      * @param callback 回调
      * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
      */
-    internal fun hookMethod(hookMethod: Member?, callback: YukiHookCallback): Pair<YukiMemberHook.Unhook?, Boolean> {
+    internal fun hookMember(member: Member, callback: YukiHookCallback): Pair<YukiMemberHook.Unhook?, Boolean> {
         runCatching {
             YukiHookedMembers.hookedMembers.takeIf { it.isNotEmpty() }?.forEach {
-                if (it.member.toString() == hookMethod.toString()) return@runCatching it
+                if (it.member.toString() == member.toString()) return@runCatching it
             }
         }
         return if (YukiHookBridge.hasXposedBridge)
-            YukiMemberHook.Unhook.wrapper(XposedBridge.hookMethod(hookMethod, callback.compat())).let {
+            YukiMemberHook.Unhook.wrapper(XposedBridge.hookMethod(member, callback.compat())).let {
                 YukiHookedMembers.hookedMembers.add(it)
                 Pair(it, false)
             }
