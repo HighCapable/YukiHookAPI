@@ -77,7 +77,7 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
-inline fun <reified T> classOf(loader: ClassLoader? = null) = classOf(T::class.java.name, loader)
+inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { classOf(T::class.java.name, loader) } ?: T::class.java
 
 /**
  * 通过字符串查找类是否存在
