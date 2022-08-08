@@ -25,15 +25,19 @@
  *
  * This file is Created by fankes on 2022/7/28.
  */
+@file:Suppress("NewApi")
+
 package com.highcapable.yukihookapi.hook.xposed.bridge.factory
 
+import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
+import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
+import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
-import java.lang.reflect.Field
 import java.lang.reflect.Member
-import java.lang.reflect.Method
 
 /**
  * Hook 回调优先级配置类
@@ -67,33 +71,20 @@ internal object YukiHookedMembers {
 internal object YukiHookHelper {
 
     /**
-     * 查找 [Class]
-     * @param loader 当前 [ClassLoader]
-     * @param baseClass 当前类
-     * @return [Field]
-     * @throws IllegalStateException 如果 [ClassLoader] 为空
+     * Hook [BaseFinder.BaseResult]
+     * @param traction 直接调用 [BaseFinder.BaseResult]
+     * @param callback 回调
+     * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
      */
-    internal fun findClass(loader: ClassLoader?, baseClass: Class<*>) = loader?.loadClass(baseClass.name) ?: error("ClassLoader is null")
-
-    /**
-     * 查找 [Field]
-     * @param baseClass 所在类
-     * @param name 变量名称
-     * @return [Field]
-     * @throws NoSuchFieldError 如果找不到变量
-     */
-    internal fun findField(baseClass: Class<*>, name: String) = baseClass.getDeclaredField(name).apply { isAccessible = true }
-
-    /**
-     * 查找 [Method]
-     * @param baseClass 所在类
-     * @param name 方法名称
-     * @param paramTypes 方法参数
-     * @return [Method]
-     * @throws NoSuchMethodError 如果找不到方法
-     */
-    internal fun findMethod(baseClass: Class<*>, name: String, vararg paramTypes: Class<*>) =
-        baseClass.getDeclaredMethod(name, *paramTypes).apply { isAccessible = true }
+    internal fun hook(traction: BaseFinder.BaseResult, callback: YukiHookCallback) = runCatching {
+        hookMember(
+            when (traction) {
+                is MethodFinder.Result -> traction.ignored().give()
+                is ConstructorFinder.Result -> traction.ignored().give()
+                else -> error("Unexpected BaseFinder result interface type")
+            }, callback
+        )
+    }.onFailure { yLoggerE(msg = "Hooking Process exception occurred", e = it) }.getOrNull() ?: Pair(null, false)
 
     /**
      * Hook [Member]
@@ -103,18 +94,21 @@ internal object YukiHookHelper {
      * @param callback 回调
      * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
      */
-    internal fun hookMember(member: Member, callback: YukiHookCallback): Pair<YukiMemberHook.Unhook?, Boolean> {
+    internal fun hookMember(member: Member?, callback: YukiHookCallback): Pair<YukiMemberHook.Unhook?, Boolean> {
         runCatching {
             YukiHookedMembers.hookedMembers.takeIf { it.isNotEmpty() }?.forEach {
-                if (it.member.toString() == member.toString()) return@runCatching it
+                if (it.member.toString() == member?.toString()) return@runCatching it
             }
         }
-        return if (YukiHookBridge.hasXposedBridge)
-            YukiMemberHook.Unhook.wrapper(XposedBridge.hookMethod(member, callback.compat())).let {
-                YukiHookedMembers.hookedMembers.add(it)
-                Pair(it, false)
-            }
-        else Pair(null, false)
+        return when {
+            member == null -> Pair(null, false)
+            YukiHookBridge.hasXposedBridge ->
+                YukiMemberHook.Unhook.wrapper(XposedBridge.hookMethod(member, callback.compat())).let {
+                    YukiHookedMembers.hookedMembers.add(it)
+                    Pair(it, false)
+                }
+            else -> Pair(null, false)
+        }
     }
 
     /**
@@ -125,9 +119,9 @@ internal object YukiHookHelper {
      * @param args 参数实例
      * @return [Any] or null
      */
-    internal fun invokeOriginalMember(member: Member, instance: Any?, vararg args: Any?) =
+    internal fun invokeOriginalMember(member: Member?, instance: Any?, vararg args: Any?) =
         if (YukiHookBridge.hasXposedBridge && YukiHookedMembers.hookedMembers.any { it.member.toString() == member.toString() })
-            XposedBridge.invokeOriginalMethod(member, instance, args)
+            member?.let { XposedBridge.invokeOriginalMethod(it, instance, args) }
         else null
 
     /**

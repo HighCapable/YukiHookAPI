@@ -40,7 +40,10 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
+import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.hasClass
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -144,10 +147,9 @@ object YukiHookBridge {
      * @throws IllegalStateException 如果获取不到系统框架的 [Context]
      */
     internal val systemContext
-        get() = runCatching {
-            YukiHookHelper.findMethod(ActivityThreadClass, name = "getSystemContext")
-                .invoke(YukiHookHelper.findMethod(ActivityThreadClass, name = "currentActivityThread").invoke(null)) as? Context?
-        }.getOrNull() ?: error("Failed to got SystemContext")
+        get() = ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()?.let {
+            ActivityThreadClass.method { name = "getSystemContext" }.ignored().get(it).invoke<Context?>()
+        } ?: error("Failed to got SystemContext")
 
     /**
      * 模块是否装载了 Xposed 回调方法
@@ -175,7 +177,7 @@ object YukiHookBridge {
      */
     internal val executorName
         get() = runCatching {
-            (YukiHookHelper.findField(XposedBridge::class.java, name = "TAG").get(null) as? String?)
+            classOf<XposedBridge>().field { name = "TAG" }.ignored().get().string().takeIf { it.isNotBlank() }
                 ?.replace(oldValue = "Bridge", newValue = "")?.replace(oldValue = "-", newValue = "")?.trim() ?: "unknown"
         }.getOrNull() ?: "invalid"
 
@@ -200,10 +202,11 @@ object YukiHookBridge {
      * @param packageName 当前包名
      * @return [Int]
      */
-    internal fun findUserId(packageName: String) = runCatching {
-        YukiHookHelper.findMethod(UserHandleClass, name = "getUserId", IntType)
-            .invoke(null, systemContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES).uid) as? Int ?: 0
-    }.getOrNull() ?: 0
+    internal fun findUserId(packageName: String) =
+        UserHandleClass.method {
+            name = "getUserId"
+            param(IntType)
+        }.ignored().get().int(systemContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES).uid)
 
     /**
      * 自动忽略 MIUI 系统可能出现的日志收集注入实例
@@ -275,7 +278,7 @@ object YukiHookBridge {
         /** Hook [Application] 装载方法 */
         runCatching {
             if (AppLifecycleCallback.isCallbackSetUp) {
-                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "attach", ContextClass), object : YukiMemberHook() {
+                YukiHookHelper.hook(ApplicationClass.method { name = "attach"; param(ContextClass) }, object : YukiMemberHook() {
                     override fun beforeHookedMember(wrapper: HookParamWrapper) {
                         (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
                     }
@@ -284,56 +287,51 @@ object YukiHookBridge {
                         (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
                     }
                 })
-                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "onTerminate"), object : YukiMemberHook() {
+                YukiHookHelper.hook(ApplicationClass.method { name = "onTerminate" }, object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
                         (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
                     }
                 })
-                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "onLowMemory"), object : YukiMemberHook() {
+                YukiHookHelper.hook(ApplicationClass.method { name = "onLowMemory" }, object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
                         (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
                     }
                 })
-                YukiHookHelper.hookMember(
-                    YukiHookHelper.findMethod(ApplicationClass, name = "onTrimMemory", IntType),
-                    object : YukiMemberHook() {
-                        override fun afterHookedMember(wrapper: HookParamWrapper) {
-                            val self = wrapper.instance as? Application? ?: return
-                            val type = wrapper.args?.get(0) as? Int? ?: return
-                            AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
-                        }
-                    })
-                YukiHookHelper.hookMember(YukiHookHelper.findMethod(ApplicationClass, name = "onConfigurationChanged", ConfigurationClass),
-                    object : YukiMemberHook() {
-                        override fun afterHookedMember(wrapper: HookParamWrapper) {
-                            val self = wrapper.instance as? Application? ?: return
-                            val config = wrapper.args?.get(0) as? Configuration? ?: return
-                            AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
-                        }
-                    })
+                YukiHookHelper.hook(ApplicationClass.method { name = "onTrimMemory"; param(IntType) }, object : YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        val self = wrapper.instance as? Application? ?: return
+                        val type = wrapper.args?.get(0) as? Int? ?: return
+                        AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
+                    }
+                })
+                YukiHookHelper.hook(ApplicationClass.method { name = "onConfigurationChanged" }, object : YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        val self = wrapper.instance as? Application? ?: return
+                        val config = wrapper.args?.get(0) as? Configuration? ?: return
+                        AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
+                    }
+                })
             }
             if (YukiHookAPI.Configs.isEnableDataChannel || AppLifecycleCallback.isCallbackSetUp)
-                YukiHookHelper.hookMember(
-                    YukiHookHelper.findMethod(InstrumentationClass, name = "callApplicationOnCreate", ApplicationClass),
-                    object : YukiMemberHook() {
-                        override fun afterHookedMember(wrapper: HookParamWrapper) {
-                            (wrapper.args?.get(0) as? Application?)?.also {
-                                hostApplication = it
-                                AppLifecycleCallback.onCreateCallback?.invoke(it)
-                                AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
-                                    if (e.first.isNotEmpty()) it.registerReceiver(object : BroadcastReceiver() {
-                                        override fun onReceive(context: Context?, intent: Intent?) {
-                                            if (context == null || intent == null) return
-                                            if (e.first.any { a -> a == intent.action }) e.second(context, intent)
-                                        }
-                                    }, IntentFilter().apply { e.first.forEach { a -> addAction(a) } })
-                                }
-                                if (isDataChannelRegister) return
-                                isDataChannelRegister = true
-                                runCatching { YukiHookDataChannel.instance().register(it, packageName) }
+                YukiHookHelper.hook(InstrumentationClass.method { name = "callApplicationOnCreate" }, object : YukiMemberHook() {
+                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                        (wrapper.args?.get(0) as? Application?)?.also {
+                            hostApplication = it
+                            AppLifecycleCallback.onCreateCallback?.invoke(it)
+                            AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
+                                if (e.first.isNotEmpty()) it.registerReceiver(object : BroadcastReceiver() {
+                                    override fun onReceive(context: Context?, intent: Intent?) {
+                                        if (context == null || intent == null) return
+                                        if (e.first.any { e -> e == intent.action }) e.second(context, intent)
+                                    }
+                                }, IntentFilter().apply { e.first.forEach { e -> addAction(e) } })
                             }
+                            if (isDataChannelRegister) return
+                            isDataChannelRegister = true
+                            runCatching { YukiHookDataChannel.instance().register(it, packageName) }
                         }
-                    })
+                    }
+                })
         }
     }
 
@@ -343,12 +341,15 @@ object YukiHookBridge {
      */
     internal fun injectModuleAppResources(context: Context) {
         if (injectedHostContextHashCodes.contains(context.hashCode())) return
+        injectedHostContextHashCodes.add(context.hashCode())
         if (hasXposedBridge)
-            runCatching {
-                YukiHookHelper.findMethod(AssetManagerClass, name = "addAssetPath", StringType)
-                    .invoke(context.resources.assets, moduleAppFilePath)
-                injectedHostContextHashCodes.add(context.hashCode())
-            }.onFailure { yLoggerE(msg = "Failed to inject module resources in context [$context]", e = it) }
+            AssetManagerClass.method {
+                name = "addAssetPath"
+                param(StringType)
+            }.ignored().onNoSuchMethod {
+                runCatching { injectedHostContextHashCodes.remove(context.hashCode()) }
+                yLoggerE(msg = "Failed to inject module resources in context [$context]", e = it)
+            }.get(context.resources.assets).call(moduleAppFilePath)
         else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
     }
 
@@ -364,14 +365,12 @@ object YukiHookBridge {
      */
     internal fun hookClassLoader(loader: ClassLoader?, result: (clazz: Class<*>, resolve: Boolean) -> Unit) {
         runCatching {
-            YukiHookHelper.hookMember(
-                YukiHookHelper.findMethod(JavaClassLoader, name = "loadClass", StringType, BooleanType),
-                object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        if (wrapper.instance?.javaClass?.name == loader?.javaClass?.name)
-                            (wrapper.result as? Class<*>?)?.also { result(it, wrapper.args?.get(1) as? Boolean ?: false) }
-                    }
-                })
+            YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringType, BooleanType) }, object : YukiMemberHook() {
+                override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    if (wrapper.instance?.javaClass?.name == loader?.javaClass?.name)
+                        (wrapper.result as? Class<*>?)?.also { result(it, wrapper.args?.get(1) as? Boolean ?: false) }
+                }
+            })
         }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
     }
 
@@ -384,27 +383,23 @@ object YukiHookBridge {
      */
     @YukiGenerateApi
     fun hookModuleAppStatus(loader: ClassLoader?, isHookResourcesStatus: Boolean = false) {
-        if (YukiHookAPI.Configs.isEnableHookModuleStatus)
-            YukiHookHelper.findClass(loader, YukiHookModuleStatus::class.java).also { statusClass ->
-                if (isHookResourcesStatus.not()) {
-                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME),
-                        object : YukiMemberReplacement() {
-                            override fun replaceHookedMember(wrapper: HookParamWrapper) = true
-                        })
-                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME),
-                        object : YukiMemberReplacement() {
-                            override fun replaceHookedMember(wrapper: HookParamWrapper) = executorName
-                        })
-                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME),
-                        object : YukiMemberReplacement() {
-                            override fun replaceHookedMember(wrapper: HookParamWrapper) = executorVersion
-                        })
-                } else
-                    YukiHookHelper.hookMember(YukiHookHelper.findMethod(statusClass, YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME),
-                        object : YukiMemberReplacement() {
-                            override fun replaceHookedMember(wrapper: HookParamWrapper) = true
-                        })
-            }
+        if (YukiHookAPI.Configs.isEnableHookModuleStatus.not()) return
+        classOf<YukiHookModuleStatus>(loader).apply {
+            if (isHookResourcesStatus.not()) {
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                })
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = executorName
+                })
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = executorVersion
+                })
+            } else
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                })
+        }
     }
 
     /**
