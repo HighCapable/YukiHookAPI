@@ -96,22 +96,21 @@ fun String.hasClass(loader: ClassLoader? = null) = try {
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasField(initiate: FieldFinder.() -> Unit) = field(initiate).ignoredError().isNoSuch.not()
+inline fun Class<*>.hasField(initiate: FieldFinder.() -> Unit) = field(initiate).ignored().isNoSuch.not()
 
 /**
  * 查找方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit) = method(initiate).ignoredError().isNoSuch.not()
+inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit) = method(initiate).ignored().isNoSuch.not()
 
 /**
  * 查找构造方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
-    constructor(initiate).ignoredError().isNoSuch.not()
+inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
 
 /**
  * 查询 [Member] 中匹配的描述符

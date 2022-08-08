@@ -490,21 +490,33 @@ fun onNoSuchField(result: (Throwable) -> Unit): Result
 
 > 监听找不到 `Field` 时。
 
-#### ignoredError [method]
+#### ignored [method]
 
 ```kotlin
-fun ignoredError(): Result
+fun ignored(): Result
 ```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 忽略异常并停止打印任何错误日志。
+
+若 `isNotIgnoredHookingFailure` 为 `false` 则自动忽略。
+
+!> 此时若要监听异常结果，你需要手动实现 `onNoSuchField` 方法。
+
+#### ~~ignoredError [method]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0.3` `新增`
 
-**功能描述**
+`v1.0.93` `作废`
 
-> 忽略任何错误发出的警告。
-
-若 `isNotIgnoredHookingFailure` 为 `false` 则自动忽略。
+请转移到新方法 `ignored()`
 
 #### Instance [class]
 

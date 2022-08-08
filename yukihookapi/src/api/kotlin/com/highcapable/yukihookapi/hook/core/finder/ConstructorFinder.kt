@@ -430,15 +430,28 @@ class ConstructorFinder @PublishedApi internal constructor(
         }
 
         /**
-         * 忽略任何错误发出的警告
+         * 忽略异常并停止打印任何错误日志
          *
          * - 若 [isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
+         *
+         * - ❗此时若要监听异常结果 - 你需要手动实现 [onNoSuchConstructor] 方法
          * @return [Result] 可继续向下监听
          */
-        fun ignoredError(): Result {
+        fun ignored(): Result {
             isShutErrorPrinting = true
             return this
         }
+
+        /**
+         * 忽略异常并停止打印任何错误日志
+         *
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         *
+         * - ❗请现在转移到 [ignored]
+         * @return [Result] 可继续向下监听
+         */
+        @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "ignored()"))
+        fun ignoredError() = ignored()
 
         /**
          * [Constructor] 实例处理类
