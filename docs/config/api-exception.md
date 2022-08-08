@@ -74,6 +74,16 @@ class HookEntry : IYukiHookXposedInit {
 }
 ```
 
+!> `loggerE` Hooking Process exception occurred
+
+**异常原因**
+
+`YukiHookAPI` 在进行自身初始化 Hook 过程中发生异常。
+
+**解决方案**
+
+通常情况下这种错误不会轻易发生，若一旦发生此错误，可直接提交日志进行反馈。
+
 !> `loggerE` YukiHookAPI try to load HookEntryClass failed
 
 **异常原因**
