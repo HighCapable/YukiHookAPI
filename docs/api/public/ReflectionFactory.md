@@ -81,7 +81,49 @@ classOf(name = "com.example.demo.DemoClass")
 > 示例如下
 
 ```kotlin
-classOf(name = "com.example.demo.DemoClass", classLoader)
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+classOf(name = "com.example.demo.DemoClass", customClassLoader)
+```
+
+### classOf [method]
+
+```kotlin
+inline fun <reified T> classOf(loader: ClassLoader?): Class<*>
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 通过 `T` 得到其 `Class` 实例并转换为实体类。
+
+**功能示例**
+
+我们要获取一个 `Class` 在 `Kotlin` 下不通过反射时应该这样做。
+
+> 示例如下
+> 
+```kotlin
+DemoClass::class.java
+```
+
+现在，你可以直接 `cast` 一个实例并获取它的 `Class` 对象，必须在当前 `ClassLoader` 下存在。
+
+> 示例如下
+
+```kotlin
+classOf<DemoClass>()
+```
+
+若目标存在的 `Class` 为 `stub`，通过这种方式，你还可以自定义 `Class` 所在的 `ClassLoader`。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+classOf<DemoClass>(customClassLoader)
 ```
 
 ### hasClass [method]

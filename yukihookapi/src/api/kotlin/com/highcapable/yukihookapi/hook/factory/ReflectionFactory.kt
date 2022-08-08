@@ -72,6 +72,14 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
 }
 
 /**
+ * 通过 [T] 得到其 [Class] 实例并转换为实体类
+ * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
+ * @return [Class]
+ * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+ */
+inline fun <reified T> classOf(loader: ClassLoader? = null) = classOf(T::class.java.name, loader)
+
+/**
  * 通过字符串查找类是否存在
  * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
  * @return [Boolean] 是否存在
