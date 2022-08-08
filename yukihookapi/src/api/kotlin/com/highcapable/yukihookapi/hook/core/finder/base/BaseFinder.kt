@@ -223,7 +223,7 @@ abstract class BaseFinder internal constructor(
      * @param msg 调试日志内容
      */
     internal fun onHookLogMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge) yLoggerI(msg = msg)
+        if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge && hookInstance != null) yLoggerI(msg = msg)
     }
 
     /**
