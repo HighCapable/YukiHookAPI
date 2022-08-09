@@ -572,6 +572,31 @@ class MyApplication : Application() {
 
 你只能在 [作为 Xposed 模块使用](config/xposed-using) 时使用 `YukiHookModulePrefs`，在 Hook 自身 APP 中请使用原生的 `Sp` 存储。
 
+!> `IllegalStateException` Cannot create itself within CurrentClass itself
+
+**异常原因**
+
+在使用 `CurrentClass` 时试图内联和反射其自身实例对象。
+
+> 示例如下
+
+```kotlin
+val instance = ... // 假设这就是当前使用的实例
+// <情景1> 嵌套调用
+instance.current {
+    // ❗不能在 CurrentClass 实例内嵌套自身
+    current {
+        // ...
+    }
+}
+// <情景2> 循环调用
+instance.current().current() // ❗不能使用 CurrentClass 实例再次创建自身
+```
+
+**解决方案**
+
+不允许内联和反射 `CurrentClass` 自身，请按正确方法使用此功能。
+
 !> `IllegalStateException` YukiHookDataChannel not allowed in Custom Hook API
 
 **异常原因**
