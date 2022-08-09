@@ -101,8 +101,8 @@ object YukiHookBridge {
     /** 当前 [PackageParamWrapper] 实例数组 */
     private val packageParamWrappers = HashMap<String, PackageParamWrapper>()
 
-    /** 已被注入到宿主 [Context] 中的当前 Xposed 模块资源 HashCode 数组 */
-    private val injectedHostContextHashCodes = HashSet<Int>()
+    /** 已被注入到宿主 [Resources] 中的当前 Xposed 模块资源 HashCode 数组 */
+    private val injectedHostResourcesHashCodes = HashSet<Int>()
 
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
@@ -336,20 +336,20 @@ object YukiHookBridge {
     }
 
     /**
-     * 向 Hook APP (宿主) [Context] 注入当前 Xposed 模块的资源
-     * @param context 需要注入的 [Context]
+     * 向 Hook APP (宿主) 注入当前 Xposed 模块的资源
+     * @param hostResources 需要注入的宿主 [Resources]
      */
-    internal fun injectModuleAppResources(context: Context) {
-        if (injectedHostContextHashCodes.contains(context.hashCode())) return
-        injectedHostContextHashCodes.add(context.hashCode())
+    internal fun injectModuleAppResources(hostResources: Resources) {
+        if (injectedHostResourcesHashCodes.contains(hostResources.hashCode())) return
+        injectedHostResourcesHashCodes.add(hostResources.hashCode())
         if (hasXposedBridge)
             AssetManagerClass.method {
                 name = "addAssetPath"
                 param(StringType)
             }.ignored().onNoSuchMethod {
-                runCatching { injectedHostContextHashCodes.remove(context.hashCode()) }
-                yLoggerE(msg = "Failed to inject module resources in context [$context]", e = it)
-            }.get(context.resources.assets).call(moduleAppFilePath)
+                runCatching { injectedHostResourcesHashCodes.remove(hostResources.hashCode()) }
+                yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
+            }.get(hostResources.assets).call(moduleAppFilePath)
         else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
     }
 

@@ -107,21 +107,24 @@ val Context.processName
  *
  * 注入的资源作用域仅限当前 [Context] - 你需要在每个用到宿主 [Context] 的地方重复调用此方法进行注入才能使用
  *
- * 为防止资源 ID 互相冲突 - 你需要在当前 Xposed 模块项目的 build.gradle 中修改资源 ID
- *
- * - Kotlin Gradle DSL ↓
- *
- * androidResources.additionalParameters("--allow-reserved-package-id", "--package-id", "0x64")
- *
- * - Groovy ↓
- *
- * aaptOptions.additionalParameters '--allow-reserved-package-id', '--package-id', '0x64'
- *
- * - ❗提供的示例资源 ID 值仅供参考 - 为了防止当前宿主存在多个 Xposed 模块 - 建议自定义你自己的资源 ID
+ * 详情请参考 [injectModuleAppResources](https://fankes.github.io/YukiHookAPI/#/api/document?id=injectmoduleappresources-method)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
-fun Context.injectModuleAppResources() = YukiHookBridge.injectModuleAppResources(context = this)
+fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
+
+/**
+ * 向 Hook APP (宿主) 指定 [Resources] 直接注入当前 Xposed 模块的资源
+ *
+ * 注入成功后 - 你就可以直接使用例如 [ImageView.setImageResource] 或 [Resources.getString] 装载当前 Xposed 模块的资源 ID
+ *
+ * 注入的资源作用域仅限当前 [Resources] - 你需要在每个用到宿主 [Resources] 的地方重复调用此方法进行注入才能使用
+ *
+ * 详情请参考 [injectModuleAppResources](https://fankes.github.io/YukiHookAPI/#/api/document?id=injectmoduleappresources-method)
+ *
+ * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ */
+fun Resources.injectModuleAppResources() = YukiHookBridge.injectModuleAppResources(hostResources = this)
 
 /**
  * 仅判断模块是否在太极、无极中激活
