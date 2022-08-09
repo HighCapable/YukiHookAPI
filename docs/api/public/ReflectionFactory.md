@@ -389,9 +389,17 @@ inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): Constru
 inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
 ```
 
+```kotlin
+inline fun <reified T : Any> T.current(): CurrentClass
+```
+
 **变更记录**
 
 `v1.0.70` `新增`
+
+`v1.0.93` `新增`
+
+新增不使用 `current { ... }` 调用域直接使用 `current()` 得到实例的类操作对象
 
 **功能描述**
 

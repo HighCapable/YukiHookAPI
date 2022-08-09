@@ -147,8 +147,18 @@ inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit = { empty
  * @return [T]
  */
 inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
+    if (javaClass.name == CurrentClass::class.java.name) error("Cannot create itself within CurrentClass itself")
     CurrentClass(javaClass, self = this).apply(initiate)
     return this
+}
+
+/**
+ * 获得当前实例的类操作对象
+ * @return [CurrentClass]
+ */
+inline fun <reified T : Any> T.current(): CurrentClass {
+    if (javaClass.name == CurrentClass::class.java.name) error("Cannot create itself within CurrentClass itself")
+    return CurrentClass(javaClass, self = this)
 }
 
 /**

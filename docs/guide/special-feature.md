@@ -563,6 +563,53 @@ instance.current {
 }
 ```
 
+如果你不喜欢使用一个大括号的调用域来创建当前实例的命名空间，你可以直接使用 `current()` 方法。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例，这个 Class 是不能被直接得到的
+val instance = Test()
+// 执行 doTask 方法
+instance
+    .current()
+    .method {
+        name = "doTask"
+        param(StringType)
+    }.call("task_name")
+// 执行 stop 方法
+instance
+    .current()
+    .method {
+        name = "stop"
+        emptyParam()
+    }.call()
+// 得到 name
+val name = instance.current().method { name = "getName" }.string()
+```
+
+同样地，它们之间可以连续调用，但<u>**不允许内联调用**</u>。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 假设这个 Class 是不能被直接得到的
+instance.current {
+    method {
+        name = "doTask"
+        param(StringType)
+    }.call("task_name")
+}.current()
+    .method {
+        name = "stop"
+        emptyParam()
+    }.call()
+// ❗注意，因为 current() 返回的是 CurrentClass 自身对象，所以不能像下面这样调用
+instance.current().current()
+```
+
 问题又来了，我想使用反射的方式创建如下的实例并调用其中的方法，该怎么做呢？
 
 > 示例如下
