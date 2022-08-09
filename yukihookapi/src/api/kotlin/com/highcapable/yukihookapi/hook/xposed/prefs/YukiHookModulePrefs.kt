@@ -180,11 +180,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [Boolean] 仅限在模块中判断 - 在 (Xposed) 宿主环境中始终返回 false
      */
     val isRunInNewXShareMode
-        get() = runCatching {
-            /** 执行一次装载 */
-            sPref.edit()
-            isUsingNewXSharePrefs
-        }.getOrNull() ?: false
+        get() = if (isXposedEnvironment.not())
+            runCatching {
+                /** 执行一次装载 */
+                sPref.edit()
+                isUsingNewXSharePrefs
+            }.getOrNull() ?: false
+        else false
 
     /**
      * 自定义 Sp 存储名称
