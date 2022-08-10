@@ -70,6 +70,7 @@
 | [Auto NFC](https://github.com/GSWXXN/AutoNFC)                                    | [GSWXXN](https://github.com/GSWXXN)             |
 | [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                        | [WankkoRee](https://github.com/WankkoRee)       |
 | [QDReadHook](https://github.com/xihan123/QDReadHook)                              | [xihan123](https://github.com/xihan123)       |
+| [WxRecordRead](https://github.com/pwh-pwh/wxrecordread)                              | [Coderpwh](https://github.com/pwh-pwh)       |
 
 你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表(私有仓库可以不需要注明网页链接)。
 
