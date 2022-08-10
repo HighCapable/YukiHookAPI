@@ -148,7 +148,7 @@ inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit = { empty
  */
 inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
     if (javaClass.name == CurrentClass::class.java.name) error("Cannot create itself within CurrentClass itself")
-    CurrentClass(javaClass, self = this).apply(initiate)
+    CurrentClass(javaClass, instance = this).apply(initiate)
     return this
 }
 
@@ -158,7 +158,7 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
  */
 inline fun <reified T : Any> T.current(): CurrentClass {
     if (javaClass.name == CurrentClass::class.java.name) error("Cannot create itself within CurrentClass itself")
-    return CurrentClass(javaClass, self = this)
+    return CurrentClass(javaClass, instance = this)
 }
 
 /**

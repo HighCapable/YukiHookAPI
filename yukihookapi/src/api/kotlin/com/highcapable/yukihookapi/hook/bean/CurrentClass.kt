@@ -34,10 +34,10 @@ import com.highcapable.yukihookapi.hook.factory.method
 
 /**
  * 当前实例的类操作对象
- * @param instance 当前实例的 [Class]
- * @param self 当前实例本身
+ * @param classSet 当前实例的 [Class]
+ * @param instance 当前实例本身
  */
-class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val instance: Class<*>, @PublishedApi internal val self: Any) {
+class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val classSet: Class<*>, @PublishedApi internal val instance: Any) {
 
     /**
      * 调用父类实例
@@ -50,14 +50,14 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * @param initiate 查找方法体
      * @return [FieldFinder.Result.Instance]
      */
-    inline fun field(initiate: FieldFinder.() -> Unit) = instance.field(initiate).get(self)
+    inline fun field(initiate: FieldFinder.() -> Unit) = classSet.field(initiate).get(instance)
 
     /**
      * 调用当前实例中的方法
      * @param initiate 查找方法体
      * @return [MethodFinder.Result.Instance]
      */
-    inline fun method(initiate: MethodFinder.() -> Unit) = instance.method(initiate).get(self)
+    inline fun method(initiate: MethodFinder.() -> Unit) = classSet.method(initiate).get(instance)
 
     /**
      * 当前类的父类实例的类操作对象
@@ -71,13 +71,13 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @param initiate 查找方法体
          * @return [FieldFinder.Result.Instance]
          */
-        inline fun field(initiate: FieldFinder.() -> Unit) = instance.superclass.field(initiate).get(self)
+        inline fun field(initiate: FieldFinder.() -> Unit) = classSet.superclass.field(initiate).get(instance)
 
         /**
          * 调用父类实例中的方法
          * @param initiate 查找方法体
          * @return [MethodFinder.Result.Instance]
          */
-        inline fun method(initiate: MethodFinder.() -> Unit) = instance.superclass.method(initiate).get(self)
+        inline fun method(initiate: MethodFinder.() -> Unit) = classSet.superclass.method(initiate).get(instance)
     }
 }

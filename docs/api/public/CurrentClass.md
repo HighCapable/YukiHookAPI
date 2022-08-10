@@ -1,12 +1,16 @@
 ## CurrentClass [class]
 
 ```kotlin
-class CurrentClass internal constructor(internal val instance: Class<*>, internal val self: Any)
+class CurrentClass internal constructor(internal val classSet: Class<*>, internal val instance: Any)
 ```
 
 **变更记录**
 
 `v1.0.70` `新增`
+
+`v1.0.93` `修改`
+
+调整了构造方法的参数名称
 
 **功能描述**
 
