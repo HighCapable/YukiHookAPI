@@ -66,6 +66,7 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [Auto NFC](https://github.com/GSWXXN/AutoNFC)                                    | [GSWXXN](https://github.com/GSWXXN)             |
 | [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                        | [WankkoRee](https://github.com/WankkoRee)       |
 | [QDReadHook](https://github.com/xihan123/QDReadHook)                              | [xihan123](https://github.com/xihan123)       |
+| [WxRecordRead](https://github.com/pwh-pwh/wxrecordread)                              | [Coderpwh](https://github.com/pwh-pwh)       |
 
 Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private repositories do not need to indicate web
 links).
