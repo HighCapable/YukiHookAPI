@@ -14,57 +14,177 @@ class ModifierRules internal constructor()
 
 可对 R8 混淆后的 `Member` 进行更加详细的定位。
 
-### asPublic
-
-```kotlin
-fun asPublic()
-```
+### ~~asPublic [method]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asPrivate [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asProtected [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asStatic [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asFinal [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asSynchronized [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asVolatile [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asTransient [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asNative [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asInterface [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asAbstract [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### ~~asStrict [method]~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0.67` `新增`
+
+`v1.0.93` `作废`
+
+请将开头的 `as` 修改为 `is`
+
+### isPublic [method]
+
+```kotlin
+fun isPublic()
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
 
 **功能描述**
 
 > 添加描述 `Member` 类型包含 `public`。
 
-### asPrivate
+### isPrivate [method]
 
 ```kotlin
-fun asPrivate()
+fun isPrivate()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
 > 添加描述 `Member` 类型包含 `private`。
 
-### asProtected
+### isProtected [method]
 
 ```kotlin
-fun asProtected()
+fun isProtected()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
 > 添加描述 `Member` 类型包含 `protected`。
 
-### asStatic
+### isStatic [method]
 
 ```kotlin
-fun asStatic()
+fun isStatic()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
@@ -74,15 +194,15 @@ fun asStatic()
 
 !> 特别注意 Kotlin -> Jvm 后的 `object` 类中的方法并不是静态的。
 
-### asFinal
+### isFinal [method]
 
 ```kotlin
-fun asFinal()
+fun isFinal()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
@@ -90,57 +210,57 @@ fun asFinal()
 
 !> 特别注意在 Kotlin -> Jvm 后没有 `open` 标识的 `Member` 和没有任何关联的 `Member` 都将为 `final`。
 
-### asSynchronized
+### isSynchronized [method]
 
 ```kotlin
-fun asSynchronized()
+fun isSynchronized()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
 > 添加描述 `Member` 类型包含 `synchronized`。
 
-### asVolatile
+### isVolatile [method]
 
 ```kotlin
-fun asVolatile()
+fun isVolatile()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
 > 添加描述 `Member` 类型包含 `volatile`。
 
-### asTransient
+### isTransient [method]
 
 ```kotlin
-fun asTransient()
+fun isTransient()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
 > 添加描述 `Member` 类型包含 `transient`。
 
-### asNative
+### isNative [method]
 
 ```kotlin
-fun asNative()
+fun isNative()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
@@ -148,29 +268,29 @@ fun asNative()
 
 对于任意 JNI 对接的 `Member` 可添加此描述进行确定。
 
-### asInterface
+### isInterface [method]
 
 ```kotlin
-fun asInterface()
+fun isInterface()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
 > 添加描述 `Member` 类型包含 `interface`。
 
-### asAbstract
+### isAbstract [method]
 
 ```kotlin
-fun asAbstract()
+fun isAbstract()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 
@@ -178,15 +298,15 @@ fun asAbstract()
 
 对于任意的抽象 `Member` 可添加此描述进行确定。
 
-### asStrict
+### isStrict [method]
 
 ```kotlin
-fun asStrict()
+fun isStrict()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.93` `新增`
 
 **功能描述**
 

@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/3/27.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.highcapable.yukihookapi.hook.core.finder.type
 
@@ -75,18 +75,114 @@ class ModifierRules @PublishedApi internal constructor() {
     /** 描述声明使用 */
     private var isStrict = false
 
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isPublic]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isPublic()"))
+    fun asPublic() = isPublic()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isPrivate]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isPrivate()"))
+    fun asPrivate() = isPrivate()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isProtected]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isProtected()"))
+    fun asProtected() = isProtected()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isStatic]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isStatic()"))
+    fun asStatic() = isStatic()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isFinal]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isFinal()"))
+    fun asFinal() = isFinal()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isSynchronized]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isSynchronized()"))
+    fun asSynchronized() = isSynchronized()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isVolatile]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isVolatile()"))
+    fun asVolatile() = isVolatile()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isTransient]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isTransient()"))
+    fun asTransient() = isTransient()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isNative]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isNative()"))
+    fun asNative() = isNative()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isInterface]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isInterface()"))
+    fun asInterface() = isInterface()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isAbstract]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isAbstract()"))
+    fun asAbstract() = isAbstract()
+
+    /**
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isStrict]
+     */
+    @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isStrict()"))
+    fun asStrict() = isStrict()
+
     /** 添加描述 [Member] 类型包含 public */
-    fun asPublic() {
+    fun isPublic() {
         isPublic = true
     }
 
     /** 添加描述 [Member] 类型包含 private */
-    fun asPrivate() {
+    fun isPrivate() {
         isPrivate = true
     }
 
     /** 添加描述 [Member] 类型包含 protected */
-    fun asProtected() {
+    fun isProtected() {
         isProtected = true
     }
 
@@ -97,7 +193,7 @@ class ModifierRules @PublishedApi internal constructor() {
      *
      * - ❗特别注意 Kotlin -> Jvm 后的 object 类中的方法并不是静态的
      */
-    fun asStatic() {
+    fun isStatic() {
         isStatic = true
     }
 
@@ -106,22 +202,22 @@ class ModifierRules @PublishedApi internal constructor() {
      *
      * - ❗特别注意在 Kotlin -> Jvm 后没有 open 标识的 [Member] 和没有任何关联的 [Member] 都将为 final
      */
-    fun asFinal() {
+    fun isFinal() {
         isFinal = true
     }
 
     /** 添加描述 [Member] 类型包含 synchronized */
-    fun asSynchronized() {
+    fun isSynchronized() {
         isSynchronized = true
     }
 
     /** 添加描述 [Member] 类型包含 volatile */
-    fun asVolatile() {
+    fun isVolatile() {
         isVolatile = true
     }
 
     /** 添加描述 [Member] 类型包含 transient */
-    fun asTransient() {
+    fun isTransient() {
         isTransient = true
     }
 
@@ -130,12 +226,12 @@ class ModifierRules @PublishedApi internal constructor() {
      *
      * 对于任意 JNI 对接的 [Member] 可添加此描述进行确定
      */
-    fun asNative() {
+    fun isNative() {
         isNative = true
     }
 
     /** 添加描述 [Member] 类型包含 interface */
-    fun asInterface() {
+    fun isInterface() {
         isInterface = true
     }
 
@@ -144,12 +240,12 @@ class ModifierRules @PublishedApi internal constructor() {
      *
      * 对于任意的抽象 [Member] 可添加此描述进行确定
      */
-    fun asAbstract() {
+    fun isAbstract() {
         isAbstract = true
     }
 
     /** 添加描述 [Member] 类型包含 strict */
-    fun asStrict() {
+    fun isStrict() {
         isStrict = true
     }
 
