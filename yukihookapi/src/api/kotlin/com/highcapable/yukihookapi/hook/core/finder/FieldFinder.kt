@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.core.finder
 
-import android.os.SystemClock
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
@@ -39,6 +38,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.utils.await
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
 
@@ -203,12 +203,7 @@ class FieldFinder @PublishedApi internal constructor(
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))
     } catch (e: Throwable) {
-        Thread {
-            /** 延迟使得方法取到返回值 */
-            SystemClock.sleep(1)
-            onFailureMsg(throwable = e)
-        }.start()
-        Result(isNoSuch = true, e)
+        Result(isNoSuch = true, e).await { onFailureMsg(throwable = e) }
     }
 
     /**

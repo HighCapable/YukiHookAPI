@@ -27,7 +27,6 @@
  */
 package com.highcapable.yukihookapi.hook.core.finder.base
 
-import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
@@ -36,6 +35,8 @@ import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.utils.await
+import com.highcapable.yukihookapi.hook.utils.unit
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -194,18 +195,10 @@ abstract class BaseFinder internal constructor(
                 loggingContent = Pair(msg, throwable)
         }
         /** 判断绑定到 Hooker 时仅创建日志 */
-        if (isBindToHooker) return Thread {
-            /** 延迟使得方法取到返回值 */
-            SystemClock.sleep(1)
-            build()
-        }.start()
+        if (isBindToHooker) return await { build() }.unit()
         /** 判断始终输出日志或等待结果后输出日志 */
         if (isAlwaysPrint) build().run { printLogIfExist() }
-        else Thread {
-            /** 延迟使得方法取到返回值 */
-            SystemClock.sleep(1)
-            build().run { printLogIfExist() }
-        }.start()
+        else await { build().run { printLogIfExist() } }
     }
 
     /** 存在日志时输出日志 */

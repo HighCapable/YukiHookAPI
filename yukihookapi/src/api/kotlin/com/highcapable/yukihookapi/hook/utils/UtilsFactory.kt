@@ -27,17 +27,45 @@
  */
 package com.highcapable.yukihookapi.hook.utils
 
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+
+/**
+ * 创建当前线程池服务
+ * @return [ExecutorService]
+ */
+private val currentThreadPool get() = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+
+/**
+ * 对 [T] 返回无返回值的 [Unit]
+ * @return [Unit]
+ */
+internal fun <T> T?.unit() = let {}
+
+/**
+ * 启动 [Thread] 延迟等待 [block] 的结果 [T]
+ * @param delayMs 延迟毫秒 - 默认 1 ms
+ * @param block 方法块
+ * @return [T]
+ */
+internal inline fun <T> T.await(delayMs: Long = 1, crossinline block: (T) -> Unit): T {
+    currentThreadPool.apply {
+        execute {
+            if (delayMs > 0) Thread.sleep(delayMs)
+            block(this@await)
+            shutdown()
+        }
+    }
+    return this
+}
 
 /**
  * 进行一次并行计算的 ForEach 操作
  * @param action 回调内容方法体
  */
-@YukiPrivateApi
-inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
-    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()).apply {
+internal inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
+    currentThreadPool.apply {
         val iterator = iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
@@ -52,8 +80,7 @@ inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
  * 获取数组内容依次列出的字符串表示
  * @return [String]
  */
-@YukiPrivateApi
-inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
+internal inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
     var value = ""
     forEach { value += it.toString() + ", " }
     "[${value.trim().let { it.substring(0, it.lastIndex) }}]"
@@ -64,8 +91,7 @@ inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
  * @param block 方法块
  * @return [RunBlockResult]
  */
-@YukiPrivateApi
-inline fun <R> runBlocking(block: () -> R): RunBlockResult {
+internal inline fun <R> runBlocking(block: () -> R): RunBlockResult {
     val start = System.currentTimeMillis()
     block()
     return RunBlockResult(afterMs = System.currentTimeMillis() - start)
@@ -75,13 +101,11 @@ inline fun <R> runBlocking(block: () -> R): RunBlockResult {
  * 构造耗时计算结果类
  * @param afterMs 耗时
  */
-@YukiPrivateApi
-class RunBlockResult(@PublishedApi internal val afterMs: Long) {
+internal class RunBlockResult(internal val afterMs: Long) {
 
     /**
      * 获取耗时计算结果
      * @param result 回调结果 - ([Long] 耗时)
      */
-    @YukiPrivateApi
-    inline fun result(result: (Long) -> Unit) = result(afterMs)
+    internal inline fun result(result: (Long) -> Unit) = result(afterMs)
 }

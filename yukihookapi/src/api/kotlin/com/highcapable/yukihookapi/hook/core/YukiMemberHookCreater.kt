@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.core
 
-import android.os.SystemClock
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
@@ -46,6 +45,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.type.java.*
+import com.highcapable.yukihookapi.hook.utils.await
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookPriority
@@ -115,22 +115,18 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] 或 [HookParam.isCallbackCalled] 已被执行 */
         packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
         preHookMembers.isEmpty() -> error("Hook Members is empty, hook aborted")
-        else -> Result().also {
+        else -> Result().await {
             warnTerribleHookClass()
-            Thread {
-                /** 延迟使得方法取到返回值 */
-                SystemClock.sleep(1)
-                when {
-                    isDisableCreaterRunHook.not() && hookClass.instance != null -> {
-                        it.onPrepareHook?.invoke()
-                        preHookMembers.forEach { (_, m) -> m.hook() }
-                    }
-                    isDisableCreaterRunHook.not() && hookClass.instance == null ->
-                        if (onHookClassNotFoundFailureCallback == null)
-                            yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
-                        else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
+            when {
+                isDisableCreaterRunHook.not() && hookClass.instance != null -> {
+                    it.onPrepareHook?.invoke()
+                    preHookMembers.forEach { (_, m) -> m.hook() }
                 }
-            }.start()
+                isDisableCreaterRunHook.not() && hookClass.instance == null ->
+                    if (onHookClassNotFoundFailureCallback == null)
+                        yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                    else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
+            }
         }
     }
 
