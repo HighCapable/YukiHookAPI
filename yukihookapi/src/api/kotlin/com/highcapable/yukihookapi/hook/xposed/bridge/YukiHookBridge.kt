@@ -40,10 +40,7 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
-import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.factory.field
-import com.highcapable.yukihookapi.hook.factory.hasClass
-import com.highcapable.yukihookapi.hook.factory.method
+import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -341,16 +338,17 @@ object YukiHookBridge {
      */
     internal fun injectModuleAppResources(hostResources: Resources) {
         if (injectedHostResourcesHashCodes.contains(hostResources.hashCode())) return
-        injectedHostResourcesHashCodes.add(hostResources.hashCode())
-        if (hasXposedBridge)
-            AssetManagerClass.method {
-                name = "addAssetPath"
-                param(StringType)
-            }.ignored().onNoSuchMethod {
-                runCatching { injectedHostResourcesHashCodes.remove(hostResources.hashCode()) }
-                yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
-            }.get(hostResources.assets).call(moduleAppFilePath)
-        else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
+        if (hasXposedBridge) runCatching {
+            hostResources.assets.current {
+                method {
+                    name = "addAssetPath"
+                    param(StringType)
+                }.call(moduleAppFilePath)
+            }
+            injectedHostResourcesHashCodes.add(hostResources.hashCode())
+        }.onFailure {
+            yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
+        } else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
     }
 
     /** 刷新当前 Xposed 模块自身 [Resources] */
