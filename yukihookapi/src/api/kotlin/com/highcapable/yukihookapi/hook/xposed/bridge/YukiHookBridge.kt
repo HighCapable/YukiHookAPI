@@ -277,56 +277,70 @@ object YukiHookBridge {
             if (AppLifecycleCallback.isCallbackSetUp) {
                 YukiHookHelper.hook(ApplicationClass.method { name = "attach"; param(ContextClass) }, object : YukiMemberHook() {
                     override fun beforeHookedMember(wrapper: HookParamWrapper) {
-                        (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
+                        runCatching {
+                            (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
+                        }.onFailure { wrapper.throwable = it }
                     }
 
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
+                        runCatching {
+                            (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
+                        }.onFailure { wrapper.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onTerminate" }, object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
+                        runCatching {
+                            (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
+                        }.onFailure { wrapper.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onLowMemory" }, object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
+                        runCatching {
+                            (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
+                        }.onFailure { wrapper.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onTrimMemory"; param(IntType) }, object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        val self = wrapper.instance as? Application? ?: return
-                        val type = wrapper.args?.get(0) as? Int? ?: return
-                        AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
+                        runCatching {
+                            val self = wrapper.instance as? Application? ?: return
+                            val type = wrapper.args?.get(0) as? Int? ?: return
+                            AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
+                        }.onFailure { wrapper.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onConfigurationChanged" }, object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        val self = wrapper.instance as? Application? ?: return
-                        val config = wrapper.args?.get(0) as? Configuration? ?: return
-                        AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
+                        runCatching {
+                            val self = wrapper.instance as? Application? ?: return
+                            val config = wrapper.args?.get(0) as? Configuration? ?: return
+                            AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
+                        }.onFailure { wrapper.throwable = it }
                     }
                 })
             }
             if (YukiHookAPI.Configs.isEnableDataChannel || AppLifecycleCallback.isCallbackSetUp)
                 YukiHookHelper.hook(InstrumentationClass.method { name = "callApplicationOnCreate" }, object : YukiMemberHook() {
                     override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        (wrapper.args?.get(0) as? Application?)?.also {
-                            hostApplication = it
-                            AppLifecycleCallback.onCreateCallback?.invoke(it)
-                            AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
-                                if (e.first.isNotEmpty()) it.registerReceiver(object : BroadcastReceiver() {
-                                    override fun onReceive(context: Context?, intent: Intent?) {
-                                        if (context == null || intent == null) return
-                                        if (e.first.any { e -> e == intent.action }) e.second(context, intent)
-                                    }
-                                }, IntentFilter().apply { e.first.forEach { e -> addAction(e) } })
+                        runCatching {
+                            (wrapper.args?.get(0) as? Application?)?.also {
+                                hostApplication = it
+                                AppLifecycleCallback.onCreateCallback?.invoke(it)
+                                AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
+                                    if (e.first.isNotEmpty()) it.registerReceiver(object : BroadcastReceiver() {
+                                        override fun onReceive(context: Context?, intent: Intent?) {
+                                            if (context == null || intent == null) return
+                                            if (e.first.any { e -> e == intent.action }) e.second(context, intent)
+                                        }
+                                    }, IntentFilter().apply { e.first.forEach { e -> addAction(e) } })
+                                }
+                                if (isDataChannelRegister) return
+                                isDataChannelRegister = true
+                                runCatching { YukiHookDataChannel.instance().register(it, packageName) }
                             }
-                            if (isDataChannelRegister) return
-                            isDataChannelRegister = true
-                            runCatching { YukiHookDataChannel.instance().register(it, packageName) }
-                        }
+                        }.onFailure { wrapper.throwable = it }
                     }
                 })
         }
