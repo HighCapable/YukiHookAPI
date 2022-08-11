@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.param
 
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater.MemberHookCreater
+import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import java.lang.reflect.Constructor
@@ -160,7 +161,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      * @return [T]
      * @throws IllegalStateException 如果对象为空或对象类型不是 [T]
      */
-    inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${T::class.java.name}")
+    inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${classOf<T>().name}")
 
     /**
      * 获取当前 Hook 对象的 [method] or [constructor] 的参数数组下标实例化类
