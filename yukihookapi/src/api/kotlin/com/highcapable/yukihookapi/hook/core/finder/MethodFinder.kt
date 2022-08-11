@@ -37,6 +37,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.factory.MethodCondition
+import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -271,6 +272,7 @@ class MethodFinder @PublishedApi internal constructor(
     @YukiPrivateApi
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
+            classSet.checkingInternal()
             runBlocking {
                 isBindToHooker = isBind
                 setInstance(isBind, result)

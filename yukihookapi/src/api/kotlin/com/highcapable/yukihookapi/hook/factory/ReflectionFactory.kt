@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
@@ -36,6 +37,7 @@ import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import de.robv.android.xposed.XposedHelpers
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -169,7 +171,7 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition = { emptyParam() 
  * @return [T]
  */
 inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
-    if (javaClass.name == CurrentClass::class.java.name) error("Cannot create itself within CurrentClass itself")
+    javaClass.checkingInternal()
     CurrentClass(javaClass, instance = this).apply(initiate)
     return this
 }
@@ -179,7 +181,7 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
  * @return [CurrentClass]
  */
 inline fun <reified T : Any> T.current(): CurrentClass {
-    if (javaClass.name == CurrentClass::class.java.name) error("Cannot create itself within CurrentClass itself")
+    javaClass.checkingInternal()
     return CurrentClass(javaClass, instance = this)
 }
 
@@ -221,3 +223,14 @@ inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructo
  */
 inline fun Class<*>.allFields(result: (index: Int, field: Field) -> Unit) =
     declaredFields.forEachIndexed { p, it -> result(p, it.apply { isAccessible = true }) }
+
+/**
+ * 检查内部类调用
+ * @throws RuntimeException 如果遇到非法调用
+ */
+@PublishedApi
+internal fun Class<*>.checkingInternal() {
+    if (name == classOf<YukiHookModuleStatus>().name) return
+    if (name == classOf<YukiHookAPI>().name || name.startsWith(prefix = "com.highcapable.yukihookapi.hook"))
+        throw RuntimeException("!!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself")
+}

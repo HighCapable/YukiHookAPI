@@ -38,6 +38,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.factory.FieldCondition
+import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
@@ -198,6 +199,7 @@ class FieldFinder @PublishedApi internal constructor(
     @YukiPrivateApi
     override fun build(isBind: Boolean) = try {
         if (classSet != null) {
+            classSet.checkingInternal()
             runBlocking {
                 setInstance(result)
             }.result { ms ->
