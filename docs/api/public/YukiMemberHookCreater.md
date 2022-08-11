@@ -251,7 +251,7 @@ fun allMembers()
 #### method [method]
 
 ```kotlin
-inline fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
+inline fun method(initiate: MethodCondition): MethodFinder.Result
 ```
 
 **变更记录**
@@ -287,7 +287,7 @@ injectMember {
 #### constructor [method]
 
 ```kotlin
-inline fun constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
+inline fun constructor(initiate: ConstructorCondition): ConstructorFinder.Result
 ```
 
 **变更记录**
@@ -319,7 +319,7 @@ injectMember {
 #### field [method]
 
 ```kotlin
-inline fun HookParam.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
+inline fun HookParam.field(initiate: FieldCondition): FieldFinder.Result
 ```
 
 **变更记录**
@@ -359,7 +359,7 @@ injectMember {
 #### method [method]
 
 ```kotlin
-inline fun HookParam.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
+inline fun HookParam.method(initiate: MethodCondition): MethodFinder.Result
 ```
 
 **变更记录**
@@ -377,7 +377,7 @@ inline fun HookParam.method(initiate: MethodFinder.() -> Unit): MethodFinder.Res
 #### constructor [method]
 
 ```kotlin
-inline fun HookParam.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
+inline fun HookParam.constructor(initiate: ConstructorCondition): ConstructorFinder.Result
 ```
 
 **变更记录**

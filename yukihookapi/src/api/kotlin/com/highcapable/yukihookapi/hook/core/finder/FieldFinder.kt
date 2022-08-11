@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
+import com.highcapable.yukihookapi.hook.factory.FieldCondition
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.utils.await
@@ -236,7 +237,7 @@ class FieldFinder @PublishedApi internal constructor(
          * @param initiate 方法体
          * @return [Result] 结果
          */
-        inline fun field(initiate: FieldFinder.() -> Unit) =
+        inline fun field(initiate: FieldCondition) =
             Result().apply { remedyPlans.add(Pair(FieldFinder(hookInstance, classSet).apply(initiate), this)) }
 
         /** 开始重查找 */

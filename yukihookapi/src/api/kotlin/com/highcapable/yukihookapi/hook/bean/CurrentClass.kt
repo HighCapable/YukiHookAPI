@@ -29,6 +29,8 @@ package com.highcapable.yukihookapi.hook.bean
 
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
+import com.highcapable.yukihookapi.hook.factory.FieldCondition
+import com.highcapable.yukihookapi.hook.factory.MethodCondition
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 
@@ -50,14 +52,14 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * @param initiate 查找方法体
      * @return [FieldFinder.Result.Instance]
      */
-    inline fun field(initiate: FieldFinder.() -> Unit) = classSet.field(initiate).get(instance)
+    inline fun field(initiate: FieldCondition) = classSet.field(initiate).get(instance)
 
     /**
      * 调用当前实例中的方法
      * @param initiate 查找方法体
      * @return [MethodFinder.Result.Instance]
      */
-    inline fun method(initiate: MethodFinder.() -> Unit) = classSet.method(initiate).get(instance)
+    inline fun method(initiate: MethodCondition) = classSet.method(initiate).get(instance)
 
     /**
      * 当前类的父类实例的类操作对象
@@ -71,13 +73,13 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @param initiate 查找方法体
          * @return [FieldFinder.Result.Instance]
          */
-        inline fun field(initiate: FieldFinder.() -> Unit) = classSet.superclass.field(initiate).get(instance)
+        inline fun field(initiate: FieldCondition) = classSet.superclass.field(initiate).get(instance)
 
         /**
          * 调用父类实例中的方法
          * @param initiate 查找方法体
          * @return [MethodFinder.Result.Instance]
          */
-        inline fun method(initiate: MethodFinder.() -> Unit) = classSet.superclass.method(initiate).get(instance)
+        inline fun method(initiate: MethodCondition) = classSet.superclass.method(initiate).get(instance)
     }
 }

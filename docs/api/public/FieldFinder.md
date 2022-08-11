@@ -185,7 +185,7 @@ inner class RemedyPlan internal constructor()
 #### field [method]
 
 ```kotlin
-inline fun field(initiate: FieldFinder.() -> Unit): Result
+inline fun field(initiate: FieldCondition): Result
 ```
 
 **变更记录**

@@ -42,6 +42,15 @@ import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 
+/** 定义 [FieldFinder] 方法体类型 */
+internal typealias FieldCondition = FieldFinder.() -> Unit
+
+/** 定义 [MethodFinder] 方法体类型 */
+internal typealias MethodCondition = MethodFinder.() -> Unit
+
+/** 定义 [ConstructorFinder] 方法体类型 */
+internal typealias ConstructorCondition = ConstructorFinder.() -> Unit
+
 /**
  * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
  * @return [Boolean]
@@ -96,21 +105,21 @@ fun String.hasClass(loader: ClassLoader? = null) = try {
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasField(initiate: FieldFinder.() -> Unit) = field(initiate).ignored().isNoSuch.not()
+inline fun Class<*>.hasField(initiate: FieldCondition) = field(initiate).ignored().isNoSuch.not()
 
 /**
  * 查找方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit) = method(initiate).ignored().isNoSuch.not()
+inline fun Class<*>.hasMethod(initiate: MethodCondition) = method(initiate).ignored().isNoSuch.not()
 
 /**
  * 查找构造方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
+inline fun Class<*>.hasConstructor(initiate: ConstructorCondition = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
 
 /**
  * 查询 [Member] 中匹配的描述符
@@ -124,22 +133,21 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRul
  * @param initiate 查找方法体
  * @return [FieldFinder.Result]
  */
-inline fun Class<*>.field(initiate: FieldFinder.() -> Unit) = FieldFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.field(initiate: FieldCondition) = FieldFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到方法
  * @param initiate 查找方法体
  * @return [MethodFinder.Result]
  */
-inline fun Class<*>.method(initiate: MethodFinder.() -> Unit) = MethodFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.method(initiate: MethodCondition) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到构造方法
  * @param initiate 查找方法体
  * @return [ConstructorFinder.Result]
  */
-inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
-    ConstructorFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.constructor(initiate: ConstructorCondition = { emptyParam() }) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
  * 获得当前实例的类操作对象
@@ -167,7 +175,7 @@ inline fun <reified T : Any> T.current(): CurrentClass {
  * @param initiate 查找方法体
  * @return [Any] or null
  */
-inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
+inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) =
     constructor(initiate).get().call(*param)
 
 /**
@@ -176,7 +184,7 @@ inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.(
  * @param initiate 查找方法体
  * @return [T] or null
  */
-inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit = { emptyParam() }) =
+inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) =
     constructor(initiate).get().newInstance<T>(*param)
 
 /**

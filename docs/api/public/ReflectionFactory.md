@@ -170,7 +170,7 @@ if("com.example.demo.DemoClass".hasClass(customClassloader)) {
 ### hasField [method]
 
 ```kotlin
-inline fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
+inline fun Class<*>.hasField(initiate: FieldCondition): Boolean
 ```
 
 **变更记录**
@@ -192,7 +192,7 @@ inline fun Class<*>.hasField(initiate: FieldFinder.() -> Unit): Boolean
 ### hasMethod [method]
 
 ```kotlin
-inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
+inline fun Class<*>.hasMethod(initiate: MethodCondition): Boolean
 ```
 
 **变更记录**
@@ -218,7 +218,7 @@ inline fun Class<*>.hasMethod(initiate: MethodFinder.() -> Unit): Boolean
 ### hasConstructor [method]
 
 ```kotlin
-inline fun Class<*>.hasConstructor(initiate: ConstructorFinder.() -> Unit): Boolean
+inline fun Class<*>.hasConstructor(initiate: ConstructorCondition): Boolean
 ```
 
 **变更记录**
@@ -290,7 +290,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 ### field [method]
 
 ```kotlin
-inline fun Class<*>.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
+inline fun Class<*>.field(initiate: FieldCondition): FieldFinder.Result
 ```
 
 **变更记录**
@@ -308,7 +308,7 @@ inline fun Class<*>.field(initiate: FieldFinder.() -> Unit): FieldFinder.Result
 ### method [method]
 
 ```kotlin
-inline fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Result
+inline fun Class<*>.method(initiate: MethodCondition): MethodFinder.Result
 ```
 
 **变更记录**
@@ -336,7 +336,7 @@ inline fun Class<*>.method(initiate: MethodFinder.() -> Unit): MethodFinder.Resu
 ### constructor [method]
 
 ```kotlin
-inline fun Class<*>.constructor(initiate: ConstructorFinder.() -> Unit): ConstructorFinder.Result
+inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFinder.Result
 ```
 
 **变更记录**
@@ -408,7 +408,7 @@ inline fun <reified T : Any> T.current(): CurrentClass
 ### buildOfAny [method]
 
 ```kotlin
-inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): Any?
+inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition): Any?
 ```
 
 **变更记录**
@@ -426,7 +426,7 @@ inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorFinder.(
 ### buildOf [method]
 
 ```kotlin
-inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorFinder.() -> Unit): T?
+inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition): T?
 ```
 
 **变更记录**

@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
+import com.highcapable.yukihookapi.hook.factory.ConstructorCondition
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -245,7 +246,7 @@ class ConstructorFinder @PublishedApi internal constructor(
          * 若最后依然失败 - 将停止查找并输出错误日志
          * @param initiate 方法体
          */
-        inline fun constructor(initiate: ConstructorFinder.() -> Unit) =
+        inline fun constructor(initiate: ConstructorCondition) =
             Result().apply { remedyPlans.add(Pair(ConstructorFinder(hookInstance, classSet).apply(initiate), this)) }
 
         /** 开始重查找 */

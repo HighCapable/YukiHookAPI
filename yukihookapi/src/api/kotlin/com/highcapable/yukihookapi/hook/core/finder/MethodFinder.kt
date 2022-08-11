@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
+import com.highcapable.yukihookapi.hook.factory.MethodCondition
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -313,7 +314,7 @@ class MethodFinder @PublishedApi internal constructor(
          * @param initiate 方法体
          * @return [Result] 结果
          */
-        inline fun method(initiate: MethodFinder.() -> Unit) =
+        inline fun method(initiate: MethodCondition) =
             Result().apply { remedyPlans.add(Pair(MethodFinder(hookInstance, classSet).apply(initiate), this)) }
 
         /** 开始重查找 */

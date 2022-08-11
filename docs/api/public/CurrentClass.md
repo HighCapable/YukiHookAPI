@@ -33,7 +33,7 @@ fun superClass(): SuperClass
 ### field [method]
 
 ```kotlin
-inline fun field(initiate: FieldFinder.() -> Unit): FieldFinder.Result.Instance
+inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
 ```
 
 **变更记录**
@@ -47,7 +47,7 @@ inline fun field(initiate: FieldFinder.() -> Unit): FieldFinder.Result.Instance
 ### method [method]
 
 ```kotlin
-inline fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result.Instance
+inline fun method(initiate: MethodCondition): MethodFinder.Result.Instance
 ```
 
 **变更记录**
@@ -75,7 +75,7 @@ inner class SuperClass internal constructor()
 #### field [method]
 
 ```kotlin
-inline fun field(initiate: FieldFinder.() -> Unit): FieldFinder.Result.Instance
+inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
 ```
 
 **变更记录**
@@ -89,7 +89,7 @@ inline fun field(initiate: FieldFinder.() -> Unit): FieldFinder.Result.Instance
 #### method [method]
 
 ```kotlin
-inline fun method(initiate: MethodFinder.() -> Unit): MethodFinder.Result.Instance
+inline fun method(initiate: MethodCondition): MethodFinder.Result.Instance
 ```
 
 **变更记录**
