@@ -548,6 +548,24 @@ inner class Instance internal constructor(private val instance: Any?, private va
 
 请直接使用 `any` 方法得到 `Field` 自身的实例化对象
 
+##### current [method]
+
+```kotlin
+fun current(): CurrentClass?
+```
+
+```kotlin
+inline fun current(initiate: CurrentClass.() -> Unit): Any?
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获得当前 `Field` 自身 `self` 实例的类操作对象。
+
 ##### cast [method]
 
 ```kotlin

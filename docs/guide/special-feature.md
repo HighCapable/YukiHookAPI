@@ -42,6 +42,8 @@ public class Test extends BaseTest {
 
     private static TAG = "Test";
 
+    private BaseTest baseInstance;
+
     private String a;
 
     private boolean a;
@@ -611,6 +613,39 @@ instance.current {
 // ❗注意，因为 current() 返回的是 CurrentClass 自身对象，所以不能像下面这样调用
 instance.current().current()
 ```
+
+针对 `Field` 实例，还有一个便捷的方法，可以直接获取 `Field` 所在实例的对象。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 假设这个 Class 是不能被直接得到的
+instance.current {
+    // <方案1>
+    field {
+        name = "baseInstance"
+    }.current {
+        method {
+            name = "doBaseTask"
+            param(StringType)
+        }.call("task_name")
+    }
+    // <方案2>
+    field {
+        name = "baseInstance"
+    }.current()
+        ?.method {
+            name = "doBaseTask"
+            param(StringType)
+        }?.call("task_name")
+}
+```
+
+上述 `current` 方法相当于帮你调用了 `CurrentClass` 中的 `field { ... }.any()?.current()` 方法。
+
+!> 若不存在 `CurrentClass` 调用域，你需要使用 `field { ... }.get(instance).current()` 来进行调用。
 
 问题又来了，我想使用反射的方式创建如下的实例并调用其中的方法，该怎么做呢？
 

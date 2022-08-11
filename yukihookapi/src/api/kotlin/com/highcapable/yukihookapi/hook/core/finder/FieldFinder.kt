@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.hook.core.finder
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
+import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
@@ -37,6 +38,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.factory.FieldCondition
+import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.utils.await
@@ -466,7 +468,22 @@ class FieldFinder @PublishedApi internal constructor(
              * - 若要直接获取不确定的实例对象 - 请调用 [any] 方法
              * @return [Any] or null
              */
-            private val self get() = field?.get(instance)
+            @PublishedApi
+            internal val self
+                get() = field?.get(instance)
+
+            /**
+             * 获得当前 [Field] 自身 [self] 实例的类操作对象
+             * @return [CurrentClass] or null
+             */
+            fun current() = self?.current()
+
+            /**
+             * 获得当前 [Field] 自身 [self] 实例的类操作对象
+             * @param initiate 方法体
+             * @return [Any] or null
+             */
+            inline fun current(initiate: CurrentClass.() -> Unit) = self?.current(initiate)
 
             /**
              * 得到当前 [Field] 实例
