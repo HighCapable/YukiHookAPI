@@ -461,9 +461,11 @@ class FieldFinder @PublishedApi internal constructor(
 
             /**
              * 获取当前 [Field] 自身的实例化对象
+             *
+             * - 若要直接获取不确定的实例对象 - 请调用 [any] 方法
              * @return [Any] or null
              */
-            val self get() = field?.get(instance)
+            private val self get() = field?.get(instance)
 
             /**
              * 得到当前 [Field] 实例
@@ -547,7 +549,7 @@ class FieldFinder @PublishedApi internal constructor(
              * 得到当前 [Field] 的 [Any] 实例
              * @return [Any] or null
              */
-            fun any() = cast<Any?>()
+            fun any() = self
 
             /**
              * 得到当前 [Field] 的 [Array] 实例 - 每项类型 [T]

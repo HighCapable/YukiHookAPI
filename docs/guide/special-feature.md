@@ -120,7 +120,7 @@ val instance = Test()
 Test::class.java.field {
     name = "isTaskRunning"
     type = BooleanType
-}.get(instance).self // self 为 Field 的实例对象
+}.get(instance).any() // any 为 Field 的任意类型实例化对象
 ```
 
 更多用法可参考 [FieldFinder](api/document?id=fieldfinder-class)。
@@ -176,7 +176,9 @@ Test::class.java.method {
 }.get(instance).string() // 得到方法的结果
 ```
 
-是的，对于确切不会变化的方法，你可以精简查询条件，**`YukiHookAPI` 会默认按照字节码顺序匹配第一个查询到的结果**。
+是的，对于确切不会变化的方法，你可以精简查询条件。
+
+在只使用 `get` 或 `wait` 方法得到结果时 `YukiHookAPI` **会默认按照字节码顺序匹配第一个查询到的结果**。
 
 问题又来了，这个 `Class` 中有一个 `release` 方法，但是它的方法参数好长，而且很多的类型都无法直接得到。
 
@@ -454,7 +456,7 @@ val instance = Test()
 Test::class.java.field {
     name = "a"
     type = BooleanType
-}.get(instance).self // 得到名称为 a 类型为 Boolean 的变量
+}.get(instance).any() // 得到名称为 a 类型为 Boolean 的变量
 ```
 
 第二种方案，确定变量的类型所在的位置。
@@ -467,7 +469,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.field {
     type(BooleanType).index().first()
-}.get(instance).self // 得到第一个类型为 Boolean 的变量
+}.get(instance).any() // 得到第一个类型为 Boolean 的变量
 ```
 
 以上两种情况均可得到对应的变量 `private boolean a`。

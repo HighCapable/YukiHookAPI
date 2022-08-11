@@ -532,25 +532,21 @@ inner class Instance internal constructor(private val instance: Any?, private va
 
 新增 `field` 参数
 
-移动 `self` 参数到类变量
+不再对外公开 `self` 参数
 
 **功能描述**
 
 > `Field` 实例变量处理类。
 
-##### self [field]
-
-```kotlin
-val self: Any?
-```
+##### ~~self [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.0` `添加`
 
-**功能描述**
+`v1.0.93` `移除`
 
-> 获取当前 `Field` 自身的实例化对象。
+请直接使用 `any` 方法得到 `Field` 自身的实例化对象
 
 ##### cast [method]
 
