@@ -220,6 +220,16 @@ injectMember {
 
 请确认当前被 Hook 方法的正确返回值类型，修改后再试一次。
 
+!> `loggerE` Hook initialization failed because got an Exception
+
+**异常原因**
+
+在准备 Hook 时发生了任意的异常。
+
+**解决方案**
+
+这是一个准备 Hook 阶段就发生异常的提醒，请仔细查看具体的异常是什么以重新确定问题。
+
 !> `loggerE` Try to hook **NAME**\[**NAME**\] got an Exception
 
 **异常原因**
@@ -490,6 +500,33 @@ Resources 的 Hook 并非类似方法的 Hook，其必须拥有完整的名称�
 
 > 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
 
+!> `RuntimeException` !!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself
+
+**异常原因**
+
+你使用 `YukiHookAPI` 的相关反射或 Hook 功能调用了 API 自身的 `Class` 对象。
+
+> 示例如下
+
+```kotlin
+// <情景1>
+YukiHookAPI.current()
+// <情景2>
+PackageParam::class.java.hook {
+    // ...
+}
+// <情景3>
+MethodFinder::class.java.method {
+    name = "name"
+    param(StringType)
+}.get().call("name")
+// ...
+```
+
+**解决方案**
+
+不允许内联、反射、Hook `YukiHookAPI` 自身的 `Class` 以及内部功能，防止发生错误。
+
 !> `IllegalStateException` Failed to got SystemContext
 
 **异常原因**
@@ -571,31 +608,6 @@ class MyApplication : Application() {
 **解决方案**
 
 你只能在 [作为 Xposed 模块使用](config/xposed-using) 时使用 `YukiHookModulePrefs`，在 Hook 自身 APP 中请使用原生的 `Sp` 存储。
-
-!> `IllegalStateException` Cannot create itself within CurrentClass itself
-
-**异常原因**
-
-在使用 `CurrentClass` 时试图内联和反射其自身实例对象。
-
-> 示例如下
-
-```kotlin
-val instance = ... // 假设这就是当前使用的实例
-// <情景1> 嵌套调用
-instance.current {
-    // ❗不能在 CurrentClass 实例内嵌套自身
-    current {
-        // ...
-    }
-}
-// <情景2> 循环调用
-instance.current().current() // ❗不能使用 CurrentClass 实例再次创建自身
-```
-
-**解决方案**
-
-不允许内联和反射 `CurrentClass` 自身，请按正确方法使用此功能。
 
 !> `IllegalStateException` YukiHookDataChannel not allowed in Custom Hook API
 
@@ -1060,42 +1072,6 @@ moduleAppResources.fwd(...).resources
 **解决方案**
 
 这种情况基本上不存在，除非 Hook Framework 自身存在问题。
-
-!> `IllegalStateException` Hook Members is empty, hook aborted
-
-**异常原因**
-
-使用了 `hook` 方法体但其中并没有填写内容。
-
-> 示例如下
-
-```kotlin
-TargetClass.hook {
-    // 这里没有填写任何内容
-}
-```
-
-**解决方案**
-
-你必须在 `hook` 方法体内加入至少一个 `injectMember` 方法。
-
-!> `IllegalStateException` Hook Resources is empty, hook aborted
-
-**异常原因**
-
-使用了 `hook` 方法体但其中并没有填写内容。
-
-> 示例如下
-
-```kotlin
-resources().hook {
-    // 这里没有填写任何内容
-}
-```
-
-**解决方案**
-
-你必须在 `hook` 方法体内加入至少一个 `injectResources` 方法。
 
 !> `IllegalStateException` paramTypes is empty, please use emptyParam() instead
 
