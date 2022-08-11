@@ -8,6 +8,62 @@
 
 > 这是自定义 `Member` 和 `Class` 相关功能的查找匹配以及 `invoke` 的封装类。
 
+### MembersType [class]
+
+```kotlin
+enum class MembersType
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 定义一个 `Class` 中的 `Member` 类型
+
+#### ALL [enum]
+
+```kotlin
+ALL
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 全部 `Method` 与 `Constructor`。
+
+#### METHOD [enum]
+
+```kotlin
+METHOD
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 全部 `Method`。
+
+#### CONSTRUCTOR [enum]
+
+```kotlin
+CONSTRUCTOR
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 全部 `Constructor`。
+
 ### ~~hookClass [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**

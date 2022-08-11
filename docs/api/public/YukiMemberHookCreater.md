@@ -230,12 +230,12 @@ injectMember {
 
 `v1.0.93` `作废`
 
-请使用 `constructor().all()` 来取代它
+请使用 `allMembers(MembersType.CONSTRUCTOR)` 来取代它
 
 #### allMembers [method]
 
 ```kotlin
-fun allMembers()
+fun allMembers(type: MembersType)
 ```
 
 **变更记录**

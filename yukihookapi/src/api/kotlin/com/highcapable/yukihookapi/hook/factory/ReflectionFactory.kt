@@ -52,6 +52,20 @@ internal typealias MethodCondition = MethodFinder.() -> Unit
 internal typealias ConstructorCondition = ConstructorFinder.() -> Unit
 
 /**
+ * 定义一个 [Class] 中的 [Member] 类型
+ */
+enum class MembersType {
+    /** 全部 [Method] 与 [Constructor] */
+    ALL,
+
+    /** 全部 [Method] */
+    METHOD,
+
+    /** 全部 [Constructor] */
+    CONSTRUCTOR
+}
+
+/**
  * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
  * @return [Boolean]
  */

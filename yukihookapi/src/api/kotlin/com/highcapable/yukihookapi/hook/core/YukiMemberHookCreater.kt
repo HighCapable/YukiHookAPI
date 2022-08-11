@@ -237,11 +237,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [MethodFinder]
+         * - ❗请现在转移到 [MethodFinder] 或 [allMembers]
          * @param name 方法名称
          * @return [ArrayList]<[MethodFinder.Result.Instance]>
          */
-        @Deprecated("请使用新方式来实现 Hook 所有方法", ReplaceWith(expression = "method { this.name = name }.all()"))
+        @Deprecated(message = "请使用新方式来实现 Hook 所有方法", ReplaceWith(expression = "method { this.name = name }.all()"))
         fun allMethods(name: String) = method { this.name = name }.all()
 
         /**
@@ -249,11 +249,14 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [ConstructorFinder]
+         * - ❗请现在转移到 [ConstructorFinder] 或 [allMembers]
          * @return [ArrayList]<[ConstructorFinder.Result.Instance]>
          */
-        @Deprecated("请使用新方式来实现 Hook 所有构造方法", ReplaceWith(expression = "constructor().all()"))
-        fun allConstructors() = constructor().all()
+        @Deprecated(
+            message = "请使用新方式来实现 Hook 所有构造方法",
+            ReplaceWith(expression = "allMembers(MembersType.CONSTRUCTOR)", "com.highcapable.yukihookapi.hook.factory.MembersType")
+        )
+        fun allConstructors() = allMembers(MembersType.CONSTRUCTOR)
 
         /**
          * 查找并 Hook [hookClass] 中的全部方法、构造方法
@@ -263,11 +266,14 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * - ❗警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] or [constructor] 对每个方法单独 Hook
          *
          * - ❗如果 [hookClass] 中没有方法可能会发生错误
+         * @param type 过滤 [Member] 类型 - 默认为 [MembersType.ALL]
          */
-        fun allMembers() {
+        fun allMembers(type: MembersType = MembersType.ALL) {
             members.clear()
-            hookClass.instance?.allConstructors { _, constructor -> members.add(constructor) }
-            hookClass.instance?.allMethods { _, method -> members.add(method) }
+            if (type == MembersType.ALL || type == MembersType.CONSTRUCTOR)
+                hookClass.instance?.allConstructors { _, constructor -> members.add(constructor) }
+            if (type == MembersType.ALL || type == MembersType.METHOD)
+                hookClass.instance?.allMethods { _, method -> members.add(method) }
             isHookMemberSetup = true
         }
 
