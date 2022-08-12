@@ -27,6 +27,8 @@
  */
 package com.highcapable.yukihookapi.hook.type.defined
 
+import com.highcapable.yukihookapi.hook.factory.classOf
+
 /** 未定义类型实例 */
 internal class UndefinedClass
 
@@ -34,4 +36,4 @@ internal class UndefinedClass
  * 未定义类型
  * @return [UndefinedClass]
  */
-internal val UndefinedType get() = UndefinedClass::class.java
+internal val UndefinedType get() = classOf<UndefinedClass>()

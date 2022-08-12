@@ -34,18 +34,19 @@ import android.graphics.drawable.*
 import android.text.*
 import android.util.Size
 import android.util.SizeF
+import com.highcapable.yukihookapi.hook.factory.classOf
 
 /**
  * 获得 [Typeface] 类型
  * @return [Class]
  */
-val TypefaceClass get() = Typeface::class.java
+val TypefaceClass get() = classOf<Typeface>()
 
 /**
  * 获得 [Bitmap] 类型
  * @return [Class]
  */
-val BitmapClass get() = Bitmap::class.java
+val BitmapClass get() = classOf<Bitmap>()
 
 /**
  * 获得 [Icon] 类型
@@ -53,154 +54,154 @@ val BitmapClass get() = Bitmap::class.java
  * - ❗在 Android M (23) 及以上系统加入
  * @return [Class]
  */
-val IconClass get() = Icon::class.java
+val IconClass get() = classOf<Icon>()
 
 /**
  * 获得 [Outline] 类型
  * @return [Class]
  */
-val OutlineClass get() = Outline::class.java
+val OutlineClass get() = classOf<Outline>()
 
 /**
  * 获得 [Drawable] 类型
  * @return [Class]
  */
-val DrawableClass get() = Drawable::class.java
+val DrawableClass get() = classOf<Drawable>()
 
 /**
  * 获得 [GradientDrawable] 类型
  * @return [Class]
  */
-val GradientDrawableClass get() = GradientDrawable::class.java
+val GradientDrawableClass get() = classOf<GradientDrawable>()
 
 /**
  * 获得 [ColorDrawable] 类型
  * @return [Class]
  */
-val ColorDrawableClass get() = ColorDrawable::class.java
+val ColorDrawableClass get() = classOf<ColorDrawable>()
 
 /**
  * 获得 [BitmapDrawable] 类型
  * @return [Class]
  */
-val BitmapDrawableClass get() = BitmapDrawable::class.java
+val BitmapDrawableClass get() = classOf<BitmapDrawable>()
 
 /**
  * 获得 [Size] 类型
  * @return [Class]
  */
-val SizeClass get() = Size::class.java
+val SizeClass get() = classOf<Size>()
 
 /**
  * 获得 [SizeF] 类型
  * @return [Class]
  */
-val SizeFClass get() = SizeF::class.java
+val SizeFClass get() = classOf<SizeF>()
 
 /**
  * 获得 [Rect] 类型
  * @return [Class]
  */
-val RectClass get() = Rect::class.java
+val RectClass get() = classOf<Rect>()
 
 /**
  * 获得 [RectF] 类型
  * @return [Class]
  */
-val RectFClass get() = RectF::class.java
+val RectFClass get() = classOf<RectF>()
 
 /**
  * 获得 [NinePatch] 类型
  * @return [Class]
  */
-val NinePatchClass get() = NinePatch::class.java
+val NinePatchClass get() = classOf<NinePatch>()
 
 /**
  * 获得 [Paint] 类型
  * @return [Class]
  */
-val PaintClass get() = Paint::class.java
+val PaintClass get() = classOf<Paint>()
 
 /**
  * 获得 [TextPaint] 类型
  * @return [Class]
  */
-val TextPaintClass get() = TextPaint::class.java
+val TextPaintClass get() = classOf<TextPaint>()
 
 /**
  * 获得 [Canvas] 类型
  * @return [Class]
  */
-val CanvasClass get() = Canvas::class.java
+val CanvasClass get() = classOf<Canvas>()
 
 /**
  * 获得 [Point] 类型
  * @return [Class]
  */
-val PointClass get() = Point::class.java
+val PointClass get() = classOf<Point>()
 
 /**
  * 获得 [PointF] 类型
  * @return [Class]
  */
-val PointFClass get() = PointF::class.java
+val PointFClass get() = classOf<PointF>()
 
 /**
  * 获得 [Matrix] 类型
  * @return [Class]
  */
-val MatrixClass get() = Matrix::class.java
+val MatrixClass get() = classOf<Matrix>()
 
 /**
  * 获得 [ColorMatrix] 类型
  * @return [Class]
  */
-val ColorMatrixClass get() = ColorMatrix::class.java
+val ColorMatrixClass get() = classOf<ColorMatrix>()
 
 /**
  * 获得 [ColorMatrixColorFilter] 类型
  * @return [Class]
  */
-val ColorMatrixColorFilterClass get() = ColorMatrixColorFilter::class.java
+val ColorMatrixColorFilterClass get() = classOf<ColorMatrixColorFilter>()
 
 /**
  * 获得 [Editable] 类型
  * @return [Class]
  */
-val EditableClass get() = Editable::class.java
+val EditableClass get() = classOf<Editable>()
 
 /**
  * 获得 [TextWatcher] 类型
  * @return [Class]
  */
-val TextWatcherClass get() = TextWatcher::class.java
+val TextWatcherClass get() = classOf<TextWatcher>()
 
 /**
  * 获得 [Editable.Factory] 类型
  * @return [Class]
  */
-val Editable_FactoryClass get() = Editable.Factory::class.java
+val Editable_FactoryClass get() = classOf<Editable.Factory>()
 
 /**
  * 获得 [GetChars] 类型
  * @return [Class]
  */
-val GetCharsClass get() = GetChars::class.java
+val GetCharsClass get() = classOf<GetChars>()
 
 /**
  * 获得 [Spannable] 类型
  * @return [Class]
  */
-val SpannableClass get() = Spannable::class.java
+val SpannableClass get() = classOf<Spannable>()
 
 /**
  * 获得 [BitmapFactory] 类型
  * @return [Class]
  */
-val BitmapFactoryClass get() = BitmapFactory::class.java
+val BitmapFactoryClass get() = classOf<BitmapFactory>()
 
 /**
  * 获得 [BitmapFactory.Options] 类型
  * @return [Class]
  */
-val BitmapFactory_OptionsClass get() = BitmapFactory.Options::class.java
+val BitmapFactory_OptionsClass get() = classOf<BitmapFactory.Options>()

@@ -62,13 +62,13 @@ import java.awt.Component
  * 获得 [android.R] 类型
  * @return [Class]
  */
-val AndroidRClass get() = android.R::class.java
+val AndroidRClass get() = classOf<android.R>()
 
 /**
  * 获得 [Context] 类型
  * @return [Class]
  */
-val ContextClass get() = Context::class.java
+val ContextClass get() = classOf<Context>()
 
 /**
  * 获得 [ContextImpl] 类型
@@ -80,31 +80,31 @@ val ContextImplClass get() = classOf(name = "android.app.ContextImpl")
  * 获得 [ContextWrapper] 类型
  * @return [Class]
  */
-val ContextWrapperClass get() = ContextWrapper::class.java
+val ContextWrapperClass get() = classOf<ContextWrapper>()
 
 /**
  * 获得 [Application] 类型
  * @return [Class]
  */
-val ApplicationClass get() = Application::class.java
+val ApplicationClass get() = classOf<Application>()
 
 /**
  * 获得 [ApplicationInfo] 类型
  * @return [Class]
  */
-val ApplicationInfoClass get() = ApplicationInfo::class.java
+val ApplicationInfoClass get() = classOf<ApplicationInfo>()
 
 /**
  * 获得 [Instrumentation] 类型
  * @return [Class]
  */
-val InstrumentationClass get() = Instrumentation::class.java
+val InstrumentationClass get() = classOf<Instrumentation>()
 
 /**
  * 获得 [PackageInfo] 类型
  * @return [Class]
  */
-val PackageInfoClass get() = PackageInfo::class.java
+val PackageInfoClass get() = classOf<PackageInfo>()
 
 /**
  * 获得 [ApplicationPackageManager] 类型
@@ -134,13 +134,13 @@ val LoadedApkClass get() = classOf(name = "android.app.LoadedApk")
  * 获得 [Activity] 类型
  * @return [Class]
  */
-val ActivityClass get() = Activity::class.java
+val ActivityClass get() = classOf<Activity>()
 
 /**
  * 获得 [Looper] 类型
  * @return [Class]
  */
-val LooperClass get() = Looper::class.java
+val LooperClass get() = classOf<Looper>()
 
 /**
  * 获得 [Fragment] 类型 - Support
@@ -176,133 +176,133 @@ val DocumentFileClass get() = classOf(name = "androidx.documentfile.provider.Doc
  * 获得 [Service] 类型
  * @return [Class]
  */
-val ServiceClass get() = Service::class.java
+val ServiceClass get() = classOf<Service>()
 
 /**
  * 获得 [Binder] 类型
  * @return [Class]
  */
-val BinderClass get() = Binder::class.java
+val BinderClass get() = classOf<Binder>()
 
 /**
  * 获得 [IBinder] 类型
  * @return [Class]
  */
-val IBinderClass get() = IBinder::class.java
+val IBinderClass get() = classOf<IBinder>()
 
 /**
  * 获得 [BroadcastReceiver] 类型
  * @return [Class]
  */
-val BroadcastReceiverClass get() = BroadcastReceiver::class.java
+val BroadcastReceiverClass get() = classOf<BroadcastReceiver>()
 
 /**
  * 获得 [Bundle] 类型
  * @return [Class]
  */
-val BundleClass get() = Bundle::class.java
+val BundleClass get() = classOf<Bundle>()
 
 /**
  * 获得 [BaseBundle] 类型
  * @return [Class]
  */
-val BaseBundleClass get() = BaseBundle::class.java
+val BaseBundleClass get() = classOf<BaseBundle>()
 
 /**
  * 获得 [Resources] 类型
  * @return [Class]
  */
-val ResourcesClass get() = Resources::class.java
+val ResourcesClass get() = classOf<Resources>()
 
 /**
  * 获得 [Configuration] 类型
  * @return [Class]
  */
-val ConfigurationClass get() = Configuration::class.java
+val ConfigurationClass get() = classOf<Configuration>()
 
 /**
  * 获得 [ConfigurationInfo] 类型
  * @return [Class]
  */
-val ConfigurationInfoClass get() = ConfigurationInfo::class.java
+val ConfigurationInfoClass get() = classOf<ConfigurationInfo>()
 
 /**
  * 获得 [ContentResolver] 类型
  * @return [Class]
  */
-val ContentResolverClass get() = ContentResolver::class.java
+val ContentResolverClass get() = classOf<ContentResolver>()
 
 /**
  * 获得 [ContentProvider] 类型
  * @return [Class]
  */
-val ContentProviderClass get() = ContentProvider::class.java
+val ContentProviderClass get() = classOf<ContentProvider>()
 
 /**
  * 获得 [Settings] 类型
  * @return [Class]
  */
-val SettingsClass get() = Settings::class.java
+val SettingsClass get() = classOf<Settings>()
 
 /**
  * 获得 [Settings.System] 类型
  * @return [Class]
  */
-val Settings_SystemClass get() = Settings.System::class.java
+val Settings_SystemClass get() = classOf<Settings.System>()
 
 /**
  * 获得 [Settings.Secure] 类型
  * @return [Class]
  */
-val Settings_SecureClass get() = Settings.Secure::class.java
+val Settings_SecureClass get() = classOf<Settings.Secure>()
 
 /**
  * 获得 [TypedArray] 类型
  * @return [Class]
  */
-val TypedArrayClass get() = TypedArray::class.java
+val TypedArrayClass get() = classOf<TypedArray>()
 
 /**
  * 获得 [TypedValue] 类型
  * @return [Class]
  */
-val TypedValueClass get() = TypedValue::class.java
+val TypedValueClass get() = classOf<TypedValue>()
 
 /**
  * 获得 [SparseArray] 类型
  * @return [Class]
  */
-val SparseArrayClass get() = SparseArray::class.java
+val SparseArrayClass get() = classOf<SparseArray<*>>()
 
 /**
  * 获得 [SparseIntArray] 类型
  * @return [Class]
  */
-val SparseIntArrayClass get() = SparseIntArray::class.java
+val SparseIntArrayClass get() = classOf<SparseIntArray>()
 
 /**
  * 获得 [SparseBooleanArray] 类型
  * @return [Class]
  */
-val SparseBooleanArrayClass get() = SparseBooleanArray::class.java
+val SparseBooleanArrayClass get() = classOf<SparseBooleanArray>()
 
 /**
  * 获得 [SparseLongArray] 类型
  * @return [Class]
  */
-val SparseLongArrayClass get() = SparseLongArray::class.java
+val SparseLongArrayClass get() = classOf<SparseLongArray>()
 
 /**
  * 获得 [LongSparseArray] 类型
  * @return [Class]
  */
-val LongSparseArrayClass get() = LongSparseArray::class.java
+val LongSparseArrayClass get() = classOf<LongSparseArray<*>>()
 
 /**
  * 获得 [ArrayMap] 类型
  * @return [Class]
  */
-val ArrayMapClass get() = ArrayMap::class.java
+val ArrayMapClass get() = classOf<ArrayMap<*, *>>()
 
 /**
  * 获得 [ArraySet] 类型
@@ -310,43 +310,43 @@ val ArrayMapClass get() = ArrayMap::class.java
  *
  * - ❗在 Android M (23) 及以上系统加入
  */
-val ArraySetClass get() = ArraySet::class.java
+val ArraySetClass get() = classOf<ArraySet<*>>()
 
 /**
  * 获得 [Handler] 类型
  * @return [Class]
  */
-val HandlerClass get() = Handler::class.java
+val HandlerClass get() = classOf<Handler>()
 
 /**
  * 获得 [Handler.Callback] 类型
  * @return [Class]
  */
-val Handler_CallbackClass get() = Handler.Callback::class.java
+val Handler_CallbackClass get() = classOf<Handler.Callback>()
 
 /**
  * 获得 [Message] 类型
  * @return [Class]
  */
-val MessageClass get() = Message::class.java
+val MessageClass get() = classOf<Message>()
 
 /**
  * 获得 [MessageQueue] 类型
  * @return [Class]
  */
-val MessageQueueClass get() = MessageQueue::class.java
+val MessageQueueClass get() = classOf<MessageQueue>()
 
 /**
  * 获得 [Messenger] 类型
  * @return [Class]
  */
-val MessengerClass get() = Messenger::class.java
+val MessengerClass get() = classOf<Messenger>()
 
 /**
  * 获得 [AsyncTask] 类型
  * @return [Class]
  */
-val AsyncTaskClass get() = AsyncTask::class.java
+val AsyncTaskClass get() = classOf<AsyncTask<*, *, *>>()
 
 /**
  * 获得 [SimpleDateFormat] 类型
@@ -354,25 +354,25 @@ val AsyncTaskClass get() = AsyncTask::class.java
  * - ❗在 Android N (24) 及以上系统加入
  * @return [Class]
  */
-val SimpleDateFormatClass_Android get() = SimpleDateFormat::class.java
+val SimpleDateFormatClass_Android get() = classOf<SimpleDateFormat>()
 
 /**
  * 获得 [Base64] 类型
  * @return [Class]
  */
-val Base64Class_Android get() = Base64::class.java
+val Base64Class_Android get() = classOf<Base64>()
 
 /**
  * 获得 [TextUtils] 类型
  * @return [Class]
  */
-val TextUtilsClass get() = TextUtils::class.java
+val TextUtilsClass get() = classOf<TextUtils>()
 
 /**
  * 获得 [Window] 类型
  * @return [Class]
  */
-val WindowClass get() = Window::class.java
+val WindowClass get() = classOf<Window>()
 
 /**
  * 获得 [WindowMetrics] 类型
@@ -380,13 +380,13 @@ val WindowClass get() = Window::class.java
  * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
-val WindowMetricsClass get() = WindowMetrics::class.java
+val WindowMetricsClass get() = classOf<WindowMetrics>()
 
 /**
  * 获得 [WindowInsets] 类型
  * @return [Class]
  */
-val WindowInsetsClass get() = WindowInsets::class.java
+val WindowInsetsClass get() = classOf<WindowInsets>()
 
 /**
  * 获得 [WindowInsets.Type] 类型
@@ -394,157 +394,157 @@ val WindowInsetsClass get() = WindowInsets::class.java
  * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
-val WindowInsets_TypeClass get() = WindowInsets.Type::class.java
+val WindowInsets_TypeClass get() = classOf<WindowInsets.Type>()
 
 /**
  * 获得 [WindowManager] 类型
  * @return [Class]
  */
-val WindowManagerClass get() = WindowManager::class.java
+val WindowManagerClass get() = classOf<WindowManager>()
 
 /**
  * 获得 [WindowManager.LayoutParams] 类型
  * @return [Class]
  */
-val WindowManager_LayoutParamsClass get() = WindowManager.LayoutParams::class.java
+val WindowManager_LayoutParamsClass get() = classOf<WindowManager.LayoutParams>()
 
 /**
  * 获得 [ViewManager] 类型
  * @return [Class]
  */
-val ViewManagerClass get() = ViewManager::class.java
+val ViewManagerClass get() = classOf<ViewManager>()
 
 /**
  * 获得 [Parcel] 类型
  * @return [Class]
  */
-val ParcelClass get() = Parcel::class.java
+val ParcelClass get() = classOf<Parcel>()
 
 /**
  * 获得 [Parcelable] 类型
  * @return [Class]
  */
-val ParcelableClass get() = Parcelable::class.java
+val ParcelableClass get() = classOf<Parcelable>()
 
 /**
  * 获得 [Parcelable.Creator] 类型
  * @return [Class]
  */
-val Parcelable_CreatorClass get() = Parcelable.Creator::class.java
+val Parcelable_CreatorClass get() = classOf<Parcelable.Creator<*>>()
 
 /**
  * 获得 [Dialog] 类型
  * @return [Class]
  */
-val DialogClass get() = Dialog::class.java
+val DialogClass get() = classOf<Dialog>()
 
 /**
  * 获得 [AlertDialog] 类型
  * @return [Class]
  */
-val AlertDialogClass get() = AlertDialog::class.java
+val AlertDialogClass get() = classOf<AlertDialog>()
 
 /**
  * 获得 [DisplayMetrics] 类型
  * @return [Class]
  */
-val DisplayMetricsClass get() = DisplayMetrics::class.java
+val DisplayMetricsClass get() = classOf<DisplayMetrics>()
 
 /**
  * 获得 [Display] 类型
  * @return [Class]
  */
-val DisplayClass get() = Display::class.java
+val DisplayClass get() = classOf<Display>()
 
 /**
  * 获得 [Toast] 类型
  * @return [Class]
  */
-val ToastClass get() = Toast::class.java
+val ToastClass get() = classOf<Toast>()
 
 /**
  * 获得 [Intent] 类型
  * @return [Class]
  */
-val IntentClass get() = Intent::class.java
+val IntentClass get() = classOf<Intent>()
 
 /**
  * 获得 [Component] 类型
  * @return [Class]
  */
-val ComponentClass get() = Component::class.java
+val ComponentClass get() = classOf<Component>()
 
 /**
  * 获得 [ComponentInfo] 类型
  * @return [Class]
  */
-val ComponentInfoClass get() = ComponentInfo::class.java
+val ComponentInfoClass get() = classOf<ComponentInfo>()
 
 /**
  * 获得 [ComponentName] 类型
  * @return [Class]
  */
-val ComponentNameClass get() = ComponentName::class.java
+val ComponentNameClass get() = classOf<ComponentName>()
 
 /**
  * 获得 [PendingIntent] 类型
  * @return [Class]
  */
-val PendingIntentClass get() = PendingIntent::class.java
+val PendingIntentClass get() = classOf<PendingIntent>()
 
 /**
  * 获得 [ColorStateList] 类型
  * @return [Class]
  */
-val ColorStateListClass get() = ColorStateList::class.java
+val ColorStateListClass get() = classOf<ColorStateList>()
 
 /**
  * 获得 [ContentValues] 类型
  * @return [Class]
  */
-val ContentValuesClass get() = ContentValues::class.java
+val ContentValuesClass get() = classOf<ContentValues>()
 
 /**
  * 获得 [SharedPreferences] 类型
  * @return [Class]
  */
-val SharedPreferencesClass get() = SharedPreferences::class.java
+val SharedPreferencesClass get() = classOf<SharedPreferences>()
 
 /**
  * 获得 [SpannableStringBuilder] 类型
  * @return [Class]
  */
-val SpannableStringBuilderClass get() = SpannableStringBuilder::class.java
+val SpannableStringBuilderClass get() = classOf<SpannableStringBuilder>()
 
 /**
  * 获得 [MediaPlayer] 类型
  * @return [Class]
  */
-val MediaPlayerClass get() = MediaPlayer::class.java
+val MediaPlayerClass get() = classOf<MediaPlayer>()
 
 /**
  * 获得 [ProgressDialog] 类型
  * @return [Class]
  */
-val ProgressDialogClass get() = ProgressDialog::class.java
+val ProgressDialogClass get() = classOf<ProgressDialog>()
 
 /**
  * 获得 [Log] 类型
  * @return [Class]
  */
-val LogClass get() = Log::class.java
+val LogClass get() = classOf<Log>()
 
 /**
  * 获得 [Build] 类型
  * @return [Class]
  */
-val BuildClass get() = Build::class.java
+val BuildClass get() = classOf<Build>()
 
 /**
  * 获得 [Xml] 类型
  * @return [Class]
  */
-val XmlClass get() = Xml::class.java
+val XmlClass get() = classOf<Xml>()
 
 /**
  * 获得 [ContrastColorUtil] 类型
@@ -556,67 +556,67 @@ val ContrastColorUtilClass get() = classOf(name = "com.android.internal.util.Con
  * 获得 [StatusBarNotification] 类型
  * @return [Class]
  */
-val StatusBarNotificationClass get() = StatusBarNotification::class.java
+val StatusBarNotificationClass get() = classOf<StatusBarNotification>()
 
 /**
  * 获得 [Notification] 类型
  * @return [Class]
  */
-val NotificationClass get() = Notification::class.java
+val NotificationClass get() = classOf<Notification>()
 
 /**
  * 获得 [Notification.Builder] 类型
  * @return [Class]
  */
-val Notification_BuilderClass get() = Notification.Builder::class.java
+val Notification_BuilderClass get() = classOf<Notification.Builder>()
 
 /**
  * 获得 [Notification.Action] 类型
  * @return [Class]
  */
-val Notification_ActionClass get() = Notification.Action::class.java
+val Notification_ActionClass get() = classOf<Notification.Action>()
 
 /**
  * 获得 [DialogInterface] 类型
  * @return [Class]
  */
-val DialogInterfaceClass get() = DialogInterface::class.java
+val DialogInterfaceClass get() = classOf<DialogInterface>()
 
 /**
  * 获得 [DialogInterface.OnClickListener] 类型
  * @return [Class]
  */
-val DialogInterface_OnClickListenerClass get() = DialogInterface.OnClickListener::class.java
+val DialogInterface_OnClickListenerClass get() = classOf<DialogInterface.OnClickListener>()
 
 /**
  * 获得 [DialogInterface.OnCancelListener] 类型
  * @return [Class]
  */
-val DialogInterface_OnCancelListenerClass get() = DialogInterface.OnCancelListener::class.java
+val DialogInterface_OnCancelListenerClass get() = classOf<DialogInterface.OnCancelListener>()
 
 /**
  * 获得 [DialogInterface.OnDismissListener] 类型
  * @return [Class]
  */
-val DialogInterface_OnDismissListenerClass get() = DialogInterface.OnDismissListener::class.java
+val DialogInterface_OnDismissListenerClass get() = classOf<DialogInterface.OnDismissListener>()
 
 /**
  * 获得 [Environment] 类型
  * @return [Class]
  */
-val EnvironmentClass get() = Environment::class.java
+val EnvironmentClass get() = classOf<Environment>()
 
 /**
  * 获得 [Process] 类型
  * @return [Class]
  */
-val ProcessClass get() = Process::class.java
+val ProcessClass get() = classOf<Process>()
 
 /**
  * 获得 [Vibrator] 类型
  * @return [Class]
  */
-val VibratorClass get() = Vibrator::class.java
+val VibratorClass get() = classOf<Vibrator>()
 
 /**
  * 获得 [VibrationEffect] 类型
@@ -624,7 +624,7 @@ val VibratorClass get() = Vibrator::class.java
  * - ❗在 Android O (26) 及以上系统加入
  * @return [Class]
  */
-val VibrationEffectClass get() = VibrationEffect::class.java
+val VibrationEffectClass get() = classOf<VibrationEffect>()
 
 /**
  * 获得 [VibrationAttributes] 类型
@@ -632,37 +632,37 @@ val VibrationEffectClass get() = VibrationEffect::class.java
  * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
-val VibrationAttributesClass get() = VibrationAttributes::class.java
+val VibrationAttributesClass get() = classOf<VibrationAttributes>()
 
 /**
  * 获得 [SystemClock] 类型
  * @return [Class]
  */
-val SystemClockClass get() = SystemClock::class.java
+val SystemClockClass get() = classOf<SystemClock>()
 
 /**
  * 获得 [PowerManager] 类型
  * @return [Class]
  */
-val PowerManagerClass get() = PowerManager::class.java
+val PowerManagerClass get() = classOf<PowerManager>()
 
 /**
  * 获得 [PowerManager.WakeLock] 类型
  * @return [Class]
  */
-val PowerManager_WakeLockClass get() = PowerManager.WakeLock::class.java
+val PowerManager_WakeLockClass get() = classOf<PowerManager.WakeLock>()
 
 /**
  * 获得 [UserHandle] 类型
  * @return [Class]
  */
-val UserHandleClass get() = UserHandle::class.java
+val UserHandleClass get() = classOf<UserHandle>()
 
 /**
  * 获得 [UserDataHandler] 类型
  * @return [Class]
  */
-val UserDataHandlerClass get() = UserDataHandler::class.java
+val UserDataHandlerClass get() = classOf<UserDataHandler>()
 
 /**
  * 获得 [ShortcutInfo] 类型
@@ -670,7 +670,7 @@ val UserDataHandlerClass get() = UserDataHandler::class.java
  * - ❗在 Android N_MR1 (25) 及以上系统加入
  * @return [Class]
  */
-val ShortcutInfoClass get() = ShortcutInfo::class.java
+val ShortcutInfoClass get() = classOf<ShortcutInfo>()
 
 /**
  * 获得 [ShortcutManager] 类型
@@ -678,7 +678,7 @@ val ShortcutInfoClass get() = ShortcutInfo::class.java
  * - ❗在 Android R (30) 及以上系统加入
  * @return [Class]
  */
-val ShortcutManagerClass get() = ShortcutManager::class.java
+val ShortcutManagerClass get() = classOf<ShortcutManager>()
 
 /**
  * 获得 [ShortcutQuery] 类型
@@ -686,118 +686,118 @@ val ShortcutManagerClass get() = ShortcutManager::class.java
  * - ❗在 Android N_MR1 (25) 及以上系统加入
  * @return [Class]
  */
-val ShortcutQueryClass get() = ShortcutQuery::class.java
+val ShortcutQueryClass get() = classOf<ShortcutQuery>()
 
 /**
  * 获得 [KeyboardShortcutInfo] 类型
  * @return [Class]
  */
-val KeyboardShortcutInfoClass get() = KeyboardShortcutInfo::class.java
+val KeyboardShortcutInfoClass get() = classOf<KeyboardShortcutInfo>()
 
 /**
  * 获得 [KeyboardShortcutGroup] 类型
  * @return [Class]
  */
-val KeyboardShortcutGroupClass get() = KeyboardShortcutGroup::class.java
+val KeyboardShortcutGroupClass get() = classOf<KeyboardShortcutGroup>()
 
 /**
  * 获得 [ShortcutIconResource] 类型
  * @return [Class]
  */
-val ShortcutIconResourceClass get() = ShortcutIconResource::class.java
+val ShortcutIconResourceClass get() = classOf<ShortcutIconResource>()
 
 /**
  * 获得 [AssetManager] 类型
  * @return [Class]
  */
-val AssetManagerClass get() = AssetManager::class.java
+val AssetManagerClass get() = classOf<AssetManager>()
 
 /**
  * 获得 [AppWidgetManager] 类型
  * @return [Class]
  */
-val AppWidgetManagerClass get() = AppWidgetManager::class.java
+val AppWidgetManagerClass get() = classOf<AppWidgetManager>()
 
 /**
  * 获得 [AppWidgetProvider] 类型
  * @return [Class]
  */
-val AppWidgetProviderClass get() = AppWidgetProvider::class.java
+val AppWidgetProviderClass get() = classOf<AppWidgetProvider>()
 
 /**
  * 获得 [AppWidgetProviderInfo] 类型
  * @return [Class]
  */
-val AppWidgetProviderInfoClass get() = AppWidgetProviderInfo::class.java
+val AppWidgetProviderInfoClass get() = classOf<AppWidgetProviderInfo>()
 
 /**
  * 获得 [AppWidgetHost] 类型
  * @return [Class]
  */
-val AppWidgetHostClass get() = AppWidgetHost::class.java
+val AppWidgetHostClass get() = classOf<AppWidgetHost>()
 
 /**
  * 获得 [ActivityInfo] 类型
  * @return [Class]
  */
-val ActivityInfoClass get() = ActivityInfo::class.java
+val ActivityInfoClass get() = classOf<ActivityInfo>()
 
 /**
  * 获得 [ResolveInfo] 类型
  * @return [Class]
  */
-val ResolveInfoClass get() = ResolveInfo::class.java
+val ResolveInfoClass get() = classOf<ResolveInfo>()
 
 /**
  * 获得 [Property] 类型
  * @return [Class]
  */
-val PropertyClass get() = Property::class.java
+val PropertyClass get() = classOf<Property<*, *>>()
 
 /**
  * 获得 [IntProperty] 类型
  * @return [Class]
  */
-val IntPropertyClass get() = IntProperty::class.java
+val IntPropertyClass get() = classOf<IntProperty<*>>()
 
 /**
  * 获得 [FloatProperty] 类型
  * @return [Class]
  */
-val FloatPropertyClass get() = FloatProperty::class.java
+val FloatPropertyClass get() = classOf<FloatProperty<*>>()
 
 /**
  * 获得 [SQLiteDatabase] 类型
  * @return [Class]
  */
-val SQLiteDatabaseClass get() = SQLiteDatabase::class.java
+val SQLiteDatabaseClass get() = classOf<SQLiteDatabase>()
 
 /**
  * 获得 [StrictMode] 类型
  * @return [Class]
  */
-val StrictModeClass get() = StrictMode::class.java
+val StrictModeClass get() = classOf<StrictMode>()
 
 /**
  * 获得 [AccessibilityManager] 类型
  * @return [Class]
  */
-val AccessibilityManagerClass get() = AccessibilityManager::class.java
+val AccessibilityManagerClass get() = classOf<AccessibilityManager>()
 
 /**
  * 获得 [AccessibilityEvent] 类型
  * @return [Class]
  */
-val AccessibilityEventClass get() = AccessibilityEvent::class.java
+val AccessibilityEventClass get() = classOf<AccessibilityEvent>()
 
 /**
  * 获得 [AccessibilityNodeInfo] 类型
  * @return [Class]
  */
-val AccessibilityNodeInfoClass get() = AccessibilityNodeInfo::class.java
+val AccessibilityNodeInfoClass get() = classOf<AccessibilityNodeInfo>()
 
 /**
  * 获得 [IInterface] 类型
  * @return [Class]
  */
-val IInterfaceClass get() = IInterface::class.java
+val IInterfaceClass get() = classOf<IInterface>()

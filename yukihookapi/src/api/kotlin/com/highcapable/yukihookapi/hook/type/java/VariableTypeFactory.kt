@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.type.java
 
+import com.highcapable.yukihookapi.hook.factory.classOf
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -63,19 +64,19 @@ fun ArrayClass(type: Class<*>) = java.lang.reflect.Array.newInstance(type, 0).ja
  * 获得 [Any] 类型
  * @return [Class]
  */
-val AnyType get() = Any::class.java
+val AnyType get() = classOf<Any>()
 
 /**
  * 获得 [Unit] 类型
  * @return [Class]
  */
-val UnitType get() = Void.TYPE ?: Unit::class.java
+val UnitType get() = Void.TYPE ?: classOf<Unit>()
 
 /**
  * 获得 [Boolean] 类型
  * @return [Class]
  */
-val BooleanType get() = Boolean::class.java
+val BooleanType get() = Boolean::class.javaPrimitiveType ?: UnitType
 
 /**
  * 获得 [Int] 类型
@@ -111,37 +112,37 @@ val DoubleType get() = Double::class.javaPrimitiveType ?: UnitType
  * 获得 [String] 类型
  * @return [Class]
  */
-val StringType get() = String::class.java
+val StringType get() = classOf<String>()
 
 /**
  * 获得 [Char] 类型
  * @return [Class]
  */
-val CharType get() = Char::class.java
+val CharType get() = classOf<Char>()
 
 /**
  * 获得 [CharSequence] 类型
  * @return [Class]
  */
-val CharSequenceType get() = CharSequence::class.java
+val CharSequenceType get() = classOf<CharSequence>()
 
 /**
  * 获得 [Serializable] 类型
  * @return [Class]
  */
-val SerializableClass get() = Serializable::class.java
+val SerializableClass get() = classOf<Serializable>()
 
 /**
  * 获得 [Byte] 类型
  * @return [Class]
  */
-val ByteClass get() = Byte::class.java
+val ByteClass get() = classOf<Byte>()
 
 /**
  * 获得 [Array] 类型
  * @return [Class]
  */
-val ArrayClass get() = Array::class.java
+val ArrayClass get() = classOf<Array<*>>()
 
 /**
  * 获得 [Any] - [Array] 类型
@@ -211,133 +212,133 @@ val DoubleArrayClass get() = ArrayClass(DoubleType)
  * 获得 [Cloneable] 类型
  * @return [Class]
  */
-val CloneableClass get() = Cloneable::class.java
+val CloneableClass get() = classOf<Cloneable>()
 
 /**
  * 获得 [List] 类型
  * @return [Class]
  */
-val ListClass get() = List::class.java
+val ListClass get() = classOf<List<*>>()
 
 /**
  * 获得 [ArrayList] 类型
  * @return [Class]
  */
-val ArrayListClass get() = ArrayList::class.java
+val ArrayListClass get() = classOf<ArrayList<*>>()
 
 /**
  * 获得 [HashMap] 类型
  * @return [Class]
  */
-val HashMapClass get() = HashMap::class.java
+val HashMapClass get() = classOf<HashMap<*, *>>()
 
 /**
  * 获得 [HashSet] 类型
  * @return [Class]
  */
-val HashSetClass get() = HashSet::class.java
+val HashSetClass get() = classOf<HashSet<*>>()
 
 /**
  * 获得 [WeakHashMap] 类型
  * @return [Class]
  */
-val WeakHashMapClass get() = WeakHashMap::class.java
+val WeakHashMapClass get() = classOf<WeakHashMap<*, *>>()
 
 /**
  * 获得 [WeakReference] 类型
  * @return [Class]
  */
-val WeakReferenceClass get() = WeakReference::class.java
+val WeakReferenceClass get() = classOf<WeakReference<*>>()
 
 /**
  * 获得 [Enum] 类型
  * @return [Class]
  */
-val EnumClass get() = Enum::class.java
+val EnumClass get() = classOf<Enum<*>>()
 
 /**
  * 获得 [Map] 类型
  * @return [Class]
  */
-val MapClass get() = Map::class.java
+val MapClass get() = classOf<Map<*, *>>()
 
 /**
  * 获得 [Map.Entry] 类型
  * @return [Class]
  */
-val Map_EntryClass get() = Map.Entry::class.java
+val Map_EntryClass get() = classOf<Map.Entry<*, *>>()
 
 /**
  * 获得 [Reference] 类型
  * @return [Class]
  */
-val ReferenceClass get() = Reference::class.java
+val ReferenceClass get() = classOf<Reference<*>>()
 
 /**
  * 获得 [Vector] 类型
  * @return [Class]
  */
-val VectorClass get() = Vector::class.java
+val VectorClass get() = classOf<Vector<*>>()
 
 /**
  * 获得 [File] 类型
  * @return [Class]
  */
-val FileClass get() = File::class.java
+val FileClass get() = classOf<File>()
 
 /**
  * 获得 [InputStream] 类型
  * @return [Class]
  */
-val InputStreamClass get() = InputStream::class.java
+val InputStreamClass get() = classOf<InputStream>()
 
 /**
  * 获得 [OutputStream] 类型
  * @return [Class]
  */
-val OutputStreamClass get() = OutputStream::class.java
+val OutputStreamClass get() = classOf<OutputStream>()
 
 /**
  * 获得 [BufferedReader] 类型
  * @return [Class]
  */
-val BufferedReaderClass get() = BufferedReader::class.java
+val BufferedReaderClass get() = classOf<BufferedReader>()
 
 /**
  * 获得 [Date] 类型
  * @return [Class]
  */
-val DateClass get() = Date::class.java
+val DateClass get() = classOf<Date>()
 
 /**
  * 获得 [TimeZone] 类型
  * @return [Class]
  */
-val TimeZoneClass get() = TimeZone::class.java
+val TimeZoneClass get() = classOf<TimeZone>()
 
 /**
  * 获得 [SimpleDateFormat] 类型
  * @return [Class]
  */
-val SimpleDateFormatClass_Java get() = SimpleDateFormat::class.java
+val SimpleDateFormatClass_Java get() = classOf<SimpleDateFormat>()
 
 /**
  * 获得 [Timer] 类型
  * @return [Class]
  */
-val TimerClass get() = Timer::class.java
+val TimerClass get() = classOf<Timer>()
 
 /**
  * 获得 [TimerTask] 类型
  * @return [Class]
  */
-val TimerTaskClass get() = TimerTask::class.java
+val TimerTaskClass get() = classOf<TimerTask>()
 
 /**
  * 获得 [Thread] 类型
  * @return [Class]
  */
-val ThreadClass get() = Thread::class.java
+val ThreadClass get() = classOf<Thread>()
 
 /**
  * 获得 [Base64] 类型
@@ -345,232 +346,232 @@ val ThreadClass get() = Thread::class.java
  * - ❗在 Android O (26) 及以上系统加入
  * @return [Class]
  */
-val Base64Class_Java get() = Base64::class.java
+val Base64Class_Java get() = classOf<Base64>()
 
 /**
  * 获得 [Observer] 类型
  * @return [Class]
  */
-val ObserverClass get() = Observer::class.java
+val ObserverClass get() = classOf<Observer>()
 
 /**
  * 获得 [Set] 类型
  * @return [Class]
  */
-val SetClass get() = Set::class.java
+val SetClass get() = classOf<Set<*>>()
 
 /**
  * 获得 [JSONObject] 类型
  * @return [Class]
  */
-val JSONObjectClass get() = JSONObject::class.java
+val JSONObjectClass get() = classOf<JSONObject>()
 
 /**
  * 获得 [JSONArray] 类型
  * @return [Class]
  */
-val JSONArrayClass get() = JSONArray::class.java
+val JSONArrayClass get() = classOf<JSONArray>()
 
 /**
  * 获得 [StringBuilder] 类型
  * @return [Class]
  */
-val StringBuilderClass get() = StringBuilder::class.java
+val StringBuilderClass get() = classOf<StringBuilder>()
 
 /**
  * 获得 [StringBuffer] 类型
  * @return [Class]
  */
-val StringBufferClass get() = StringBuffer::class.java
+val StringBufferClass get() = classOf<StringBuffer>()
 
 /**
  * 获得 [ZipEntry] 类型
  * @return [Class]
  */
-val ZipEntryClass get() = ZipEntry::class.java
+val ZipEntryClass get() = classOf<ZipEntry>()
 
 /**
  * 获得 [ZipFile] 类型
  * @return [Class]
  */
-val ZipFileClass get() = ZipFile::class.java
+val ZipFileClass get() = classOf<ZipFile>()
 
 /**
  * 获得 [ZipInputStream] 类型
  * @return [Class]
  */
-val ZipInputStreamClass get() = ZipInputStream::class.java
+val ZipInputStreamClass get() = classOf<ZipInputStream>()
 
 /**
  * 获得 [ZipOutputStream] 类型
  * @return [Class]
  */
-val ZipOutputStreamClass get() = ZipOutputStream::class.java
+val ZipOutputStreamClass get() = classOf<ZipOutputStream>()
 
 /**
  * 获得 [HttpURLConnection] 类型
  * @return [Class]
  */
-val HttpURLConnectionClass get() = HttpURLConnection::class.java
+val HttpURLConnectionClass get() = classOf<HttpURLConnection>()
 
 /**
  * 获得 [HttpCookie] 类型
  * @return [Class]
  */
-val HttpCookieClass get() = HttpCookie::class.java
+val HttpCookieClass get() = classOf<HttpCookie>()
 
 /**
  * 获得 [HttpClient] 类型
  * @return [Class]
  */
-val HttpClientClass get() = HttpClient::class.java
+val HttpClientClass get() = classOf<HttpClient>()
 
 /**
  * 获得 [AtomicBoolean] 类型
  * @return [Class]
  */
-val AtomicBooleanClass get() = AtomicBoolean::class.java
+val AtomicBooleanClass get() = classOf<AtomicBoolean>()
 
 /**
  * 获得 [Supplier] 类型
  * @return [Class]
  */
-val SupplierClass get() = Supplier::class.java
+val SupplierClass get() = classOf<Supplier<*>>()
 
 /**
  * 获得 [Class] 类型
  * @return [Class]
  */
-val JavaClass get() = Class::class.java
+val JavaClass get() = classOf<Class<*>>()
 
 /**
  * 获得 [ClassLoader] 类型
  * @return [ClassLoader]
  */
-val JavaClassLoader get() = ClassLoader::class.java
+val JavaClassLoader get() = classOf<ClassLoader>()
 
 /**
  * 获得 [Method] 类型
  * @return [Class]
  */
-val JavaMethodClass get() = Method::class.java
+val JavaMethodClass get() = classOf<Method>()
 
 /**
  * 获得 [Field] 类型
  * @return [Class]
  */
-val JavaFieldClass get() = Field::class.java
+val JavaFieldClass get() = classOf<Field>()
 
 /**
  * 获得 [Constructor] 类型
  * @return [Class]
  */
-val JavaConstructorClass get() = Constructor::class.java
+val JavaConstructorClass get() = classOf<Constructor<*>>()
 
 /**
  * 获得 [Member] 类型
  * @return [Class]
  */
-val JavaMemberClass get() = Member::class.java
+val JavaMemberClass get() = classOf<Member>()
 
 /**
  * 获得 [Annotation] 类型
  * @return [Class]
  */
-val JavaAnnotationClass get() = Annotation::class.java
+val JavaAnnotationClass get() = classOf<Annotation>()
 
 /**
  * 获得 [java.util.function.Function] 类型
  * @return [Class]
  */
-val FunctionClass get() = java.util.function.Function::class.java
+val FunctionClass get() = classOf<java.util.function.Function<*, *>>()
 
 /**
  * 获得 [Optional] 类型
  * @return [Class]
  */
-val OptionalClass get() = Optional::class.java
+val OptionalClass get() = classOf<Optional<*>>()
 
 /**
  * 获得 [OptionalInt] 类型
  * @return [Class]
  */
-val OptionalIntClass get() = OptionalInt::class.java
+val OptionalIntClass get() = classOf<OptionalInt>()
 
 /**
  * 获得 [OptionalLong] 类型
  * @return [Class]
  */
-val OptionalLongClass get() = OptionalLong::class.java
+val OptionalLongClass get() = classOf<OptionalLong>()
 
 /**
  * 获得 [OptionalDouble] 类型
  * @return [Class]
  */
-val OptionalDoubleClass get() = OptionalDouble::class.java
+val OptionalDoubleClass get() = classOf<OptionalDouble>()
 
 /**
  * 获得 [Objects] 类型
  * @return [Class]
  */
-val ObjectsClass get() = Objects::class.java
+val ObjectsClass get() = classOf<Objects>()
 
 /**
  * 获得 [Runtime] 类型
  * @return [Class]
  */
-val RuntimeClass get() = Runtime::class.java
+val RuntimeClass get() = classOf<Runtime>()
 
 /**
  * 获得 [NullPointerException] 类型
  * @return [Class]
  */
-val NullPointerExceptionClass get() = NullPointerException::class.java
+val NullPointerExceptionClass get() = classOf<NullPointerException>()
 
 /**
  * 获得 [NumberFormatException] 类型
  * @return [Class]
  */
-val NumberFormatExceptionClass get() = NumberFormatException::class.java
+val NumberFormatExceptionClass get() = classOf<NumberFormatException>()
 
 /**
  * 获得 [IllegalStateException] 类型
  * @return [Class]
  */
-val IllegalStateExceptionClass get() = IllegalStateException::class.java
+val IllegalStateExceptionClass get() = classOf<IllegalStateException>()
 
 /**
  * 获得 [RuntimeException] 类型
  * @return [Class]
  */
-val RuntimeExceptionClass get() = RuntimeException::class.java
+val RuntimeExceptionClass get() = classOf<RuntimeException>()
 
 /**
  * 获得 [NoSuchMethodError] 类型
  * @return [Class]
  */
-val NoSuchMethodErrorClass get() = NoSuchMethodError::class.java
+val NoSuchMethodErrorClass get() = classOf<NoSuchMethodError>()
 
 /**
  * 获得 [NoSuchFieldError] 类型
  * @return [Class]
  */
-val NoSuchFieldErrorClass get() = NoSuchFieldError::class.java
+val NoSuchFieldErrorClass get() = classOf<NoSuchFieldError>()
 
 /**
  * 获得 [Error] 类型
  * @return [Class]
  */
-val ErrorClass get() = Error::class.java
+val ErrorClass get() = classOf<Error>()
 
 /**
  * 获得 [Exception] 类型
  * @return [Class]
  */
-val ExceptionClass get() = Exception::class.java
+val ExceptionClass get() = classOf<Exception>()
 
 /**
  * 获得 [Throwable] 类型
  * @return [Class]
  */
-val ThrowableClass get() = Throwable::class.java
+val ThrowableClass get() = classOf<Throwable>()

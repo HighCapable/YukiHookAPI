@@ -40,375 +40,376 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
 import android.widget.RemoteViews.RemoteView
+import com.highcapable.yukihookapi.hook.factory.classOf
 
 /**
  * 获得 [View] 类型
  * @return [Class]
  */
-val ViewClass get() = View::class.java
+val ViewClass get() = classOf<View>()
 
 /**
  * 获得 [Surface] 类型
  * @return [Class]
  */
-val SurfaceClass get() = Surface::class.java
+val SurfaceClass get() = classOf<Surface>()
 
 /**
  * 获得 [SurfaceView] 类型
  * @return [Class]
  */
-val SurfaceViewClass get() = SurfaceView::class.java
+val SurfaceViewClass get() = classOf<SurfaceView>()
 
 /**
  * 获得 [TextureView] 类型
  * @return [Class]
  */
-val TextureViewClass get() = TextureView::class.java
+val TextureViewClass get() = classOf<TextureView>()
 
 /**
  * 获得 [WebView] 类型
  * @return [Class]
  */
-val WebViewClass get() = WebView::class.java
+val WebViewClass get() = classOf<WebView>()
 
 /**
  * 获得 [WebViewClient] 类型
  * @return [Class]
  */
-val WebViewClientClass get() = WebViewClient::class.java
+val WebViewClientClass get() = classOf<WebViewClient>()
 
 /**
  * 获得 [ViewStructure] 类型
  * @return [Class]
  */
-val ViewStructureClass get() = ViewStructure::class.java
+val ViewStructureClass get() = classOf<ViewStructure>()
 
 /**
  * 获得 [ViewGroup] 类型
  * @return [Class]
  */
-val ViewGroupClass get() = ViewGroup::class.java
+val ViewGroupClass get() = classOf<ViewGroup>()
 
 /**
  * 获得 [ViewParent] 类型
  * @return [Class]
  */
-val ViewParentClass get() = ViewParent::class.java
+val ViewParentClass get() = classOf<ViewParent>()
 
 /**
  * 获得 [AppWidgetHostView] 类型
  * @return [Class]
  */
-val AppWidgetHostViewClass get() = AppWidgetHostView::class.java
+val AppWidgetHostViewClass get() = classOf<AppWidgetHostView>()
 
 /**
  * 获得 [RemoteViews] 类型
  * @return [Class]
  */
-val RemoteViewsClass get() = RemoteViews::class.java
+val RemoteViewsClass get() = classOf<RemoteViews>()
 
 /**
  * 获得 [RemoteView] 类型
  * @return [Class]
  */
-val RemoteViewClass get() = RemoteView::class.java
+val RemoteViewClass get() = classOf<RemoteView>()
 
 /**
  * 获得 [TextView] 类型
  * @return [Class]
  */
-val TextViewClass get() = TextView::class.java
+val TextViewClass get() = classOf<TextView>()
 
 /**
  * 获得 [ImageView] 类型
  * @return [Class]
  */
-val ImageViewClass get() = ImageView::class.java
+val ImageViewClass get() = classOf<ImageView>()
 
 /**
  * 获得 [ImageButton] 类型
  * @return [Class]
  */
-val ImageButtonClass get() = ImageButton::class.java
+val ImageButtonClass get() = classOf<ImageButton>()
 
 /**
  * 获得 [EditText] 类型
  * @return [Class]
  */
-val EditTextClass get() = EditText::class.java
+val EditTextClass get() = classOf<EditText>()
 
 /**
  * 获得 [Button] 类型
  * @return [Class]
  */
-val ButtonClass get() = Button::class.java
+val ButtonClass get() = classOf<Button>()
 
 /**
  * 获得 [CheckBox] 类型
  * @return [Class]
  */
-val CheckBoxClass get() = CheckBox::class.java
+val CheckBoxClass get() = classOf<CheckBox>()
 
 /**
  * 获得 [CompoundButton] 类型
  * @return [Class]
  */
-val CompoundButtonClass get() = CompoundButton::class.java
+val CompoundButtonClass get() = classOf<CompoundButton>()
 
 /**
  * 获得 [VideoView] 类型
  * @return [Class]
  */
-val VideoViewClass get() = VideoView::class.java
+val VideoViewClass get() = classOf<VideoView>()
 
 /**
  * 获得 [ListView] 类型
  * @return [Class]
  */
-val ListViewClass get() = ListView::class.java
+val ListViewClass get() = classOf<ListView>()
 
 /**
  * 获得 [LayoutInflater] 类型
  * @return [Class]
  */
-val LayoutInflaterClass get() = LayoutInflater::class.java
+val LayoutInflaterClass get() = classOf<LayoutInflater>()
 
 /**
  * 获得 [LayoutInflater.Filter] 类型
  * @return [Class]
  */
-val LayoutInflater_FilterClass get() = LayoutInflater.Filter::class.java
+val LayoutInflater_FilterClass get() = classOf<LayoutInflater.Filter>()
 
 /**
  * 获得 [LayoutInflater.Factory] 类型
  * @return [Class]
  */
-val LayoutInflater_FactoryClass get() = LayoutInflater.Factory::class.java
+val LayoutInflater_FactoryClass get() = classOf<LayoutInflater.Factory>()
 
 /**
  * 获得 [LayoutInflater.Factory2] 类型
  * @return [Class]
  */
-val LayoutInflater_Factory2Class get() = LayoutInflater.Factory2::class.java
+val LayoutInflater_Factory2Class get() = classOf<LayoutInflater.Factory2>()
 
 /**
  * 获得 [ListAdapter] 类型
  * @return [Class]
  */
-val ListAdapterClass get() = ListAdapter::class.java
+val ListAdapterClass get() = classOf<ListAdapter>()
 
 /**
  * 获得 [ArrayAdapter] 类型
  * @return [Class]
  */
-val ArrayAdapterClass get() = ArrayAdapter::class.java
+val ArrayAdapterClass get() = classOf<ArrayAdapter<*>>()
 
 /**
  * 获得 [BaseAdapter] 类型
  * @return [Class]
  */
-val BaseAdapterClass get() = BaseAdapter::class.java
+val BaseAdapterClass get() = classOf<BaseAdapter>()
 
 /**
  * 获得 [RelativeLayout] 类型
  * @return [Class]
  */
-val RelativeLayoutClass get() = RelativeLayout::class.java
+val RelativeLayoutClass get() = classOf<RelativeLayout>()
 
 /**
  * 获得 [FrameLayout] 类型
  * @return [Class]
  */
-val FrameLayoutClass get() = FrameLayout::class.java
+val FrameLayoutClass get() = classOf<FrameLayout>()
 
 /**
  * 获得 [LinearLayout] 类型
  * @return [Class]
  */
-val LinearLayoutClass get() = LinearLayout::class.java
+val LinearLayoutClass get() = classOf<LinearLayout>()
 
 /**
  * 获得 [ViewGroup.LayoutParams] 类型
  * @return [Class]
  */
-val ViewGroup_LayoutParamsClass get() = ViewGroup.LayoutParams::class.java
+val ViewGroup_LayoutParamsClass get() = classOf<ViewGroup.LayoutParams>()
 
 /**
  * 获得 [RelativeLayout.LayoutParams] 类型
  * @return [Class]
  */
-val RelativeLayout_LayoutParamsClass get() = RelativeLayout.LayoutParams::class.java
+val RelativeLayout_LayoutParamsClass get() = classOf<RelativeLayout.LayoutParams>()
 
 /**
  * 获得 [LinearLayout.LayoutParams] 类型
  * @return [Class]
  */
-val LinearLayout_LayoutParamsClass get() = LinearLayout.LayoutParams::class.java
+val LinearLayout_LayoutParamsClass get() = classOf<LinearLayout.LayoutParams>()
 
 /**
  * 获得 [FrameLayout.LayoutParams] 类型
  * @return [Class]
  */
-val FrameLayout_LayoutParamsClass get() = FrameLayout.LayoutParams::class.java
+val FrameLayout_LayoutParamsClass get() = classOf<FrameLayout.LayoutParams>()
 
 /**
  * 获得 [TextClock] 类型
  * @return [Class]
  */
-val TextClockClass get() = TextClock::class.java
+val TextClockClass get() = classOf<TextClock>()
 
 /**
  * 获得 [MotionEvent] 类型
  * @return [Class]
  */
-val MotionEventClass get() = MotionEvent::class.java
+val MotionEventClass get() = classOf<MotionEvent>()
 
 /**
  * 获得 [View.OnClickListener] 类型
  * @return [Class]
  */
-val View_OnClickListenerClass get() = View.OnClickListener::class.java
+val View_OnClickListenerClass get() = classOf<View.OnClickListener>()
 
 /**
  * 获得 [View.OnLongClickListener] 类型
  * @return [Class]
  */
-val View_OnLongClickListenerClass get() = View.OnLongClickListener::class.java
+val View_OnLongClickListenerClass get() = classOf<View.OnLongClickListener>()
 
 /**
  * 获得 [View.OnTouchListener] 类型
  * @return [Class]
  */
-val View_OnTouchListenerClass get() = View.OnTouchListener::class.java
+val View_OnTouchListenerClass get() = classOf<View.OnTouchListener>()
 
 /**
  * 获得 [AutoCompleteTextView] 类型
  * @return [Class]
  */
-val AutoCompleteTextViewClass get() = AutoCompleteTextView::class.java
+val AutoCompleteTextViewClass get() = classOf<AutoCompleteTextView>()
 
 /**
  * 获得 [ViewStub] 类型
  * @return [Class]
  */
-val ViewStubClass get() = ViewStub::class.java
+val ViewStubClass get() = classOf<ViewStub>()
 
 /**
  * 获得 [ViewStub.OnInflateListener] 类型
  * @return [Class]
  */
-val ViewStub_OnInflateListenerClass get() = ViewStub.OnInflateListener::class.java
+val ViewStub_OnInflateListenerClass get() = classOf<ViewStub.OnInflateListener>()
 
 /**
  * 获得 [GestureDetector] 类型
  * @return [Class]
  */
-val GestureDetectorClass get() = GestureDetector::class.java
+val GestureDetectorClass get() = classOf<GestureDetector>()
 
 /**
  * 获得 [GestureDetector.SimpleOnGestureListener] 类型
  * @return [Class]
  */
-val GestureDetector_SimpleOnGestureListenerClass get() = GestureDetector.SimpleOnGestureListener::class.java
+val GestureDetector_SimpleOnGestureListenerClass get() = classOf<GestureDetector.SimpleOnGestureListener>()
 
 /**
  * 获得 [ProgressBar] 类型
  * @return [Class]
  */
-val ProgressBarClass get() = ProgressBar::class.java
+val ProgressBarClass get() = classOf<ProgressBar>()
 
 /**
  * 获得 [AttributeSet] 类型
  * @return [Class]
  */
-val AttributeSetClass get() = AttributeSet::class.java
+val AttributeSetClass get() = classOf<AttributeSet>()
 
 /**
  * 获得 [Animation] 类型
  * @return [Class]
  */
-val AnimationClass get() = Animation::class.java
+val AnimationClass get() = classOf<Animation>()
 
 /**
  * 获得 [Animation.AnimationListener] 类型
  * @return [Class]
  */
-val Animation_AnimationListenerClass get() = Animation.AnimationListener::class.java
+val Animation_AnimationListenerClass get() = classOf<Animation.AnimationListener>()
 
 /**
  * 获得 [TranslateAnimation] 类型
  * @return [Class]
  */
-val TranslateAnimationClass get() = TranslateAnimation::class.java
+val TranslateAnimationClass get() = classOf<TranslateAnimation>()
 
 /**
  * 获得 [AlphaAnimation] 类型
  * @return [Class]
  */
-val AlphaAnimationClass get() = AlphaAnimation::class.java
+val AlphaAnimationClass get() = classOf<AlphaAnimation>()
 
 /**
  * 获得 [Animator] 类型
  * @return [Class]
  */
-val AnimatorClass get() = Animator::class.java
+val AnimatorClass get() = classOf<Animator>()
 
 /**
  * 获得 [Animator.AnimatorListener] 类型
  * @return [Class]
  */
-val Animator_AnimatorListenerClass get() = Animator.AnimatorListener::class.java
+val Animator_AnimatorListenerClass get() = classOf<Animator.AnimatorListener>()
 
 /**
  * 获得 [ObjectAnimator] 类型
  * @return [Class]
  */
-val ObjectAnimatorClass get() = ObjectAnimator::class.java
+val ObjectAnimatorClass get() = classOf<ObjectAnimator>()
 
 /**
  * 获得 [ValueAnimator] 类型
  * @return [Class]
  */
-val ValueAnimatorClass get() = ValueAnimator::class.java
+val ValueAnimatorClass get() = classOf<ValueAnimator>()
 
 /**
  * 获得 [ValueAnimator.AnimatorUpdateListener] 类型
  * @return [Class]
  */
-val ValueAnimator_AnimatorUpdateListenerClass get() = ValueAnimator.AnimatorUpdateListener::class.java
+val ValueAnimator_AnimatorUpdateListenerClass get() = classOf<ValueAnimator.AnimatorUpdateListener>()
 
 /**
  * 获得 [ViewAnimator] 类型
  * @return [Class]
  */
-val ViewAnimatorClass get() = ViewAnimator::class.java
+val ViewAnimatorClass get() = classOf<ViewAnimator>()
 
 /**
  * 获得 [AnimatorSet] 类型
  * @return [Class]
  */
-val AnimatorSetClass get() = AnimatorSet::class.java
+val AnimatorSetClass get() = classOf<AnimatorSet>()
 
 /**
  * 获得 [AnimatorSet.Builder] 类型
  * @return [Class]
  */
-val AnimatorSet_BuilderClass get() = AnimatorSet.Builder::class.java
+val AnimatorSet_BuilderClass get() = classOf<AnimatorSet.Builder>()
 
 /**
  * 获得 [PropertyValuesHolder] 类型
  * @return [Class]
  */
-val PropertyValuesHolderClass get() = PropertyValuesHolder::class.java
+val PropertyValuesHolderClass get() = classOf<PropertyValuesHolder>()
 
 /**
  * 获得 [ViewPropertyAnimator] 类型
  * @return [Class]
  */
-val ViewPropertyAnimatorClass get() = ViewPropertyAnimator::class.java
+val ViewPropertyAnimatorClass get() = classOf<ViewPropertyAnimator>()
 
 /**
  * 获得 [View.MeasureSpec] 类型
  * @return [Class]
  */
-val View_MeasureSpecClass get() = View.MeasureSpec::class.java
+val View_MeasureSpecClass get() = classOf<View.MeasureSpec>()
