@@ -1105,7 +1105,7 @@ loggerD(tag = "YukiHookAPI", msg = "This is a log")
 > 示例如下
 
 ```
-[YukiHookAPI][D]--> This is a log
+[YukiHookAPI][D][宿主包名]--> This is a log
 ```
 
 你还可以使用 `LoggerType` 自定义日志打印的类型，可选择使用 `android.util.Log` 还是 `XposedBridge.log` 来打印日志。
@@ -1168,7 +1168,7 @@ loggerE(msg = "This is an error", e = throwable)
 > 示例如下
 
 ```
-[YukiHookAPI][E]--> This is an error
+[YukiHookAPI][E][宿主包名]--> This is an error
 ```
 
 同时，日志会帮你打印整个异常堆栈。
