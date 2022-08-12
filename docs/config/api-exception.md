@@ -527,6 +527,54 @@ MethodFinder::class.java.method {
 
 不允许内联、反射、Hook `YukiHookAPI` 自身的 `Class` 以及内部功能，防止发生错误。
 
+!> `UnsupportedOperationException` !!!DANGEROUS!!! Hook \[**CLASS**\] Class is a dangerous behavior! \[**CONTENT**\] \[**SOLVE**\]
+
+**异常原因**
+
+你尝试 Hook 了处于危险行为列表中的 `Class` 对象，例如 `Class`、`ClassLoader`、`Method`。
+
+> 示例如下
+
+```kotlin
+// <情景1>
+JavaClassLoader.hook {
+    // ...
+}
+// <情景2>
+JavaClass.hook {
+    // ...
+}
+// <情景3>
+JavaMethod.hook {
+    // ...
+}
+// ...
+```
+
+**解决方案**
+
+这些功能是系统内部的，<u>**它们不应该被 Hook，在部分 Hook Framework 上可能不被支持，还会引发其它错误**</u>，请尝试更换 Hook 点。
+
+若你仍要使用此功能，请参考 [useDangerousOperation](api/document?id=usedangerousoperation-method) 并在 `hook` 方法体内第一位加入方法 `useDangerousOperation` 并键入 `Yes do as I say!`。
+
+> 示例如下
+
+```kotlin
+JavaClassLoader.hook {
+    useDangerousOperation(option = "Yes do as I say!")
+    injectMember {
+        method {
+            // ...
+        }
+        afterHook {
+            // ...
+        }
+    }
+}
+```
+
+这只是一个用于调试的功能，<u>**强烈建议不要这样做，发生问题请不要反馈，自行承担一切后果**</u>。
+
 !> `IllegalStateException` Failed to got SystemContext
 
 **异常原因**
