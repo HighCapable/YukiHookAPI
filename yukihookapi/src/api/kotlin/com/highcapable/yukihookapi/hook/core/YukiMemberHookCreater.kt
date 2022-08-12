@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.hook.core
 
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
@@ -39,7 +40,6 @@ import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
-import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
@@ -73,6 +73,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     /** 更快回调 Hook 方法结果 */
     val PRIORITY_HIGHEST = YukiHookPriority.PRIORITY_HIGHEST
 
+    /** Hook 操作选项内容 */
+    private var hookOption = ""
+
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
 
@@ -105,8 +108,22 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         MemberHookCreater(priority, tag).apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
     /**
+     * 允许 Hook 过程中的所有危险行为
+     *
+     * 请在 [option] 中键入 "Yes do as I say!" 代表你同意允许所有危险行为
+     *
+     * 你还需要在整个作用域中声明注解 [CauseProblemsApi] 以消除警告
+     *
+     * - ❗若你不知道允许此功能会带来何种后果 - 请勿使用
+     * @param option 操作选项内容
+     */
+    @CauseProblemsApi
+    fun useDangerousOperation(option: String) {
+        hookOption = option
+    }
+
+    /**
      * Hook 执行入口
-     * @throws IllegalStateException 如果必要参数没有被设置
      * @return [Result]
      */
     @PublishedApi
@@ -116,10 +133,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
         preHookMembers.isEmpty() -> Result().also { loggerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
         else -> Result().await {
-            warnTerribleHookClass()
             when {
                 isDisableCreaterRunHook.not() && hookClass.instance != null -> runCatching {
-                    hookClass.instance?.checkingInternal()
+                    hookClass.instance?.apply { checkingInternal(); checkingDangerous() }
                     it.onPrepareHook?.invoke()
                     preHookMembers.forEach { (_, m) -> m.hook() }
                 }.onFailure {
@@ -135,21 +151,37 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
     }
 
-    /** 打印不应该被 Hook 警告范围内的 [HookClass] 对象 */
-    private fun warnTerribleHookClass() {
-        when (hookClass.name) {
-            AnyType.name -> yLoggerW(
-                msg = "Hook [Object] Class is a dangerous behavior! " +
-                        "This is the parent Class of all objects, if you hook it, it may cause a lot of memory leaks"
+    /**
+     * 检查不应该被 Hook 警告范围内的 [HookClass] 对象
+     * @throws UnsupportedOperationException 如果遇到警告范围内的 [HookClass] 对象
+     */
+    private fun Class<*>.checkingDangerous() {
+        /**
+         * 警告并抛出异常
+         * @param name 对象名称
+         * @param content 警告内容
+         * @throws UnsupportedOperationException 抛出警告异常
+         */
+        fun throwProblem(name: String, content: String) {
+            if (hookOption != "Yes do as I say!") throw UnsupportedOperationException(
+                "!!!DANGEROUS!!! Hook [$name] Class is a dangerous behavior! $content\n" +
+                        "The hook request was rejected, if you still want to use it, " +
+                        "call \"useDangerousOperation\" and type \"Yes do as I say!\""
             )
-            JavaClassLoader.name -> yLoggerW(
-                msg = "Hook [ClassLoader] Class is a dangerous behavior! " +
-                        "If you only want to listen to \"loadClass\" use \"ClassLoader.fetching\" instead it"
+        }
+        when (hookClass.name) {
+            AnyType.name -> throwProblem(
+                name = "Object",
+                content = "This is the parent Class of all objects, if you hook it, it may cause a lot of memory leaks"
+            )
+            JavaClassLoader.name -> throwProblem(
+                name = "ClassLoader",
+                content = "If you only want to listen to \"loadClass\", just use \"ClassLoader.fetching\" instead it"
             )
             JavaClass.name, JavaMethodClass.name, JavaFieldClass.name,
-            JavaConstructorClass.name, JavaMemberClass.name -> yLoggerW(
-                msg = "Hook [Class/Method/Field/Constructor/Member] Class is a dangerous behavior! " +
-                        "Those Class should not be hooked, it may cause StackOverflow errors"
+            JavaConstructorClass.name, JavaMemberClass.name -> throwProblem(
+                name = "Class/Method/Field/Constructor/Member",
+                content = "Those Class should not be hooked, it may cause StackOverflow errors"
             )
         }
     }

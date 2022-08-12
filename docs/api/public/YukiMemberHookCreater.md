@@ -130,6 +130,26 @@ injectMember(priority = PRIORITY_HIGHEST) {
 }
 ```
 
+### useDangerousOperation [method]
+
+```kotlin
+fun useDangerousOperation(option: String)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 允许 Hook 过程中的所有危险行为。
+
+请在 `option` 中键入 `Yes do as I say!` 代表你同意允许所有危险行为。
+
+你还需要在整个作用域中声明注解 `CauseProblemsApi` 以消除警告。
+
+!> 若你不知道允许此功能会带来何种后果，请勿使用。
+
 ### MemberHookCreater [class]
 
 ```kotlin

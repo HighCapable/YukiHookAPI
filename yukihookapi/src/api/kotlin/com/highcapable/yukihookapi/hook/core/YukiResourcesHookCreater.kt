@@ -61,10 +61,7 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
     inline fun injectResource(tag: String = "Default", initiate: ResourcesHookCreater.() -> Unit) =
         ResourcesHookCreater(tag).apply(initiate).apply { preHookResources[toString()] = this }.build()
 
-    /**
-     * Hook 执行入口
-     * @throws IllegalStateException 如果必要参数没有被设置
-     */
+    /** Hook 执行入口 */
     @PublishedApi
     internal fun hook() {
         if (YukiHookBridge.hasXposedBridge.not()) return
