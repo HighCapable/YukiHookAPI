@@ -37,9 +37,9 @@ import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.factory.*
-import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
@@ -131,7 +131,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         YukiHookBridge.hasXposedBridge.not() -> Result()
         /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] 或 [HookParam.isCallbackCalled] 已被执行 */
         packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
-        preHookMembers.isEmpty() -> Result().also { loggerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
+        preHookMembers.isEmpty() -> Result().also { yLoggerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
         else -> Result().await {
             when {
                 isDisableCreaterRunHook.not() && hookClass.instance != null -> runCatching {

@@ -32,9 +32,9 @@ package com.highcapable.yukihookapi.hook.core
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookResources
-import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
@@ -67,7 +67,7 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
         if (YukiHookBridge.hasXposedBridge.not()) return
         /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.RESOURCES] */
         if (packageParam.wrapper?.type == HookEntryType.PACKAGE) return
-        if (preHookResources.isEmpty()) return loggerW(msg = "Hook Resources is empty, hook aborted")
+        if (preHookResources.isEmpty()) return yLoggerW(msg = "Hook Resources is empty, hook aborted")
         preHookResources.forEach { (_, r) -> r.hook() }
     }
 
