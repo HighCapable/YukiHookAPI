@@ -16,6 +16,34 @@ class CurrentClass internal constructor(internal val classSet: Class<*>, interna
 
 > 当前实例的类操作对象。
 
+### name [field]
+
+```kotlin
+val name: String
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获得当前 `classSet` 的 `Class.getName`。
+
+### simpleName [field]
+
+```kotlin
+val simpleName: String
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获得当前 `classSet` 的 `Class.getSimpleName`。
+
 ### superClass [method]
 
 ```kotlin
@@ -71,6 +99,34 @@ inner class SuperClass internal constructor()
 **功能描述**
 
 > 当前类的父类实例的类操作对象。
+
+#### name [field]
+
+```kotlin
+val name: String
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获得当前 `classSet` 中父类的 `Class.getName`。
+
+#### simpleName [field]
+
+```kotlin
+val simpleName: String
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获得当前 `classSet` 中父类的 `Class.getSimpleName`。
 
 #### field [method]
 

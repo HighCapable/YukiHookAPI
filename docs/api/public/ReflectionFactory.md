@@ -442,11 +442,11 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFind
 ### current [method]
 
 ```kotlin
-inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
+inline fun <reified T : Any> T.current(): CurrentClass
 ```
 
 ```kotlin
-inline fun <reified T : Any> T.current(): CurrentClass
+inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
 ```
 
 **变更记录**

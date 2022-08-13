@@ -25,6 +25,8 @@
  *
  * This file is Created by fankes on 2022/4/4.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.hook.bean
 
 import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
@@ -40,6 +42,18 @@ import com.highcapable.yukihookapi.hook.factory.method
  * @param instance 当前实例本身
  */
 class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val classSet: Class<*>, @PublishedApi internal val instance: Any) {
+
+    /**
+     * 获得当前 [classSet] 的 [Class.getName]
+     * @return [String]
+     */
+    val name get() = classSet.name ?: instance.javaClass.name ?: ""
+
+    /**
+     * 获得当前 [classSet] 的 [Class.getSimpleName]
+     * @return [String]
+     */
+    val simpleName get() = classSet.simpleName ?: instance.javaClass.simpleName ?: ""
 
     /**
      * 调用父类实例
@@ -69,6 +83,18 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
     inner class SuperClass internal constructor() {
 
         /**
+         * 获得当前 [classSet] 中父类的 [Class.getName]
+         * @return [String]
+         */
+        val name get() = classSet.superclass.name ?: instance.javaClass.superclass.name ?: ""
+
+        /**
+         * 获得当前 [classSet] 中父类的 [Class.getSimpleName]
+         * @return [String]
+         */
+        val simpleName get() = classSet.superclass.simpleName ?: instance.javaClass.superclass.simpleName ?: ""
+
+        /**
          * 调用父类实例中的变量
          * @param initiate 查找方法体
          * @return [FieldFinder.Result.Instance]
@@ -81,5 +107,9 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @return [MethodFinder.Result.Instance]
          */
         inline fun method(initiate: MethodCondition) = classSet.superclass.method(initiate).get(instance)
+
+        override fun toString() = "CurrentClass super [${classSet.superclass}]"
     }
+
+    override fun toString() = "CurrentClass [$classSet]"
 }

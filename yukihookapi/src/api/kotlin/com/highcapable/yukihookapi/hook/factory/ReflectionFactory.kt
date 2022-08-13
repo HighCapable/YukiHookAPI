@@ -167,22 +167,21 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition = { emptyParam() 
 
 /**
  * 获得当前实例的类操作对象
- * @param initiate 方法体
- * @return [T]
- */
-inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
-    javaClass.checkingInternal()
-    CurrentClass(javaClass, instance = this).apply(initiate)
-    return this
-}
-
-/**
- * 获得当前实例的类操作对象
  * @return [CurrentClass]
  */
 inline fun <reified T : Any> T.current(): CurrentClass {
     javaClass.checkingInternal()
     return CurrentClass(javaClass, instance = this)
+}
+
+/**
+ * 获得当前实例的类操作对象
+ * @param initiate 方法体
+ * @return [T]
+ */
+inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
+    current().apply(initiate)
+    return this
 }
 
 /**
