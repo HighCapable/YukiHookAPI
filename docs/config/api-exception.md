@@ -500,7 +500,7 @@ Resources 的 Hook 并非类似方法的 Hook，其必须拥有完整的名称�
 
 > 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
 
-!> `RuntimeException` !!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself
+!> `RuntimeException` !!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself, The called class is \[**CLASS**\]
 
 **异常原因**
 
@@ -524,6 +524,21 @@ MethodFinder::class.java.method {
 ```
 
 **解决方案**
+
+请检查代码部分是否有错误，例如下面的情况。
+
+> 示例如下
+
+```kotlin
+YourClass.method {
+    // ...
+    // ❗ 没有调用方法执行，这里实际调用的是 MethodFinder.Result 对象
+}.get(instance).current()
+YourClass.method {
+    // ...
+    // ✅ 正确的使用方法，假设此方法无参
+}.get(instance).call().current()
+```
 
 不允许内联、反射、Hook `YukiHookAPI` 自身的 `Class` 以及内部功能，防止发生错误。
 
