@@ -121,6 +121,15 @@ object YukiHookBridge {
     internal var moduleAppResources: YukiModuleResources? = null
 
     /**
+     * 当前环境中使用的 [ClassLoader]
+     *
+     * 装载位于 (Xposed) 宿主环境与模块环境时均使用当前 DEX 内的 [ClassLoader]
+     * @return [ClassLoader]
+     * @throws IllegalStateException 如果 [ClassLoader] 为空
+     */
+    internal val baseClassLoader get() = classOf<YukiHookAPI>().classLoader ?: error("Operating system not supported")
+
+    /**
      * 获取当前 Xposed 模块自身动态 [Resources]
      * @return [YukiModuleResources] or null
      */
