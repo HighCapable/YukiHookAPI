@@ -119,16 +119,58 @@ val ApplicationPackageManagerClass get() = classOf(name = "android.app.Applicati
 val ActivityThreadClass get() = classOf(name = "android.app.ActivityThread")
 
 /**
+ * 获得 [ActivityManager] 类型
+ * @return [Class]
+ */
+val ActivityManagerClass get() = classOf<ActivityManager>()
+
+/**
+ * 获得 [IActivityManager] 类型
+ * @return [Class]
+ */
+val IActivityManagerClass get() = classOf(name = "android.app.IActivityManager")
+
+/**
+ * 获得 [ActivityManagerNative] 类型
+ * @return [Class]
+ */
+val ActivityManagerNativeClass get() = classOf(name = "android.app.ActivityManagerNative")
+
+/**
+ * 获得 [IActivityTaskManager] 类型
+ * @return [Class]
+ */
+val IActivityTaskManagerClass get() = classOf(name = "android.app.IActivityTaskManager")
+
+/**
+ * 获得 [ActivityTaskManager] 类型
+ * @return [Class]
+ */
+val ActivityTaskManagerClass get() = classOf(name = "android.app.ActivityTaskManager")
+
+/**
  * 获得 [IPackageManager] 类型
  * @return [Class]
  */
 val IPackageManagerClass get() = classOf(name = "android.content.pm.IPackageManager")
 
 /**
+ * 获得 [ClientTransaction] 类型
+ * @return [Class]
+ */
+val ClientTransactionClass get() = classOf(name = "android.app.servertransaction.ClientTransaction")
+
+/**
  * 获得 [LoadedApk] 类型
  * @return [Class]
  */
 val LoadedApkClass get() = classOf(name = "android.app.LoadedApk")
+
+/**
+ * 获得 [Singleton] 类型
+ * @return [Class]
+ */
+val SingletonClass get() = classOf(name = "android.util.Singleton")
 
 /**
  * 获得 [Activity] 类型
