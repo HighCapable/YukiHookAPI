@@ -39,8 +39,8 @@ import android.widget.ImageView
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.BufferedReader
@@ -124,7 +124,7 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
-fun Resources.injectModuleAppResources() = YukiHookBridge.injectModuleAppResources(hostResources = this)
+fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResources(hostResources = this)
 
 /**
  * 仅判断模块是否在太极、无极中激活

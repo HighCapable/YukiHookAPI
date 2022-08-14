@@ -29,38 +29,24 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge
 
-import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
-import com.highcapable.yukihookapi.hook.factory.*
-import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.field
+import com.highcapable.yukihookapi.hook.factory.hasClass
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.type.android.*
-import com.highcapable.yukihookapi.hook.type.java.BooleanType
-import com.highcapable.yukihookapi.hook.type.java.IntType
-import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
-import com.highcapable.yukihookapi.hook.type.java.StringType
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
 import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
-import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.PathClassLoader
 import de.robv.android.xposed.IXposedHookInitPackageResources
 import de.robv.android.xposed.IXposedHookLoadPackage
@@ -79,15 +65,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 @YukiGenerateApi
 object YukiHookBridge {
 
-    /** Android 系统框架名称 */
-    @PublishedApi
-    internal const val SYSTEM_FRAMEWORK_NAME = "android"
-
     /** Xposed 是否装载完成 */
     private var isXposedInitialized = false
-
-    /** [YukiHookDataChannel] 是否已经注册 */
-    private var isDataChannelRegister = false
 
     /** 当前 Hook 进程是否正处于 [IXposedHookZygoteInit.initZygote] */
     private var isInitializingZygote = false
@@ -98,48 +77,11 @@ object YukiHookBridge {
     /** 当前 [PackageParamWrapper] 实例数组 */
     private val packageParamWrappers = HashMap<String, PackageParamWrapper>()
 
-    /** 已被注入到宿主 [Resources] 中的当前 Xposed 模块资源 HashCode 数组 */
-    private val injectedHostResourcesHashCodes = HashSet<Int>()
-
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
 
     /** 当前 Hook Framework 是否支持 Resources Hook */
     internal var isSupportResourcesHook = false
-
-    /**
-     * 当前 Hook APP (宿主) 的全局生命周期 [Application]
-     *
-     * 需要 [YukiHookAPI.Configs.isEnableDataChannel] 或 [AppLifecycleCallback.isCallbackSetUp] 才会生效
-     */
-    internal var hostApplication: Application? = null
-
-    /** 当前 Xposed 模块自身 APK 路径 */
-    internal var moduleAppFilePath = ""
-
-    /** 当前 Xposed 模块自身 [Resources] */
-    internal var moduleAppResources: YukiModuleResources? = null
-
-    /**
-     * 当前环境中使用的 [ClassLoader]
-     *
-     * 装载位于 (Xposed) 宿主环境与模块环境时均使用当前 DEX 内的 [ClassLoader]
-     * @return [ClassLoader]
-     * @throws IllegalStateException 如果 [ClassLoader] 为空
-     */
-    internal val baseClassLoader get() = classOf<YukiHookAPI>().classLoader ?: error("Operating system not supported")
-
-    /**
-     * 获取当前 Xposed 模块自身动态 [Resources]
-     * @return [YukiModuleResources] or null
-     */
-    internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.wrapper(moduleAppFilePath) }.getOrNull()
-
-    /**
-     * 自动生成的 Xposed 模块构建版本号
-     * @return [String]
-     */
-    internal val moduleGeneratedVersion get() = YukiHookBridge_Injector.getModuleGeneratedVersion()
 
     /**
      * 当前宿主正在进行的 Hook 进程标识名称
@@ -148,14 +90,18 @@ object YukiHookBridge {
     internal val hostProcessName get() = if (isInitializingZygote) "android-zygote" else YukiHookAppHelper.currentPackageName() ?: "unknown"
 
     /**
-     * 获取当前系统框架的 [Context]
-     * @return [Context] ContextImpl 实例对象
-     * @throws IllegalStateException 如果获取不到系统框架的 [Context]
+     * 自动生成的 Xposed 模块构建版本号
+     * @return [String]
      */
-    internal val systemContext
-        get() = ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()?.let {
-            ActivityThreadClass.method { name = "getSystemContext" }.ignored().get(it).invoke<Context?>()
-        } ?: error("Failed to got SystemContext")
+    internal val moduleGeneratedVersion get() = YukiHookBridge_Injector.getModuleGeneratedVersion()
+
+    /**
+     * 预设的 Xposed 模块包名
+     *
+     * - ❗装载代码将自动生成 - 请勿手动修改 - 会引发未知异常
+     */
+    @YukiGenerateApi
+    var modulePackageName = ""
 
     /**
      * 模块是否装载了 Xposed 回调方法
@@ -166,14 +112,6 @@ object YukiHookBridge {
     @YukiGenerateApi
     val isXposedCallbackSetUp
         get() = isXposedInitialized.not() && packageParamCallback != null
-
-    /**
-     * 预设的 Xposed 模块包名
-     *
-     * - ❗装载代码将自动生成 - 请勿手动修改 - 会引发未知异常
-     */
-    @YukiGenerateApi
-    var modulePackageName = ""
 
     /**
      * 获取当前 Hook 框架的名称
@@ -200,19 +138,6 @@ object YukiHookBridge {
      * @return [Boolean]
      */
     internal val hasXposedBridge get() = executorVersion >= 0
-
-    /**
-     * 获取指定 [packageName] 的用户 ID
-     *
-     * 机主为 0 - 应用双开 (分身) 或工作资料因系统环境不同 ID 也各不相同
-     * @param packageName 当前包名
-     * @return [Int]
-     */
-    internal fun findUserId(packageName: String) =
-        UserHandleClass.method {
-            name = "getUserId"
-            param(IntType)
-        }.ignored().get().int(systemContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES).uid)
 
     /**
      * 自动忽略 MIUI 系统可能出现的日志收集注入实例
@@ -259,12 +184,12 @@ object YukiHookBridge {
             if (type == HookEntryType.ZYGOTE || appClassLoader != null)
                 PackageParamWrapper(
                     type = type,
-                    packageName = packageName ?: SYSTEM_FRAMEWORK_NAME,
-                    processName = processName ?: SYSTEM_FRAMEWORK_NAME,
+                    packageName = packageName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME,
+                    processName = processName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME,
                     appClassLoader = appClassLoader ?: XposedBridge.BOOTCLASSLOADER,
                     appInfo = appInfo,
                     appResources = appResources
-                ).also { packageParamWrappers[packageName ?: SYSTEM_FRAMEWORK_NAME] = it }
+                ).also { packageParamWrappers[packageName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME] = it }
             else null
         else packageParamWrappers[packageName]?.also {
             it.type = type
@@ -274,125 +199,6 @@ object YukiHookBridge {
             if (appInfo != null) it.appInfo = appInfo
             if (appResources != null) it.appResources = appResources
         }
-    }
-
-    /**
-     * 注入当前 Hook APP (宿主) 全局生命周期
-     * @param packageName 包名
-     */
-    private fun registerToAppLifecycle(packageName: String) {
-        /** Hook [Application] 装载方法 */
-        runCatching {
-            if (AppLifecycleCallback.isCallbackSetUp) {
-                YukiHookHelper.hook(ApplicationClass.method { name = "attach"; param(ContextClass) }, object : YukiMemberHook() {
-                    override fun beforeHookedMember(wrapper: HookParamWrapper) {
-                        runCatching {
-                            (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
-                        }.onFailure { wrapper.throwable = it }
-                    }
-
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        runCatching {
-                            (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
-                        }.onFailure { wrapper.throwable = it }
-                    }
-                })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onTerminate" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        runCatching {
-                            (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
-                        }.onFailure { wrapper.throwable = it }
-                    }
-                })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onLowMemory" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        runCatching {
-                            (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
-                        }.onFailure { wrapper.throwable = it }
-                    }
-                })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onTrimMemory"; param(IntType) }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        runCatching {
-                            val self = wrapper.instance as? Application? ?: return
-                            val type = wrapper.args?.get(0) as? Int? ?: return
-                            AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
-                        }.onFailure { wrapper.throwable = it }
-                    }
-                })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onConfigurationChanged" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        runCatching {
-                            val self = wrapper.instance as? Application? ?: return
-                            val config = wrapper.args?.get(0) as? Configuration? ?: return
-                            AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
-                        }.onFailure { wrapper.throwable = it }
-                    }
-                })
-            }
-            if (YukiHookAPI.Configs.isEnableDataChannel || AppLifecycleCallback.isCallbackSetUp)
-                YukiHookHelper.hook(InstrumentationClass.method { name = "callApplicationOnCreate" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
-                        runCatching {
-                            (wrapper.args?.get(0) as? Application?)?.also {
-                                hostApplication = it
-                                AppLifecycleCallback.onCreateCallback?.invoke(it)
-                                AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
-                                    if (e.first.isNotEmpty()) it.registerReceiver(object : BroadcastReceiver() {
-                                        override fun onReceive(context: Context?, intent: Intent?) {
-                                            if (context == null || intent == null) return
-                                            if (e.first.any { e -> e == intent.action }) e.second(context, intent)
-                                        }
-                                    }, IntentFilter().apply { e.first.forEach { e -> addAction(e) } })
-                                }
-                                if (isDataChannelRegister) return
-                                isDataChannelRegister = true
-                                runCatching { YukiHookDataChannel.instance().register(it, packageName) }
-                            }
-                        }.onFailure { wrapper.throwable = it }
-                    }
-                })
-        }
-    }
-
-    /**
-     * 向 Hook APP (宿主) 注入当前 Xposed 模块的资源
-     * @param hostResources 需要注入的宿主 [Resources]
-     */
-    internal fun injectModuleAppResources(hostResources: Resources) {
-        if (injectedHostResourcesHashCodes.contains(hostResources.hashCode())) return
-        if (hasXposedBridge) runCatching {
-            hostResources.assets.current {
-                method {
-                    name = "addAssetPath"
-                    param(StringType)
-                }.call(moduleAppFilePath)
-            }
-            injectedHostResourcesHashCodes.add(hostResources.hashCode())
-        }.onFailure {
-            yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
-        } else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
-    }
-
-    /** 刷新当前 Xposed 模块自身 [Resources] */
-    internal fun refreshModuleAppResources() {
-        dynamicModuleAppResources?.let { moduleAppResources = it }
-    }
-
-    /**
-     * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
-     * @param loader 当前 [ClassLoader]
-     * @param result 回调 - ([Class] 实例对象,[Boolean] 是否 resolve)
-     */
-    internal fun hookClassLoader(loader: ClassLoader?, result: (clazz: Class<*>, resolve: Boolean) -> Unit) {
-        runCatching {
-            YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringType, BooleanType) }, object : YukiMemberHook() {
-                override fun afterHookedMember(wrapper: HookParamWrapper) {
-                    if (wrapper.instance?.javaClass?.name == loader?.javaClass?.name)
-                        (wrapper.result as? Class<*>?)?.also { result(it, wrapper.args?.get(1) as? Boolean ?: false) }
-                }
-            })
-        }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
     }
 
     /**
@@ -441,8 +247,8 @@ object YukiHookBridge {
      */
     @YukiGenerateApi
     fun callXposedZygoteLoaded(sparam: IXposedHookZygoteInit.StartupParam) {
-        moduleAppFilePath = sparam.modulePath
-        refreshModuleAppResources()
+        AppParasitics.moduleAppFilePath = sparam.modulePath
+        AppParasitics.refreshModuleAppResources()
     }
 
     /**
@@ -468,7 +274,7 @@ object YukiHookBridge {
         resparam: XC_InitPackageResources.InitPackageResourcesParam? = null
     ) {
         if (isMiuiCatcherPatch(packageName = lpparam?.packageName ?: resparam?.packageName).not()) when {
-            isZygoteLoaded -> assignWrapper(HookEntryType.ZYGOTE, SYSTEM_FRAMEWORK_NAME, SYSTEM_FRAMEWORK_NAME)
+            isZygoteLoaded -> assignWrapper(HookEntryType.ZYGOTE, AppParasitics.SYSTEM_FRAMEWORK_NAME, AppParasitics.SYSTEM_FRAMEWORK_NAME)
             lpparam != null ->
                 if (isPackageLoaded(lpparam.packageName, HookEntryType.PACKAGE).not())
                     assignWrapper(HookEntryType.PACKAGE, lpparam.packageName, lpparam.processName, lpparam.classLoader, lpparam.appInfo)
@@ -480,38 +286,8 @@ object YukiHookBridge {
             else -> null
         }?.also {
             YukiHookAPI.onXposedLoaded(it)
-            if (it.type == HookEntryType.PACKAGE) registerToAppLifecycle(it.packageName)
+            if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
             if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
         }
-    }
-
-    /**
-     * 当前 Hook APP (宿主) 的生命周期回调处理类
-     */
-    internal object AppLifecycleCallback {
-
-        /** 是否已设置回调 */
-        internal var isCallbackSetUp = false
-
-        /** [Application.attachBaseContext] 回调 */
-        internal var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null
-
-        /** [Application.onCreate] 回调 */
-        internal var onCreateCallback: (Application.() -> Unit)? = null
-
-        /** [Application.onTerminate] 回调 */
-        internal var onTerminateCallback: (Application.() -> Unit)? = null
-
-        /** [Application.onLowMemory] 回调 */
-        internal var onLowMemoryCallback: (Application.() -> Unit)? = null
-
-        /** [Application.onTrimMemory] 回调 */
-        internal var onTrimMemoryCallback: ((Application, Int) -> Unit)? = null
-
-        /** [Application.onConfigurationChanged] 回调 */
-        internal var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
-
-        /** 系统广播监听回调 */
-        internal val onReceiversCallback = HashMap<String, Pair<Array<out String>, (Context, Intent) -> Unit>>()
     }
 }

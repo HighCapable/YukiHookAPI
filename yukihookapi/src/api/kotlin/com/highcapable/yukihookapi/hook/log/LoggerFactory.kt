@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.log
 import android.util.Log
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import de.robv.android.xposed.XposedBridge
 
 /**
@@ -91,7 +92,7 @@ private fun baseLogger(format: String, type: LoggerType, tag: String, msg: Strin
     /** 打印到 [XposedBridge.log] */
     fun loggerInXposed() = runCatching {
         YukiHookBridge.hostProcessName.also {
-            val appUserId = YukiHookBridge.findUserId(it)
+            val appUserId = AppParasitics.findUserId(it)
             XposedBridge.log("[$tag][$format]${if (isShowProcessName) (if (appUserId != 0) "[$it][$appUserId]" else "[$it]") else ""}--> $msg")
             e?.also { e -> XposedBridge.log(e) }
         }

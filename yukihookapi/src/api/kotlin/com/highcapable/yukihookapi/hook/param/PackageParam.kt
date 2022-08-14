@@ -48,11 +48,11 @@ import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.value
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
 /**
@@ -82,7 +82,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 机主为 0 - 应用双开 (分身) 或工作资料因系统环境不同 ID 也各不相同
      * @return [Int]
      */
-    val appUserId get() = YukiHookBridge.findUserId(packageName)
+    val appUserId get() = AppParasitics.findUserId(packageName)
 
     /**
      * 获取当前 Hook APP 的 [Application] 实例
@@ -91,7 +91,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [Application]
      * @throws IllegalStateException 如果 [Application] 是空的
      */
-    val appContext get() = YukiHookBridge.hostApplication ?: YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
+    val appContext get() = AppParasitics.hostApplication ?: YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
 
     /**
      * 获取当前 Hook APP 的 Resources
@@ -107,7 +107,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [Context] ContextImpl 实例对象
      * @throws IllegalStateException 如果获取不到系统框架的 [Context]
      */
-    val systemContext get() = YukiHookBridge.systemContext
+    val systemContext get() = AppParasitics.systemContext
 
     /**
      * 获取当前 Hook APP 的进程名称
@@ -143,7 +143,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗作为 Hook API 装载时无法使用 - 会获取到空字符串
      * @return [String]
      */
-    val moduleAppFilePath get() = YukiHookBridge.moduleAppFilePath
+    val moduleAppFilePath get() = AppParasitics.moduleAppFilePath
 
     /**
      * 获取当前 Xposed 模块自身 [Resources]
@@ -153,8 +153,8 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @throws IllegalStateException 如果当前 Hook Framework 不支持此功能
      */
     val moduleAppResources
-        get() = (if (YukiHookAPI.Configs.isEnableModuleAppResourcesCache) YukiHookBridge.moduleAppResources
-        else YukiHookBridge.dynamicModuleAppResources) ?: error("Current Hook Framework not support moduleAppResources")
+        get() = (if (YukiHookAPI.Configs.isEnableModuleAppResourcesCache) AppParasitics.moduleAppResources
+        else AppParasitics.dynamicModuleAppResources) ?: error("Current Hook Framework not support moduleAppResources")
 
     /**
      * 获得当前使用的存取数据对象缓存实例
@@ -202,7 +202,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun resources() = HookResources(wrapper?.appResources)
 
     /** 刷新当前 Xposed 模块自身 [Resources] */
-    fun refreshModuleAppResources() = YukiHookBridge.refreshModuleAppResources()
+    fun refreshModuleAppResources() = AppParasitics.refreshModuleAppResources()
 
     /**
      * 监听当前 Hook APP 生命周期装载事件
@@ -244,13 +244,13 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 装载并 Hook 系统框架
      * @param initiate 方法体
      */
-    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, initiate)
+    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, initiate)
 
     /**
      * 装载并 Hook 系统框架
      * @param hooker Hook 子类
      */
-    fun loadSystem(hooker: YukiBaseHooker) = loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, hooker)
+    fun loadSystem(hooker: YukiBaseHooker) = loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, hooker)
 
     /**
      * 装载 APP Zygote 事件
@@ -356,7 +356,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗这是一个实验性功能 - 一般情况下不会用到此方法 - 不保证不会发生错误
      * @param result 回调 - ([Class] 实例对象,[Boolean] 是否 resolve)
      */
-    fun ClassLoader.fetching(result: (clazz: Class<*>, resolve: Boolean) -> Unit) = YukiHookBridge.hookClassLoader(loader = this, result)
+    fun ClassLoader.fetching(result: (clazz: Class<*>, resolve: Boolean) -> Unit) = AppParasitics.hookClassLoader(loader = this, result)
 
     /**
      * Hook 方法、构造方法
@@ -439,7 +439,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param result 回调 - ([Context] baseContext,[Boolean] 是否已执行 super)
          */
         fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.attachBaseContextCallback = result
+            AppParasitics.AppLifecycleCallback.attachBaseContextCallback = result
         }
 
         /**
@@ -447,7 +447,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param initiate 方法体
          */
         fun onCreate(initiate: Application.() -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.onCreateCallback = initiate
+            AppParasitics.AppLifecycleCallback.onCreateCallback = initiate
         }
 
         /**
@@ -455,7 +455,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param initiate 方法体
          */
         fun onTerminate(initiate: Application.() -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.onTerminateCallback = initiate
+            AppParasitics.AppLifecycleCallback.onTerminateCallback = initiate
         }
 
         /**
@@ -463,7 +463,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param initiate 方法体
          */
         fun onLowMemory(initiate: Application.() -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.onLowMemoryCallback = initiate
+            AppParasitics.AppLifecycleCallback.onLowMemoryCallback = initiate
         }
 
         /**
@@ -471,7 +471,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param result 回调 - ([Application] 当前实例,[Int] 类型)
          */
         fun onTrimMemory(result: (self: Application, level: Int) -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.onTrimMemoryCallback = result
+            AppParasitics.AppLifecycleCallback.onTrimMemoryCallback = result
         }
 
         /**
@@ -479,7 +479,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param result 回调 - ([Application] 当前实例,[Configuration] 配置实例)
          */
         fun onConfigurationChanged(result: (self: Application, config: Configuration) -> Unit) {
-            YukiHookBridge.AppLifecycleCallback.onConfigurationChangedCallback = result
+            AppParasitics.AppLifecycleCallback.onConfigurationChangedCallback = result
         }
 
         /**
@@ -488,13 +488,13 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param result 回调 - ([Context] 当前上下文,[Intent] 当前 Intent)
          */
         fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit) {
-            if (action.isNotEmpty()) YukiHookBridge.AppLifecycleCallback.onReceiversCallback[action.value()] = Pair(action, result)
+            if (action.isNotEmpty()) AppParasitics.AppLifecycleCallback.onReceiversCallback[action.value()] = Pair(action, result)
         }
 
         /** 设置创建生命周期监听回调 */
         @PublishedApi
         internal fun build() {
-            YukiHookBridge.AppLifecycleCallback.isCallbackSetUp = true
+            AppParasitics.AppLifecycleCallback.isCallbackSetUp = true
         }
     }
 
