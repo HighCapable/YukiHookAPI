@@ -225,12 +225,7 @@ internal object AppParasitics {
     internal fun injectModuleAppResources(hostResources: Resources) {
         if (injectedHostResourcesHashCodes.contains(hostResources.hashCode())) return
         if (YukiHookBridge.hasXposedBridge) runCatching {
-            hostResources.assets.current {
-                method {
-                    name = "addAssetPath"
-                    param(StringType)
-                }.call(moduleAppFilePath)
-            }
+            hostResources.assets.current().method { name = "addAssetPath"; param(StringType) }.call(moduleAppFilePath)
             injectedHostResourcesHashCodes.add(hostResources.hashCode())
         }.onFailure {
             yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
