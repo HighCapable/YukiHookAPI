@@ -24,6 +24,10 @@
 
 [filename](public/ModuleApplication.md ':include')
 
+[filename](public/ModuleAppActivity.md ':include')
+
+[filename](public/ModuleAppCompatActivity.md ':include')
+
 [filename](public/YukiModuleResources.md ':include')
 
 [filename](public/YukiResources.md ':include')

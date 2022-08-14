@@ -24,11 +24,16 @@
  * SOFTWARE.
  *
  * This file is Created by fankes on 2022/8/14.
+ * Thanks for providing https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/lifecycle/Parasitics.java
  */
+@file:Suppress("QueryPermissionsNeeded")
+
 package com.highcapable.yukihookapi.hook.xposed.parasitic
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.Application
+import android.app.Instrumentation
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -36,10 +41,9 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.Handler
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.factory.current
-import com.highcapable.yukihookapi.hook.factory.method
+import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
@@ -53,6 +57,10 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.HandlerDelegate
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.IActivityManagerProxy
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.InstrumentationDelegate
 
 /**
  * 这是一个管理 APP 寄生功能的控制类
@@ -68,6 +76,9 @@ internal object AppParasitics {
 
     /** [YukiHookDataChannel] 是否已经注册 */
     private var isDataChannelRegister = false
+
+    /** [Activity] 代理是否已经注册 */
+    private var isActivityProxyRegister = false
 
     /** 已被注入到宿主 [Resources] 中的当前 Xposed 模块资源 HashCode 数组 */
     private val injectedHostResourcesHashCodes = HashSet<Int>()
@@ -235,6 +246,61 @@ internal object AppParasitics {
     /** 刷新当前 Xposed 模块自身 [Resources] */
     internal fun refreshModuleAppResources() {
         dynamicModuleAppResources?.let { moduleAppResources = it }
+    }
+
+    /**
+     * 向 Hook APP (宿主) 注册当前 Xposed 模块的 [Activity]
+     * @param context 当前 [Context]
+     * @param proxy 代理的 [Activity]
+     */
+    internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
+        if (isActivityProxyRegister) return
+        if (YukiHookBridge.hasXposedBridge.not()) return yLoggerW(msg = "You can only register Activity Proxy in Xposed Environment")
+        runCatching {
+            ActivityProxyConfig.apply {
+                proxyIntentName = "${YukiHookBridge.modulePackageName}.ACTIVITY_PROXY_INTENT"
+                proxyClassName = proxy?.let {
+                    when (it) {
+                        is String, is CharSequence -> it.toString()
+                        is Class<*> -> it.name
+                        else -> error("This proxy [$it] type is not allowed")
+                    }
+                }?.takeIf { it.isNotBlank() } ?: context.packageManager?.runCatching {
+                    queryIntentActivities(getLaunchIntentForPackage(context.packageName)!!, 0).first().activityInfo.name
+                }?.getOrNull() ?: ""
+                if ((proxyClassName.hasClass(context.classLoader) && classOf(proxyClassName, context.classLoader).hasMethod {
+                        name = "setIntent"; param(IntentClass); superClass()
+                    }).not()
+                ) (if (proxyClassName.isBlank()) error("Cound not got launch intent for package \"${context.packageName}\"")
+                else error("Could not found \"$proxyClassName\" or Class is not a type of Activity"))
+            }
+            /** Patched [Instrumentation] */
+            ActivityThreadClass.field { name = "sCurrentActivityThread" }.ignored().get().any()?.current {
+                method { name = "getInstrumentation" }
+                    .invoke<Instrumentation>()
+                    ?.also { field { name = "mInstrumentation" }.set(InstrumentationDelegate.wrapper(it)) }
+                HandlerClass.field { name = "mCallback" }.get(field { name = "mH" }.any()).apply {
+                    cast<Handler.Callback?>()?.apply {
+                        if (current().name != classOf<HandlerDelegate>().name) set(HandlerDelegate.wrapper(baseInstance = this))
+                    } ?: set(HandlerDelegate.wrapper())
+                }
+            }
+            /** Patched [ActivityManager] */
+            runCatching {
+                runCatching {
+                    ActivityManagerNativeClass.field { name = "gDefault" }.ignored().get().any()
+                }.getOrNull() ?: ActivityManagerClass.field { name = "IActivityManagerSingleton" }.ignored().get().any()
+            }.getOrNull()?.also { default ->
+                SingletonClass.field { name = "mInstance" }.ignored().result {
+                    get(default).apply { any()?.also { set(IActivityManagerProxy.wrapper(IActivityManagerClass, it)) } }
+                    ActivityTaskManagerClass.field { name = "IActivityTaskManagerSingleton" }.ignored().get().any().also { singleton ->
+                        SingletonClass.method { name = "get" }.ignored().get(singleton).call()
+                        get(singleton).apply { any()?.also { set(IActivityManagerProxy.wrapper(IActivityTaskManagerClass, it)) } }
+                    }
+                }
+            }
+            isActivityProxyRegister = true
+        }.onFailure { yLoggerE(msg = "Activity Proxy initialization failed because got an Exception", e = it) }
     }
 
     /**

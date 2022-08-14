@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -41,6 +42,8 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppActivity
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.BufferedReader
@@ -125,6 +128,20 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
 fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResources(hostResources = this)
+
+/**
+ * 向 Hook APP (宿主) 注册当前 Xposed 模块的 [Activity]
+ *
+ * 注册成功后 - 你就可以直接使用 [Context.startActivity] 来启动未在宿主中注册的 [Activity]
+ *
+ * - 你要将需要在宿主启动的 [Activity] 继承于 [ModuleAppActivity] 或 [ModuleAppCompatActivity]
+ *
+ * 详情请参考 [registerModuleAppActivities](https://fankes.github.io/YukiHookAPI/#/api/document?id=registermoduleappactivities-method)
+ *
+ * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
+ */
+fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)
 
 /**
  * 仅判断模块是否在太极、无极中激活
