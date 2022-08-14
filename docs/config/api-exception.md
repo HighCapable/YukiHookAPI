@@ -496,6 +496,76 @@ Resources 的 Hook 并非类似方法的 Hook，其必须拥有完整的名称�
 
 一般情况下，此错误基本上不会发生，排除自身代码的问题后，请携带详细日志进行反馈。
 
+!> `loggerE` Activity Proxy initialization failed because got an Exception
+
+**异常原因**
+
+在 (Xposed) 宿主环境中使用 `registerModuleAppActivities` 注入模块 `Activity` 时发生异常。
+
+**解决方案**
+
+请检查此错误发生后的下一个错误日志，或许在配置参数上可能发生了一些问题，若找不到相关错误日志的说明，排除自身代码的问题后，请携带详细日志进行反馈。
+
+!> `loggerE` Activity Proxy got an Exception in msg.what \[**WHAT**\]
+
+**异常原因**
+
+在 (Xposed) 宿主环境中使用 `registerModuleAppActivities` 注入模块 `Activity` 时发生异常。
+
+**解决方案**
+
+一般情况下，此错误基本上不会发生，但根据系统版本差异性并未做详细测试，排除自身代码的问题后，请携带详细日志进行反馈。
+
+!> `loggerE` This proxy \[**TYPE**\] type is not allowed
+
+**异常原因**
+
+在 (Xposed) 宿主环境中使用 `registerModuleAppActivities` 注入模块 `Activity` 时填入了无效的参数。
+
+> 示例如下
+
+```kotlin
+// ❗ 这里填入的内容仅为举例，其中 proxy 填入了不能理解的无效参数
+registerModuleAppActivities(proxy = false)
+```
+
+**解决方案**
+
+方法中的 `proxy` 参数只接受 `String`、`CharSequence`、`Class` 类型，请查看相关使用方法正确填入方法参数。
+
+!> `loggerE` Cound not got launch intent for package "**NAME**"
+
+**异常原因**
+
+在 (Xposed) 宿主环境中使用 `registerModuleAppActivities` 注入模块 `Activity` 时找不到宿主的启动 `Activity`。
+
+> 示例如下
+
+```kotlin
+// 使用了默认参数直接进行注册
+registerModuleAppActivities()
+```
+
+**解决方案**
+
+默认参数 (无参) 只能用于可被启动的 APP，若 APP 并未声明启动入口 `Activity`，你就需要手动指定方法的 `proxy` 参数。
+
+!> `loggerE` Could not found "**NAME**" or Class is not a type of Activity
+
+**异常原因**
+
+在 (Xposed) 宿主环境中使用 `registerModuleAppActivities` 注入模块 `Activity` 时无法找到被填入参数 `proxy` 的 `Activity`。
+
+> 示例如下
+
+```kotlin
+registerModuleAppActivities(proxy = "com.demo.test.TestActivity")
+```
+
+**解决方案**
+
+请确认你填入的 `Activity` 名称真实有效地存在于宿主中，且目标 `Class` 继承于 `Activity`。
+
 ## 阻断异常
 
 > 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
