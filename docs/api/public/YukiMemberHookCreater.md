@@ -429,12 +429,16 @@ inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHo
 #### beforeHook [method]
 
 ```kotlin
-fun beforeHook(initiate: HookParam.() -> Unit)
+fun beforeHook(initiate: HookParam.() -> Unit): HookCallback
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.93` `修改`
+
+新增 `HookCallback` 返回类型
 
 **功能描述**
 
@@ -443,12 +447,16 @@ fun beforeHook(initiate: HookParam.() -> Unit)
 #### afterHook [method]
 
 ```kotlin
-fun afterHook(initiate: HookParam.() -> Unit)
+fun afterHook(initiate: HookParam.() -> Unit): HookCallback
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.93` `修改`
+
+新增 `HookCallback` 返回类型
 
 **功能描述**
 
@@ -561,6 +569,34 @@ fun removeSelf(result: (Boolean) -> Unit)
 > 移除当前注入的 Hook 方法、构造方法 (解除 Hook)。
 
 !> 你只能在 Hook 回调方法中使用此功能。
+
+#### HookCallback [class]
+
+```kotlin
+inner class HookCallback internal constructor()
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> Hook 方法体回调实现类。
+
+##### onFailureThrowToApp [method]
+
+```kotlin
+fun onFailureThrowToApp()
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 当回调方法体内发生异常时将异常抛出给当前 Hook APP。
 
 #### Result [class]
 

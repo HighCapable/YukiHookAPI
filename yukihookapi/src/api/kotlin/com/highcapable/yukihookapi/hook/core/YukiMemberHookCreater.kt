@@ -228,6 +228,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /** 全部错误回调 */
         private var onAllFailureCallback: ((Throwable) -> Unit)? = null
 
+        /** 发生异常时是否将异常抛出给当前 Hook APP */
+        private var isOnFailureThrowToApp = false
+
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
 
@@ -390,10 +393,12 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
          * @param initiate [HookParam] 方法体
+         * @return [HookCallback]
          */
-        fun beforeHook(initiate: HookParam.() -> Unit) {
+        fun beforeHook(initiate: HookParam.() -> Unit): HookCallback {
             isReplaceHookMode = false
             beforeHookCallback = initiate
+            return HookCallback()
         }
 
         /**
@@ -401,10 +406,12 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          *
          * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
          * @param initiate [HookParam] 方法体
+         * @return [HookCallback]
          */
-        fun afterHook(initiate: HookParam.() -> Unit) {
+        fun afterHook(initiate: HookParam.() -> Unit): HookCallback {
             isReplaceHookMode = false
             afterHookCallback = initiate
+            return HookCallback()
         }
 
         /**
@@ -584,6 +591,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                            if (isOnFailureThrowToApp) wrapper.throwable = it
                         }
                     }
                 }
@@ -598,6 +606,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             onConductFailureCallback?.invoke(param, it)
                             onAllFailureCallback?.invoke(it)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                            if (isOnFailureThrowToApp) wrapper.throwable = it
                         }
                     }
                 }
@@ -649,6 +658,17 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
 
         override fun toString() = "[tag] $tag [priority] $priority [class] $hookClass [members] $members"
+
+        /**
+         * Hook 方法体回调实现类
+         */
+        inner class HookCallback internal constructor() {
+
+            /** 当回调方法体内发生异常时将异常抛出给当前 Hook APP */
+            fun onFailureThrowToApp() {
+                isOnFailureThrowToApp = true
+            }
+        }
 
         /**
          * 监听 Hook 结果实现类

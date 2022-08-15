@@ -348,6 +348,8 @@ injectMember {
 
 > `YukiHookAPI` 重新设计了对异常的监听，任何异常都不会在 Hook 过程中抛出，避免打断下一个 Hook 流程导致 Hook 进程“死掉”。
 
+### 监听异常
+
 你可以处理 Hook 方法过程发生的异常。
 
 > 示例如下
@@ -407,6 +409,78 @@ method {
 ```
 
 这里介绍了可能发生的常见异常，若要了解更多请参考 [API 异常处理](config/api-exception.md)。
+
+### 抛出异常
+
+在某些情况下，你可以**手动抛出异常**来达到提醒某些功能存在问题的目的。
+
+上面已经介绍过，在 `hook` 方法体内抛出的异常会被 `YukiHookAPI` 接管，避免打断下一个 Hook 流程导致 Hook 进程“死掉”。
+
+以下是 `YukiHookAPI` 接管时这些异常的运作方式。
+
+> 示例如下
+
+```kotlin
+// <情景1>
+injectMember {
+    throw RuntimeException("Exception Test")
+}.result {
+    // 能够捕获到 RuntimeException
+    onHookingFailure {}
+}
+// <情景2>
+injectMember {
+    method {
+        // ...
+    }
+    afterHook {
+        throw RuntimeException("Exception Test")
+    }
+}.result {
+    // 能够捕获到 RuntimeException
+    onConductFailure { param, throwable -> }
+}
+```
+
+以上情景只会在 (Xposed) 宿主环境被处理，不会对宿主自身造成任何影响。
+
+若我们想将这些异常直接抛给宿主，原生的 Xposed 为我们提供了 `param.throwable` 方法，`YukiHookAPI` 同样可以实现此功能。
+
+若想在 Hook 回调方法中将一个异常直接抛给宿主，可以有如下实现方法。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        // ...
+    }
+    afterHook {
+        RuntimeException("Exception Test").throwToApp()
+    }
+}
+```
+
+你也可以直接在 Hook 回调方法中抛出异常，然后标识将异常抛给宿主。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        // ...
+    }
+    afterHook {
+        throw RuntimeException("Exception Test")
+    }.onFailureThrowToApp()
+}
+```
+
+以上两种方法均可在宿主接收到异常从而使宿主进程崩溃。
+
+!> 为了保证 Hook 调用域与宿主内调用域相互隔离，异常只有在 `beforeHook` 与 `afterHook` 回调方法体中才能抛给宿主。
+
+更多功能请参考 [HookCallback](api/document?id=hookcallback-class)。
 
 ## 状态监听
 
@@ -532,7 +606,7 @@ if(YukiHookAPI.Status.isModuleActive) {
 
 若要了解更多可 [点击这里](api/document?id=status-object) 进行查看。
 
-!> 新版本的 API 修改了激活逻辑判断方式，现在你可以在模块与 Hook APP(宿主)中同时使用此 API。
+!> 新版本的 API 修改了激活逻辑判断方式，现在你可以在模块与 Hook APP (宿主) 中同时使用此 API。
 
 !> 需要确保 `YukiHookAPI.Configs.isEnableHookModuleStatus` 是启用状态。
 
