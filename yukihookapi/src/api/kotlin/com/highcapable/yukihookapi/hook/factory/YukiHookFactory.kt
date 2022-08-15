@@ -36,7 +36,9 @@ import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.os.Process
+import android.view.ContextThemeWrapper
 import android.widget.ImageView
+import androidx.annotation.StyleRes
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -44,6 +46,7 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
+import com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper.ModuleContextThemeWrapper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.BufferedReader
@@ -142,6 +145,17 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
  */
 fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)
+
+/**
+ * 生成一个 [ContextThemeWrapper] 代理以应用主题资源
+ *
+ * 在 Hook APP (宿主) 中使用此方法会自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
+ *
+ * 详情请参考 [applyTheme](https://fankes.github.io/YukiHookAPI/#/api/document?id=applytheme-method)
+ * @param theme 主题资源 ID
+ * @return [ModuleContextThemeWrapper]
+ */
+fun Context.applyTheme(@StyleRes theme: Int) = ModuleContextThemeWrapper.wrapper(baseContext = this, theme)
 
 /**
  * 仅判断模块是否在太极、无极中激活

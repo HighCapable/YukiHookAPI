@@ -335,6 +335,73 @@ val context: Context = ... // 假设这就是你的 Context
 context.startActivity(context, HostTestActivity::class.java)
 ```
 
+### applyTheme [method]
+
+```kotlin
+fun Context.applyTheme(theme: Int): ModuleContextThemeWrapper
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 生成一个 `ContextThemeWrapper` 代理以应用主题资源。
+
+在 Hook APP (宿主) 中使用此方法会自动调用 `injectModuleAppResources` 注入当前 Xposed 模块的资源。
+
+为防止资源 ID 互相冲突，你需要在当前 Xposed 模块项目的 `build.gradle` 中修改资源 ID。
+
+- Kotlin Gradle DSL
+
+```kotlin
+androidResources.additionalParameters("--allow-reserved-package-id", "--package-id", "0x64")
+```
+
+- Groovy
+
+```groovy
+aaptOptions.additionalParameters '--allow-reserved-package-id', '--package-id', '0x64'
+```
+
+!> 提供的示例资源 ID 值仅供参考，为了防止当前宿主存在多个 Xposed 模块，建议自定义你自己的资源 ID。
+
+**功能示例**
+
+有时候，我们需要使用 `MaterialAlertDialogBuilder` 来美化自己在宿主中的对话框，但是拿不到 AppCompat 主题就无法创建。
+
+- 会得到如下异常
+
+```
+The style on this component requires your app theme to be Theme.AppCompat (or a descendant).
+```
+
+这时，我们想在宿主被 Hook 的当前 `Activity` 中使用 `MaterialAlertDialogBuilder` 来创建对话框，就可以有如下方法。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        name = "onCreate"
+        param(BundleClass)
+    }
+    afterHook {
+        // 使用 applyTheme 创建一个当前模块中的主题资源
+        val appCompatContext = instance<Activity>().applyTheme(R.style.Theme_AppCompat)
+        // 直接使用这个包装了模块主题后的 Context 创建对话框
+        MaterialAlertDialogBuilder(appCompatContext)
+            .setTitle("AppCompat 主题对话框")
+            .setMessage("我是一个在宿主中显示的 AppCompat 主题对话框。")
+            .setPositiveButton("确定", null)
+            .show()
+    }
+}
+```
+
+这样，我们就可以在宿主中非常简单地使用 `MaterialAlertDialogBuilder` 创建对话框了。
+
 ### ~~isSupportResourcesHook [field]~~ <!-- {docsify-ignore} -->
 
 **变更记录**
