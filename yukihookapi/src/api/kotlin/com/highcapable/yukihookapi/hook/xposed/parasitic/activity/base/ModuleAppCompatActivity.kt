@@ -36,7 +36,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.ModuleClassLoader
+import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
  * 代理 [AppCompatActivity]

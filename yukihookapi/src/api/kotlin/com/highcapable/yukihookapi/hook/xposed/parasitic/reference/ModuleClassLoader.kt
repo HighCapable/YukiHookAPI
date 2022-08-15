@@ -26,7 +26,7 @@
  * This file is Created by fankes on 2022/8/8.
  * Thanks for providing https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/lifecycle/Parasitics.java
  */
-package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate
+package com.highcapable.yukihookapi.hook.xposed.parasitic.reference
 
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper

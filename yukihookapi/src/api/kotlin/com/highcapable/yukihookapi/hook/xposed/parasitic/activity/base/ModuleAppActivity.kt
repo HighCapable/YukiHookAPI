@@ -34,7 +34,7 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.ModuleClassLoader
+import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
  * 代理 [Activity]
