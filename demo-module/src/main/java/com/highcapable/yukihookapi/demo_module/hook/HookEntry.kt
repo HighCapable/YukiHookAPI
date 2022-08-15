@@ -30,12 +30,14 @@
 package com.highcapable.yukihookapi.demo_module.hook
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.widget.Button
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
+import com.highcapable.yukihookapi.demo_module.hook.factory.compatStyle
+import com.highcapable.yukihookapi.hook.factory.applyTheme
 import com.highcapable.yukihookapi.hook.type.android.ActivityClass
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
@@ -155,7 +157,7 @@ class HookEntry : IYukiHookXposedInit {
                         // 在执行方法之后拦截
                         afterHook {
                             if (prefs.getBoolean("show_dialog_when_demo_app_opend"))
-                                AlertDialog.Builder(instance())
+                                MaterialAlertDialogBuilder(instance<Activity>().applyTheme(R.style.Theme_Default))
                                     .setTitle("Hooked")
                                     .setMessage(
                                         "This App has been hooked!\n\n" +
@@ -164,7 +166,7 @@ class HookEntry : IYukiHookXposedInit {
                                                 "Support Resources Hook: ${YukiHookAPI.Status.isSupportResourcesHook}"
                                     )
                                     .setPositiveButton("OK", null)
-                                    .show()
+                                    .show().compatStyle()
                         }
                     }
                     // 注入要 Hook 的方法
@@ -202,7 +204,7 @@ class HookEntry : IYukiHookXposedInit {
                         }
                         // 拦截整个方法
                         replaceUnit {
-                            AlertDialog.Builder(instance())
+                            MaterialAlertDialogBuilder(instance<Activity>().applyTheme(R.style.Theme_Default))
                                 .setTitle("Hooked")
                                 .setMessage("I am hook your toast showing!")
                                 .setPositiveButton("OK", null)
@@ -210,7 +212,7 @@ class HookEntry : IYukiHookXposedInit {
                                     dataChannel.put(DataConst.TEST_CN_DATA, value = "I am host, can you hear me?")
                                 }.setNeutralButton("REMOVE HOOK") { _, _ ->
                                     removeSelf()
-                                }.show()
+                                }.show().compatStyle()
                         }
                     }
                     // 注入要 Hook 的方法
