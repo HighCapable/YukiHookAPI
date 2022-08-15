@@ -1258,5 +1258,22 @@ method {
 
 这种情况基本上不存在，若发生上述问题，确定并非自己的代码发生的问题后，可提交日志进行反馈。
 
+!> `IllegalStateException` ModuleContextThemeWrapper already loaded
+
+**异常原因**
+
+在 `Context` 中使用 `applyTheme` 方法时重复进行调用。
+
+> 示例如下
+
+```kotlin
+// 假设这就是当前的 Context 对象
+context.applyTheme(R.style.Theme_AppCompat).applyTheme(R.style.Theme_AppCompat)
+```
+
+**解决方案**
+
+在 `Context` 中只能创建一次 `ModuleContextThemeWrapper`，请检查代码是否有循环调用问题。
+
 <br/><br/>
 [浏览下一篇 ➡️](config/xposed-using.md)
