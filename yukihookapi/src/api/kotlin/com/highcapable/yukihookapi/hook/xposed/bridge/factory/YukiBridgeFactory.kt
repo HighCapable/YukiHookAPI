@@ -196,7 +196,7 @@ internal abstract class YukiMemberHook(override val priority: Int = YukiHookPrio
      */
     internal class Unhook private constructor(private val instance: XC_MethodHook.Unhook) {
 
-        companion object {
+        internal companion object {
 
             /**
              * 从 [XC_MethodHook.Unhook] 创建 [Unhook] 实例
