@@ -1,4 +1,4 @@
-## ReflectionFactory [kt]
+## ReflectionFactory *- kt*
 
 **变更记录**
 
@@ -8,7 +8,7 @@
 
 > 这是自定义 `Member` 和 `Class` 相关功能的查找匹配以及 `invoke` 的封装类。
 
-### MembersType [class]
+### MembersType *- class*
 
 ```kotlin
 enum class MembersType
@@ -22,7 +22,7 @@ enum class MembersType
 
 > 定义一个 `Class` 中的 `Member` 类型
 
-#### ALL [enum]
+#### ALL *- enum*
 
 ```kotlin
 ALL
@@ -36,7 +36,7 @@ ALL
 
 > 全部 `Method` 与 `Constructor`。
 
-#### METHOD [enum]
+#### METHOD *- enum*
 
 ```kotlin
 METHOD
@@ -50,7 +50,7 @@ METHOD
 
 > 全部 `Method`。
 
-#### CONSTRUCTOR [enum]
+#### CONSTRUCTOR *- enum*
 
 ```kotlin
 CONSTRUCTOR
@@ -64,7 +64,7 @@ CONSTRUCTOR
 
 > 全部 `Constructor`。
 
-### ~~hookClass [field]~~ <!-- {docsify-ignore} -->
+### ~~hookClass *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -74,7 +74,7 @@ CONSTRUCTOR
 
 `HookClass` 相关功能不再对外开放
 
-### ~~normalClass [field]~~ <!-- {docsify-ignore} -->
+### ~~normalClass *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -84,7 +84,7 @@ CONSTRUCTOR
 
 `HookClass` 相关功能不再对外开放
 
-### ~~hasClass [field]~~ <!-- {docsify-ignore} -->
+### ~~hasClass *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -94,7 +94,7 @@ CONSTRUCTOR
 
 请直接使用 `hasClass()` 无参方法
 
-### hasExtends [field]
+### Class.hasExtends *- ext-field*
 
 ```kotlin
 val Class<*>.hasExtends: Boolean
@@ -108,7 +108,7 @@ val Class<*>.hasExtends: Boolean
 
 > 当前 `Class` 是否有继承关系，父类是 `Any` 将被认为没有继承关系。
 
-### classOf [method]
+### classOf *- method*
 
 ```kotlin
 fun classOf(name: String, loader: ClassLoader?): Class<*>
@@ -141,7 +141,7 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 classOf(name = "com.example.demo.DemoClass", customClassLoader)
 ```
 
-### classOf [method]
+### classOf *- method*
 
 ```kotlin
 inline fun <reified T> classOf(loader: ClassLoader?): Class<*>
@@ -182,7 +182,7 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 classOf<DemoClass>(customClassLoader)
 ```
 
-### hasClass [method]
+### String.hasClass *- ext-method*
 
 ```kotlin
 fun String.hasClass(loader: ClassLoader?): Boolean
@@ -223,7 +223,7 @@ if("com.example.demo.DemoClass".hasClass(customClassloader)) {
 }
 ```
 
-### hasField [method]
+### Class.hasField *- ext-method*
 
 ```kotlin
 inline fun Class<*>.hasField(initiate: FieldCondition): Boolean
@@ -245,7 +245,7 @@ inline fun Class<*>.hasField(initiate: FieldCondition): Boolean
 
 > 查找变量是否存在。
 
-### hasMethod [method]
+### Class.hasMethod *- ext-method*
 
 ```kotlin
 inline fun Class<*>.hasMethod(initiate: MethodCondition): Boolean
@@ -271,7 +271,7 @@ inline fun Class<*>.hasMethod(initiate: MethodCondition): Boolean
 
 > 查找方法是否存在。
 
-### hasConstructor [method]
+### Class.hasConstructor *- ext-method*
 
 ```kotlin
 inline fun Class<*>.hasConstructor(initiate: ConstructorCondition): Boolean
@@ -293,7 +293,7 @@ inline fun Class<*>.hasConstructor(initiate: ConstructorCondition): Boolean
 
 > 查找构造方法是否存在。
 
-### hasModifiers [method]
+### Member.hasModifiers *- ext-method*
 
 ```kotlin
 inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
@@ -311,7 +311,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 > 查询 `Member` 中匹配的描述符。
 
-### ~~obtainStaticFieldAny [method]~~ <!-- {docsify-ignore} -->
+### ~~obtainStaticFieldAny *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -319,7 +319,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 `v1.0.1` `移除`
 
-### ~~obtainFieldAny [method]~~ <!-- {docsify-ignore} -->
+### ~~obtainFieldAny *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -327,7 +327,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 `v1.0.1` `移除`
 
-### ~~modifyStaticField [method]~~ <!-- {docsify-ignore} -->
+### ~~modifyStaticField *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -335,7 +335,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 `v1.0.1` `移除`
 
-### ~~modifyField [method]~~ <!-- {docsify-ignore} -->
+### ~~modifyField *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -343,7 +343,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 `v1.0.1` `移除`
 
-### field [method]
+### Class.field *- ext-method*
 
 ```kotlin
 inline fun Class<*>.field(initiate: FieldCondition): FieldFinder.Result
@@ -361,7 +361,7 @@ inline fun Class<*>.field(initiate: FieldCondition): FieldFinder.Result
 
 > 查找并得到变量。
 
-### method [method]
+### Class.method *- ext-method*
 
 ```kotlin
 inline fun Class<*>.method(initiate: MethodCondition): MethodFinder.Result
@@ -389,7 +389,7 @@ inline fun Class<*>.method(initiate: MethodCondition): MethodFinder.Result
 
 > 查找并得到方法。
 
-### constructor [method]
+### Class.constructor *- ext-method*
 
 ```kotlin
 inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFinder.Result
@@ -415,7 +415,7 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFind
 
 > 查找并得到构造方法。
 
-### ~~callStatic [method]~~ <!-- {docsify-ignore} -->
+### ~~callStatic *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -427,7 +427,7 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFind
 
 `v1.0.2` `移除`
 
-### ~~call [method]~~ <!-- {docsify-ignore} -->
+### ~~call *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -439,7 +439,7 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFind
 
 `v1.0.2` `移除`
 
-### current [method]
+### Any.current *- ext-method*
 
 ```kotlin
 inline fun <reified T : Any> T.current(): CurrentClass
@@ -461,7 +461,7 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
 
 > 获得当前实例的类操作对象。
 
-### buildOfAny [method]
+### Class.buildOfAny *- ext-method*
 
 ```kotlin
 inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition): Any?
@@ -479,7 +479,7 @@ inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorConditio
 
 > 通过构造方法创建新实例，任意类型 `Any`。
 
-### buildOf [method]
+### Class.buildOf *- ext-method*
 
 ```kotlin
 inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition): T?
@@ -497,7 +497,7 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditi
 
 > 通过构造方法创建新实例，指定类型 `T`。
 
-### allMethods [method]
+### Class.allMethods *- ext-method*
 
 ```kotlin
 inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit)
@@ -515,7 +515,7 @@ inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit)
 
 > 遍历当前类中的所有方法。
 
-### allConstructors [method]
+### Class.allConstructors *- ext-method*
 
 ```kotlin
 inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructor<*>) -> Unit)
@@ -533,7 +533,7 @@ inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructo
 
 > 遍历当前类中的所有构造方法。
 
-### allFields [method]
+### Class.allFields *- ext-method*
 
 ```kotlin
 inline fun Class<*>.allFields(result: (index: Int, field: Field) -> Unit)

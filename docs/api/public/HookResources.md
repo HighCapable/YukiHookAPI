@@ -1,4 +1,4 @@
-## HookResources [class]
+## HookResources *- class*
 
 ```kotlin
 class HookResources internal constructor(var instance: YukiResources?)

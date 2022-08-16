@@ -1,4 +1,4 @@
-## ModuleAppCompatActivity [class]
+## ModuleAppCompatActivity *- class*
 
 ```kotlin
 open class ModuleAppCompatActivity : AppCompatActivity()
@@ -18,7 +18,7 @@ open class ModuleAppCompatActivity : AppCompatActivity()
 
 在 (Xposed) 宿主环境需要重写 `moduleTheme` 设置 AppCompat 主题，否则会无法启动。
 
-### moduleTheme [field]
+### moduleTheme *- field*
 
 ```kotlin
 open val moduleTheme: Int

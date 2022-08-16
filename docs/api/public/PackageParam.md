@@ -1,4 +1,4 @@
-## PackageParam [class]
+## PackageParam *- class*
 
 ```kotlin
 open class PackageParam internal constructor(internal var wrapper: PackageParamWrapper?)
@@ -12,7 +12,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
 
 > 装载 Hook 的目标 APP 入口对象实现类。
 
-### appClassLoader [field]
+### appClassLoader *- field*
 
 ```kotlin
 val appClassLoader：ClassLoader
@@ -26,7 +26,7 @@ val appClassLoader：ClassLoader
 
 > 获取当前 Hook APP 的 `ClassLoader`。
 
-### appInfo [field]
+### appInfo *- field*
 
 ```kotlin
 val appInfo: ApplicationInfo
@@ -40,7 +40,7 @@ val appInfo: ApplicationInfo
 
 > 获取当前 Hook APP 的 `ApplicationInfo`。
 
-### appUserId [field]
+### appUserId *- field*
 
 ```kotlin
 val appUserId: Int
@@ -56,7 +56,7 @@ val appUserId: Int
 
 机主为 `0`，应用双开 (分身) 或工作资料因系统环境不同 ID 也各不相同。
 
-### appContext [field]
+### appContext *- field*
 
 ```kotlin
 val appContext: Application
@@ -72,7 +72,7 @@ val appContext: Application
 
 !> 首次装载可能是空的，请延迟一段时间再获取或通过设置 `onAppLifecycle` 监听来完成。
 
-### appResources [field]
+### appResources *- field*
 
 ```kotlin
 val appResources：Resources
@@ -88,7 +88,7 @@ val appResources：Resources
 
 !> 你只能在 `HookResources.hook` 方法体内或 `appContext` 装载完毕时进行调用。
 
-### systemContext [field]
+### systemContext *- field*
 
 ```kotlin
 val systemContext: Context
@@ -102,7 +102,7 @@ val systemContext: Context
 
 > 获取当前系统框架的 `Context`。
 
-### processName [field]
+### processName *- field*
 
 ```kotlin
 val processName: String
@@ -116,7 +116,7 @@ val processName: String
 
 > 获取当前 Hook APP 的进程名称。
 
-### packageName [field]
+### packageName *- field*
 
 ```kotlin
 val packageName: String
@@ -130,7 +130,7 @@ val packageName: String
 
 > 获取当前 Hook APP 的包名。
 
-### isFirstApplication [field]
+### isFirstApplication *- field*
 
 ```kotlin
 val isFirstApplication: Boolean
@@ -144,7 +144,7 @@ val isFirstApplication: Boolean
 
 > 获取当前 Hook APP 是否为第一个 `Application`。
 
-### mainProcessName [field]
+### mainProcessName *- field*
 
 ```kotlin
 val mainProcessName: String
@@ -160,7 +160,7 @@ val mainProcessName: String
 
 其对应的就是 `packageName`。
 
-### moduleAppFilePath [field]
+### moduleAppFilePath *- field*
 
 ```kotlin
 val moduleAppFilePath: String
@@ -176,7 +176,7 @@ val moduleAppFilePath: String
 
 !> 作为 Hook API 装载时无法使用，会获取到空字符串。
 
-### moduleAppResources [field]
+### moduleAppResources *- field*
 
 ```kotlin
 val moduleAppResources: YukiModuleResources
@@ -192,7 +192,7 @@ val moduleAppResources: YukiModuleResources
 
 !> 作为 Hook API 或不支持的 Hook Framework 装载时无法使用，会抛出异常。
 
-### prefs [field]
+### prefs *- field*
 
 ```kotlin
 val prefs: YukiHookModulePrefs
@@ -208,7 +208,7 @@ val prefs: YukiHookModulePrefs
 
 !> 作为 Hook API 装载时无法使用，会抛出异常。
 
-### prefs [method]
+### prefs *- method*
 
 ```kotlin
 fun prefs(name: String): YukiHookModulePrefs
@@ -230,7 +230,7 @@ fun prefs(name: String): YukiHookModulePrefs
 
 !> 作为 Hook API 装载时无法使用，会抛出异常。
 
-### dataChannel [field]
+### dataChannel *- field*
 
 ```kotlin
 val dataChannel: YukiHookDataChannel.NameSpace
@@ -246,7 +246,7 @@ val dataChannel: YukiHookDataChannel.NameSpace
 
 !> 作为 Hook API 装载时无法使用，会抛出异常。
 
-### resources [method]
+### resources *- method*
 
 ```kotlin
 fun resources(): HookResources
@@ -262,7 +262,7 @@ fun resources(): HookResources
 
 请调用 `HookResources.hook` 方法开始 Hook。
 
-### refreshModuleAppResources [method]
+### refreshModuleAppResources *- method*
 
 ```kotlin
 fun refreshModuleAppResources()
@@ -276,7 +276,7 @@ fun refreshModuleAppResources()
 
 > 刷新当前 Xposed 模块自身 `Resources`。
 
-### onAppLifecycle [method]
+### onAppLifecycle *- method*
 
 ```kotlin
 inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit)
@@ -294,7 +294,7 @@ inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit)
 
 !> 作为 Hook API 装载时请使用原生的 `Application` 实现生命周期监听。
 
-### loadApp [method]
+### loadApp *- method*
 
 ```kotlin
 inline fun loadApp(name: String, initiate: PackageParam.() -> Unit)
@@ -352,7 +352,7 @@ loadApp {
 loadApp(hooker = CustomHooker)
 ```
 
-### loadZygote [method]
+### loadZygote *- method*
 
 ```kotlin
 inline fun loadZygote(initiate: PackageParam.() -> Unit)
@@ -372,7 +372,7 @@ fun loadZygote(hooker: YukiBaseHooker)
 
 方法中的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
 
-### loadSystem [method]
+### loadSystem *- method*
 
 ```kotlin
 inline fun loadSystem(initiate: PackageParam.() -> Unit)
@@ -392,7 +392,7 @@ fun loadSystem(hooker: YukiBaseHooker)
 
 方法中的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
 
-### withProcess [method]
+### withProcess *- method*
 
 ```kotlin
 inline fun withProcess(name: String, initiate: PackageParam.() -> Unit)
@@ -412,7 +412,7 @@ fun withProcess(name: String, hooker: YukiBaseHooker)
 
 `name` 为 APP 的进程名称，后方的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
 
-### loadHooker [method]
+### loadHooker *- method*
 
 ```kotlin
 fun loadHooker(hooker: YukiBaseHooker)
@@ -428,7 +428,7 @@ fun loadHooker(hooker: YukiBaseHooker)
 
 你可以填入 `hooker` 在 Hooker 中继续装载 Hooker。
 
-### clazz [field]
+### String.clazz *- i-ext-field*
 
 ```kotlin
 val String.clazz: Class<*>
@@ -476,7 +476,7 @@ val VariousClass.clazz: Class<*>
 VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").clazz
 ```
 
-### hasClass [field]
+### String.hasClass *- i-ext-field*
 
 ```kotlin
 val String.hasClass: Boolean
@@ -502,7 +502,7 @@ if("com.example.demo.DemoClass".hasClass) {
 }
 ```
 
-### findClass [method]
+### findClass *- method*
 
 ```kotlin
 fun findClass(name: String, loader: ClassLoader?): HookClass
@@ -576,7 +576,7 @@ val outsideLoader: ClassLoader? = ... // 假设这就是你的 ClassLoader
 findClass("com.example.demo.OutsideClass1", "com.example.demo.OutsideClass2", "com.example.demo.OutsideClass3", loader = outsideLoader)
 ```
 
-### fetching [method]
+### ClassLoader.fetching *- i-ext-method*
 
 ```kotlin
 fun ClassLoader.fetching(result: (clazz: Class<*>, resolve: Boolean) -> Unit)
@@ -639,7 +639,7 @@ customClassLoader?.fetching { clazz, resolve ->
 }
 ```
 
-### hook [method]
+### String+Class+VariousClass+HookClass.hook *- i-ext-method*
 
 ```kotlin
 inline fun String.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
@@ -745,7 +745,7 @@ findClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook {
 }
 ```
 
-### hook [method]
+### HookResources.hook *- i-ext-method*
 
 ```kotlin
 inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit)
@@ -777,7 +777,7 @@ resources().hook {
 
 将 Resources 的 Hook 设置为这样是为了与 `findClass(...).hook` 做到统一，使得调用起来逻辑不会混乱。
 
-### AppLifecycle [class]
+### AppLifecycle *- class*
 
 ```kotlin
 inner class AppLifecycle internal constructor()
@@ -791,7 +791,7 @@ inner class AppLifecycle internal constructor()
 
 > 当前 Hook APP 的生命周期实例处理类。
 
-#### attachBaseContext [method]
+#### attachBaseContext *- method*
 
 ```kotlin
 fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) -> Unit)
@@ -805,7 +805,7 @@ fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) ->
 
 > 监听当前 Hook APP 装载 `Application.attachBaseContext`。
 
-#### onCreate [method]
+#### onCreate *- method*
 
 ```kotlin
 fun onCreate(initiate: Application.() -> Unit)
@@ -819,7 +819,7 @@ fun onCreate(initiate: Application.() -> Unit)
 
 > 监听当前 Hook APP 装载 `Application.onCreate`。
 
-#### onTerminate [method]
+#### onTerminate *- method*
 
 ```kotlin
 fun onTerminate(initiate: Application.() -> Unit)
@@ -833,7 +833,7 @@ fun onTerminate(initiate: Application.() -> Unit)
 
 > 监听当前 Hook APP 装载 `Application.onTerminate`。
 
-#### onLowMemory [method]
+#### onLowMemory *- method*
 
 ```kotlin
 fun onLowMemory(initiate: Application.() -> Unit)
@@ -847,7 +847,7 @@ fun onLowMemory(initiate: Application.() -> Unit)
 
 > 监听当前 Hook APP 装载 `Application.onLowMemory`。
 
-#### onTrimMemory [method]
+#### onTrimMemory *- method*
 
 ```kotlin
 fun onTrimMemory(result: (self: Application, level: Int) -> Unit)
@@ -861,7 +861,7 @@ fun onTrimMemory(result: (self: Application, level: Int) -> Unit)
 
 > 监听当前 Hook APP 装载 `Application.onTrimMemory`。
 
-#### onConfigurationChanged [method]
+#### onConfigurationChanged *- method*
 
 ```kotlin
 fun onConfigurationChanged(result: (self: Application, config: Configuration) -> Unit)
@@ -875,7 +875,7 @@ fun onConfigurationChanged(result: (self: Application, config: Configuration) ->
 
 > 监听当前 Hook APP 装载 `Application.onConfigurationChanged`。
 
-#### registerReceiver [method]
+#### registerReceiver *- method*
 
 ```kotlin
 fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit)

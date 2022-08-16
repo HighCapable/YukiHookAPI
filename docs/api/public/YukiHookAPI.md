@@ -1,4 +1,4 @@
-## YukiHookAPI [object]
+## YukiHookAPI *- object*
 
 ```kotlin
 object YukiHookAPI
@@ -12,7 +12,7 @@ object YukiHookAPI
 
 > 这是 `YukiHookAPI` 的 API 调用总类，Hook 相关功能的开始、Hook 相关功能的配置都在这里。
 
-### API_VERSION_NAME [field]
+### API_VERSION_NAME *- field*
 
 ```kotlin
 const val API_VERSION_NAME: String
@@ -26,7 +26,7 @@ const val API_VERSION_NAME: String
 
 > 获取当前 `YukiHookAPI` 的版本。
 
-### API_VERSION_CODE [field]
+### API_VERSION_CODE *- field*
 
 ```kotlin
 const val API_VERSION_CODE: Int
@@ -40,7 +40,7 @@ const val API_VERSION_CODE: Int
 
 > 获取当前 `YukiHookAPI` 的版本号。
 
-### ~~executorName [field]~~ <!-- {docsify-ignore} -->
+### ~~executorName *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -50,7 +50,7 @@ const val API_VERSION_CODE: Int
 
 请转移到 `Status.executorName`
 
-### ~~executorVersion [field]~~ <!-- {docsify-ignore} -->
+### ~~executorVersion *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -60,7 +60,7 @@ const val API_VERSION_CODE: Int
 
 请转移到 `Status.executorVersion`
 
-### Status [object]
+### Status *- object*
 
 ```kotlin
 object Status
@@ -74,7 +74,7 @@ object Status
 
 > 当前 `YukiHookAPI` 的状态。
 
-#### executorName [field]
+#### executorName *- field*
 
 ```kotlin
 val executorName: String
@@ -92,7 +92,7 @@ val executorName: String
 
 !> 在模块环境中需要启用 `Configs.isEnableHookModuleStatus`。
 
-#### executorVersion [field]
+#### executorVersion *- field*
 
 ```kotlin
 val executorVersion: Int
@@ -110,7 +110,7 @@ val executorVersion: Int
 
 !> 在模块环境中需要启用 `Configs.isEnableHookModuleStatus`。
 
-#### isModuleActive [field]
+#### isModuleActive *- field*
 
 ```kotlin
 val isModuleActive: Boolean
@@ -130,7 +130,7 @@ val isModuleActive: Boolean
 
 !> 在 (Xposed) 宿主环境中仅返回非 `isTaiChiModuleActive` 的激活状态。
 
-#### isXposedModuleActive [field]
+#### isXposedModuleActive *- field*
 
 ```kotlin
 val isXposedModuleActive: Boolean
@@ -148,7 +148,7 @@ val isXposedModuleActive: Boolean
 
 !> 在 (Xposed) 宿主环境中始终返回 true。
 
-#### isTaiChiModuleActive [field]
+#### isTaiChiModuleActive *- field*
 
 ```kotlin
 val isTaiChiModuleActive: Boolean
@@ -166,7 +166,7 @@ val isTaiChiModuleActive: Boolean
 
 !> 在 (Xposed) 宿主环境中始终返回 false。
 
-#### isSupportResourcesHook [field]
+#### isSupportResourcesHook *- field*
 
 ```kotlin
 val isSupportResourcesHook: Boolean
@@ -186,7 +186,7 @@ val isSupportResourcesHook: Boolean
 
 !> 请注意你需要确保 `InjectYukiHookWithXposed.isUsingResourcesHook` 已启用，否则始终返回 false。
 
-### Configs [object]
+### Configs *- object*
 
 ```kotlin
 object Configs
@@ -200,7 +200,7 @@ object Configs
 
 > 对 API 相关功能的配置类。
 
-#### debugTag [field]
+#### debugTag *- field*
 
 ```kotlin
 var debugTag: String
@@ -216,7 +216,7 @@ var debugTag: String
 
 你可以方便地进行自定义，并可以在 `Logcat` 和 `XposedBridge.log` 中找到它们。
 
-#### isDebug [field]
+#### isDebug *- field*
 
 ```kotlin
 var isDebug: Boolean
@@ -232,7 +232,7 @@ var isDebug: Boolean
 
 默认为开启状态，开启后模块将会向 `Logcat` 和 `XposedBridge.log` 打印详细的 Hook 日志，关闭后仅会打印 `E` 级别的日志。
 
-#### isAllowPrintingLogs [field]
+#### isAllowPrintingLogs *- field*
 
 ```kotlin
 var isAllowPrintingLogs: Boolean
@@ -248,7 +248,7 @@ var isAllowPrintingLogs: Boolean
 
 !> 关闭后将会停用 `YukiHookAPI` 对全部日志的输出，但是不影响当你手动调用日志方法输出日志。
 
-#### isEnableModulePrefsCache [field]
+#### isEnableModulePrefsCache *- field*
 
 ```kotlin
 var isEnableModulePrefsCache: Boolean
@@ -266,7 +266,7 @@ var isEnableModulePrefsCache: Boolean
 
 你可以手动在 `YukiHookModulePrefs` 中自由开启和关闭缓存功能以及清除缓存。
 
-#### isEnableModuleAppResourcesCache [field]
+#### isEnableModuleAppResourcesCache *- field*
 
 ```kotlin
 var isEnableModuleAppResourcesCache: Boolean
@@ -286,7 +286,7 @@ var isEnableModuleAppResourcesCache: Boolean
 
 !> 关闭后每次使用 `PackageParam.moduleAppResources` 都会重新创建，可能会造成运行缓慢。
 
-#### isEnableHookModuleStatus [field]
+#### isEnableHookModuleStatus *- field*
 
 ```kotlin
 var isEnableHookModuleStatus: Boolean
@@ -304,7 +304,7 @@ var isEnableHookModuleStatus: Boolean
 
 !> 关闭后你将不能再在模块环境中使用 `YukiHookAPI.Status` 中的功能。
 
-#### isEnableDataChannel [field]
+#### isEnableDataChannel *- field*
 
 ```kotlin
 var isEnableDataChannel: Boolean
@@ -322,7 +322,7 @@ var isEnableDataChannel: Boolean
 
 此功能默认启用，关闭后将不会在功能初始化的时候装载 `YukiHookDataChannel`。
 
-#### isEnableMemberCache [field]
+#### isEnableMemberCache *- field*
 
 ```kotlin
 var isEnableMemberCache: Boolean
@@ -350,7 +350,7 @@ var isEnableMemberCache: Boolean
 
 除非缓存的 `Member` 发生了混淆的问题，例如使用 R8 混淆后的 APP 的目标 `Member`，否则建议启用。
 
-### configs [method]
+### configs *- method*
 
 ```kotlin
 inline fun configs(initiate: Configs.() -> Unit)
@@ -442,7 +442,7 @@ class HookEntryClass : IYukiHookXposedInit {
 }
 ```
 
-### encase [method]
+### encase *- method*
 
 ```kotlin
 fun encase(initiate: PackageParam.() -> Unit)

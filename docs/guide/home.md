@@ -40,7 +40,7 @@
 
 - **方便移植**
 
-  原生支持 Xposed API 用法，并原生对接 Xposed API，拥有 Xposed API 的 Hook 框架都能快速对接 Yuki Hook API。
+  原生支持 Xposed API 用法，并原生对接 Xposed API，拥有 Xposed API 的 Hook 框架都能快速对接 `YukiHookAPI`。
 
 - **支持混淆**
 
@@ -205,4 +205,4 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
 | [Xposed](https://github.com/rovo89/Xposed)                | ❎   | 未测试，不再推荐使用                                                                      |
 
 <br/><br/>
-[浏览下一篇 ➡️](guide/knowledge.md)
+[浏览下一篇 &nbsp;➡️](guide/knowledge.md)

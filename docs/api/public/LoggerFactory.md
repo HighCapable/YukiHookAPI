@@ -1,4 +1,4 @@
-## LoggerFactory [kt]
+## LoggerFactory *- kt*
 
 **变更记录**
 
@@ -8,7 +8,7 @@
 
 > 这是 `YukiHookAPI` 的日志封装类，可实现同时向 `Logcat` 和 `XposedBridge.log` 打印日志的功能。
 
-### LoggerType [class]
+### LoggerType *- class*
 
 ```kotlin
 enum class LoggerType
@@ -24,7 +24,7 @@ enum class LoggerType
 
 决定于模块与 (Xposed) 宿主环境使用的打印方式。
 
-#### LOGD [enum]
+#### LOGD *- enum*
 
 ```kotlin
 LOGD
@@ -38,7 +38,7 @@ LOGD
 
 > 仅使用 `android.util.Log`。
 
-#### XPOSEDBRIDGE [enum]
+#### XPOSEDBRIDGE *- enum*
 
 ```kotlin
 XPOSEDBRIDGE
@@ -54,7 +54,7 @@ XPOSEDBRIDGE
 
 !> 只能在 (Xposed) 宿主环境中使用，模块环境将不生效。
 
-#### SCOPE [enum]
+#### SCOPE *- enum*
 
 ```kotlin
 SCOPE
@@ -72,7 +72,7 @@ SCOPE
 
 模块环境仅使用 `LOGD`。
 
-#### BOTH [enum]
+#### BOTH *- enum*
 
 ```kotlin
 BOTH
@@ -90,7 +90,7 @@ BOTH
 
 模块环境仅使用 `LOGD`。
 
-### loggerD [method]
+### loggerD *- method*
 
 ```kotlin
 fun loggerD(tag: String, msg: String, type: LoggerType)
@@ -110,7 +110,7 @@ fun loggerD(tag: String, msg: String, type: LoggerType)
 
 `tag` 的默认参数为 `YukiHookAPI.Configs.debugTag`，你可以进行自定义。
 
-### loggerI [method]
+### loggerI *- method*
 
 ```kotlin
 fun loggerI(tag: String, msg: String, type: LoggerType)
@@ -130,7 +130,7 @@ fun loggerI(tag: String, msg: String, type: LoggerType)
 
 `tag` 的默认参数为 `YukiHookAPI.Configs.debugTag`，你可以进行自定义。
 
-### loggerW [method]
+### loggerW *- method*
 
 ```kotlin
 fun loggerW(tag: String, msg: String, type: LoggerType)
@@ -150,7 +150,7 @@ fun loggerW(tag: String, msg: String, type: LoggerType)
 
 `tag` 的默认参数为 `YukiHookAPI.Configs.debugTag`，你可以进行自定义。
 
-### loggerE [method]
+### loggerE *- method*
 
 ```kotlin
 fun loggerE(tag: String, msg: String, e: Throwable?, type: LoggerType)

@@ -1,4 +1,4 @@
-## InjectYukiHookWithXposed [annotation]
+## InjectYukiHookWithXposed *- annotation*
 
 ```kotlin
 annotation class InjectYukiHookWithXposed(

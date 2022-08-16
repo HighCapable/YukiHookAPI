@@ -1,4 +1,4 @@
-## VariableTypeFactory [kt]
+## VariableTypeFactory *- kt*
 
 **变更记录**
 

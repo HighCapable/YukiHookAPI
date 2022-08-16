@@ -1,4 +1,4 @@
-## VariousClass [class]
+## VariousClass *- class*
 
 ```kotlin
 class VariousClass(vararg var name: String)
@@ -12,7 +12,7 @@ class VariousClass(vararg var name: String)
 
 > 这是一个不确定性 `Class` 类名装载器，通过 `name` 装载 `Class` 名称数组。
 
-### get [method]
+### get *- method*
 
 ```kotlin
 fun get(loader: ClassLoader? = null): Class<*>

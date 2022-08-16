@@ -1,4 +1,4 @@
-## PrefsData [class]
+## PrefsData *- class*
 
 ```kotlin
 data class PrefsData<T>(var key: String, var value: T)

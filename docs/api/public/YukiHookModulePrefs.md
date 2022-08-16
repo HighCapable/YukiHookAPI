@@ -1,4 +1,4 @@
-## YukiHookModulePrefs [class]
+## YukiHookModulePrefs *- class*
 
 ```kotlin
 class YukiHookModulePrefs private constructor(private var context: Context?)
@@ -42,7 +42,7 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
     android:value="true"/>
 ```
 
-### isXSharePrefsReadable [field]
+### isXSharePrefsReadable *- field*
 
 ```kotlin
 val isXSharePrefsReadable: Boolean
@@ -58,7 +58,7 @@ val isXSharePrefsReadable: Boolean
 
 !> 只能在 (Xposed) 宿主环境中使用，模块环境中始终返回 false。
 
-### isRunInNewXShareMode [field]
+### isRunInNewXShareMode *- field*
 
 ```kotlin
 val isRunInNewXShareMode: Boolean
@@ -76,7 +76,7 @@ val isRunInNewXShareMode: Boolean
 
 !> 只能在模块环境中使用，(Xposed) 宿主环境中始终返回 false
 
-### name [method]
+### name *- method*
 
 ```kotlin
 fun name(name: String): YukiHookModulePrefs
@@ -108,7 +108,7 @@ modulePrefs("custom_name").getString("custom_key")
 prefs("custom_name").getString("custom_key")
 ```
 
-### direct [method]
+### direct *- method*
 
 ```kotlin
 fun direct(): YukiHookModulePrefs
@@ -126,7 +126,7 @@ fun direct(): YukiHookModulePrefs
 
 仅在 `XSharedPreferences` 下生效。
 
-### getString [method]
+### getString *- method*
 
 ```kotlin
 fun getString(key: String, value: String): String
@@ -140,7 +140,7 @@ fun getString(key: String, value: String): String
 
 > 获取 `String` 键值。
 
-### getStringSet [method]
+### getStringSet *- method*
 
 ```kotlin
 fun getStringSet(key: String, value: Set<String>): Set<String>
@@ -154,7 +154,7 @@ fun getStringSet(key: String, value: Set<String>): Set<String>
 
 > 获取 `Set<String>` 键值。
 
-### getBoolean [method]
+### getBoolean *- method*
 
 ```kotlin
 fun getBoolean(key: String, value: Boolean): Boolean
@@ -168,7 +168,7 @@ fun getBoolean(key: String, value: Boolean): Boolean
 
 > 获取 `Boolean` 键值。
 
-### getInt [method]
+### getInt *- method*
 
 ```kotlin
 fun getInt(key: String, value: Int): Int
@@ -182,7 +182,7 @@ fun getInt(key: String, value: Int): Int
 
 > 获取 `Int` 键值。
 
-### getLong [method]
+### getLong *- method*
 
 ```kotlin
 fun getLong(key: String, value: Long): Long
@@ -196,7 +196,7 @@ fun getLong(key: String, value: Long): Long
 
 > 获取 `Long` 键值。
 
-### getFloat [method]
+### getFloat *- method*
 
 ```kotlin
 fun getFloat(key: String, value: Float): Float
@@ -210,7 +210,7 @@ fun getFloat(key: String, value: Float): Float
 
 > 获取 `Float` 键值。
 
-### all [method]
+### all *- method*
 
 ```kotlin
 fun all(): HashMap<String, Any?>
@@ -228,7 +228,7 @@ fun all(): HashMap<String, Any?>
 
 !> 每次调用都会获取实时的数据，不受缓存控制，请勿在高并发场景中使用。
 
-### remove [method]
+### remove *- method*
 
 ```kotlin
 fun remove(key: String)
@@ -244,7 +244,7 @@ fun remove(key: String)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### remove [method]
+### remove *- method*
 
 ```kotlin
 inline fun <reified T> remove(prefs: PrefsData<T>)
@@ -260,7 +260,7 @@ inline fun <reified T> remove(prefs: PrefsData<T>)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### clear [method]
+### clear *- method*
 
 ```kotlin
 fun clear()
@@ -276,7 +276,7 @@ fun clear()
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### putString [method]
+### putString *- method*
 
 ```kotlin
 fun putString(key: String, value: String)
@@ -292,7 +292,7 @@ fun putString(key: String, value: String)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### putStringSet [method]
+### putStringSet *- method*
 
 ```kotlin
 fun putStringSet(key: String, value: Set<String>)
@@ -308,7 +308,7 @@ fun putStringSet(key: String, value: Set<String>)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### putBoolean [method]
+### putBoolean *- method*
 
 ```kotlin
 fun putBoolean(key: String, value: Boolean)
@@ -324,7 +324,7 @@ fun putBoolean(key: String, value: Boolean)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### putInt [method]
+### putInt *- method*
 
 ```kotlin
 fun putInt(key: String, value: Int)
@@ -340,7 +340,7 @@ fun putInt(key: String, value: Int)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### putLong [method]
+### putLong *- method*
 
 ```kotlin
 fun putLong(key: String, value: Long)
@@ -356,7 +356,7 @@ fun putLong(key: String, value: Long)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### putFloat [method]
+### putFloat *- method*
 
 ```kotlin
 fun putFloat(key: String, value: Float)
@@ -372,7 +372,7 @@ fun putFloat(key: String, value: Float)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### get [method]
+### get *- method*
 
 ```kotlin
 inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
@@ -386,7 +386,7 @@ inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
 
 > 智能获取指定类型的键值。
 
-### put [method]
+### put *- method*
 
 ```kotlin
 inline fun <reified T> put(prefs: PrefsData<T>, value: T)
@@ -402,7 +402,7 @@ inline fun <reified T> put(prefs: PrefsData<T>, value: T)
 
 !> 在 (Xposed) 宿主环境下只读，无法使用。
 
-### clearCache [method]
+### clearCache *- method*
 
 ```kotlin
 fun clearCache()

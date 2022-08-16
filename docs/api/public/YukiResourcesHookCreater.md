@@ -1,4 +1,4 @@
-## YukiResourcesHookCreater [class]
+## YukiResourcesHookCreater *- class*
 
 ```kotlin
 class YukiResourcesHookCreater(internal val packageParam: PackageParam, internal val hookResources: HookResources)
@@ -12,7 +12,7 @@ class YukiResourcesHookCreater(internal val packageParam: PackageParam, internal
 
 > `YukiHookAPI` 的 `Resources` 核心 Hook 实现类。
 
-### injectResource [method]
+### injectResource *- method*
 
 ```kotlin
 inline fun injectResource(tag: String, initiate: ResourceHookCreater.() -> Unit): ResourceHookCreater.Result
@@ -48,7 +48,7 @@ injectResource(tag = "KuriharaYuki") {
 }
 ```
 
-### ResourcesHookCreater [class]
+### ResourcesHookCreater *- class*
 
 ```kotlin
 inner class ResourcesHookCreater internal constructor(private val tag: String)
@@ -68,7 +68,7 @@ inner class ResourcesHookCreater internal constructor(private val tag: String)
 
 查找和处理需要 Hook 的 Resources。
 
-#### resourceId [field]
+#### resourceId *- field*
 
 ```kotlin
 var resourceId: Int
@@ -97,7 +97,7 @@ injectResource {
 }
 ```
 
-#### conditions [method]
+#### conditions *- method*
 
 ```kotlin
 inline fun conditions(initiate: ConditionFinder.() -> Unit)
@@ -129,7 +129,7 @@ injectResource {
 }
 ```
 
-#### replaceTo [method]
+#### replaceTo *- method*
 
 ```kotlin
 fun replaceTo(any: Any)
@@ -175,7 +175,7 @@ injectResource {
 }
 ```
 
-#### replaceToTrue [method]
+#### replaceToTrue *- method*
 
 ```kotlin
 fun replaceToTrue()
@@ -191,7 +191,7 @@ fun replaceToTrue()
 
 !> 确保目标替换 Resources 的类型为 `Boolean`。
 
-#### replaceToFalse [method]
+#### replaceToFalse *- method*
 
 ```kotlin
 fun replaceToFalse()
@@ -207,7 +207,7 @@ fun replaceToFalse()
 
 !> 确保目标替换 Resources 的类型为 `Boolean`。
 
-#### replaceToModuleResource [method]
+#### replaceToModuleResource *- method*
 
 ```kotlin
 fun replaceToModuleResource(resId: Int)
@@ -257,7 +257,7 @@ injectResource {
 }
 ```
 
-#### injectAsLayout [method]
+#### injectAsLayout *- method*
 
 ```kotlin
 fun injectAsLayout(initiate: YukiResources.LayoutInflatedParam.() -> Unit)
@@ -306,7 +306,7 @@ injectResource {
 }
 ```
 
-#### ConditionFinder [class]
+#### ConditionFinder *- class*
 
 ```kotlin
 inner class ConditionFinder internal constructor()
@@ -320,7 +320,7 @@ inner class ConditionFinder internal constructor()
 
 > Resources 查找条件实现类。
 
-##### name [field]
+##### name *- field*
 
 ```kotlin
 var name: String
@@ -334,7 +334,7 @@ var name: String
 
 > 设置 Resources 名称。
 
-##### anim [method]
+##### anim *- method*
 
 ```kotlin
 fun anim()
@@ -348,7 +348,7 @@ fun anim()
 
 > 设置 Resources 类型为动画。
 
-##### animator [method]
+##### animator *- method*
 
 ```kotlin
 fun animator()
@@ -362,7 +362,7 @@ fun animator()
 
 > 设置 Resources 类型为属性动画。
 
-##### bool [method]
+##### bool *- method*
 
 ```kotlin
 fun bool()
@@ -376,7 +376,7 @@ fun bool()
 
 > 设置 Resources 类型为布朗(Boolean)。
 
-##### color [method]
+##### color *- method*
 
 ```kotlin
 fun color()
@@ -390,7 +390,7 @@ fun color()
 
 > 设置 Resources 类型为颜色(Color)。
 
-##### dimen [method]
+##### dimen *- method*
 
 ```kotlin
 fun dimen()
@@ -404,7 +404,7 @@ fun dimen()
 
 > 设置 Resources 类型为尺寸(Dimention)。
 
-##### drawable [method]
+##### drawable *- method*
 
 ```kotlin
 fun drawable()
@@ -418,7 +418,7 @@ fun drawable()
 
 > 设置 Resources 类型为 Drawable。
 
-##### integer [method]
+##### integer *- method*
 
 ```kotlin
 fun integer()
@@ -432,7 +432,7 @@ fun integer()
 
 > 设置 Resources 类型为整型(Integer)。
 
-##### layout [method]
+##### layout *- method*
 
 ```kotlin
 fun layout()
@@ -446,7 +446,7 @@ fun layout()
 
 > 设置 Resources 类型为布局(Layout)。
 
-##### plurals [method]
+##### plurals *- method*
 
 ```kotlin
 fun plurals()
@@ -460,7 +460,7 @@ fun plurals()
 
 > 设置 Resources 类型为 Plurals。
 
-##### string [method]
+##### string *- method*
 
 ```kotlin
 fun string()
@@ -474,7 +474,7 @@ fun string()
 
 > 设置 Resources 类型为字符串(String)。
 
-##### xml [method]
+##### xml *- method*
 
 ```kotlin
 fun xml()
@@ -488,7 +488,7 @@ fun xml()
 
 > 设置 Resources 类型为 Xml。
 
-##### mipmap [method]
+##### mipmap *- method*
 
 ```kotlin
 fun mipmap()
@@ -502,7 +502,7 @@ fun mipmap()
 
 > 设置 Resources 类型为位图(Mipmap)。
 
-##### array [method]
+##### array *- method*
 
 ```kotlin
 fun array()
@@ -516,7 +516,7 @@ fun array()
 
 > 设置 Resources 类型为数组(Array)。
 
-#### Result [class]
+#### Result *- class*
 
 ```kotlin
 inner class Result internal constructor()
@@ -530,7 +530,7 @@ inner class Result internal constructor()
 
 > 监听全部 Hook 结果实现类，可在这里处理失败事件监听。
 
-##### result [method]
+##### result *- method*
 
 ```kotlin
 inline fun result(initiate: Result.() -> Unit): Result
@@ -544,7 +544,7 @@ inline fun result(initiate: Result.() -> Unit): Result
 
 > 创建监听事件方法体。
 
-##### by [method]
+##### by *- method*
 
 ```kotlin
 inline fun by(condition: () -> Boolean): Result
@@ -558,7 +558,7 @@ inline fun by(condition: () -> Boolean): Result
 
 > 添加执行 Hook 需要满足的条件，不满足条件将直接停止 Hook。
 
-#### onHookingFailure [method]
+#### onHookingFailure *- method*
 
 ```kotlin
 fun onHookingFailure(result: (Throwable) -> Unit): Result
@@ -572,7 +572,7 @@ fun onHookingFailure(result: (Throwable) -> Unit): Result
 
 > 监听 Hook 过程发生错误的回调方法。
 
-#### ignoredHookingFailure [method]
+#### ignoredHookingFailure *- method*
 
 ```kotlin
 fun ignoredHookingFailure(): Result

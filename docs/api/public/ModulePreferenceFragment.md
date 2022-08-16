@@ -1,4 +1,4 @@
-## ModulePreferenceFragment [class]
+## ModulePreferenceFragment *- class*
 
 ```kotlin
 abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener
@@ -36,7 +36,7 @@ class SettingsFragment : ModulePreferenceFragment() {
 
 其余用法与 `PreferenceFragmentCompat` 保持一致。
 
-### onCreatePreferencesInModuleApp [method]
+### onCreatePreferencesInModuleApp *- method*
 
 ```kotlin
 abstract fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?)
@@ -50,7 +50,7 @@ abstract fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey
 
 > 对接原始方法 `onCreatePreferences`。
 
-### onSharedPreferenceChanged [method]
+### onSharedPreferenceChanged *- method*
 
 ```kotlin
 override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?)

@@ -1,4 +1,4 @@
-## YukiResources [class]
+## YukiResources *- class*
 
 ```kotlin
 class YukiResources private constructor(private val baseInstance: XResources) : Resources
@@ -12,7 +12,7 @@ class YukiResources private constructor(private val baseInstance: XResources) : 
 
 > 对接 `XResources` 的中间层实例。
 
-### LayoutInflatedParam [class]
+### LayoutInflatedParam *- class*
 
 ```kotlin
 class LayoutInflatedParam(internal val baseParam: XC_LayoutInflated.LayoutInflatedParam)
@@ -26,7 +26,7 @@ class LayoutInflatedParam(internal val baseParam: XC_LayoutInflated.LayoutInflat
 
 > 装载 Hook APP 的目标布局 Resources 实现类。
 
-#### variantName [field]
+#### variantName *- field*
 
 ```kotlin
 val variantName: String
@@ -42,7 +42,7 @@ val variantName: String
 
 例如：`layout`、`layout-land`、`layout-sw600dp`。
 
-#### currentView [field]
+#### currentView *- field*
 
 ```kotlin
 val currentView: View
@@ -56,7 +56,7 @@ val currentView: View
 
 > 获取当前被 Hook 的布局实例。
 
-#### findViewByIdentifier [method]
+#### findViewByIdentifier *- method*
 
 ```kotlin
 inline fun <reified T : View> View.findViewByIdentifier(name: String): T?

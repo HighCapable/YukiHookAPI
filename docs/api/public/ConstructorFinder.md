@@ -1,4 +1,4 @@
-## ConstructorFinder [class]
+## ConstructorFinder *- class*
 
 ```kotlin
 class ConstructorFinder internal constructor(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
@@ -18,7 +18,7 @@ class ConstructorFinder internal constructor(override val hookInstance: YukiMemb
 
 可通过指定类型查找指定构造方法或一组构造方法。
 
-### paramCount [field]
+### paramCount *- field*
 
 ```kotlin
 var paramCount: Int
@@ -36,7 +36,7 @@ var paramCount: Int
 
 若参数个数小于零则忽略并使用 `param`。
 
-### modifiers [method]
+### modifiers *- method*
 
 ```kotlin
 inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
@@ -58,7 +58,7 @@ inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### emptyParam [method]
+### emptyParam *- method*
 
 ```kotlin
 fun emptyParam(): IndexTypeCondition
@@ -72,7 +72,7 @@ fun emptyParam(): IndexTypeCondition
 
 > 设置 `Constructor` 空参数、无参数。
 
-### param [method]
+### param *- method*
 
 ```kotlin
 fun param(vararg paramType: Any): IndexTypeCondition
@@ -94,7 +94,7 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### paramCount [method]
+### paramCount *- method*
 
 ```kotlin
 fun paramCount(num: Int): IndexTypeCondition
@@ -114,7 +114,7 @@ fun paramCount(num: Int): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### paramCount [method]
+### paramCount *- method*
 
 ```kotlin
 fun paramCount(numRange: IntRange): IndexTypeCondition
@@ -132,7 +132,7 @@ fun paramCount(numRange: IntRange): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### superClass [method]
+### superClass *- method*
 
 ```kotlin
 fun superClass(isOnlySuperClass: Boolean)
@@ -148,7 +148,7 @@ fun superClass(isOnlySuperClass: Boolean)
 
 !> 若当前 `classSet` 的父类较多可能会耗时，API 会自动循环到父类继承是 `Any` 前的最后一个类。
 
-### RemedyPlan [class]
+### RemedyPlan *- class*
 
 ```kotlin
 inner class RemedyPlan internal constructor()
@@ -162,7 +162,7 @@ inner class RemedyPlan internal constructor()
 
 > `Constructor` 重查找实现类，可累计失败次数直到查找成功。
 
-#### constructor [method]
+#### constructor *- method*
 
 ```kotlin
 inline fun constructor(initiate: ConstructorCondition)
@@ -182,7 +182,7 @@ inline fun constructor(initiate: ConstructorCondition)
 
 你可以添加多个备选 `Constructor`，直到成功为止，若最后依然失败，将停止查找并输出错误日志。
 
-#### Result [class]
+#### Result *- class*
 
 ```kotlin
 inner class Result internal constructor()
@@ -196,7 +196,7 @@ inner class Result internal constructor()
 
 > `RemedyPlan` 结果实现类。
 
-##### onFind [method]
+##### onFind *- method*
 
 ```kotlin
 fun onFind(initiate: HashSet<Constructor<*>>.() -> Unit)
@@ -228,7 +228,7 @@ constructor {
 }
 ```
 
-### Result [class]
+### Result *- class*
 
 ```kotlin
 inner class Result internal constructor(internal val isNoSuch: Boolean, internal val throwable: Throwable?) : BaseResult
@@ -246,7 +246,7 @@ inner class Result internal constructor(internal val isNoSuch: Boolean, internal
 
 > `Constructor` 查找结果实现类。
 
-#### result [method]
+#### result *- method*
 
 ```kotlin
 inline fun result(initiate: Result.() -> Unit): Result
@@ -281,7 +281,7 @@ constructor {
 }
 ```
 
-#### get [method]
+#### get *- method*
 
 ```kotlin
 fun get(): Instance
@@ -331,7 +331,7 @@ constructor {
 }.get().newInstance<TestClass>("param1", "param2")
 ```
 
-#### all [method]
+#### all *- method*
 
 ```kotlin
 fun all(): ArrayList<Instance>
@@ -361,7 +361,7 @@ constructor {
 }
 ```
 
-#### give [method]
+#### give *- method*
 
 ```kotlin
 fun give(): Constructor<*>?
@@ -379,7 +379,7 @@ fun give(): Constructor<*>?
 
 在查询条件找不到任何结果的时候将返回 `null`。
 
-#### giveAll [method]
+#### giveAll *- method*
 
 ```kotlin
 fun giveAll(): HashSet<Constructor<*>>
@@ -397,7 +397,7 @@ fun giveAll(): HashSet<Constructor<*>>
 
 在查询条件找不到任何结果的时候将返回空的 `HashSet`。
 
-#### wait [method]
+#### wait *- method*
 
 ```kotlin
 fun wait(initiate: Instance.() -> Unit)
@@ -417,7 +417,7 @@ fun wait(initiate: Instance.() -> Unit)
 
 !> 若你没有设置 `remedys` 此方法将不会被回调。
 
-#### waitAll [method]
+#### waitAll *- method*
 
 ```kotlin
 fun waitAll(initiate: ArrayList<Instance>.() -> Unit)
@@ -437,7 +437,7 @@ fun waitAll(initiate: ArrayList<Instance>.() -> Unit)
 
 !> 若你没有设置 `remedys` 此方法将不会被回调。
 
-#### remedys [method]
+#### remedys *- method*
 
 ```kotlin
 inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
@@ -476,7 +476,7 @@ constructor {
 }
 ```
 
-#### onNoSuchConstructor [method]
+#### onNoSuchConstructor *- method*
 
 ```kotlin
 inline fun onNoSuchConstructor(result: (Throwable) -> Unit): Result
@@ -496,7 +496,7 @@ inline fun onNoSuchConstructor(result: (Throwable) -> Unit): Result
 
 只会返回第一次的错误信息，不会返回 `RemedyPlan` 的错误信息。
 
-#### ignored [method]
+#### ignored *- method*
 
 ```kotlin
 fun ignored(): Result
@@ -514,7 +514,7 @@ fun ignored(): Result
 
 !> 此时若要监听异常结果，你需要手动实现 `onNoSuchConstructor` 方法。
 
-#### ~~ignoredError [method]~~ <!-- {docsify-ignore} -->
+#### ~~ignoredError *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -524,7 +524,7 @@ fun ignored(): Result
 
 请转移到新方法 `ignored()`
 
-#### Instance [class]
+#### Instance *- class*
 
 ```kotlin
 inner class Instance internal constructor(private val constructor: Constructor<*>?)
@@ -542,7 +542,7 @@ inner class Instance internal constructor(private val constructor: Constructor<*
 
 > `Constructor` 实例处理类。
 
-##### call [method]
+##### call *- method*
 
 ```kotlin
 fun call(vararg param: Any?): Any?
@@ -556,7 +556,7 @@ fun call(vararg param: Any?): Any?
 
 > 执行 `Constructor` 创建目标实例，不指定目标实例类型。
 
-##### newInstance [method]
+##### newInstance *- method*
 
 ```kotlin
 fun <T> newInstance(vararg param: Any?): T?

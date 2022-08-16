@@ -1,4 +1,4 @@
-## ModifierRules [class]
+## ModifierRules *- class*
 
 ```kotlin
 class ModifierRules internal constructor()
@@ -14,7 +14,7 @@ class ModifierRules internal constructor()
 
 可对 R8 混淆后的 `Member` 进行更加详细的定位。
 
-### ~~asPublic [method]~~ <!-- {docsify-ignore} -->
+### ~~asPublic *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -24,7 +24,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asPrivate [method]~~ <!-- {docsify-ignore} -->
+### ~~asPrivate *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -34,7 +34,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asProtected [method]~~ <!-- {docsify-ignore} -->
+### ~~asProtected *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -44,7 +44,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asStatic [method]~~ <!-- {docsify-ignore} -->
+### ~~asStatic *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -54,7 +54,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asFinal [method]~~ <!-- {docsify-ignore} -->
+### ~~asFinal *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -64,7 +64,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asSynchronized [method]~~ <!-- {docsify-ignore} -->
+### ~~asSynchronized *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -74,7 +74,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asVolatile [method]~~ <!-- {docsify-ignore} -->
+### ~~asVolatile *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -84,7 +84,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asTransient [method]~~ <!-- {docsify-ignore} -->
+### ~~asTransient *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -94,7 +94,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asNative [method]~~ <!-- {docsify-ignore} -->
+### ~~asNative *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -104,7 +104,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asInterface [method]~~ <!-- {docsify-ignore} -->
+### ~~asInterface *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -114,7 +114,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asAbstract [method]~~ <!-- {docsify-ignore} -->
+### ~~asAbstract *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -124,7 +124,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### ~~asStrict [method]~~ <!-- {docsify-ignore} -->
+### ~~asStrict *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -134,7 +134,7 @@ class ModifierRules internal constructor()
 
 请将开头的 `as` 修改为 `is`
 
-### isPublic [method]
+### isPublic *- method*
 
 ```kotlin
 fun isPublic()
@@ -148,7 +148,7 @@ fun isPublic()
 
 > 添加描述 `Member` 类型包含 `public`。
 
-### isPrivate [method]
+### isPrivate *- method*
 
 ```kotlin
 fun isPrivate()
@@ -162,7 +162,7 @@ fun isPrivate()
 
 > 添加描述 `Member` 类型包含 `private`。
 
-### isProtected [method]
+### isProtected *- method*
 
 ```kotlin
 fun isProtected()
@@ -176,7 +176,7 @@ fun isProtected()
 
 > 添加描述 `Member` 类型包含 `protected`。
 
-### isStatic [method]
+### isStatic *- method*
 
 ```kotlin
 fun isStatic()
@@ -194,7 +194,7 @@ fun isStatic()
 
 !> 特别注意 Kotlin -> Jvm 后的 `object` 类中的方法并不是静态的。
 
-### isFinal [method]
+### isFinal *- method*
 
 ```kotlin
 fun isFinal()
@@ -210,7 +210,7 @@ fun isFinal()
 
 !> 特别注意在 Kotlin -> Jvm 后没有 `open` 标识的 `Member` 和没有任何关联的 `Member` 都将为 `final`。
 
-### isSynchronized [method]
+### isSynchronized *- method*
 
 ```kotlin
 fun isSynchronized()
@@ -224,7 +224,7 @@ fun isSynchronized()
 
 > 添加描述 `Member` 类型包含 `synchronized`。
 
-### isVolatile [method]
+### isVolatile *- method*
 
 ```kotlin
 fun isVolatile()
@@ -238,7 +238,7 @@ fun isVolatile()
 
 > 添加描述 `Member` 类型包含 `volatile`。
 
-### isTransient [method]
+### isTransient *- method*
 
 ```kotlin
 fun isTransient()
@@ -252,7 +252,7 @@ fun isTransient()
 
 > 添加描述 `Member` 类型包含 `transient`。
 
-### isNative [method]
+### isNative *- method*
 
 ```kotlin
 fun isNative()
@@ -268,7 +268,7 @@ fun isNative()
 
 对于任意 JNI 对接的 `Member` 可添加此描述进行确定。
 
-### isInterface [method]
+### isInterface *- method*
 
 ```kotlin
 fun isInterface()
@@ -282,7 +282,7 @@ fun isInterface()
 
 > 添加描述 `Member` 类型包含 `interface`。
 
-### isAbstract [method]
+### isAbstract *- method*
 
 ```kotlin
 fun isAbstract()
@@ -298,7 +298,7 @@ fun isAbstract()
 
 对于任意的抽象 `Member` 可添加此描述进行确定。
 
-### isStrict [method]
+### isStrict *- method*
 
 ```kotlin
 fun isStrict()

@@ -1,4 +1,4 @@
-## HookParam [class]
+## HookParam *- class*
 
 ```kotlin
 class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper?)
@@ -12,7 +12,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
 
 > Hook 方法、构造方法的目标对象实现类。
 
-### args [field]
+### args *- field*
 
 ```kotlin
 val args: Array<Any?>
@@ -26,7 +26,7 @@ val args: Array<Any?>
 
 > 获取当前 Hook 对象 `member` 或 `constructor` 的参数对象数组。
 
-### ~~firstArgs [field]~~ <!-- {docsify-ignore} -->
+### ~~firstArgs *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -36,7 +36,7 @@ val args: Array<Any?>
 
 请使用 `args(index = 0)` 或 `args().first()`
 
-### ~~lastArgs [field]~~ <!-- {docsify-ignore} -->
+### ~~lastArgs *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -46,7 +46,7 @@ val args: Array<Any?>
 
 请使用 `args().last()`
 
-### instance [field]
+### instance *- field*
 
 ```kotlin
 val instance: Any
@@ -62,7 +62,7 @@ val instance: Any
 
 !> 如果你当前 Hook 的对象是一个静态，那么它将不存在实例的对象。
 
-### instanceClass [field]
+### instanceClass *- field*
 
 ```kotlin
 val instanceClass: Class<*>
@@ -76,7 +76,7 @@ val instanceClass: Class<*>
 
 > 获取当前 Hook 实例的类对象。
 
-### member [field]
+### member *- field*
 
 ```kotlin
 val member: Member
@@ -92,7 +92,7 @@ val member: Member
 
 在不确定 `Member` 类型为 `Method` 或 `Constructor` 时可以使用此方法。
 
-### method [field]
+### method *- field*
 
 ```kotlin
 val method: Method
@@ -106,7 +106,7 @@ val method: Method
 
 > 获取当前 Hook 对象的方法。
 
-### constructor [field]
+### constructor *- field*
 
 ```kotlin
 val constructor: Constructor
@@ -120,7 +120,7 @@ val constructor: Constructor
 
 > 获取当前 Hook 对象的构造方法。
 
-### result [field]
+### result *- field*
 
 ```kotlin
 var result: Any?
@@ -134,7 +134,7 @@ var result: Any?
 
 > 获取、设置当前 Hook 对象的 `method` 或 `constructor` 的返回值。
 
-### hasThrowable [field]
+### hasThrowable *- field*
 
 ```kotlin
 val hasThrowable: Boolean
@@ -148,7 +148,7 @@ val hasThrowable: Boolean
 
 > 判断是否存在设置过的方法调用抛出异常。
 
-### throwable [field]
+### throwable *- field*
 
 ```kotlin
 val throwable: Throwable?
@@ -162,7 +162,7 @@ val throwable: Throwable?
 
 > 获取设置的方法调用抛出异常。
 
-### throwToApp [method]
+### Throwable.throwToApp *- i-ext-method*
 
 ```kotlin
 fun Throwable.throwToApp()
@@ -205,7 +205,7 @@ injectMember {
 
 !> 向 Hook APP 抛出异常<u>**会对其暴露被 Hook 的事实**</u>，是不安全的，容易被检测，请按实际场景合理使用。
 
-### result [method]
+### result *- method*
 
 ```kotlin
 inline fun <reified T> result(): T?
@@ -219,7 +219,7 @@ inline fun <reified T> result(): T?
 
 > 获取当前 Hook 对象的 `method` 或 `constructor` 的返回值 `T`。
 
-### ~~firstArgs [method]~~ <!-- {docsify-ignore} -->
+### ~~firstArgs *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -227,7 +227,7 @@ inline fun <reified T> result(): T?
 
 `v1.0.75` `移除`
 
-### ~~lastArgs [method]~~ <!-- {docsify-ignore} -->
+### ~~lastArgs *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -235,7 +235,7 @@ inline fun <reified T> result(): T?
 
 `v1.0.75` `移除`
 
-### instance [method]
+### instance *- method*
 
 ```kotlin
 inline fun <reified T> instance(): T
@@ -259,7 +259,7 @@ inline fun <reified T> instance(): T
 instance<Activity>().finish()
 ```
 
-### args [method]
+### args *- method*
 
 ```kotlin
 fun args(): ArgsIndexCondition
@@ -273,7 +273,7 @@ fun args(): ArgsIndexCondition
 
 > 获取当前 Hook 对象的 `method` or `constructor` 的参数数组下标实例化类。
 
-### args [method]
+### args *- method*
 
 ```kotlin
 fun args(index: Int): ArgsModifyer
@@ -349,7 +349,7 @@ args(index = 1).setTrue()
 args(index = 1).setFalse()
 ```
 
-### invokeOriginal [method]
+### Member.invokeOriginal *- i-ext-method*
 
 ```kotlin
 fun <T> Member.invokeOriginal(vararg args: Any?): Any?
@@ -373,7 +373,7 @@ fun <T> Member.invokeOriginal(vararg args: Any?): Any?
 member.invokeOriginal("test value")
 ```
 
-### resultTrue [method]
+### resultTrue *- method*
 
 ```kotlin
 fun resultTrue()
@@ -389,7 +389,7 @@ fun resultTrue()
 
 !> 请确保 `result` 类型为 `Boolean`。
 
-### resultFalse [method]
+### resultFalse *- method*
 
 ```kotlin
 fun resultFalse()
@@ -405,7 +405,7 @@ fun resultFalse()
 
 !> 请确保 `result` 类型为 `Boolean`。
 
-### resultNull [method]
+### resultNull *- method*
 
 ```kotlin
 fun resultNull()
@@ -419,7 +419,7 @@ fun resultNull()
 
 !> 此方法将强制设置 Hook 对象方法的 `result` 为 `null`。
 
-### ArgsIndexCondition [class]
+### ArgsIndexCondition *- class*
 
 ```kotlin
 inner class ArgsIndexCondition internal constructor()
@@ -433,7 +433,7 @@ inner class ArgsIndexCondition internal constructor()
 
 > 对方法参数的数组下标进行实例化类。
 
-#### first [method]
+#### first *- method*
 
 ```kotlin
 fun first(): ArgsModifyer
@@ -447,7 +447,7 @@ fun first(): ArgsModifyer
 
 > 获取当前 Hook 对象的 `method` or `constructor` 的参数数组第一位。
 
-#### last [method]
+#### last *- method*
 
 ```kotlin
 fun last(): ArgsModifyer
@@ -461,7 +461,7 @@ fun last(): ArgsModifyer
 
 > 获取当前 Hook 对象的 `method` or `constructor` 的参数数组最后一位。
 
-### ArgsModifyer [class]
+### ArgsModifyer *- class*
 
 ```kotlin
 inner class ArgsModifyer internal constructor(private val index: Int)
@@ -475,7 +475,7 @@ inner class ArgsModifyer internal constructor(private val index: Int)
 
 > 对方法参数的修改进行实例化类。
 
-#### cast [method]
+#### cast *- method*
 
 ```kotlin
 fun <T> cast(): T?
@@ -493,7 +493,7 @@ fun <T> cast(): T?
 
 > 得到方法参数的实例对象 `T`。
 
-#### byte [method]
+#### byte *- method*
 
 ```kotlin
 fun byte(): Byte?
@@ -507,7 +507,7 @@ fun byte(): Byte?
 
 > 得到方法参数的实例对象 Byte。
 
-#### int [method]
+#### int *- method*
 
 ```kotlin
 fun int(): Int
@@ -525,7 +525,7 @@ fun int(): Int
 
 > 得到方法参数的实例对象 Int。
 
-#### long [method]
+#### long *- method*
 
 ```kotlin
 fun long(): Long
@@ -543,7 +543,7 @@ fun long(): Long
 
 > 得到方法参数的实例对象 Long。
 
-#### short [method]
+#### short *- method*
 
 ```kotlin
 fun short(): Short
@@ -561,7 +561,7 @@ fun short(): Short
 
 > 得到方法参数的实例对象 Short。
 
-#### double [method]
+#### double *- method*
 
 ```kotlin
 fun double(): Double
@@ -579,7 +579,7 @@ fun double(): Double
 
 > 得到方法参数的实例对象 Double。
 
-#### float [method]
+#### float *- method*
 
 ```kotlin
 fun float(): Float
@@ -597,7 +597,7 @@ fun float(): Float
 
 > 得到方法参数的实例对象 Float。
 
-#### string [method]
+#### string *- method*
 
 ```kotlin
 fun string(): String
@@ -615,7 +615,7 @@ fun string(): String
 
 > 得到方法参数的实例对象 String。
 
-#### char [method]
+#### char *- method*
 
 ```kotlin
 fun char(): Char
@@ -629,7 +629,7 @@ fun char(): Char
 
 > 得到方法参数的实例对象 Char。
 
-#### boolean [method]
+#### boolean *- method*
 
 ```kotlin
 fun boolean(): Boolean
@@ -647,7 +647,7 @@ fun boolean(): Boolean
 
 > 得到方法参数的实例对象 Boolean。
 
-#### any [method]
+#### any *- method*
 
 ```kotlin
 fun any(): Any?
@@ -661,7 +661,7 @@ fun any(): Any?
 
 > 得到方法参数的实例对象 Any。
 
-#### array [method]
+#### array *- method*
 
 ```kotlin
 inline fun <reified T> array(): Array<T>
@@ -675,7 +675,7 @@ inline fun <reified T> array(): Array<T>
 
 > 得到方法参数的实例对象 Array。
 
-#### list [method]
+#### list *- method*
 ```kotlin
 inline fun <reified T> list(): List<T>
 ```
@@ -688,7 +688,7 @@ inline fun <reified T> list(): List<T>
 
 > 得到方法参数的实例对象 List。
 
-#### set [method]
+#### set *- method*
 
 ```kotlin
 fun <T> set(any: T?)
@@ -702,7 +702,7 @@ fun <T> set(any: T?)
 
 > 设置方法参数的实例对象。
 
-#### setNull [method]
+#### setNull *- method*
 
 ```kotlin
 fun setNull()
@@ -716,7 +716,7 @@ fun setNull()
 
 > 设置方法参数的实例对象为 `null`。
 
-#### setTrue [method]
+#### setTrue *- method*
 
 ```kotlin
 fun setTrue()
@@ -732,7 +732,7 @@ fun setTrue()
 
 !> 请确保目标对象的类型是 `Boolean`。
 
-#### setFalse [method]
+#### setFalse *- method*
 
 ```kotlin
 fun setFalse()

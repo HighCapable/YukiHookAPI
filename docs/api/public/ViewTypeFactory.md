@@ -1,4 +1,4 @@
-## ViewTypeFactory [kt]
+## ViewTypeFactory *- kt*
 
 **变更记录**
 

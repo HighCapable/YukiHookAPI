@@ -242,7 +242,7 @@ encase {
 
 - 装载 `handleInitPackageResources` → `encase`
 
-在这个过程中，你需要使用 `loadApp`、`loadSystem`、`loadZygote` 来区分每一次装载代码的作用域，否则你的代码就会被<u>**多次执行造成错误**</u>。
+在这个过程中，你需要使用 `loadApp`、`loadSystem`、`loadZygote` 来区分每一次装载代码的调用域，否则你的代码就会被<u>**多次执行造成错误**</u>。
 
 下面是两个**错误**示例。
 
@@ -363,4 +363,4 @@ fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker)
 !> Resources Hook 功能不支持作为 Hook API 使用。
 
 <br/><br/>
-[浏览下一篇 ➡️](config/api-exception.md)
+[浏览下一篇 &nbsp;➡️](config/api-exception.md)

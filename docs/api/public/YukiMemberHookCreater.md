@@ -1,4 +1,4 @@
-## YukiMemberHookCreater [class]
+## YukiMemberHookCreater *- class*
 
 ```kotlin
 class YukiMemberHookCreater(internal val packageParam: PackageParam, internal val hookClass: HookClass)
@@ -16,7 +16,7 @@ class YukiMemberHookCreater(internal val packageParam: PackageParam, internal va
 
 > `YukiHookAPI` 的 `Member` 核心 Hook 实现类。
 
-### PRIORITY_DEFAULT [field]
+### PRIORITY_DEFAULT *- field*
 
 ```kotlin
 val PRIORITY_DEFAULT: Int
@@ -30,7 +30,7 @@ val PRIORITY_DEFAULT: Int
 
 > 默认 Hook 回调优先级。
 
-### PRIORITY_LOWEST [field]
+### PRIORITY_LOWEST *- field*
 
 ```kotlin
 val PRIORITY_LOWEST: Int
@@ -44,7 +44,7 @@ val PRIORITY_LOWEST: Int
 
 > 延迟回调 Hook 方法结果。
 
-### PRIORITY_HIGHEST [field]
+### PRIORITY_HIGHEST *- field*
 
 ```kotlin
 val PRIORITY_HIGHEST: Int
@@ -58,7 +58,7 @@ val PRIORITY_HIGHEST: Int
 
 > 更快回调 Hook 方法结果。
 
-### instanceClass [field]
+### instanceClass *- field*
 
 ```kotlin
 val instanceClass: Class<*>
@@ -78,7 +78,7 @@ val instanceClass: Class<*>
 
 !> 不推荐直接使用，万一得不到 `Class` 对象则会无法处理异常导致崩溃。
 
-### injectMember [method]
+### injectMember *- method*
 
 ```kotlin
 inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
@@ -130,7 +130,7 @@ injectMember(priority = PRIORITY_HIGHEST) {
 }
 ```
 
-### useDangerousOperation [method]
+### useDangerousOperation *- method*
 
 ```kotlin
 fun useDangerousOperation(option: String)
@@ -150,7 +150,7 @@ fun useDangerousOperation(option: String)
 
 !> 若你不知道允许此功能会带来何种后果，请勿使用。
 
-### MemberHookCreater [class]
+### MemberHookCreater *- class*
 
 ```kotlin
 inner class MemberHookCreater internal constructor(private val priority: Int, internal val tag: String)
@@ -176,7 +176,7 @@ inner class MemberHookCreater internal constructor(private val priority: Int, in
 
 > Hook 核心功能实现类，查找和处理需要 Hook 的方法、构造方法。
 
-#### ~~member [field]~~ <!-- {docsify-ignore} -->
+#### ~~member *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -186,7 +186,7 @@ inner class MemberHookCreater internal constructor(private val priority: Int, in
 
 请转移到 `members`
 
-#### members [method]
+#### members *- method*
 
 ```kotlin
 fun members(vararg member: Member?)
@@ -232,7 +232,7 @@ injectMember {
 }
 ```
 
-#### ~~allMethods [method]~~ <!-- {docsify-ignore} -->
+#### ~~allMethods *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -242,7 +242,7 @@ injectMember {
 
 请使用 `method { name = /** name */ }.all()` 来取代它
 
-#### ~~allConstructors [method]~~ <!-- {docsify-ignore} -->
+#### ~~allConstructors *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -252,7 +252,7 @@ injectMember {
 
 请使用 `allMembers(MembersType.CONSTRUCTOR)` 来取代它
 
-#### allMembers [method]
+#### allMembers *- method*
 
 ```kotlin
 fun allMembers(type: MembersType)
@@ -268,7 +268,7 @@ fun allMembers(type: MembersType)
 
 !> 警告：无法准确处理每个方法的返回值和 `param`，建议使用 `method` or `constructor` 对每个方法单独 Hook。
 
-#### method [method]
+#### method *- method*
 
 ```kotlin
 inline fun method(initiate: MethodCondition): MethodFinder.Result
@@ -304,7 +304,7 @@ injectMember {
 }
 ```
 
-#### constructor [method]
+#### constructor *- method*
 
 ```kotlin
 inline fun constructor(initiate: ConstructorCondition): ConstructorFinder.Result
@@ -336,7 +336,7 @@ injectMember {
 }
 ```
 
-#### field [method]
+#### HookParam.field *- i-ext-method*
 
 ```kotlin
 inline fun HookParam.field(initiate: FieldCondition): FieldFinder.Result
@@ -376,7 +376,7 @@ injectMember {
 }
 ```
 
-#### method [method]
+#### HookParam.method *- i-ext-method*
 
 ```kotlin
 inline fun HookParam.method(initiate: MethodCondition): MethodFinder.Result
@@ -394,7 +394,7 @@ inline fun HookParam.method(initiate: MethodCondition): MethodFinder.Result
 
 > 使用当前 `hookClass` 查找并得到方法。
 
-#### constructor [method]
+#### HookParam.constructor *- i-ext-method*
 
 ```kotlin
 inline fun HookParam.constructor(initiate: ConstructorCondition): ConstructorFinder.Result
@@ -412,7 +412,7 @@ inline fun HookParam.constructor(initiate: ConstructorCondition): ConstructorFin
 
 > 使用当前 `hookClass` 查找并得到构造方法。
 
-#### injectMember [method]
+#### HookParam.injectMember *- i-ext-method*
 
 ```kotlin
 inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
@@ -426,7 +426,7 @@ inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHo
 
 > 注入要 Hook 的方法、构造方法 (嵌套 Hook)。
 
-#### beforeHook [method]
+#### beforeHook *- method*
 
 ```kotlin
 fun beforeHook(initiate: HookParam.() -> Unit): HookCallback
@@ -444,7 +444,7 @@ fun beforeHook(initiate: HookParam.() -> Unit): HookCallback
 
 > 在方法执行完成前 Hook。
 
-#### afterHook [method]
+#### afterHook *- method*
 
 ```kotlin
 fun afterHook(initiate: HookParam.() -> Unit): HookCallback
@@ -462,7 +462,7 @@ fun afterHook(initiate: HookParam.() -> Unit): HookCallback
 
 > 在方法执行完成后 Hook。
 
-#### replaceAny [method]
+#### replaceAny *- method*
 
 ```kotlin
 fun replaceAny(initiate: HookParam.() -> Any?)
@@ -476,7 +476,7 @@ fun replaceAny(initiate: HookParam.() -> Any?)
 
 > 拦截并替换此方法内容，给出返回值。
 
-#### replaceUnit [method]
+#### replaceUnit *- method*
 
 ```kotlin
 fun replaceUnit(initiate: HookParam.() -> Unit)
@@ -490,7 +490,7 @@ fun replaceUnit(initiate: HookParam.() -> Unit)
 
 > 拦截并替换此方法内容，没有返回值，可以称为 `Void`。
 
-#### replaceTo [method]
+#### replaceTo *- method*
 
 ```kotlin
 fun replaceTo(any: Any?)
@@ -504,7 +504,7 @@ fun replaceTo(any: Any?)
 
 > 拦截并替换方法返回值。
 
-#### replaceToTrue [method]
+#### replaceToTrue *- method*
 
 ```kotlin
 fun replaceToTrue()
@@ -520,7 +520,7 @@ fun replaceToTrue()
 
 !> 确保替换方法的返回对象为 `Boolean`。
 
-#### replaceToFalse [method]
+#### replaceToFalse *- method*
 
 ```kotlin
 fun replaceToFalse()
@@ -536,7 +536,7 @@ fun replaceToFalse()
 
 !> 确保替换方法的返回对象为 `Boolean`。
 
-#### intercept [method]
+#### intercept *- method*
 
 ```kotlin
 fun intercept()
@@ -554,7 +554,7 @@ fun intercept()
 
 !> 注意：例如 `Int`、`Long`、`Boolean` 常量返回值的方法一旦被设置为 null 可能会造成 Hook APP 抛出异常。
 
-#### removeSelf [method]
+#### removeSelf *- method*
 
 ```kotlin
 fun removeSelf(result: (Boolean) -> Unit)
@@ -570,7 +570,7 @@ fun removeSelf(result: (Boolean) -> Unit)
 
 !> 你只能在 Hook 回调方法中使用此功能。
 
-#### HookCallback [class]
+#### HookCallback *- class*
 
 ```kotlin
 inner class HookCallback internal constructor()
@@ -584,7 +584,7 @@ inner class HookCallback internal constructor()
 
 > Hook 方法体回调实现类。
 
-##### onFailureThrowToApp [method]
+##### onFailureThrowToApp *- method*
 
 ```kotlin
 fun onFailureThrowToApp()
@@ -598,7 +598,7 @@ fun onFailureThrowToApp()
 
 > 当回调方法体内发生异常时将异常抛出给当前 Hook APP。
 
-#### Result [class]
+#### Result *- class*
 
 ```kotlin
 inner class Result internal constructor()
@@ -612,7 +612,7 @@ inner class Result internal constructor()
 
 > 监听 Hook 结果实现类。
 
-##### result [method]
+##### result *- method*
 
 ```kotlin
 inline fun result(initiate: Result.() -> Unit): Result
@@ -652,7 +652,7 @@ injectMember {
 }
 ```
 
-##### by [method]
+##### by *- method*
 
 ```kotlin
 inline fun by(condition: () -> Boolean): Result
@@ -670,7 +670,7 @@ inline fun by(condition: () -> Boolean): Result
 
 > 添加执行 Hook 需要满足的条件，不满足条件将直接停止 Hook。
 
-##### onHooked [method]
+##### onHooked *- method*
 
 ```kotlin
 fun onHooked(result: (Member) -> Unit): Result
@@ -688,7 +688,7 @@ fun onHooked(result: (Member) -> Unit): Result
 
 在重复 Hook 时会回调 `onAlreadyHooked`。
 
-##### onAlreadyHooked [method]
+##### onAlreadyHooked *- method*
 
 ```kotlin
 fun onAlreadyHooked(result: (Member) -> Unit): Result
@@ -704,7 +704,7 @@ fun onAlreadyHooked(result: (Member) -> Unit): Result
 
 !> 同一个 `hookClass` 中的同一个 `members` 不会被 API 重复 Hook，若由于各种原因重复 Hook 会回调此方法。
 
-##### onNoSuchMemberFailure [method]
+##### onNoSuchMemberFailure *- method*
 
 ```kotlin
 fun onNoSuchMemberFailure(result: (Throwable) -> Unit): Result
@@ -718,7 +718,7 @@ fun onNoSuchMemberFailure(result: (Throwable) -> Unit): Result
 
 > 监听 `members` 不存在发生错误的回调方法。
 
-##### onConductFailure [method]
+##### onConductFailure *- method*
 
 ```kotlin
 fun onConductFailure(result: (HookParam, Throwable) -> Unit): Result
@@ -732,7 +732,7 @@ fun onConductFailure(result: (HookParam, Throwable) -> Unit): Result
 
 > 监听 Hook 进行过程中发生错误的回调方法。
 
-##### onHookingFailure [method]
+##### onHookingFailure *- method*
 
 ```kotlin
 fun onHookingFailure(result: (Throwable) -> Unit): Result
@@ -746,7 +746,7 @@ fun onHookingFailure(result: (Throwable) -> Unit): Result
 
 > 监听 Hook 开始时发生的错误的回调方法。
 
-##### onAllFailure [method]
+##### onAllFailure *- method*
 
 ```kotlin
 fun onAllFailure(result: (Throwable) -> Unit): Result
@@ -760,7 +760,7 @@ fun onAllFailure(result: (Throwable) -> Unit): Result
 
 > 监听全部 Hook 过程发生错误的回调方法。
 
-##### ignoredNoSuchMemberFailure [method]
+##### ignoredNoSuchMemberFailure *- method*
 
 ```kotlin
 fun ignoredNoSuchMemberFailure(): Result
@@ -774,7 +774,7 @@ fun ignoredNoSuchMemberFailure(): Result
 
 > 忽略 `members` 不存在发生的错误。
 
-##### ignoredConductFailure [method]
+##### ignoredConductFailure *- method*
 
 ```kotlin
 fun ignoredConductFailure(): Result
@@ -788,7 +788,7 @@ fun ignoredConductFailure(): Result
 
 > 忽略 Hook 进行过程中发生的错误。
 
-##### ignoredHookingFailure [method]
+##### ignoredHookingFailure *- method*
 
 ```kotlin
 fun ignoredHookingFailure(): Result
@@ -802,7 +802,7 @@ fun ignoredHookingFailure(): Result
 
 > 忽略 Hook 开始时发生的错误。
 
-##### ignoredAllFailure [method]
+##### ignoredAllFailure *- method*
 
 ```kotlin
 fun ignoredAllFailure(): Result
@@ -816,7 +816,7 @@ fun ignoredAllFailure(): Result
 
 > 忽略全部 Hook 过程发生的错误。
 
-##### remove [method]
+##### remove *- method*
 
 ```kotlin
 fun remove(result: (Boolean) -> Unit)
@@ -832,7 +832,7 @@ fun remove(result: (Boolean) -> Unit)
 
 !> 你只能在 Hook 成功后才能解除 Hook，可监听 `onHooked` 事件。
 
-### Result [class]
+### Result *- class*
 
 ```kotlin
 inner class Result internal constructor()
@@ -846,7 +846,7 @@ inner class Result internal constructor()
 
 > 监听全部 Hook 结果实现类。
 
-#### result [method]
+#### result *- method*
 
 ```kotlin
 inline fun result(initiate: Result.() -> Unit): Result
@@ -868,7 +868,7 @@ inline fun result(initiate: Result.() -> Unit): Result
 
 > 创建监听事件方法体。
 
-#### by [method]
+#### by *- method*
 
 ```kotlin
 inline fun by(condition: () -> Boolean): Result
@@ -886,7 +886,7 @@ inline fun by(condition: () -> Boolean): Result
 
 > 添加执行 Hook 需要满足的条件，不满足条件将直接停止 Hook。
 
-#### onPrepareHook [method]
+#### onPrepareHook *- method*
 
 ```kotlin
 fun onPrepareHook(callback: () -> Unit): Result
@@ -900,7 +900,7 @@ fun onPrepareHook(callback: () -> Unit): Result
 
 > 监听 `hookClass` 存在时准备开始 Hook 的操作。
 
-#### onHookClassNotFoundFailure [method]
+#### onHookClassNotFoundFailure *- method*
 
 ```kotlin
 fun onHookClassNotFoundFailure(result: (Throwable) -> Unit): Result
@@ -914,7 +914,7 @@ fun onHookClassNotFoundFailure(result: (Throwable) -> Unit): Result
 
 > 监听 `hookClass` 找不到时发生错误的回调方法。
 
-#### ignoredHookClassNotFoundFailure [method]
+#### ignoredHookClassNotFoundFailure *- method*
 
 ```kotlin
 fun ignoredHookClassNotFoundFailure(): Result

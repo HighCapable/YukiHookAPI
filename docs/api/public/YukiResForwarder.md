@@ -1,4 +1,4 @@
-## YukiResForwarder [class]
+## YukiResForwarder *- class*
 
 ```kotlin
 class YukiResForwarder private constructor(private val baseInstance: XResForwarder)
@@ -12,7 +12,7 @@ class YukiResForwarder private constructor(private val baseInstance: XResForward
 
 > 对接 `XResForwarder` 的中间层实例。
 
-### ~~instance [field]~~ <!-- {docsify-ignore} -->
+### ~~instance *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -22,7 +22,7 @@ class YukiResForwarder private constructor(private val baseInstance: XResForward
 
 不再对外公开 `instance` 参数
 
-### id [field]
+### id *- field*
 
 ```kotlin
 val id: Int
@@ -36,7 +36,7 @@ val id: Int
 
 > 获得当前 APP 的 Resources Id。
 
-### resources [field]
+### resources *- field*
 
 ```kotlin
 val resources: Resources

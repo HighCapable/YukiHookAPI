@@ -1,4 +1,4 @@
-## YukiHookDataChannel [class]
+## YukiHookDataChannel *- class*
 
 ```kotlin
 class YukiHookDataChannel private constructor()
@@ -18,7 +18,7 @@ class YukiHookDataChannel private constructor()
 
 !> 模块与宿主需要保持存活状态，否则无法建立通讯。
 
-### NameSpace [class]
+### NameSpace *- class*
 
 ```kotlin
 inner class NameSpace internal constructor(private val context: Context?, private val packageName: String, private val isSecure: Boolean)
@@ -36,7 +36,7 @@ inner class NameSpace internal constructor(private val context: Context?, privat
 
 > `YukiHookDataChannel` 命名空间。
 
-#### with [method]
+#### with *- method*
 
 ```kotlin
 inline fun with(initiate: NameSpace.() -> Unit): NameSpace
@@ -50,7 +50,7 @@ inline fun with(initiate: NameSpace.() -> Unit): NameSpace
 
 > 创建一个调用空间。
 
-#### put [method]
+#### put *- method*
 
 ```kotlin
 fun <T> put(key: String, value: T)
@@ -72,7 +72,7 @@ fun put(vararg data: ChannelData<*>)
 
 > 发送键值数据。
 
-#### put [method]
+#### put *- method*
 
 ```kotlin
 fun put(key: String)
@@ -86,7 +86,7 @@ fun put(key: String)
 
 > 仅发送键值监听，使用默认值 `VALUE_WAIT_FOR_LISTENER` 发送键值数据。
 
-#### wait [method]
+#### wait *- method*
 
 ```kotlin
 fun <T> wait(key: String, result: (value: T) -> Unit)
@@ -108,7 +108,7 @@ fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit)
 
 > 获取键值数据。
 
-#### wait [method]
+#### wait *- method*
 
 ```kotlin
 fun wait(key: String, callback: () -> Unit)
@@ -124,7 +124,7 @@ fun wait(key: String, callback: () -> Unit)
 
 !> 仅限使用 `VALUE_WAIT_FOR_LISTENER` 发送的监听才能被接收。
 
-#### checkingVersionEquals [method]
+#### checkingVersionEquals *- method*
 
 ```kotlin
 fun checkingVersionEquals(result: (Boolean) -> Unit)

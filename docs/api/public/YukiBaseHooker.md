@@ -1,4 +1,4 @@
-## YukiBaseHooker [class]
+## YukiBaseHooker *- class*
 
 ```kotlin
 abstract class YukiBaseHooker : PackageParam()
@@ -12,7 +12,7 @@ abstract class YukiBaseHooker : PackageParam()
 
 > `YukiHookAPI` 的子类 Hooker 实现。
 
-### onHook [method]
+### onHook *- method*
 
 ```kotlin
 fun onHook()

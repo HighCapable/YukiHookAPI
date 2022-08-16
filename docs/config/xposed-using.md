@@ -55,7 +55,7 @@ annotation class InjectYukiHookWithXposed(
 
 示例 2 `com.example.demo.hook.custom.CustomClass`
 
-若你不想使用此格式定义入口类的包名，你可以直接设置 `modulePackageName` 的参数。
+若你不想使用此格式定义入口类的包名，例如你的包名动态的，类似使用 `productFlavors` 进行多渠道打包，你可以直接设置 `modulePackageName` 的参数。
 
 > 示例如下
 
@@ -237,4 +237,4 @@ class HookEntry: IYukiHookXposedInit {
 若要了解更多可 [点击这里](api/document?id=onxposedevent-method) 进行查看。
 
 <br/><br/>
-[浏览下一篇 ➡️](config/api-using.md)
+[浏览下一篇 &nbsp;➡️](config/api-using.md)

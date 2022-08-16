@@ -687,7 +687,7 @@ classOf("com.demo.Test").buildOfAny(true) { param(BooleanType) }?.current {
 }
 ```
 
-更多用法可参考 [CurrentClass](api/document?id=currentclass-class) 以及 [buildOf](api/document?id=buildof-method) 方法。
+更多用法可参考 [CurrentClass](api/document?id=currentclass-class) 以及 [Class.buildOf](api/document?id=classbuildof-ext-method) 方法。
 
 ### 再次查询
 
@@ -1070,7 +1070,7 @@ method {
 }
 ```
 
-更多类型请 [点击这里](api/document?id=graphicstypefactory-kt) 前往查看，也欢迎你能贡献更多的常用类型。
+更多类型请 [点击这里](api/document?id=componenttypefactory-kt) 前往查看，也欢迎你能贡献更多的常用类型。
 
 ## 调试日志功能
 
@@ -1493,4 +1493,4 @@ loadApp(name = "com.example.demo") {
 详情请参考 [AppLifecycle](api/document?id=applifecycle-class)。
 
 <br/><br/>
-[浏览下一篇 ➡️](guide/move-to-new-api.md)
+[浏览下一篇 &nbsp;➡️](guide/move-to-new-api.md)

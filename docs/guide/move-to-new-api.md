@@ -252,4 +252,4 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 `YukiHookAPI` 对 Xposed API 进行了完全重写，你可以参考 [API 文档](api/home) 以及 [特色功能](guide/special-feature) 来决定一些功能性的迁移和使用。
 
 <br/><br/>
-[浏览下一篇 ➡️](config/api-example.md)
+[浏览下一篇 &nbsp;➡️](config/api-example.md)

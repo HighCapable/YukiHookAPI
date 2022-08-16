@@ -6,9 +6,9 @@
 
 - Windows 7 及以上/macOS 10.14 及以上/Linux 发行版(Arch/Debian)
 
-- Android Studio 4.1 及以上
+- Android Studio 2021.1 及以上
 
-- IntelliJ IDEA 2021.01 及以上
+- IntelliJ IDEA 2021.1 及以上
 
 - Kotlin 1.6.0 及以上
 
@@ -186,4 +186,4 @@ override fun attachBaseContext(base: Context?) {
 !> 由于你使用了自定义的 Hook 框架而并非模块，~~`YukiHookModuleStatus`~~ ~~`YukiHookModulePrefs`~~ ~~`YukiHookDataChannel`~~ 以及 Resources Hook 功能将失效。
 
 <br/><br/>
-[浏览下一篇 ➡️](guide/example.md)
+[浏览下一篇 &nbsp;➡️](guide/example.md)

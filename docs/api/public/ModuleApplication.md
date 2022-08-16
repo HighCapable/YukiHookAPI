@@ -1,4 +1,4 @@
-## ModuleApplication [class]
+## ModuleApplication *- class*
 
 ```kotlin
 open class ModuleApplication: Application()
@@ -65,7 +65,7 @@ class MyApplication: ModuleApplication() {
     ...>
 ```
 
-### appContext [field]
+### appContext *- field*
 
 ```kotlin
 val appContext: ModuleApplication

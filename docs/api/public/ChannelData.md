@@ -1,4 +1,4 @@
-## ChannelData [class]
+## ChannelData *- class*
 
 ```kotlin
 data class ChannelData<T>(var key: String, var value: T?)

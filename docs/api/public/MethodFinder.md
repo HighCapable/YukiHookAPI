@@ -1,4 +1,4 @@
-## MethodFinder [class]
+## MethodFinder *- class*
 
 ```kotlin
 class MethodFinder internal constructor(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>) : BaseFinder()
@@ -18,7 +18,7 @@ class MethodFinder internal constructor(override val hookInstance: YukiMemberHoo
 
 可通过指定类型查找指定方法或一组方法。
 
-### name [field]
+### name *- field*
 
 ```kotlin
 var name: String
@@ -38,7 +38,7 @@ var name: String
 
 !> 若不填写名称则必须存在一个其它条件。
 
-### paramCount [field]
+### paramCount *- field*
 
 ```kotlin
 var paramCount: Int
@@ -56,7 +56,7 @@ var paramCount: Int
 
 若参数个数小于零则忽略并使用 `param`。
 
-### returnType [field]
+### returnType *- field*
 
 ```kotlin
 var returnType: Any?
@@ -70,7 +70,7 @@ var returnType: Any?
 
 > 设置 `Method` 返回值，可不填写返回值。
 
-### modifiers [method]
+### modifiers *- method*
 
 ```kotlin
 inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
@@ -92,7 +92,7 @@ inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### emptyParam [method]
+### emptyParam *- method*
 
 ```kotlin
 fun emptyParam(): IndexTypeCondition
@@ -106,7 +106,7 @@ fun emptyParam(): IndexTypeCondition
 
 > 设置 `Method` 空参数、无参数。
 
-### param [method]
+### param *- method*
 
 ```kotlin
 fun param(vararg paramType: Any): IndexTypeCondition
@@ -128,7 +128,7 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### order [method]
+### order *- method*
 
 ```kotlin
 fun order(): IndexTypeCondition
@@ -142,7 +142,7 @@ fun order(): IndexTypeCondition
 
 > 顺序筛选字节码的下标。
 
-### name [method]
+### name *- method*
 
 ```kotlin
 fun name(value: String): IndexTypeCondition
@@ -160,7 +160,7 @@ fun name(value: String): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### name [method]
+### name *- method*
 
 ```kotlin
 inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition
@@ -178,7 +178,7 @@ inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### paramCount [method]
+### paramCount *- method*
 
 ```kotlin
 fun paramCount(num: Int): IndexTypeCondition
@@ -198,7 +198,7 @@ fun paramCount(num: Int): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### paramCount [method]
+### paramCount *- method*
 
 ```kotlin
 fun paramCount(numRange: IntRange): IndexTypeCondition
@@ -216,7 +216,7 @@ fun paramCount(numRange: IntRange): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### returnType [method]
+### returnType *- method*
 
 ```kotlin
 fun returnType(value: Any): IndexTypeCondition
@@ -234,7 +234,7 @@ fun returnType(value: Any): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### superClass [method]
+### superClass *- method*
 
 ```kotlin
 fun superClass(isOnlySuperClass: Boolean)
@@ -250,7 +250,7 @@ fun superClass(isOnlySuperClass: Boolean)
 
 !> 若当前 `classSet` 的父类较多可能会耗时，API 会自动循环到父类继承是 `Any` 前的最后一个类。
 
-### RemedyPlan [class]
+### RemedyPlan *- class*
 
 ```kotlin
 inner class RemedyPlan internal constructor()
@@ -264,7 +264,7 @@ inner class RemedyPlan internal constructor()
 
 > `Method` 重查找实现类，可累计失败次数直到查找成功。
 
-#### method [method]
+#### method *- method*
 
 ```kotlin
 inline fun method(initiate: MethodCondition): Result
@@ -284,7 +284,7 @@ inline fun method(initiate: MethodCondition): Result
 
 你可以添加多个备选 `Method`，直到成功为止，若最后依然失败，将停止查找并输出错误日志。
 
-#### Result [class]
+#### Result *- class*
 
 ```kotlin
 inner class Result internal constructor()
@@ -298,7 +298,7 @@ inner class Result internal constructor()
 
 > `RemedyPlan` 结果实现类。
 
-##### onFind [method]
+##### onFind *- method*
 
 ```kotlin
 fun onFind(initiate: HashSet<Method>.() -> Unit)
@@ -330,7 +330,7 @@ method {
 }
 ```
 
-### Result [class]
+### Result *- class*
 
 ```kotlin
 inner class Result internal constructor(internal val isNoSuch: Boolean, private val throwable: Throwable?) : BaseResult
@@ -348,7 +348,7 @@ inner class Result internal constructor(internal val isNoSuch: Boolean, private 
 
 > `Method` 查找结果实现类。
 
-#### result [method]
+#### result *- method*
 
 ```kotlin
 inline fun result(initiate: Result.() -> Unit): Result
@@ -383,7 +383,7 @@ method {
 }
 ```
 
-#### get [method]
+#### get *- method*
 
 ```kotlin
 fun get(instance: Any?): Instance
@@ -423,7 +423,7 @@ method {
 }.get().call()
 ```
 
-#### all [method]
+#### all *- method*
 
 ```kotlin
 fun all(instance: Any?): ArrayList<Instance>
@@ -453,7 +453,7 @@ method {
 }
 ```
 
-#### give [method]
+#### give *- method*
 
 ```kotlin
 fun give(): Method?
@@ -471,7 +471,7 @@ fun give(): Method?
 
 在查询条件找不到任何结果的时候将返回 `null`。
 
-#### giveAll [method]
+#### giveAll *- method*
 
 ```kotlin
 fun giveAll(): HashSet<Method>
@@ -489,7 +489,7 @@ fun giveAll(): HashSet<Method>
 
 在查询条件找不到任何结果的时候将返回空的 `HashSet`。
 
-#### wait [method]
+#### wait *- method*
 
 ```kotlin
 fun wait(instance: Any?, initiate: Instance.() -> Unit)
@@ -509,7 +509,7 @@ fun wait(instance: Any?, initiate: Instance.() -> Unit)
 
 !> 若你没有设置 `remedys` 此方法将不会被回调。
 
-#### waitAll [method]
+#### waitAll *- method*
 
 ```kotlin
 fun waitAll(instance: Any?, initiate: ArrayList<Instance>.() -> Unit)
@@ -529,7 +529,7 @@ fun waitAll(instance: Any?, initiate: ArrayList<Instance>.() -> Unit)
 
 !> 若你没有设置 `remedys` 此方法将不会被回调。
 
-#### remedys [method]
+#### remedys *- method*
 
 ```kotlin
 inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
@@ -568,7 +568,7 @@ method {
 }
 ```
 
-#### onNoSuchMethod [method]
+#### onNoSuchMethod *- method*
 
 ```kotlin
 inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result
@@ -588,7 +588,7 @@ inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result
 
 只会返回第一次的错误信息，不会返回 `RemedyPlan` 的错误信息。
 
-#### ignored [method]
+#### ignored *- method*
 
 ```kotlin
 fun ignored(): Result
@@ -606,7 +606,7 @@ fun ignored(): Result
 
 !> 此时若要监听异常结果，你需要手动实现 `onNoSuchMethod` 方法。
 
-#### ~~ignoredError [method]~~ <!-- {docsify-ignore} -->
+#### ~~ignoredError *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -616,7 +616,7 @@ fun ignored(): Result
 
 请转移到新方法 `ignored()`
 
-#### Instance [class]
+#### Instance *- class*
 
 ```kotlin
 inner class Instance internal constructor(private val instance: Any?, private val method: Method?)
@@ -634,7 +634,7 @@ inner class Instance internal constructor(private val instance: Any?, private va
 
 > `Method` 实例处理类。
 
-##### original [method]
+##### original *- method*
 
 ```kotlin
 fun original(): Instance
@@ -652,7 +652,7 @@ fun original(): Instance
 
 !> 你只能在 (Xposed) 宿主环境中使用此功能。
 
-##### call [method]
+##### call *- method*
 
 ```kotlin
 fun call(vararg param: Any?): Any?
@@ -666,7 +666,7 @@ fun call(vararg param: Any?): Any?
 
 > 执行方法，不指定返回值类型。
 
-##### invoke [method]
+##### invoke *- method*
 
 ```kotlin
 fun <T> invoke(vararg param: Any?): T?
@@ -680,7 +680,7 @@ fun <T> invoke(vararg param: Any?): T?
 
 > 执行方法，指定 `T` 返回值类型。
 
-##### byte [method]
+##### byte *- method*
 
 ```kotlin
 fun byte(vararg param: Any?): Byte?
@@ -694,7 +694,7 @@ fun byte(vararg param: Any?): Byte?
 
 > 执行方法，指定 Byte 返回值类型。
 
-##### int [method]
+##### int *- method*
 
 ```kotlin
 fun int(vararg param: Any?): Int
@@ -712,7 +712,7 @@ fun int(vararg param: Any?): Int
 
 > 执行方法，指定 Int 返回值类型。
 
-##### long [method]
+##### long *- method*
 
 ```kotlin
 fun long(vararg param: Any?): Long
@@ -730,7 +730,7 @@ fun long(vararg param: Any?): Long
 
 > 执行方法，指定 Long 返回值类型。
 
-##### short [method]
+##### short *- method*
 
 ```kotlin
 fun short(vararg param: Any?): Short
@@ -748,7 +748,7 @@ fun short(vararg param: Any?): Short
 
 > 执行方法，指定 Short 返回值类型。
 
-##### double [method]
+##### double *- method*
 
 ```kotlin
 fun double(vararg param: Any?): Double
@@ -766,7 +766,7 @@ fun double(vararg param: Any?): Double
 
 > 执行方法，指定 Double 返回值类型。
 
-##### float [method]
+##### float *- method*
 
 ```kotlin
 fun float(vararg param: Any?): Float
@@ -784,7 +784,7 @@ fun float(vararg param: Any?): Float
 
 > 执行方法，指定 Float 返回值类型。
 
-##### string [method]
+##### string *- method*
 
 ```kotlin
 fun string(vararg param: Any?): String
@@ -802,7 +802,7 @@ fun string(vararg param: Any?): String
 
 > 执行方法，指定 String 返回值类型。
 
-##### char [method]
+##### char *- method*
 
 ```kotlin
 fun char(vararg param: Any?): Char
@@ -816,7 +816,7 @@ fun char(vararg param: Any?): Char
 
 > 执行方法，指定 Char 返回值类型。
 
-##### boolean [method]
+##### boolean *- method*
 
 ```kotlin
 fun boolean(vararg param: Any?): Boolean
@@ -834,7 +834,7 @@ fun boolean(vararg param: Any?): Boolean
 
 > 执行方法，指定 Boolean 返回值类型。
 
-#### array [method]
+#### array *- method*
 
 ```kotlin
 inline fun <reified T> array(vararg param: Any?): Array<T>
@@ -848,7 +848,7 @@ inline fun <reified T> array(vararg param: Any?): Array<T>
 
 > 执行方法，指定 Array 返回值类型。
 
-#### list [method]
+#### list *- method*
 
 ```kotlin
 inline fun <reified T> list(vararg param: Any?): List<T>

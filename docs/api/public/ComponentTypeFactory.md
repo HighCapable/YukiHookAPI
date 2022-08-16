@@ -1,4 +1,4 @@
-## ComponentTypeFactory [kt]
+## ComponentTypeFactory *- kt*
 
 **变更记录**
 

@@ -266,4 +266,4 @@
 - 首个版本提交至 Maven
 
 <br/><br/>
-[浏览下一篇 ➡️](about/future.md)
+[浏览下一篇 &nbsp;➡️](about/future.md)

@@ -1,4 +1,4 @@
-## NameConditions [class]
+## NameConditions *- class*
 
 ```kotlin
 class NameConditions internal constructor()
@@ -14,7 +14,7 @@ class NameConditions internal constructor()
 
 可对 R8 混淆后的 `Member` 进行更加详细的定位。
 
-### equalsOf
+### equalsOf *- method*
 
 ```kotlin
 fun equalsOf(other: String, isIgnoreCase: Boolean)
@@ -28,7 +28,7 @@ fun equalsOf(other: String, isIgnoreCase: Boolean)
 
 > 完全字符匹配。
 
-### startsWith
+### startsWith *- method*
 
 ```kotlin
 fun startsWith(prefix: String, startIndex: Int, isIgnoreCase: Boolean)
@@ -42,7 +42,7 @@ fun startsWith(prefix: String, startIndex: Int, isIgnoreCase: Boolean)
 
 > 起始字符匹配。
 
-### endsWith
+### endsWith *- method*
 
 ```kotlin
 fun endsWith(suffix: String, isIgnoreCase: Boolean)
@@ -56,7 +56,7 @@ fun endsWith(suffix: String, isIgnoreCase: Boolean)
 
 > 结束字符匹配。
 
-### contains
+### contains *- method*
 
 ```kotlin
 fun contains(other: String, isIgnoreCase: Boolean)
@@ -70,7 +70,7 @@ fun contains(other: String, isIgnoreCase: Boolean)
 
 > 包含字符匹配。
 
-### matches
+### matches *- method*
 
 ```kotlin
 fun matches(regex: String)
@@ -88,7 +88,7 @@ fun matches(regex: Regex)
 
 > 正则字符匹配。
 
-### thisSynthetic0
+### thisSynthetic0 *- method*
 
 ```kotlin
 fun thisSynthetic0()
@@ -102,7 +102,7 @@ fun thisSynthetic0()
 
 > 标识为匿名类的主类调用对象。
 
-### onlySymbols
+### onlySymbols *- method*
 
 ```kotlin
 fun onlySymbols()
@@ -116,7 +116,7 @@ fun onlySymbols()
 
 > 标识为只有符号。
 
-### onlyLetters
+### onlyLetters *- method*
 
 ```kotlin
 fun onlyLetters()
@@ -130,7 +130,7 @@ fun onlyLetters()
 
 > 标识为只有字母。
 
-### onlyNumbers
+### onlyNumbers *- method*
 
 ```kotlin
 fun onlyNumbers()
@@ -144,7 +144,7 @@ fun onlyNumbers()
 
 > 标识为只有数字。
 
-### onlyLettersNumbers
+### onlyLettersNumbers *- method*
 
 ```kotlin
 fun onlyLettersNumbers()
@@ -158,7 +158,7 @@ fun onlyLettersNumbers()
 
 > 标识为只有字母或数字。
 
-### onlyLowercase
+### onlyLowercase *- method*
 
 ```kotlin
 fun onlyLowercase()
@@ -174,7 +174,7 @@ fun onlyLowercase()
 
 在没有其它条件的情况下设置此条件允许判断对象存在字母以外的字符。
 
-### onlyUppercase
+### onlyUppercase *- method*
 
 ```kotlin
 fun onlyUppercase()

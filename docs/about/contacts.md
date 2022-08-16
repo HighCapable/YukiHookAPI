@@ -11,4 +11,4 @@
 感谢您选择并使用 `YukiHookAPI`，如有代码相关的建议和请求，可在 Github 提交 Pull Request。
 
 <br/><br/>
-[浏览下一篇 ➡️](about/about.md)
+[浏览下一篇 &nbsp;➡️](about/about.md)

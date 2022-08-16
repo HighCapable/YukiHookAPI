@@ -1,4 +1,4 @@
-## YukiXposedEvent [object]
+## YukiXposedEvent *- object*
 
 ```kotlin
 object YukiXposedEvent
@@ -12,7 +12,7 @@ object YukiXposedEvent
 
 > 实现对原生 Xposed API 的装载事件监听。
 
-### events [method]
+### events *- method*
 
 ```kotlin
 inline fun events(initiate: YukiXposedEvent.() -> Unit)
@@ -26,7 +26,7 @@ inline fun events(initiate: YukiXposedEvent.() -> Unit)
 
 > 对 `YukiXposedEvent` 创建一个方法体。
 
-### onInitZygote [method]
+### onInitZygote *- method*
 
 ```kotlin
 fun onInitZygote(result: (StartupParam) -> Unit)
@@ -40,7 +40,7 @@ fun onInitZygote(result: (StartupParam) -> Unit)
 
 > 设置 initZygote 事件监听。
 
-### onHandleLoadPackage [method]
+### onHandleLoadPackage *- method*
 
 ```kotlin
 fun onHandleLoadPackage(result: (LoadPackageParam) -> Unit)
@@ -54,7 +54,7 @@ fun onHandleLoadPackage(result: (LoadPackageParam) -> Unit)
 
 > 设置 handleLoadPackage 事件监听。
 
-### onHandleInitPackageResources [method]
+### onHandleInitPackageResources *- method*
 
 ```kotlin
 fun onHandleInitPackageResources(result: (InitPackageResourcesParam) -> Unit)

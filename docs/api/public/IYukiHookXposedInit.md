@@ -1,4 +1,4 @@
-## IYukiHookXposedInit [interface]
+## IYukiHookXposedInit *- interface*
 
 ```kotlin
 interface IYukiHookXposedInit
@@ -18,7 +18,7 @@ interface IYukiHookXposedInit
 
 > YukiHookAPI 的 Xposed 装载 API 调用接口。
 
-### onInit [method]
+### onInit *- method*
 
 ```kotlin
 fun onInit()
@@ -36,7 +36,7 @@ fun onInit()
 
 此方法可选，你也可以选择不对 `YukiHookAPI.Configs` 进行配置。
 
-### onHook [method]
+### onHook *- method*
 
 ```kotlin
 fun onHook()
@@ -50,7 +50,7 @@ fun onHook()
 
 > Xposed API 的模块装载调用入口方法。
 
-### onXposedEvent [method]
+### onXposedEvent *- method*
 
 ```kotlin
 fun onXposedEvent()
@@ -78,7 +78,7 @@ fun onXposedEvent()
 
 !> 此接口仅供监听和实现原生 Xposed API 的功能，请不要在这里操作 `YukiHookAPI`。
 
-## ~~YukiHookXposedInitProxy [interface]~~ <!-- {docsify-ignore} -->
+## ~~YukiHookXposedInitProxy *- interface*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 

@@ -1,4 +1,4 @@
-## YukiModuleResources [class]
+## YukiModuleResources *- class*
 
 ```kotlin
 class YukiModuleResources private constructor(private val baseInstance: XModuleResources) : Resources
@@ -12,7 +12,7 @@ class YukiModuleResources private constructor(private val baseInstance: XModuleR
 
 > 对接 `XModuleResources` 的中间层实例。
 
-### fwd [method]
+### fwd *- method*
 
 ```kotlin
 fun fwd(resId: Int): YukiResForwarder

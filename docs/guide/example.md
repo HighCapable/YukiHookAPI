@@ -68,7 +68,7 @@ resources().hook {
 
 ## 一个简单的 Hook 例子
 
-> 这里给出了 Hook APP、Hook 系统框架与 Hook Resources 的例子，可供参考。
+> 这里给出了 Hook APP、Hook 系统框架与 Hook Resources 等例子，可供参考。
 
 ### Hook APP
 
@@ -423,7 +423,12 @@ method {
 ```kotlin
 // <情景1>
 injectMember {
-    throw RuntimeException("Exception Test")
+    method {
+        throw RuntimeException("Exception Test")
+    }
+    afterHook {
+        // ...
+    }
 }.result {
     // 能够捕获到 RuntimeException
     onHookingFailure {}
@@ -446,7 +451,7 @@ injectMember {
 
 若我们想将这些异常直接抛给宿主，原生的 Xposed 为我们提供了 `param.throwable` 方法，`YukiHookAPI` 同样可以实现此功能。
 
-若想在 Hook 回调方法中将一个异常直接抛给宿主，可以有如下实现方法。
+若想在 Hook 回调方法体中将一个异常直接抛给宿主，可以有如下实现方法。
 
 > 示例如下
 
@@ -461,7 +466,7 @@ injectMember {
 }
 ```
 
-你也可以直接在 Hook 回调方法中抛出异常，然后标识将异常抛给宿主。
+你也可以直接在 Hook 回调方法体中抛出异常，然后标识将异常抛给宿主。
 
 > 示例如下
 
@@ -613,4 +618,4 @@ if(YukiHookAPI.Status.isModuleActive) {
 !> 除了提供标准 API 的 Hook 框架之外，其它情况下模块可能都将无法判断自己是否被激活。
 
 <br/><br/>
-[浏览下一篇 ➡️](guide/special-feature.md)
+[浏览下一篇 &nbsp;➡️](guide/special-feature.md)

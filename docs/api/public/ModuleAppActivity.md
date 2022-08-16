@@ -1,4 +1,4 @@
-## ModuleAppActivity [class]
+## ModuleAppActivity *- class*
 
 ```kotlin
 open class ModuleAppActivity : Activity()

@@ -1,4 +1,4 @@
-## CurrentClass [class]
+## CurrentClass *- class*
 
 ```kotlin
 class CurrentClass internal constructor(internal val classSet: Class<*>, internal val instance: Any)
@@ -16,7 +16,7 @@ class CurrentClass internal constructor(internal val classSet: Class<*>, interna
 
 > 当前实例的类操作对象。
 
-### name [field]
+### name *- field*
 
 ```kotlin
 val name: String
@@ -30,7 +30,7 @@ val name: String
 
 > 获得当前 `classSet` 的 `Class.getName`。
 
-### simpleName [field]
+### simpleName *- field*
 
 ```kotlin
 val simpleName: String
@@ -44,7 +44,7 @@ val simpleName: String
 
 > 获得当前 `classSet` 的 `Class.getSimpleName`。
 
-### superClass [method]
+### superClass *- method*
 
 ```kotlin
 fun superClass(): SuperClass
@@ -58,7 +58,7 @@ fun superClass(): SuperClass
 
 > 调用父类实例。
 
-### field [method]
+### field *- method*
 
 ```kotlin
 inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
@@ -72,7 +72,7 @@ inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
 
 > 调用当前实例中的变量。
 
-### method [method]
+### method *- method*
 
 ```kotlin
 inline fun method(initiate: MethodCondition): MethodFinder.Result.Instance
@@ -86,7 +86,7 @@ inline fun method(initiate: MethodCondition): MethodFinder.Result.Instance
 
 > 调用当前实例中的方法。
 
-### SuperClass [class]
+### SuperClass *- class*
 
 ```kotlin
 inner class SuperClass internal constructor()
@@ -100,7 +100,7 @@ inner class SuperClass internal constructor()
 
 > 当前类的父类实例的类操作对象。
 
-#### name [field]
+#### name *- field*
 
 ```kotlin
 val name: String
@@ -114,7 +114,7 @@ val name: String
 
 > 获得当前 `classSet` 中父类的 `Class.getName`。
 
-#### simpleName [field]
+#### simpleName *- field*
 
 ```kotlin
 val simpleName: String
@@ -128,7 +128,7 @@ val simpleName: String
 
 > 获得当前 `classSet` 中父类的 `Class.getSimpleName`。
 
-#### field [method]
+#### field *- method*
 
 ```kotlin
 inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
@@ -142,7 +142,7 @@ inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
 
 > 调用父类实例中的变量。
 
-#### method [method]
+#### method *- method*
 
 ```kotlin
 inline fun method(initiate: MethodCondition): MethodFinder.Result.Instance

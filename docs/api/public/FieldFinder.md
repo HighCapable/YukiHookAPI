@@ -1,4 +1,4 @@
-## FieldFinder [class]
+## FieldFinder *- class*
 
 ```kotlin
 class FieldFinder internal constructor(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>?) : BaseFinder()
@@ -18,7 +18,7 @@ class FieldFinder internal constructor(override val hookInstance: YukiMemberHook
 
 可通过指定类型查找指定变量或一组变量。
 
-### ~~classSet [field]~~ <!-- {docsify-ignore} -->
+### ~~classSet *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -26,7 +26,7 @@ class FieldFinder internal constructor(override val hookInstance: YukiMemberHook
 
 `v1.0.2` `移除`
 
-### name [field]
+### name *- field*
 
 ```kotlin
 var name: String
@@ -46,7 +46,7 @@ var name: String
 
 !> 若不填写名称则必须存在一个其它条件。
 
-### type [field]
+### type *- field*
 
 ```kotlin
 var type: Any?
@@ -62,7 +62,7 @@ var type: Any?
 
 可不填写类型。
 
-### modifiers [method]
+### modifiers *- method*
 
 ```kotlin
 inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
@@ -84,7 +84,7 @@ inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### order [method]
+### order *- method*
 
 ```kotlin
 fun order(): IndexTypeCondition
@@ -98,7 +98,7 @@ fun order(): IndexTypeCondition
 
 > 顺序筛选字节码的下标。
 
-### name [method]
+### name *- method*
 
 ```kotlin
 fun name(value: String): IndexTypeCondition
@@ -116,7 +116,7 @@ fun name(value: String): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### name [method]
+### name *- method*
 
 ```kotlin
 inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition
@@ -134,7 +134,7 @@ inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### type [method]
+### type *- method*
 
 ```kotlin
 fun type(value: Any): IndexTypeCondition
@@ -152,7 +152,7 @@ fun type(value: Any): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
-### superClass [method]
+### superClass *- method*
 
 ```kotlin
 fun superClass(isOnlySuperClass: Boolean)
@@ -168,7 +168,7 @@ fun superClass(isOnlySuperClass: Boolean)
 
 !> 若当前 `classSet` 的父类较多可能会耗时，API 会自动循环到父类继承是 `Any` 前的最后一个类。
 
-### RemedyPlan [class]
+### RemedyPlan *- class*
 
 ```kotlin
 inner class RemedyPlan internal constructor()
@@ -182,7 +182,7 @@ inner class RemedyPlan internal constructor()
 
 > `Field` 重查找实现类，可累计失败次数直到查找成功。
 
-#### field [method]
+#### field *- method*
 
 ```kotlin
 inline fun field(initiate: FieldCondition): Result
@@ -198,7 +198,7 @@ inline fun field(initiate: FieldCondition): Result
 
 你可以添加多个备选 `Field`，直到成功为止，若最后依然失败，将停止查找并输出错误日志。
 
-#### Result [class]
+#### Result *- class*
 
 ```kotlin
 inner class Result internal constructor()
@@ -212,7 +212,7 @@ inner class Result internal constructor()
 
 > `RemedyPlan` 结果实现类。
 
-##### onFind [method]
+##### onFind *- method*
 
 ```kotlin
 fun onFind(initiate: HashSet<Field>.() -> Unit)
@@ -240,7 +240,7 @@ field {
 }
 ```
 
-### Result [class]
+### Result *- class*
 
 ```kotlin
 inner class Result internal constructor(internal val isNoSuch: Boolean, private val throwable: Throwable?) : BaseResult
@@ -258,7 +258,7 @@ inner class Result internal constructor(internal val isNoSuch: Boolean, private 
 
 > `Field` 查找结果实现类。
 
-#### result [method]
+#### result *- method*
 
 ```kotlin
 inline fun result(initiate: Result.() -> Unit): Result
@@ -297,7 +297,7 @@ field {
 }
 ```
 
-#### get [method]
+#### get *- method*
 
 ```kotlin
 fun get(instance: Any?): Instance
@@ -335,7 +335,7 @@ field {
 }.get().set("something")
 ```
 
-#### all [method]
+#### all *- method*
 
 ```kotlin
 fun all(instance: Any?): ArrayList<Instance>
@@ -365,7 +365,7 @@ field {
 }
 ```
 
-#### give [method]
+#### give *- method*
 
 ```kotlin
 fun give(): Field?
@@ -383,7 +383,7 @@ fun give(): Field?
 
 在查询条件找不到任何结果的时候将返回 `null`。
 
-#### giveAll [method]
+#### giveAll *- method*
 
 ```kotlin
 fun giveAll(): HashSet<Field>
@@ -401,7 +401,7 @@ fun giveAll(): HashSet<Field>
 
 在查询条件找不到任何结果的时候将返回空的 `HashSet`。
 
-#### wait [method]
+#### wait *- method*
 
 ```kotlin
 fun wait(instance: Any?, initiate: Instance.() -> Unit)
@@ -421,7 +421,7 @@ fun wait(instance: Any?, initiate: Instance.() -> Unit)
 
 !> 若你没有设置 `remedys` 此方法将不会被回调。
 
-#### waitAll [method]
+#### waitAll *- method*
 
 ```kotlin
 fun waitAll(instance: Any?, initiate: ArrayList<Instance>.() -> Unit)
@@ -441,7 +441,7 @@ fun waitAll(instance: Any?, initiate: ArrayList<Instance>.() -> Unit)
 
 !> 若你没有设置 `remedys` 此方法将不会被回调。
 
-#### remedys [method]
+#### remedys *- method*
 
 ```kotlin
 inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
@@ -476,7 +476,7 @@ field {
 }
 ```
 
-#### onNoSuchField [method]
+#### onNoSuchField *- method*
 
 ```kotlin
 fun onNoSuchField(result: (Throwable) -> Unit): Result
@@ -490,7 +490,7 @@ fun onNoSuchField(result: (Throwable) -> Unit): Result
 
 > 监听找不到 `Field` 时。
 
-#### ignored [method]
+#### ignored *- method*
 
 ```kotlin
 fun ignored(): Result
@@ -508,7 +508,7 @@ fun ignored(): Result
 
 !> 此时若要监听异常结果，你需要手动实现 `onNoSuchField` 方法。
 
-#### ~~ignoredError [method]~~ <!-- {docsify-ignore} -->
+#### ~~ignoredError *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -518,7 +518,7 @@ fun ignored(): Result
 
 请转移到新方法 `ignored()`
 
-#### Instance [class]
+#### Instance *- class*
 
 ```kotlin
 inner class Instance internal constructor(private val instance: Any?, private val field: Field?)
@@ -538,7 +538,7 @@ inner class Instance internal constructor(private val instance: Any?, private va
 
 > `Field` 实例变量处理类。
 
-##### ~~self [field]~~ <!-- {docsify-ignore} -->
+##### ~~self *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -548,7 +548,7 @@ inner class Instance internal constructor(private val instance: Any?, private va
 
 请直接使用 `any` 方法得到 `Field` 自身的实例化对象
 
-##### current [method]
+##### current *- method*
 
 ```kotlin
 fun current(): CurrentClass?
@@ -566,7 +566,7 @@ inline fun current(initiate: CurrentClass.() -> Unit): Any?
 
 > 获得当前 `Field` 自身 `self` 实例的类操作对象。
 
-##### cast [method]
+##### cast *- method*
 
 ```kotlin
 fun <T> cast(): T?
@@ -586,7 +586,7 @@ fun <T> cast(): T?
 
 > 得到当前 `Field` 实例。
 
-##### byte [method]
+##### byte *- method*
 
 ```kotlin
 fun byte(): Byte?
@@ -600,7 +600,7 @@ fun byte(): Byte?
 
 > 得到当前 `Field` Byte 实例。
 
-##### int [method]
+##### int *- method*
 
 ```kotlin
 fun int(): Int
@@ -620,7 +620,7 @@ fun int(): Int
 
 > 得到当前 `Field` Int 实例。
 
-##### long [method]
+##### long *- method*
 
 ```kotlin
 fun long(): Long
@@ -640,7 +640,7 @@ fun long(): Long
 
 > 得到当前 `Field` Long 实例。
 
-##### short [method]
+##### short *- method*
 
 ```kotlin
 fun short(): Short
@@ -659,7 +659,7 @@ fun short(): Short
 
 > 得到当前 `Field` Short 实例。
 
-##### double [method]
+##### double *- method*
 
 ```kotlin
 fun double(): Double
@@ -679,7 +679,7 @@ fun double(): Double
 
 > 得到当前 `Field` Double 实例。
 
-##### float [method]
+##### float *- method*
 
 ```kotlin
 fun float(): Float
@@ -698,7 +698,7 @@ fun float(): Float
 
 > 得到当前 `Field` Float 实例。
 
-##### string [method]
+##### string *- method*
 
 ```kotlin
 fun string(): String
@@ -718,7 +718,7 @@ fun string(): String
 
 > 得到当前 `Field` String 实例。
 
-##### char [method]
+##### char *- method*
 
 ```kotlin
 fun char(): Char
@@ -732,7 +732,7 @@ fun char(): Char
 
 > 得到当前 `Field` Char 实例。
 
-##### boolean [method]
+##### boolean *- method*
 
 ```kotlin
 fun boolean(): Boolean
@@ -752,7 +752,7 @@ fun boolean(): Boolean
 
 > 得到当前 `Field` Boolean 实例。
 
-##### any [method]
+##### any *- method*
 
 ```kotlin
 fun any(): Any?
@@ -771,7 +771,7 @@ fun any(): Any?
 
 > 得到当前 `Field` Any 实例。
 
-##### array [method]
+##### array *- method*
 
 ```kotlin
 inline fun <reified T> array(): Array<T>
@@ -785,7 +785,7 @@ inline fun <reified T> array(): Array<T>
 
 > 得到当前 `Field` Array 实例。
 
-##### list [method]
+##### list *- method*
 
 ```kotlin
 inline fun <reified T> list(): List<T>
@@ -799,7 +799,7 @@ inline fun <reified T> list(): List<T>
 
 > 得到当前 `Field` List 实例。
 
-##### set [method]
+##### set *- method*
 
 ```kotlin
 fun set(any: Any?)
@@ -813,7 +813,7 @@ fun set(any: Any?)
 
 > 设置当前 `Field` 实例。
 
-##### setTrue [method]
+##### setTrue *- method*
 
 ```kotlin
 fun setTrue()
@@ -828,7 +828,7 @@ fun setTrue()
 
 !> 请确保实例对象类型为 `Boolean`。
 
-##### setFalse [method]
+##### setFalse *- method*
 
 ```kotlin
 fun setFalse()
@@ -844,7 +844,7 @@ fun setFalse()
 
 !> 请确保实例对象类型为 `Boolean`。
 
-##### setNull [method]
+##### setNull *- method*
 
 ```kotlin
 fun setNull()

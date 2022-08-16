@@ -1,4 +1,4 @@
-## YukiHookFactory [kt]
+## YukiHookFactory *- kt*
 
 **变更记录**
 
@@ -12,7 +12,7 @@
 
 > 这是 `YukiHookAPI` 相关 `lambda` 方法的封装类以及部分 API 用法。
 
-### configs [method]
+### IYukiHookXposedInit.configs *- ext-method*
 
 ```kotlin
 inline fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit)
@@ -30,7 +30,7 @@ inline fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit)
 
 > 在 `IYukiHookXposedInit` 中配置 `Configs`。
 
-### encase [method]
+### IYukiHookXposedInit.encase *- ext-method*
 
 ```kotlin
 fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit)
@@ -52,7 +52,7 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker)
 
 > 在 `IYukiHookXposedInit` 中调用 `YukiHookAPI`。
 
-### modulePrefs [field]
+### Context.modulePrefs *- ext-field*
 
 ```kotlin
 val Context.modulePrefs: YukiHookModulePrefs
@@ -66,7 +66,7 @@ val Context.modulePrefs: YukiHookModulePrefs
 
 > 获取模块的存取对象。
 
-### modulePrefs [method]
+### Context.modulePrefs *- ext-method*
 
 ```kotlin
 fun Context.modulePrefs(name: String): YukiHookModulePrefs
@@ -80,7 +80,7 @@ fun Context.modulePrefs(name: String): YukiHookModulePrefs
 
 > 获取模块的存取对象，可设置 `name` 为自定义 Sp 存储名称。
 
-### dataChannel [method]
+### Context.dataChannel *- ext-method*
 
 ```kotlin
 fun Context.dataChannel(packageName: String): YukiHookDataChannel.NameSpace
@@ -94,7 +94,7 @@ fun Context.dataChannel(packageName: String): YukiHookDataChannel.NameSpace
 
 > 获取模块的数据通讯桥命名空间对象。
 
-### processName [field]
+### Context.processName *- ext-field*
 
 ```kotlin
 val Context.processName: String
@@ -108,7 +108,7 @@ val Context.processName: String
 
 > 获取当前进程名称。
 
-### injectModuleAppResources [method]
+### Context+Resources.injectModuleAppResources *- ext-method*
 
 ```kotlin
 fun Context.injectModuleAppResources()
@@ -191,7 +191,7 @@ onAppLifecycle {
 }
 ```
 
-### registerModuleAppActivities [method]
+### Context.registerModuleAppActivities *- ext-method*
 
 ```kotlin
 fun Context.registerModuleAppActivities(proxy: Any?)
@@ -335,7 +335,7 @@ val context: Context = ... // 假设这就是你的 Context
 context.startActivity(context, HostTestActivity::class.java)
 ```
 
-### applyTheme [method]
+### Context.applyTheme *- ext-method*
 
 ```kotlin
 fun Context.applyTheme(theme: Int): ModuleContextThemeWrapper
@@ -402,7 +402,7 @@ injectMember {
 
 这样，我们就可以在宿主中非常简单地使用 `MaterialAlertDialogBuilder` 创建对话框了。
 
-### ~~isSupportResourcesHook [field]~~ <!-- {docsify-ignore} -->
+### ~~isSupportResourcesHook *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -412,7 +412,7 @@ injectMember {
 
 请转移到 `YukiHookAPI.Status.isSupportResourcesHook`
 
-### ~~isModuleActive [field]~~ <!-- {docsify-ignore} -->
+### ~~isModuleActive *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -422,7 +422,7 @@ injectMember {
 
 请转移到 `YukiHookAPI.Status.isModuleActive`
 
-### ~~isXposedModuleActive [field]~~ <!-- {docsify-ignore} -->
+### ~~isXposedModuleActive *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -432,7 +432,7 @@ injectMember {
 
 请转移到 `YukiHookAPI.Status.isXposedModuleActive`
 
-### ~~isTaiChiModuleActive [field]~~ <!-- {docsify-ignore} -->
+### ~~isTaiChiModuleActive *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -442,7 +442,7 @@ injectMember {
 
 请转移到 `YukiHookAPI.Status.isTaiChiModuleActive`
 
-## ~~YukiHookModuleStatus [class]~~ <!-- {docsify-ignore} -->
+## ~~YukiHookModuleStatus *- class*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 

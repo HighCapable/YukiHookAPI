@@ -1,4 +1,4 @@
-## BaseFinder.IndexTypeCondition [class]
+## BaseFinder.IndexTypeCondition *- class*
 
 ```kotlin
 inner class IndexTypeCondition internal constructor(private val type: IndexConfigType)
@@ -12,7 +12,7 @@ inner class IndexTypeCondition internal constructor(private val type: IndexConfi
 
 > 字节码下标筛选实现类。
 
-### index [method]
+### index *- method*
 
 ```kotlin
 fun index(num: Int)
@@ -30,7 +30,7 @@ fun index(num: Int)
 
 可使用 `IndexTypeConditionSort.first` 和 `IndexTypeConditionSort.last` 设置首位和末位筛选条件。
 
-### index [method]
+### index *- method*
 
 ```kotlin
 fun index(): IndexTypeConditionSort
@@ -44,7 +44,7 @@ fun index(): IndexTypeConditionSort
 
 > 得到下标。
 
-### IndexTypeConditionSort [class]
+### IndexTypeConditionSort *- class*
 
 ```kotlin
 inner class IndexTypeConditionSort internal constructor()
@@ -58,7 +58,7 @@ inner class IndexTypeConditionSort internal constructor()
 
 > 字节码下标排序实现类。
 
-#### first [method]
+#### first *- method*
 
 ```kotlin
 fun first()
@@ -72,7 +72,7 @@ fun first()
 
 > 设置满足条件的第一个。
 
-#### last [method]
+#### last *- method*
 
 ```kotlin
 fun last()
@@ -86,7 +86,7 @@ fun last()
 
 > 设置满足条件的最后一个。
 
-#### reverse [method]
+#### reverse *- method*
 
 ```kotlin
 fun reverse(num: Int)

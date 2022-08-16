@@ -22,5 +22,31 @@
 
 后期被删除的功能将标记为 `v$version` `移除` 并会标注删除线。
 
+## 相关符号说明
+
+- *kt* &nbsp;Kotlin Static File
+
+- *annotation* &nbsp;注解
+
+- *interface* &nbsp;接口
+
+- *object* &nbsp;类 (单例)
+
+- *class* &nbsp;类
+
+- *field* &nbsp;变量或 `get`、`set` 方法或只读的 `get` 方法
+
+- *method* &nbsp;方法
+
+- *enum* &nbsp;Enum 常量
+
+- *ext-field* &nbsp;扩展的变量 (全局)
+
+- *ext-method* &nbsp;扩展的方法 (全局)
+
+- *i-ext-field* &nbsp;扩展的变量 (调用域限制)
+
+- *i-ext-method* &nbsp;扩展的方法 (调用域限制)
+
 <br/><br/>
-[浏览下一篇 ➡️](api/document)
+[浏览下一篇 &nbsp;➡️](api/document)
