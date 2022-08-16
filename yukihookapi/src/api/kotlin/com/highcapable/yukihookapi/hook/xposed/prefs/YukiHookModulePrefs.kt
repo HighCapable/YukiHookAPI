@@ -36,6 +36,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
@@ -137,11 +138,14 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [XSharedPreferences]
      */
     private val xPref
-        get() = XSharedPreferences(YukiHookBridge.modulePackageName, prefsName).apply {
-            checkApi()
-            makeWorldReadable()
-            reload()
-        }
+        get() = runCatching {
+            XSharedPreferences(YukiHookBridge.modulePackageName, prefsName).apply {
+                checkApi()
+                makeWorldReadable()
+                reload()
+            }
+        }.onFailure { yLoggerE(msg = it.message ?: "Operating system not supported", e = it) }.getOrNull()
+            ?: error("Cannot load the XSharedPreferences, maybe is your Hook Framework not support it")
 
     /**
      * 获得 [SharedPreferences] 对象
@@ -169,7 +173,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * - ❗只能在 (Xposed) 宿主环境中使用 - 模块环境中始终返回 false
      * @return [Boolean] 是否可读
      */
-    val isXSharePrefsReadable get() = runCatching { xPref.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false
+    val isXSharePrefsReadable
+        get() = if (isXposedEnvironment) (runCatching { xPref.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false) else false
 
     /**
      * 获取 [YukiHookModulePrefs] 是否正处于 EdXposed/LSPosed 的最高权限运行
