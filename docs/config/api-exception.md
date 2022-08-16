@@ -742,6 +742,24 @@ class MyApplication : Application() {
 
 你只能在 [作为 Xposed 模块使用](config/xposed-using) 时使用 `YukiHookModulePrefs`，在 Hook 自身 APP 中请使用原生的 `Sp` 存储。
 
+!> `IllegalStateException` Cannot load the XSharedPreferences, maybe is your Hook Framework not support it
+
+**异常原因**
+
+在 (Xposed) 宿主环境使用了 `YukiHookModulePrefs` 但是无法得到 `XSharedPreferences` 对象。
+
+> 示例如下
+
+```kotlin
+encase {
+    prefs... // 调用了此变量
+}
+```
+
+**解决方案**
+
+一般情况下不会发生此问题，若持续无法获取 `XSharedPreferences` 对象则可能是你使用的 Hook Framework 不支持此功能或自身存在错误。
+
 !> `IllegalStateException` YukiHookDataChannel not allowed in Custom Hook API
 
 **异常原因**
