@@ -36,13 +36,23 @@ import android.content.res.XResForwarder
  * 对接 [XResForwarder] 的中间层实例
  * @param baseInstance 原始实例
  */
-class YukiResForwarder internal constructor(private val baseInstance: XResForwarder) {
+class YukiResForwarder private constructor(private val baseInstance: XResForwarder) {
+
+    internal companion object {
+
+        /**
+         * 从 [XResForwarder] 创建 [YukiResForwarder] 实例
+         * @param baseInstance [XResForwarder] 实例
+         * @return [YukiResForwarder]
+         */
+        internal fun wrapper(baseInstance: XResForwarder) = YukiResForwarder(baseInstance)
+    }
 
     /**
      * 获得 [XResForwarder] 实例
      * @return [XResForwarder]
      */
-    val instance get() = baseInstance
+    internal val instance get() = baseInstance
 
     /**
      * 获得当前 Resources Id

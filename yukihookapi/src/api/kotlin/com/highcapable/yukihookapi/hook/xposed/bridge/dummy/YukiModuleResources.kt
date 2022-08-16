@@ -63,7 +63,7 @@ class YukiModuleResources private constructor(private val baseInstance: XModuleR
      * @param resId Resources Id
      * @return [YukiResForwarder]
      */
-    fun fwd(resId: Int) = YukiResForwarder(baseInstance.fwd(resId))
+    fun fwd(resId: Int) = YukiResForwarder.wrapper(baseInstance.fwd(resId))
 
     override fun toString() = "YukiModuleResources by $baseInstance"
 }
