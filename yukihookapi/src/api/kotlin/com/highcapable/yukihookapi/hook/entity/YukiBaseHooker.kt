@@ -41,9 +41,17 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
  *
  * 你可以在 [IYukiHookXposedInit] 的 [IYukiHookXposedInit.onHook] 中实现如下用法：
  *
- * 1.调用 [YukiHookAPI.encase] encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
+ * 1.调用 [YukiHookAPI.encase]
  *
- * 2.调用 [PackageParam.loadHooker] loadHooker(hooker = CustomHooker())
+ * ```kotlin
+ * encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
+ * ```
+ *
+ * 2.调用 [PackageParam.loadHooker]
+ *
+ * ```kotlin
+ * loadHooker(hooker = CustomHooker())
+ * ```
  *
  * 更多请参考 [InjectYukiHookWithXposed] 中的注解内容
  *
