@@ -20,6 +20,8 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
 
 详见 [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)。
 
+若你在按照规定配置后依然无法使用或出现文件权限错误问题，可以参考 [isEnableHookSharedPreferences](api/document?id=isenablehooksharedpreferences-field)。
+
 未使用 LSPosed 环境请将你的模块 `API` 降至 `26` 以下，`YukiHookAPI` 将会尝试使用 `makeWorldReadable` 但仍有可能不成功。
 
 太极请参阅 [文件权限/配置/XSharedPreference](https://taichi.cool/zh/doc/for-xposed-dev.html#文件权限-配置-xsharedpreference)。

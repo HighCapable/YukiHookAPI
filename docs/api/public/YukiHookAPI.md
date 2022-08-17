@@ -304,6 +304,26 @@ var isEnableHookModuleStatus: Boolean
 
 !> 关闭后你将不能再在模块环境中使用 `YukiHookAPI.Status` 中的功能。
 
+#### isEnableHookSharedPreferences *- field*
+
+```kotlin
+var isEnableHookSharedPreferences: Boolean
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 是否启用 Hook `SharedPreferences`。
+
+启用后将在模块启动时强制将 `SharedPreferences` 文件权限调整为 `Context.MODE_WORLD_READABLE` (0644)。
+
+!> 这是一个可选的实验性功能，此功能默认不启用。
+
+仅用于修复某些系统可能会出现在启用了 `New XSharedPreferences` 后依然出现文件权限错误问题，若你能正常使用 `YukiHookModulePrefs` 就不建议启用此功能。
+
 #### isEnableDataChannel *- field*
 
 ```kotlin

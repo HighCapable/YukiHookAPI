@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
@@ -220,6 +221,17 @@ object YukiHookAPI {
          * - ❗关闭后你将不能再在模块环境中使用 [YukiHookAPI.Status] 中的功能
          */
         var isEnableHookModuleStatus = true
+
+        /**
+         * 是否启用 Hook [SharedPreferences]
+         *
+         * 启用后将在模块启动时强制将 [SharedPreferences] 文件权限调整为 [Context.MODE_WORLD_READABLE] (0644)
+         *
+         * - ❗这是一个可选的实验性功能 - 此功能默认不启用
+         *
+         * - 仅用于修复某些系统可能会出现在启用了 New XSharedPreferences 后依然出现文件权限错误问题 - 若你能正常使用 [YukiHookModulePrefs] 就不建议启用此功能
+         */
+        var isEnableHookSharedPreferences = false
 
         /**
          * 是否启用当前 Xposed 模块与宿主交互的 [YukiHookDataChannel] 功能

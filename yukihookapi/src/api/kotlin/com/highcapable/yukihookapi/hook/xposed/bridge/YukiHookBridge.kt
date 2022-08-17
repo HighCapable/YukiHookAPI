@@ -40,8 +40,10 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.type.android.ContextImplClass
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
 import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
@@ -210,8 +212,13 @@ object YukiHookBridge {
      */
     @YukiGenerateApi
     fun hookModuleAppStatus(loader: ClassLoader?, isHookResourcesStatus: Boolean = false) {
-        if (YukiHookAPI.Configs.isEnableHookModuleStatus.not()) return
-        classOf<YukiHookModuleStatus>(loader).apply {
+        if (YukiHookAPI.Configs.isEnableHookSharedPreferences)
+            YukiHookHelper.hook(ContextImplClass.method { name = "setFilePermissionsFromMode" }, object : YukiMemberHook() {
+                override fun beforeHookedMember(wrapper: HookParamWrapper) {
+                    if ((wrapper.args?.get(0) as? String?)?.endsWith(suffix = "preferences.xml") == true) wrapper.args?.set(1, 1)
+                }
+            })
+        if (YukiHookAPI.Configs.isEnableHookModuleStatus) classOf<YukiHookModuleStatus>(loader).apply {
             if (isHookResourcesStatus.not()) {
                 YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME }, object : YukiMemberReplacement() {
                     override fun replaceHookedMember(wrapper: HookParamWrapper) = true
