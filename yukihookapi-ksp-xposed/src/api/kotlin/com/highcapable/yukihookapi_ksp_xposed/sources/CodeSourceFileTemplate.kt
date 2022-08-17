@@ -144,10 +144,11 @@ object CodeSourceFileTemplate {
      * 获得 xposed_init_Impl 注入文件
      * @param packageName 包名
      * @param modulePackageName 模块包名
+     * @param customMPackageName 自定义模块包名
      * @param entryClassName 入口类名
      * @return [ByteArray]
      */
-    fun getXposedInitImplFileByteArray(packageName: String, modulePackageName: String, entryClassName: String) =
+    fun getXposedInitImplFileByteArray(packageName: String, modulePackageName: String, customMPackageName: String, entryClassName: String) =
         ("@file:Suppress(\"ClassName\")\n" +
                 "\n" +
                 "package $packageName\n" +
@@ -158,12 +159,14 @@ object CodeSourceFileTemplate {
                 "import de.robv.android.xposed.IXposedHookZygoteInit\n" +
                 "import de.robv.android.xposed.callbacks.XC_InitPackageResources\n" +
                 "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
+                (if (customMPackageName.isBlank()) "import $modulePackageName.BuildConfig\n" else "") +
                 "\n" +
                 getCommentContent(entryClassName, currrentClassTag = "Xposed Init Impl") +
                 "@YukiGenerateApi\n" +
                 "object ${entryClassName}_Impl {\n" +
                 "\n" +
-                "    private const val modulePackageName = \"$modulePackageName\"\n" +
+                "    private const val modulePackageName = " +
+                (if (customMPackageName.isNotBlank()) "\"$customMPackageName\"" else "BuildConfig.APPLICATION_ID") + "\n" +
                 "\n" +
                 "    private val hookEntry = $entryClassName()\n" +
                 "\n" +

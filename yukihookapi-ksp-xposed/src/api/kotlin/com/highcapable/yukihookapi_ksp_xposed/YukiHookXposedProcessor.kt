@@ -35,9 +35,12 @@ import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.highcapable.yukihookapi_ksp_xposed.sources.CodeSourceFileTemplate
+import org.w3c.dom.Element
+import org.w3c.dom.Node
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
+import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * 这是 [YukiHookAPI] 的自动生成处理类 - 核心基于 KSP
@@ -49,16 +52,19 @@ import java.util.regex.Pattern
 @AutoService(SymbolProcessorProvider::class)
 class YukiHookXposedProcessor : SymbolProcessorProvider {
 
-    override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
+    private companion object {
 
         /** 自动处理程序的 TAG */
-        private val TAG = "YukiHookAPI"
+        private const val TAG = "YukiHookAPI"
 
         /** 查找的注解名称 */
-        private val annotationName = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
+        private const val annotationName = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
 
         /** 插入 Xposed 尾部的名称 */
-        private val xposedClassShortName = "_YukiHookXposedInit"
+        private const val xposedClassShortName = "_YukiHookXposedInit"
+    }
+
+    override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
 
         /**
          * 创建一个环境方法体方便调用
@@ -86,8 +92,14 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun SymbolProcessorEnvironment.warn(msg: String) = logger.warn(message = "[$TAG] $msg")
 
+        /**
+         * 移除字符串中的空格与换行符并将双引号替换为单引号
+         * @return [String]
+         */
+        private fun String.removeSpecialChars() = replace("\\s*|\t|\r|\n".toRegex(), replacement = "").replace(oldValue = "\"", newValue = "'")
+
         override fun process(resolver: Resolver) = emptyList<KSAnnotated>().let {
-            injectProcess(resolver)
+            startProcess(resolver)
             it
         }
 
@@ -95,35 +107,36 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * 开始作业入口
          * @param resolver [Resolver]
          */
-        private fun injectProcess(resolver: Resolver) = environment {
+        private fun startProcess(resolver: Resolver) = environment {
             var isInjectOnce = true
             resolver.getSymbolsWithAnnotation(annotationName).apply {
                 /**
                  * 检索需要注入的类
                  * @param sourcePath 指定的 source 路径
-                 * @param modulePackageName 模块包名
+                 * @param custMPackageName 自定义模块包名
                  * @param xInitClassName xposed_init 入口类名
                  * @param isUsingResourcesHook 是否启用 Resources Hook
                  */
                 fun fetchKSClassDeclaration(
                     sourcePath: String,
-                    modulePackageName: String,
+                    custMPackageName: String,
                     xInitClassName: String,
                     isUsingResourcesHook: Boolean
                 ) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
-                                val xcName = xInitClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
+                                val xInitPatchName = xInitClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
                                 if (xInitClassName == it.simpleName.asString()) problem(msg = "Duplicate entryClassName \"$xInitClassName\"")
-                                injectAssets(
+                                generateAssetsFile(
                                     codePath = (it.location as? FileLocation?)?.filePath ?: "",
                                     sourcePath = sourcePath,
                                     packageName = it.packageName.asString(),
+                                    custMPackageName = custMPackageName,
                                     entryClassName = it.simpleName.asString(),
-                                    xInitClassName = xcName
+                                    xInitClassName = xInitPatchName,
+                                    isUsingResourcesHook = isUsingResourcesHook
                                 )
-                                injectClass(it.packageName.asString(), modulePackageName, it.simpleName.asString(), xcName, isUsingResourcesHook)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
                                 problem(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
@@ -135,32 +148,32 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     }
                 }
                 forEach {
-                    it.annotations.forEach { e ->
+                    it.annotations.forEach { annotation ->
                         var sourcePath = "" // 项目相对路径
-                        var modulePackageName = "" // 模块包名
+                        var custMPackageName = "" // 自定义模块包名
                         var entryClassName = "" // xposed_init 入口类名
                         var isUsingResourcesHook = false // 是否启用 Resources Hook
-                        e.arguments.forEach { pease ->
-                            if (pease.name?.asString() == "sourcePath")
-                                sourcePath = pease.value.toString().trim()
-                            if (pease.name?.asString() == "modulePackageName")
-                                modulePackageName = pease.value.toString().trim()
-                            if (pease.name?.asString() == "entryClassName")
-                                entryClassName = pease.value.toString().trim()
-                            if (pease.name?.asString() == "isUsingResourcesHook")
-                                isUsingResourcesHook = pease.value as Boolean
+                        annotation.arguments.forEach { args ->
+                            if (args.name?.asString() == "sourcePath")
+                                sourcePath = args.value.toString().trim()
+                            if (args.name?.asString() == "modulePackageName")
+                                custMPackageName = args.value.toString().trim()
+                            if (args.name?.asString() == "entryClassName")
+                                entryClassName = args.value.toString().trim()
+                            if (args.name?.asString() == "isUsingResourcesHook")
+                                isUsingResourcesHook = args.value as? Boolean ?: true
                         }
-                        if ((modulePackageName.startsWith(".") ||
-                                    modulePackageName.endsWith(".") ||
-                                    modulePackageName.contains(".").not() ||
-                                    modulePackageName.contains("..")) &&
-                            modulePackageName.isNotEmpty()
-                        ) problem(msg = "Invalid modulePackageName \"$modulePackageName\"")
+                        if ((custMPackageName.startsWith(".") ||
+                                    custMPackageName.endsWith(".") ||
+                                    custMPackageName.contains(".").not() ||
+                                    custMPackageName.contains("..")) &&
+                            custMPackageName.isNotEmpty()
+                        ) problem(msg = "Invalid modulePackageName \"$custMPackageName\"")
                         if ((Pattern.compile("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-+=<>]").matcher(entryClassName).find() ||
                                     true.let { for (i in 0..9) if (entryClassName.startsWith(i.toString())) return@let true;false })
                             && entryClassName.isNotEmpty()
                         ) problem(msg = "Invalid entryClassName \"$entryClassName\"")
-                        else fetchKSClassDeclaration(sourcePath, modulePackageName, entryClassName, isUsingResourcesHook)
+                        else fetchKSClassDeclaration(sourcePath, custMPackageName, entryClassName, isUsingResourcesHook)
                     }
                 }
             }
@@ -171,67 +184,78 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param codePath 注解类的完整代码文件路径
          * @param sourcePath 指定的 source 路径
          * @param packageName 包名
-         * @param entryClassName 入口类名
-         * @param xInitClassName xposed_init 入口类名
-         */
-        private fun injectAssets(codePath: String, sourcePath: String, packageName: String, entryClassName: String, xInitClassName: String) =
-            environment {
-                if (codePath.isBlank()) problem(msg = "Project CodePath not available")
-                if (sourcePath.isBlank()) problem(msg = "Project SourcePath not available")
-                /**
-                 * Gradle 在这里自动处理了 Windows 和 Unix 下的反斜杠路径问题
-                 * 为了防止万一还是做了一下反斜杠处理防止旧版本不支持此用法
-                 */
-                val separator = when {
-                    codePath.contains("\\") -> "\\"
-                    codePath.contains("/") -> "/"
-                    else -> error("Unix File Separator unknown")
-                }
-                val projectPath = when {
-                    codePath.contains("\\") -> sourcePath.replace("/", "\\")
-                    codePath.contains("/") -> sourcePath.replace("\\", "/")
-                    else -> error("Unix File Separator unknown")
-                }.let {
-                    if (codePath.contains(it))
-                        codePath.split(it)[0] + it
-                    else problem(msg = "Project Source Path \"$it\" not matched")
-                }
-                File("$projectPath${separator}assets").also { assFile ->
-                    if (File("$projectPath${separator}AndroidManifest.xml").exists()) {
-                        if (assFile.exists().not() || assFile.isDirectory.not()) {
-                            assFile.delete()
-                            assFile.mkdirs()
-                        }
-                        File("${assFile.absolutePath}${separator}xposed_init")
-                            .writeText(text = "$packageName.$xInitClassName")
-                        File("${assFile.absolutePath}${separator}yukihookapi_init")
-                            .writeText(text = "$packageName.$entryClassName")
-                    } else problem(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
-                }
-            }
-
-        /**
-         * 注入并生成指定类
-         * @param packageName 包名
-         * @param modulePackageName 模块包名
+         * @param custMPackageName 自定义模块包名
          * @param entryClassName 入口类名
          * @param xInitClassName xposed_init 入口类名
          * @param isUsingResourcesHook 是否启用 Resources Hook
          */
-        private fun injectClass(
+        private fun generateAssetsFile(
+            codePath: String,
+            sourcePath: String,
+            packageName: String,
+            custMPackageName: String,
+            entryClassName: String,
+            xInitClassName: String,
+            isUsingResourcesHook: Boolean
+        ) = environment {
+            if (codePath.isBlank()) problem(msg = "Project CodePath not available")
+            if (sourcePath.isBlank()) problem(msg = "Project SourcePath not available")
+            /**
+             * Gradle 在这里自动处理了 Windows 和 Unix 下的反斜杠路径问题
+             *
+             * 为了防止万一还是做了一下反斜杠处理防止旧版本不支持此用法
+             */
+            val separator = when {
+                codePath.contains("\\") -> "\\"
+                codePath.contains("/") -> "/"
+                else -> error("Unix File Separator unknown")
+            }
+            var rootPath = ""
+            val projectPath = when {
+                codePath.contains("\\") -> sourcePath.replace("/", "\\")
+                codePath.contains("/") -> sourcePath.replace("\\", "/")
+                else -> error("Unix File Separator unknown")
+            }.let {
+                if (codePath.contains(it))
+                    codePath.split(it)[0].apply { rootPath = this } + it
+                else problem(msg = "Project Source Path \"$it\" not matched")
+            }
+            val gradleFile = File("$rootPath${separator}build.gradle")
+            val gradleKtsFile = File("$rootPath${separator}build.gradle.kts")
+            val assetsFile = File("$projectPath${separator}assets")
+            val manifestFile = File("$projectPath${separator}AndroidManifest.xml")
+            if (manifestFile.exists()) {
+                if (assetsFile.exists().not() || assetsFile.isDirectory.not()) assetsFile.apply { delete(); mkdirs() }
+                val modulePackageName = parseModulePackageName(manifestFile, gradleFile, gradleKtsFile)
+                if (modulePackageName.isBlank() && custMPackageName.isBlank())
+                    problem(msg = "Cannot identify your Module App's package name, tried AndroidManifest.xml, build.gradle and build.gradle.kts")
+                File("${assetsFile.absolutePath}${separator}xposed_init")
+                    .writeText(text = "$packageName.$xInitClassName")
+                File("${assetsFile.absolutePath}${separator}yukihookapi_init")
+                    .writeText(text = "$packageName.$entryClassName")
+                generateClassFile(packageName, modulePackageName, custMPackageName, entryClassName, xInitClassName, isUsingResourcesHook)
+            } else problem(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
+        }
+
+        /**
+         * 自动生成指定类文件
+         * @param packageName 包名
+         * @param modulePackageName 模块包名
+         * @param customMPackageName 自定义模块包名
+         * @param entryClassName 入口类名
+         * @param xInitClassName xposed_init 入口类名
+         * @param isUsingResourcesHook 是否启用 Resources Hook
+         */
+        private fun generateClassFile(
             packageName: String,
             modulePackageName: String,
+            customMPackageName: String,
             entryClassName: String,
             xInitClassName: String,
             isUsingResourcesHook: Boolean
         ) = environment(ignoredError = true) {
-            if (modulePackageName.isNotBlank())
-                warn(msg = "You set the customize module package name to \"$modulePackageName\", please check for yourself if it is correct")
-            val fModulePackageName = modulePackageName.ifBlank {
-                if (packageName.contains(other = ".hook.") || packageName.endsWith(suffix = ".hook"))
-                    packageName.split(".hook")[0]
-                else error("Cannot identify your Module App's package name, please manually configure the package name")
-            }
+            if (customMPackageName.isNotBlank())
+                warn(msg = "You set the customize module package name to \"$customMPackageName\", please check for yourself if it is correct")
             val mdAppInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
             val ykBridgeInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.bridge.inject"
             /** 插入 ModuleApplication_Injector 代码 */
@@ -270,10 +294,45 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 packageName = packageName,
                 fileName = "${entryClassName}_Impl"
             ).apply {
-                write(CodeSourceFileTemplate.getXposedInitImplFileByteArray(packageName, fModulePackageName, entryClassName))
+                write(CodeSourceFileTemplate.getXposedInitImplFileByteArray(packageName, modulePackageName, customMPackageName, entryClassName))
                 flush()
                 close()
             }
         }
+
+        /**
+         * 解析模块包名
+         * @param manifestFile AndroidManifest.xml 文件
+         * @param gradleFile build.gradle 文件
+         * @param gradleKtsFile build.gradle.kts 文件
+         * @return [String] 模块包名
+         */
+        private fun parseModulePackageName(manifestFile: File, gradleFile: File, gradleKtsFile: File) = when {
+            gradleFile.exists() -> runCatching {
+                gradleFile.readText()
+                    .removeSpecialChars()
+                    .split("namespace'")[1]
+                    .split("'")[0]
+            }.getOrNull()
+            gradleKtsFile.exists() -> runCatching {
+                gradleKtsFile.readText()
+                    .removeSpecialChars()
+                    .replace(oldValue = "varnamespace", newValue = "")
+                    .replace(oldValue = "valnamespace", newValue = "")
+                    .split("namespace='")[1]
+                    .split("'")[0]
+            }.getOrNull()
+            else -> null
+        } ?: runCatching {
+            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(manifestFile).let { document ->
+                document.getElementsByTagName("manifest").let { nodeList ->
+                    nodeList.item(0).let { node ->
+                        if (node.nodeType == Node.ELEMENT_NODE)
+                            (node as? Element?)?.getAttribute("package") ?: ""
+                        else ""
+                    }
+                }
+            }
+        }.getOrNull() ?: ""
     }
 }

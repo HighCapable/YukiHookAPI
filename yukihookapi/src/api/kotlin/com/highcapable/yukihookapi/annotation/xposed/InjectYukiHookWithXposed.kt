@@ -34,21 +34,13 @@ import de.robv.android.xposed.IXposedHookInitPackageResources
 /**
  * 标识 [YukiHookAPI] 注入 Xposed 入口的类注解
  *
- * - 你的项目 source 目录默认为 "src/main/" 可在 [sourcePath] 中进行自定义 - 自动处理程序将只检查 ..app/[sourcePath]/java.. 中间部分
+ * - 你的项目 source 目录默认为 "src/main/" 可在 [sourcePath] 中进行自定义 - 自动处理程序将只检查 ../[sourcePath]/java.. 中间部分
  *
  * - 自动处理程序将自动在 ../[sourcePath]/assets/ 下建立 xposed_init 文件
  *
- * - 你的 Hook 入口类(HookEntryClass) 需要按照此格式创建 --> 你的模块 APP 包名/hook/...可允许子包名存在.../你的入口类
+ * 你的 xposed_init 入口将被自动生成为 --> 你的入口类完整包名/你的入口类名_YukiHookXposedInit 或自定义 [entryClassName]
  *
- * 例子：com.example.module.hook.MainHook、com.example.module.hook.inject.MainInject、com.example.module.hook.custom.CustomClass
- *
- * 你的 xposed_init 入口将被自动生成为 --> 你的模块 APP 包名/hook/...可允许子包名存在.../你的入口类_YukiHookXposedInit 或自定义 [entryClassName]
- *
- * 例子：com.example.module.hook.MainHook_YukiHookXposedInit
- *
- * - 你的模块包名将被这样识别：|com.example.module|.hook...
- *
- * - 若你不喜欢这样创建类 - 没问题 - 请在 [modulePackageName] 填写你的模块包名即可 - 默认会按照标准识别 - 失败编译会报错
+ * - 你可以在 [modulePackageName] 自定义你的模块包名 - 未定义的情况下会使用 AndroidManifest.xml 与 build.gradle/kts 进行分析 - 失败编译会报错
  *
  * - 为了防止模块包名无法正常被识别 - 自定义 [modulePackageName] 会在编译时产生警告
  *
@@ -60,7 +52,7 @@ import de.robv.android.xposed.IXposedHookInitPackageResources
  *
  * 详情请参考 [InjectYukiHookWithXposed 注解](https://fankes.github.io/YukiHookAPI/#/config/xposed-using?id=injectyukihookwithxposed-%e6%b3%a8%e8%a7%a3)
  * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
- * @param modulePackageName 模块包名 - 使用标准路径可不填会自动生成
+ * @param modulePackageName 模块包名 - 不填默认自动生成
  * @param entryClassName 定义 [YukiHookAPI] 自动生成 Xposed 模块入口类的名称 - 不填默认使用 HookEntryClass_YukiHookXposedInit 进行生成
  * @param isUsingResourcesHook 是否启用 Resources Hook (资源钩子) - 启用后将自动注入 [IXposedHookInitPackageResources] - 默认是
  */

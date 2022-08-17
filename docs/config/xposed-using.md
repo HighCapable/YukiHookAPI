@@ -27,13 +27,13 @@ annotation class InjectYukiHookWithXposed(
 
 !> `@InjectYukiHookWithXposed` 注解的 `Class` 必须实现 `IYukiHookXposedInit` 接口。
 
-!> 在你当前项目中的所有 `Class` 标记中**只能存在一次**，若存在多个声明自动处理程序<u>会在编译时抛出异常</u>，你可以自定义其相关参数。
+!> 在你当前项目中的所有 `Class` 标记中**只能存在一次**，若存在多个声明自动处理程序<u>**会在编译时抛出异常**</u>，你可以自定义其相关参数。
 
 #### sourcePath 参数
 
 `sourcePath` 参数决定了自动处理程序自动查找并匹配你当前项目路径的重要标识，此参数的内容为相对路径匹配，默认参数为 `src/main`。
 
-!> 如果你的项目不在 `...app/src/main...` 或你手动使用 `sourceSets` 设置了项目路径，你就需要手动设置 `sourcePath` 参数，否则自动处理程序将无法识别你的项目路径并<u>会在编译时抛出异常</u>。
+!> 如果你的项目不在 `../src/main..` 或你手动使用 `sourceSets` 设置了项目路径，你就需要手动设置 `sourcePath` 参数，否则自动处理程序将无法识别你的项目路径并<u>**会在编译时抛出异常**</u>。
 
 > 示例如下
 
@@ -45,17 +45,38 @@ annotation class InjectYukiHookWithXposed(
 
 #### modulePackageName 参数
 
-`modulePackageName` 是你当前项目的包名，也就是你的模块包名，默认留空自动处理程序将自动根据你注解的 `Class` 入口类的路径进行生成。
+`modulePackageName` 是你当前项目的 `applicationId`，也就是你的模块包名 (最终生成的应用包名)，留空或不填时自动处理程序将对当前项目文件进行分析并生成。
 
-!> 若你想使用包名自动生成，你的 Hook 入口类 `HookEntryClass` 就要遵守包名的命名规范，格式为 `包名.hook.HookEntryClass` 或 `包名.hook.子包名.HookEntryClass`。
+!> 若你想使用模块包名自动生成，你需要确保你的项目命名空间在 `AndroidManifest.xml`、`build.gradle` 或 `build.gradle.kts` 中定义。
 
-示例模块包名 `com.example.demo`
+示例命名空间 `com.example.demo`，以下定义方式任选其一。
 
-示例 1 `com.example.demo.hook.MainHook`
+以下定义方式仅供参考，通常情况下**只要你的项目能够正常生成 `BuildConfig.java` 文件，就不需要做额外操作**。
 
-示例 2 `com.example.demo.hook.custom.CustomClass`
+- `AndroidManifest.xml` 示例
 
-若你不想使用此格式定义入口类的包名，例如你的包名动态的，类似使用 `productFlavors` 进行多渠道打包，你可以直接设置 `modulePackageName` 的参数。
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.demo">
+```
+
+- `build.gradle` 示例
+
+```groovy
+android {
+    namespace 'com.example.demo'
+}
+```
+
+- `build.gradle.kts` 示例
+
+```kotlin
+android {
+    namespace = "com.example.demo"
+}
+```
+
+若你的模块包名是非常规手段进行自动生成的，或你认为有必要手动定义模块包名，那么你可以直接设置 `modulePackageName` 的参数。
 
 > 示例如下
 
@@ -63,21 +84,15 @@ annotation class InjectYukiHookWithXposed(
 @InjectYukiHookWithXposed(modulePackageName = "com.example.demo")
 ```
 
-你也可以直接设置为你的 `BuildConfig.APPLICATION_ID`。
-
-> 示例如下
-
-```kotlin
-@InjectYukiHookWithXposed(modulePackageName = BuildConfig.APPLICATION_ID)
-```
-
-!> 只要你自定义了 `modulePackageName` 的参数，你就会在编译时收到警告。
+只要你自定义了 `modulePackageName` 的参数，你就会在编译时收到警告。
 
 > 示例如下
 
 ```
 You set the customize module package name to "com.example.demo", please check for yourself if it is correct
 ```
+
+!> 手动定义的模块包名除了格式之外，自动处理程序将不会再检查模块包名是否正确，需要你自行确认其有效性。
 
 #### entryClassName 参数
 
