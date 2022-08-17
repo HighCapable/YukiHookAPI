@@ -124,7 +124,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
 
     /** 是否使用新版存储方式 EdXposed/LSPosed */
-    private var isUsingNewXSharePrefs = false
+    private var isUsingNewXSharedPreferences = false
 
     /** 检查 API 装载状态 */
     private fun checkApi() {
@@ -137,7 +137,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * 获得 [XSharedPreferences] 对象
      * @return [XSharedPreferences]
      */
-    private val xPref
+    private val xPrefs
         get() = runCatching {
             XSharedPreferences(YukiHookBridge.modulePackageName, prefsName).apply {
                 checkApi()
@@ -151,20 +151,20 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * 获得 [SharedPreferences] 对象
      * @return [SharedPreferences]
      */
-    private val sPref
+    private val sPrefs
         get() = try {
             checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharePrefs = true }
+            context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharedPreferences = true }
                 ?: error("If you want to use module prefs, you must set the context instance first")
         } catch (_: Throwable) {
             checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharePrefs = false }
+            context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharedPreferences = false }
                 ?: error("If you want to use module prefs, you must set the context instance first")
         }
 
     /** 设置全局可读可写 */
     private fun makeWorldReadable() = runCatching {
-        if (isUsingNewXSharePrefs.not()) makeWorldReadable(context, prefsFileName = "${prefsName}.xml")
+        if (isUsingNewXSharedPreferences.not()) makeWorldReadable(context, prefsFileName = "${prefsName}.xml")
     }
 
     /**
@@ -174,7 +174,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [Boolean] 是否可读
      */
     val isXSharePrefsReadable
-        get() = if (isXposedEnvironment) (runCatching { xPref.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false) else false
+        get() = if (isXposedEnvironment) (runCatching { xPrefs.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false) else false
 
     /**
      * 获取 [YukiHookModulePrefs] 是否正处于 EdXposed/LSPosed 的最高权限运行
@@ -188,8 +188,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         get() = if (isXposedEnvironment.not())
             runCatching {
                 /** 执行一次装载 */
-                sPref.edit()
-                isUsingNewXSharePrefs
+                sPrefs.edit()
+                isUsingNewXSharedPreferences
             }.getOrNull() ?: false
         else false
 
@@ -231,13 +231,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueStrings[key].let {
-                    (it ?: xPref.getString(key, value) ?: value).let { value ->
+                    (it ?: xPrefs.getString(key, value) ?: value).let { value ->
                         xPrefCacheKeyValueStrings[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getString(key, value) ?: value }
-        else sPref.getString(key, value) ?: value).let {
+            else resetCacheSet { xPrefs.getString(key, value) ?: value }
+        else sPrefs.getString(key, value) ?: value).let {
             makeWorldReadable()
             it
         }
@@ -256,13 +256,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueStrings[key].let {
-                    (it ?: xPref.getStringSet(key, value) ?: value).let { value ->
+                    (it ?: xPrefs.getStringSet(key, value) ?: value).let { value ->
                         xPrefCacheKeyValueStringSets[key] = value as Set<String>
                         value
                     }
                 }
-            else resetCacheSet { xPref.getStringSet(key, value) ?: value }
-        else sPref.getStringSet(key, value) ?: value).let {
+            else resetCacheSet { xPrefs.getStringSet(key, value) ?: value }
+        else sPrefs.getStringSet(key, value) ?: value).let {
             makeWorldReadable()
             it
         }
@@ -281,13 +281,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueBooleans[key].let {
-                    it ?: xPref.getBoolean(key, value).let { value ->
+                    it ?: xPrefs.getBoolean(key, value).let { value ->
                         xPrefCacheKeyValueBooleans[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getBoolean(key, value) }
-        else sPref.getBoolean(key, value)).let {
+            else resetCacheSet { xPrefs.getBoolean(key, value) }
+        else sPrefs.getBoolean(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -306,13 +306,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueInts[key].let {
-                    it ?: xPref.getInt(key, value).let { value ->
+                    it ?: xPrefs.getInt(key, value).let { value ->
                         xPrefCacheKeyValueInts[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getInt(key, value) }
-        else sPref.getInt(key, value)).let {
+            else resetCacheSet { xPrefs.getInt(key, value) }
+        else sPrefs.getInt(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -331,13 +331,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueFloats[key].let {
-                    it ?: xPref.getFloat(key, value).let { value ->
+                    it ?: xPrefs.getFloat(key, value).let { value ->
                         xPrefCacheKeyValueFloats[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getFloat(key, value) }
-        else sPref.getFloat(key, value)).let {
+            else resetCacheSet { xPrefs.getFloat(key, value) }
+        else sPrefs.getFloat(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -356,13 +356,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 xPrefCacheKeyValueLongs[key].let {
-                    it ?: xPref.getLong(key, value).let { value ->
+                    it ?: xPrefs.getLong(key, value).let { value ->
                         xPrefCacheKeyValueLongs[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPref.getLong(key, value) }
-        else sPref.getLong(key, value)).let {
+            else resetCacheSet { xPrefs.getLong(key, value) }
+        else sPrefs.getLong(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -377,8 +377,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      */
     fun all() = hashMapOf<String, Any?>().apply {
         if (isXposedEnvironment)
-            xPref.all.forEach { (k, v) -> this[k] = v }
-        else sPref.all.forEach { (k, v) -> this[k] = v }
+            xPrefs.all.forEach { (k, v) -> this[k] = v }
+        else sPrefs.all.forEach { (k, v) -> this[k] = v }
     }
 
     /**
@@ -390,7 +390,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @param key 键值名称
      */
     fun remove(key: String) = moduleEnvironment {
-        sPref.edit().remove(key).apply()
+        sPrefs.edit().remove(key).apply()
         makeWorldReadable()
     }
 
@@ -412,7 +412,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      */
     fun clear() = moduleEnvironment {
-        sPref.edit().clear().apply()
+        sPrefs.edit().clear().apply()
         makeWorldReadable()
     }
 
@@ -428,7 +428,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @param value 键值数据
      */
     fun putString(key: String, value: String) = moduleEnvironment {
-        sPref.edit().putString(key, value).apply()
+        sPrefs.edit().putString(key, value).apply()
         makeWorldReadable()
     }
 
@@ -444,7 +444,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @param value 键值数据
      */
     fun putStringSet(key: String, value: Set<String>) = moduleEnvironment {
-        sPref.edit().putStringSet(key, value).apply()
+        sPrefs.edit().putStringSet(key, value).apply()
         makeWorldReadable()
     }
 
@@ -460,7 +460,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @param value 键值数据
      */
     fun putBoolean(key: String, value: Boolean) = moduleEnvironment {
-        sPref.edit().putBoolean(key, value).apply()
+        sPrefs.edit().putBoolean(key, value).apply()
         makeWorldReadable()
     }
 
@@ -476,7 +476,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @param value 键值数据
      */
     fun putInt(key: String, value: Int) = moduleEnvironment {
-        sPref.edit().putInt(key, value).apply()
+        sPrefs.edit().putInt(key, value).apply()
         makeWorldReadable()
     }
 
@@ -492,7 +492,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @param value 键值数据
      */
     fun putFloat(key: String, value: Float) = moduleEnvironment {
-        sPref.edit().putFloat(key, value).apply()
+        sPrefs.edit().putFloat(key, value).apply()
         makeWorldReadable()
     }
 
@@ -508,7 +508,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @param value 键值数据
      */
     fun putLong(key: String, value: Long) = moduleEnvironment {
-        sPref.edit().putLong(key, value).apply()
+        sPrefs.edit().putLong(key, value).apply()
         makeWorldReadable()
     }
 
