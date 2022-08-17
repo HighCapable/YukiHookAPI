@@ -113,7 +113,7 @@ val Context.processName
  *
  * 注入的资源作用域仅限当前 [Context] - 你需要在每个用到宿主 [Context] 的地方重复调用此方法进行注入才能使用
  *
- * 详情请参考 [Context+Resources.injectModuleAppResources](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextresourcesinjectmoduleappresources-ext-method)
+ * 详情请参考 [API 文档 - Context+Resources.injectModuleAppResources](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextresourcesinjectmoduleappresources-ext-method)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
@@ -126,7 +126,7 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
  *
  * 注入的资源作用域仅限当前 [Resources] - 你需要在每个用到宿主 [Resources] 的地方重复调用此方法进行注入才能使用
  *
- * 详情请参考 [Context+Resources.injectModuleAppResources](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextresourcesinjectmoduleappresources-ext-method)
+ * 详情请参考 [API 文档 - Context+Resources.injectModuleAppResources](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextresourcesinjectmoduleappresources-ext-method)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
@@ -139,7 +139,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  *
  * - 你要将需要在宿主启动的 [Activity] 继承于 [ModuleAppActivity] 或 [ModuleAppCompatActivity]
  *
- * 详情请参考 [Context.registerModuleAppActivities](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextregistermoduleappactivities-ext-method)
+ * 详情请参考 [API 文档 - Context.registerModuleAppActivities](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextregistermoduleappactivities-ext-method)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
@@ -151,7 +151,7 @@ fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.regi
  *
  * 在 Hook APP (宿主) 中使用此方法会自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
  *
- * 详情请参考 [Context.applyTheme](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextapplytheme-ext-method)
+ * 详情请参考 [API 文档 - Context.applyTheme](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextapplytheme-ext-method)
  * @param theme 主题资源 ID
  * @return [ModuleContextThemeWrapper]
  */

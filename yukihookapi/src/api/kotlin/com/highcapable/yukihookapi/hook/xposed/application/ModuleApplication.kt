@@ -55,7 +55,7 @@ import com.highcapable.yukihookapi.thirdparty.me.weishu.reflection.Reflection
  *
  * - 在模块中使用 [YukiHookAPI.Status.isTaiChiModuleActive] 判断太极、无极激活状态
  *
- * 详情请参考 [ModuleApplication](https://fankes.github.io/YukiHookAPI/#/api/document?id=moduleapplication-class)
+ * 详情请参考 [API 文档 - ModuleApplication](https://fankes.github.io/YukiHookAPI/#/api/document?id=moduleapplication-class)
  */
 open class ModuleApplication : Application() {
 
