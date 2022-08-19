@@ -318,7 +318,7 @@ var isEnableHookSharedPreferences: Boolean
 
 > 是否启用 Hook `SharedPreferences`。
 
-启用后将在模块启动时强制将 `SharedPreferences` 文件权限调整为 `Context.MODE_WORLD_READABLE` (0644)。
+启用后将在模块启动时强制将 `SharedPreferences` 文件权限调整为 `Context.MODE_WORLD_READABLE` (0664)。
 
 !> 这是一个可选的实验性功能，此功能默认不启用。
 
