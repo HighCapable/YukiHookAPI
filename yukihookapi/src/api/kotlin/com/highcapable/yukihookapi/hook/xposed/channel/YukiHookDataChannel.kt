@@ -161,8 +161,7 @@ class YukiHookDataChannel private constructor() {
      * @param packageName 包名 - 为空获取 [context] 的 [Context.getPackageName]
      */
     internal fun register(context: Context?, packageName: String = context?.packageName ?: "") {
-        if (context == null) return
-        if (YukiHookAPI.Configs.isEnableDataChannel.not() || receiverContext != null) return
+        if (YukiHookAPI.Configs.isEnableDataChannel.not() || context == null) return
         receiverContext = context
         context.registerReceiver(
             handlerReceiver, IntentFilter().apply {

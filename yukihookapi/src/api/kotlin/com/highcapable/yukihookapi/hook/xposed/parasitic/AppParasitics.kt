@@ -69,9 +69,6 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.Instr
  */
 internal object AppParasitics {
 
-    /** [YukiHookDataChannel] 是否已经注册 */
-    private var isDataChannelRegister = false
-
     /** [Activity] 代理是否已经注册 */
     private var isActivityProxyRegister = false
 
@@ -230,8 +227,6 @@ internal object AppParasitics {
                                         }
                                     }, IntentFilter().apply { e.first.forEach { e -> addAction(e) } })
                                 }
-                                if (isDataChannelRegister) return
-                                isDataChannelRegister = true
                                 runCatching { YukiHookDataChannel.instance().register(it, packageName) }
                             }
                         }.onFailure { wrapper.throwable = it }
