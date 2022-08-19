@@ -89,11 +89,11 @@ internal class HandlerDelegate private constructor(private val baseInstance: Han
                                 if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
                                     intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName).also { subIntent ->
                                         if (Build.VERSION.SDK_INT >= 31)
-                                            ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()
-                                                ?.current()?.method {
-                                                    name = "getLaunchingActivity"
-                                                    param(IBinderClass)
-                                                }?.call(this@client.current().method { name = "getActivityToken" }.call())
+                                            ActivityThreadClass.method {
+                                                name = "getLaunchingActivity"
+                                                param(IBinderClass)
+                                            }.ignored().get(ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call())
+                                                .call(this@client.current().method { name = "getActivityToken" }.call())
                                                 ?.current()?.field { name = "intent" }?.set(subIntent)
                                         set(subIntent)
                                     }
