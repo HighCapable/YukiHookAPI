@@ -260,6 +260,7 @@ object YukiHookBridge {
             if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
                 AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
             if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
+            if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
         }
     }
 }
