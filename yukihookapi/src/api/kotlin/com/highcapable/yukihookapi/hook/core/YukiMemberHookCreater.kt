@@ -621,9 +621,24 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @throws IllegalStateException 如果返回值不正确
          */
         private fun checkingReturnType(origin: Class<*>?, target: Class<*>?) {
+            /**
+             * 获取当前 [Class] 的 Java 基本类型
+             * @return [String]
+             */
+            fun Class<*>.objectName() =
+                name.replace(Unit.toString(), newValue = "void")
+                    .replace(oldValue = "java.lang.Void", newValue = "void")
+                    .replace(oldValue = "java.lang.Boolean", newValue = "boolean")
+                    .replace(oldValue = "java.lang.Integer", newValue = "int")
+                    .replace(oldValue = "java.lang.Float", newValue = "float")
+                    .replace(oldValue = "java.lang.Double", newValue = "double")
+                    .replace(oldValue = "java.lang.Long", newValue = "long")
+                    .replace(oldValue = "java.lang.Short", newValue = "short")
+                    .replace(oldValue = "java.lang.Character", newValue = "char")
+                    .replace(oldValue = "java.lang.Byte", newValue = "byte")
             if (origin == null || target == null) return
-            val originName = origin.name.replace(Unit.toString(), newValue = "void")
-            val targetName = target.name.replace(Unit.toString(), newValue = "void")
+            val originName = origin.objectName()
+            val targetName = target.objectName()
             if (originName != targetName) error("Hooked method return type match failed, required [$originName] but got [$targetName]")
         }
 
