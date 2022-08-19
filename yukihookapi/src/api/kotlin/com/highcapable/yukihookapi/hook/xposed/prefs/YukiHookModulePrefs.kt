@@ -129,7 +129,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /** 检查 API 装载状态 */
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
-        if (YukiHookBridge.hasXposedBridge && YukiHookBridge.modulePackageName.isBlank())
+        if (isXposedEnvironment && YukiHookBridge.modulePackageName.isBlank())
             error("Xposed modulePackageName load failed, please reset and rebuild it")
     }
 
@@ -155,11 +155,11 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         get() = try {
             checkApi()
             context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharedPreferences = true }
-                ?: error("If you want to use module prefs, you must set the context instance first")
+                ?: error("YukiHookModulePrefs missing Context instance")
         } catch (_: Throwable) {
             checkApi()
             context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharedPreferences = false }
-                ?: error("If you want to use module prefs, you must set the context instance first")
+                ?: error("YukiHookModulePrefs missing Context instance")
         }
 
     /** 设置全局可读可写 */
@@ -610,6 +610,6 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      */
     private inline fun moduleEnvironment(callback: () -> Unit) {
         if (isXposedEnvironment.not()) callback()
-        else yLoggerW(msg = "You cannot use write prefs function in Xposed Environment")
+        else yLoggerW(msg = "YukiHookModulePrefs write operation not allowed in Xposed Environment")
     }
 }
