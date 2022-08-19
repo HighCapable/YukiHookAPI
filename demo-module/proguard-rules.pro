@@ -36,3 +36,13 @@
 
 -renamesourcefileattribute P
 -keepattributes SourceFile,LineNumberTable
+
+-keepclassmembers class androidx.appcompat.app.AlertDialog {
+    *** mAlert;
+}
+
+-keepclassmembers class androidx.appcompat.app.AlertController {
+    *** mButtonPositive;
+    *** mButtonNegative;
+    *** mButtonNeutral;
+}

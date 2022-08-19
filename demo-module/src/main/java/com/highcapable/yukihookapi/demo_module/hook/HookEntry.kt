@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.demo_module.hook
 
 import android.app.Activity
+import android.content.Intent
 import android.widget.Button
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.highcapable.yukihookapi.YukiHookAPI
@@ -37,7 +38,9 @@ import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.hook.factory.compatStyle
+import com.highcapable.yukihookapi.demo_module.ui.MainActivity
 import com.highcapable.yukihookapi.hook.factory.applyTheme
+import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.type.android.ActivityClass
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
@@ -134,6 +137,8 @@ class HookEntry : IYukiHookXposedInit {
             }
             // 装载需要 Hook 的 APP
             loadApp(name = "com.highcapable.yukihookapi.demo_app") {
+                // 注册模块 Activity 代理
+                onAppLifecycle { onCreate { registerModuleAppActivities() } }
                 // 得到需要 Hook 的 Class
                 findClass(name = "$packageName.ui.MainActivity").hook {
                     // 注入要 Hook 的方法
@@ -209,15 +214,23 @@ class HookEntry : IYukiHookXposedInit {
                         }
                         // 拦截整个方法
                         replaceUnit {
-                            MaterialAlertDialogBuilder(instance<Activity>().applyTheme(R.style.Theme_Default))
-                                .setTitle("Hooked")
-                                .setMessage("I am hook your toast showing!")
-                                .setPositiveButton("OK", null)
-                                .setNegativeButton("SEND MSG TO MODULE") { _, _ ->
-                                    dataChannel.put(DataConst.TEST_CN_DATA, value = "I am host, can you hear me?")
-                                }.setNeutralButton("REMOVE HOOK") { _, _ ->
-                                    removeSelf()
-                                }.show().compatStyle()
+                            instance<Activity>().applyTheme(R.style.Theme_Default).also { context ->
+                                MaterialAlertDialogBuilder(context)
+                                    .setTitle("Hooked")
+                                    .setMessage("I am hook your toast showing!")
+                                    .setPositiveButton("START PARASITIC") { _, _ ->
+                                        MaterialAlertDialogBuilder(context)
+                                            .setTitle("Start Parasitic")
+                                            .setMessage("This function will start MainActivity that exists in the module app.")
+                                            .setPositiveButton("YES") { _, _ ->
+                                                context.startActivity(Intent(context, MainActivity::class.java))
+                                            }.setNegativeButton("NO", null).show().compatStyle()
+                                    }.setNegativeButton("SEND MSG TO MODULE") { _, _ ->
+                                        dataChannel.put(DataConst.TEST_CN_DATA, value = "I am host, can you hear me?")
+                                    }.setNeutralButton("REMOVE HOOK") { _, _ ->
+                                        removeSelf()
+                                    }.show().compatStyle()
+                            }
                         }
                     }
                     // 注入要 Hook 的方法

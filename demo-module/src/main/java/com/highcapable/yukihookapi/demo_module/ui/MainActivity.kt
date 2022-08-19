@@ -32,22 +32,27 @@ package com.highcapable.yukihookapi.demo_module.ui
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ModuleAppCompatActivity() {
+
+    override val moduleTheme get() = R.style.Theme_Default
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityMainBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            dataChannel(packageName = "com.highcapable.yukihookapi.demo_app").with {
-                wait(DataConst.TEST_CN_DATA) {
-                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+            moduleEnvironment(isShowWarn = false) {
+                dataChannel(packageName = "com.highcapable.yukihookapi.demo_app").with {
+                    wait(DataConst.TEST_CN_DATA) {
+                        Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             moduleDemoActiveText.text = "Module is Active：${YukiHookAPI.Status.isModuleActive}"
@@ -58,20 +63,38 @@ class MainActivity : AppCompatActivity() {
             moduleDemoApiVersionZhText.text = "Xposed API 版本"
             moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.API_VERSION_NAME}(${YukiHookAPI.API_VERSION_CODE})"
             moduleDemoYukiHookApiVersionZhText.text = "YukiHookAPI 版本"
-            moduleDemoNewXshareText.text = "New XShare Mode：${modulePrefs.isRunInNewXShareMode}"
-            moduleDemoNewXshareZhText.text = "New XShare 模式支持状态"
+            moduleDemoNewXshareText.text =
+                if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences：${modulePrefs.isXSharePrefsReadable}"
+                else "New XShare Mode：${modulePrefs.isRunInNewXShareMode}"
+            moduleDemoNewXshareZhText.text = if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences 是否可用" else "New XShare 模式支持状态"
             moduleDemoResHookText.text = "Support Resources Hook：${YukiHookAPI.Status.isSupportResourcesHook}"
             moduleDemoResHookZhText.text = "资源钩子支持状态"
             moduleDemoEditText.also {
                 it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
                 moduleDemoButton.setOnClickListener { _ ->
-                    if (it.text.toString().isNotEmpty()) {
-                        modulePrefs.put(DataConst.TEST_KV_DATA, it.text.toString())
-                        Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
-                    } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
+                    moduleEnvironment {
+                        if (it.text.toString().isNotEmpty()) {
+                            modulePrefs.put(DataConst.TEST_KV_DATA, it.text.toString())
+                            Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
+                        } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-            moduleDemoFrgButton.setOnClickListener { startActivity(Intent(this@MainActivity, PreferenceActivity::class.java)) }
+            moduleDemoFrgButton.setOnClickListener {
+                moduleEnvironment { startActivity(Intent(this@MainActivity, PreferenceActivity::class.java)) }
+            }
         }
+    }
+
+    /**
+     * 仅在模块环境执行
+     * @param isShowWarn 是否显示警告 - 默认是
+     * @param callback 在模块环境执行
+     */
+    private inline fun moduleEnvironment(isShowWarn: Boolean = true, callback: () -> Unit) {
+        if (YukiHookAPI.Status.isXposedEnvironment)
+            (if (isShowWarn)
+                Toast.makeText(applicationContext, "This operation is not allowed in Xposed Environment", Toast.LENGTH_SHORT).show())
+        else callback()
     }
 }
