@@ -807,7 +807,7 @@ class MyApplication : Application() {
 
 请仔细阅读 [这里](config/xposed-using?id=modulepackagename-参数) 的帮助文档，正确配置模块的 Hook 入口类包名。
 
-!> `IllegalStateException` If you want to use module prefs, you must set the context instance first
+!> `IllegalStateException` YukiHookModulePrefs missing Context instance
 
 **异常原因**
 
