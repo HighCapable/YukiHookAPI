@@ -489,7 +489,7 @@ injectMember {
 
 ## 状态监听
 
-在使用 `XposedHelper` 的同学往往会在 Hook 后打印 `UnHook` 的方法确定是否 Hook 成功。
+在使用 `XposedHelpers` 的同学往往会在 Hook 后打印 `UnHook` 的方法确定是否 Hook 成功。
 
 在 `YukiHookAPI` 中，你可以用以下方法方便地重新实现这个功能。
 

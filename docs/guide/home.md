@@ -14,7 +14,7 @@
 
 `YukiHookAPI` 完全采用 `Kotlin` `lambda` 语法构建。
 
-抛弃原始不太友好的 `XposedHelper`，你可以使用它来轻松创建 Xposed 模块以及轻松实现自定义 Hook API。
+抛弃原始不太友好的 `XposedHelpers`，你可以使用它来轻松创建 Xposed 模块以及轻松实现自定义 Hook API。
 
 ## 语言要求
 
