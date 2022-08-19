@@ -87,6 +87,8 @@ fun Context.modulePrefs(name: String) = modulePrefs.name(name)
 
 /**
  * 获取模块的数据通讯桥命名空间对象
+ *
+ * - ❗只能在模块环境使用此功能 - 其它环境下使用将不起作用
  * @param packageName 目标 Hook APP (宿主) 包名
  * @return [YukiHookDataChannel.NameSpace]
  */
