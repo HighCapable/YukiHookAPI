@@ -74,6 +74,20 @@ object Status
 
 > 当前 `YukiHookAPI` 的状态。
 
+#### isXposedEnvironment *- field*
+
+```kotlin
+val isXposedEnvironment: Boolean
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 获取当前是否为 (Xposed) 宿主环境。
+
 #### executorName *- field*
 
 ```kotlin

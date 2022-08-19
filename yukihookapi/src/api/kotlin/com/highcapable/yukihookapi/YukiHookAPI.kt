@@ -87,6 +87,12 @@ object YukiHookAPI {
     object Status {
 
         /**
+         * 获取当前是否为 (Xposed) 宿主环境
+         * @return [Boolean]
+         */
+        val isXposedEnvironment get() = YukiHookBridge.hasXposedBridge
+
+        /**
          * 获取当前 Hook 框架的名称
          *
          * 从 [XposedBridge] 获取 TAG
