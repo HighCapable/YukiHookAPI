@@ -121,6 +121,12 @@ val StringType get() = classOf<String>()
 val CharType get() = classOf<Char>()
 
 /**
+ * 获得 [Byte] 类型
+ * @return [Class]
+ */
+val ByteType get() = classOf<Byte>()
+
+/**
  * 获得 [CharSequence] 类型
  * @return [Class]
  */
@@ -131,12 +137,6 @@ val CharSequenceType get() = classOf<CharSequence>()
  * @return [Class]
  */
 val SerializableClass get() = classOf<Serializable>()
-
-/**
- * 获得 [Byte] 类型
- * @return [Class]
- */
-val ByteClass get() = classOf<Byte>()
 
 /**
  * 获得 [Array] 类型
@@ -158,7 +158,7 @@ val AnyArrayClass get() = ArrayClass(AnyType)
  * Java 中表示：byte[]
  * @return [Class]
  */
-val ByteArrayClass get() = ArrayClass(ByteClass)
+val ByteArrayClass get() = ArrayClass(ByteType)
 
 /**
  * 获得 [Int] - [Array] 类型
