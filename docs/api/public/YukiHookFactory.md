@@ -340,7 +340,7 @@ context.startActivity(context, HostTestActivity::class.java)
 ### Context.applyTheme *- ext-method*
 
 ```kotlin
-fun Context.applyTheme(theme: Int): ModuleContextThemeWrapper
+fun Context.applyTheme(theme: Int, isUseNewConfig: Boolean): ModuleContextThemeWrapper
 ```
 
 **变更记录**
@@ -352,6 +352,8 @@ fun Context.applyTheme(theme: Int): ModuleContextThemeWrapper
 > 生成一个 `ContextThemeWrapper` 代理以应用主题资源。
 
 在 Hook APP (宿主) 中使用此方法会自动调用 `injectModuleAppResources` 注入当前 Xposed 模块的资源。
+
+如果在 Hook APP (宿主) 中使用此方法发生 `ClassCastException`，请设置 `isUseNewConfig` 为 `true`。
 
 为防止资源 ID 互相冲突，你需要在当前 Xposed 模块项目的 `build.gradle` 中修改资源 ID。
 

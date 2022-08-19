@@ -29,6 +29,7 @@
 package com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper
 
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.view.ContextThemeWrapper
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
@@ -41,8 +42,10 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  * 通过包装 - 你可以轻松在 (Xposed) 宿主环境使用来自模块的主题资源
  * @param baseContext 原始 [Context]
  * @param theme 使用的主题
+ * @param isUseNewConfig 是否使用新的 [Configuration]
  */
-class ModuleContextThemeWrapper private constructor(baseContext: Context, theme: Int) : ContextThemeWrapper(baseContext, theme) {
+class ModuleContextThemeWrapper private constructor(baseContext: Context, theme: Int, isUseNewConfig: Boolean) :
+    ContextThemeWrapper(baseContext, theme) {
 
     internal companion object {
 
@@ -50,12 +53,13 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
          * 从 [Context] 创建 [ModuleContextThemeWrapper]
          * @param baseContext 对接的 [Context]
          * @param theme 需要使用的主题
+         * @param isUseNewConfig 是否使用新的 [Configuration]
          * @return [ModuleContextThemeWrapper]
          * @throws IllegalStateException 如果重复装载
          */
-        internal fun wrapper(baseContext: Context, theme: Int) =
+        internal fun wrapper(baseContext: Context, theme: Int, isUseNewConfig: Boolean) =
             if (baseContext !is ModuleContextThemeWrapper)
-                ModuleContextThemeWrapper(baseContext, theme)
+                ModuleContextThemeWrapper(baseContext, theme, isUseNewConfig)
             else error("ModuleContextThemeWrapper already loaded")
     }
 
@@ -63,8 +67,8 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
     private var baseResources: Resources? = null
 
     init {
-        if (baseContext.resources?.configuration != null)
-            baseResources = baseContext.createConfigurationContext(baseContext.resources.configuration).resources
+        if (isUseNewConfig && baseContext.resources?.configuration != null)
+            baseResources = baseContext.createConfigurationContext(baseContext.resources.configuration)?.resources
         if (YukiHookBridge.hasXposedBridge) resources?.injectModuleAppResources()
     }
 
