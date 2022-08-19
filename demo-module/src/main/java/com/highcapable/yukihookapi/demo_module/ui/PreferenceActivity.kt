@@ -28,11 +28,15 @@
 package com.highcapable.yukihookapi.demo_module.ui
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.SwitchPreference
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.R
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 
-class PreferenceActivity : AppCompatActivity() {
+class PreferenceActivity : ModuleAppCompatActivity() {
+
+    override val moduleTheme get() = R.style.Theme_Default
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,13 +51,14 @@ class PreferenceActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
-        return super.onSupportNavigateUp()
+        return true
     }
 
     class SettingsFragment : ModulePreferenceFragment() {
 
         override fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
+            findPreference<SwitchPreference>("show_dialog_when_demo_app_opend")?.isEnabled = YukiHookAPI.Status.isXposedEnvironment.not()
         }
     }
 }

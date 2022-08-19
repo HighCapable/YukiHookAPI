@@ -48,7 +48,7 @@ class MainActivity : ModuleAppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivityMainBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            moduleEnvironment(isShowWarn = false) {
+            moduleEnvironment {
                 dataChannel(packageName = "com.highcapable.yukihookapi.demo_app").with {
                     wait(DataConst.TEST_CN_DATA) {
                         Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
@@ -70,6 +70,10 @@ class MainActivity : ModuleAppCompatActivity() {
             moduleDemoResHookText.text = "Support Resources Hook：${YukiHookAPI.Status.isSupportResourcesHook}"
             moduleDemoResHookZhText.text = "资源钩子支持状态"
             moduleDemoEditText.also {
+                hostEnvironment {
+                    it.isEnabled = false
+                    moduleDemoButton.isEnabled = false
+                }
                 it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
                 moduleDemoButton.setOnClickListener { _ ->
                     moduleEnvironment {
@@ -80,21 +84,23 @@ class MainActivity : ModuleAppCompatActivity() {
                     }
                 }
             }
-            moduleDemoFrgButton.setOnClickListener {
-                moduleEnvironment { startActivity(Intent(this@MainActivity, PreferenceActivity::class.java)) }
-            }
+            moduleDemoFrgButton.setOnClickListener { startActivity(Intent(this@MainActivity, PreferenceActivity::class.java)) }
         }
     }
 
     /**
-     * 仅在模块环境执行
-     * @param isShowWarn 是否显示警告 - 默认是
+     * 仅在 (Xposed) 宿主环境执行
      * @param callback 在模块环境执行
      */
-    private inline fun moduleEnvironment(isShowWarn: Boolean = true, callback: () -> Unit) {
-        if (YukiHookAPI.Status.isXposedEnvironment)
-            (if (isShowWarn)
-                Toast.makeText(applicationContext, "This operation is not allowed in Xposed Environment", Toast.LENGTH_SHORT).show())
-        else callback()
+    private inline fun hostEnvironment(callback: () -> Unit) {
+        if (YukiHookAPI.Status.isXposedEnvironment) callback()
+    }
+
+    /**
+     * 仅在模块环境执行
+     * @param callback 在模块环境执行
+     */
+    private inline fun moduleEnvironment(callback: () -> Unit) {
+        if (YukiHookAPI.Status.isXposedEnvironment.not()) callback()
     }
 }
