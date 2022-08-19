@@ -34,10 +34,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
 import android.app.Instrumentation
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -46,6 +43,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.type.android.*
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
@@ -56,6 +54,8 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.HandlerDelegate
@@ -67,12 +67,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.Instr
  *
  * 通过这些功能即可轻松实现对 (Xposed) 宿主环境的 [Resources] 注入以及 [Activity] 代理
  */
-@PublishedApi
 internal object AppParasitics {
-
-    /** Android 系统框架名称 */
-    @PublishedApi
-    internal const val SYSTEM_FRAMEWORK_NAME = "android"
 
     /** [YukiHookDataChannel] 是否已经注册 */
     private var isDataChannelRegister = false
@@ -133,6 +128,38 @@ internal object AppParasitics {
             name = "getUserId"
             param(IntType)
         }.ignored().get().int(systemContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES).uid)
+
+    /**
+     * Hook 模块 APP 相关功能 - 包括自身激活状态、Resources Hook 支持状态以及 [SharedPreferences]
+     *
+     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
+     * @param loader 模块的 [ClassLoader]
+     * @param type 当前正在进行的 Hook 类型
+     */
+    internal fun hookModuleAppRelated(loader: ClassLoader?, type: HookEntryType) {
+        if (YukiHookAPI.Configs.isEnableHookSharedPreferences && type == HookEntryType.PACKAGE)
+            YukiHookHelper.hook(ContextImplClass.method { name = "setFilePermissionsFromMode" }, object : YukiMemberHook() {
+                override fun beforeHookedMember(wrapper: HookParamWrapper) {
+                    if ((wrapper.args?.get(0) as? String?)?.endsWith(suffix = "preferences.xml") == true) wrapper.args?.set(1, 1)
+                }
+            })
+        if (YukiHookAPI.Configs.isEnableHookModuleStatus) classOf<YukiHookModuleStatus>(loader).apply {
+            if (type != HookEntryType.RESOURCES) {
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                })
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = YukiHookBridge.executorName
+                })
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = YukiHookBridge.executorVersion
+                })
+            } else
+                YukiHookHelper.hook(method { name = YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME }, object : YukiMemberReplacement() {
+                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                })
+        }
+    }
 
     /**
      * 注入当前 Hook APP (宿主) 全局生命周期

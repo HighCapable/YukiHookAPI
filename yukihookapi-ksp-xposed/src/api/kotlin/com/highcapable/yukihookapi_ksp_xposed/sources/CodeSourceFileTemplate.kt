@@ -168,10 +168,9 @@ object CodeSourceFileTemplate {
                 "    private const val modulePackageName = " +
                 (if (customMPackageName.isNotBlank()) "\"$customMPackageName\"" else "BuildConfig.APPLICATION_ID") + "\n" +
                 "\n" +
-                "    private val hookEntry = $entryClassName()\n" +
-                "\n" +
-                "    private var moduleClassLoader: ClassLoader? = null\n" +
                 "    private var isZygoteBinded = false\n" +
+                "\n" +
+                "    private val hookEntry = $entryClassName()\n" +
                 "\n" +
                 "    private fun callXposedLoaded(\n" +
                 "        isZygoteLoaded: Boolean = false,\n" +
@@ -192,11 +191,6 @@ object CodeSourceFileTemplate {
                 "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
                 "    }\n" +
                 "\n" +
-                "    private fun hookModuleAppStatus(loader: ClassLoader? = null, isHookResourcesStatus: Boolean = false) {\n" +
-                "        loader?.let { moduleClassLoader = it }\n" +
-                "        runCatching { YukiHookBridge.hookModuleAppStatus(moduleClassLoader, isHookResourcesStatus) }\n" +
-                "    }\n" +
-                "\n" +
                 "    @YukiGenerateApi\n" +
                 "    fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +
                 "        if (sparam == null) return\n" +
@@ -209,16 +203,12 @@ object CodeSourceFileTemplate {
                 "\n" +
                 "    @YukiGenerateApi\n" +
                 "    fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
-                "        if (lpparam == null) return\n" +
-                "        if (lpparam.packageName == modulePackageName) hookModuleAppStatus(lpparam.classLoader)\n" +
-                "        callXposedLoaded(lpparam = lpparam)\n" +
+                "        if (lpparam != null) callXposedLoaded(lpparam = lpparam)\n" +
                 "    }\n" +
                 "\n" +
                 "    @YukiGenerateApi\n" +
                 "    fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
-                "        if (resparam == null) return\n" +
-                "        if (resparam.packageName == modulePackageName) hookModuleAppStatus(isHookResourcesStatus = true)\n" +
-                "        callXposedLoaded(resparam = resparam)\n" +
+                "        if (resparam != null) callXposedLoaded(resparam = resparam)\n" +
                 "    }\n" +
                 "}").toByteArray()
 }

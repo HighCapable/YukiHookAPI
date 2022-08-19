@@ -35,18 +35,11 @@ import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.hasClass
-import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.type.android.ContextImplClass
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
 import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
-import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.PathClassLoader
@@ -66,6 +59,10 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  */
 @YukiGenerateApi
 object YukiHookBridge {
+
+    /** Android 系统框架名称 */
+    @PublishedApi
+    internal const val SYSTEM_FRAMEWORK_NAME = "android"
 
     /** Xposed 是否装载完成 */
     private var isXposedInitialized = false
@@ -186,12 +183,12 @@ object YukiHookBridge {
             if (type == HookEntryType.ZYGOTE || appClassLoader != null)
                 PackageParamWrapper(
                     type = type,
-                    packageName = packageName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME,
-                    processName = processName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME,
+                    packageName = packageName ?: SYSTEM_FRAMEWORK_NAME,
+                    processName = processName ?: SYSTEM_FRAMEWORK_NAME,
                     appClassLoader = appClassLoader ?: XposedBridge.BOOTCLASSLOADER,
                     appInfo = appInfo,
                     appResources = appResources
-                ).also { packageParamWrappers[packageName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME] = it }
+                ).also { packageParamWrappers[packageName ?: SYSTEM_FRAMEWORK_NAME] = it }
             else null
         else packageParamWrappers[packageName]?.also {
             it.type = type
@@ -200,39 +197,6 @@ object YukiHookBridge {
             if (appClassLoader != null && (type == HookEntryType.ZYGOTE || appClassLoader is PathClassLoader)) it.appClassLoader = appClassLoader
             if (appInfo != null) it.appInfo = appInfo
             if (appResources != null) it.appResources = appResources
-        }
-    }
-
-    /**
-     * Hook 模块自身激活状态和 Resources Hook 支持状态
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
-     * @param loader 模块的 [ClassLoader]
-     * @param isHookResourcesStatus 是否 Hook Resources 支持状态
-     */
-    @YukiGenerateApi
-    fun hookModuleAppStatus(loader: ClassLoader?, isHookResourcesStatus: Boolean = false) {
-        if (YukiHookAPI.Configs.isEnableHookSharedPreferences)
-            YukiHookHelper.hook(ContextImplClass.method { name = "setFilePermissionsFromMode" }, object : YukiMemberHook() {
-                override fun beforeHookedMember(wrapper: HookParamWrapper) {
-                    if ((wrapper.args?.get(0) as? String?)?.endsWith(suffix = "preferences.xml") == true) wrapper.args?.set(1, 1)
-                }
-            })
-        if (YukiHookAPI.Configs.isEnableHookModuleStatus) classOf<YukiHookModuleStatus>(loader).apply {
-            if (isHookResourcesStatus.not()) {
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
-                })
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = executorName
-                })
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = executorVersion
-                })
-            } else
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
-                })
         }
     }
 
@@ -281,7 +245,7 @@ object YukiHookBridge {
         resparam: XC_InitPackageResources.InitPackageResourcesParam? = null
     ) {
         if (isMiuiCatcherPatch(packageName = lpparam?.packageName ?: resparam?.packageName).not()) when {
-            isZygoteLoaded -> assignWrapper(HookEntryType.ZYGOTE, AppParasitics.SYSTEM_FRAMEWORK_NAME, AppParasitics.SYSTEM_FRAMEWORK_NAME)
+            isZygoteLoaded -> assignWrapper(HookEntryType.ZYGOTE, SYSTEM_FRAMEWORK_NAME, SYSTEM_FRAMEWORK_NAME)
             lpparam != null ->
                 if (isPackageLoaded(lpparam.packageName, HookEntryType.PACKAGE).not())
                     assignWrapper(HookEntryType.PACKAGE, lpparam.packageName, lpparam.processName, lpparam.classLoader, lpparam.appInfo)
@@ -293,8 +257,9 @@ object YukiHookBridge {
             else -> null
         }?.also {
             YukiHookAPI.onXposedLoaded(it)
+            if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
+                AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
             if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
-            if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
         }
     }
 }
