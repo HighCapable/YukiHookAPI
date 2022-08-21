@@ -258,7 +258,7 @@ internal object AppParasitics {
     internal fun injectModuleAppResources(hostResources: Resources) {
         if (injectedHostResourcesHashCodes.contains(hostResources.hashCode())) return
         if (YukiHookBridge.hasXposedBridge) runCatching {
-            hostResources.assets.current().method { name = "addAssetPath"; param(StringType) }.call(moduleAppFilePath)
+            hostResources.assets.current(ignored = true).method { name = "addAssetPath"; param(StringType) }.call(moduleAppFilePath)
             injectedHostResourcesHashCodes.add(hostResources.hashCode())
         }.onFailure {
             yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
@@ -297,7 +297,7 @@ internal object AppParasitics {
                 else error("Could not found \"$proxyClassName\" or Class is not a type of Activity"))
             }
             /** Patched [Instrumentation] */
-            ActivityThreadClass.field { name = "sCurrentActivityThread" }.ignored().get().any()?.current {
+            ActivityThreadClass.field { name = "sCurrentActivityThread" }.ignored().get().any()?.current(ignored = true) {
                 method { name = "getInstrumentation" }
                     .invoke<Instrumentation>()
                     ?.also { field { name = "mInstrumentation" }.set(InstrumentationDelegate.wrapper(it)) }

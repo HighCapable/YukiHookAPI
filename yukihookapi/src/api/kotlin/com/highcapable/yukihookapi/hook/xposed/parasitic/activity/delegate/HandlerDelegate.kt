@@ -70,7 +70,7 @@ internal class HandlerDelegate private constructor(private val baseInstance: Han
     override fun handleMessage(msg: Message): Boolean {
         when (msg.what) {
             LAUNCH_ACTIVITY -> runCatching {
-                msg.obj.current().field { name = "intent" }.apply {
+                msg.obj.current(ignored = true).field { name = "intent" }.apply {
                     cast<Intent?>()?.also { intent ->
                         IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
                             ?.classLoader = YukiHookAppHelper.currentApplication()?.classLoader
@@ -82,23 +82,24 @@ internal class HandlerDelegate private constructor(private val baseInstance: Han
             EXECUTE_TRANSACTION -> msg.obj?.runCatching client@{
                 ClientTransactionClass.method { name = "getCallbacks" }.ignored().get(this).list<Any?>().takeIf { it.isNotEmpty() }
                     ?.forEach { item ->
-                        item?.current()?.takeIf { it.name.contains(other = "LaunchActivityItem") }?.field { name = "mIntent" }?.apply {
-                            cast<Intent?>()?.also { intent ->
-                                IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
-                                    ?.classLoader = YukiHookAppHelper.currentApplication()?.classLoader
-                                if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
-                                    intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName).also { subIntent ->
-                                        if (Build.VERSION.SDK_INT >= 31)
-                                            ActivityThreadClass.method {
-                                                name = "getLaunchingActivity"
-                                                param(IBinderClass)
-                                            }.ignored().get(ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call())
-                                                .call(this@client.current().method { name = "getActivityToken" }.call())
-                                                ?.current()?.field { name = "intent" }?.set(subIntent)
-                                        set(subIntent)
-                                    }
+                        item?.current(ignored = true)?.takeIf { it.name.contains(other = "LaunchActivityItem") }?.field { name = "mIntent" }
+                            ?.apply {
+                                cast<Intent?>()?.also { intent ->
+                                    IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
+                                        ?.classLoader = YukiHookAppHelper.currentApplication()?.classLoader
+                                    if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
+                                        intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName).also { subIntent ->
+                                            if (Build.VERSION.SDK_INT >= 31)
+                                                ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()
+                                                    ?.current(ignored = true)?.method {
+                                                        name = "getLaunchingActivity"
+                                                        param(IBinderClass)
+                                                    }?.call(this@client.current(ignored = true).method { name = "getActivityToken" }.call())
+                                                    ?.current(ignored = true)?.field { name = "intent" }?.set(subIntent)
+                                            set(subIntent)
+                                        }
+                                }
                             }
-                        }
                     }
             }?.onFailure { yLoggerE(msg = "Activity Proxy got an Exception in msg.what [$EXECUTE_TRANSACTION]", e = it) }
         }
