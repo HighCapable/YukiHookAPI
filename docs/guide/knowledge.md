@@ -80,7 +80,7 @@ App's Environment
 
 - 掌握基础的原生 Xposed API 用法，了解 Xposed 的运行原理，可参考本文以及 [这里](https://blog.ketal.icu/2022/01/13/Xposed%E6%A8%A1%E5%9D%97%E5%BC%80%E5%8F%91%E5%85%A5%E9%97%A8%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B) **(友情链接)**
 
-- 掌握 Kotlin 语言，学会灵活运用 [Kotlin Lambda](https://blog.ketal.icu/2022/01/01/kotlin-lambda%E5%85%A5%E9%97%A8/) **(友情链接)**
+- 掌握 Kotlin 语言，学会灵活运用 [Kotlin lambda](https://blog.ketal.icu/2022/01/01/kotlin-lambda%E5%85%A5%E9%97%A8/) **(友情链接)**
 
 - 掌握并了解 Kotlin 与 Java 混编、互相调用以及 Kotlin 生成的 Java 字节码
 

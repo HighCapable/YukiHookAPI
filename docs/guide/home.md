@@ -32,7 +32,7 @@
 
 - **轻量优雅**
 
-  拥有一套强大、优雅和人性化的 `Kotlin Lambda Hook API`，可以帮你快速实现 `Method`、`Constructor`、`Field` 的查找以及 Hook。
+  拥有一套强大、优雅、人性化、完全使用 `Kotlin` `lambda` 打造的 API，可以帮你快速实现字节码的查找以及方法 Hook。
 
 - **高效调试**
 
@@ -54,7 +54,7 @@
 
 以前，我们在构建 Xposed 模块的时候，首先需要在 `assets` 下创建 `xposed_init` 文件。
 
-然后，将自己的入口类名手动填入文件中，使用 `XposedHelper` 去实现我们的 Hook 逻辑。
+然后，将自己的入口类名手动填入文件中，使用 `XposedHelpers` 去实现我们的 Hook 逻辑。
 
 自 `Kotlin` 作为 Android 主要开发语言以来，这套 API 用起来确实已经不是很优雅了。
 

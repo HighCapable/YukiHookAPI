@@ -506,7 +506,7 @@ fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker)
 
 详情请参考
 
-- [通过 Lambda 创建](config/api-example?id=通过-lambda-创建)
+- [通过 lambda 创建](config/api-example?id=通过-lambda-创建)
 
 - [通过自定义 Hooker 创建](config/api-example?id=通过自定义-hooker-创建)
 

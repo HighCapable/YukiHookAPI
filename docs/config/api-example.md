@@ -20,7 +20,7 @@ fun configs(initiate: Configs.() -> Unit)
 
 > 一个 Xposed 模块或 Hook API 最重要的地方就是 Hooker 的创建与使用，`YukiHookAPI` 提供了两种使用方法。
 
-### 通过 Lambda 创建
+### 通过 lambda 创建
 
 > 这种方案是最简单的，如果你的模块功能不多，代码数量不大，不需要进行分类处理，推荐使用这种方式进行创建。
 
