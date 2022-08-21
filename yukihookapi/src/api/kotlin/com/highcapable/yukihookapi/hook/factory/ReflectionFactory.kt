@@ -167,20 +167,22 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition = { emptyParam() 
 
 /**
  * 获得当前实例的类操作对象
+ * @param ignored 是否开启忽略错误警告功能 - 默认否
  * @return [CurrentClass]
  */
-inline fun <reified T : Any> T.current(): CurrentClass {
+inline fun <reified T : Any> T.current(ignored: Boolean = false): CurrentClass {
     javaClass.checkingInternal()
-    return CurrentClass(javaClass, instance = this)
+    return CurrentClass(javaClass, instance = this).apply { isShutErrorPrinting = ignored }
 }
 
 /**
  * 获得当前实例的类操作对象
+ * @param ignored 是否开启忽略错误警告功能 - 默认否
  * @param initiate 方法体
  * @return [T]
  */
-inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T {
-    current().apply(initiate)
+inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: CurrentClass.() -> Unit): T {
+    current(ignored).apply(initiate)
     return this
 }
 

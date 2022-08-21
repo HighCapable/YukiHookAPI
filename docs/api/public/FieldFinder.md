@@ -551,11 +551,11 @@ inner class Instance internal constructor(private val instance: Any?, private va
 ##### current *- method*
 
 ```kotlin
-fun current(): CurrentClass?
+fun current(ignored: Boolean): CurrentClass?
 ```
 
 ```kotlin
-inline fun current(initiate: CurrentClass.() -> Unit): Any?
+inline fun current(ignored: Boolean, initiate: CurrentClass.() -> Unit): Any?
 ```
 
 **变更记录**
@@ -564,7 +564,7 @@ inline fun current(initiate: CurrentClass.() -> Unit): Any?
 
 **功能描述**
 
-> 获得当前 `Field` 自身 `self` 实例的类操作对象。
+> 获得当前 `Field` 自身 `self` 实例的类操作对象 `CurrentClass`。
 
 ##### cast *- method*
 

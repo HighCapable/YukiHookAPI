@@ -43,6 +43,10 @@ import com.highcapable.yukihookapi.hook.factory.method
  */
 class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val classSet: Class<*>, @PublishedApi internal val instance: Any) {
 
+    /** 是否开启忽略错误警告功能 */
+    @PublishedApi
+    internal var isShutErrorPrinting = false
+
     /**
      * 获得当前 [classSet] 的 [Class.getName]
      * @return [String]
@@ -66,14 +70,14 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * @param initiate 查找方法体
      * @return [FieldFinder.Result.Instance]
      */
-    inline fun field(initiate: FieldCondition) = classSet.field(initiate).get(instance)
+    inline fun field(initiate: FieldCondition) = classSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
     /**
      * 调用当前实例中的方法
      * @param initiate 查找方法体
      * @return [MethodFinder.Result.Instance]
      */
-    inline fun method(initiate: MethodCondition) = classSet.method(initiate).get(instance)
+    inline fun method(initiate: MethodCondition) = classSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
     /**
      * 当前类的父类实例的类操作对象
@@ -83,32 +87,40 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
     inner class SuperClass internal constructor() {
 
         /**
+         * 获取 [classSet] 的 [Class.getSuperclass] 对象
+         * @return [Class]
+         */
+        @PublishedApi
+        internal val superClassSet
+            get() = classSet.superclass
+
+        /**
          * 获得当前 [classSet] 中父类的 [Class.getName]
          * @return [String]
          */
-        val name get() = classSet.superclass.name ?: instance.javaClass.superclass.name ?: ""
+        val name get() = superClassSet.name ?: instance.javaClass.superclass.name ?: ""
 
         /**
          * 获得当前 [classSet] 中父类的 [Class.getSimpleName]
          * @return [String]
          */
-        val simpleName get() = classSet.superclass.simpleName ?: instance.javaClass.superclass.simpleName ?: ""
+        val simpleName get() = superClassSet.simpleName ?: instance.javaClass.superclass.simpleName ?: ""
 
         /**
          * 调用父类实例中的变量
          * @param initiate 查找方法体
          * @return [FieldFinder.Result.Instance]
          */
-        inline fun field(initiate: FieldCondition) = classSet.superclass.field(initiate).get(instance)
+        inline fun field(initiate: FieldCondition) = superClassSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
         /**
          * 调用父类实例中的方法
          * @param initiate 查找方法体
          * @return [MethodFinder.Result.Instance]
          */
-        inline fun method(initiate: MethodCondition) = classSet.superclass.method(initiate).get(instance)
+        inline fun method(initiate: MethodCondition) = superClassSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
-        override fun toString() = "CurrentClass super [${classSet.superclass}]"
+        override fun toString() = "CurrentClass super [${superClassSet}]"
     }
 
     override fun toString() = "CurrentClass [$classSet]"

@@ -442,11 +442,11 @@ inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFind
 ### Any.current *- ext-method*
 
 ```kotlin
-inline fun <reified T : Any> T.current(): CurrentClass
+inline fun <reified T : Any> T.current(ignored: Boolean): CurrentClass
 ```
 
 ```kotlin
-inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
+inline fun <reified T : Any> T.current(ignored: Boolean, initiate: CurrentClass.() -> Unit): T
 ```
 
 **变更记录**
@@ -454,6 +454,8 @@ inline fun <reified T : Any> T.current(initiate: CurrentClass.() -> Unit): T
 `v1.0.70` `新增`
 
 `v1.0.93` `新增`
+
+新增 `ignored` 参数，可以忽略在 `CurrentClass` 中出现的异常
 
 新增不使用 `current { ... }` 调用域直接使用 `current()` 得到实例的类操作对象
 

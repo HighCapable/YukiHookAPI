@@ -476,16 +476,18 @@ class FieldFinder @PublishedApi internal constructor(
 
             /**
              * 获得当前 [Field] 自身 [self] 实例的类操作对象
+             * @param ignored 是否开启忽略错误警告功能 - 默认否
              * @return [CurrentClass] or null
              */
-            fun current() = self?.current()
+            fun current(ignored: Boolean = false) = self?.current(ignored)
 
             /**
              * 获得当前 [Field] 自身 [self] 实例的类操作对象
+             * @param ignored 是否开启忽略错误警告功能 - 默认否
              * @param initiate 方法体
              * @return [Any] or null
              */
-            inline fun current(initiate: CurrentClass.() -> Unit) = self?.current(initiate)
+            inline fun current(ignored: Boolean = false, initiate: CurrentClass.() -> Unit) = self?.current(ignored, initiate)
 
             /**
              * 得到当前 [Field] 实例
