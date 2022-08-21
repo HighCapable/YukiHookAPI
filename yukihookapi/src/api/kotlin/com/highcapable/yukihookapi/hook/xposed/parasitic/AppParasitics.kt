@@ -72,9 +72,6 @@ internal object AppParasitics {
     /** [Activity] 代理是否已经注册 */
     private var isActivityProxyRegister = false
 
-    /** 已被注入到宿主 [Resources] 中的当前 Xposed 模块资源 HashCode 数组 */
-    private val injectedHostResourcesHashCodes = HashSet<Int>()
-
     /**
      * 当前 Hook APP (宿主) 的全局生命周期 [Application]
      *
@@ -256,10 +253,8 @@ internal object AppParasitics {
      * @param hostResources 需要注入的宿主 [Resources]
      */
     internal fun injectModuleAppResources(hostResources: Resources) {
-        if (injectedHostResourcesHashCodes.contains(hostResources.hashCode())) return
         if (YukiHookBridge.hasXposedBridge) runCatching {
             hostResources.assets.current(ignored = true).method { name = "addAssetPath"; param(StringType) }.call(moduleAppFilePath)
-            injectedHostResourcesHashCodes.add(hostResources.hashCode())
         }.onFailure {
             yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
         } else yLoggerW(msg = "You can only inject module resources in Xposed Environment")

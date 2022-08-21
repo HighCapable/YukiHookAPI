@@ -30,10 +30,12 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
@@ -56,6 +58,12 @@ open class ModuleAppCompatActivity : AppCompatActivity() {
     open val moduleTheme get() = -1
 
     override fun getClassLoader(): ClassLoader? = ModuleClassLoader.instance()
+
+    @CallSuper
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        if (YukiHookBridge.hasXposedBridge) injectModuleAppResources()
+        super.onConfigurationChanged(newConfig)
+    }
 
     @CallSuper
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

@@ -140,6 +140,8 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  *
  * 注册成功后 - 你就可以直接使用 [Context.startActivity] 来启动未在宿主中注册的 [Activity]
  *
+ * 使用此方法会在未注册的 [Activity] 在 Hook APP (宿主) 中启动时自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
+ *
  * - 你要将需要在宿主启动的 [Activity] 继承于 [ModuleAppActivity] 或 [ModuleAppCompatActivity]
  *
  * 详情请参考 [API 文档 - Context.registerModuleAppActivities](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextregistermoduleappactivities-ext-method)
