@@ -37,8 +37,8 @@ import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
-import de.robv.android.xposed.XposedHelpers
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -85,7 +85,7 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
     return MemberCacheStore.findClass(hashCode) ?: run {
         when {
             YukiHookBridge.hasXposedBridge ->
-                runCatching { XposedHelpers.findClassIfExists(name, loader) }.getOrNull()
+                runCatching { YukiHookHelper.findClass(name, loader) }.getOrNull()
                     ?: when (loader) {
                         null -> Class.forName(name)
                         else -> loader.loadClass(name)

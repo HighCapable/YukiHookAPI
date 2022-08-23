@@ -37,6 +37,7 @@ import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
+import de.robv.android.xposed.XposedHelpers
 import java.lang.reflect.Member
 
 /**
@@ -69,6 +70,16 @@ internal object YukiHookedMembers {
  * 对接 [XposedBridge] 实现 Hook 功能
  */
 internal object YukiHookHelper {
+
+    /**
+     * 使用 [XposedHelpers.findClass] 来查找 [Class]
+     * @param name [Class] 的完整包名+名称
+     * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
+     * @return [Class] or null
+     * @throws ClassNotFoundException 如果找不到 [Class]
+     */
+    internal fun findClass(name: String, loader: ClassLoader? = null) =
+        if (YukiHookBridge.hasXposedBridge) XposedHelpers.findClass(name, loader) else null
 
     /**
      * Hook [BaseFinder.BaseResult]
