@@ -37,6 +37,9 @@ English | [简体中文](https://github.com/fankes/YukiHookAPI/blob/master/READM
 - [Click here](https://fankes.github.io/YukiHookAPI) go to the documentation page for more detailed tutorials and content.
 - Only **Simplified Chinese** translations in this time, English ver is in future.
 
+> You may encounter the problem that the document is not the latest version due to the browser cache.
+> If you have already viewed the document once, please manually refresh it once on each page to synchronize the latest version, or clear the browser cache.
+
 The latest version update time: 2022-07-23 22:33
 
 ## Contacts
