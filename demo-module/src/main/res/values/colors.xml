@@ -2,6 +2,8 @@
 <resources>
     <color name="yuki_theme_color">#FFEBAD70</color>
     <color name="yuki_accent_color">#FF777777</color>
+    <color name="yuki_light_color">#FFFDF5F3</color>
+    <color name="yuki_dark_color">#FF2D2726</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
