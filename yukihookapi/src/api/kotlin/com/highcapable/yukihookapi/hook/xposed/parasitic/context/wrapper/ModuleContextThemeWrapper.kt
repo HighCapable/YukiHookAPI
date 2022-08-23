@@ -26,6 +26,8 @@
  * This file is Created by fankes on 2022/8/15.
  * Thanks for providing https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/ui/CommonContextWrapper.java
  */
+@file:Suppress("unused", "DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper
 
 import android.content.Context
@@ -42,9 +44,9 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  * 通过包装 - 你可以轻松在 (Xposed) 宿主环境使用来自模块的主题资源
  * @param baseContext 原始 [Context]
  * @param theme 使用的主题
- * @param isUseNewConfig 是否使用新的 [Configuration]
+ * @param configuration 使用的 [Configuration]
  */
-class ModuleContextThemeWrapper private constructor(baseContext: Context, theme: Int, isUseNewConfig: Boolean) :
+class ModuleContextThemeWrapper private constructor(baseContext: Context, theme: Int, configuration: Configuration?) :
     ContextThemeWrapper(baseContext, theme) {
 
     internal companion object {
@@ -53,13 +55,13 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
          * 从 [Context] 创建 [ModuleContextThemeWrapper]
          * @param baseContext 对接的 [Context]
          * @param theme 需要使用的主题
-         * @param isUseNewConfig 是否使用新的 [Configuration]
+         * @param configuration 使用的 [Configuration]
          * @return [ModuleContextThemeWrapper]
          * @throws IllegalStateException 如果重复装载
          */
-        internal fun wrapper(baseContext: Context, theme: Int, isUseNewConfig: Boolean) =
+        internal fun wrapper(baseContext: Context, theme: Int, configuration: Configuration?) =
             if (baseContext !is ModuleContextThemeWrapper)
-                ModuleContextThemeWrapper(baseContext, theme, isUseNewConfig)
+                ModuleContextThemeWrapper(baseContext, theme, configuration)
             else error("ModuleContextThemeWrapper already loaded")
     }
 
@@ -67,9 +69,24 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
     private var baseResources: Resources? = null
 
     init {
-        if (isUseNewConfig && baseContext.resources?.configuration != null)
-            baseResources = baseContext.createConfigurationContext(baseContext.resources.configuration)?.resources
+        configuration?.also {
+            baseResources = baseContext.createConfigurationContext(it)?.resources
+            baseResources?.updateConfiguration(it, baseContext.resources.displayMetrics)
+        }
         if (YukiHookBridge.hasXposedBridge) resources?.injectModuleAppResources()
+    }
+
+    /**
+     * 设置当前 [ModuleContextThemeWrapper] 的 [Configuration]
+     *
+     * 设置后会自动调用 [Resources.updateConfiguration]
+     * @param initiate [Configuration] 方法体
+     * @return [ModuleContextThemeWrapper]
+     */
+    fun applyConfiguration(initiate: Configuration.() -> Unit): ModuleContextThemeWrapper {
+        resources?.configuration?.apply(initiate)
+        resources?.updateConfiguration(resources?.configuration, resources?.displayMetrics)
+        return this
     }
 
     override fun getClassLoader(): ClassLoader = ModuleClassLoader.instance()

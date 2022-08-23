@@ -342,7 +342,7 @@ context.startActivity(context, HostTestActivity::class.java)
 ### Context.applyTheme *- ext-method*
 
 ```kotlin
-fun Context.applyTheme(theme: Int, isUseNewConfig: Boolean): ModuleContextThemeWrapper
+fun Context.applyTheme(theme: Int, configuration: Configuration?): ModuleContextThemeWrapper
 ```
 
 **变更记录**
@@ -355,7 +355,7 @@ fun Context.applyTheme(theme: Int, isUseNewConfig: Boolean): ModuleContextThemeW
 
 在 Hook APP (宿主) 中使用此方法会自动调用 `injectModuleAppResources` 注入当前 Xposed 模块的资源。
 
-如果在 Hook APP (宿主) 中使用此方法发生 `ClassCastException`，请设置 `isUseNewConfig` 为 `true`。
+如果在 Hook APP (宿主) 中使用此方法发生 `ClassCastException`，请手动设置 `configuration`。
 
 为防止资源 ID 互相冲突，你需要在当前 Xposed 模块项目的 `build.gradle` 中修改资源 ID。
 
@@ -396,6 +396,33 @@ injectMember {
     afterHook {
         // 使用 applyTheme 创建一个当前模块中的主题资源
         val appCompatContext = instance<Activity>().applyTheme(R.style.Theme_AppCompat)
+        // 直接使用这个包装了模块主题后的 Context 创建对话框
+        MaterialAlertDialogBuilder(appCompatContext)
+            .setTitle("AppCompat 主题对话框")
+            .setMessage("我是一个在宿主中显示的 AppCompat 主题对话框。")
+            .setPositiveButton("确定", null)
+            .show()
+    }
+}
+```
+
+你还可以对当前 `Context` 通过 `uiMode` 设置原生的夜间模式和日间模式，至少需要 Android 10 及以上系统版本支持且当前主题包含夜间模式相关元素。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        name = "onCreate"
+        param(BundleClass)
+    }
+    afterHook {
+        // 定义当前模块中的主题资源
+        var appCompatContext: ModuleContextThemeWrapper
+        // <方案1> 直接得到 Configuration 对象设置
+        appCompatContext = instance<Activity>().applyTheme(R.style.Theme_AppCompat).applyConfiguration { uiMode = Configuration.UI_MODE_NIGHT_YES }
+        // <方案2> 创建一个新的 Configuration 对象，但会破坏当前宿主中原有的字体缩放大小等设置，你需要手动重新传递 densityDpi 等参数
+        appCompatContext = instance<Activity>().applyTheme(R.style.Theme_AppCompat, Configuration().apply { uiMode = Configuration.UI_MODE_NIGHT_YES })
         // 直接使用这个包装了模块主题后的 Context 创建对话框
         MaterialAlertDialogBuilder(appCompatContext)
             .setTitle("AppCompat 主题对话框")

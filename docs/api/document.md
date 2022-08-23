@@ -28,6 +28,8 @@
 
 [filename](public/ModuleAppCompatActivity.md ':include')
 
+[filename](public/ModuleContextThemeWrapper.md ':include')
+
 [filename](public/YukiModuleResources.md ':include')
 
 [filename](public/YukiResources.md ':include')

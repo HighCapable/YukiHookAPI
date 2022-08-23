@@ -156,15 +156,15 @@ fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.regi
  *
  * 在 Hook APP (宿主) 中使用此方法会自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
  *
- * - 如果在 Hook APP (宿主) 中使用此方法发生 [ClassCastException] - 请设置 [isUseNewConfig] 为 true
+ * - 如果在 Hook APP (宿主) 中使用此方法发生 [ClassCastException] - 请手动设置新的 [configuration]
  *
  * 详情请参考 [API 文档 - Context.applyTheme](https://fankes.github.io/YukiHookAPI/#/api/document?id=contextapplytheme-ext-method)
  * @param theme 主题资源 ID
- * @param isUseNewConfig 是否使用新的 [Configuration] - 默认否
+ * @param configuration 使用的 [Configuration] - 默认空
  * @return [ModuleContextThemeWrapper]
  */
-fun Context.applyTheme(@StyleRes theme: Int, isUseNewConfig: Boolean = false) =
-    ModuleContextThemeWrapper.wrapper(baseContext = this, theme, isUseNewConfig)
+fun Context.applyTheme(@StyleRes theme: Int, configuration: Configuration? = null) =
+    ModuleContextThemeWrapper.wrapper(baseContext = this, theme, configuration)
 
 /**
  * 仅判断模块是否在太极、无极中激活
