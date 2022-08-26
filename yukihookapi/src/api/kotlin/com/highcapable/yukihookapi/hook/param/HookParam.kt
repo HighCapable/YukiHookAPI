@@ -33,7 +33,7 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater.MemberHookCreater
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookCallback
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -41,9 +41,9 @@ import java.lang.reflect.Method
 /**
  * Hook 方法、构造方法的目标对象实现类
  * @param createrInstance [YukiMemberHookCreater] 的实例对象
- * @param wrapper [HookParam] 的参数包装类实例
+ * @param param Hook 结果回调接口
  */
-class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper? = null) {
+class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var param: YukiHookCallback.Param? = null) {
 
     internal companion object {
 
@@ -57,20 +57,22 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
     }
 
     /**
-     * 在回调中设置 [HookParam] 使用的 [HookParamWrapper]
-     * @param wrapper [HookParamWrapper] 实例
+     * 在回调中设置 [HookParam] 使用的 [YukiHookCallback.Param]
+     * @param param Hook 结果回调接口
      * @return [HookParam]
      */
-    internal fun assign(wrapper: HookParamWrapper): HookParam {
-        this.wrapper = wrapper
+    internal fun assign(param: YukiHookCallback.Param): HookParam {
+        this.param = param
         return this
     }
 
     /**
      * 获取当前 Hook 对象 [method] or [constructor] 的参数对象数组
+     *
+     * 这里的数组每项类型默认为 [Any] - 你可以使用 [args] 方法来实现 [ArgsModifyer.cast] 功能
      * @return [Array]
      */
-    val args get() = wrapper?.args ?: arrayOf(0)
+    val args get() = param?.args ?: arrayOf(0)
 
     /**
      * 获取当前 Hook 实例的对象
@@ -79,13 +81,13 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      * @return [Any]
      * @throws IllegalStateException 如果对象为空
      */
-    val instance get() = wrapper?.instance ?: error("HookParam instance got null! Is this a static member?")
+    val instance get() = param?.instance ?: error("HookParam instance got null! Is this a static member?")
 
     /**
      * 获取当前 Hook 实例的类对象
      * @return [Class]
      */
-    val instanceClass get() = wrapper?.instance?.javaClass ?: createrInstance.instanceClass
+    val instanceClass get() = param?.instance?.javaClass ?: createrInstance.instanceClass
 
     /**
      * 获取当前 Hook 对象的 [Member]
@@ -94,7 +96,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      * @return [Member]
      * @throws IllegalStateException 如果 [member] 为空
      */
-    val member get() = wrapper?.member ?: error("Current hooked Member is null")
+    val member get() = param?.member ?: error("Current hooked Member is null")
 
     /**
      * 获取当前 Hook 对象的方法
@@ -115,22 +117,22 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      * @return [Any] or null
      */
     var result: Any?
-        get() = wrapper?.result
+        get() = param?.result
         set(value) {
-            wrapper?.result = value
+            param?.result = value
         }
 
     /**
      * 判断是否存在设置过的方法调用抛出异常
      * @return [Boolean]
      */
-    val hasThrowable get() = wrapper?.hasThrowable
+    val hasThrowable get() = param?.hasThrowable
 
     /**
      * 获取设置的方法调用抛出异常
      * @return [Throwable] or null
      */
-    val throwable get() = wrapper?.throwable
+    val throwable get() = param?.throwable
 
     /**
      * 向 Hook APP 抛出异常
@@ -146,7 +148,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      * @throws Throwable
      */
     fun Throwable.throwToApp() {
-        wrapper?.throwable = this
+        param?.throwable = this
         yLoggerE(msg = message ?: "$this", e = this)
     }
 
@@ -183,7 +185,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      * @param args 参数实例
      * @return [T]
      */
-    fun <T> Member.invokeOriginal(vararg args: Any?) = wrapper?.invokeOriginalMember(member = this, *args) as? T?
+    fun <T> Member.invokeOriginal(vararg args: Any?) = param?.invokeOriginalMember(member = this, *args) as? T?
 
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 true
@@ -349,7 +351,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
             if (index < 0) error("HookParam Method args index must be >= 0")
             if (args.isEmpty()) error("HookParam Method args is empty, mabe not has args")
             if (index > args.lastIndex) error("HookParam Method args index out of bounds, max is ${args.lastIndex}")
-            wrapper?.setArgs(index, any)
+            param?.setArgs(index, any)
         }
 
         /**
@@ -376,5 +378,5 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
         override fun toString() = "Args of index $index"
     }
 
-    override fun toString() = "HookParam by $wrapper"
+    override fun toString() = "HookParam by $param"
 }

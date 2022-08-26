@@ -43,7 +43,6 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.utils.await
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
@@ -554,20 +553,20 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
 
             /** 定义替换 Hook 回调方法体 */
             val replaceMent = object : YukiMemberReplacement(priority) {
-                override fun replaceHookedMember(wrapper: HookParamWrapper) =
-                    replaceHookParam.assign(wrapper).let { param ->
+                override fun replaceHookedMember(param: Param) =
+                    replaceHookParam.assign(param).let { assign ->
                         try {
-                            replaceHookCallback?.invoke(param).also {
-                                checkingReturnType((wrapper.member as? Method?)?.returnType, it?.javaClass)
+                            replaceHookCallback?.invoke(assign).also {
+                                checkingReturnType((param.member as? Method?)?.returnType, it?.javaClass)
                                 if (replaceHookCallback != null) onHookLogMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
                                 HookParam.invoke()
                             }
                         } catch (e: Throwable) {
-                            onConductFailureCallback?.invoke(param, e)
+                            onConductFailureCallback?.invoke(assign, e)
                             onAllFailureCallback?.invoke(e)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
                             /** 若发生异常则会自动调用未经 Hook 的原始方法保证 Hook APP 正常运行 */
-                            wrapper.member?.also { wrapper.invokeOriginalMember(it, wrapper.args) }
+                            param.member?.also { member -> param.invokeOriginalMember(member, param.args) }
                         }
                     }
             }
@@ -580,33 +579,33 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
 
             /** 定义前后 Hook 回调方法体 */
             val beforeAfterHook = object : YukiMemberHook(priority) {
-                override fun beforeHookedMember(wrapper: HookParamWrapper) {
-                    beforeHookParam.assign(wrapper).also { param ->
+                override fun beforeHookedMember(param: Param) {
+                    beforeHookParam.assign(param).also { assign ->
                         runCatching {
-                            beforeHookCallback?.invoke(param)
-                            checkingReturnType((wrapper.member as? Method?)?.returnType, wrapper.result?.javaClass)
+                            beforeHookCallback?.invoke(assign)
+                            checkingReturnType((param.member as? Method?)?.returnType, param.result?.javaClass)
                             if (beforeHookCallback != null) onHookLogMsg(msg = "Before Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
-                            onConductFailureCallback?.invoke(param, it)
+                            onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
-                            if (isOnFailureThrowToApp) wrapper.throwable = it
+                            if (isOnFailureThrowToApp) param.throwable = it
                         }
                     }
                 }
 
-                override fun afterHookedMember(wrapper: HookParamWrapper) {
-                    afterHookParam.assign(wrapper).also { param ->
+                override fun afterHookedMember(param: Param) {
+                    afterHookParam.assign(param).also { assign ->
                         runCatching {
-                            afterHookCallback?.invoke(param)
+                            afterHookCallback?.invoke(assign)
                             if (afterHookCallback != null) onHookLogMsg(msg = "After Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
-                            onConductFailureCallback?.invoke(param, it)
+                            onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
-                            if (isOnFailureThrowToApp) wrapper.throwable = it
+                            if (isOnFailureThrowToApp) param.throwable = it
                         }
                     }
                 }

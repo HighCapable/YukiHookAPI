@@ -33,7 +33,6 @@ import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
@@ -114,9 +113,9 @@ internal object YukiHookHelper {
         return when {
             member == null -> Pair(null, false)
             YukiHookBridge.hasXposedBridge ->
-                YukiMemberHook.Unhook.wrapper(XposedBridge.hookMethod(member, callback.compat())).let {
-                    YukiHookedMembers.hookedMembers.add(it)
-                    Pair(it, false)
+                XposedBridge.hookMethod(member, callback.compat()).compat().let { memberUnhook ->
+                    YukiHookedMembers.hookedMembers.add(memberUnhook)
+                    Pair(memberUnhook, false)
                 }
             else -> Pair(null, false)
         }
@@ -136,104 +135,188 @@ internal object YukiHookHelper {
         else null
 
     /**
+     * 兼容对接已 Hook 的 [Member] 接口
+     * @return [YukiMemberHook.Unhook]
+     */
+    private fun XC_MethodHook.Unhook.compat() = object : YukiMemberHook.Unhook() {
+        override val member get() = hookedMethod
+        override fun unhook() = this@compat.unhook()
+    }
+
+    /**
      * 兼容对接 Hook 回调接口
      * @return [XC_MethodHook] 原始接口
      */
     private fun YukiHookCallback.compat() = object : XC_MethodHook(priority) {
 
-        /** 创建 Hook 前 [HookParamWrapper] */
-        private val beforeHookWrapper = HookParamWrapper()
-
-        /** 创建 Hook 后 [HookParamWrapper] */
-        private val afterHookWrapper = HookParamWrapper()
-
         override fun beforeHookedMethod(param: MethodHookParam?) {
             if (param == null) return
             if (this@compat !is YukiMemberHook) error("Invalid YukiHookCallback type")
             if (this@compat is YukiMemberReplacement)
-                param.result = replaceHookedMember(beforeHookWrapper.assign(param))
-            else beforeHookedMember(beforeHookWrapper.assign(param))
+                param.result = replaceHookedMember(param.compat())
+            else beforeHookedMember(param.compat())
         }
 
         override fun afterHookedMethod(param: MethodHookParam?) {
             if (param == null) return
             if (this@compat !is YukiMemberHook) error("Invalid YukiHookCallback type")
-            afterHookedMember(afterHookWrapper.assign(param))
+            afterHookedMember(param.compat())
         }
+    }
+
+    /**
+     * 兼容对接 Hook 结果回调接口
+     * @return [YukiHookCallback.Param]
+     */
+    private fun XC_MethodHook.MethodHookParam.compat() = object : YukiHookCallback.Param {
+        override val member get() = this@compat.method
+        override val instance get() = this@compat.thisObject
+        override val args get() = this@compat.args
+        override val hasThrowable get() = this@compat.hasThrowable()
+        override var result
+            get() = this@compat.result
+            set(value) {
+                this@compat.result = value
+            }
+        override var throwable
+            get() = this@compat.throwable
+            set(value) {
+                this@compat.throwable = value
+            }
+
+        override fun setArgs(index: Int, any: Any?) {
+            this@compat.args[index] = any
+        }
+
+        override fun invokeOriginalMember(member: Member, vararg args: Any?) =
+            YukiHookHelper.invokeOriginalMember(member, this@compat.thisObject, args)
     }
 }
 
 /**
- * Hook 替换方法回调接口
+ * Hook 替换方法回调接口抽象类
  * @param priority Hook 优先级- 默认 [YukiHookPriority.PRIORITY_DEFAULT]
  */
 internal abstract class YukiMemberReplacement(override val priority: Int = YukiHookPriority.PRIORITY_DEFAULT) : YukiMemberHook(priority) {
 
-    override fun beforeHookedMember(wrapper: HookParamWrapper) {
-        wrapper.result = replaceHookedMember(wrapper)
+    override fun beforeHookedMember(param: Param) {
+        param.result = replaceHookedMember(param)
     }
 
-    override fun afterHookedMember(wrapper: HookParamWrapper) {}
+    override fun afterHookedMember(param: Param) {}
 
     /**
      * 拦截替换为指定结果
-     * @param wrapper 包装实例
+     * @param param Hook 结果回调接口
      * @return [Any] or null
      */
-    abstract fun replaceHookedMember(wrapper: HookParamWrapper): Any?
+    abstract fun replaceHookedMember(param: Param): Any?
 }
 
 /**
- * Hook 方法回调接口
+ * Hook 方法回调接口抽象类
  * @param priority Hook 优先级 - 默认 [YukiHookPriority.PRIORITY_DEFAULT]
  */
 internal abstract class YukiMemberHook(override val priority: Int = YukiHookPriority.PRIORITY_DEFAULT) : YukiHookCallback(priority) {
 
     /**
      * 在方法执行之前注入
-     * @param wrapper 包装实例
+     * @param param Hook 结果回调接口
      */
-    open fun beforeHookedMember(wrapper: HookParamWrapper) {}
+    open fun beforeHookedMember(param: Param) {}
 
     /**
      * 在方法执行之后注入
-     * @param wrapper 包装实例
+     * @param param Hook 结果回调接口
      */
-    open fun afterHookedMember(wrapper: HookParamWrapper) {}
+    open fun afterHookedMember(param: Param) {}
 
     /**
-     * 已经 Hook 且可被解除 Hook 的 [Member] 实现类
-     * @param instance 对接 [XC_MethodHook.Unhook]
+     * 已经 Hook 且可被解除 Hook 的 [Member] 实现接口抽象类
      */
-    internal class Unhook private constructor(private val instance: XC_MethodHook.Unhook) {
-
-        internal companion object {
-
-            /**
-             * 从 [XC_MethodHook.Unhook] 创建 [Unhook] 实例
-             * @param instance [XC_MethodHook.Unhook] 实例
-             * @return [Unhook]
-             */
-            internal fun wrapper(instance: XC_MethodHook.Unhook) = Unhook(instance)
-        }
+    internal abstract class Unhook internal constructor() {
 
         /**
          * 当前被 Hook 的 [Member]
          * @return [Member] or null
          */
-        internal val member: Member? get() = instance.hookedMethod
+        internal abstract val member: Member?
 
-        /** 解除 [instance] 的 Hook 并从 [YukiHookedMembers.hookedMembers] 缓存数组中移除 */
+        /** 解除 Hook */
+        internal abstract fun unhook()
+
+        /** 解除 Hook 并从 [YukiHookedMembers.hookedMembers] 缓存数组中移除 */
         internal fun remove() {
             if (YukiHookBridge.hasXposedBridge.not()) return
-            instance.unhook()
+            unhook()
             runCatching { YukiHookedMembers.hookedMembers.remove(this) }
         }
     }
 }
 
 /**
- * Hook 回调接口父类
+ * Hook 回调接口抽象类
  * @param priority Hook 优先级
  */
-internal abstract class YukiHookCallback(open val priority: Int)
+internal abstract class YukiHookCallback(open val priority: Int) {
+
+    /**
+     * Hook 结果回调接口
+     */
+    internal interface Param {
+
+        /**
+         * [Member] 实例
+         * @return [Member] or null
+         */
+        val member: Member?
+
+        /**
+         * 当前实例对象
+         * @return [Any] or null
+         */
+        val instance: Any?
+
+        /**
+         * 方法、构造方法数组
+         * @return [Array] or null
+         */
+        val args: Array<Any?>?
+
+        /**
+         * 获取、设置方法结果
+         * @return [Any] or null
+         */
+        var result: Any?
+
+        /**
+         * 判断是否存在设置过的方法调用抛出异常
+         * @return [Boolean]
+         */
+        val hasThrowable: Boolean
+
+        /**
+         * 获取、设置方法调用抛出的异常
+         * @return [Throwable] or null
+         * @throws Throwable
+         */
+        var throwable: Throwable?
+
+        /**
+         * 设置方法参数
+         * @param index 数组下标
+         * @param any 参数对象实例
+         */
+        fun setArgs(index: Int, any: Any?)
+
+        /**
+         * 执行原始 [Member]
+         *
+         * 未进行 Hook 的 [Member]
+         * @param member 实例
+         * @param args 参数实例
+         * @return [Any] or null
+         */
+        fun invokeOriginalMember(member: Member, vararg args: Any?): Any?
+    }
+}

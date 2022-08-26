@@ -44,7 +44,6 @@ import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.param.wrapper.HookParamWrapper
 import com.highcapable.yukihookapi.hook.type.android.*
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
@@ -133,24 +132,24 @@ internal object AppParasitics {
     internal fun hookModuleAppRelated(loader: ClassLoader?, type: HookEntryType) {
         if (YukiHookAPI.Configs.isEnableHookSharedPreferences && type == HookEntryType.PACKAGE)
             YukiHookHelper.hook(ContextImplClass.method { name = "setFilePermissionsFromMode" }, object : YukiMemberHook() {
-                override fun beforeHookedMember(wrapper: HookParamWrapper) {
-                    if ((wrapper.args?.get(0) as? String?)?.endsWith(suffix = "preferences.xml") == true) wrapper.args?.set(1, 1)
+                override fun beforeHookedMember(param: Param) {
+                    if ((param.args?.get(0) as? String?)?.endsWith(suffix = "preferences.xml") == true) param.setArgs(index = 1, any = 1)
                 }
             })
         if (YukiHookAPI.Configs.isEnableHookModuleStatus) classOf<YukiHookModuleStatus>(loader).apply {
             if (type != HookEntryType.RESOURCES) {
                 YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                    override fun replaceHookedMember(param: Param) = true
                 })
                 YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = YukiHookBridge.executorName
+                    override fun replaceHookedMember(param: Param) = YukiHookBridge.executorName
                 })
                 YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = YukiHookBridge.executorVersion
+                    override fun replaceHookedMember(param: Param) = YukiHookBridge.executorVersion
                 })
             } else
                 YukiHookHelper.hook(method { name = YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(wrapper: HookParamWrapper) = true
+                    override fun replaceHookedMember(param: Param) = true
                 })
         }
     }
@@ -164,56 +163,56 @@ internal object AppParasitics {
         runCatching {
             if (AppLifecycleCallback.isCallbackSetUp) {
                 YukiHookHelper.hook(ApplicationClass.method { name = "attach"; param(ContextClass) }, object : YukiMemberHook() {
-                    override fun beforeHookedMember(wrapper: HookParamWrapper) {
+                    override fun beforeHookedMember(param: Param) {
                         runCatching {
-                            (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
-                        }.onFailure { wrapper.throwable = it }
+                            (param.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
+                        }.onFailure { param.throwable = it }
                     }
 
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    override fun afterHookedMember(param: Param) {
                         runCatching {
-                            (wrapper.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
-                        }.onFailure { wrapper.throwable = it }
+                            (param.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
+                        }.onFailure { param.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onTerminate" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    override fun afterHookedMember(param: Param) {
                         runCatching {
-                            (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
-                        }.onFailure { wrapper.throwable = it }
+                            (param.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
+                        }.onFailure { param.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onLowMemory" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    override fun afterHookedMember(param: Param) {
                         runCatching {
-                            (wrapper.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
-                        }.onFailure { wrapper.throwable = it }
+                            (param.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
+                        }.onFailure { param.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onTrimMemory"; param(IntType) }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    override fun afterHookedMember(param: Param) {
                         runCatching {
-                            val self = wrapper.instance as? Application? ?: return
-                            val type = wrapper.args?.get(0) as? Int? ?: return
+                            val self = param.instance as? Application? ?: return
+                            val type = param.args?.get(0) as? Int? ?: return
                             AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
-                        }.onFailure { wrapper.throwable = it }
+                        }.onFailure { param.throwable = it }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onConfigurationChanged" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    override fun afterHookedMember(param: Param) {
                         runCatching {
-                            val self = wrapper.instance as? Application? ?: return
-                            val config = wrapper.args?.get(0) as? Configuration? ?: return
+                            val self = param.instance as? Application? ?: return
+                            val config = param.args?.get(0) as? Configuration? ?: return
                             AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
-                        }.onFailure { wrapper.throwable = it }
+                        }.onFailure { param.throwable = it }
                     }
                 })
             }
             if (YukiHookAPI.Configs.isEnableDataChannel || AppLifecycleCallback.isCallbackSetUp)
                 YukiHookHelper.hook(InstrumentationClass.method { name = "callApplicationOnCreate" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(wrapper: HookParamWrapper) {
+                    override fun afterHookedMember(param: Param) {
                         runCatching {
-                            (wrapper.args?.get(0) as? Application?)?.also {
+                            (param.args?.get(0) as? Application?)?.also {
                                 hostApplication = it
                                 AppLifecycleCallback.onCreateCallback?.invoke(it)
                                 AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
@@ -226,7 +225,7 @@ internal object AppParasitics {
                                 }
                                 runCatching { YukiHookDataChannel.instance().register(it, packageName) }
                             }
-                        }.onFailure { wrapper.throwable = it }
+                        }.onFailure { param.throwable = it }
                     }
                 })
         }
@@ -240,9 +239,9 @@ internal object AppParasitics {
     internal fun hookClassLoader(loader: ClassLoader?, result: (clazz: Class<*>, resolve: Boolean) -> Unit) {
         runCatching {
             YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringType, BooleanType) }, object : YukiMemberHook() {
-                override fun afterHookedMember(wrapper: HookParamWrapper) {
-                    if (wrapper.instance?.javaClass?.name == loader?.javaClass?.name)
-                        (wrapper.result as? Class<*>?)?.also { result(it, wrapper.args?.get(1) as? Boolean ?: false) }
+                override fun afterHookedMember(param: Param) {
+                    if (param.instance?.javaClass?.name == loader?.javaClass?.name)
+                        (param.result as? Class<*>?)?.also { result(it, param.args?.get(1) as? Boolean ?: false) }
                 }
             })
         }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }

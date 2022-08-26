@@ -1,12 +1,16 @@
 ## HookParam *- class*
 
 ```kotlin
-class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var wrapper: HookParamWrapper?)
+class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var param: YukiHookCallback.Param?)
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.0.93` `修改`
+
+移动 `HookParamWrapper` 到 `YukiHookCallback.Param`
 
 **功能描述**
 
@@ -25,6 +29,8 @@ val args: Array<Any?>
 **功能描述**
 
 > 获取当前 Hook 对象 `member` 或 `constructor` 的参数对象数组。
+
+这里的数组每项类型默认为 `Any`，你可以使用 `args` 方法来实现 `ArgsModifyer.cast` 功能。
 
 ### ~~firstArgs *- field*~~ <!-- {docsify-ignore} -->
 
