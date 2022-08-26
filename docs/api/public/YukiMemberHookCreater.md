@@ -148,6 +148,8 @@ fun useDangerousOperation(option: String)
 
 你还需要在整个作用域中声明注解 `CauseProblemsApi` 以消除警告。
 
+若你只需要 Hook `ClassLoader` 的 `loadClass` 方法，请参考 [ClassLoader.fetching](api/document?id=classloaderfetching-i-ext-method)。
+
 !> 若你不知道允许此功能会带来何种后果，请勿使用。
 
 ### MemberHookCreater *- class*

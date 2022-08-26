@@ -640,7 +640,7 @@ JavaMethod.hook {
 
 这些功能是系统内部的，<u>**它们不应该被 Hook，在部分 Hook Framework 上可能不被支持，还会引发其它错误**</u>，请尝试更换 Hook 点。
 
-若你仍要使用此功能，请参考 [useDangerousOperation](api/document?id=usedangerousoperation-method) 并在 `hook` 方法体内第一位加入方法 `useDangerousOperation` 并键入 `Yes do as I say!`。
+若你仍要使用此功能，请参考 [useDangerousOperation](api/document?id=usedangerousoperation-method)。
 
 > 示例如下
 
