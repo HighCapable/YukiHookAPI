@@ -10,7 +10,7 @@
 
 - IntelliJ IDEA 2021.1 及以上
 
-- Kotlin 1.6.0 及以上
+- Kotlin 1.7.0 及以上
 
 - Android Gradle Plugin 7.0 及以上
 
@@ -125,8 +125,6 @@ android {
 
 在你的项目中创建一个 Hook 入口类，继承于 `IYukiHookXposedInit` 并加入注解 `@InjectYukiHookWithXposed`。
 
-!> 在默认配置情况下，你的入口类需要建立在你的包名的 hook 子包名下，假设你的包名为 `com.example.demo`，入口类应为 `com.example.demo.hook.你的入口类名称`。
-
 > 示例如下
 
 ```kotlin
@@ -139,7 +137,7 @@ class HookEntry : IYukiHookXposedInit {
 }
 ```
 
-你还可以将你的模块 APP 的 `Application` 继承于 `ModuleApplication` 以实现更多功能。
+**(建议)** 你可以将你的模块 APP 的 `Application` 继承于 `ModuleApplication` 以实现完整使用体验。
 
 详情请参考 [ModuleApplication](api/document?id=moduleapplication-class)。
 
