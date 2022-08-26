@@ -945,6 +945,28 @@ injectMember {
 
 请确认你 Hook 的方法是否为静态类型，静态类型的方法没有实例，不能使用此功能，若非静态方法，请检查实例是否已经销毁。
 
+!> `IllegalStateException` Current hooked Member args is null
+
+**异常原因**
+
+在 `HookParam` 中调用 `args` 变量但获取不到当前实例方法、构造方法的参数数组。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    // ...
+    afterHook {
+        // 调用了此变量
+        args...
+    }
+}
+```
+
+**解决方案**
+
+这种问题一般不会发生，真的发生了此问题，请携带详细日志进行反馈。
+
 !> `IllegalStateException` Current hooked Member is null
 
 **异常原因**
