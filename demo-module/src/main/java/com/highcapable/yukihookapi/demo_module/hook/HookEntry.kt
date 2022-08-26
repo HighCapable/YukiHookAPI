@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.hook.factory.compatStyle
 import com.highcapable.yukihookapi.demo_module.ui.MainActivity
-import com.highcapable.yukihookapi.hook.factory.applyTheme
+import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.type.android.ActivityClass
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
@@ -167,7 +167,7 @@ class HookEntry : IYukiHookXposedInit {
                         // 在执行方法之后拦截
                         afterHook {
                             if (prefs.getBoolean("show_dialog_when_demo_app_opend"))
-                                MaterialAlertDialogBuilder(instance<Activity>().applyTheme(R.style.Theme_Default))
+                                MaterialAlertDialogBuilder(instance<Activity>().applyModuleTheme(R.style.Theme_Default))
                                     .setTitle("Hooked")
                                     .setMessage(
                                         "This App has been hooked!\n\n" +
@@ -214,7 +214,7 @@ class HookEntry : IYukiHookXposedInit {
                         }
                         // 拦截整个方法
                         replaceUnit {
-                            instance<Activity>().applyTheme(R.style.Theme_Default).also { context ->
+                            instance<Activity>().applyModuleTheme(R.style.Theme_Default).also { context ->
                                 MaterialAlertDialogBuilder(context)
                                     .setTitle("Hooked")
                                     .setMessage("I am hook your toast showing!")
