@@ -71,8 +71,9 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      *
      * 这里的数组每项类型默认为 [Any] - 你可以使用 [args] 方法来实现 [ArgsModifyer.cast] 功能
      * @return [Array]
+     * @throws IllegalStateException 如果对象为空
      */
-    val args get() = param?.args ?: arrayOf(0)
+    val args get() = param?.args ?: error("Current hooked Member args is null")
 
     /**
      * 获取当前 Hook 实例的对象
