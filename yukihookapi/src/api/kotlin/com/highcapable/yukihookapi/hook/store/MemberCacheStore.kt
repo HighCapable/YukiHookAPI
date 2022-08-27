@@ -43,44 +43,44 @@ import java.lang.reflect.Method
 internal object MemberCacheStore {
 
     /** 缓存的 [Class] */
-    private val classCacheDatas = HashMap<Int, Class<*>?>()
+    private val classData = HashMap<Int, Class<*>?>()
 
     /** 缓存的 [Method] 数组 */
-    private val methodsCacheDatas = HashMap<Int, HashSet<Method>>()
+    private val methodsData = HashMap<Int, HashSet<Method>>()
 
     /** 缓存的 [Constructor] 数组 */
-    private val constructorsCacheDatas = HashMap<Int, HashSet<Constructor<*>>>()
+    private val constructorsData = HashMap<Int, HashSet<Constructor<*>>>()
 
     /** 缓存的 [Field] 数组 */
-    private val fieldsCacheDatas = HashMap<Int, HashSet<Field>>()
+    private val fieldsData = HashMap<Int, HashSet<Field>>()
 
     /**
      * 查找缓存中的 [Class]
      * @param hashCode 标识符
      * @return [Class] or null
      */
-    internal fun findClass(hashCode: Int) = classCacheDatas[hashCode]
+    internal fun findClass(hashCode: Int) = classData[hashCode]
 
     /**
      * 查找缓存中的 [Method] 数组
      * @param hashCode 标识符
      * @return [HashSet]<[Method]>
      */
-    internal fun findMethods(hashCode: Int) = methodsCacheDatas[hashCode]
+    internal fun findMethods(hashCode: Int) = methodsData[hashCode]
 
     /**
      * 查找缓存中的 [Constructor] 数组
      * @param hashCode 标识符
      * @return [HashSet]<[Constructor]>
      */
-    internal fun findConstructors(hashCode: Int) = constructorsCacheDatas[hashCode]
+    internal fun findConstructors(hashCode: Int) = constructorsData[hashCode]
 
     /**
      * 查找缓存中的 [Field] 数组
      * @param hashCode 标识符
      * @return [HashSet]<[Field]>
      */
-    internal fun findFields(hashCode: Int) = fieldsCacheDatas[hashCode]
+    internal fun findFields(hashCode: Int) = fieldsData[hashCode]
 
     /**
      * 写入 [Class] 到缓存
@@ -89,7 +89,7 @@ internal object MemberCacheStore {
      */
     internal fun putClass(hashCode: Int, instance: Class<*>?) {
         if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
-        classCacheDatas[hashCode] = instance
+        classData[hashCode] = instance
     }
 
     /**
@@ -99,7 +99,7 @@ internal object MemberCacheStore {
      */
     internal fun putMethods(hashCode: Int, instances: HashSet<Method>) {
         if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
-        methodsCacheDatas[hashCode] = instances
+        methodsData[hashCode] = instances
     }
 
     /**
@@ -109,7 +109,7 @@ internal object MemberCacheStore {
      */
     internal fun putConstructors(hashCode: Int, instances: HashSet<Constructor<*>>) {
         if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
-        constructorsCacheDatas[hashCode] = instances
+        constructorsData[hashCode] = instances
     }
 
     /**
@@ -119,6 +119,6 @@ internal object MemberCacheStore {
      */
     internal fun putFields(hashCode: Int, instances: HashSet<Field>) {
         if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
-        fieldsCacheDatas[hashCode] = instances
+        fieldsData[hashCode] = instances
     }
 }
