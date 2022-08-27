@@ -102,29 +102,45 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /** 存储名称 - 默认包名 + _preferences */
     private var prefsName = "${YukiHookBridge.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
 
-    /** [XSharedPreferences] 缓存的 [String] 键值数据 */
-    private var xPrefCacheKeyValueStrings = HashMap<String, String>()
-
-    /** [XSharedPreferences] 缓存的 [Set]<[String]> 键值数据 */
-    private var xPrefCacheKeyValueStringSets = HashMap<String, Set<String>>()
-
-    /** [XSharedPreferences] 缓存的 [Boolean] 键值数据 */
-    private var xPrefCacheKeyValueBooleans = HashMap<String, Boolean>()
-
-    /** [XSharedPreferences] 缓存的 [Int] 键值数据 */
-    private var xPrefCacheKeyValueInts = HashMap<String, Int>()
-
-    /** [XSharedPreferences] 缓存的 [Long] 键值数据 */
-    private var xPrefCacheKeyValueLongs = HashMap<String, Long>()
-
-    /** [XSharedPreferences] 缓存的 [Float] 键值数据 */
-    private var xPrefCacheKeyValueFloats = HashMap<String, Float>()
-
     /** 是否使用键值缓存 */
     private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
 
     /** 是否使用新版存储方式 EdXposed/LSPosed */
     private var isUsingNewXSharedPreferences = false
+
+    /**
+     * [XSharedPreferences] 缓存的键值数据
+     */
+    private object XSharedPreferencesCaches {
+
+        /** 缓存的 [String] 键值数据 */
+        var stringData = HashMap<String, String>()
+
+        /** 缓存的 [Set]<[String]> 键值数据 */
+        var stringSetData = HashMap<String, Set<String>>()
+
+        /** 缓存的 [Boolean] 键值数据 */
+        var booleanData = HashMap<String, Boolean>()
+
+        /** 缓存的 [Int] 键值数据 */
+        var intData = HashMap<String, Int>()
+
+        /** 缓存的 [Long] 键值数据 */
+        var longData = HashMap<String, Long>()
+
+        /** 缓存的 [Float] 键值数据 */
+        var floatData = HashMap<String, Float>()
+
+        /** 清除所有缓存的键值数据 */
+        fun clear() {
+            stringData.clear()
+            stringSetData.clear()
+            booleanData.clear()
+            intData.clear()
+            longData.clear()
+            floatData.clear()
+        }
+    }
 
     /** 检查 API 装载状态 */
     private fun checkApi() {
@@ -230,9 +246,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     fun getString(key: String, value: String = "") =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
-                xPrefCacheKeyValueStrings[key].let {
+                XSharedPreferencesCaches.stringData[key].let {
                     (it ?: xPrefs.getString(key, value) ?: value).let { value ->
-                        xPrefCacheKeyValueStrings[key] = value
+                        XSharedPreferencesCaches.stringData[key] = value
                         value
                     }
                 }
@@ -255,9 +271,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     fun getStringSet(key: String, value: Set<String>) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
-                xPrefCacheKeyValueStrings[key].let {
+                XSharedPreferencesCaches.stringSetData[key].let {
                     (it ?: xPrefs.getStringSet(key, value) ?: value).let { value ->
-                        xPrefCacheKeyValueStringSets[key] = value as Set<String>
+                        XSharedPreferencesCaches.stringSetData[key] = value
                         value
                     }
                 }
@@ -280,9 +296,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     fun getBoolean(key: String, value: Boolean = false) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
-                xPrefCacheKeyValueBooleans[key].let {
+                XSharedPreferencesCaches.booleanData[key].let {
                     it ?: xPrefs.getBoolean(key, value).let { value ->
-                        xPrefCacheKeyValueBooleans[key] = value
+                        XSharedPreferencesCaches.booleanData[key] = value
                         value
                     }
                 }
@@ -305,9 +321,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     fun getInt(key: String, value: Int = 0) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
-                xPrefCacheKeyValueInts[key].let {
+                XSharedPreferencesCaches.intData[key].let {
                     it ?: xPrefs.getInt(key, value).let { value ->
-                        xPrefCacheKeyValueInts[key] = value
+                        XSharedPreferencesCaches.intData[key] = value
                         value
                     }
                 }
@@ -330,9 +346,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     fun getFloat(key: String, value: Float = 0f) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
-                xPrefCacheKeyValueFloats[key].let {
+                XSharedPreferencesCaches.floatData[key].let {
                     it ?: xPrefs.getFloat(key, value).let { value ->
-                        xPrefCacheKeyValueFloats[key] = value
+                        XSharedPreferencesCaches.floatData[key] = value
                         value
                     }
                 }
@@ -355,9 +371,9 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     fun getLong(key: String, value: Long = 0L) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
-                xPrefCacheKeyValueLongs[key].let {
+                XSharedPreferencesCaches.longData[key].let {
                     it ?: xPrefs.getLong(key, value).let { value ->
-                        xPrefCacheKeyValueLongs[key] = value
+                        XSharedPreferencesCaches.longData[key] = value
                         value
                     }
                 }
@@ -516,7 +532,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * 智能获取指定类型的键值
      * @param prefs 键值实例
      * @param value 默认值 - 未指定默认为 [prefs] 中的 [PrefsData.value]
-     * @return [T] 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
+     * @return [T] 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
      */
     inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = getPrefsData(prefs.key, value) as T
 
@@ -527,7 +543,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param prefs 键值实例
-     * @param value 要存储的值 - 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
+     * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
      */
     inline fun <reified T> put(prefs: PrefsData<T>, value: T) = putPrefsData(prefs.key, value)
 
@@ -559,7 +575,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param key 键值
-     * @param value 要存储的值 - 只能是 [String]、[Int]、[Float]、[Long]、[Boolean]
+     * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
      */
     @PublishedApi
     internal fun putPrefsData(key: String, value: Any?) = when (value) {
@@ -583,14 +599,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      *
      * - 在 (Xposed) 宿主环境中使用
      */
-    fun clearCache() {
-        xPrefCacheKeyValueStrings.clear()
-        xPrefCacheKeyValueStringSets.clear()
-        xPrefCacheKeyValueBooleans.clear()
-        xPrefCacheKeyValueInts.clear()
-        xPrefCacheKeyValueLongs.clear()
-        xPrefCacheKeyValueFloats.clear()
-    }
+    fun clearCache() = XSharedPreferencesCaches.clear()
 
     /**
      * 恢复 [isUsingKeyValueCache] 为默认状态
