@@ -248,7 +248,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     fun getStringSet(key: String, value: Set<String>) =
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
-                xPrefCacheKeyValueStrings[key].let {
+                xPrefCacheKeyValueStringSets[key].let {
                     (it ?: xPref.getStringSet(key, value) ?: value).let { value ->
                         xPrefCacheKeyValueStringSets[key] = value as Set<String>
                         value
