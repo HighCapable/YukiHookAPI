@@ -761,6 +761,59 @@ Test::class.java.method {
 
 !> 特别注意使用了 `RemedyPlan` 的方法查询结果不能再使用 `get` 的方式得到方法实例，应当使用 `wait` 方法。
 
+另外，你还可以在使用 [多重查询](guide/special-feature?id=多重查询) 的情况下继续使用 `RemedyPlan`。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name = "doTask"
+    emptyParam()
+}.remedys {
+    method {
+        name = "doTask"
+        paramCount(0..1)
+    }.onFind {
+        // 可在这里实现找到的逻辑
+    }
+    method {
+        name = "doTask"
+        paramCount(1..2)
+    }.onFind {
+        // 可在这里实现找到的逻辑
+    }
+}.waitAll(instance) {
+    // 得到方法的结果
+}
+```
+
+以当前 `Class` 举例，若 [多重查询](guide/special-feature?id=多重查询) 结合 `RemedyPlan` 在创建 Hook 的时候使用，你需要稍微改变一下用法。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        name = "doTask"
+        emptyParam()
+    }.remedys {
+        method {
+            name = "doTask"
+            paramCount(0..1)
+        }
+        method {
+            name = "doTask"
+            paramCount(1..2)
+        }
+    }.all()
+    beforeHook {}
+    afterHook {}
+}
+```
+
 更多用法可参考 [Method RemedyPlan](api/document?id=remedyplan-class)、[Constructor RemedyPlan](api/document?id=remedyplan-class-1)、[Field RemedyPlan](api/document?id=remedyplan-class-2)。
 
 ### 相对匹配

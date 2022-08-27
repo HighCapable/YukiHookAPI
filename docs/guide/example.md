@@ -192,6 +192,8 @@ TestClass.hook {
 }
 ```
 
+更多功能请参考 [MemberHookCreater](api/document?id=memberhookcreater-class)。
+
 ### Hook Zygote
 
 在 APP 启动时，新的进程被 fork 后的第一个事件 `initZygote`。
@@ -219,6 +221,8 @@ loadZygote {
 }
 ```
 
+!> 在 `loadZygote` 中进行的功能十分有限，几乎很少的情况下需要用到 `loadZygote` 方法。
+
 ### Hook 系统框架
 
 在 `YukiHookAPI` 中，Hook 系统框架的实现非常简单。
@@ -240,7 +244,7 @@ loadSystem {
 }
 ```
 
-!> `loadZygote` 与 `loadSystem` 有直接性区别，`loadZygote` 会在 `initZygote` 中装载，系统框架被视为一个单独的 APP 而存在，若要 Hook 系统框架，请使用 `loadSystem`。
+!> `loadZygote` 与 `loadSystem` 有直接性区别，`loadZygote` 会在 `initZygote` 中装载，系统框架被视为 `loadApp(name = "android")` 而存在，若要 Hook 系统框架，可直接使用 `loadSystem`。
 
 ### Hook Resources
 
@@ -408,6 +412,8 @@ method {
 }
 ```
 
+更多功能请参考 [MemberHookCreater.Result](api/document?id=result-class) 与 [ResourcesHookCreater.Result](api/document?id=result-class-2)。
+
 这里介绍了可能发生的常见异常，若要了解更多请参考 [API 异常处理](config/api-exception.md)。
 
 ### 抛出异常
@@ -485,7 +491,7 @@ injectMember {
 
 !> 为了保证 Hook 调用域与宿主内调用域相互隔离，异常只有在 `beforeHook` 与 `afterHook` 回调方法体中才能抛给宿主。
 
-更多功能请参考 [HookCallback](api/document?id=hookcallback-class)。
+更多功能请参考 [Throwable.throwToApp](api/document?id=throwablethrowtoapp-i-ext-method) 与 [HookCallback](api/document?id=hookcallback-class)。
 
 ## 状态监听
 
@@ -538,7 +544,7 @@ loadApp(name = "com.android.phone") {
 }
 ```
 
-详细用法可 [点击这里](api/document?id=loadapp-method) 进行查看。
+更多功能请参考 [loadApp](api/document?id=loadapp-method)。
 
 ### 多个进程
 
@@ -555,7 +561,7 @@ withProcess(name = "$packageName:tool") {
 }
 ```
 
-详细用法可 [点击这里](api/document?id=withprocess-method) 进行查看。
+更多功能请参考 [withProcess](api/document?id=withprocess-method)。
 
 ## 写法优化
 
@@ -609,9 +615,11 @@ if(YukiHookAPI.Status.isModuleActive) {
 }
 ```
 
-若要了解更多可 [点击这里](api/document?id=status-object) 进行查看。
+更多功能请参考 [YukiHookAPI.Status](api/document?id=status-object)。
 
-!> 新版本的 API 修改了激活逻辑判断方式，现在你可以在模块与 Hook APP (宿主) 中同时使用此 API。
+!> 若模块激活判断中包含太极、无极中的激活状态，就必须将模块的 `Application` 继承于 `ModuleApplication` 或直接使用 `ModuleApplication`。
+
+!> `1.0.91` 版本后的 API 修改了激活逻辑判断方式，现在你可以在模块与 Hook APP (宿主) 中同时使用此 API。
 
 !> 需要确保 `YukiHookAPI.Configs.isEnableHookModuleStatus` 是启用状态。
 

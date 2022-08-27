@@ -212,7 +212,7 @@ fun members(vararg member: Member?)
 
 ```kotlin
 injectMember {
-    members(instanceClass.getMethod("test", StringType))
+    members(instanceClass.getDeclaredMethod("test", StringType))
     beforeHook {}
     afterHook {}
 }
@@ -225,9 +225,9 @@ injectMember {
 ```kotlin
 injectMember {
     members(
-        instanceClass.getMethod("test1", StringType),
-        instanceClass.getMethod("test2", StringType),
-        instanceClass.getMethod("test3", StringType)
+        instanceClass.getDeclaredMethod("test1", StringType),
+        instanceClass.getDeclaredMethod("test2", StringType),
+        instanceClass.getDeclaredMethod("test3", StringType)
     )
     beforeHook {}
     afterHook {}
@@ -306,6 +306,25 @@ injectMember {
 }
 ```
 
+若想 Hook 当前查询 `method { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        name = "test"
+        paramCount(1..5)
+    }.all()
+    beforeHook {}
+    afterHook {}
+}
+```
+
+此时 `beforeHook` 与 `afterHook` 会在每个查询到的结果中多次回调 Hook 方法体。
+
+!> 若没有 `all`，默认只会 Hook 当前条件查询到的数组下标结果第一位。
+
 #### constructor *- method*
 
 ```kotlin
@@ -338,6 +357,22 @@ injectMember {
 }
 ```
 
+若想 Hook 当前查询 `constructor { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    constructor { paramCount(1..5) }.all()
+    beforeHook {}
+    afterHook {}
+}
+```
+
+此时 `beforeHook` 与 `afterHook` 会在每个查询到的结果中多次回调 Hook 方法体。
+
+!> 若没有 `all`，默认只会 Hook 当前条件查询到的数组下标结果第一位。
+
 #### HookParam.field *- i-ext-method*
 
 ```kotlin
@@ -354,7 +389,7 @@ inline fun HookParam.field(initiate: FieldCondition): FieldFinder.Result
 
 **功能描述**
 
-> 使用当前 `hookClass` 查找并得到 `Field`。
+> 使用当前 `instanceClass` 查找并得到 `Field`。
 
 **功能示例**
 
@@ -370,6 +405,7 @@ injectMember {
         returnType = UnitType
     }
     afterHook {
+        // 这里不需要再调用 instanceClass.field 进行查询
         field {
             name = "isSweet"
             type = BooleanType
@@ -394,7 +430,7 @@ inline fun HookParam.method(initiate: MethodCondition): MethodFinder.Result
 
 **功能描述**
 
-> 使用当前 `hookClass` 查找并得到方法。
+> 使用当前 `instanceClass` 查找并得到方法。
 
 #### HookParam.constructor *- i-ext-method*
 
@@ -412,7 +448,7 @@ inline fun HookParam.constructor(initiate: ConstructorCondition): ConstructorFin
 
 **功能描述**
 
-> 使用当前 `hookClass` 查找并得到构造方法。
+> 使用当前 `instanceClass` 查找并得到构造方法。
 
 #### HookParam.injectMember *- i-ext-method*
 
