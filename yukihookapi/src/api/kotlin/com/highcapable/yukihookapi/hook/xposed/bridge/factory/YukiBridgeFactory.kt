@@ -187,9 +187,6 @@ internal object YukiHookHelper {
         override fun args(index: Int, value: Any?) {
             this@compat.args[index] = value
         }
-
-        override fun invokeOriginalMember(member: Member, vararg args: Any?) =
-            YukiHookHelper.invokeOriginalMember(member, this@compat.thisObject, args)
     }
 }
 
@@ -308,15 +305,5 @@ internal abstract class YukiHookCallback(open val priority: Int) {
          * @param value 参数对象实例
          */
         fun args(index: Int, value: Any?)
-
-        /**
-         * 执行原始 [Member]
-         *
-         * 未进行 Hook 的 [Member]
-         * @param member 实例
-         * @param args 参数实例
-         * @return [Any] or null
-         */
-        fun invokeOriginalMember(member: Member, vararg args: Any?): Any?
     }
 }

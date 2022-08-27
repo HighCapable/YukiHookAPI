@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater.MemberHookCre
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookCallback
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -182,11 +183,38 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
     /**
      * 执行原始 [Member]
      *
-     * 未进行 Hook 的 [Member]
-     * @param args 参数实例
-     * @return [T]
+     * 调用自身未进行 Hook 的原始 [Member] 并调用原始参数执行
+     * @return [Any] or null
      */
-    fun <T> Member.invokeOriginal(vararg args: Any?) = param?.invokeOriginalMember(member = this, *args) as? T?
+    fun callOriginal() = callOriginal<Any>()
+
+    /**
+     * 执行原始 [Member]
+     *
+     * 调用自身未进行 Hook 的原始 [Member] 并调用原始参数执行
+     * @return [T] or null
+     */
+    @JvmName(name = "callOriginal_Generics")
+    fun <T> callOriginal() = invokeOriginal<T>(*args)
+
+    /**
+     * 执行原始 [Member]
+     *
+     * 调用自身未进行 Hook 的原始 [Member] 并自定义 [args] 执行
+     * @param args 参数实例
+     * @return [Any] or null
+     */
+    fun invokeOriginal(vararg args: Any?) = invokeOriginal<Any>(*args)
+
+    /**
+     * 执行原始 [Member]
+     *
+     * 调用自身未进行 Hook 的原始 [Member] 并自定义 [args] 执行
+     * @param args 参数实例
+     * @return [T] or null
+     */
+    @JvmName(name = "invokeOriginal_Generics")
+    fun <T> invokeOriginal(vararg args: Any?) = YukiHookHelper.invokeOriginalMember(member, instance, *args) as T?
 
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 true

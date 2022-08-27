@@ -566,7 +566,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             onAllFailureCallback?.invoke(e)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
                             /** 若发生异常则会自动调用未经 Hook 的原始方法保证 Hook APP 正常运行 */
-                            param.member?.also { member -> param.invokeOriginalMember(member, param.args) }
+                            assign.callOriginal()
                         }
                     }
             }

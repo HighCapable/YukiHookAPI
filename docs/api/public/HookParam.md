@@ -355,28 +355,100 @@ args(index = 1).setTrue()
 args(index = 1).setFalse()
 ```
 
-### Member.invokeOriginal *- i-ext-method*
+### callOriginal *- method*
 
 ```kotlin
-fun <T> Member.invokeOriginal(vararg args: Any?): Any?
+fun callOriginal(): Any?
+```
+
+```kotlin
+fun <T> callOriginal(): T?
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 执行原始 `Member`。
+
+调用自身未进行 Hook 的原始 `Member` 并调用原始参数执行。
+
+**功能实例**
+
+此方法可以 `invoke` 原始未经 Hook 的 `Member` 对象，取决于原始 `Member` 的参数。
+
+调用自身原始的方法不会再经过当前 `beforeHook`、`afterHook` 以及 `replaceUnit`、`replaceAny`。
+
+比如我们 Hook 的这个方法被这样调用 `test("test value")`，使用此方法会调用其中的 `"test value"` 作为参数。
+
+> 示例如下
+
+```kotlin
+injectMember {
+    method {
+        name = "test"
+        param(StringType)
+        returnType = StringType
+    }
+    afterHook {
+        // <方案1> 不使用泛型，不获取方法执行结果，调用将使用原方法传入的 args 自动传参
+        callOriginal()
+        // <方案2> 使用泛型，已知方法执行结果参数类型进行 cast，假设返回值为 String，失败会返回 null，调用将使用原方法传入的 args 自动传参
+        val value = callOriginal<String>()
+    }
+}
+```
+
+### invokeOriginal *- method*
+
+```kotlin
+fun invokeOriginal(vararg args: Any?): Any?
+```
+
+```kotlin
+fun <T> invokeOriginal(vararg args: Any?): T?
 ```
 
 **变更记录**
 
 `v1.0` `添加`
 
+`v1.0.93` `修改`
+
+不再需要使用 `member.invokeOriginal` 进行调用
+
 **功能描述**
 
 > 执行原始 `Member`。
 
+调用自身未进行 Hook 的原始 `Member` 并自定义 `args` 执行。
+
 **功能实例**
 
-此方法可以 `invoke` 原始未经 Hook 的 `Member` 对象，取决于原始 `Member` 的参数和类型。
+此方法可以 `invoke` 原始未经 Hook 的 `Member` 对象，可自定义需要调用的参数内容。
+
+调用自身原始的方法不会再经过当前 `beforeHook`、`afterHook` 以及 `replaceUnit`、`replaceAny`。
+
+比如我们 Hook 的这个方法被这样调用 `test("test value")`，使用此方法可自定义其中的 `args` 作为参数。
 
 > 示例如下
 
 ```kotlin
-member.invokeOriginal("test value")
+injectMember {
+    method {
+        name = "test"
+        param(StringType)
+        returnType = StringType
+    }
+    afterHook {
+        // <方案1> 不使用泛型，不获取方法执行结果
+        invokeOriginal("test value")
+        // <方案2> 使用泛型，已知方法执行结果参数类型进行 cast，假设返回值为 String，失败会返回 null
+        val value = invokeOriginal<String>("test value")
+    }
+}
 ```
 
 ### resultTrue *- method*

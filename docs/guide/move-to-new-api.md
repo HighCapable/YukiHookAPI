@@ -127,8 +127,10 @@ afterHook {
     resultNull()
     // 向 Hook APP 抛出异常
     Throwable("Fatal").throwToApp()
-    // 执行未经 Hook 的原始方法
-    method.invokeOriginal(...)
+    // 执行未经 Hook 的原始方法并使用原始方法参数调用，泛型可略
+    callOriginal<Any?>()
+    // 执行未经 Hook 的原始方法并自定义方法参数调用，泛型可略
+    invokeOriginal<Any?>(...)
 }
 ```
 
