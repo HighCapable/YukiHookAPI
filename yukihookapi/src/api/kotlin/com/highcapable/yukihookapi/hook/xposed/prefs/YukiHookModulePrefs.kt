@@ -154,28 +154,30 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [XSharedPreferences]
      */
     private val xPrefs
-        get() = runCatching {
-            XSharedPreferences(YukiHookBridge.modulePackageName, prefsName).apply {
-                checkApi()
-                makeWorldReadable()
-                reload()
-            }
-        }.onFailure { yLoggerE(msg = it.message ?: "Operating system not supported", e = it) }.getOrNull()
-            ?: error("Cannot load the XSharedPreferences, maybe is your Hook Framework not support it")
+        get() = checkApi().let {
+            runCatching {
+                XSharedPreferences(YukiHookBridge.modulePackageName, prefsName).apply {
+                    checkApi()
+                    makeWorldReadable()
+                    reload()
+                }
+            }.onFailure { yLoggerE(msg = it.message ?: "Operating system not supported", e = it) }.getOrNull()
+                ?: error("Cannot load the XSharedPreferences, maybe is your Hook Framework not support it")
+        }
 
     /**
      * 获得 [SharedPreferences] 对象
      * @return [SharedPreferences]
      */
     private val sPrefs
-        get() = try {
-            checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharedPreferences = true }
-                ?: error("YukiHookModulePrefs missing Context instance")
-        } catch (_: Throwable) {
-            checkApi()
-            context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharedPreferences = false }
-                ?: error("YukiHookModulePrefs missing Context instance")
+        get() = checkApi().let {
+            try {
+                context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharedPreferences = true }
+                    ?: error("YukiHookModulePrefs missing Context instance")
+            } catch (_: Throwable) {
+                context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharedPreferences = false }
+                    ?: error("YukiHookModulePrefs missing Context instance")
+            }
         }
 
     /** 设置全局可读可写 */
