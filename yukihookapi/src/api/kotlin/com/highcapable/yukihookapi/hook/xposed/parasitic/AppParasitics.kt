@@ -133,7 +133,7 @@ internal object AppParasitics {
         if (YukiHookAPI.Configs.isEnableHookSharedPreferences && type == HookEntryType.PACKAGE)
             YukiHookHelper.hook(ContextImplClass.method { name = "setFilePermissionsFromMode" }, object : YukiMemberHook() {
                 override fun beforeHookedMember(param: Param) {
-                    if ((param.args?.get(0) as? String?)?.endsWith(suffix = "preferences.xml") == true) param.setArgs(index = 1, any = 1)
+                    if ((param.args?.get(0) as? String?)?.endsWith(suffix = "preferences.xml") == true) param.args(index = 1, value = 1)
                 }
             })
         if (YukiHookAPI.Configs.isEnableHookModuleStatus) classOf<YukiHookModuleStatus>(loader).apply {

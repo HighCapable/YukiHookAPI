@@ -184,8 +184,8 @@ internal object YukiHookHelper {
                 this@compat.throwable = value
             }
 
-        override fun setArgs(index: Int, any: Any?) {
-            this@compat.args[index] = any
+        override fun args(index: Int, value: Any?) {
+            this@compat.args[index] = value
         }
 
         override fun invokeOriginalMember(member: Member, vararg args: Any?) =
@@ -305,9 +305,9 @@ internal abstract class YukiHookCallback(open val priority: Int) {
         /**
          * 设置方法参数
          * @param index 数组下标
-         * @param any 参数对象实例
+         * @param value 参数对象实例
          */
-        fun setArgs(index: Int, any: Any?)
+        fun args(index: Int, value: Any?)
 
         /**
          * 执行原始 [Member]
