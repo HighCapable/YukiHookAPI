@@ -689,6 +689,70 @@ classOf("com.demo.Test").buildOfAny(true) { param(BooleanType) }?.current {
 
 更多用法可参考 [CurrentClass](api/document?id=currentclass-class) 以及 [Class.buildOf](api/document?id=classbuildof-ext-method) 方法。
 
+### 原始调用
+
+若你正在使用反射调用的一个方法是被 Hook 过的，此时我们如何调用其原始方法呢？
+
+`XposedBridge` 为我们提供了一个 `XposedBridge.invokeOriginalMethod` 功能，现在，在 `YukiHookAPI` 中你可以便捷地实现这个功能。
+
+假设下面是我们要演示的 `Class`。
+
+> 示例如下
+
+```java
+public class Test {
+
+    public static String getString() {
+        return "Original";
+    }
+}
+```
+
+下面是 Hook 这个 `Class` 中 `getString` 方法的方式。
+
+> 示例如下
+
+```kotlin
+Test::class.java.hook {
+    injectMember {
+        method {
+            name = "getString"
+            emptyParam()
+            returnType = StringType
+        }
+        replaceTo("Hooked")
+    }
+}
+```
+
+此时，我们再使用反射调用这个方法，则会得到 Hook 后的结果 `"Hooked"`。
+
+> 示例如下
+
+```kotlin
+// result 的结果会是 "Hooked"
+val result = Test::class.java.method {
+    name = "getString"
+    emptyParam()
+    returnType = StringType
+}.get().string()
+```
+
+如果我们想得到这个方法未经 Hook 的原始方法及结果，只需要在结果中加入 `original` 即可。
+
+> 示例如下
+
+```kotlin
+// result 的结果会是 "Original"
+val result = Test::class.java.method {
+    name = "getString"
+    emptyParam()
+    returnType = StringType
+}.get().original().string()
+```
+
+更多用法可参考 [MethodFinder.Result.original](api/document?id=original-method) 方法。
+
 ### 再次查询
 
 假设有三个不同版本的 `Class`，它们都是这个宿主不同版本相同的 `Class`。
@@ -814,7 +878,9 @@ injectMember {
 }
 ```
 
-更多用法可参考 [Method RemedyPlan](api/document?id=remedyplan-class)、[Constructor RemedyPlan](api/document?id=remedyplan-class-1)、[Field RemedyPlan](api/document?id=remedyplan-class-2)。
+在创建 Hook 的时候使用可参考 [MethodFinder.Process.all](api/document?id=all-method-1)、[ConstructorFinder.Process.all](api/document?id=all-method-3)。
+
+更多用法可参考 [MethodFinder.RemedyPlan](api/document?id=remedyplan-class)、[ConstructorFinder.RemedyPlan](api/document?id=remedyplan-class-1)、[FieldFinder.RemedyPlan](api/document?id=remedyplan-class-2)。
 
 ### 相对匹配
 
