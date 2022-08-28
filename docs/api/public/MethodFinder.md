@@ -330,6 +330,115 @@ method {
 }
 ```
 
+### Process *- class*
+
+```kotlin
+inner class Process internal constructor(internal val isNoSuch: Boolean, internal val throwable: Throwable?) : BaseResult
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> `Method` 查找结果处理类，为 `hookInstance` 提供。
+
+#### result *- method*
+
+```kotlin
+inline fun result(initiate: Process.() -> Unit): Process
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 创建监听结果事件方法体。
+
+**功能示例**
+
+你可以使用 `lambda` 形式创建 `Result` 类。
+
+> 示例如下
+
+```kotlin
+method {
+    // Your code here.
+}.result {
+    all()
+    remedys {}
+    onNoSuchMethod {}
+}
+```
+
+#### all *- method*
+
+```kotlin
+fun all(): Process
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 设置全部查询条件匹配的多个 `Method` 实例结果到 `hookInstance`。
+
+#### remedys *- method*
+
+```kotlin
+inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 创建 `Method` 重查找功能。
+
+**功能示例**
+
+当你遇到一种 `Method` 可能存在不同形式的存在时，可以使用 `RemedyPlan` 重新查找它，而没有必要使用 `onNoSuchMethod` 捕获异常二次查找 `Method`。
+
+若第一次查找失败了，你还可以在这里继续添加此方法体直到成功为止。
+
+> 示例如下
+
+```kotlin
+method {
+    // Your code here.
+}.remedys {
+    method {
+        // Your code here.
+    }
+    method {
+        // Your code here.
+    }
+}
+```
+
+#### onNoSuchMethod *- method*
+
+```kotlin
+inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 监听找不到 `Method` 时。
+
+只会返回第一次的错误信息，不会返回 `RemedyPlan` 的错误信息。
+
 ### Result *- class*
 
 ```kotlin
@@ -437,7 +546,7 @@ fun all(instance: Any?): ArrayList<Instance>
 
 > 获得 `Method` 实例处理类数组。
 
-返回全部查询条件匹配的多个 `Method` 实例结果并在 `isBindToHooker` 时设置到 `hookInstance`。
+返回全部查询条件匹配的多个 `Method` 实例结果。
 
 **功能示例**
 

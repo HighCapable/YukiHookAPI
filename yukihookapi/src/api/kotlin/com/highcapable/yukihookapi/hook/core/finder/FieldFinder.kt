@@ -188,16 +188,8 @@ class FieldFinder @PublishedApi internal constructor(
         fields.takeIf { it.isNotEmpty() }?.forEach { memberInstances.add(it) }
     }
 
-    /**
-     * 得到 [Field] 处理结果
-     *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
-     * @return [Result]
-     * @throws IllegalStateException 如果 [name] 没有被设置
-     */
     @YukiPrivateApi
-    override fun build(isBind: Boolean) = try {
+    override fun build() = try {
         if (classSet != null) {
             classSet.checkingInternal()
             runBlocking {
@@ -211,15 +203,14 @@ class FieldFinder @PublishedApi internal constructor(
         Result(isNoSuch = true, e).await { onFailureMsg(throwable = e) }
     }
 
-    /**
-     * 创建一个异常结果
-     *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-     * @param throwable 异常
-     * @return [Result]
-     */
+    @YukiPrivateApi
+    override fun process() = error("FieldFinder does not contain this usage")
+
     @YukiPrivateApi
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
+
+    @YukiPrivateApi
+    override fun denied(throwable: Throwable?) = error("FieldFinder does not contain this usage")
 
     /**
      * [Field] 重查找实现类

@@ -220,17 +220,25 @@ abstract class BaseFinder internal constructor(
     }
 
     /**
-     * 得到结果
+     * 返回结果实现类
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
      * @return [BaseResult]
      */
     @YukiPrivateApi
-    abstract fun build(isBind: Boolean = false): BaseResult
+    abstract fun build(): BaseResult
 
     /**
-     * 创建一个异常结果
+     * 返回结果处理类并设置到目标 [YukiMemberHookCreater.MemberHookCreater]
+     *
+     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @return [BaseResult]
+     */
+    @YukiPrivateApi
+    abstract fun process(): BaseResult
+
+    /**
+     * 返回只有异常的结果实现类
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param throwable 异常
@@ -240,7 +248,17 @@ abstract class BaseFinder internal constructor(
     abstract fun failure(throwable: Throwable?): BaseResult
 
     /**
-     * 查找结果实现类接口
+     * 返回只有异常的结果处理类并作用于目标 [YukiMemberHookCreater.MemberHookCreater]
+     *
+     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * @param throwable 异常
+     * @return [BaseResult]
+     */
+    @YukiPrivateApi
+    abstract fun denied(throwable: Throwable?): BaseResult
+
+    /**
+     * 查找结果实现、处理类接口
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动继承此接口
      */

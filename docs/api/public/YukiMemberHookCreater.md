@@ -96,11 +96,11 @@ inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreater.
 
 **功能描述**
 
-> 注入要 Hook 的方法、构造方法。
+> 注入要 Hook 的 `Method`、`Constructor`。
 
 **功能示例**
 
-你可以注入任意方法与构造方法，使用 `injectMember` 即可创建一个 `Hook` 对象。
+你可以注入任意 `Method` 与 `Constructor`，使用 `injectMember` 即可创建一个 `Hook` 对象。
 
 > 示例如下
 
@@ -176,7 +176,7 @@ inner class MemberHookCreater internal constructor(private val priority: Int, in
 
 **功能描述**
 
-> Hook 核心功能实现类，查找和处理需要 Hook 的方法、构造方法。
+> Hook 核心功能实现类，查找和处理需要 Hook 的 `Method`、`Constructor`。
 
 #### ~~member *- field*~~ <!-- {docsify-ignore} -->
 
@@ -200,13 +200,13 @@ fun members(vararg member: Member?)
 
 **功能描述**
 
-> 手动指定要 Hook 的方法、构造方法。
+> 手动指定要 Hook 的 `Method`、`Constructor`。
 
 !> 不建议使用此方法设置目标需要 Hook 的 `Member` 对象，你可以使用 `method` 或 `constructor` 方法。
 
 **功能示例**
 
-你可以调用 `instanceClass` 来手动查询要 Hook 的方法。
+你可以调用 `instanceClass` 来手动查询要 Hook 的 `Method`、`Constructor`。
 
 > 示例如下
 
@@ -218,7 +218,7 @@ injectMember {
 }
 ```
 
-同样地，你也可以传入一组方法同时进行 Hook。
+同样地，你也可以传入一组 `Member` 同时进行 Hook。
 
 > 示例如下
 
@@ -266,9 +266,9 @@ fun allMembers(type: MembersType)
 
 **功能描述**
 
-> 查找并 Hook `hookClass` 中的全部方法、构造方法。
+> 查找并 Hook `hookClass` 中的全部 `Method`、`Constructor`。
 
-!> 警告：无法准确处理每个方法的返回值和 `param`，建议使用 `method` or `constructor` 对每个方法单独 Hook。
+!> 警告：无法准确处理每个 `Member` 的返回值和 `param`，建议使用 `method` or `constructor` 对每个 `Member` 单独 Hook。
 
 #### method *- method*
 
@@ -286,7 +286,7 @@ inline fun method(initiate: MethodCondition): MethodFinder.Result
 
 **功能描述**
 
-> 查找当前 `Class` 需要 Hook 的方法。
+> 查找当前 `Class` 需要 Hook 的 `Method` 。
 
 **功能示例**
 
@@ -341,7 +341,7 @@ inline fun constructor(initiate: ConstructorCondition): ConstructorFinder.Result
 
 **功能描述**
 
-> 查找当前 `Class` 需要 Hook 的构造方法。
+> 查找当前 `Class` 需要 Hook 的 `Constructor`。
 
 **功能示例**
 
@@ -389,7 +389,7 @@ inline fun HookParam.field(initiate: FieldCondition): FieldFinder.Result
 
 **功能描述**
 
-> 使用当前 `instanceClass` 查找并得到 `Field`。
+> 使用当前 `hookClass` 查找并得到 `Field`。
 
 **功能示例**
 
@@ -430,7 +430,7 @@ inline fun HookParam.method(initiate: MethodCondition): MethodFinder.Result
 
 **功能描述**
 
-> 使用当前 `instanceClass` 查找并得到方法。
+> 使用当前 `hookClass` 查找并得到 `Method` 。
 
 #### HookParam.constructor *- i-ext-method*
 
@@ -448,7 +448,7 @@ inline fun HookParam.constructor(initiate: ConstructorCondition): ConstructorFin
 
 **功能描述**
 
-> 使用当前 `instanceClass` 查找并得到构造方法。
+> 使用当前 `hookClass` 查找并得到 `Constructor`。
 
 #### HookParam.injectMember *- i-ext-method*
 
@@ -462,7 +462,7 @@ inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHo
 
 **功能描述**
 
-> 注入要 Hook 的方法、构造方法 (嵌套 Hook)。
+> 注入要 Hook 的 `Method`、`Constructor` (嵌套 Hook)。
 
 #### beforeHook *- method*
 
@@ -480,7 +480,7 @@ fun beforeHook(initiate: HookParam.() -> Unit): HookCallback
 
 **功能描述**
 
-> 在方法执行完成前 Hook。
+> 在 `Member` 执行完成前 Hook。
 
 #### afterHook *- method*
 
@@ -498,7 +498,7 @@ fun afterHook(initiate: HookParam.() -> Unit): HookCallback
 
 **功能描述**
 
-> 在方法执行完成后 Hook。
+> 在 `Member` 执行完成后 Hook。
 
 #### replaceAny *- method*
 
@@ -512,7 +512,7 @@ fun replaceAny(initiate: HookParam.() -> Any?)
 
 **功能描述**
 
-> 拦截并替换此方法内容，给出返回值。
+> 拦截并替换此 `Member` 内容，给出返回值。
 
 #### replaceUnit *- method*
 
@@ -526,7 +526,7 @@ fun replaceUnit(initiate: HookParam.() -> Unit)
 
 **功能描述**
 
-> 拦截并替换此方法内容，没有返回值，可以称为 `Void`。
+> 拦截并替换此 `Member` 内容，没有返回值，可以称为 `Void`。
 
 #### replaceTo *- method*
 
@@ -540,7 +540,7 @@ fun replaceTo(any: Any?)
 
 **功能描述**
 
-> 拦截并替换方法返回值。
+> 拦截并替 `Member` 返回值。
 
 #### replaceToTrue *- method*
 
@@ -554,9 +554,9 @@ fun replaceToTrue()
 
 **功能描述**
 
-> 拦截并替换方法返回值为 `true`。
+> 拦截并替换 `Member` 返回值为 `true`。
 
-!> 确保替换方法的返回对象为 `Boolean`。
+!> 确保替换 `Member` 的返回对象为 `Boolean`。
 
 #### replaceToFalse *- method*
 
@@ -570,9 +570,9 @@ fun replaceToFalse()
 
 **功能描述**
 
-> 拦截并替换方法返回值为 `false`。
+> 拦截并替换 `Member` 返回值为 `false`。
 
-!> 确保替换方法的返回对象为 `Boolean`。
+!> 确保替换 `Member` 的返回对象为 `Boolean`。
 
 #### intercept *- method*
 
@@ -586,11 +586,11 @@ fun intercept()
 
 **功能描述**
 
-> 拦截此方法。
+> 拦截此 `Member` 。
 
-!> 这将会禁止此方法执行并返回 `null`。
+!> 这将会禁止此 `Member` 执行并返回 `null`。
 
-!> 注意：例如 `Int`、`Long`、`Boolean` 常量返回值的方法一旦被设置为 null 可能会造成 Hook APP 抛出异常。
+!> 注意：例如 `Int`、`Long`、`Boolean` 常量返回值的 `Member` 一旦被设置为 null 可能会造成 Hook APP 抛出异常。
 
 #### removeSelf *- method*
 
@@ -604,7 +604,7 @@ fun removeSelf(result: (Boolean) -> Unit)
 
 **功能描述**
 
-> 移除当前注入的 Hook 方法、构造方法 (解除 Hook)。
+> 移除当前注入的 Hook `Method`、`Constructor` (解除 Hook)。
 
 !> 你只能在 Hook 回调方法中使用此功能。
 
@@ -866,7 +866,7 @@ fun remove(result: (Boolean) -> Unit)
 
 **功能描述**
 
-> 移除当前注入的 Hook 方法、构造方法 (解除 Hook)。
+> 移除当前注入的 Hook `Method`、`Constructor` (解除 Hook)。
 
 !> 你只能在 Hook 成功后才能解除 Hook，可监听 `onHooked` 事件。
 

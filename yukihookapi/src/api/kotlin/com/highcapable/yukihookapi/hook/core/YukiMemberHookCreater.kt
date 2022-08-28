@@ -50,6 +50,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookPriority
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
+import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -82,7 +83,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     @PublishedApi
     internal var isDisableCreaterRunHook = false
 
-    /** 设置要 Hook 的方法、构造方法 */
+    /** 设置要 Hook 的 [Method]、[Constructor] */
     @PublishedApi
     internal var preHookMembers = HashMap<String, MemberHookCreater>()
 
@@ -97,7 +98,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         get() = hookClass.instance ?: error("Cannot get hook class \"${hookClass.name}\" cause ${hookClass.throwable?.message}")
 
     /**
-     * 注入要 Hook 的方法、构造方法
+     * 注入要 Hook 的 [Method]、[Constructor]
      * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
      * @param tag 可设置标签 - 在发生错误时方便进行调试
      * @param initiate 方法体
@@ -188,7 +189,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     /**
      * Hook 核心功能实现类
      *
-     * 查找和处理需要 Hook 的方法、构造方法
+     * 查找和处理需要 Hook 的 [Method]、[Constructor]
      * @param priority Hook 优先级
      * @param tag 当前设置的标签
      */
@@ -249,16 +250,16 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         @PublishedApi
         internal var finder: BaseFinder? = null
 
-        /** 当前被 Hook 的方法、构造方法实例数组 */
+        /** 当前被 Hook 的 [Method]、[Constructor] 实例数组 */
         private val memberUnhooks = HashSet<YukiMemberHook.Unhook>()
 
-        /** 当前需要 Hook 的方法、构造方法 */
+        /** 当前需要 Hook 的 [Method]、[Constructor] */
         internal val members = HashSet<Member>()
 
         /**
-         * 手动指定要 Hook 的方法、构造方法
+         * 手动指定要 Hook 的 [Method]、[Constructor]
          *
-         * 你可以调用 [instanceClass] 来手动查询要 Hook 的方法
+         * 你可以调用 [instanceClass] 来手动查询要 Hook 的 [Method]、[Constructor]
          *
          * - ❗不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] 或 [constructor] 方法
          *
@@ -273,7 +274,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 查找并 Hook [hookClass] 中指定 [name] 的全部方法
+         * 查找并 Hook [hookClass] 中指定 [name] 的全部 [Method]
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
@@ -285,7 +286,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         fun allMethods(name: String) = method { this.name = name }.all()
 
         /**
-         * 查找并 Hook [hookClass] 中的全部构造方法
+         * 查找并 Hook [hookClass] 中的全部 [Constructor]
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
@@ -299,13 +300,13 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         fun allConstructors() = allMembers(MembersType.CONSTRUCTOR)
 
         /**
-         * 查找并 Hook [hookClass] 中的全部方法、构造方法
+         * 查找并 Hook [hookClass] 中的全部 [Method]、[Constructor]
          *
          * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          *
-         * - ❗警告：无法准确处理每个方法的返回值和 param - 建议使用 [method] or [constructor] 对每个方法单独 Hook
+         * - ❗警告：无法准确处理每个 [Member] 的返回值和 param - 建议使用 [method] or [constructor] 对每个 [Member] 单独 Hook
          *
-         * - ❗如果 [hookClass] 中没有方法可能会发生错误
+         * - ❗如果 [hookClass] 中没有 [Member] 可能会发生错误
          * @param type 过滤 [Member] 类型 - 默认为 [MembersType.ALL]
          */
         fun allMembers(type: MembersType = MembersType.ALL) {
@@ -318,33 +319,33 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 查找 [hookClass] 需要 Hook 的方法
+         * 查找 [hookClass] 需要 Hook 的 [Method]
          *
          * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
-         * @return [MethodFinder.Result]
+         * @return [MethodFinder.Process]
          */
         inline fun method(initiate: MethodCondition) = try {
             isHookMemberSetup = true
-            MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.build(isBind = true)
+            MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
         } catch (e: Throwable) {
             findingThrowable = e
-            MethodFinder(hookInstance = this).failure(e)
+            MethodFinder(hookInstance = this).denied(e)
         }
 
         /**
-         * 查找 [hookClass] 需要 Hook 的构造方法
+         * 查找 [hookClass] 需要 Hook 的 [Constructor]
          *
          * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
-         * @return [ConstructorFinder.Result]
+         * @return [ConstructorFinder.Process]
          */
         inline fun constructor(initiate: ConstructorCondition = { emptyParam() }) = try {
             isHookMemberSetup = true
-            ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.build(isBind = true)
+            ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
         } catch (e: Throwable) {
             findingThrowable = e
-            ConstructorFinder(hookInstance = this).failure(e)
+            ConstructorFinder(hookInstance = this).denied(e)
         }
 
         /**
@@ -357,7 +358,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             else FieldFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
         /**
-         * 使用当前 [hookClass] 查找并得到方法
+         * 使用当前 [hookClass] 查找并得到 [Method]
          * @param initiate 方法体
          * @return [MethodFinder.Result]
          */
@@ -366,7 +367,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             else MethodFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
         /**
-         * 使用当前 [hookClass] 查找并得到构造方法
+         * 使用当前 [hookClass] 查找并得到 [Constructor]
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
@@ -375,7 +376,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             else ConstructorFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
 
         /**
-         * 注入要 Hook 的方法、构造方法 (嵌套 Hook)
+         * 注入要 Hook 的 [Method]、[Constructor] (嵌套 Hook)
          * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
          * @param tag 可设置标签 - 在发生错误时方便进行调试
          * @param initiate 方法体
@@ -388,7 +389,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         ) = this@YukiMemberHookCreater.injectMember(priority, tag, initiate).also { this@YukiMemberHookCreater.hook() }
 
         /**
-         * 在方法执行完成前 Hook
+         * 在 [Member] 执行完成前 Hook
          *
          * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
          * @param initiate [HookParam] 方法体
@@ -401,7 +402,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 在方法执行完成后 Hook
+         * 在 [Member] 执行完成后 Hook
          *
          * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
          * @param initiate [HookParam] 方法体
@@ -414,7 +415,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 拦截并替换此方法内容 - 给出返回值
+         * 拦截并替换此 [Member] 内容 - 给出返回值
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          * @param initiate [HookParam] 方法体
@@ -425,7 +426,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 拦截并替换此方法内容 - 没有返回值 ([Unit])
+         * 拦截并替换此 [Member] 内容 - 没有返回值 ([Unit])
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          * @param initiate [HookParam] 方法体
@@ -436,7 +437,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 拦截并替换方法返回值
+         * 拦截并替换 [Member] 返回值
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          * @param any 要替换为的返回值对象
@@ -447,9 +448,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 拦截并替换方法返回值为 true
+         * 拦截并替换 [Member] 返回值为 true
          *
-         * - ❗确保替换方法的返回对象为 [Boolean]
+         * - ❗确保替换 [Member] 的返回对象为 [Boolean]
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -459,9 +460,9 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 拦截并替换方法返回值为 false
+         * 拦截并替换 [Member] 返回值为 false
          *
-         * - ❗确保替换方法的返回对象为 [Boolean]
+         * - ❗确保替换 [Member] 的返回对象为 [Boolean]
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -471,11 +472,11 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 拦截此方法
+         * 拦截此 [Member]
          *
-         * - ❗这将会禁止此方法执行并返回 null
+         * - ❗这将会禁止此 [Member] 执行并返回 null
          *
-         * - ❗注意：例如 [Int]、[Long]、[Boolean] 常量返回值的方法一旦被设置为 null 可能会造成 Hook APP 抛出异常
+         * - ❗注意：例如 [Int]、[Long]、[Boolean] 常量返回值的 [Member] 一旦被设置为 null 可能会造成 Hook APP 抛出异常
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -485,7 +486,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 移除当前注入的 Hook 方法、构造方法 (解除 Hook)
+         * 移除当前注入的 Hook [Method]、[Constructor] (解除 Hook)
          *
          * - ❗你只能在 Hook 回调方法中使用此功能
          * @param result 回调是否成功
@@ -544,7 +545,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * Hook 方法、构造方法
+         * Hook [Method]、[Constructor]
          * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
          */
         private fun Member.hook(): Pair<YukiMemberHook.Unhook?, Boolean> {
@@ -565,7 +566,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                             onConductFailureCallback?.invoke(assign, e)
                             onAllFailureCallback?.invoke(e)
                             if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
-                            /** 若发生异常则会自动调用未经 Hook 的原始方法保证 Hook APP 正常运行 */
+                            /** 若发生异常则会自动调用未经 Hook 的原始 [Member] 保证 Hook APP 正常运行 */
                             assign.callOriginal()
                         }
                     }
@@ -614,7 +615,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         }
 
         /**
-         * 检查被 Hook 方法的返回值
+         * 检查被 Hook [Member] 的返回值
          * @param origin 原始返回值
          * @param target 目标返回值
          * @throws IllegalStateException 如果返回值不正确
@@ -802,7 +803,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             fun ignoredAllFailure() = onAllFailure {}
 
             /**
-             * 移除当前注入的 Hook 方法、构造方法 (解除 Hook)
+             * 移除当前注入的 Hook [Method]、[Constructor] (解除 Hook)
              *
              * - ❗你只能在 Hook 成功后才能解除 Hook - 可监听 [onHooked] 事件
              * @param result 回调是否成功

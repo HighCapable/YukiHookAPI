@@ -42,7 +42,9 @@ import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.utils.runBlocking
+import com.highcapable.yukihookapi.hook.utils.unit
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
+import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
@@ -264,37 +266,43 @@ class MethodFinder @PublishedApi internal constructor(
 
     /**
      * 得到 [Method] 结果
-     *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
-     * @return [Result]
      */
+    private fun build(isBind: Boolean) {
+        if (classSet == null) error("classSet is null")
+        classSet.checkingInternal()
+        runBlocking {
+            isBindToHooker = isBind
+            setInstance(isBind, result)
+        }.result { ms ->
+            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
+        }
+    }
+
     @YukiPrivateApi
-    override fun build(isBind: Boolean) = try {
-        if (classSet != null) {
-            classSet.checkingInternal()
-            runBlocking {
-                isBindToHooker = isBind
-                setInstance(isBind, result)
-            }.result { ms ->
-                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
-            }
-            Result()
-        } else Result(isNoSuch = true, Throwable("classSet is null"))
+    override fun build() = try {
+        build(isBind = false)
+        Result()
     } catch (e: Throwable) {
         onFailureMsg(throwable = e)
         Result(isNoSuch = true, e)
     }
 
-    /**
-     * 创建一个异常结果
-     *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
-     * @param throwable 异常
-     * @return [Result]
-     */
+    @YukiPrivateApi
+    override fun process() = try {
+        build(isBind = true)
+        Process()
+    } catch (e: Throwable) {
+        onFailureMsg(throwable = e)
+        Process(isNoSuch = true, e)
+    }
+
     @YukiPrivateApi
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
+
+
+    @YukiPrivateApi
+    override fun denied(throwable: Throwable?) = Process(isNoSuch = true, throwable)
 
     /**
      * [Method] 重查找实现类
@@ -377,6 +385,68 @@ class MethodFinder @PublishedApi internal constructor(
     }
 
     /**
+     * [Method] 查找结果处理类 - 为 [hookInstance] 提供
+     * @param isNoSuch 是否没有找到方法 - 默认否
+     * @param throwable 错误信息
+     */
+    inner class Process internal constructor(
+        @PublishedApi internal val isNoSuch: Boolean = false,
+        @PublishedApi internal val throwable: Throwable? = null
+    ) : BaseResult {
+
+        /**
+         * 创建监听结果事件方法体
+         * @param initiate 方法体
+         * @return [Process] 可继续向下监听
+         */
+        inline fun result(initiate: Process.() -> Unit) = apply(initiate)
+
+        /**
+         * 设置全部查询条件匹配的多个 [Method] 实例结果到 [hookInstance]
+         * @return [Process] 可继续向下监听
+         */
+        fun all(): Process {
+            fun HashSet<Member>.bind() = takeIf { it.isNotEmpty() }?.apply {
+                hookInstance?.members?.clear()
+                forEach { hookInstance?.members?.add(it) }
+            }.unit()
+            if (isUsingRemedyPlan)
+                remedyPlansCallback = { memberInstances.bind() }
+            else memberInstances.bind()
+            return this
+        }
+
+        /**
+         * 创建 [Method] 重查找功能
+         *
+         * 当你遇到一种 [Method] 可能存在不同形式的存在时
+         *
+         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchMethod] 捕获异常二次查找 [Method]
+         *
+         * 若第一次查找失败了 - 你还可以在这里继续添加此方法体直到成功为止
+         * @param initiate 方法体
+         * @return [Process] 可继续向下监听
+         */
+        inline fun remedys(initiate: RemedyPlan.() -> Unit): Process {
+            isUsingRemedyPlan = true
+            if (isNoSuch) RemedyPlan().apply(initiate).build()
+            return this
+        }
+
+        /**
+         * 监听找不到 [Method] 时
+         *
+         * - 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
+         * @param result 回调错误
+         * @return [Process] 可继续向下监听
+         */
+        inline fun onNoSuchMethod(result: (Throwable) -> Unit): Process {
+            if (isNoSuch) result(throwable ?: Throwable("Initialization Error"))
+            return this
+        }
+    }
+
+    /**
      * [Method] 查找结果实现类
      * @param isNoSuch 是否没有找到方法 - 默认否
      * @param throwable 错误信息
@@ -409,7 +479,7 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * 获得 [Method] 实例处理类数组
          *
-         * - 返回全部查询条件匹配的多个 [Method] 实例结果并在 [isBindToHooker] 时设置到 [hookInstance]
+         * - 返回全部查询条件匹配的多个 [Method] 实例结果
          *
          * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
          *
@@ -417,13 +487,8 @@ class MethodFinder @PublishedApi internal constructor(
          * @param instance 所在实例
          * @return [ArrayList]<[Instance]>
          */
-        fun all(instance: Any? = null): ArrayList<Instance> {
-            if (isBindToHooker) memberInstances.takeIf { it.isNotEmpty() }?.apply {
-                hookInstance?.members?.clear()
-                forEach { hookInstance?.members?.add(it) }
-            }
-            return arrayListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
-        }
+        fun all(instance: Any? = null) =
+            arrayListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
 
         /**
          * 得到 [Method] 本身
