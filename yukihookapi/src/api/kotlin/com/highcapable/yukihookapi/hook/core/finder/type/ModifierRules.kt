@@ -191,7 +191,7 @@ class ModifierRules @PublishedApi internal constructor() {
      *
      * 对于任意的静态 [Member] 可添加此描述进行确定
      *
-     * - ❗特别注意 Kotlin -> Jvm 后的 object 类中的方法并不是静态的
+     * - ❗注意 Kotlin → Jvm 后的 object 类中的方法并不是静态的
      */
     fun isStatic() {
         isStatic = true
@@ -200,7 +200,7 @@ class ModifierRules @PublishedApi internal constructor() {
     /**
      * 添加描述 [Member] 类型包含 final
      *
-     * - ❗特别注意在 Kotlin -> Jvm 后没有 open 标识的 [Member] 和没有任何关联的 [Member] 都将为 final
+     * - ❗注意 Kotlin → Jvm 后没有 open 标识的 [Member] 和没有任何关联的 [Member] 都将为 final
      */
     fun isFinal() {
         isFinal = true
