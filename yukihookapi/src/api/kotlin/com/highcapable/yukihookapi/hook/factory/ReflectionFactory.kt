@@ -188,11 +188,22 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: Curre
 
 /**
  * 通过构造方法创建新实例 - 任意类型 [Any]
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [buildOf]
+ * @return [Any] or null
+ */
+@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "buildOf(*param, initiate)"))
+fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) = buildOf(*param, initiate)
+
+/**
+ * 通过构造方法创建新实例 - 任意类型 [Any]
  * @param param 方法参数
  * @param initiate 查找方法体
  * @return [Any] or null
  */
-inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) =
+inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) =
     constructor(initiate).get().call(*param)
 
 /**
@@ -201,6 +212,7 @@ inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorConditio
  * @param initiate 查找方法体
  * @return [T] or null
  */
+@JvmName(name = "buildOf_Generics")
 inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) =
     constructor(initiate).get().newInstance<T>(*param)
 

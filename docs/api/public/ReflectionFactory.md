@@ -463,11 +463,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean, initiate: CurrentClass.
 
 > 获得当前实例的类操作对象。
 
-### Class.buildOfAny *- ext-method*
-
-```kotlin
-inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition): Any?
-```
+### ~~Class.buildOfAny *- ext-method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
@@ -477,11 +473,15 @@ inline fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorConditio
 
 将方法体进行 inline
 
-**功能描述**
+`v1.0.93` `作废`
 
-> 通过构造方法创建新实例，任意类型 `Any`。
+请转移到 `buildOf` 方法
 
 ### Class.buildOf *- ext-method*
+
+```kotlin
+inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition): Any?
+```
 
 ```kotlin
 inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition): T?
@@ -495,9 +495,13 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditi
 
 将方法体进行 inline
 
+`v1.0.93` `修改`
+
+加入无泛型方法 `buildOf`
+
 **功能描述**
 
-> 通过构造方法创建新实例，指定类型 `T`。
+> 通过构造方法创建新实例，指定类型 `T` 或任意类型 `Any`。
 
 ### Class.allMethods *- ext-method*
 
