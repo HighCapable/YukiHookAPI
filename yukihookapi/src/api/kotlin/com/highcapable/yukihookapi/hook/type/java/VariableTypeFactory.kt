@@ -30,6 +30,10 @@
 package com.highcapable.yukihookapi.hook.type.java
 
 import com.highcapable.yukihookapi.hook.factory.classOf
+import dalvik.system.BaseDexClassLoader
+import dalvik.system.DexClassLoader
+import dalvik.system.InMemoryDexClassLoader
+import dalvik.system.PathClassLoader
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -446,9 +450,33 @@ val JavaClass get() = classOf<Class<*>>()
 
 /**
  * 获得 [ClassLoader] 类型
- * @return [ClassLoader]
+ * @return [Class]
  */
 val JavaClassLoader get() = classOf<ClassLoader>()
+
+/**
+ * 获得 [BaseDexClassLoader] 类型
+ * @return [Class]
+ */
+val DalvikBaseDexClassLoader get() = classOf<BaseDexClassLoader>()
+
+/**
+ * 获得 [DexClassLoader] 类型
+ * @return [Class]
+ */
+val DalvikDexClassLoader get() = classOf<DexClassLoader>()
+
+/**
+ * 获得 [PathClassLoader] 类型
+ * @return [Class]
+ */
+val DalvikPathClassLoader get() = classOf<PathClassLoader>()
+
+/**
+ * 获得 [InMemoryDexClassLoader] 类型
+ * @return [Class]
+ */
+val DalvikInMemoryDexClassLoader get() = classOf<InMemoryDexClassLoader>()
 
 /**
  * 获得 [Method] 类型
