@@ -46,20 +46,20 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookResources 要 Hook 的 [HookResources] 实例
  */
-class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookResources: HookResources) {
+class YukiResourcesHookCreator(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookResources: HookResources) {
 
     /** 设置要 Hook 的 Resources */
     @PublishedApi
-    internal var preHookResources = HashMap<String, ResourcesHookCreater>()
+    internal var preHookResources = HashMap<String, ResourcesHookCreator>()
 
     /**
      * 注入要 Hook 的 Resources
      * @param tag 可设置标签 - 在发生错误时方便进行调试
      * @param initiate 方法体
-     * @return [ResourcesHookCreater.Result]
+     * @return [ResourcesHookCreator.Result]
      */
-    inline fun injectResource(tag: String = "Default", initiate: ResourcesHookCreater.() -> Unit) =
-        ResourcesHookCreater(tag).apply(initiate).apply { preHookResources[toString()] = this }.build()
+    inline fun injectResource(tag: String = "Default", initiate: ResourcesHookCreator.() -> Unit) =
+        ResourcesHookCreator(tag).apply(initiate).apply { preHookResources[toString()] = this }.build()
 
     /** Hook 执行入口 */
     @PublishedApi
@@ -77,7 +77,7 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
      * 查找和处理需要 Hook 的 Resources
      * @param tag 当前设置的标签
      */
-    inner class ResourcesHookCreater @PublishedApi internal constructor(private val tag: String) {
+    inner class ResourcesHookCreator @PublishedApi internal constructor(private val tag: String) {
 
         /** 是否已经执行 Hook */
         private var isHooked = false
@@ -88,9 +88,9 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
          */
         private inner class ModuleResFwd(var resId: Int)
 
-        /** 是否对当前 [ResourcesHookCreater] 禁止执行 Hook 操作 */
+        /** 是否对当前 [ResourcesHookCreator] 禁止执行 Hook 操作 */
         @PublishedApi
-        internal var isDisableCreaterRunHook = false
+        internal var isDisableCreatorRunHook = false
 
         /** 当前的查找条件 */
         @PublishedApi
@@ -177,7 +177,7 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
         internal fun hook() {
             if (isHooked) return
             isHooked = true
-            if (isDisableCreaterRunHook.not()) runCatching {
+            if (isDisableCreatorRunHook.not()) runCatching {
                 when {
                     conditions == null -> yLoggerE(msg = "You must set the conditions before hook a Resources [$tag]")
                     replaceInstance == null && layoutInstance == null -> yLoggerE(msg = "Resources Hook got null replaceInstance [$tag]")
@@ -347,7 +347,7 @@ class YukiResourcesHookCreater(@PublishedApi internal val packageParam: PackageP
              * @return [Result] 可继续向下监听
              */
             inline fun by(condition: () -> Boolean): Result {
-                isDisableCreaterRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
+                isDisableCreatorRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
                 return this
             }
 

@@ -62,7 +62,7 @@ import java.lang.reflect.Method
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
-class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
+class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
 
     /** 默认 Hook 回调优先级 */
     val PRIORITY_DEFAULT = YukiHookPriority.PRIORITY_DEFAULT
@@ -79,13 +79,13 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
 
-    /** 是否对当前 [YukiMemberHookCreater] 禁止执行 Hook 操作 */
+    /** 是否对当前 [YukiMemberHookCreator] 禁止执行 Hook 操作 */
     @PublishedApi
-    internal var isDisableCreaterRunHook = false
+    internal var isDisableCreatorRunHook = false
 
     /** 设置要 Hook 的 [Method]、[Constructor] */
     @PublishedApi
-    internal var preHookMembers = HashMap<String, MemberHookCreater>()
+    internal var preHookMembers = HashMap<String, MemberHookCreator>()
 
     /**
      * 得到当前被 Hook 的 [Class]
@@ -102,10 +102,10 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
      * @param tag 可设置标签 - 在发生错误时方便进行调试
      * @param initiate 方法体
-     * @return [MemberHookCreater.Result]
+     * @return [MemberHookCreator.Result]
      */
-    inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreater.() -> Unit) =
-        MemberHookCreater(priority, tag).apply(initiate).apply { preHookMembers[toString()] = this }.build()
+    inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreator.() -> Unit) =
+        MemberHookCreator(priority, tag).apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
     /**
      * 允许 Hook 过程中的所有危险行为
@@ -134,7 +134,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         preHookMembers.isEmpty() -> Result().also { yLoggerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
         else -> Result().await {
             when {
-                isDisableCreaterRunHook.not() && hookClass.instance != null -> runCatching {
+                isDisableCreatorRunHook.not() && hookClass.instance != null -> runCatching {
                     hookClass.instance?.apply { checkingInternal(); checkingDangerous() }
                     it.onPrepareHook?.invoke()
                     preHookMembers.forEach { (_, m) -> m.hook() }
@@ -143,7 +143,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                         yLoggerE(msg = "Hook initialization failed because got an Exception", e = it)
                     else onHookClassNotFoundFailureCallback?.invoke(it)
                 }
-                isDisableCreaterRunHook.not() && hookClass.instance == null ->
+                isDisableCreatorRunHook.not() && hookClass.instance == null ->
                     if (onHookClassNotFoundFailureCallback == null)
                         yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
                     else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
@@ -193,7 +193,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
      * @param priority Hook 优先级
      * @param tag 当前设置的标签
      */
-    inner class MemberHookCreater @PublishedApi internal constructor(private val priority: Int, internal val tag: String) {
+    inner class MemberHookCreator @PublishedApi internal constructor(private val priority: Int, internal val tag: String) {
 
         /** Hook 结果实例 */
         private var result: Result? = null
@@ -234,7 +234,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
         /** 是否为替换 Hook 模式 */
         private var isReplaceHookMode = false
 
-        /** 是否对当前 [MemberHookCreater] 禁止执行 Hook 操作 */
+        /** 是否对当前 [MemberHookCreator] 禁止执行 Hook 操作 */
         @PublishedApi
         internal var isDisableMemberRunHook = false
 
@@ -354,8 +354,8 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @return [FieldFinder.Result]
          */
         inline fun HookParam.field(initiate: FieldCondition) =
-            if (hookClass.instance == null) FieldFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
-            else FieldFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
+            if (hookClass.instance == null) FieldFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
+            else FieldFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
         /**
          * 使用当前 [hookClass] 查找并得到 [Method]
@@ -363,8 +363,8 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @return [MethodFinder.Result]
          */
         inline fun HookParam.method(initiate: MethodCondition) =
-            if (hookClass.instance == null) MethodFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
-            else MethodFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
+            if (hookClass.instance == null) MethodFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
+            else MethodFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
         /**
          * 使用当前 [hookClass] 查找并得到 [Constructor]
@@ -372,21 +372,21 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @return [ConstructorFinder.Result]
          */
         inline fun HookParam.constructor(initiate: ConstructorCondition = { emptyParam() }) =
-            if (hookClass.instance == null) ConstructorFinder(hookInstance = this@MemberHookCreater).failure(hookClass.throwable)
-            else ConstructorFinder(hookInstance = this@MemberHookCreater, hookClass.instance).apply(initiate).build()
+            if (hookClass.instance == null) ConstructorFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
+            else ConstructorFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
         /**
          * 注入要 Hook 的 [Method]、[Constructor] (嵌套 Hook)
          * @param priority Hook 优先级 - 默认 [PRIORITY_DEFAULT]
          * @param tag 可设置标签 - 在发生错误时方便进行调试
          * @param initiate 方法体
-         * @return [MemberHookCreater.Result]
+         * @return [MemberHookCreator.Result]
          */
         inline fun HookParam.injectMember(
             priority: Int = PRIORITY_DEFAULT,
             tag: String = "InnerDefault",
-            initiate: MemberHookCreater.() -> Unit
-        ) = this@YukiMemberHookCreater.injectMember(priority, tag, initiate).also { this@YukiMemberHookCreater.hook() }
+            initiate: MemberHookCreator.() -> Unit
+        ) = this@YukiMemberHookCreator.injectMember(priority, tag, initiate).also { this@YukiMemberHookCreator.hook() }
 
         /**
          * 在 [Member] 执行完成前 Hook
@@ -550,7 +550,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          */
         private fun Member.hook(): Pair<YukiMemberHook.Unhook?, Boolean> {
             /** 定义替换 Hook 的 [HookParam] */
-            val replaceHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
+            val replaceHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
 
             /** 定义替换 Hook 回调方法体 */
             val replaceMent = object : YukiMemberReplacement(priority) {
@@ -573,10 +573,10 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
             }
 
             /** 定义前 Hook 的 [HookParam] */
-            val beforeHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
+            val beforeHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
 
             /** 定义后 Hook 的 [HookParam] */
-            val afterHookParam = HookParam(createrInstance = this@YukiMemberHookCreater)
+            val afterHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
 
             /** 定义前后 Hook 回调方法体 */
             val beforeAfterHook = object : YukiMemberHook(priority) {
@@ -814,7 +814,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
                         it.remove()
                         onHookLogMsg(msg = "Remove Hooked Member [${it.member}] done [$tag]")
                     }
-                    runCatching { preHookMembers.remove(this@MemberHookCreater.toString()) }
+                    runCatching { preHookMembers.remove(this@MemberHookCreator.toString()) }
                     clear()
                     result(true)
                 } ?: result(false)
@@ -847,7 +847,7 @@ class YukiMemberHookCreater(@PublishedApi internal val packageParam: PackagePara
          * @return [Result] 可继续向下监听
          */
         inline fun by(condition: () -> Boolean): Result {
-            isDisableCreaterRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
+            isDisableCreatorRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
             return this
         }
 

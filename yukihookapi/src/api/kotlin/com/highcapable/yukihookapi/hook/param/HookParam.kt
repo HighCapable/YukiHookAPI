@@ -29,8 +29,8 @@
 
 package com.highcapable.yukihookapi.hook.param
 
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater.MemberHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator.MemberHookCreator
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookCallback
@@ -41,10 +41,10 @@ import java.lang.reflect.Method
 
 /**
  * Hook 方法、构造方法的目标对象实现类
- * @param createrInstance [YukiMemberHookCreater] 的实例对象
+ * @param creatorInstance [YukiMemberHookCreator] 的实例对象
  * @param param Hook 结果回调接口
  */
-class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var param: YukiHookCallback.Param? = null) {
+class HookParam internal constructor(private val creatorInstance: YukiMemberHookCreator, private var param: YukiHookCallback.Param? = null) {
 
     internal companion object {
 
@@ -89,7 +89,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      * 获取当前 Hook 实例的类对象
      * @return [Class]
      */
-    val instanceClass get() = param?.instance?.javaClass ?: createrInstance.instanceClass
+    val instanceClass get() = param?.instance?.javaClass ?: creatorInstance.instanceClass
 
     /**
      * 获取当前 Hook 对象的 [Member]
@@ -143,7 +143,7 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
      *
      * 使用 [throwable] 获取当前设置的方法调用抛出异常
      *
-     * - 仅会在回调方法的 [MemberHookCreater.beforeHook] or [MemberHookCreater.afterHook] 中生效
+     * - 仅会在回调方法的 [MemberHookCreator.beforeHook] or [MemberHookCreator.afterHook] 中生效
      *
      * - ❗设置后会同时执行 [resultNull] 方法并将异常抛出给当前 Hook APP
      * @return [Throwable] or null

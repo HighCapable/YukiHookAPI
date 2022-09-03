@@ -1,12 +1,16 @@
-## YukiResourcesHookCreater *- class*
+## YukiResourcesHookCreator *- class*
 
 ```kotlin
-class YukiResourcesHookCreater(internal val packageParam: PackageParam, internal val hookResources: HookResources)
+class YukiResourcesHookCreator(internal val packageParam: PackageParam, internal val hookResources: HookResources)
 ```
 
 **变更记录**
 
 `v1.0.80` `新增`
+
+`v1.0.93` `修改`
+
+修正拼写错误的 **Creater** 命名到 **Creator**
 
 **功能描述**
 
@@ -15,7 +19,7 @@ class YukiResourcesHookCreater(internal val packageParam: PackageParam, internal
 ### injectResource *- method*
 
 ```kotlin
-inline fun injectResource(tag: String, initiate: ResourceHookCreater.() -> Unit): ResourceHookCreater.Result
+inline fun injectResource(tag: String, initiate: ResourceHookCreator.() -> Unit): ResourceHookCreator.Result
 ```
 
 **变更记录**
@@ -48,10 +52,10 @@ injectResource(tag = "KuriharaYuki") {
 }
 ```
 
-### ResourcesHookCreater *- class*
+### ResourcesHookCreator *- class*
 
 ```kotlin
-inner class ResourcesHookCreater internal constructor(private val tag: String)
+inner class ResourcesHookCreator internal constructor(private val tag: String)
 ```
 
 **变更记录**
@@ -61,6 +65,8 @@ inner class ResourcesHookCreater internal constructor(private val tag: String)
 `v1.0.93` `修改`
 
 移除 `packageName`
+
+修正拼写错误的 **Creater** 命名到 **Creator**
 
 **功能描述**
 

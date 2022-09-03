@@ -1,7 +1,7 @@
-## YukiMemberHookCreater *- class*
+## YukiMemberHookCreator *- class*
 
 ```kotlin
-class YukiMemberHookCreater(internal val packageParam: PackageParam, internal val hookClass: HookClass)
+class YukiMemberHookCreator(internal val packageParam: PackageParam, internal val hookClass: HookClass)
 ```
 
 **变更记录**
@@ -11,6 +11,10 @@ class YukiMemberHookCreater(internal val packageParam: PackageParam, internal va
 `v1.0.80` `修改`
 
 对 `hookClass` 进行 inline 处理
+
+`v1.0.93` `修改`
+
+修正拼写错误的 **Creater** 命名到 **Creator**
 
 **功能描述**
 
@@ -81,7 +85,7 @@ val instanceClass: Class<*>
 ### injectMember *- method*
 
 ```kotlin
-inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
+inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
 ```
 
 **变更记录**
@@ -152,10 +156,10 @@ fun useDangerousOperation(option: String)
 
 !> 若你不知道允许此功能会带来何种后果，请勿使用。
 
-### MemberHookCreater *- class*
+### MemberHookCreator *- class*
 
 ```kotlin
-inner class MemberHookCreater internal constructor(private val priority: Int, internal val tag: String)
+inner class MemberHookCreator internal constructor(private val priority: Int, internal val tag: String)
 ```
 
 **变更记录**
@@ -173,6 +177,8 @@ inner class MemberHookCreater internal constructor(private val priority: Int, in
 `v1.0.93` `修改`
 
 移除 `packageName`
+
+修正拼写错误的 **Creater** 命名到 **Creator**
 
 **功能描述**
 
@@ -453,7 +459,7 @@ inline fun HookParam.constructor(initiate: ConstructorCondition): ConstructorFin
 #### HookParam.injectMember *- i-ext-method*
 
 ```kotlin
-inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHookCreater.() -> Unit): MemberHookCreater.Result
+inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
 ```
 
 **变更记录**

@@ -40,8 +40,8 @@ import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
-import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
+import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.hasClass
@@ -366,18 +366,18 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * - ❗为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
      * @param initiate 方法体
-     * @return [YukiMemberHookCreater.Result]
+     * @return [YukiMemberHookCreator.Result]
      */
-    inline fun String.hook(initiate: YukiMemberHookCreater.() -> Unit) = findClass(name = this).hook(initiate)
+    inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit) = findClass(name = this).hook(initiate)
 
     /**
      * Hook 方法、构造方法
      *
      * - 自动选择与当前 [Class] 相匹配的 [ClassLoader] - 优先使用 [appClassLoader]
      * @param initiate 方法体
-     * @return [YukiMemberHookCreater.Result]
+     * @return [YukiMemberHookCreator.Result]
      */
-    inline fun Class<*>.hook(initiate: YukiMemberHookCreater.() -> Unit) = when {
+    inline fun Class<*>.hook(initiate: YukiMemberHookCreator.() -> Unit) = when {
         name.hasClass(appClassLoader) -> findClass(name)
         else -> hookClass
     }.hook(initiate)
@@ -387,17 +387,17 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * - 使用当前 [appClassLoader] 装载目标 [Class]
      * @param initiate 方法体
-     * @return [YukiMemberHookCreater.Result]
+     * @return [YukiMemberHookCreator.Result]
      */
-    inline fun VariousClass.hook(initiate: YukiMemberHookCreater.() -> Unit) = hookClass(appClassLoader).hook(initiate)
+    inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = hookClass(appClassLoader).hook(initiate)
 
     /**
      * Hook 方法、构造方法
      * @param initiate 方法体
-     * @return [YukiMemberHookCreater.Result]
+     * @return [YukiMemberHookCreator.Result]
      */
-    inline fun HookClass.hook(initiate: YukiMemberHookCreater.() -> Unit) =
-        YukiMemberHookCreater(packageParam = this@PackageParam, hookClass = this).apply(initiate).hook()
+    inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit) =
+        YukiMemberHookCreator(packageParam = this@PackageParam, hookClass = this).apply(initiate).hook()
 
     /**
      * Hook APP 的 Resources
@@ -405,8 +405,8 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗请注意你需要确保当前 Hook Framework 支持且 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用
      * @param initiate 方法体
      */
-    inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit) =
-        YukiResourcesHookCreater(packageParam = this@PackageParam, hookResources = this).apply(initiate).hook()
+    inline fun HookResources.hook(initiate: YukiResourcesHookCreator.() -> Unit) =
+        YukiResourcesHookCreator(packageParam = this@PackageParam, hookResources = this).apply(initiate).hook()
 
     /**
      * [VariousClass] 转换为 [HookClass]

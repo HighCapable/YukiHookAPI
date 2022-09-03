@@ -879,7 +879,7 @@ loadZygote {
 
 **异常原因**
 
-在 `MemberHookCreater` 中调用 `members()` 但是未设置需要 Hook 的 `Member` 实例。
+在 `MemberHookCreator` 中调用 `members()` 但是未设置需要 Hook 的 `Member` 实例。
 
 > 示例如下
 

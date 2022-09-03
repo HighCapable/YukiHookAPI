@@ -642,19 +642,19 @@ customClassLoader?.fetching { clazz, resolve ->
 ### String+Class+VariousClass+HookClass.hook *- i-ext-method*
 
 ```kotlin
-inline fun String.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
 ```
 
 ```kotlin
-inline fun Class<*>.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun Class<*>.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
 ```
 
 ```kotlin
-inline fun VariousClass.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
 ```
 
 ```kotlin
-inline fun HookClass.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMemberHookCreater.Result
+inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
 ```
 
 **变更记录**
@@ -671,7 +671,7 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreater.() -> Unit): YukiMembe
 
 `v1.0.3` `修改`
 
-新增 `YukiMemberHookCreater.Result` 返回值
+新增 `YukiMemberHookCreator.Result` 返回值
 
 `v1.0.70` `修改`
 
@@ -748,7 +748,7 @@ findClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook {
 ### HookResources.hook *- i-ext-method*
 
 ```kotlin
-inline fun HookResources.hook(initiate: YukiResourcesHookCreater.() -> Unit)
+inline fun HookResources.hook(initiate: YukiResourcesHookCreator.() -> Unit)
 ```
 
 **变更记录**

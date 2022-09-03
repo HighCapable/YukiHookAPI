@@ -1,7 +1,7 @@
 ## HookParam *- class*
 
 ```kotlin
-class HookParam internal constructor(private val createrInstance: YukiMemberHookCreater, private var param: YukiHookCallback.Param?)
+class HookParam internal constructor(private val creatorInstance: YukiMemberHookCreator, private var param: YukiHookCallback.Param?)
 ```
 
 **变更记录**
@@ -11,6 +11,10 @@ class HookParam internal constructor(private val createrInstance: YukiMemberHook
 `v1.0.93` `修改`
 
 移动 `HookParamWrapper` 到 `YukiHookCallback.Param`
+
+`v1.0.93` `修改`
+
+修正拼写错误的 **creater** 命名到 **creator**
 
 **功能描述**
 
@@ -186,7 +190,7 @@ fun Throwable.throwToApp()
 
 使用 `throwable` 获取当前设置的方法调用抛出异常。
 
-仅会在回调方法的 `MemberHookCreater.beforeHook` or `MemberHookCreater.afterHook` 中生效。
+仅会在回调方法的 `MemberHookCreator.beforeHook` or `MemberHookCreator.afterHook` 中生效。
 
 !> 设置后会同时执行 `resultNull` 方法并将异常抛出给当前 Hook APP。
 

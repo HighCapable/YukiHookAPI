@@ -1,7 +1,7 @@
 ## FieldFinder *- class*
 
 ```kotlin
-class FieldFinder internal constructor(override val hookInstance: YukiMemberHookCreater.MemberHookCreater?, override val classSet: Class<*>?) : BaseFinder()
+class FieldFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>?) : BaseFinder()
 ```
 
 **变更记录**

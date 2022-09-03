@@ -31,7 +31,7 @@ package com.highcapable.yukihookapi.hook.core.finder
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
@@ -49,12 +49,12 @@ import java.lang.reflect.Member
  * [Constructor] 查找类
  *
  * 可通过指定类型查找指定构造方法或一组构造方法
- * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreater.MemberHookCreater.members]
+ * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreator.MemberHookCreator.members]
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class ConstructorFinder @PublishedApi internal constructor(
     @property:YukiPrivateApi
-    override val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
+    override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
     @property:YukiPrivateApi
     override val classSet: Class<*>? = null
 ) : BaseFinder(tag = "Constructor", hookInstance, classSet) {
@@ -185,7 +185,7 @@ class ConstructorFinder @PublishedApi internal constructor(
 
     /**
      * 设置实例
-     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
+     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreator.MemberHookCreator]
      * @param constructors 当前找到的 [Constructor] 数组
      */
     private fun setInstance(isBind: Boolean, constructors: HashSet<Constructor<*>>) {
@@ -199,7 +199,7 @@ class ConstructorFinder @PublishedApi internal constructor(
 
     /**
      * 得到 [Constructor] 结果
-     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater]
+     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreator.MemberHookCreator]
      */
     private fun build(isBind: Boolean) {
         if (classSet == null) error("classSet is null")

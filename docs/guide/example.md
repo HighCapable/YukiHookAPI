@@ -8,23 +8,23 @@
 
 ```
 Host Environment
-└── YukiMemberHookCreater
+└── YukiMemberHookCreator
     └── Class
-        └── MemberHookCreater
+        └── MemberHookCreator
             └── Member
                 ├── Before
                 └── After
-            MemberHookCreater
+            MemberHookCreator
             └── Member
                 ├── Before
                 └── After
             ...
-    YukiResourcesHookCreater
+    YukiResourcesHookCreator
     └── Resources
-        └── ResourcesHookCreater
+        └── ResourcesHookCreator
             └── Drawable
                 └── Replace
-            ResourcesHookCreater
+            ResourcesHookCreator
             └── Layout
                 └── Inject
             ...
@@ -192,7 +192,7 @@ TestClass.hook {
 }
 ```
 
-更多功能请参考 [MemberHookCreater](api/document?id=memberhookcreater-class)。
+更多功能请参考 [MemberHookCreator](api/document?id=memberhookcreator-class)。
 
 ### Hook Zygote
 
@@ -304,7 +304,7 @@ loadZygote {
 }
 ```
 
-更多功能请参考 [ResourcesHookCreater](api/document?id=resourceshookcreater-class)。
+更多功能请参考 [ResourcesHookCreator](api/document?id=resourceshookcreator-class)。
 
 ### 解除 Hook
 
@@ -346,7 +346,7 @@ injectMember {
 }
 ```
 
-更多功能请参考 [MemberHookCreater](api/document?id=memberhookcreater-class)。
+更多功能请参考 [MemberHookCreator](api/document?id=memberhookcreator-class)。
 
 ## 异常处理
 
@@ -412,7 +412,7 @@ method {
 }
 ```
 
-更多功能请参考 [MemberHookCreater.Result](api/document?id=result-class) 与 [ResourcesHookCreater.Result](api/document?id=result-class-2)。
+更多功能请参考 [MemberHookCreator.Result](api/document?id=result-class) 与 [ResourcesHookCreator.Result](api/document?id=result-class-2)。
 
 这里介绍了可能发生的常见异常，若要了解更多请参考 [API 异常处理](config/api-exception.md)。
 

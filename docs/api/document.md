@@ -54,9 +54,9 @@
 
 [filename](public/YukiBaseHooker.md ':include')
 
-[filename](public/YukiMemberHookCreater.md ':include')
+[filename](public/YukiMemberHookCreator.md ':include')
 
-[filename](public/YukiResourcesHookCreater.md ':include')
+[filename](public/YukiResourcesHookCreator.md ':include')
 
 [filename](public/MethodFinder.md ':include')
 
