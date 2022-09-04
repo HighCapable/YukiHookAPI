@@ -1,7 +1,7 @@
 ## MethodFinder *- class*
 
 ```kotlin
-class MethodFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>) : BaseFinder()
+class MethodFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>) : MemberBaseFinder
 ```
 
 **变更记录**
@@ -11,6 +11,10 @@ class MethodFinder internal constructor(override val hookInstance: YukiMemberHoo
 `v1.0.2` `修改`
 
 合并到 `BaseFinder`
+
+`v1.0.93` `修改`
+
+合并到 `MemberBaseFinder`
 
 **功能描述**
 
@@ -120,7 +124,7 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 > 设置 `Method` 参数。
 
-如果同时使用了 `paramCount` 则 `paramTypes` 的数量必须与 `paramCount` 完全匹配。
+如果同时使用了 `paramCount` 则 `paramType` 的数量必须与 `paramCount` 完全匹配。
 
 !> 无参 `Method` 请使用 `emptyParam` 设置查询条件。
 

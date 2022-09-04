@@ -33,7 +33,9 @@ import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
@@ -63,26 +65,24 @@ class FieldFinder @PublishedApi internal constructor(
     /** 当前使用的 [classSet] */
     private var usedClassSet = classSet
 
-    /** 是否在未找到后继续在当前 [classSet] 的父类中查找 */
-    private var isFindInSuperClass = false
-
     /** 当前重查找结果回调 */
     private var remedyPlansCallback: (() -> Unit)? = null
 
-    /** [ModifierRules] 实例 */
+    /** 当前查询条件规则数据 */
     @PublishedApi
-    internal var modifiers: ModifierRules? = null
-
-    /** [NameConditions] 实例 */
-    @PublishedApi
-    internal var nameConditions: NameConditions? = null
+    internal var rulesData = FieldRulesData()
 
     /**
      * 设置 [Field] 名称
      *
      * - ❗若不填写名称则必须存在一个其它条件
+     * @return [String]
      */
-    var name = ""
+    var name
+        get() = rulesData.name
+        set(value) {
+            rulesData.name = value
+        }
 
     /**
      * 设置 [Field] 类型
@@ -90,26 +90,31 @@ class FieldFinder @PublishedApi internal constructor(
      * - ❗只能是 [Class]、[String]、[VariousClass]
      *
      * - 可不填写类型
+     * @return [Any] or null
      */
-    var type: Any? = null
+    var type
+        get() = rulesData.type
+        set(value) {
+            rulesData.type = value.compat()
+        }
 
     /**
      * 设置 [Field] 标识符筛选条件
      *
      * - 可不设置筛选条件
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
-        modifiers = ModifierRules().apply(initiate)
+        rulesData.modifiers = ModifierRules().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
      * 顺序筛选字节码的下标
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
@@ -118,12 +123,12 @@ class FieldFinder @PublishedApi internal constructor(
      *
      * - ❗若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 名称
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun name(value: String): IndexTypeCondition {
-        name = value
+        rulesData.name = value
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -132,12 +137,12 @@ class FieldFinder @PublishedApi internal constructor(
      *
      * - ❗若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition {
-        nameConditions = NameConditions().apply(initiate)
+        rulesData.nameConditions = NameConditions().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -146,12 +151,12 @@ class FieldFinder @PublishedApi internal constructor(
      *
      * - 可不填写类型
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 类型 - ❗只能是 [Class]、[String]、[VariousClass]
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun type(value: Any): IndexTypeCondition {
-        type = value
+        rulesData.type = value.compat()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -162,7 +167,7 @@ class FieldFinder @PublishedApi internal constructor(
      * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
      */
     fun superClass(isOnlySuperClass: Boolean = false) {
-        isFindInSuperClass = true
+        rulesData.isFindInSuper = true
         if (isOnlySuperClass && classSet?.hasExtends == true) usedClassSet = classSet.superclass
     }
 
@@ -171,13 +176,7 @@ class FieldFinder @PublishedApi internal constructor(
      * @return [HashSet]<[Field]>
      * @throws NoSuchFieldError 如果找不到变量
      */
-    private val result
-        get() = ReflectionTool.findFields(
-            usedClassSet, orderIndex,
-            matchIndex, name,
-            modifiers, nameConditions,
-            type.compat(), isFindInSuperClass
-        )
+    private val result get() = ReflectionTool.findFields(usedClassSet, orderIndex, matchIndex, rulesData)
 
     /**
      * 设置实例

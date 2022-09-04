@@ -27,8 +27,9 @@
  */
 package com.highcapable.yukihookapi.hook.core.reflex.tools
 
-import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
+import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
+import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -51,29 +52,21 @@ internal object ReflectionTool {
      * @param classSet 变量所在类
      * @param orderIndex 字节码顺序下标
      * @param matchIndex 字节码筛选下标
-     * @param name 变量名称
-     * @param modifiers 变量描述
-     * @param nameConditions 名称查找条件
-     * @param type 变量类型
-     * @param isFindInSuperClass 是否在未找到后继续在当前 [classSet] 的父类中查找
+     * @param rulesData 规则查询数据
      * @return [HashSet]<[Field]>
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [type] 目标类不存在
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [FieldRulesData.type] 目标类不存在
      * @throws NoSuchFieldError 如果找不到变量
      */
     internal fun findFields(
         classSet: Class<*>?,
         orderIndex: Pair<Int, Boolean>?,
         matchIndex: Pair<Int, Boolean>?,
-        name: String,
-        modifiers: ModifierRules?,
-        nameConditions: NameConditions?,
-        type: Class<*>?,
-        isFindInSuperClass: Boolean
+        rulesData: FieldRulesData
     ): HashSet<Field> {
-        if (type == UndefinedType) error("Field match type class is not found")
-        if (orderIndex == null && matchIndex == null && name.isBlank() && modifiers == null && type == null)
+        if (rulesData.type == UndefinedType) error("Field match type class is not found")
+        if (orderIndex == null && matchIndex == null && rulesData.name.isBlank() && rulesData.modifiers == null && rulesData.type == null)
             error("You must set a condition when finding a Field")
-        val hashCode = ("[$orderIndex][$matchIndex][$name][$type][$modifiers][$classSet]").hashCode()
+        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.type}][${rulesData.modifiers}][$classSet]").hashCode()
         return ReflectsCacheStore.findFields(hashCode) ?: let {
             val fields = HashSet<Field>()
             classSet?.declaredFields?.apply {
@@ -81,15 +74,19 @@ internal object ReflectionTool {
                 var nameIndex = -1
                 var modifyIndex = -1
                 var nameCdsIndex = -1
-                val typeLastIndex = if (type != null && matchIndex != null) filter { type == it.type }.lastIndex else -1
-                val nameLastIndex = if (name.isNotBlank() && matchIndex != null) filter { name == it.name }.lastIndex else -1
-                val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
-                val nameCdsLastIndex = if (nameConditions != null && matchIndex != null) filter { nameConditions.contains(it) }.lastIndex else -1
+                val typeLastIndex =
+                    if (rulesData.type != null && matchIndex != null) filter { rulesData.type == it.type }.lastIndex else -1
+                val nameLastIndex =
+                    if (rulesData.name.isNotBlank() && matchIndex != null) filter { rulesData.name == it.name }.lastIndex else -1
+                val modifyLastIndex =
+                    if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
+                val nameCdsLastIndex =
+                    if (rulesData.nameConditions != null && matchIndex != null) filter { rulesData.nameConditions!!.contains(it) }.lastIndex else -1
                 forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
-                    if (type != null)
-                        conditions = (type == it.type).let {
+                    if (rulesData.type != null)
+                        conditions = (rulesData.type == it.type).let {
                             if (it) typeIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -98,8 +95,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (typeLastIndex - typeIndex) && matchIndex.second) ||
                                     (typeLastIndex == typeIndex && matchIndex.second.not()))
                         }
-                    if (name.isNotBlank())
-                        conditions = (conditions && name == it.name).let {
+                    if (rulesData.name.isNotBlank())
+                        conditions = (conditions && rulesData.name == it.name).let {
                             if (it) nameIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -108,8 +105,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
                                     (nameLastIndex == nameIndex && matchIndex.second.not()))
                         }
-                    if (modifiers != null)
-                        conditions = (conditions && modifiers.contains(it)).let {
+                    if (rulesData.modifiers != null)
+                        conditions = (conditions && rulesData.modifiers!!.contains(it)).let {
                             if (it) modifyIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -118,8 +115,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
                                     (modifyLastIndex == modifyIndex && matchIndex.second.not()))
                         }
-                    if (nameConditions != null)
-                        conditions = (conditions && nameConditions.contains(it)).let {
+                    if (rulesData.nameConditions != null)
+                        conditions = (conditions && rulesData.nameConditions!!.contains(it)).let {
                             if (it) nameCdsIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -134,15 +131,10 @@ internal object ReflectionTool {
                                 (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
                     if (conditions && isMatched) fields.add(it.apply { isAccessible = true })
                 }
-            } ?: error("Can't find this Field [$name] because classSet is null")
+            } ?: error("Can't find this Field [${rulesData.name}] because classSet is null")
             fields.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putFields(hashCode, fields) }
-                ?: if (isFindInSuperClass && classSet.hasExtends)
-                    findFields(
-                        classSet.superclass,
-                        orderIndex, matchIndex,
-                        name, modifiers, nameConditions,
-                        type, isFindInSuperClass = true
-                    )
+                ?: if (rulesData.isFindInSuper && classSet.hasExtends)
+                    findFields(classSet.superclass, orderIndex, matchIndex, rulesData)
                 else throw NoSuchFieldError(
                     "Can't find this Field --> " +
                             when {
@@ -155,13 +147,13 @@ internal object ReflectionTool {
                                 matchIndex.second.not() -> "matchIndex:[last] "
                                 else -> "matchIndex:[${matchIndex.first}] "
                             } +
-                            when (nameConditions) {
+                            when (rulesData.nameConditions) {
                                 null -> ""
-                                else -> "nameConditions:$nameConditions "
+                                else -> "nameConditions:${rulesData.nameConditions} "
                             } +
-                            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
-                            "type:[${type ?: "unspecified"}] " +
-                            "modifiers:${modifiers ?: "[]"} " +
+                            "name:[${rulesData.name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
+                            "type:[${rulesData.type ?: "unspecified"}] " +
+                            "modifiers:${rulesData.modifiers ?: "[]"} " +
                             "in [$classSet] " +
                             "by $TAG"
                 )
@@ -173,41 +165,28 @@ internal object ReflectionTool {
      * @param classSet 方法所在类
      * @param orderIndex 字节码顺序下标
      * @param matchIndex 字节码筛选下标
-     * @param name 方法名称
-     * @param modifiers 方法描述
-     * @param nameConditions 名称查找条件
-     * @param returnType 方法返回值
-     * @param paramCount 方法参数个数
-     * @param paramCountRange 方法参数个数范围
-     * @param paramTypes 方法参数类型
-     * @param isFindInSuperClass 是否在未找到后继续在当前 [classSet] 的父类中查找
+     * @param rulesData 规则查询数据
      * @return [HashSet]<[Method]>
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [paramTypes] 以及 [returnType] 目标类不存在
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [MethodRulesData.paramTypes] 以及 [MethodRulesData.returnType] 目标类不存在
      * @throws NoSuchMethodError 如果找不到方法
      */
     internal fun findMethods(
         classSet: Class<*>?,
         orderIndex: Pair<Int, Boolean>?,
         matchIndex: Pair<Int, Boolean>?,
-        name: String,
-        modifiers: ModifierRules?,
-        nameConditions: NameConditions?,
-        returnType: Class<*>?,
-        paramCount: Int,
-        paramCountRange: IntRange,
-        paramTypes: Array<out Class<*>>?,
-        isFindInSuperClass: Boolean
+        rulesData: MethodRulesData
     ): HashSet<Method> {
-        if (returnType == UndefinedType) error("Method match returnType class is not found")
-        paramTypes?.takeIf { it.isNotEmpty() }
+        if (rulesData.returnType == UndefinedType) error("Method match returnType class is not found")
+        rulesData.paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Method match paramType[$p] class is not found") }
         if (orderIndex == null && matchIndex == null &&
-            name.isBlank() && modifiers == null &&
-            paramCount < 0 && paramCountRange.isEmpty() &&
-            paramTypes == null && returnType == null
+            rulesData.name.isBlank() && rulesData.modifiers == null &&
+            rulesData.paramCount < 0 && rulesData.paramCountRange.isEmpty() &&
+            rulesData.paramTypes == null && rulesData.returnType == null
         ) error("You must set a condition when finding a Method")
         val hashCode =
-            ("[$orderIndex][$matchIndex][$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
+            ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.paramCount}][${rulesData.paramTypes.typeOfString()}]" +
+                    "[${rulesData.returnType}][${rulesData.modifiers}][$classSet]").hashCode()
         return ReflectsCacheStore.findMethods(hashCode) ?: let {
             val methods = HashSet<Method>()
             classSet?.declaredMethods?.apply {
@@ -219,21 +198,25 @@ internal object ReflectionTool {
                 var modifyIndex = -1
                 var nameCdsIndex = -1
                 val returnTypeLastIndex =
-                    if (returnType != null && matchIndex != null) filter { returnType == it.returnType }.lastIndex else -1
+                    if (rulesData.returnType != null && matchIndex != null) filter { rulesData.returnType == it.returnType }.lastIndex else -1
                 val paramCountLastIndex =
-                    if (paramCount >= 0 && matchIndex != null) filter { paramCount == it.parameterTypes.size }.lastIndex else -1
-                val paramCountRangeLastIndex = if (paramCountRange.isEmpty().not() && matchIndex != null)
-                    filter { it.parameterTypes.size in paramCountRange }.lastIndex else -1
+                    if (rulesData.paramCount >= 0 && matchIndex != null) filter { rulesData.paramCount == it.parameterTypes.size }.lastIndex else -1
+                val paramCountRangeLastIndex = if (rulesData.paramCountRange.isEmpty().not() && matchIndex != null)
+                    filter { it.parameterTypes.size in rulesData.paramCountRange }.lastIndex else -1
                 val paramTypeLastIndex =
-                    if (paramTypes != null && matchIndex != null) filter { arrayContentsEq(paramTypes, it.parameterTypes) }.lastIndex else -1
-                val nameLastIndex = if (name.isNotBlank() && matchIndex != null) filter { name == it.name }.lastIndex else -1
-                val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
-                val nameCdsLastIndex = if (nameConditions != null && matchIndex != null) filter { nameConditions.contains(it) }.lastIndex else -1
+                    if (rulesData.paramTypes != null && matchIndex != null)
+                        filter { arrayContentsEq(rulesData.paramTypes, it.parameterTypes) }.lastIndex else -1
+                val nameLastIndex =
+                    if (rulesData.name.isNotBlank() && matchIndex != null) filter { rulesData.name == it.name }.lastIndex else -1
+                val modifyLastIndex =
+                    if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
+                val nameCdsLastIndex =
+                    if (rulesData.nameConditions != null && matchIndex != null) filter { rulesData.nameConditions!!.contains(it) }.lastIndex else -1
                 forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
-                    if (name.isNotBlank())
-                        conditions = (name == it.name).let {
+                    if (rulesData.name.isNotBlank())
+                        conditions = (rulesData.name == it.name).let {
                             if (it) nameIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -242,8 +225,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
                                     (nameLastIndex == nameIndex && matchIndex.second.not()))
                         }
-                    if (returnType != null)
-                        conditions = (conditions && returnType == it.returnType).let {
+                    if (rulesData.returnType != null)
+                        conditions = (conditions && rulesData.returnType == it.returnType).let {
                             if (it) returnTypeIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -252,8 +235,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (returnTypeLastIndex - returnTypeIndex) && matchIndex.second) ||
                                     (returnTypeLastIndex == returnTypeIndex && matchIndex.second.not()))
                         }
-                    if (paramCount >= 0)
-                        conditions = (conditions && it.parameterTypes.size == paramCount).let {
+                    if (rulesData.paramCount >= 0)
+                        conditions = (conditions && it.parameterTypes.size == rulesData.paramCount).let {
                             if (it) paramCountIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -262,8 +245,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
                                     (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
                         }
-                    if (paramCountRange.isEmpty().not())
-                        conditions = (conditions && it.parameterTypes.size in paramCountRange).let {
+                    if (rulesData.paramCountRange.isEmpty().not())
+                        conditions = (conditions && it.parameterTypes.size in rulesData.paramCountRange).let {
                             if (it) paramCountRangeIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -272,8 +255,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
                                     (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
                         }
-                    if (paramTypes != null)
-                        conditions = (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).let {
+                    if (rulesData.paramTypes != null)
+                        conditions = (conditions && arrayContentsEq(rulesData.paramTypes, it.parameterTypes)).let {
                             if (it) paramTypeIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -282,8 +265,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
                                     (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
                         }
-                    if (modifiers != null)
-                        conditions = (conditions && modifiers.contains(it)).let {
+                    if (rulesData.modifiers != null)
+                        conditions = (conditions && rulesData.modifiers!!.contains(it)).let {
                             if (it) modifyIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -292,8 +275,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
                                     (modifyLastIndex == modifyIndex && matchIndex.second.not()))
                         }
-                    if (nameConditions != null)
-                        conditions = (conditions && nameConditions.contains(it)).let {
+                    if (rulesData.nameConditions != null)
+                        conditions = (conditions && rulesData.nameConditions!!.contains(it)).let {
                             if (it) nameCdsIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -308,16 +291,10 @@ internal object ReflectionTool {
                                 (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
                     if (conditions && isMatched) methods.add(it.apply { isAccessible = true })
                 }
-            } ?: error("Can't find this Method [$name] because classSet is null")
+            } ?: error("Can't find this Method [${rulesData.name}] because classSet is null")
             methods.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putMethods(hashCode, methods) }
-                ?: if (isFindInSuperClass && classSet.hasExtends)
-                    findMethods(
-                        classSet.superclass,
-                        orderIndex, matchIndex,
-                        name, modifiers, nameConditions,
-                        returnType, paramCount, paramCountRange,
-                        paramTypes, isFindInSuperClass = true
-                    )
+                ?: if (rulesData.isFindInSuper && classSet.hasExtends)
+                    findMethods(classSet.superclass, orderIndex, matchIndex, rulesData)
                 else throw NoSuchMethodError(
                     "Can't find this Method --> " +
                             when {
@@ -330,16 +307,16 @@ internal object ReflectionTool {
                                 matchIndex.second.not() -> "matchIndex:[last] "
                                 else -> "matchIndex:[${matchIndex.first}] "
                             } +
-                            when (nameConditions) {
+                            when (rulesData.nameConditions) {
                                 null -> ""
-                                else -> "nameConditions:$nameConditions "
+                                else -> "nameConditions:${rulesData.nameConditions} "
                             } +
-                            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
-                            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                            "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
-                            "paramTypes:[${paramTypes.typeOfString()}] " +
-                            "returnType:[${returnType ?: "unspecified"}] " +
-                            "modifiers:${modifiers ?: "[]"} " +
+                            "name:[${rulesData.name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
+                            "paramCount:[${rulesData.paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "paramCountRange:[${rulesData.paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
+                            "paramTypes:[${rulesData.paramTypes.typeOfString()}] " +
+                            "returnType:[${rulesData.returnType ?: "unspecified"}] " +
+                            "modifiers:${rulesData.modifiers ?: "[]"} " +
                             "in [$classSet] " +
                             "by $TAG"
                 )
@@ -351,32 +328,25 @@ internal object ReflectionTool {
      * @param classSet 构造方法所在类
      * @param orderIndex 字节码顺序下标
      * @param matchIndex 字节码筛选下标
-     * @param modifiers 构造方法描述
-     * @param paramCount 构造方法参数个数
-     * @param paramCountRange 构造方法参数个数范围
-     * @param paramTypes 构造方法参数类型
-     * @param isFindInSuperClass 是否在未找到后继续在当前 [classSet] 的父类中查找
+     * @param rulesData 规则查询数据
      * @return [HashSet]<[Constructor]>
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [paramTypes] 目标类不存在
+     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [ConstructorRulesData.paramTypes] 目标类不存在
      * @throws NoSuchMethodError 如果找不到构造方法
      */
     internal fun findConstructors(
         classSet: Class<*>?,
         orderIndex: Pair<Int, Boolean>?,
         matchIndex: Pair<Int, Boolean>?,
-        modifiers: ModifierRules?,
-        paramCount: Int,
-        paramCountRange: IntRange,
-        paramTypes: Array<out Class<*>>?,
-        isFindInSuperClass: Boolean
+        rulesData: ConstructorRulesData
     ): HashSet<Constructor<*>> {
-        paramTypes?.takeIf { it.isNotEmpty() }
+        rulesData.paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
         if (orderIndex == null && matchIndex == null &&
-            modifiers == null && paramCount < 0 &&
-            paramCountRange.isEmpty() && paramTypes == null
+            rulesData.modifiers == null && rulesData.paramCount < 0 &&
+            rulesData.paramCountRange.isEmpty() && rulesData.paramTypes == null
         ) error("You must set a condition when finding a Constructor")
-        val hashCode = ("[$orderIndex][$matchIndex][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
+        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.paramCount}][${rulesData.paramTypes.typeOfString()}]" +
+                "[${rulesData.modifiers}][$classSet]").hashCode()
         return ReflectsCacheStore.findConstructors(hashCode) ?: let {
             val constructors = HashSet<Constructor<*>>()
             classSet?.declaredConstructors?.apply {
@@ -385,17 +355,19 @@ internal object ReflectionTool {
                 var paramCountRangeIndex = -1
                 var modifyIndex = -1
                 val paramCountLastIndex =
-                    if (paramCount >= 0 && matchIndex != null) filter { paramCount == it.parameterTypes.size }.lastIndex else -1
-                val paramCountRangeLastIndex = if (paramCountRange.isEmpty().not() && matchIndex != null)
-                    filter { it.parameterTypes.size in paramCountRange }.lastIndex else -1
+                    if (rulesData.paramCount >= 0 && matchIndex != null) filter { rulesData.paramCount == it.parameterTypes.size }.lastIndex else -1
+                val paramCountRangeLastIndex = if (rulesData.paramCountRange.isEmpty().not() && matchIndex != null)
+                    filter { it.parameterTypes.size in rulesData.paramCountRange }.lastIndex else -1
                 val paramTypeLastIndex =
-                    if (paramTypes != null && matchIndex != null) filter { arrayContentsEq(paramTypes, it.parameterTypes) }.lastIndex else -1
-                val modifyLastIndex = if (modifiers != null && matchIndex != null) filter { modifiers.contains(it) }.lastIndex else -1
+                    if (rulesData.paramTypes != null && matchIndex != null)
+                        filter { arrayContentsEq(rulesData.paramTypes, it.parameterTypes) }.lastIndex else -1
+                val modifyLastIndex =
+                    if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
                 forEachIndexed { p, it ->
                     var isMatched = false
                     var conditions = true
-                    if (paramCount >= 0)
-                        conditions = (it.parameterTypes.size == paramCount).let {
+                    if (rulesData.paramCount >= 0)
+                        conditions = (it.parameterTypes.size == rulesData.paramCount).let {
                             if (it) paramCountIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -404,8 +376,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
                                     (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
                         }
-                    if (paramCountRange.isEmpty().not())
-                        conditions = (conditions && it.parameterTypes.size in paramCountRange).let {
+                    if (rulesData.paramCountRange.isEmpty().not())
+                        conditions = (conditions && it.parameterTypes.size in rulesData.paramCountRange).let {
                             if (it) paramCountRangeIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -414,8 +386,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
                                     (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
                         }
-                    if (paramTypes != null)
-                        conditions = (conditions && arrayContentsEq(paramTypes, it.parameterTypes)).let {
+                    if (rulesData.paramTypes != null)
+                        conditions = (conditions && arrayContentsEq(rulesData.paramTypes, it.parameterTypes)).let {
                             if (it) paramTypeIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -424,8 +396,8 @@ internal object ReflectionTool {
                                             abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
                                     (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
                         }
-                    if (modifiers != null)
-                        conditions = (conditions && modifiers.contains(it)).let {
+                    if (rulesData.modifiers != null)
+                        conditions = (conditions && rulesData.modifiers!!.contains(it)).let {
                             if (it) modifyIndex++
                             isMatched = true
                             it && (matchIndex == null ||
@@ -442,13 +414,8 @@ internal object ReflectionTool {
                 }
             } ?: error("Can't find this Constructor because classSet is null")
             return constructors.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putConstructors(hashCode, constructors) }
-                ?: if (isFindInSuperClass && classSet.hasExtends)
-                    findConstructors(
-                        classSet.superclass,
-                        orderIndex, matchIndex,
-                        modifiers, paramCount, paramCountRange,
-                        paramTypes, isFindInSuperClass = true
-                    )
+                ?: if (rulesData.isFindInSuper && classSet.hasExtends)
+                    findConstructors(classSet.superclass, orderIndex, matchIndex, rulesData)
                 else throw NoSuchMethodError(
                     "Can't find this Constructor --> " +
                             when {
@@ -461,10 +428,10 @@ internal object ReflectionTool {
                                 matchIndex.second.not() -> "matchIndex:[last] "
                                 else -> "matchIndex:[${matchIndex.first}] "
                             } +
-                            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                            "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
-                            "paramTypes:[${paramTypes.typeOfString()}] " +
-                            "modifiers:${modifiers ?: "[]"} " +
+                            "paramCount:[${rulesData.paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
+                            "paramCountRange:[${rulesData.paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
+                            "paramTypes:[${rulesData.paramTypes.typeOfString()}] " +
+                            "modifiers:${rulesData.modifiers ?: "[]"} " +
                             "in [$classSet] " +
                             "by $TAG"
                 )

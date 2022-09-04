@@ -32,7 +32,9 @@ package com.highcapable.yukihookapi.hook.core.finder.members
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
@@ -64,32 +66,24 @@ class MethodFinder @PublishedApi internal constructor(
     /** 当前使用的 [classSet] */
     private var usedClassSet = classSet
 
-    /** 是否在未找到后继续在当前 [classSet] 的父类中查找 */
-    private var isFindInSuperClass = false
-
     /** 当前重查找结果回调 */
     private var remedyPlansCallback: (() -> Unit)? = null
 
-    /** [Method] 参数数组 */
-    private var paramTypes: Array<out Class<*>>? = null
-
-    /** [Method] 参数个数范围 */
-    private var paramCountRange = IntRange.EMPTY
-
-    /** [ModifierRules] 实例 */
+    /** 当前查询条件规则数据 */
     @PublishedApi
-    internal var modifiers: ModifierRules? = null
-
-    /** [NameConditions] 实例 */
-    @PublishedApi
-    internal var nameConditions: NameConditions? = null
+    internal var rulesData = MethodRulesData()
 
     /**
      * 设置 [Method] 名称
      *
      * - ❗若不填写名称则必须存在一个其它条件
+     * @return [String]
      */
-    var name = ""
+    var name
+        get() = rulesData.name
+        set(value) {
+            rulesData.name = value
+        }
 
     /**
      * 设置 [Method] 参数个数
@@ -97,8 +91,13 @@ class MethodFinder @PublishedApi internal constructor(
      * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
      *
      * 若参数个数小于零则忽略并使用 [param]
+     * @return [Int]
      */
-    var paramCount = -1
+    var paramCount
+        get() = rulesData.paramCount
+        set(value) {
+            rulesData.paramCount = value
+        }
 
     /**
      * 设置 [Method] 返回值
@@ -106,52 +105,57 @@ class MethodFinder @PublishedApi internal constructor(
      * - ❗只能是 [Class]、[String]、[VariousClass]
      *
      * - 可不填写返回值
+     * @return [Any] or null
      */
-    var returnType: Any? = null
+    var returnType
+        get() = rulesData.returnType
+        set(value) {
+            rulesData.returnType = value.compat()
+        }
 
     /**
      * 设置 [Method] 标识符筛选条件
      *
      * - 可不设置筛选条件
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
-        modifiers = ModifierRules().apply(initiate)
+        rulesData.modifiers = ModifierRules().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
      * 设置 [Method] 空参数、无参数
      *
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun emptyParam() = paramCount(num = 0)
 
     /**
      * 设置 [Method] 参数
      *
-     * 如果同时使用了 [paramCount] 则 [paramTypes] 的数量必须与 [paramCount] 完全匹配
+     * 如果同时使用了 [paramCount] 则 [paramType] 的数量必须与 [paramCount] 完全匹配
      *
      * - ❗无参 [Method] 请使用 [emptyParam] 设置查询条件
      *
      * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun param(vararg paramType: Any): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
-        paramTypes = ArrayList<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
+        rulesData.paramTypes = arrayListOf<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
      * 顺序筛选字节码的下标
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
@@ -160,12 +164,12 @@ class MethodFinder @PublishedApi internal constructor(
      *
      * - ❗若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 名称
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun name(value: String): IndexTypeCondition {
-        name = value
+        rulesData.name = value
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -174,12 +178,12 @@ class MethodFinder @PublishedApi internal constructor(
      *
      * - ❗若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition {
-        nameConditions = NameConditions().apply(initiate)
+        rulesData.nameConditions = NameConditions().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -190,12 +194,12 @@ class MethodFinder @PublishedApi internal constructor(
      *
      * 若参数个数小于零则忽略并使用 [param]
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param num 个数
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun paramCount(num: Int): IndexTypeCondition {
-        paramCount = num
+        rulesData.paramCount = num
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -204,12 +208,12 @@ class MethodFinder @PublishedApi internal constructor(
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数范围
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param numRange 个数范围
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun paramCount(numRange: IntRange): IndexTypeCondition {
-        paramCountRange = numRange
+        rulesData.paramCountRange = numRange
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -218,12 +222,12 @@ class MethodFinder @PublishedApi internal constructor(
      *
      * - 可不填写返回值
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 个数
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun returnType(value: Any): IndexTypeCondition {
-        returnType = value
+        rulesData.returnType = value.compat()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -234,7 +238,7 @@ class MethodFinder @PublishedApi internal constructor(
      * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
      */
     fun superClass(isOnlySuperClass: Boolean = false) {
-        isFindInSuperClass = true
+        rulesData.isFindInSuper = true
         if (isOnlySuperClass && classSet?.hasExtends == true) usedClassSet = classSet.superclass
     }
 
@@ -243,12 +247,7 @@ class MethodFinder @PublishedApi internal constructor(
      * @return [HashSet]<[Method]>
      * @throws NoSuchMethodError 如果找不到方法
      */
-    private val result
-        get() = ReflectionTool.findMethods(
-            usedClassSet, orderIndex, matchIndex, name,
-            modifiers, nameConditions, returnType.compat(),
-            paramCount, paramCountRange, paramTypes, isFindInSuperClass
-        )
+    private val result get() = ReflectionTool.findMethods(usedClassSet, orderIndex, matchIndex, rulesData)
 
     /**
      * 设置实例

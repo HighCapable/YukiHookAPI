@@ -29,9 +29,9 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.factory
 
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import de.robv.android.xposed.XC_MethodHook
@@ -81,12 +81,12 @@ internal object YukiHookHelper {
         if (YukiHookBridge.hasXposedBridge) XposedHelpers.findClass(name, loader) else null
 
     /**
-     * Hook [MemberBaseFinder.BaseResult]
-     * @param traction 直接调用 [MemberBaseFinder.BaseResult]
+     * Hook [BaseFinder.BaseResult]
+     * @param traction 直接调用 [BaseFinder.BaseResult]
      * @param callback 回调
      * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
      */
-    internal fun hook(traction: MemberBaseFinder.BaseResult, callback: YukiHookCallback) = runCatching {
+    internal fun hook(traction: BaseFinder.BaseResult, callback: YukiHookCallback) = runCatching {
         hookMember(
             when (traction) {
                 is MethodFinder.Result -> traction.ignored().give()

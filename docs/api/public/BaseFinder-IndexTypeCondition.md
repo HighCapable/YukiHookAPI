@@ -1,4 +1,4 @@
-## MemberBaseFinder.IndexTypeCondition *- class*
+## BaseFinder.IndexTypeCondition *- class*
 
 ```kotlin
 inner class IndexTypeCondition internal constructor(private val type: IndexConfigType)
@@ -7,10 +7,6 @@ inner class IndexTypeCondition internal constructor(private val type: IndexConfi
 **变更记录**
 
 `v1.0.70` `新增`
-
-`v1.0.93` `修改`
-
-重命名 `BaseFinder` 到 `MemberBaseFinder`
 
 **功能描述**
 

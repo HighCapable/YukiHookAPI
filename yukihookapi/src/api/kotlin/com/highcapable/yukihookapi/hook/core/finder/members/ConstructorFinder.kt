@@ -32,7 +32,9 @@ package com.highcapable.yukihookapi.hook.core.finder.members
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.factory.ConstructorCondition
@@ -62,21 +64,12 @@ class ConstructorFinder @PublishedApi internal constructor(
     /** 当前使用的 [classSet] */
     private var usedClassSet = classSet
 
-    /** 是否在未找到后继续在当前 [classSet] 的父类中查找 */
-    private var isFindInSuperClass = false
-
     /** 当前重查找结果回调 */
     private var remedyPlansCallback: (() -> Unit)? = null
 
-    /** [Constructor] 参数数组 */
-    private var paramTypes: Array<out Class<*>>? = null
-
-    /** [Constructor] 参数个数范围 */
-    private var paramCountRange = IntRange.EMPTY
-
-    /** [ModifierRules] 实例 */
+    /** 当前查询条件规则数据 */
     @PublishedApi
-    internal var modifiers: ModifierRules? = null
+    internal var rulesData = ConstructorRulesData()
 
     /**
      * 设置 [Constructor] 参数个数
@@ -84,50 +77,55 @@ class ConstructorFinder @PublishedApi internal constructor(
      * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
      *
      * 若参数个数小于零则忽略并使用 [param]
+     * @return [Int]
      */
-    var paramCount = -1
+    var paramCount
+        get() = rulesData.paramCount
+        set(value) {
+            rulesData.paramCount = value
+        }
 
     /**
      * 设置 [Constructor] 标识符筛选条件
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
-        modifiers = ModifierRules().apply(initiate)
+        rulesData.modifiers = ModifierRules().apply(initiate)
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
      * 设置 [Constructor] 空参数、无参数
      *
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun emptyParam() = paramCount(num = 0)
 
     /**
      * 设置 [Constructor] 参数
      *
-     * 如果同时使用了 [paramCount] 则 [paramTypes] 的数量必须与 [paramCount] 完全匹配
+     * 如果同时使用了 [paramCount] 则 [paramType] 的数量必须与 [paramCount] 完全匹配
      *
      * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查询条件
      *
      * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun param(vararg paramType: Any): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
-        paramTypes = ArrayList<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
+        rulesData.paramTypes = arrayListOf<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
     /**
      * 顺序筛选字节码的下标
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
@@ -138,12 +136,12 @@ class ConstructorFinder @PublishedApi internal constructor(
      *
      * 若参数个数小于零则忽略并使用 [param]
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param num 个数
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun paramCount(num: Int): IndexTypeCondition {
-        paramCount = num
+        rulesData.paramCount = num
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -152,12 +150,12 @@ class ConstructorFinder @PublishedApi internal constructor(
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数范围
      *
-     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param numRange 个数范围
-     * @return [MemberBaseFinder.IndexTypeCondition]
+     * @return [BaseFinder.IndexTypeCondition]
      */
     fun paramCount(numRange: IntRange): IndexTypeCondition {
-        paramCountRange = numRange
+        rulesData.paramCountRange = numRange
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -168,7 +166,7 @@ class ConstructorFinder @PublishedApi internal constructor(
      * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
      */
     fun superClass(isOnlySuperClass: Boolean = false) {
-        isFindInSuperClass = true
+        rulesData.isFindInSuper = true
         if (isOnlySuperClass && classSet?.hasExtends == true) usedClassSet = classSet.superclass
     }
 
@@ -177,11 +175,7 @@ class ConstructorFinder @PublishedApi internal constructor(
      * @return [HashSet]<[Constructor]>
      * @throws NoSuchMethodError 如果找不到构造方法
      */
-    private val result
-        get() = ReflectionTool.findConstructors(
-            usedClassSet, orderIndex, matchIndex, modifiers,
-            paramCount, paramCountRange, paramTypes, isFindInSuperClass
-        )
+    private val result get() = ReflectionTool.findConstructors(usedClassSet, orderIndex, matchIndex, rulesData)
 
     /**
      * 设置实例

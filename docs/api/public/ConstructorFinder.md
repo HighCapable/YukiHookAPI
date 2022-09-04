@@ -1,7 +1,7 @@
 ## ConstructorFinder *- class*
 
 ```kotlin
-class ConstructorFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>) : BaseFinder()
+class ConstructorFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>) : MemberBaseFinder
 ```
 
 **变更记录**
@@ -14,7 +14,7 @@ class ConstructorFinder internal constructor(override val hookInstance: YukiMemb
 
 `v1.0.93` `修改`
 
-修正拼写错误的 **Creater** 命名到 **Creator**
+合并到 `MemberBaseFinder`
 
 **功能描述**
 
@@ -90,7 +90,7 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 > 设置 `Constructor` 参数。
 
-如果同时使用了 `paramCount` 则 `paramTypes` 的数量必须与 `paramCount` 完全匹配。
+如果同时使用了 `paramCount` 则 `paramType` 的数量必须与 `paramCount` 完全匹配。
 
 !> 无参 `Constructor` 请使用 `emptyParam` 设置查询条件。
 
