@@ -30,7 +30,7 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreater
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
@@ -52,7 +52,7 @@ import kotlin.math.abs
  */
 abstract class BaseFinder internal constructor(
     private val tag: String,
-    open val hookInstance: YukiMemberHookCreater.MemberHookCreater? = null,
+    open val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
     open val classSet: Class<*>? = null
 ) {
 
@@ -125,7 +125,7 @@ abstract class BaseFinder internal constructor(
     @PublishedApi
     internal var isUsingRemedyPlan = false
 
-    /** 是否将结果设置到目标 [YukiMemberHookCreater.MemberHookCreater] */
+    /** 是否将结果设置到目标 [YukiMemberHookCreator.MemberHookCreator] */
     internal var isBindToHooker = false
 
     /** 是否开启忽略错误警告功能 */
@@ -229,7 +229,7 @@ abstract class BaseFinder internal constructor(
     abstract fun build(): BaseResult
 
     /**
-     * 返回结果处理类并设置到目标 [YukiMemberHookCreater.MemberHookCreater]
+     * 返回结果处理类并设置到目标 [YukiMemberHookCreator.MemberHookCreator]
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [BaseResult]
@@ -248,7 +248,7 @@ abstract class BaseFinder internal constructor(
     abstract fun failure(throwable: Throwable?): BaseResult
 
     /**
-     * 返回只有异常的结果处理类并作用于目标 [YukiMemberHookCreater.MemberHookCreater]
+     * 返回只有异常的结果处理类并作用于目标 [YukiMemberHookCreator.MemberHookCreator]
      *
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param throwable 异常
