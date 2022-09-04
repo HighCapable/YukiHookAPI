@@ -109,3 +109,15 @@ internal class RunBlockResult(internal val afterMs: Long) {
      */
     internal inline fun result(result: (Long) -> Unit) = result(afterMs)
 }
+
+/**
+ * 获取 [ModifyValue] 对象
+ * @return [ModifyValue]
+ */
+internal fun <T> T.value() = ModifyValue(value = this)
+
+/**
+ * 可修改变量实现类
+ * @param value 变量自身实例
+ */
+internal data class ModifyValue<T>(var value: T)
