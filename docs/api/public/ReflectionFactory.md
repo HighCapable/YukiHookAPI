@@ -311,6 +311,20 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 > 查询 `Member` 中匹配的描述符。
 
+### Class.hasModifiers *- ext-method*
+
+```kotlin
+inline fun Class<*>.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 查询 `Class` 中匹配的描述符。
+
 ### ~~obtainStaticFieldAny *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**

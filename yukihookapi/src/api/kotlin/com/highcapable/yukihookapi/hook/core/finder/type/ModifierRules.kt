@@ -33,9 +33,9 @@ import java.lang.reflect.Member
 import java.lang.reflect.Modifier
 
 /**
- * 这是一个 [Member] 描述符定义类
+ * 这是一个 [Class]、[Member] 描述符定义类
  *
- * 可对 R8 混淆后的 [Member] 进行更加详细的定位
+ * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
  */
 class ModifierRules @PublishedApi internal constructor() {
 
@@ -171,25 +171,25 @@ class ModifierRules @PublishedApi internal constructor() {
     @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "isStrict()"))
     fun asStrict() = isStrict()
 
-    /** 添加描述 [Member] 类型包含 public */
+    /** 添加描述 [Class]、[Member] 类型包含 public */
     fun isPublic() {
         isPublic = true
     }
 
-    /** 添加描述 [Member] 类型包含 private */
+    /** 添加描述 [Class]、[Member] 类型包含 private */
     fun isPrivate() {
         isPrivate = true
     }
 
-    /** 添加描述 [Member] 类型包含 protected */
+    /** 添加描述 [Class]、[Member] 类型包含 protected */
     fun isProtected() {
         isProtected = true
     }
 
     /**
-     * 添加描述 [Member] 类型包含 static
+     * 添加描述 [Class]、[Member] 类型包含 static
      *
-     * 对于任意的静态 [Member] 可添加此描述进行确定
+     * 对于任意的静态 [Class]、[Member] 可添加此描述进行确定
      *
      * - ❗注意 Kotlin → Jvm 后的 object 类中的方法并不是静态的
      */
@@ -198,77 +198,79 @@ class ModifierRules @PublishedApi internal constructor() {
     }
 
     /**
-     * 添加描述 [Member] 类型包含 final
+     * 添加描述 [Class]、[Member] 类型包含 final
      *
-     * - ❗注意 Kotlin → Jvm 后没有 open 标识的 [Member] 和没有任何关联的 [Member] 都将为 final
+     * - ❗注意 Kotlin → Jvm 后没有 open 标识的 [Class]、[Member] 和没有任何关联的 [Class]、[Member] 都将为 final
      */
     fun isFinal() {
         isFinal = true
     }
 
-    /** 添加描述 [Member] 类型包含 synchronized */
+    /** 添加描述 [Class]、[Member] 类型包含 synchronized */
     fun isSynchronized() {
         isSynchronized = true
     }
 
-    /** 添加描述 [Member] 类型包含 volatile */
+    /** 添加描述 [Class]、[Member] 类型包含 volatile */
     fun isVolatile() {
         isVolatile = true
     }
 
-    /** 添加描述 [Member] 类型包含 transient */
+    /** 添加描述 [Class]、[Member] 类型包含 transient */
     fun isTransient() {
         isTransient = true
     }
 
     /**
-     * 添加描述 [Member] 类型包含 native
+     * 添加描述 [Class]、[Member] 类型包含 native
      *
-     * 对于任意 JNI 对接的 [Member] 可添加此描述进行确定
+     * 对于任意 JNI 对接的 [Class]、[Member] 可添加此描述进行确定
      */
     fun isNative() {
         isNative = true
     }
 
-    /** 添加描述 [Member] 类型包含 interface */
+    /** 添加描述 [Class]、[Member] 类型包含 interface */
     fun isInterface() {
         isInterface = true
     }
 
     /**
-     * 添加描述 [Member] 类型包含 abstract
+     * 添加描述 [Class]、[Member] 类型包含 abstract
      *
-     * 对于任意的抽象 [Member] 可添加此描述进行确定
+     * 对于任意的抽象 [Class]、[Member] 可添加此描述进行确定
      */
     fun isAbstract() {
         isAbstract = true
     }
 
-    /** 添加描述 [Member] 类型包含 strict */
+    /** 添加描述 [Class]、[Member] 类型包含 strict */
     fun isStrict() {
         isStrict = true
     }
 
     /**
-     * 对比 [Member] 类型是否符合条件
-     * @param member 实例
+     * 对比 [Class]、[Member] 类型是否符合条件
+     * @param reflects 实例 - 只能是 [Class] or [Member]
      * @return [Boolean] 是否符合条件
      */
     @PublishedApi
-    internal fun contains(member: Member): Boolean {
+    internal fun contains(reflects: Any): Boolean {
         var conditions = true
-        if (isPublic) conditions = Modifier.isPublic(member.modifiers)
-        if (isPrivate) conditions = conditions && Modifier.isPrivate(member.modifiers)
-        if (isProtected) conditions = conditions && Modifier.isProtected(member.modifiers)
-        if (isStatic) conditions = conditions && Modifier.isStatic(member.modifiers)
-        if (isFinal) conditions = conditions && Modifier.isFinal(member.modifiers)
-        if (isSynchronized) conditions = conditions && Modifier.isSynchronized(member.modifiers)
-        if (isVolatile) conditions = conditions && Modifier.isVolatile(member.modifiers)
-        if (isTransient) conditions = conditions && Modifier.isTransient(member.modifiers)
-        if (isNative) conditions = conditions && Modifier.isNative(member.modifiers)
-        if (isInterface) conditions = conditions && Modifier.isInterface(member.modifiers)
-        if (isAbstract) conditions = conditions && Modifier.isAbstract(member.modifiers)
-        if (isStrict) conditions = conditions && Modifier.isStrict(member.modifiers)
+        Reflects(reflects).also {
+            if (isPublic) conditions = Modifier.isPublic(it.modifiers)
+            if (isPrivate) conditions = conditions && Modifier.isPrivate(it.modifiers)
+            if (isProtected) conditions = conditions && Modifier.isProtected(it.modifiers)
+            if (isStatic) conditions = conditions && Modifier.isStatic(it.modifiers)
+            if (isFinal) conditions = conditions && Modifier.isFinal(it.modifiers)
+            if (isSynchronized) conditions = conditions && Modifier.isSynchronized(it.modifiers)
+            if (isVolatile) conditions = conditions && Modifier.isVolatile(it.modifiers)
+            if (isTransient) conditions = conditions && Modifier.isTransient(it.modifiers)
+            if (isNative) conditions = conditions && Modifier.isNative(it.modifiers)
+            if (isInterface) conditions = conditions && Modifier.isInterface(it.modifiers)
+            if (isAbstract) conditions = conditions && Modifier.isAbstract(it.modifiers)
+            if (isStrict) conditions = conditions && Modifier.isStrict(it.modifiers)
+        }
         return conditions
     }
 
@@ -287,5 +289,23 @@ class ModifierRules @PublishedApi internal constructor() {
         if (isAbstract) conditions += "<abstract> "
         if (isStrict) conditions += "<strict> "
         return "[${conditions.trim()}]"
+    }
+
+    /**
+     * 实例化反射对象接口实现类
+     * @param reflects 反射对象实例
+     */
+    private class Reflects(private val reflects: Any) {
+
+        /**
+         * 获取当前对象的类型描述符
+         * @return [Int]
+         */
+        val modifiers
+            get() = when (reflects) {
+                is Member -> reflects.modifiers
+                is Class<*> -> reflects.modifiers
+                else -> error("Invalid reflects type")
+            }
     }
 }

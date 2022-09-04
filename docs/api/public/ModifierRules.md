@@ -8,11 +8,15 @@ class ModifierRules internal constructor()
 
 `v1.0.67` `新增`
 
+`v1.0.93` `修改`
+
+新增 `Class` 的描述符判断
+
 **功能描述**
 
-> 这是一个 `Member` 描述符定义类。
+> 这是一个 `Class`、`Member` 描述符定义类。
 
-可对 R8 混淆后的 `Member` 进行更加详细的定位。
+可对 R8 混淆后的 `Class`、`Member` 进行更加详细的定位。
 
 ### ~~asPublic *- method*~~ <!-- {docsify-ignore} -->
 
@@ -146,7 +150,7 @@ fun isPublic()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `public`。
+> 添加描述 `Class`、`Member` 类型包含 `public`。
 
 ### isPrivate *- method*
 
@@ -160,7 +164,7 @@ fun isPrivate()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `private`。
+> 添加描述 `Class`、`Member` 类型包含 `private`。
 
 ### isProtected *- method*
 
@@ -174,7 +178,7 @@ fun isProtected()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `protected`。
+> 添加描述 `Class`、`Member` 类型包含 `protected`。
 
 ### isStatic *- method*
 
@@ -188,9 +192,9 @@ fun isStatic()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `static`。
+> 添加描述 `Class`、`Member` 类型包含 `static`。
 
-对于任意的静态 `Member` 可添加此描述进行确定。
+对于任意的静态 `Class`、`Member` 可添加此描述进行确定。
 
 !> 特别注意 Kotlin -> Jvm 后的 `object` 类中的方法并不是静态的。
 
@@ -206,9 +210,9 @@ fun isFinal()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `final`。
+> 添加描述 `Class`、`Member` 类型包含 `final`。
 
-!> 特别注意在 Kotlin -> Jvm 后没有 `open` 标识的 `Member` 和没有任何关联的 `Member` 都将为 `final`。
+!> 特别注意在 Kotlin -> Jvm 后没有 `open` 标识的 `Class`、`Member` 和没有任何关联的 `Class`、`Member` 都将为 `final`。
 
 ### isSynchronized *- method*
 
@@ -222,7 +226,7 @@ fun isSynchronized()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `synchronized`。
+> 添加描述 `Class`、`Member` 类型包含 `synchronized`。
 
 ### isVolatile *- method*
 
@@ -236,7 +240,7 @@ fun isVolatile()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `volatile`。
+> 添加描述 `Class`、`Member` 类型包含 `volatile`。
 
 ### isTransient *- method*
 
@@ -250,7 +254,7 @@ fun isTransient()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `transient`。
+> 添加描述 `Class`、`Member` 类型包含 `transient`。
 
 ### isNative *- method*
 
@@ -264,9 +268,9 @@ fun isNative()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `native`。
+> 添加描述 `Class`、`Member` 类型包含 `native`。
 
-对于任意 JNI 对接的 `Member` 可添加此描述进行确定。
+对于任意 JNI 对接的 `Class`、`Member` 可添加此描述进行确定。
 
 ### isInterface *- method*
 
@@ -280,7 +284,7 @@ fun isInterface()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `interface`。
+> 添加描述 `Class`、`Member` 类型包含 `interface`。
 
 ### isAbstract *- method*
 
@@ -294,9 +298,9 @@ fun isAbstract()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `abstract`。
+> 添加描述 `Class`、`Member` 类型包含 `abstract`。
 
-对于任意的抽象 `Member` 可添加此描述进行确定。
+对于任意的抽象 `Class`、`Member` 可添加此描述进行确定。
 
 ### isStrict *- method*
 
@@ -310,4 +314,4 @@ fun isStrict()
 
 **功能描述**
 
-> 添加描述 `Member` 类型包含 `strict`。
+> 添加描述 `Class`、`Member` 类型包含 `strict`。

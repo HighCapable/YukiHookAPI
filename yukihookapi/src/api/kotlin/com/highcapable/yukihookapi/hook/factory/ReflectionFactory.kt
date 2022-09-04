@@ -145,6 +145,13 @@ inline fun Class<*>.hasConstructor(initiate: ConstructorCondition = { emptyParam
 inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
 
 /**
+ * 查询 [Class] 中匹配的描述符
+ * @param initiate 方法体
+ * @return [Boolean] 是否存在
+ */
+inline fun Class<*>.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
+
+/**
  * 查找并得到变量
  * @param initiate 查找方法体
  * @return [FieldFinder.Result]
