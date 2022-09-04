@@ -30,7 +30,7 @@ package com.highcapable.yukihookapi.hook.core.reflex.tools
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.factory.hasExtends
-import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -74,7 +74,7 @@ internal object ReflectionTool {
         if (orderIndex == null && matchIndex == null && name.isBlank() && modifiers == null && type == null)
             error("You must set a condition when finding a Field")
         val hashCode = ("[$orderIndex][$matchIndex][$name][$type][$modifiers][$classSet]").hashCode()
-        return MemberCacheStore.findFields(hashCode) ?: let {
+        return ReflectsCacheStore.findFields(hashCode) ?: let {
             val fields = HashSet<Field>()
             classSet?.declaredFields?.apply {
                 var typeIndex = -1
@@ -135,7 +135,7 @@ internal object ReflectionTool {
                     if (conditions && isMatched) fields.add(it.apply { isAccessible = true })
                 }
             } ?: error("Can't find this Field [$name] because classSet is null")
-            fields.takeIf { it.isNotEmpty() }?.also { MemberCacheStore.putFields(hashCode, fields) }
+            fields.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putFields(hashCode, fields) }
                 ?: if (isFindInSuperClass && classSet.hasExtends)
                     findFields(
                         classSet.superclass,
@@ -208,7 +208,7 @@ internal object ReflectionTool {
         ) error("You must set a condition when finding a Method")
         val hashCode =
             ("[$orderIndex][$matchIndex][$name][$paramCount][${paramTypes.typeOfString()}][$returnType][$modifiers][$classSet]").hashCode()
-        return MemberCacheStore.findMethods(hashCode) ?: let {
+        return ReflectsCacheStore.findMethods(hashCode) ?: let {
             val methods = HashSet<Method>()
             classSet?.declaredMethods?.apply {
                 var returnTypeIndex = -1
@@ -309,7 +309,7 @@ internal object ReflectionTool {
                     if (conditions && isMatched) methods.add(it.apply { isAccessible = true })
                 }
             } ?: error("Can't find this Method [$name] because classSet is null")
-            methods.takeIf { it.isNotEmpty() }?.also { MemberCacheStore.putMethods(hashCode, methods) }
+            methods.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putMethods(hashCode, methods) }
                 ?: if (isFindInSuperClass && classSet.hasExtends)
                     findMethods(
                         classSet.superclass,
@@ -377,7 +377,7 @@ internal object ReflectionTool {
             paramCountRange.isEmpty() && paramTypes == null
         ) error("You must set a condition when finding a Constructor")
         val hashCode = ("[$orderIndex][$matchIndex][$paramCount][${paramTypes.typeOfString()}][$modifiers][$classSet]").hashCode()
-        return MemberCacheStore.findConstructors(hashCode) ?: let {
+        return ReflectsCacheStore.findConstructors(hashCode) ?: let {
             val constructors = HashSet<Constructor<*>>()
             classSet?.declaredConstructors?.apply {
                 var paramTypeIndex = -1
@@ -441,7 +441,7 @@ internal object ReflectionTool {
                     if (conditions && isMatched) constructors.add(it.apply { isAccessible = true })
                 }
             } ?: error("Can't find this Constructor because classSet is null")
-            return constructors.takeIf { it.isNotEmpty() }?.also { MemberCacheStore.putConstructors(hashCode, constructors) }
+            return constructors.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putConstructors(hashCode, constructors) }
                 ?: if (isFindInSuperClass && classSet.hasExtends)
                     findConstructors(
                         classSet.superclass,

@@ -46,7 +46,7 @@ import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
@@ -255,7 +255,7 @@ object YukiHookAPI {
          *
          * 启用后会缓存已经找到的 [Class]、[Method]、[Constructor]、[Field]
          *
-         * 缓存的 [Member] 都将处于 [MemberCacheStore] 的全局静态实例中
+         * 缓存的 [Member] 都将处于 [ReflectsCacheStore] 的全局静态实例中
          *
          * 推荐使用 [MethodFinder]、[ConstructorFinder]、[FieldFinder] 来获取 [Member]
          *

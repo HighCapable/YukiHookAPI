@@ -34,13 +34,13 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * 这是一个全局静态的 [Member] 缓存实例
+ * 这是一个全局静态的 [Class]、[Member] 缓存实例
  *
- * 为防止 [Member] 复用过高造成的系统 GC 问题
+ * 为防止 [Class]、[Member] 复用过高造成的系统 GC 问题
  *
- * 查询后的 [Member] 在 [YukiHookAPI.Configs.isEnableMemberCache] 启用后自动进入缓存
+ * 查询后的 [Class]、[Member] 在 [YukiHookAPI.Configs.isEnableMemberCache] 启用后自动进入缓存
  */
-internal object MemberCacheStore {
+internal object ReflectsCacheStore {
 
     /** 缓存的 [Class] */
     private val classData = HashMap<Int, Class<*>?>()

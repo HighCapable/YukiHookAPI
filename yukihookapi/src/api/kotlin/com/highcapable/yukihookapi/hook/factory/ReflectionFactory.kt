@@ -35,7 +35,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.store.MemberCacheStore
+import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
@@ -82,7 +82,7 @@ val Class<*>.hasExtends get() = superclass.name != "java.lang.Object"
  */
 fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
     val hashCode = ("[$name][$loader]").hashCode()
-    return MemberCacheStore.findClass(hashCode) ?: run {
+    return ReflectsCacheStore.findClass(hashCode) ?: run {
         when {
             YukiHookBridge.hasXposedBridge ->
                 runCatching { YukiHookHelper.findClass(name, loader) }.getOrNull()
@@ -92,7 +92,7 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
                     }
             loader == null -> Class.forName(name)
             else -> loader.loadClass(name)
-        }.also { MemberCacheStore.putClass(hashCode, it) }
+        }.also { ReflectsCacheStore.putClass(hashCode, it) }
     }
 }
 
