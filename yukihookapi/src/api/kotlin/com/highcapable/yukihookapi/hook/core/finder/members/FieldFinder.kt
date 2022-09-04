@@ -54,9 +54,9 @@ import java.lang.reflect.Field
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class FieldFinder @PublishedApi internal constructor(
-    @property:YukiPrivateApi
+    @PublishedApi
     override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
-    @property:YukiPrivateApi
+    @PublishedApi
     override val classSet: Class<*>? = null
 ) : MemberBaseFinder(tag = "Field", hookInstance, classSet) {
 

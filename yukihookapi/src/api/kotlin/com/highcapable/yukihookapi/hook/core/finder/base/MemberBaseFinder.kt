@@ -52,8 +52,10 @@ import kotlin.math.abs
  */
 abstract class MemberBaseFinder internal constructor(
     private val tag: String,
-    open val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
-    open val classSet: Class<*>? = null
+    @PublishedApi
+    internal open val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
+    @PublishedApi
+    internal open val classSet: Class<*>? = null
 ) {
 
     /**

@@ -55,9 +55,9 @@ import java.lang.reflect.Method
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class MethodFinder @PublishedApi internal constructor(
-    @property:YukiPrivateApi
+    @PublishedApi
     override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
-    @property:YukiPrivateApi
+    @PublishedApi
     override val classSet: Class<*>? = null
 ) : MemberBaseFinder(tag = "Method", hookInstance, classSet) {
 
