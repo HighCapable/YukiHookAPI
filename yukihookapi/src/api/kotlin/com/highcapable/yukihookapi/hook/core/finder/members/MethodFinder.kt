@@ -101,7 +101,7 @@ class MethodFinder @PublishedApi internal constructor(
     var paramCount = -1
 
     /**
-     * [Method] 返回值
+     * 设置 [Method] 返回值
      *
      * - ❗只能是 [Class]、[String]、[VariousClass]
      *
