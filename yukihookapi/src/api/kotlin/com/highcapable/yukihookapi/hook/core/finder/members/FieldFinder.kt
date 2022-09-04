@@ -27,13 +27,13 @@
  */
 @file:Suppress("unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 
-package com.highcapable.yukihookapi.hook.core.finder
+package com.highcapable.yukihookapi.hook.core.finder.members
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
-import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
+import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
@@ -58,7 +58,7 @@ class FieldFinder @PublishedApi internal constructor(
     override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
     @property:YukiPrivateApi
     override val classSet: Class<*>? = null
-) : BaseFinder(tag = "Field", hookInstance, classSet) {
+) : MemberBaseFinder(tag = "Field", hookInstance, classSet) {
 
     /** 当前使用的 [classSet] */
     private var usedClassSet = classSet
@@ -98,9 +98,9 @@ class FieldFinder @PublishedApi internal constructor(
      *
      * - 可不设置筛选条件
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
-     * @return [BaseFinder.IndexTypeCondition]
+     * @return [MemberBaseFinder.IndexTypeCondition]
      */
     inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
         modifiers = ModifierRules().apply(initiate)
@@ -109,7 +109,7 @@ class FieldFinder @PublishedApi internal constructor(
 
     /**
      * 顺序筛选字节码的下标
-     * @return [BaseFinder.IndexTypeCondition]
+     * @return [MemberBaseFinder.IndexTypeCondition]
      */
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
@@ -118,9 +118,9 @@ class FieldFinder @PublishedApi internal constructor(
      *
      * - ❗若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 名称
-     * @return [BaseFinder.IndexTypeCondition]
+     * @return [MemberBaseFinder.IndexTypeCondition]
      */
     fun name(value: String): IndexTypeCondition {
         name = value
@@ -132,9 +132,9 @@ class FieldFinder @PublishedApi internal constructor(
      *
      * - ❗若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param initiate 方法体
-     * @return [BaseFinder.IndexTypeCondition]
+     * @return [MemberBaseFinder.IndexTypeCondition]
      */
     inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition {
         nameConditions = NameConditions().apply(initiate)
@@ -146,9 +146,9 @@ class FieldFinder @PublishedApi internal constructor(
      *
      * - 可不填写类型
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - ❗存在多个 [MemberBaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 类型 - ❗只能是 [Class]、[String]、[VariousClass]
-     * @return [BaseFinder.IndexTypeCondition]
+     * @return [MemberBaseFinder.IndexTypeCondition]
      */
     fun type(value: Any): IndexTypeCondition {
         type = value

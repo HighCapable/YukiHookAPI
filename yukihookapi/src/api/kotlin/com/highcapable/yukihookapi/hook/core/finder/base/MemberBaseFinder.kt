@@ -45,12 +45,12 @@ import java.lang.reflect.Method
 import kotlin.math.abs
 
 /**
- * 这是查找类功能的基本类实现
+ * 这是 [Member] 查找类功能的基本类实现
  * @param tag 当前查找类的标识
  * @param hookInstance 当前 Hook 实例
  * @param classSet 当前需要查找的 [Class] 实例
  */
-abstract class BaseFinder internal constructor(
+abstract class MemberBaseFinder internal constructor(
     private val tag: String,
     open val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
     open val classSet: Class<*>? = null

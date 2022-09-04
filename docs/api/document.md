@@ -64,7 +64,7 @@
 
 [filename](public/FieldFinder.md ':include')
 
-[filename](public/BaseFinder-IndexTypeCondition.md ':include')
+[filename](public/MemberBaseFinder-IndexTypeCondition.md ':include')
 
 [filename](public/ModifierRules.md ':include')
 

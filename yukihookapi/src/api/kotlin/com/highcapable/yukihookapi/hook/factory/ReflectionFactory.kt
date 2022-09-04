@@ -31,9 +31,9 @@ package com.highcapable.yukihookapi.hook.factory
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
-import com.highcapable.yukihookapi.hook.core.finder.ConstructorFinder
-import com.highcapable.yukihookapi.hook.core.finder.FieldFinder
-import com.highcapable.yukihookapi.hook.core.finder.MethodFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.store.MemberCacheStore
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
