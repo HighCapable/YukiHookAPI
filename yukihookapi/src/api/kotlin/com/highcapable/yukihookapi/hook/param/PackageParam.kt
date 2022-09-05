@@ -44,7 +44,6 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.value
@@ -296,7 +295,45 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun loadHooker(hooker: YukiBaseHooker) = hooker.assignInstance(packageParam = this)
 
     /**
-     * 通过字符串转换为实体类
+     * 通过字符串类名转换为当前 Hook APP 的实体类
+     *
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [toAppClass]
+     * @return [Class]
+     * @throws NoClassDefFoundError 如果找不到 [Class]
+     */
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toAppClass()"))
+    val String.clazz
+        get() = toAppClass()
+
+    /**
+     * [VariousClass] 转换为当前 Hook APP 的实体类
+     *
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [toAppClass]
+     * @return [Class]
+     * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
+     */
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toAppClass()"))
+    val VariousClass.clazz
+        get() = toAppClass()
+
+    /**
+     * 通过字符串类名查找是否存在
+     *
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [hasClass]
+     * @return [Boolean] 是否存在
+     */
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "hasClass()"))
+    val String.hasClass
+        get() = hasClass()
+
+    /**
+     * 通过字符串类名转换为当前 Hook APP 的实体类
      *
      * - 使用当前 [appClassLoader] 装载目标 [Class]
      *
@@ -304,47 +341,46 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
-    val String.clazz get() = classOf(name = this, appClassLoader)
+    fun String.toAppClass() = classOf(name = this, appClassLoader)
 
     /**
-     * [VariousClass] 转换为实体类
+     * [VariousClass] 转换为当前 Hook APP 的实体类
      *
      * - 使用当前 [appClassLoader] 装载目标 [Class]
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    val VariousClass.clazz get() = get(appClassLoader)
+    fun VariousClass.toAppClass() = get(appClassLoader)
 
     /**
-     * 通过字符串查找类是否存在
-     *
-     * - 使用当前 [appClassLoader] 装载目标 [Class]
+     * 通过字符串类名查找是否存在
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Boolean] 是否存在
      */
-    val String.hasClass get() = hasClass(appClassLoader)
+    fun String.hasClass(loader: ClassLoader? = appClassLoader) = runCatching { classOf(name = this, loader); true }.getOrNull() ?: false
 
     /**
-     * 查找并装载 [Class]
+     * 查找并装载 [HookClass]
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [classOf]、[clazz] 功能
+     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [classOf]、[toAppClass] 功能
      * @param name 类名
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]
      */
     fun findClass(name: String, loader: ClassLoader? = appClassLoader) =
-        runCatching { classOf(name, loader).hookClass }.getOrElse { HookClass(name = name, throwable = it) }
+        runCatching { classOf(name, loader).toHookClass() }.getOrElse { HookClass(name = name, throwable = it) }
 
     /**
-     * 查找并装载 [Class]
+     * 查找并装载 [HookClass]
      *
      * 使用此方法查找将会取 [name] 其中命中存在的第一个 [Class] 作为结果
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [classOf]、[clazz] 功能
+     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [classOf]、[toAppClass] 功能
      * @param name 可填入多个类名 - 自动匹配
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]
      */
-    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name).hookClass(loader)
+    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name).toHookClass(loader)
 
     /**
      * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
@@ -371,12 +407,16 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * Hook 方法、构造方法
      *
      * - 自动选择与当前 [Class] 相匹配的 [ClassLoader] - 优先使用 [appClassLoader]
+     *
+     * - ❗若当前 [Class] 不在 [appClassLoader] 且自动匹配无法找到该 [Class] - 请启用 [isForceUseAbsolute]
+     * @param isForceUseAbsolute 是否强制使用绝对实例对象 - 默认否
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
-    inline fun Class<*>.hook(initiate: YukiMemberHookCreator.() -> Unit) = when {
-        name.hasClass(appClassLoader) -> findClass(name)
-        else -> hookClass
+    inline fun Class<*>.hook(isForceUseAbsolute: Boolean = false, initiate: YukiMemberHookCreator.() -> Unit) = when {
+        isForceUseAbsolute -> toHookClass()
+        name.hasClass() -> findClass(name)
+        else -> toHookClass()
     }.hook(initiate)
 
     /**
@@ -386,7 +426,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
-    inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = hookClass(appClassLoader).hook(initiate)
+    inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass(appClassLoader).hook(initiate)
 
     /**
      * Hook 方法、构造方法
@@ -411,16 +451,15 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [HookClass]
      */
     @PublishedApi
-    internal fun VariousClass.hookClass(loader: ClassLoader? = null) =
-        runCatching { get(loader).hookClass }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
+    internal fun VariousClass.toHookClass(loader: ClassLoader? = null) =
+        runCatching { get(loader).toHookClass() }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
 
     /**
      * [Class] 转换为 [HookClass]
      * @return [HookClass]
      */
     @PublishedApi
-    internal val Class<*>.hookClass
-        get() = HookClass(instance = this, name)
+    internal fun Class<*>.toHookClass() = HookClass(instance = this, name)
 
     /**
      * 当前 Hook APP 的生命周期实例处理类

@@ -428,23 +428,43 @@ fun loadHooker(hooker: YukiBaseHooker)
 
 你可以填入 `hooker` 在 Hooker 中继续装载 Hooker。
 
-### String.clazz *- i-ext-field*
-
-```kotlin
-val String.clazz: Class<*>
-```
-
-```kotlin
-val VariousClass.clazz: Class<*>
-```
+### ~~String+VariousClass.clazz *- i-ext-field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
 
+`v1.0.93` `作废`
+
+请转移到 `toAppClass()` 方法
+
+### ~~String.hasClass *- i-ext-field*~~ <!-- {docsify-ignore} -->
+
+**变更记录**
+
+`v1.0` `添加`
+
+`v1.0.93` `作废`
+
+请转移到 `hasClass(...)` 方法
+
+### String+VariousClass.toAppClass *- i-ext-method*
+
+```kotlin
+fun String.toAppClass(): Class<*>
+```
+
+```kotlin
+fun VariousClass.toAppClass(): Class<*>
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
 **功能描述**
 
-> 字符串、`VariousClass` 转换为实体类。
+> 通过字符串类名、`VariousClass` 转换为当前 Hook APP 的实体类。
 
 使用当前 `appClassLoader` 装载目标 `Class`。
 
@@ -455,7 +475,7 @@ val VariousClass.clazz: Class<*>
 > 示例如下
 
 ```kotlin
-"com.example.demo.DemoClass".clazz
+"com.example.demo.DemoClass".toAppClass()
 ```
 
 为了美观，你可以把字符串用 `(` `)` 括起来。
@@ -463,32 +483,32 @@ val VariousClass.clazz: Class<*>
 > 示例如下
 
 ```kotlin
-("com.example.demo.DemoClass").clazz
+("com.example.demo.DemoClass").toAppClass()
 ```
 
 你还可以创建一个 `VariousClass`，并转换为实体类。
 
-`VariousClass` 会枚举所有设置的 `Class` 并最终获得完全匹配的那一个。
+`VariousClass` 会枚举所有设置的 `Class` 并最终获得第一个存在的 `Class`。
 
 > 示例如下
 
 ```kotlin
-VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").clazz
+VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").toAppClass()
 ```
 
-### String.hasClass *- i-ext-field*
+### String.hasClass *- i-ext-method*
 
 ```kotlin
-val String.hasClass: Boolean
+fun String.hasClass(loader: ClassLoader?): Boolean
 ```
 
 **变更记录**
 
-`v1.0` `添加`
+`v1.0.93` `新增`
 
 **功能描述**
 
-> 通过字符串使用当前 `appClassLoader` 查找类是否存在。
+> 通过字符串类名查找是否存在。
 
 **功能示例**
 
@@ -497,7 +517,18 @@ val String.hasClass: Boolean
 > 示例如下
 
 ```kotlin
-if("com.example.demo.DemoClass".hasClass) {
+if("com.example.demo.DemoClass".hasClass()) {
+    // Your code here.
+}
+```
+
+你还可以自定义其中的 `loader` 参数，默认为 `appClassLoader`。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+if("com.example.demo.DemoClass".hasClass(customClassLoader)) {
     // Your code here.
 }
 ```
@@ -528,7 +559,7 @@ fun findClass(vararg name: String, loader: ClassLoader?): VariousClass
 
 > 通过完整包名+名称查找需要被 Hook 的 `Class`。
 
-!> 使用此方法会得到一个 `HookClass` 仅用于 Hook，若想查找 `Class` 请使用 `classOf`、`clazz` 功能。
+!> 使用此方法会得到一个 `HookClass` 仅用于 Hook，若想查找 `Class` 请使用 `classOf`、`toAppClass` 功能。
 
 **功能示例**
 
@@ -646,7 +677,7 @@ inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHo
 ```
 
 ```kotlin
-inline fun Class<*>.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
+inline fun Class<*>.hook(isForceUseAbsolute: Boolean, initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
 ```
 
 ```kotlin
@@ -685,6 +716,8 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMembe
 
 移除了 ~~`isUseAppClassLoader`~~ 参数
 
+添加了 `isForceUseAbsolute` 参数到 `Class.hook` 方法
+
 **功能描述**
 
 > 这是一切 Hook 的入口创建方法，Hook 方法、构造方法。
@@ -721,6 +754,16 @@ findClass(name = "com.example.demo.DemoClass").hook {
 
 ```kotlin
 Stub::class.java.hook {
+    // Your code here.
+}
+```
+
+若当前 `Class` 不在 `appClassLoader` 且自动匹配无法找到该 `Class`，请启用 `isForceUseAbsolute`。
+
+> 示例如下
+
+```kotlin
+YourClass::class.java.hook(isForceUseAbsolute = true) {
     // Your code here.
 }
 ```
