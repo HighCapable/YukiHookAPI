@@ -185,7 +185,7 @@ TestClass.hook {
 > 示例如下
 
 ```kotlin
-("$packageName.TestClass").hook {
+"$packageName.TestClass".hook {
     injectMember {
         // Your code here.
     }

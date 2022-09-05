@@ -478,14 +478,6 @@ fun VariousClass.toAppClass(): Class<*>
 "com.example.demo.DemoClass".toAppClass()
 ```
 
-为了美观，你可以把字符串用 `(` `)` 括起来。
-
-> 示例如下
-
-```kotlin
-("com.example.demo.DemoClass").toAppClass()
-```
-
 你还可以创建一个 `VariousClass`，并转换为实体类。
 
 `VariousClass` 会枚举所有设置的 `Class` 并最终获得第一个存在的 `Class`。
@@ -731,7 +723,7 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMembe
 > 示例如下
 
 ```kotlin
-("com.example.demo.DemoClass").hook {
+"com.example.demo.DemoClass".hook {
     // Your code here.
 }
 
