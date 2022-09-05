@@ -279,21 +279,21 @@ class MethodFinder @PublishedApi internal constructor(
     }
 
     @YukiPrivateApi
-    override fun build() = try {
+    override fun build() = runCatching {
         build(isBind = false)
         Result()
-    } catch (e: Throwable) {
-        onFailureMsg(throwable = e)
-        Result(isNoSuch = true, e)
+    }.getOrElse {
+        onFailureMsg(throwable = it)
+        Result(isNoSuch = true, it)
     }
 
     @YukiPrivateApi
-    override fun process() = try {
+    override fun process() = runCatching {
         build(isBind = true)
         Process()
-    } catch (e: Throwable) {
-        onFailureMsg(throwable = e)
-        Process(isNoSuch = true, e)
+    }.getOrElse {
+        onFailureMsg(throwable = it)
+        Process(isNoSuch = true, it)
     }
 
     @YukiPrivateApi

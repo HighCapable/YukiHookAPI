@@ -331,11 +331,8 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]
      */
-    fun findClass(name: String, loader: ClassLoader? = appClassLoader) = try {
-        classOf(name, loader).hookClass
-    } catch (e: Throwable) {
-        HookClass(name = name, throwable = e)
-    }
+    fun findClass(name: String, loader: ClassLoader? = appClassLoader) =
+        runCatching { classOf(name, loader).hookClass }.getOrElse { HookClass(name = name, throwable = it) }
 
     /**
      * 查找并装载 [Class]
@@ -414,11 +411,8 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [HookClass]
      */
     @PublishedApi
-    internal fun VariousClass.hookClass(loader: ClassLoader? = null) = try {
-        get(loader).hookClass
-    } catch (e: Throwable) {
-        HookClass(name = "VariousClass", throwable = Throwable(e.message))
-    }
+    internal fun VariousClass.hookClass(loader: ClassLoader? = null) =
+        runCatching { get(loader).hookClass }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
 
     /**
      * [Class] 转换为 [HookClass]

@@ -61,7 +61,7 @@ import java.io.File
  *
  * - 若你正在使用 [PreferenceFragmentCompat] - 请迁移到 [ModulePreferenceFragment] 以适配上述功能特性
  *
- * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/#/api/document?id=yukihookmoduleprefs-class)
+ * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookModulePrefs)
  * @param context 上下文实例 - 默认空
  */
 class YukiHookModulePrefs private constructor(private var context: Context? = null) {
@@ -171,10 +171,10 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      */
     private val sPrefs
         get() = checkApi().let {
-            try {
+            runCatching {
                 context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharedPreferences = true }
                     ?: error("YukiHookModulePrefs missing Context instance")
-            } catch (_: Throwable) {
+            }.getOrElse {
                 context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharedPreferences = false }
                     ?: error("YukiHookModulePrefs missing Context instance")
             }

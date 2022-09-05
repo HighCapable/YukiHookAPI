@@ -32,10 +32,10 @@ package com.highcapable.yukihookapi.hook.core
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
+import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
@@ -325,12 +325,12 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [MethodFinder.Process]
          */
-        inline fun method(initiate: MethodCondition) = try {
+        inline fun method(initiate: MethodCondition) = runCatching {
             isHookMemberSetup = true
             MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
-        } catch (e: Throwable) {
-            findingThrowable = e
-            MethodFinder(hookInstance = this).denied(e)
+        }.getOrElse {
+            findingThrowable = it
+            MethodFinder(hookInstance = this).denied(it)
         }
 
         /**
@@ -340,12 +340,12 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [ConstructorFinder.Process]
          */
-        inline fun constructor(initiate: ConstructorCondition = { emptyParam() }) = try {
+        inline fun constructor(initiate: ConstructorCondition = { emptyParam() }) = runCatching {
             isHookMemberSetup = true
             ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
-        } catch (e: Throwable) {
-            findingThrowable = e
-            ConstructorFinder(hookInstance = this).denied(e)
+        }.getOrElse {
+            findingThrowable = it
+            ConstructorFinder(hookInstance = this).denied(it)
         }
 
         /**
@@ -556,16 +556,16 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
             val replaceMent = object : YukiMemberReplacement(priority) {
                 override fun replaceHookedMember(param: Param) =
                     replaceHookParam.assign(param).let { assign ->
-                        try {
+                        runCatching {
                             replaceHookCallback?.invoke(assign).also {
                                 checkingReturnType((param.member as? Method?)?.returnType, it?.javaClass)
                                 if (replaceHookCallback != null) onHookLogMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
                                 HookParam.invoke()
                             }
-                        } catch (e: Throwable) {
-                            onConductFailureCallback?.invoke(assign, e)
-                            onAllFailureCallback?.invoke(e)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(e)
+                        }.getOrElse {
+                            onConductFailureCallback?.invoke(assign, it)
+                            onAllFailureCallback?.invoke(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
                             /** 若发生异常则会自动调用未经 Hook 的原始 [Member] 保证 Hook APP 正常运行 */
                             assign.callOriginal()
                         }

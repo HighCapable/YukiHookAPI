@@ -188,7 +188,7 @@ class FieldFinder @PublishedApi internal constructor(
     }
 
     @YukiPrivateApi
-    override fun build() = try {
+    override fun build() = runCatching {
         if (classSet != null) {
             classSet.checkingInternal()
             runBlocking {
@@ -198,9 +198,7 @@ class FieldFinder @PublishedApi internal constructor(
             }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))
-    } catch (e: Throwable) {
-        Result(isNoSuch = true, e).await { onFailureMsg(throwable = e) }
-    }
+    }.getOrElse { e -> Result(isNoSuch = true, e).await { onFailureMsg(throwable = e) } }
 
     @YukiPrivateApi
     override fun process() = error("FieldFinder does not contain this usage")

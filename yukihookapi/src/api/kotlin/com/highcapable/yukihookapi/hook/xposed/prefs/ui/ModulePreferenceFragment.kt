@@ -39,6 +39,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.PreferenceScreen
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.utils.unit
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
 /**
@@ -50,7 +51,7 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  *
  * 然后请将重写方法由 [onCreatePreferences] 替换为 [onCreatePreferencesInModuleApp] 即可
  *
- * 详情请参考 [API 文档 - ModulePreferenceFragment](https://fankes.github.io/YukiHookAPI/#/api/document?id=modulepreferencefragment-class)
+ * 详情请参考 [API 文档 - ModulePreferenceFragment](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/ModulePreferenceFragment)
  */
 abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -101,9 +102,7 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
     abstract fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?)
 
     /** 设置自动适配模块 Sp 存储全局可读可写 */
-    private fun makeNewXShareReadableIfPossible() = try {
+    private fun makeNewXShareReadableIfPossible() = runCatching {
         currentActivity.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
-    } catch (_: Throwable) {
-        YukiHookModulePrefs.makeWorldReadable(currentActivity, prefsFileName = "$prefsName.xml")
-    }
+    }.onFailure { YukiHookModulePrefs.makeWorldReadable(currentActivity, prefsFileName = "$prefsName.xml") }.unit()
 }

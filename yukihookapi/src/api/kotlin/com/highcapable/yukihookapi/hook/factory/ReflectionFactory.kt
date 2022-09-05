@@ -109,12 +109,7 @@ inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { clas
  * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
  * @return [Boolean] 是否存在
  */
-fun String.hasClass(loader: ClassLoader? = null) = try {
-    classOf(name = this, loader)
-    true
-} catch (_: Throwable) {
-    false
-}
+fun String.hasClass(loader: ClassLoader? = null) = runCatching { classOf(name = this, loader); true }.getOrNull() ?: false
 
 /**
  * 查找变量是否存在
