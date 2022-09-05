@@ -198,7 +198,7 @@ fun String.hasClass(loader: ClassLoader?): Boolean
 
 **功能描述**
 
-> 通过字符串使用指定的 `ClassLoader` 查找类是否存在。
+> 通过字符串类名使用指定的 `ClassLoader` 查找是否存在。
 
 **功能示例**
 

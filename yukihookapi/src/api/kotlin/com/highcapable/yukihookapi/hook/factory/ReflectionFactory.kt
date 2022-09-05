@@ -105,7 +105,7 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
 inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { classOf(T::class.java.name, loader) } ?: T::class.java
 
 /**
- * 通过字符串查找类是否存在
+ * 通过字符串类名使用指定的 [ClassLoader] 查找是否存在
  * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
  * @return [Boolean] 是否存在
  */
