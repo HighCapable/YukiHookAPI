@@ -660,7 +660,7 @@ Test(true).doTask("task_name")
 > 示例如下
 
 ```kotlin
-classOf("com.demo.Test")
+"com.demo.Test".toClass()
     .getDeclaredConstructor(Boolean::class.java)
     .apply { isAccessible = true }
     .newInstance(true)
@@ -679,7 +679,7 @@ classOf("com.demo.Test")
 > 示例如下
 
 ```kotlin
-classOf("com.demo.Test").buildOfAny(true) { param(BooleanType) }?.current {
+"com.demo.Test".toClass().buildOfAny(true) { param(BooleanType) }?.current {
     method {
         name = "doTask"
         param(StringType)
@@ -916,7 +916,7 @@ public class BTest {
 
 ```kotlin
 // 首先查询到这个 Class
-val currentClass = if("com.demo.ATest".hasClass) classOf("com.demo.ATest") else classOf("com.demo.BTest")
+val currentClass = if("com.demo.ATest".hasClass()) "com.demo.ATest".toClass() else "com.demo.BTest".toClass()
 // 然后再查询这个方法并调用
 currentClass.method {
     name = "doTask"

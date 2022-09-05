@@ -108,28 +108,38 @@ val Class<*>.hasExtends: Boolean
 
 > 当前 `Class` 是否有继承关系，父类是 `Any` 将被认为没有继承关系。
 
-### classOf *- method*
-
-```kotlin
-fun classOf(name: String, loader: ClassLoader?): Class<*>
-```
+### ~~classOf *- method*~~ <!-- {docsify-ignore} -->
 
 **变更记录**
 
 `v1.0` `添加`
 
+`v1.0.93` `移除`
+
+请转到 `toClass(...)` 方法
+
+### String.toClass *- ext-method*
+
+```kotlin
+fun String.toClass(loader: ClassLoader?): Class<*>
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
 **功能描述**
 
-> 通过字符串使用指定的 `ClassLoader` 转换为实体类。
+> 通过字符串类名转换为 `loader` 中的实体类。
 
 **功能示例**
 
-你可以直接填写你要查找的目标 `Class`，必须在当前 `ClassLoader` 下存在。
+你可以直接填写你要查找的目标 `Class`，必须在默认 `ClassLoader` 下存在。
 
 > 示例如下
 
 ```kotlin
-classOf(name = "com.example.demo.DemoClass")
+"com.example.demo.DemoClass".toClass()
 ```
 
 你还可以自定义 `Class` 所在的 `ClassLoader`。
@@ -138,7 +148,7 @@ classOf(name = "com.example.demo.DemoClass")
 
 ```kotlin
 val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
-classOf(name = "com.example.demo.DemoClass", customClassLoader)
+"com.example.demo.DemoClass".toClass(customClassLoader)
 ```
 
 ### classOf *- method*

@@ -55,6 +55,7 @@ import android.view.accessibility.AccessibilityManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
 import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.toClass
 import org.w3c.dom.UserDataHandler
 import java.awt.Component
 
@@ -74,7 +75,7 @@ val ContextClass get() = classOf<Context>()
  * 获得 [ContextImpl] 类型
  * @return [Class]
  */
-val ContextImplClass get() = classOf(name = "android.app.ContextImpl")
+val ContextImplClass get() = "android.app.ContextImpl".toClass()
 
 /**
  * 获得 [ContextWrapper] 类型
@@ -110,13 +111,13 @@ val PackageInfoClass get() = classOf<PackageInfo>()
  * 获得 [ApplicationPackageManager] 类型
  * @return [Class]
  */
-val ApplicationPackageManagerClass get() = classOf(name = "android.app.ApplicationPackageManager")
+val ApplicationPackageManagerClass get() = "android.app.ApplicationPackageManager".toClass()
 
 /**
  * 获得 [ActivityThread] 类型
  * @return [Class]
  */
-val ActivityThreadClass get() = classOf(name = "android.app.ActivityThread")
+val ActivityThreadClass get() = "android.app.ActivityThread".toClass()
 
 /**
  * 获得 [ActivityManager] 类型
@@ -128,49 +129,49 @@ val ActivityManagerClass get() = classOf<ActivityManager>()
  * 获得 [IActivityManager] 类型
  * @return [Class]
  */
-val IActivityManagerClass get() = classOf(name = "android.app.IActivityManager")
+val IActivityManagerClass get() = "android.app.IActivityManager".toClass()
 
 /**
  * 获得 [ActivityManagerNative] 类型
  * @return [Class]
  */
-val ActivityManagerNativeClass get() = classOf(name = "android.app.ActivityManagerNative")
+val ActivityManagerNativeClass get() = "android.app.ActivityManagerNative".toClass()
 
 /**
  * 获得 [IActivityTaskManager] 类型
  * @return [Class]
  */
-val IActivityTaskManagerClass get() = classOf(name = "android.app.IActivityTaskManager")
+val IActivityTaskManagerClass get() = "android.app.IActivityTaskManager".toClass()
 
 /**
  * 获得 [ActivityTaskManager] 类型
  * @return [Class]
  */
-val ActivityTaskManagerClass get() = classOf(name = "android.app.ActivityTaskManager")
+val ActivityTaskManagerClass get() = "android.app.ActivityTaskManager".toClass()
 
 /**
  * 获得 [IPackageManager] 类型
  * @return [Class]
  */
-val IPackageManagerClass get() = classOf(name = "android.content.pm.IPackageManager")
+val IPackageManagerClass get() = "android.content.pm.IPackageManager".toClass()
 
 /**
  * 获得 [ClientTransaction] 类型
  * @return [Class]
  */
-val ClientTransactionClass get() = classOf(name = "android.app.servertransaction.ClientTransaction")
+val ClientTransactionClass get() = "android.app.servertransaction.ClientTransaction".toClass()
 
 /**
  * 获得 [LoadedApk] 类型
  * @return [Class]
  */
-val LoadedApkClass get() = classOf(name = "android.app.LoadedApk")
+val LoadedApkClass get() = "android.app.LoadedApk".toClass()
 
 /**
  * 获得 [Singleton] 类型
  * @return [Class]
  */
-val SingletonClass get() = classOf(name = "android.util.Singleton")
+val SingletonClass get() = "android.util.Singleton".toClass()
 
 /**
  * 获得 [Activity] 类型
@@ -188,31 +189,31 @@ val LooperClass get() = classOf<Looper>()
  * 获得 [Fragment] 类型 - Support
  * @return [Class]
  */
-val FragmentClass_AndroidSupport get() = classOf(name = "android.support.v4.app.Fragment")
+val FragmentClass_AndroidSupport get() = "android.support.v4.app.Fragment".toClass()
 
 /**
  * 获得 [Fragment] 类型 - AndroidX
  * @return [Class]
  */
-val FragmentClass_AndroidX get() = classOf(name = "androidx.fragment.app.Fragment")
+val FragmentClass_AndroidX get() = "androidx.fragment.app.Fragment".toClass()
 
 /**
  * 获得 [FragmentActivity] 类型 - Support
  * @return [Class]
  */
-val FragmentActivityClass_AndroidSupport get() = classOf(name = "android.support.v4.app.FragmentActivity")
+val FragmentActivityClass_AndroidSupport get() = "android.support.v4.app.FragmentActivity".toClass()
 
 /**
  * 获得 [FragmentActivity] 类型 - AndroidX
  * @return [Class]
  */
-val FragmentActivityClass_AndroidX get() = classOf(name = "androidx.fragment.app.FragmentActivity")
+val FragmentActivityClass_AndroidX get() = "androidx.fragment.app.FragmentActivity".toClass()
 
 /**
  * 获得 [DocumentFile] 类型 - AndroidX
  * @return [Class]
  */
-val DocumentFileClass get() = classOf(name = "androidx.documentfile.provider.DocumentFile")
+val DocumentFileClass get() = "androidx.documentfile.provider.DocumentFile".toClass()
 
 /**
  * 获得 [Service] 类型
@@ -592,7 +593,7 @@ val XmlClass get() = classOf<Xml>()
  * 获得 [ContrastColorUtil] 类型
  * @return [Class]
  */
-val ContrastColorUtilClass get() = classOf(name = "com.android.internal.util.ContrastColorUtil")
+val ContrastColorUtilClass get() = "com.android.internal.util.ContrastColorUtil".toClass()
 
 /**
  * 获得 [StatusBarNotification] 类型

@@ -551,7 +551,7 @@ fun findClass(vararg name: String, loader: ClassLoader?): VariousClass
 
 > 通过完整包名+名称查找需要被 Hook 的 `Class`。
 
-!> 使用此方法会得到一个 `HookClass` 仅用于 Hook，若想查找 `Class` 请使用 `classOf`、`toAppClass` 功能。
+!> 使用此方法会得到一个 `HookClass` 仅用于 Hook，若想查找 `Class` 请使用 `toClass`、`toAppClass` 功能。
 
 **功能示例**
 

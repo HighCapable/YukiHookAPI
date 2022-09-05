@@ -74,7 +74,7 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
         baseInstance.newActivity(cl, className, intent)
     } catch (e: Throwable) {
         if (className?.startsWith(YukiHookBridge.modulePackageName) == true)
-            classOf(className).buildOf<Activity>() ?: throw e
+            className.toClass().buildOf<Activity>() ?: throw e
         else throw e
     }
 

@@ -284,7 +284,7 @@ internal object AppParasitics {
                 }?.takeIf { it.isNotBlank() } ?: context.packageManager?.runCatching {
                     queryIntentActivities(getLaunchIntentForPackage(context.packageName)!!, 0).first().activityInfo.name
                 }?.getOrNull() ?: ""
-                if ((proxyClassName.hasClass(context.classLoader) && classOf(proxyClassName, context.classLoader).hasMethod {
+                if ((proxyClassName.hasClass(context.classLoader) && proxyClassName.toClass(context.classLoader).hasMethod {
                         name = "setIntent"; param(IntentClass); superClass()
                     }).not()
                 ) (if (proxyClassName.isBlank()) error("Cound not got launch intent for package \"${context.packageName}\"")

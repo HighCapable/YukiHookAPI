@@ -29,7 +29,7 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Member
 import kotlin.math.abs
@@ -113,7 +113,7 @@ abstract class BaseFinder {
     internal fun Any?.compat(tag: String, loader: ClassLoader?) = when (this) {
         null -> null
         is Class<*> -> this
-        is String -> runCatching { classOf(name = this, loader) }.getOrNull() ?: UndefinedType
+        is String -> runCatching { toClass(loader) }.getOrNull() ?: UndefinedType
         is VariousClass -> runCatching { get(loader) }.getOrNull() ?: UndefinedType
         else -> error("$tag match type \"$javaClass\" not allowed")
     } as Class<*>?

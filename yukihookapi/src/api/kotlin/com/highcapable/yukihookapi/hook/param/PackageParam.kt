@@ -44,6 +44,7 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.value
@@ -341,7 +342,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
-    fun String.toAppClass() = classOf(name = this, appClassLoader)
+    fun String.toAppClass() = toClass(appClassLoader)
 
     /**
      * [VariousClass] 转换为当前 Hook APP 的实体类
@@ -357,25 +358,25 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Boolean] 是否存在
      */
-    fun String.hasClass(loader: ClassLoader? = appClassLoader) = runCatching { classOf(name = this, loader); true }.getOrNull() ?: false
+    fun String.hasClass(loader: ClassLoader? = appClassLoader) = runCatching { toClass(loader); true }.getOrNull() ?: false
 
     /**
      * 查找并装载 [HookClass]
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [classOf]、[toAppClass] 功能
+     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass]、[toAppClass] 功能
      * @param name 类名
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]
      */
     fun findClass(name: String, loader: ClassLoader? = appClassLoader) =
-        runCatching { classOf(name, loader).toHookClass() }.getOrElse { HookClass(name = name, throwable = it) }
+        runCatching { name.toClass(loader).toHookClass() }.getOrElse { HookClass(name = name, throwable = it) }
 
     /**
      * 查找并装载 [HookClass]
      *
      * 使用此方法查找将会取 [name] 其中命中存在的第一个 [Class] 作为结果
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [classOf]、[toAppClass] 功能
+     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass]、[toAppClass] 功能
      * @param name 可填入多个类名 - 自动匹配
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]

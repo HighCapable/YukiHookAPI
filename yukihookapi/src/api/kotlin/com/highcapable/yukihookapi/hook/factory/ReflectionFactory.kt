@@ -74,24 +74,31 @@ enum class MembersType {
 val Class<*>.hasExtends get() = superclass.name != "java.lang.Object"
 
 /**
- * 通过字符串转换为实体类
- * @param name [Class] 的完整包名+名称
- * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
+ * 通过字符串类名转换为 [loader] 中的实体类
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [toClass]
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
-fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
-    val hashCode = ("[$name][$loader]").hashCode()
+@Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "name.toClass(loader)"))
+fun classOf(name: String, loader: ClassLoader? = null) = name.toClass(loader)
+
+/**
+ * 通过字符串类名转换为 [loader] 中的实体类
+ * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [Class]
+ * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+ */
+fun String.toClass(loader: ClassLoader? = null): Class<*> {
+    val hashCode = ("[$this][$loader]").hashCode()
     return ReflectsCacheStore.findClass(hashCode) ?: run {
         when {
-            YukiHookBridge.hasXposedBridge ->
-                runCatching { YukiHookHelper.findClass(name, loader) }.getOrNull()
-                    ?: when (loader) {
-                        null -> Class.forName(name)
-                        else -> loader.loadClass(name)
-                    }
-            loader == null -> Class.forName(name)
-            else -> loader.loadClass(name)
+            YukiHookBridge.hasXposedBridge -> runCatching { YukiHookHelper.findClass(name = this, loader) }.getOrNull()
+                ?: (if (loader == null) Class.forName(this) else loader.loadClass(this))
+            loader == null -> Class.forName(this)
+            else -> loader.loadClass(this)
         }.also { ReflectsCacheStore.putClass(hashCode, it) }
     }
 }
@@ -102,14 +109,14 @@ fun classOf(name: String, loader: ClassLoader? = null): Class<*> {
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
-inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { classOf(T::class.java.name, loader) } ?: T::class.java
+inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { T::class.java.name.toClass(loader) } ?: T::class.java
 
 /**
  * 通过字符串类名使用指定的 [ClassLoader] 查找是否存在
  * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
  * @return [Boolean] 是否存在
  */
-fun String.hasClass(loader: ClassLoader? = null) = runCatching { classOf(name = this, loader); true }.getOrNull() ?: false
+fun String.hasClass(loader: ClassLoader? = null) = runCatching { toClass(loader); true }.getOrNull() ?: false
 
 /**
  * 查找变量是否存在

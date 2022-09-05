@@ -27,7 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.bean
 
-import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.toClass
 
 /**
  * 这是一个不确定性 [Class] 类名装载器
@@ -48,7 +48,7 @@ class VariousClass(vararg var name: String) {
         if (name.isNotEmpty()) run {
             name.forEach {
                 runCatching {
-                    finalClass = classOf(it, loader)
+                    finalClass = it.toClass(loader)
                     return@run
                 }
             }
