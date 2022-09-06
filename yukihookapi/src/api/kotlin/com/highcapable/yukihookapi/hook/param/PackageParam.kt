@@ -42,9 +42,8 @@ import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
+import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.value
@@ -300,26 +299,26 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [toAppClass]
+     * - ❗请现在转移到 [toClass]
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
-    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toAppClass()"))
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toClass()"))
     val String.clazz
-        get() = toAppClass()
+        get() = toClass()
 
     /**
      * [VariousClass] 转换为当前 Hook APP 的实体类
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [toAppClass]
+     * - ❗请现在转移到 [toClass]
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toAppClass()"))
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toClass()"))
     val VariousClass.clazz
-        get() = toAppClass()
+        get() = toClass()
 
     /**
      * 通过字符串类名查找是否存在
@@ -334,36 +333,32 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         get() = hasClass()
 
     /**
-     * 通过字符串类名转换为当前 Hook APP 的实体类
-     *
-     * - 使用当前 [appClassLoader] 装载目标 [Class]
-     *
-     * - 若要使用指定的 [ClassLoader] 装载 - 请手动调用 [classOf] 方法
+     * 通过字符串类名转换为 [loader] 中的实体类
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
-    fun String.toAppClass() = toClass(appClassLoader)
+    fun String.toClass(loader: ClassLoader? = appClassLoader) = ReflectionTool.findClassByName(name = this, loader)
 
     /**
-     * [VariousClass] 转换为当前 Hook APP 的实体类
-     *
-     * - 使用当前 [appClassLoader] 装载目标 [Class]
+     * [VariousClass] 转换为 [loader] 中的实体类
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    fun VariousClass.toAppClass() = get(appClassLoader)
+    fun VariousClass.toClass(loader: ClassLoader? = appClassLoader) = get(loader)
 
     /**
      * 通过字符串类名查找是否存在
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Boolean] 是否存在
      */
-    fun String.hasClass(loader: ClassLoader? = appClassLoader) = runCatching { toClass(loader); true }.getOrNull() ?: false
+    fun String.hasClass(loader: ClassLoader? = appClassLoader) = ReflectionTool.hasClassByName(name = this, loader)
 
     /**
      * 查找并装载 [HookClass]
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass]、[toAppClass] 功能
+     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
      * @param name 类名
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]
@@ -376,7 +371,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * 使用此方法查找将会取 [name] 其中命中存在的第一个 [Class] 作为结果
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass]、[toAppClass] 功能
+     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
      * @param name 可填入多个类名 - 自动匹配
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]

@@ -33,6 +33,9 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -40,12 +43,42 @@ import java.lang.reflect.Method
 import kotlin.math.abs
 
 /**
- * 这是一个对 [Member] 查找的工具实现类
+ * 这是一个对 [Class]、[Member] 查找的工具实现类
  */
 internal object ReflectionTool {
 
     /** 当前工具类的标签 */
     private const val TAG = "YukiHookAPI#ReflectionTool"
+
+    /**
+     * 使用字符串类名查询 [Class] 是否存在
+     * @param name [Class] 完整名称
+     * @param loader [Class] 所在的 [ClassLoader]
+     * @return [Boolean]
+     */
+    internal fun hasClassByName(name: String, loader: ClassLoader?) = runCatching { findClassByName(name, loader); true }.getOrNull() ?: false
+
+    /**
+     * 使用字符串类名获取 [Class]
+     * @param name [Class] 完整名称
+     * @param loader [Class] 所在的 [ClassLoader]
+     * @return [Class]
+     * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+     */
+    internal fun findClassByName(name: String, loader: ClassLoader?): Class<*> {
+        val hashCode = ("[$name][$loader]").hashCode()
+        return ReflectsCacheStore.findClass(hashCode) ?: runCatching {
+            when {
+                YukiHookBridge.hasXposedBridge -> runCatching { YukiHookHelper.findClass(name, loader) }
+                    .getOrNull() ?: (if (loader == null) Class.forName(name) else loader.loadClass(name))
+                loader == null -> Class.forName(name)
+                else -> loader.loadClass(name)
+            }.also { ReflectsCacheStore.putClass(hashCode, it) }
+        }.getOrNull() ?: throw NoClassDefFoundError(
+            "Can't find this Class --> " +
+                    "name:[$name] in [${loader ?: AppParasitics.baseClassLoader}] by $TAG"
+        )
+    }
 
     /**
      * 查找任意变量或一组变量

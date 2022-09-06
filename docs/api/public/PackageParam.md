@@ -436,7 +436,7 @@ fun loadHooker(hooker: YukiBaseHooker)
 
 `v1.0.93` `作废`
 
-请转移到 `toAppClass()` 方法
+请转移到 `toClass(...)` 方法
 
 ### ~~String.hasClass *- i-ext-field*~~ <!-- {docsify-ignore} -->
 
@@ -448,14 +448,14 @@ fun loadHooker(hooker: YukiBaseHooker)
 
 请转移到 `hasClass(...)` 方法
 
-### String+VariousClass.toAppClass *- i-ext-method*
+### String+VariousClass.toClass *- i-ext-method*
 
 ```kotlin
-fun String.toAppClass(): Class<*>
+fun String.toClass(loader: ClassLoader?): Class<*>
 ```
 
 ```kotlin
-fun VariousClass.toAppClass(): Class<*>
+fun VariousClass.toClass(loader: ClassLoader?): Class<*>
 ```
 
 **变更记录**
@@ -464,9 +464,9 @@ fun VariousClass.toAppClass(): Class<*>
 
 **功能描述**
 
-> 通过字符串类名、`VariousClass` 转换为当前 Hook APP 的实体类。
+> 通过字符串类名、`VariousClass` 转换为 `loader` 中的实体类。
 
-使用当前 `appClassLoader` 装载目标 `Class`。
+默认使用当前 `appClassLoader` 装载目标 `Class`。
 
 **功能示例**
 
@@ -475,7 +475,16 @@ fun VariousClass.toAppClass(): Class<*>
 > 示例如下
 
 ```kotlin
-"com.example.demo.DemoClass".toAppClass()
+"com.example.demo.DemoClass".toClass()
+```
+
+你还可以向 `loader` 参数传入你自定义的 `ClassLoader`。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+"com.example.demo.DemoClass".toClass(customClassLoader)
 ```
 
 你还可以创建一个 `VariousClass`，并转换为实体类。
@@ -485,7 +494,16 @@ fun VariousClass.toAppClass(): Class<*>
 > 示例如下
 
 ```kotlin
-VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").toAppClass()
+VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").toClass()
+```
+
+同样地，你还可以向 `loader` 参数传入你自定义的 `ClassLoader`。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").toClass(customClassLoader)
 ```
 
 ### String.hasClass *- i-ext-method*
@@ -501,6 +519,8 @@ fun String.hasClass(loader: ClassLoader?): Boolean
 **功能描述**
 
 > 通过字符串类名查找是否存在。
+
+默认使用当前 `appClassLoader` 装载目标 `Class`。
 
 **功能示例**
 
@@ -551,7 +571,7 @@ fun findClass(vararg name: String, loader: ClassLoader?): VariousClass
 
 > 通过完整包名+名称查找需要被 Hook 的 `Class`。
 
-!> 使用此方法会得到一个 `HookClass` 仅用于 Hook，若想查找 `Class` 请使用 `toClass`、`toAppClass` 功能。
+!> 使用此方法会得到一个 `HookClass` 仅用于 Hook，若想查找 `Class` 请使用 `toClass` 功能。
 
 **功能示例**
 

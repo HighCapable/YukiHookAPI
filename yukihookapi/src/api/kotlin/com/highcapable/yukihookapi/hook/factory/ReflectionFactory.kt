@@ -35,9 +35,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
+import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -91,17 +89,7 @@ fun classOf(name: String, loader: ClassLoader? = null) = name.toClass(loader)
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
-fun String.toClass(loader: ClassLoader? = null): Class<*> {
-    val hashCode = ("[$this][$loader]").hashCode()
-    return ReflectsCacheStore.findClass(hashCode) ?: run {
-        when {
-            YukiHookBridge.hasXposedBridge -> runCatching { YukiHookHelper.findClass(name = this, loader) }.getOrNull()
-                ?: (if (loader == null) Class.forName(this) else loader.loadClass(this))
-            loader == null -> Class.forName(this)
-            else -> loader.loadClass(this)
-        }.also { ReflectsCacheStore.putClass(hashCode, it) }
-    }
-}
+fun String.toClass(loader: ClassLoader? = null) = ReflectionTool.findClassByName(name = this, loader)
 
 /**
  * 通过 [T] 得到其 [Class] 实例并转换为实体类
@@ -116,7 +104,7 @@ inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { T::c
  * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
  * @return [Boolean] 是否存在
  */
-fun String.hasClass(loader: ClassLoader? = null) = runCatching { toClass(loader); true }.getOrNull() ?: false
+fun String.hasClass(loader: ClassLoader? = null) = ReflectionTool.hasClassByName(name = this, loader)
 
 /**
  * 查找变量是否存在
