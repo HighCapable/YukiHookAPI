@@ -29,11 +29,28 @@ package com.highcapable.yukihookapi.hook.type.defined
 
 import com.highcapable.yukihookapi.hook.factory.classOf
 
-/** 未定义类型实例 */
+/**
+ * 未定义类型实例
+ *
+ * 请使用 [UndefinedType] 来调用它
+ */
 internal class UndefinedClass
 
 /**
- * 未定义类型
- * @return [UndefinedClass]
+ * 模糊类型实例
+ *
+ * 请使用 [VagueType] 来调用它
+ */
+internal class VagueClass
+
+/**
+ * 得到未定义类型
+ * @return [Class]
  */
 internal val UndefinedType get() = classOf<UndefinedClass>()
+
+/**
+ * 得到模糊类型
+ * @return [Class]
+ */
+val VagueType get() = classOf<VagueClass>()

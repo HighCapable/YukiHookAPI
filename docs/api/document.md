@@ -46,6 +46,8 @@
 
 [filename](public/VariableTypeFactory.md ':include')
 
+[filename](public/DefinedTypeFactory.md ':include')
+
 [filename](public/LoggerFactory.md ':include')
 
 [filename](public/ReflectionFactory.md ':include')
