@@ -660,6 +660,22 @@ JavaClassLoader.hook {
 
 这只是一个用于调试的功能，<u>**强烈建议不要这样做，发生问题请不要反馈，自行承担一切后果**</u>。
 
+!> `NoClassDefFoundError` Can't find this Class --> name:\[**NAME**\] in \[**CLASSLOADER**\] by YukiHookAPI#ReflectionTool
+
+**异常原因**
+
+通过 `String.toClass(...)` 或 `classOf<...>()` 找不到需要查找的 `Class` 对象。
+
+> 示例如下
+
+```kotlin
+"com.demo.Test".toClass()
+```
+
+**解决方案**
+
+请检查当前字符串或实体匹配到的 `Class` 是否存在于当前 `ClassLoader`，并再试一次。
+
 !> `IllegalStateException` Failed to got SystemContext
 
 **异常原因**
