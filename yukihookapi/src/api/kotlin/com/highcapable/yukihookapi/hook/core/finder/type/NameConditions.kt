@@ -34,9 +34,9 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * 这是一个模糊 [Member] 名称匹配实现类
+ * 这是一个模糊 [Class]、[Member] 名称匹配实现类
  *
- * 可对 R8 混淆后的 [Member] 进行更加详细的定位
+ * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
  */
 class NameConditions @PublishedApi internal constructor() {
 
@@ -221,16 +221,17 @@ class NameConditions @PublishedApi internal constructor() {
     }
 
     /**
-     * 对比 [Member] 类型是否符合条件
-     * @param member 实例 - 只支持 [Method]、[Field]
+     * 对比 [Class]、[Member] 类型是否符合条件
+     * @param reflects 实例 - 只支持 [Class]、[Method]、[Field]
      * @return [Boolean] 是否符合条件
      */
     @PublishedApi
-    internal fun contains(member: Member): Boolean {
+    internal fun contains(reflects: Any): Boolean {
         var conditions = true
-        when (member) {
-            is Method -> member.name
-            is Field -> member.name
+        when (reflects) {
+            is Class<*> -> reflects.name
+            is Method -> reflects.name
+            is Field -> reflects.name
             else -> ""
         }.also {
             if (isThisSynthetic0) conditions = conditions && it == "this$0"

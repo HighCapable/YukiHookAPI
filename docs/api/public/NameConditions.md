@@ -10,9 +10,9 @@ class NameConditions internal constructor()
 
 **功能描述**
 
-> 这是一个模糊 `Member` 名称匹配实现类
+> 这是一个模糊 `Class`、`Member` 名称匹配实现类。
 
-可对 R8 混淆后的 `Member` 进行更加详细的定位。
+可对 R8 混淆后的 `Class`、`Member` 进行更加详细的定位。
 
 ### equalsOf *- method*
 
