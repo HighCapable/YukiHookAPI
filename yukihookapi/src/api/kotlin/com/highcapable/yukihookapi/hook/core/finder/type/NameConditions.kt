@@ -55,6 +55,12 @@ class NameConditions @PublishedApi internal constructor() {
     /** 正则字符匹配条件 */
     private var cdsMatches: Regex? = null
 
+    /** 字符长度匹配条件 */
+    private var cdsLength = -1
+
+    /** 字符长度范围匹配条件 */
+    private var cdsLengthRange = IntRange.EMPTY
+
     /** 标识为匿名类的主类调用对象条件 */
     private var isThisSynthetic0 = false
 
@@ -141,6 +147,22 @@ class NameConditions @PublishedApi internal constructor() {
      */
     fun matches(regex: Regex) {
         cdsMatches = regex
+    }
+
+    /**
+     * 字符长度匹配
+     * @param num 预期的长度
+     */
+    fun length(num: Int) {
+        cdsLength = num
+    }
+
+    /**
+     * 字符长度范围匹配
+     * @param numRange 预期的长度范围
+     */
+    fun length(numRange: IntRange) {
+        cdsLengthRange = numRange
     }
 
     /**
@@ -247,6 +269,8 @@ class NameConditions @PublishedApi internal constructor() {
             if (cdsEndsWith != null) cdsEndsWith?.apply { conditions = conditions && it.endsWith(first, second) }
             if (cdsContains != null) cdsContains?.apply { conditions = conditions && it.contains(first, second) }
             if (cdsMatches != null) cdsMatches?.apply { conditions = conditions && it.matches(regex = this) }
+            if (cdsLength >= 0) conditions = conditions && it.length == cdsLength
+            if (cdsLengthRange != IntRange.EMPTY) conditions = conditions && it.length in cdsLengthRange
         }
         return conditions
     }
@@ -265,6 +289,8 @@ class NameConditions @PublishedApi internal constructor() {
         if (cdsEndsWith != null) cdsEndsWith?.apply { conditions += "<EndsWith:[suffix: $first, isIgnoreCase: $second]> " }
         if (cdsContains != null) cdsContains?.apply { conditions += "<Contains:[other: $first, isIgnoreCase: $second]> " }
         if (cdsMatches != null) cdsMatches?.apply { conditions += "<Matches:[regex: $this]> " }
+        if (cdsLength >= 0) conditions += "<Length:[num: $cdsLength]> "
+        if (cdsLengthRange != IntRange.EMPTY) conditions += "<LengthRange:[numRange: $cdsLengthRange]> "
         return "[${conditions.trim()}]"
     }
 }

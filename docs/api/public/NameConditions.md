@@ -88,6 +88,24 @@ fun matches(regex: Regex)
 
 > 正则字符匹配。
 
+### length *- method*
+
+```kotlin
+fun length(num: Int)
+```
+
+```kotlin
+fun length(numRange: IntRange)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 字符长度与范围匹配。
+
 ### thisSynthetic0 *- method*
 
 ```kotlin
