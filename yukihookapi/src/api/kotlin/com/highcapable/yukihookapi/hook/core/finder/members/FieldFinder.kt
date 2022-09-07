@@ -49,9 +49,9 @@ import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
 
 /**
- * Field 查找类
+ * [Field] 查找类
  *
- * 可通过指定类型查找指定变量或一组变量
+ * 可通过指定类型查找指定 [Field] 或一组 [Field]
  * @param hookInstance 当前 Hook 实例
  * @param classSet 当前需要查找的 [Class] 实例
  */
@@ -172,9 +172,9 @@ class FieldFinder @PublishedApi internal constructor(
     }
 
     /**
-     * 得到变量或一组变量
+     * 得到 [Field] 或一组 [Field]
      * @return [HashSet]<[Field]>
-     * @throws NoSuchFieldError 如果找不到变量
+     * @throws NoSuchFieldError 如果找不到 [Field]
      */
     private val result get() = ReflectionTool.findFields(usedClassSet, orderIndex, matchIndex, rulesData)
 
@@ -292,7 +292,7 @@ class FieldFinder @PublishedApi internal constructor(
     /**
      * [Field] 查找结果实现类
      *
-     * @param isNoSuch 是否没有找到变量 - 默认否
+     * @param isNoSuch 是否没有找到 [Field] - 默认否
      * @param throwable 错误信息
      */
     inner class Result internal constructor(
@@ -317,7 +317,7 @@ class FieldFinder @PublishedApi internal constructor(
          * - ❗如果目标对象不是静态 - 你必须设置 [instance]
          *
          * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @param instance [Field] 所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [Instance]
          */
         fun get(instance: Any? = null) = Instance(instance, give())
@@ -332,7 +332,7 @@ class FieldFinder @PublishedApi internal constructor(
          * - ❗如果目标对象不是静态 - 你必须设置 [instance]
          *
          * - ❗若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
-         * @param instance 变量所在的实例对象 - 如果是静态可不填 - 默认 null
+         * @param instance [Field] 所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [ArrayList]<[Instance]>
          */
         fun all(instance: Any? = null) =

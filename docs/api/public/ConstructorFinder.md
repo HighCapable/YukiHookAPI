@@ -20,7 +20,7 @@ class ConstructorFinder internal constructor(override val hookInstance: YukiMemb
 
 > `Constructor` 查找类。
 
-可通过指定类型查找指定构造方法或一组构造方法。
+可通过指定类型查找指定 `Constructor` 或一组 `Constructor`。
 
 ### paramCount *- field*
 
@@ -414,7 +414,7 @@ fun get(): Instance
 
 **功能示例**
 
-你可以通过获得方法所在实例来执行构造方法创建新的实例对象。
+你可以通过获得方法所在实例来执行 `Constructor` 创建新的实例对象。
 
 > 示例如下
 
@@ -486,7 +486,7 @@ fun give(): Constructor<*>?
 
 **功能描述**
 
-> 得到构造方法本身。
+> 得到 `Constructor` 本身。
 
 若有多个 `Constructor` 结果只会返回第一个。
 

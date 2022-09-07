@@ -50,7 +50,7 @@ import java.lang.reflect.Member
 /**
  * [Constructor] 查找类
  *
- * 可通过指定类型查找指定构造方法或一组构造方法
+ * 可通过指定类型查找指定 [Constructor] 或一组 [Constructor]
  * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreator.MemberHookCreator.members]
  * @param classSet 当前需要查找的 [Class] 实例
  */
@@ -171,9 +171,9 @@ class ConstructorFinder @PublishedApi internal constructor(
     }
 
     /**
-     * 得到构造方法或一组构造方法
+     * 得到 [Constructor] 或一组 [Constructor]
      * @return [HashSet]<[Constructor]>
-     * @throws NoSuchMethodError 如果找不到构造方法
+     * @throws NoSuchMethodError 如果找不到 [Constructor]
      */
     private val result get() = ReflectionTool.findConstructors(usedClassSet, orderIndex, matchIndex, rulesData)
 
@@ -312,7 +312,7 @@ class ConstructorFinder @PublishedApi internal constructor(
 
     /**
      * [Constructor] 查找结果处理类 - 为 [hookInstance] 提供
-     * @param isNoSuch 是否没有找到构造方法 - 默认否
+     * @param isNoSuch 是否没有找到 [Constructor] - 默认否
      * @param throwable 错误信息
      */
     inner class Process internal constructor(
@@ -374,7 +374,7 @@ class ConstructorFinder @PublishedApi internal constructor(
 
     /**
      * [Constructor] 查找结果实现类
-     * @param isNoSuch 是否没有找到构造方法 - 默认否
+     * @param isNoSuch 是否没有找到 [Constructor] - 默认否
      * @param throwable 错误信息
      */
     inner class Result internal constructor(
@@ -526,21 +526,21 @@ class ConstructorFinder @PublishedApi internal constructor(
 
             /**
              * 执行 [Constructor] 创建目标实例
-             * @param param 构造方法参数
+             * @param param [Constructor] 参数
              * @return [Any] or null
              */
             private fun baseCall(vararg param: Any?) = constructor?.newInstance(*param)
 
             /**
              * 执行 [Constructor] 创建目标实例 - 不指定目标实例类型
-             * @param param 构造方法参数
+             * @param param [Constructor] 参数
              * @return [Any] or null
              */
             fun call(vararg param: Any?) = baseCall(*param)
 
             /**
              * 执行 [Constructor] 创建目标实例 - 指定 [T] 目标实例类型
-             * @param param 构造方法参数
+             * @param param [Constructor] 参数
              * @return [T] or null
              */
             fun <T> newInstance(vararg param: Any?) = baseCall(*param) as? T?

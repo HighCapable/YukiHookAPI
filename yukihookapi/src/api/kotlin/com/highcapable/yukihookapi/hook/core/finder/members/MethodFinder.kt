@@ -52,7 +52,7 @@ import java.lang.reflect.Method
 /**
  * [Method] 查找类
  *
- * 可通过指定类型查找指定方法或一组方法
+ * 可通过指定类型查找指定 [Method] 或一组 [Method]
  * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreator.MemberHookCreator.members]
  * @param classSet 当前需要查找的 [Class] 实例
  */
@@ -243,9 +243,9 @@ class MethodFinder @PublishedApi internal constructor(
     }
 
     /**
-     * 得到方法或一组方法
+     * 得到 [Method] 或一组 [Method]
      * @return [HashSet]<[Method]>
-     * @throws NoSuchMethodError 如果找不到方法
+     * @throws NoSuchMethodError 如果找不到 [Method]
      */
     private val result get() = ReflectionTool.findMethods(usedClassSet, orderIndex, matchIndex, rulesData)
 
@@ -385,7 +385,7 @@ class MethodFinder @PublishedApi internal constructor(
 
     /**
      * [Method] 查找结果处理类 - 为 [hookInstance] 提供
-     * @param isNoSuch 是否没有找到方法 - 默认否
+     * @param isNoSuch 是否没有找 [Method]  - 默认否
      * @param throwable 错误信息
      */
     inner class Process internal constructor(
@@ -447,7 +447,7 @@ class MethodFinder @PublishedApi internal constructor(
 
     /**
      * [Method] 查找结果实现类
-     * @param isNoSuch 是否没有找到方法 - 默认否
+     * @param isNoSuch 是否没有找到 [Method] - 默认否
      * @param throwable 错误信息
      */
     inner class Result internal constructor(
@@ -607,7 +607,7 @@ class MethodFinder @PublishedApi internal constructor(
             private var isCallOriginal = false
 
             /**
-             * 标识需要调用当前 [Method] 未经 Hook 的原始方法
+             * 标识需要调用当前 [Method] 未经 Hook 的原始 [Method]
              *
              * 若当前 [Method] 并未 Hook 则会使用原始的 [Method.invoke] 方法调用
              *
@@ -620,7 +620,7 @@ class MethodFinder @PublishedApi internal constructor(
             }
 
             /**
-             * 执行方法
+             * 执行 [Method]
              * @param param 方法参数
              * @return [Any] or null
              */
@@ -630,21 +630,21 @@ class MethodFinder @PublishedApi internal constructor(
                 else method?.invoke(instance, *param)
 
             /**
-             * 执行方法 - 不指定返回值类型
+             * 执行 [Method] - 不指定返回值类型
              * @param param 方法参数
              * @return [Any] or null
              */
             fun call(vararg param: Any?) = baseCall(*param)
 
             /**
-             * 执行方法 - 指定 [T] 返回值类型
+             * 执行 [Method] - 指定 [T] 返回值类型
              * @param param 方法参数
              * @return [T] or null
              */
             fun <T> invoke(vararg param: Any?) = baseCall(*param) as? T?
 
             /**
-             * 执行方法 - 指定 [Byte] 返回值类型
+             * 执行 [Method] - 指定 [Byte] 返回值类型
              *
              * - ❗请确认目标变量的类型 - 发生错误会返回 null
              * @param param 方法参数
@@ -653,85 +653,85 @@ class MethodFinder @PublishedApi internal constructor(
             fun byte(vararg param: Any?) = invoke<Byte?>(*param)
 
             /**
-             * 执行方法 - 指定 [Int] 返回值类型
+             * 执行 [Method] - 指定 [Int] 返回值类型
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回默认值
              * @param param 方法参数
              * @return [Int] 取不到返回 0
              */
             fun int(vararg param: Any?) = invoke(*param) ?: 0
 
             /**
-             * 执行方法 - 指定 [Long] 返回值类型
+             * 执行 [Method] - 指定 [Long] 返回值类型
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回默认值
              * @param param 方法参数
              * @return [Long] 取不到返回 0L
              */
             fun long(vararg param: Any?) = invoke(*param) ?: 0L
 
             /**
-             * 执行方法 - 指定 [Short] 返回值类型
+             * 执行 [Method] - 指定 [Short] 返回值类型
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回默认值
              * @param param 方法参数
              * @return [Short] 取不到返回 0
              */
             fun short(vararg param: Any?) = invoke<Short?>(*param) ?: 0
 
             /**
-             * 执行方法 - 指定 [Double] 返回值类型
+             * 执行 [Method] - 指定 [Double] 返回值类型
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回默认值
              * @param param 方法参数
              * @return [Double] 取不到返回 0.0
              */
             fun double(vararg param: Any?) = invoke(*param) ?: 0.0
 
             /**
-             * 执行方法 - 指定 [Float] 返回值类型
+             * 执行 [Method] - 指定 [Float] 返回值类型
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回默认值
              * @param param 方法参数
              * @return [Float] 取不到返回 0f
              */
             fun float(vararg param: Any?) = invoke(*param) ?: 0f
 
             /**
-             * 执行方法 - 指定 [String] 返回值类型
+             * 执行 [Method] - 指定 [String] 返回值类型
              * @param param 方法参数
              * @return [String] 取不到返回 ""
              */
             fun string(vararg param: Any?) = invoke(*param) ?: ""
 
             /**
-             * 执行方法 - 指定 [Char] 返回值类型
+             * 执行 [Method] - 指定 [Char] 返回值类型
              * @param param 方法参数
              * @return [Char] 取不到返回 ' '
              */
             fun char(vararg param: Any?) = invoke(*param) ?: ' '
 
             /**
-             * 执行方法 - 指定 [Boolean] 返回值类型
+             * 执行 [Method] - 指定 [Boolean] 返回值类型
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回默认值
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回默认值
              * @param param 方法参数
              * @return [Boolean] 取不到返回 false
              */
             fun boolean(vararg param: Any?) = invoke(*param) ?: false
 
             /**
-             * 执行方法 - 指定 [Array] 返回值类型 - 每项类型 [T]
+             * 执行 [Method] - 指定 [Array] 返回值类型 - 每项类型 [T]
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回空数组
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回空数组
              * @return [Array] 取不到返回空数组
              */
             inline fun <reified T> array(vararg param: Any?) = invoke(*param) ?: arrayOf<T>()
 
             /**
-             * 执行方法 - 指定 [List] 返回值类型 - 每项类型 [T]
+             * 执行 [Method] - 指定 [List] 返回值类型 - 每项类型 [T]
              *
-             * - ❗请确认目标方法的返回值 - 发生错误会返回空数组
+             * - ❗请确认目标 [Method] 的返回值 - 发生错误会返回空数组
              * @return [List] 取不到返回空数组
              */
             inline fun <reified T> list(vararg param: Any?) = invoke(*param) ?: listOf<T>()

@@ -20,7 +20,7 @@ class MethodFinder internal constructor(override val hookInstance: YukiMemberHoo
 
 > `Method` 查找类。
 
-可通过指定类型查找指定方法或一组方法。
+可通过指定类型查找指定 `Method` 或一组 `Method`。
 
 ### name *- field*
 
@@ -516,7 +516,7 @@ fun get(instance: Any?): Instance
 
 **功能示例**
 
-你可以通过获得方法所在实例来执行方法。
+你可以通过获得方法所在实例来执行 `Method`。
 
 > 示例如下
 
@@ -759,7 +759,7 @@ fun original(): Instance
 
 **功能描述**
 
-> 标识需要调用当前 `Method` 未经 Hook 的原始方法。
+> 标识需要调用当前 `Method` 未经 Hook 的原始 `Method`。
 
 若当前 `Method` 并未 Hook 则会使用原始的 `Method.invoke` 方法调用。
 
@@ -777,7 +777,7 @@ fun call(vararg param: Any?): Any?
 
 **功能描述**
 
-> 执行方法，不指定返回值类型。
+> 执行 `Method`，不指定返回值类型。
 
 ##### invoke *- method*
 
@@ -791,7 +791,7 @@ fun <T> invoke(vararg param: Any?): T?
 
 **功能描述**
 
-> 执行方法，指定 `T` 返回值类型。
+> 执行 `Method`，指定 `T` 返回值类型。
 
 ##### byte *- method*
 
@@ -805,7 +805,7 @@ fun byte(vararg param: Any?): Byte?
 
 **功能描述**
 
-> 执行方法，指定 Byte 返回值类型。
+> 执行 `Method`，指定 Byte 返回值类型。
 
 ##### int *- method*
 
@@ -823,7 +823,7 @@ fun int(vararg param: Any?): Int
 
 **功能描述**
 
-> 执行方法，指定 Int 返回值类型。
+> 执行 `Method`，指定 Int 返回值类型。
 
 ##### long *- method*
 
@@ -841,7 +841,7 @@ fun long(vararg param: Any?): Long
 
 **功能描述**
 
-> 执行方法，指定 Long 返回值类型。
+> 执行 `Method`，指定 Long 返回值类型。
 
 ##### short *- method*
 
@@ -859,7 +859,7 @@ fun short(vararg param: Any?): Short
 
 **功能描述**
 
-> 执行方法，指定 Short 返回值类型。
+> 执行 `Method`，指定 Short 返回值类型。
 
 ##### double *- method*
 
@@ -877,7 +877,7 @@ fun double(vararg param: Any?): Double
 
 **功能描述**
 
-> 执行方法，指定 Double 返回值类型。
+> 执行 `Method`，指定 Double 返回值类型。
 
 ##### float *- method*
 
@@ -895,7 +895,7 @@ fun float(vararg param: Any?): Float
 
 **功能描述**
 
-> 执行方法，指定 Float 返回值类型。
+> 执行 `Method`，指定 Float 返回值类型。
 
 ##### string *- method*
 
@@ -913,7 +913,7 @@ fun string(vararg param: Any?): String
 
 **功能描述**
 
-> 执行方法，指定 String 返回值类型。
+> 执行 `Method`，指定 String 返回值类型。
 
 ##### char *- method*
 
@@ -927,7 +927,7 @@ fun char(vararg param: Any?): Char
 
 **功能描述**
 
-> 执行方法，指定 Char 返回值类型。
+> 执行 `Method`，指定 Char 返回值类型。
 
 ##### boolean *- method*
 
@@ -945,7 +945,7 @@ fun boolean(vararg param: Any?): Boolean
 
 **功能描述**
 
-> 执行方法，指定 Boolean 返回值类型。
+> 执行 `Method`，指定 Boolean 返回值类型。
 
 #### array *- method*
 
@@ -959,7 +959,7 @@ inline fun <reified T> array(vararg param: Any?): Array<T>
 
 **功能描述**
 
-> 执行方法，指定 Array 返回值类型。
+> 执行 `Method`，指定 Array 返回值类型。
 
 #### list *- method*
 
@@ -973,4 +973,4 @@ inline fun <reified T> list(vararg param: Any?): List<T>
 
 **功能描述**
 
-> 执行方法，指定 List 返回值类型。
+> 执行 `Method`，指定 List 返回值类型。

@@ -20,7 +20,7 @@ class FieldFinder internal constructor(override val hookInstance: YukiMemberHook
 
 > `Field` 查找类。
 
-可通过指定类型查找指定变量或一组变量。
+可通过指定类型查找指定 `Field` 或一组 `Field`。
 
 ### ~~classSet *- field*~~ <!-- {docsify-ignore} -->
 
@@ -357,7 +357,7 @@ fun all(instance: Any?): ArrayList<Instance>
 
 **功能示例**
 
-你可以通过此方法来获得当前条件结果中匹配的全部 `Field`，其变量所在实例用法与 `get` 相同。
+你可以通过此方法来获得当前条件结果中匹配的全部 `Field`，其 `Field` 所在实例用法与 `get` 相同。
 
 > 示例如下
 
