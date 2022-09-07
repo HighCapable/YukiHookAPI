@@ -111,6 +111,67 @@ internal class RunBlockResult(internal val afterMs: Long) {
 }
 
 /**
+ * 创建多项条件判断 - 条件对象 [T]
+ * @param initiate 方法体
+ * @return [Conditions.Result]
+ */
+internal inline fun <T> T.conditions(initiate: Conditions<T>.() -> Unit) = Conditions(value = this).apply(initiate).build()
+
+/**
+ * 构造条件判断类
+ * @param value 当前条件对象
+ */
+internal class Conditions<T>(internal var value: T) {
+
+    /** 全部判断条件数组 */
+    private val conditions = ArrayList<Boolean>()
+
+    /**
+     * 添加与 (and) 条件
+     * @param value 条件值
+     */
+    internal fun and(value: Boolean) {
+        conditions.add(value)
+    }
+
+    /**
+     * 结束方法体
+     * @return [Result]
+     */
+    internal fun build() = Result()
+
+    /**
+     * 构造条件判断结果类
+     */
+    inner class Result internal constructor() {
+
+        /**
+         * 获取条件判断结果
+         * @return [Boolean]
+         */
+        private val result by lazy { conditions.takeIf { it.isNotEmpty() }?.any { it.not() }?.not() == true }
+
+        /**
+         * 当条件成立
+         * @param callback 回调
+         */
+        internal inline fun finally(callback: () -> Unit): Result {
+            if (result) callback()
+            return this
+        }
+
+        /**
+         * 当条件不成立
+         * @param callback 回调
+         */
+        internal inline fun without(callback: () -> Unit): Result {
+            if (result.not()) callback()
+            return this
+        }
+    }
+}
+
+/**
  * 获取 [ModifyValue] 对象
  * @return [ModifyValue]
  */
