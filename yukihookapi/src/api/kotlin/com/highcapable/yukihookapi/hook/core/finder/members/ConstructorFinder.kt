@@ -202,7 +202,7 @@ class ConstructorFinder @PublishedApi internal constructor(
             isBindToHooker = isBind
             setInstance(isBind, result)
         }.result { ms ->
-            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Constructor [$it] takes ${ms}ms [${hookTag}]") }
+            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Constructor [$it] takes ${ms}ms [${hookTag}]") }
         }
     }
 
@@ -266,13 +266,13 @@ class ConstructorFinder @PublishedApi internal constructor(
                             setInstance(isBindToHooker, it.first.result)
                         }.result { ms ->
                             memberInstances.takeIf { it.isNotEmpty() }
-                                ?.forEach { onHookLogMsg(msg = "Find Constructor [$it] takes ${ms}ms [${hookTag}]") }
+                                ?.forEach { onDebuggingMsg(msg = "Find Constructor [$it] takes ${ms}ms [${hookTag}]") }
                         }
                         isFindSuccess = true
                         it.second.onFindCallback?.invoke(memberInstances.constructors())
                         remedyPlansCallback?.invoke()
                         memberInstances.takeIf { it.isNotEmpty() }
-                            ?.forEach { onHookLogMsg(msg = "Constructor [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
+                            ?.forEach { onDebuggingMsg(msg = "Constructor [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
                         return@run
                     }.onFailure {
                         lastError = it

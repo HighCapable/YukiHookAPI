@@ -139,10 +139,10 @@ abstract class MemberBaseFinder internal constructor(
     }
 
     /**
-     * Hook 过程中开启了 [YukiHookAPI.Configs.isDebug] 输出调试信息
+     * 在开启 [YukiHookAPI.Configs.isDebug] 且在 [YukiHookBridge.hasXposedBridge] 且在 Hook 过程中情况下输出调试信息
      * @param msg 调试日志内容
      */
-    internal fun onHookLogMsg(msg: String) {
+    internal fun onDebuggingMsg(msg: String) {
         if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge && hookInstance != null) yLoggerI(msg = msg)
     }
 

@@ -274,7 +274,7 @@ class MethodFinder @PublishedApi internal constructor(
             isBindToHooker = isBind
             setInstance(isBind, result)
         }.result { ms ->
-            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
+            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
         }
     }
 
@@ -339,13 +339,13 @@ class MethodFinder @PublishedApi internal constructor(
                             setInstance(isBindToHooker, it.first.result)
                         }.result { ms ->
                             memberInstances.takeIf { it.isNotEmpty() }
-                                ?.forEach { onHookLogMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
+                                ?.forEach { onDebuggingMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
                         }
                         isFindSuccess = true
                         it.second.onFindCallback?.invoke(memberInstances.methods())
                         remedyPlansCallback?.invoke()
                         memberInstances.takeIf { it.isNotEmpty() }
-                            ?.forEach { onHookLogMsg(msg = "Method [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
+                            ?.forEach { onDebuggingMsg(msg = "Method [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
                         return@run
                     }.onFailure {
                         lastError = it

@@ -194,7 +194,7 @@ class FieldFinder @PublishedApi internal constructor(
             runBlocking {
                 setInstance(result)
             }.result { ms ->
-                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onHookLogMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
+                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
             }
             Result()
         } else Result(isNoSuch = true, Throwable("classSet is null"))
@@ -245,13 +245,13 @@ class FieldFinder @PublishedApi internal constructor(
                             setInstance(it.first.result)
                         }.result { ms ->
                             memberInstances.takeIf { it.isNotEmpty() }
-                                ?.forEach { onHookLogMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
+                                ?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
                         }
                         isFindSuccess = true
                         it.second.onFindCallback?.invoke(memberInstances.fields())
                         remedyPlansCallback?.invoke()
                         memberInstances.takeIf { it.isNotEmpty() }
-                            ?.forEach { onHookLogMsg(msg = "Field [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
+                            ?.forEach { onDebuggingMsg(msg = "Field [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
                         return@run
                     }.onFailure {
                         lastError = it
