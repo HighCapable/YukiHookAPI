@@ -69,7 +69,7 @@ enum class MembersType {
  * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
  * @return [Boolean]
  */
-val Class<*>.hasExtends get() = superclass.name != "java.lang.Object"
+val Class<*>.hasExtends get() = superclass != null && superclass?.name != "java.lang.Object"
 
 /**
  * 通过字符串类名转换为 [loader] 中的实体类
