@@ -101,7 +101,8 @@ internal object ReflectionTool {
             rulesData.name.isBlank() && rulesData.nameConditions == null &&
             rulesData.modifiers == null && rulesData.type == null
         ) error("You must set a condition when finding a Field")
-        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.type}][${rulesData.modifiers}][$classSet]").hashCode()
+        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.nameConditions}]" +
+                "[${rulesData.type}][${rulesData.modifiers}][$classSet]").hashCode()
         return ReflectsCacheStore.findFields(hashCode) ?: let {
             val fields = HashSet<Field>()
             classSet?.declaredFields?.apply {
@@ -220,9 +221,8 @@ internal object ReflectionTool {
             rulesData.paramCountRange.isEmpty() && rulesData.paramTypes == null &&
             rulesData.returnType == null
         ) error("You must set a condition when finding a Method")
-        val hashCode =
-            ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.paramCount}][${rulesData.paramTypes.typeOfString()}]" +
-                    "[${rulesData.returnType}][${rulesData.modifiers}][$classSet]").hashCode()
+        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.nameConditions}][${rulesData.paramCount}]" +
+                "[${rulesData.paramTypes.typeOfString()}][${rulesData.returnType}][${rulesData.modifiers}][$classSet]").hashCode()
         return ReflectsCacheStore.findMethods(hashCode) ?: let {
             val methods = HashSet<Method>()
             classSet?.declaredMethods?.apply {
