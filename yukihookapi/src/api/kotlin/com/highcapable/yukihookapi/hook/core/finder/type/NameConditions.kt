@@ -223,13 +223,14 @@ class NameConditions @PublishedApi internal constructor() {
     /**
      * 对比 [Class]、[Member] 类型是否符合条件
      * @param reflects 实例 - 只支持 [Class]、[Method]、[Field]
+     * @param isUseSimple 是否使用 [Class.getSimpleName] - 只支持 [Class] - 默认否
      * @return [Boolean] 是否符合条件
      */
     @PublishedApi
-    internal fun contains(reflects: Any): Boolean {
+    internal fun contains(reflects: Any, isUseSimple: Boolean = false): Boolean {
         var conditions = true
         when (reflects) {
-            is Class<*> -> reflects.name
+            is Class<*> -> if (isUseSimple) reflects.simpleName else reflects.name
             is Method -> reflects.name
             is Field -> reflects.name
             else -> ""
