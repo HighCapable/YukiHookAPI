@@ -33,6 +33,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.utils.conditions
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
@@ -118,54 +119,59 @@ internal object ReflectionTool {
                     if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
                 val nameCdsLastIndex =
                     if (rulesData.nameConditions != null && matchIndex != null) filter { rulesData.nameConditions!!.contains(it) }.lastIndex else -1
-                forEachIndexed { p, it ->
+                forEachIndexed { p, instance ->
                     var isMatched = false
-                    var conditions = true
-                    if (rulesData.type != null)
-                        conditions = (rulesData.type == it.type).let {
-                            if (it) typeIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == typeIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (typeLastIndex - typeIndex) && matchIndex.second) ||
-                                    (typeLastIndex == typeIndex && matchIndex.second.not()))
+                    rulesData.conditions {
+                        value.type?.also { e ->
+                            and((e == instance.type).let {
+                                if (it) typeIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == typeIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (typeLastIndex - typeIndex) && matchIndex.second) ||
+                                        (typeLastIndex == typeIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.name.isNotBlank())
-                        conditions = (conditions && rulesData.name == it.name).let {
-                            if (it) nameIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
-                                    (nameLastIndex == nameIndex && matchIndex.second.not()))
+                        value.name.takeIf { it.isNotBlank() }?.also { e ->
+                            and((e == instance.name).let {
+                                if (it) nameIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
+                                        (nameLastIndex == nameIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.modifiers != null)
-                        conditions = (conditions && rulesData.modifiers!!.contains(it)).let {
-                            if (it) modifyIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
-                                    (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                        value.modifiers?.also { e ->
+                            and(e.contains(instance).let {
+                                if (it) modifyIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
+                                        (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.nameConditions != null)
-                        conditions = (conditions && rulesData.nameConditions!!.contains(it)).let {
-                            if (it) nameCdsIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
-                                    (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                        value.nameConditions?.also { e ->
+                            and(e.contains(instance).let {
+                                if (it) nameCdsIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
+                                        (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (orderIndex != null) conditions =
-                        (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
-                                (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
-                                (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
-                    if (conditions && isMatched) fields.add(it.apply { isAccessible = true })
+                        orderIndex?.also {
+                            and(((it.first >= 0 && it.first == p && it.second) ||
+                                    (it.first < 0 && abs(it.first) == (lastIndex - p) && it.second) ||
+                                    (lastIndex == p && it.second.not())).also { isMatched = true })
+                        }
+                    }.finally { if (isMatched) fields.add(instance.apply { isAccessible = true }) }
                 }
             } ?: error("Can't find this Field [${rulesData.name}] because classSet is null")
             fields.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putFields(hashCode, fields) }
@@ -248,84 +254,92 @@ internal object ReflectionTool {
                     if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
                 val nameCdsLastIndex =
                     if (rulesData.nameConditions != null && matchIndex != null) filter { rulesData.nameConditions!!.contains(it) }.lastIndex else -1
-                forEachIndexed { p, it ->
+                forEachIndexed { p, instance ->
                     var isMatched = false
-                    var conditions = true
-                    if (rulesData.name.isNotBlank())
-                        conditions = (rulesData.name == it.name).let {
-                            if (it) nameIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
-                                    (nameLastIndex == nameIndex && matchIndex.second.not()))
+                    rulesData.conditions {
+                        value.name.takeIf { it.isNotBlank() }?.also { e ->
+                            and((e == instance.name).let {
+                                if (it) nameIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
+                                        (nameLastIndex == nameIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.returnType != null)
-                        conditions = (conditions && rulesData.returnType == it.returnType).let {
-                            if (it) returnTypeIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == returnTypeIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (returnTypeLastIndex - returnTypeIndex) && matchIndex.second) ||
-                                    (returnTypeLastIndex == returnTypeIndex && matchIndex.second.not()))
+                        value.returnType?.also { e ->
+                            and((e == instance.returnType).let {
+                                if (it) returnTypeIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == returnTypeIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (returnTypeLastIndex - returnTypeIndex) && matchIndex.second) ||
+                                        (returnTypeLastIndex == returnTypeIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.paramCount >= 0)
-                        conditions = (conditions && it.parameterTypes.size == rulesData.paramCount).let {
-                            if (it) paramCountIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
-                                    (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                        value.paramCount.takeIf { it >= 0 }?.also { e ->
+                            and((instance.parameterTypes.size == e).let {
+                                if (it) paramCountIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
+                                        (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.paramCountRange.isEmpty().not())
-                        conditions = (conditions && it.parameterTypes.size in rulesData.paramCountRange).let {
-                            if (it) paramCountRangeIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == paramCountRangeIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
-                                    (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
+                        value.paramCountRange.takeIf { it.isEmpty().not() }?.also { e ->
+                            and((instance.parameterTypes.size in e).let {
+                                if (it) paramCountRangeIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == paramCountRangeIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
+                                        (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.paramTypes != null)
-                        conditions = (conditions && arrayContentsEq(rulesData.paramTypes, it.parameterTypes)).let {
-                            if (it) paramTypeIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
-                                    (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                        value.paramTypes?.also { e ->
+                            and(arrayContentsEq(e, instance.parameterTypes).let {
+                                if (it) paramTypeIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
+                                        (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.modifiers != null)
-                        conditions = (conditions && rulesData.modifiers!!.contains(it)).let {
-                            if (it) modifyIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
-                                    (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                        value.modifiers?.also { e ->
+                            and(e.contains(instance).let {
+                                if (it) modifyIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
+                                        (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.nameConditions != null)
-                        conditions = (conditions && rulesData.nameConditions!!.contains(it)).let {
-                            if (it) nameCdsIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
-                                    (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                        value.nameConditions?.also { e ->
+                            and(e.contains(instance).let {
+                                if (it) nameCdsIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
+                                        (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (orderIndex != null) conditions =
-                        (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
-                                (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
-                                (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
-                    if (conditions && isMatched) methods.add(it.apply { isAccessible = true })
+                        orderIndex?.also {
+                            and(((it.first >= 0 && it.first == p && it.second) ||
+                                    (it.first < 0 && abs(it.first) == (lastIndex - p) && it.second) ||
+                                    (lastIndex == p && it.second.not())).also { isMatched = true })
+                        }
+                    }.finally { if (isMatched) methods.add(instance.apply { isAccessible = true }) }
                 }
             } ?: error("Can't find this Method [${rulesData.name}] because classSet is null")
             methods.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putMethods(hashCode, methods) }
@@ -399,54 +413,59 @@ internal object ReflectionTool {
                         filter { arrayContentsEq(rulesData.paramTypes, it.parameterTypes) }.lastIndex else -1
                 val modifyLastIndex =
                     if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
-                forEachIndexed { p, it ->
+                forEachIndexed { p, instance ->
                     var isMatched = false
-                    var conditions = true
-                    if (rulesData.paramCount >= 0)
-                        conditions = (it.parameterTypes.size == rulesData.paramCount).let {
-                            if (it) paramCountIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
-                                    (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                    rulesData.conditions {
+                        value.paramCount.takeIf { it >= 0 }?.also { e ->
+                            and((instance.parameterTypes.size == e).let {
+                                if (it) paramCountIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
+                                        (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.paramCountRange.isEmpty().not())
-                        conditions = (conditions && it.parameterTypes.size in rulesData.paramCountRange).let {
-                            if (it) paramCountRangeIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == paramCountRangeIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
-                                    (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
+                        value.paramCountRange.takeIf { it.isEmpty().not() }?.also { e ->
+                            and((instance.parameterTypes.size in e).let {
+                                if (it) paramCountRangeIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == paramCountRangeIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
+                                        (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.paramTypes != null)
-                        conditions = (conditions && arrayContentsEq(rulesData.paramTypes, it.parameterTypes)).let {
-                            if (it) paramTypeIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
-                                    (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                        value.paramTypes?.also { e ->
+                            and(arrayContentsEq(e, instance.parameterTypes).let {
+                                if (it) paramTypeIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
+                                        (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (rulesData.modifiers != null)
-                        conditions = (conditions && rulesData.modifiers!!.contains(it)).let {
-                            if (it) modifyIndex++
-                            isMatched = true
-                            it && (matchIndex == null ||
-                                    (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
-                                    (matchIndex.first < 0 &&
-                                            abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
-                                    (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                        value.modifiers?.also { e ->
+                            and(e.contains(instance).let {
+                                if (it) modifyIndex++
+                                isMatched = true
+                                it && (matchIndex == null ||
+                                        (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
+                                        (matchIndex.first < 0 &&
+                                                abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
+                                        (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                            })
                         }
-                    if (orderIndex != null) conditions =
-                        (conditions && ((orderIndex.first >= 0 && orderIndex.first == p && orderIndex.second) ||
-                                (orderIndex.first < 0 && abs(orderIndex.first) == (lastIndex - p) && orderIndex.second) ||
-                                (lastIndex == p && orderIndex.second.not()))).also { isMatched = true }
-                    if (conditions && isMatched) constructors.add(it.apply { isAccessible = true })
+                        orderIndex?.also {
+                            and(((it.first >= 0 && it.first == p && it.second) ||
+                                    (it.first < 0 && abs(it.first) == (lastIndex - p) && it.second) ||
+                                    (lastIndex == p && it.second.not())).also { isMatched = true })
+                        }
+                    }.finally { if (isMatched) constructors.add(instance.apply { isAccessible = true }) }
                 }
             } ?: error("Can't find this Constructor because classSet is null")
             return constructors.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putConstructors(hashCode, constructors) }
