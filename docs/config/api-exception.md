@@ -326,25 +326,6 @@ method {
 
 请将查询条件补充完整并再试一次。
 
-!> `loggerE` Can't find this Method/Constructor/Field \[**NAME**\] because classSet is null
-
-**异常原因**
-
-在查找方法、构造方法以及变量时所设置的 `Class` 实例为 `null`。
-
-> 示例如下
-
-```kotlin
-// 假设 TargetClass 的实例为 null
-TargetClass.method {
-    // ...
-}
-```
-
-**解决方案**
-
-这种情况比较少见，请检查你要查询的目标 `Class` 是否被正确赋值并检查整个 Hook 流程和使用范围。
-
 !> `loggerE` Can't find this Method/Constructor/Field --> **TYPE** in \[**CLASS**\] by YukiHookAPI#ReflectionTool
 
 **异常原因**
