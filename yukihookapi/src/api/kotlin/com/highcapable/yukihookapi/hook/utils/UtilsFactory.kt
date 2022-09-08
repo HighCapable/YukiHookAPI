@@ -87,6 +87,22 @@ internal inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
 } else "[]"
 
 /**
+ * 满足条件判断方法体 - 对 [kotlin.takeIf] 进行封装
+ * @param other 需要满足不为空的对象 - 仅用于判断是否为 null
+ * @param predicate 原始方法体
+ * @return [T] or null
+ */
+internal inline fun <T> T.takeIf(other: Any?, predicate: (T) -> Boolean) = if (other != null) takeIf(predicate) else null
+
+/**
+ * 满足条件返回值 - 对 [kotlin.let] 进行封装
+ * @param other 需要满足不为空的对象 - 仅用于判断是否为 null
+ * @param block 原始方法体
+ * @return [R] or null
+ */
+internal inline fun <T, R> T.let(other: Any?, block: (T) -> R) = if (other != null) let(block) else null
+
+/**
  * 计算方法执行耗时
  * @param block 方法块
  * @return [RunBlockResult]
