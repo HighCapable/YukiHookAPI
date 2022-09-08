@@ -62,15 +62,14 @@ class FieldFinder @PublishedApi internal constructor(
     override val classSet: Class<*>? = null
 ) : MemberBaseFinder(tag = "Field", hookInstance, classSet) {
 
+    @PublishedApi
+    override var rulesData = FieldRulesData()
+
     /** 当前使用的 [classSet] */
     private var usedClassSet = classSet
 
     /** 当前重查找结果回调 */
     private var remedyPlansCallback: (() -> Unit)? = null
-
-    /** 当前查询条件规则数据 */
-    @PublishedApi
-    internal var rulesData = FieldRulesData()
 
     /**
      * 设置 [Field] 名称
@@ -176,7 +175,7 @@ class FieldFinder @PublishedApi internal constructor(
      * @return [HashSet]<[Field]>
      * @throws NoSuchFieldError 如果找不到 [Field]
      */
-    private val result get() = ReflectionTool.findFields(usedClassSet, orderIndex, matchIndex, rulesData)
+    private val result get() = ReflectionTool.findFields(usedClassSet, rulesData)
 
     /**
      * 设置实例

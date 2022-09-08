@@ -61,15 +61,14 @@ class ConstructorFinder @PublishedApi internal constructor(
     override val classSet: Class<*>? = null
 ) : MemberBaseFinder(tag = "Constructor", hookInstance, classSet) {
 
+    @PublishedApi
+    override var rulesData = ConstructorRulesData()
+
     /** 当前使用的 [classSet] */
     private var usedClassSet = classSet
 
     /** 当前重查找结果回调 */
     private var remedyPlansCallback: (() -> Unit)? = null
-
-    /** 当前查询条件规则数据 */
-    @PublishedApi
-    internal var rulesData = ConstructorRulesData()
 
     /**
      * 设置 [Constructor] 参数个数
@@ -175,7 +174,7 @@ class ConstructorFinder @PublishedApi internal constructor(
      * @return [HashSet]<[Constructor]>
      * @throws NoSuchMethodError 如果找不到 [Constructor]
      */
-    private val result get() = ReflectionTool.findConstructors(usedClassSet, orderIndex, matchIndex, rulesData)
+    private val result by lazy { ReflectionTool.findConstructors(usedClassSet, rulesData) }
 
     /**
      * 设置实例

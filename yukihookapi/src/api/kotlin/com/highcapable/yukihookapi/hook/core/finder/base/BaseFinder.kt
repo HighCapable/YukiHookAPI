@@ -29,6 +29,7 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
+import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Member
@@ -39,17 +40,15 @@ import kotlin.math.abs
  */
 abstract class BaseFinder {
 
+    /** 当前查询条件规则数据 */
+    @PublishedApi
+    internal abstract val rulesData: BaseRulesData
+
     /**
      * 字节码、数组下标筛选数据类型
      */
     @PublishedApi
     internal enum class IndexConfigType { ORDER, MATCH }
-
-    /** 字节码、数组顺序下标 */
-    internal var orderIndex: Pair<Int, Boolean>? = null
-
-    /** 字节码、数组筛选下标 */
-    internal var matchIndex: Pair<Int, Boolean>? = null
 
     /**
      * 字节码、数组下标筛选实现类
@@ -66,8 +65,8 @@ abstract class BaseFinder {
          * @param num 下标
          */
         fun index(num: Int) = when (type) {
-            IndexConfigType.ORDER -> orderIndex = Pair(num, true)
-            IndexConfigType.MATCH -> matchIndex = Pair(num, true)
+            IndexConfigType.ORDER -> rulesData.orderIndex = Pair(num, true)
+            IndexConfigType.MATCH -> rulesData.matchIndex = Pair(num, true)
         }
 
         /**
@@ -88,8 +87,8 @@ abstract class BaseFinder {
 
             /** 设置满足条件的最后一个*/
             fun last() = when (type) {
-                IndexConfigType.ORDER -> orderIndex = Pair(0, false)
-                IndexConfigType.MATCH -> matchIndex = Pair(0, false)
+                IndexConfigType.ORDER -> rulesData.orderIndex = Pair(0, false)
+                IndexConfigType.MATCH -> rulesData.matchIndex = Pair(0, false)
             }
 
             /**

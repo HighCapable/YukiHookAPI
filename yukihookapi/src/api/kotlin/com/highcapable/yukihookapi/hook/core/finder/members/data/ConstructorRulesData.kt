@@ -40,4 +40,11 @@ internal class ConstructorRulesData internal constructor(
     var paramTypes: Array<out Class<*>>? = null,
     var paramCount: Int = -1,
     var paramCountRange: IntRange = IntRange.EMPTY
-) : MemberRulesData()
+) : MemberRulesData() {
+
+    override val objectName get() = "Constructor"
+
+    override val isInitialize get() = super.isInitializeOfSuper || paramTypes != null || paramCount >= 0 || paramCountRange != IntRange.EMPTY
+
+    override fun hashCode(other: Any?) = super.hashCode(other) + "[$paramTypes][$paramCount][$paramCountRange]".hashCode()
+}

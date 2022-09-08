@@ -41,4 +41,11 @@ internal class FieldRulesData internal constructor(
     var name: String = "",
     var nameConditions: NameConditions? = null,
     var type: Any? = null
-) : MemberRulesData()
+) : MemberRulesData() {
+
+    override val objectName get() = "Field"
+
+    override val isInitialize get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || type != null
+
+    override fun hashCode(other: Any?) = super.hashCode(other) + "[$name][$nameConditions][$type]".hashCode()
+}

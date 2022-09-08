@@ -23,35 +23,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/9/4.
+ * This file is Created by fankes on 2022/9/8.
  */
-package com.highcapable.yukihookapi.hook.core.finder.members.data
+package com.highcapable.yukihookapi.hook.core.finder.base.data
 
-import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
+import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import java.lang.reflect.Member
 
 /**
- * [Member] 规则查询数据类
- * @param isFindInSuper 是否在未找到后继续在父类中查找
- * @param matchCount 匹配的字节码个数
- * @param matchCountRange 匹配的字节码个数范围
+ * 这是 [Class] 与 [Member] 规则查询数据基本类实现
+ * @param modifiers 描述符
+ * @param orderIndex 字节码、数组顺序下标
+ * @param matchIndex 字节码、数组筛选下标
  */
 @PublishedApi
-internal open class MemberRulesData internal constructor(
-    var isFindInSuper: Boolean = false,
-    var matchCount: Int = -1,
-    var matchCountRange: IntRange = IntRange.EMPTY
-) : BaseRulesData() {
-
-    override val objectName get() = "Member"
+internal abstract class BaseRulesData internal constructor(
+    var modifiers: ModifierRules? = null,
+    var orderIndex: Pair<Int, Boolean>? = null,
+    var matchIndex: Pair<Int, Boolean>? = null
+) {
 
     /**
-     * 判断 [BaseRulesData] 规则是否已经初始化 (设置了任意一个参数)
+     * 获取规则对象名称
+     * @return [String]
+     */
+    internal abstract val objectName: String
+
+    /**
+     * 判断规则是否已经初始化 (设置了任意一个参数)
      * @return [Boolean]
      */
-    internal val isInitializeOfSuper get() = super.isInitialize
+    internal open val isInitialize get() = modifiers != null || orderIndex != null || matchIndex != null
 
-    override val isInitialize get() = isInitializeOfSuper || matchCount >= 0 || matchCountRange != IntRange.EMPTY
-
-    override fun hashCode(other: Any?) = super.hashCode(other) + "[$isFindInSuper][$matchIndex][$matchCountRange]".hashCode()
+    /**
+     * 通过规则数据 [toString] 来得到一个 [Any.hashCode]
+     * @param other 额外的数据 - 可选
+     * @return [Int]
+     */
+    internal open fun hashCode(other: Any? = null) = "[$other][$modifiers][$orderIndex][$matchIndex]".hashCode()
 }

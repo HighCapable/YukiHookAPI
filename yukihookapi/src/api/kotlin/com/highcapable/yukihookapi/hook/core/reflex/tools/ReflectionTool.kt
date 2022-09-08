@@ -27,13 +27,17 @@
  */
 package com.highcapable.yukihookapi.hook.core.reflex.tools
 
+import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
+import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.utils.conditions
+import com.highcapable.yukihookapi.hook.utils.let
+import com.highcapable.yukihookapi.hook.utils.takeIf
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
@@ -84,413 +88,350 @@ internal object ReflectionTool {
     /**
      * 查找任意 [Field] 或一组 [Field]
      * @param classSet [Field] 所在类
-     * @param orderIndex 字节码顺序下标
-     * @param matchIndex 字节码筛选下标
      * @param rulesData 规则查询数据
      * @return [HashSet]<[Field]>
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [FieldRulesData.type] 目标类不存在
+     * @throws IllegalStateException 如果未设置任何条件或 [FieldRulesData.type] 目标类不存在
      * @throws NoSuchFieldError 如果找不到 [Field]
      */
-    internal fun findFields(
-        classSet: Class<*>?,
-        orderIndex: Pair<Int, Boolean>?,
-        matchIndex: Pair<Int, Boolean>?,
-        rulesData: FieldRulesData
-    ): HashSet<Field> {
-        if (rulesData.type == UndefinedType) error("Field match type class is not found")
-        if (orderIndex == null && matchIndex == null &&
-            rulesData.name.isBlank() && rulesData.nameConditions == null &&
-            rulesData.modifiers == null && rulesData.type == null
-        ) error("You must set a condition when finding a Field")
-        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.nameConditions}]" +
-                "[${rulesData.type}][${rulesData.modifiers}][$classSet]").hashCode()
-        return ReflectsCacheStore.findFields(hashCode) ?: let {
-            val fields = HashSet<Field>()
-            classSet?.declaredFields?.apply {
-                var typeIndex = -1
-                var nameIndex = -1
-                var modifyIndex = -1
-                var nameCdsIndex = -1
-                val typeLastIndex =
-                    if (rulesData.type != null && matchIndex != null) filter { rulesData.type == it.type }.lastIndex else -1
-                val nameLastIndex =
-                    if (rulesData.name.isNotBlank() && matchIndex != null) filter { rulesData.name == it.name }.lastIndex else -1
-                val modifyLastIndex =
-                    if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
-                val nameCdsLastIndex =
-                    if (rulesData.nameConditions != null && matchIndex != null) filter { rulesData.nameConditions!!.contains(it) }.lastIndex else -1
-                forEachIndexed { p, instance ->
+    internal fun findFields(classSet: Class<*>?, rulesData: FieldRulesData) = rulesData.createResult {
+        if (type == UndefinedType) error("Field match type class is not found")
+        if (classSet == null) return@createResult hashSetOf()
+        ReflectsCacheStore.findFields(hashCode(classSet)) ?: hashSetOf<Field>().also { fields ->
+            classSet.declaredFields.also { declares ->
+                var iType = -1
+                var iName = -1
+                var iModify = -1
+                var iNameCds = -1
+                val iLType = type?.let(matchIndex) { e -> declares.filter { e == it.type }.lastIndex } ?: -1
+                val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                declares.forEachIndexed { index, instance ->
                     var isMatched = false
-                    rulesData.conditions {
-                        value.type?.also { e ->
-                            and((e == instance.type).let {
-                                if (it) typeIndex++
+                    conditions {
+                        type?.also {
+                            and((it == instance.type).let { hold ->
+                                if (hold) iType++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == typeIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (typeLastIndex - typeIndex) && matchIndex.second) ||
-                                        (typeLastIndex == typeIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iType, iLType)
                             })
                         }
-                        value.name.takeIf { it.isNotBlank() }?.also { e ->
-                            and((e == instance.name).let {
-                                if (it) nameIndex++
+                        name.takeIf { it.isNotBlank() }?.also {
+                            and((it == instance.name).let { hold ->
+                                if (hold) iName++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
-                                        (nameLastIndex == nameIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iName, iLName)
                             })
                         }
-                        value.modifiers?.also { e ->
-                            and(e.contains(instance).let {
-                                if (it) modifyIndex++
+                        modifiers?.also {
+                            and(it.contains(instance).let { hold ->
+                                if (hold) iModify++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
-                                        (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
-                        value.nameConditions?.also { e ->
-                            and(e.contains(instance).let {
-                                if (it) nameCdsIndex++
+                        nameConditions?.also {
+                            and(it.contains(instance).let { hold ->
+                                if (hold) iNameCds++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
-                                        (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
                         }
-                        orderIndex?.also {
-                            and(((it.first >= 0 && it.first == p && it.second) ||
-                                    (it.first < 0 && abs(it.first) == (lastIndex - p) && it.second) ||
-                                    (lastIndex == p && it.second.not())).also { isMatched = true })
-                        }
+                        orderIndex.compare(index, declares.lastIndex) { and(it); isMatched = it }
                     }.finally { if (isMatched) fields.add(instance.apply { isAccessible = true }) }
                 }
-            } ?: error("Can't find this Field [${rulesData.name}] because classSet is null")
-            fields.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putFields(hashCode, fields) }
-                ?: if (rulesData.isFindInSuper && classSet.hasExtends)
-                    findFields(classSet.superclass, orderIndex, matchIndex, rulesData)
-                else throw NoSuchFieldError(
-                    "Can't find this Field --> " +
-                            when {
-                                orderIndex == null -> ""
-                                orderIndex.second.not() -> "orderIndex:[last] "
-                                else -> "orderIndex:[${orderIndex.first}] "
-                            } +
-                            when {
-                                matchIndex == null -> ""
-                                matchIndex.second.not() -> "matchIndex:[last] "
-                                else -> "matchIndex:[${matchIndex.first}] "
-                            } +
-                            when (rulesData.nameConditions) {
-                                null -> ""
-                                else -> "nameConditions:${rulesData.nameConditions} "
-                            } +
-                            "name:[${rulesData.name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
-                            "type:[${rulesData.type ?: "unspecified"}] " +
-                            "modifiers:${rulesData.modifiers ?: "[]"} " +
-                            "in [$classSet] " +
-                            "by $TAG"
-                )
-        }
+            }
+        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putFields(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
     }
 
     /**
      * 查找任意 [Method] 或一组 [Method]
      * @param classSet [Method] 所在类
-     * @param orderIndex 字节码顺序下标
-     * @param matchIndex 字节码筛选下标
      * @param rulesData 规则查询数据
      * @return [HashSet]<[Method]>
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [MethodRulesData.paramTypes] 以及 [MethodRulesData.returnType] 目标类不存在
+     * @throws IllegalStateException 如果未设置任何条件或 [MethodRulesData.paramTypes] 以及 [MethodRulesData.returnType] 目标类不存在
      * @throws NoSuchMethodError 如果找不到 [Method]
      */
-    internal fun findMethods(
-        classSet: Class<*>?,
-        orderIndex: Pair<Int, Boolean>?,
-        matchIndex: Pair<Int, Boolean>?,
-        rulesData: MethodRulesData
-    ): HashSet<Method> {
-        if (rulesData.returnType == UndefinedType) error("Method match returnType class is not found")
-        rulesData.paramTypes?.takeIf { it.isNotEmpty() }
+    internal fun findMethods(classSet: Class<*>?, rulesData: MethodRulesData) = rulesData.createResult {
+        if (returnType == UndefinedType) error("Method match returnType class is not found")
+        if (classSet == null) return@createResult hashSetOf()
+        paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Method match paramType[$p] class is not found") }
-        if (orderIndex == null && matchIndex == null &&
-            rulesData.name.isBlank() && rulesData.nameConditions == null &&
-            rulesData.modifiers == null && rulesData.paramCount < 0 &&
-            rulesData.paramCountRange.isEmpty() && rulesData.paramTypes == null &&
-            rulesData.returnType == null
-        ) error("You must set a condition when finding a Method")
-        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.name}][${rulesData.nameConditions}][${rulesData.paramCount}]" +
-                "[${rulesData.paramTypes.typeOfString()}][${rulesData.returnType}][${rulesData.modifiers}][$classSet]").hashCode()
-        return ReflectsCacheStore.findMethods(hashCode) ?: let {
-            val methods = HashSet<Method>()
-            classSet?.declaredMethods?.apply {
-                var returnTypeIndex = -1
-                var paramTypeIndex = -1
-                var paramCountIndex = -1
-                var paramCountRangeIndex = -1
-                var nameIndex = -1
-                var modifyIndex = -1
-                var nameCdsIndex = -1
-                val returnTypeLastIndex =
-                    if (rulesData.returnType != null && matchIndex != null) filter { rulesData.returnType == it.returnType }.lastIndex else -1
-                val paramCountLastIndex =
-                    if (rulesData.paramCount >= 0 && matchIndex != null) filter { rulesData.paramCount == it.parameterTypes.size }.lastIndex else -1
-                val paramCountRangeLastIndex = if (rulesData.paramCountRange.isEmpty().not() && matchIndex != null)
-                    filter { it.parameterTypes.size in rulesData.paramCountRange }.lastIndex else -1
-                val paramTypeLastIndex =
-                    if (rulesData.paramTypes != null && matchIndex != null)
-                        filter { arrayContentsEq(rulesData.paramTypes, it.parameterTypes) }.lastIndex else -1
-                val nameLastIndex =
-                    if (rulesData.name.isNotBlank() && matchIndex != null) filter { rulesData.name == it.name }.lastIndex else -1
-                val modifyLastIndex =
-                    if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
-                val nameCdsLastIndex =
-                    if (rulesData.nameConditions != null && matchIndex != null) filter { rulesData.nameConditions!!.contains(it) }.lastIndex else -1
-                forEachIndexed { p, instance ->
+        ReflectsCacheStore.findMethods(hashCode(classSet)) ?: hashSetOf<Method>().also { methods ->
+            classSet.declaredMethods.also { declares ->
+                var iReturnType = -1
+                var iParamTypes = -1
+                var iParamCount = -1
+                var iParamCountRange = -1
+                var iName = -1
+                var iModify = -1
+                var iNameCds = -1
+                val iLReturnType = returnType?.let(matchIndex) { e -> declares.filter { e == it.returnType }.lastIndex } ?: -1
+                val iLParamCount = paramCount.takeIf(matchIndex) { it >= 0 }
+                    ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
+                val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
+                    ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
+                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { arrayContentsEq(e, it.parameterTypes) }.lastIndex } ?: -1
+                val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                declares.forEachIndexed { index, instance ->
                     var isMatched = false
-                    rulesData.conditions {
-                        value.name.takeIf { it.isNotBlank() }?.also { e ->
-                            and((e == instance.name).let {
-                                if (it) nameIndex++
+                    conditions {
+                        name.takeIf { it.isNotBlank() }?.also {
+                            and((it == instance.name).let { hold ->
+                                if (hold) iName++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == nameIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (nameLastIndex - nameIndex) && matchIndex.second) ||
-                                        (nameLastIndex == nameIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iName, iLName)
                             })
                         }
-                        value.returnType?.also { e ->
-                            and((e == instance.returnType).let {
-                                if (it) returnTypeIndex++
+                        returnType?.also {
+                            and((it == instance.returnType).let { hold ->
+                                if (hold) iReturnType++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == returnTypeIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (returnTypeLastIndex - returnTypeIndex) && matchIndex.second) ||
-                                        (returnTypeLastIndex == returnTypeIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iReturnType, iLReturnType)
                             })
                         }
-                        value.paramCount.takeIf { it >= 0 }?.also { e ->
-                            and((instance.parameterTypes.size == e).let {
-                                if (it) paramCountIndex++
+                        paramCount.takeIf { it >= 0 }?.also {
+                            and((instance.parameterTypes.size == it).let { hold ->
+                                if (hold) iParamCount++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
-                                        (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iParamCount, iLParamCount)
                             })
                         }
-                        value.paramCountRange.takeIf { it.isEmpty().not() }?.also { e ->
-                            and((instance.parameterTypes.size in e).let {
-                                if (it) paramCountRangeIndex++
+                        paramCountRange.takeIf { it.isEmpty().not() }?.also {
+                            and((instance.parameterTypes.size in it).let { hold ->
+                                if (hold) iParamCountRange++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == paramCountRangeIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
-                                        (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iParamCountRange, iLParamCountRange)
                             })
                         }
-                        value.paramTypes?.also { e ->
-                            and(arrayContentsEq(e, instance.parameterTypes).let {
-                                if (it) paramTypeIndex++
+                        paramTypes?.also {
+                            and(arrayContentsEq(it, instance.parameterTypes).let { hold ->
+                                if (hold) iParamTypes++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
-                                        (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
                         }
-                        value.modifiers?.also { e ->
-                            and(e.contains(instance).let {
-                                if (it) modifyIndex++
+                        modifiers?.also {
+                            and(it.contains(instance).let { hold ->
+                                if (hold) iModify++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
-                                        (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
-                        value.nameConditions?.also { e ->
-                            and(e.contains(instance).let {
-                                if (it) nameCdsIndex++
+                        nameConditions?.also {
+                            and(it.contains(instance).let { hold ->
+                                if (hold) iNameCds++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == nameCdsIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (nameCdsLastIndex - nameCdsIndex) && matchIndex.second) ||
-                                        (nameCdsLastIndex == nameCdsIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
                         }
-                        orderIndex?.also {
-                            and(((it.first >= 0 && it.first == p && it.second) ||
-                                    (it.first < 0 && abs(it.first) == (lastIndex - p) && it.second) ||
-                                    (lastIndex == p && it.second.not())).also { isMatched = true })
-                        }
+                        orderIndex.compare(index, declares.lastIndex) { and(it); isMatched = it }
                     }.finally { if (isMatched) methods.add(instance.apply { isAccessible = true }) }
                 }
-            } ?: error("Can't find this Method [${rulesData.name}] because classSet is null")
-            methods.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putMethods(hashCode, methods) }
-                ?: if (rulesData.isFindInSuper && classSet.hasExtends)
-                    findMethods(classSet.superclass, orderIndex, matchIndex, rulesData)
-                else throw NoSuchMethodError(
-                    "Can't find this Method --> " +
-                            when {
-                                orderIndex == null -> ""
-                                orderIndex.second.not() -> "orderIndex:[last] "
-                                else -> "orderIndex:[${orderIndex.first}] "
-                            } +
-                            when {
-                                matchIndex == null -> ""
-                                matchIndex.second.not() -> "matchIndex:[last] "
-                                else -> "matchIndex:[${matchIndex.first}] "
-                            } +
-                            when (rulesData.nameConditions) {
-                                null -> ""
-                                else -> "nameConditions:${rulesData.nameConditions} "
-                            } +
-                            "name:[${rulesData.name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
-                            "paramCount:[${rulesData.paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                            "paramCountRange:[${rulesData.paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
-                            "paramTypes:[${rulesData.paramTypes.typeOfString()}] " +
-                            "returnType:[${rulesData.returnType ?: "unspecified"}] " +
-                            "modifiers:${rulesData.modifiers ?: "[]"} " +
-                            "in [$classSet] " +
-                            "by $TAG"
-                )
-        }
+            }
+        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putMethods(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
     }
 
     /**
      * 查找任意 [Constructor] 或一组 [Constructor]
      * @param classSet [Constructor] 所在类
-     * @param orderIndex 字节码顺序下标
-     * @param matchIndex 字节码筛选下标
      * @param rulesData 规则查询数据
      * @return [HashSet]<[Constructor]>
-     * @throws IllegalStateException 如果 [classSet] 为 null 或未设置任何条件或 [ConstructorRulesData.paramTypes] 目标类不存在
+     * @throws IllegalStateException 如果未设置任何条件或 [ConstructorRulesData.paramTypes] 目标类不存在
      * @throws NoSuchMethodError 如果找不到 [Constructor]
      */
-    internal fun findConstructors(
-        classSet: Class<*>?,
-        orderIndex: Pair<Int, Boolean>?,
-        matchIndex: Pair<Int, Boolean>?,
-        rulesData: ConstructorRulesData
-    ): HashSet<Constructor<*>> {
-        rulesData.paramTypes?.takeIf { it.isNotEmpty() }
+    internal fun findConstructors(classSet: Class<*>?, rulesData: ConstructorRulesData) = rulesData.createResult {
+        if (classSet == null) return@createResult hashSetOf()
+        paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
-        if (orderIndex == null && matchIndex == null &&
-            rulesData.modifiers == null && rulesData.paramCount < 0 &&
-            rulesData.paramCountRange.isEmpty() && rulesData.paramTypes == null
-        ) error("You must set a condition when finding a Constructor")
-        val hashCode = ("[$orderIndex][$matchIndex][${rulesData.paramCount}][${rulesData.paramTypes.typeOfString()}]" +
-                "[${rulesData.modifiers}][$classSet]").hashCode()
-        return ReflectsCacheStore.findConstructors(hashCode) ?: let {
-            val constructors = HashSet<Constructor<*>>()
-            classSet?.declaredConstructors?.apply {
-                var paramTypeIndex = -1
-                var paramCountIndex = -1
-                var paramCountRangeIndex = -1
-                var modifyIndex = -1
-                val paramCountLastIndex =
-                    if (rulesData.paramCount >= 0 && matchIndex != null) filter { rulesData.paramCount == it.parameterTypes.size }.lastIndex else -1
-                val paramCountRangeLastIndex = if (rulesData.paramCountRange.isEmpty().not() && matchIndex != null)
-                    filter { it.parameterTypes.size in rulesData.paramCountRange }.lastIndex else -1
-                val paramTypeLastIndex =
-                    if (rulesData.paramTypes != null && matchIndex != null)
-                        filter { arrayContentsEq(rulesData.paramTypes, it.parameterTypes) }.lastIndex else -1
-                val modifyLastIndex =
-                    if (rulesData.modifiers != null && matchIndex != null) filter { rulesData.modifiers!!.contains(it) }.lastIndex else -1
-                forEachIndexed { p, instance ->
+        ReflectsCacheStore.findConstructors(hashCode(classSet)) ?: hashSetOf<Constructor<*>>().also { constructors ->
+            classSet.declaredConstructors.also { declares ->
+                var iParamTypes = -1
+                var iParamCount = -1
+                var iParamCountRange = -1
+                var iModify = -1
+                val iLParamCount = paramCount.takeIf(matchIndex) { it >= 0 }
+                    ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
+                val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
+                    ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
+                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { arrayContentsEq(e, it.parameterTypes) }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                declares.forEachIndexed { index, instance ->
                     var isMatched = false
-                    rulesData.conditions {
-                        value.paramCount.takeIf { it >= 0 }?.also { e ->
-                            and((instance.parameterTypes.size == e).let {
-                                if (it) paramCountIndex++
+                    conditions {
+                        paramCount.takeIf { it >= 0 }?.also {
+                            and((instance.parameterTypes.size == it).let { hold ->
+                                if (hold) iParamCount++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == paramCountIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (paramCountLastIndex - paramCountIndex) && matchIndex.second) ||
-                                        (paramCountLastIndex == paramCountIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iParamCount, iLParamCount)
                             })
                         }
-                        value.paramCountRange.takeIf { it.isEmpty().not() }?.also { e ->
-                            and((instance.parameterTypes.size in e).let {
-                                if (it) paramCountRangeIndex++
+                        paramCountRange.takeIf { it.isEmpty().not() }?.also {
+                            and((instance.parameterTypes.size in it).let { hold ->
+                                if (hold) iParamCountRange++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == paramCountRangeIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (paramCountRangeLastIndex - paramCountRangeIndex) && matchIndex.second) ||
-                                        (paramCountRangeLastIndex == paramCountRangeIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iParamCountRange, iLParamCountRange)
                             })
                         }
-                        value.paramTypes?.also { e ->
-                            and(arrayContentsEq(e, instance.parameterTypes).let {
-                                if (it) paramTypeIndex++
+                        paramTypes?.also {
+                            and(arrayContentsEq(it, instance.parameterTypes).let { hold ->
+                                if (hold) iParamTypes++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == paramTypeIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (paramTypeLastIndex - paramTypeIndex) && matchIndex.second) ||
-                                        (paramTypeLastIndex == paramTypeIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
                         }
-                        value.modifiers?.also { e ->
-                            and(e.contains(instance).let {
-                                if (it) modifyIndex++
+                        modifiers?.also {
+                            and(it.contains(instance).let { hold ->
+                                if (hold) iModify++
                                 isMatched = true
-                                it && (matchIndex == null ||
-                                        (matchIndex.first >= 0 && matchIndex.first == modifyIndex && matchIndex.second) ||
-                                        (matchIndex.first < 0 &&
-                                                abs(matchIndex.first) == (modifyLastIndex - modifyIndex) && matchIndex.second) ||
-                                        (modifyLastIndex == modifyIndex && matchIndex.second.not()))
+                                hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
-                        orderIndex?.also {
-                            and(((it.first >= 0 && it.first == p && it.second) ||
-                                    (it.first < 0 && abs(it.first) == (lastIndex - p) && it.second) ||
-                                    (lastIndex == p && it.second.not())).also { isMatched = true })
-                        }
+                        orderIndex.compare(index, declares.lastIndex) { and(it); isMatched = it }
                     }.finally { if (isMatched) constructors.add(instance.apply { isAccessible = true }) }
                 }
-            } ?: error("Can't find this Constructor because classSet is null")
-            return constructors.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putConstructors(hashCode, constructors) }
-                ?: if (rulesData.isFindInSuper && classSet.hasExtends)
-                    findConstructors(classSet.superclass, orderIndex, matchIndex, rulesData)
-                else throw NoSuchMethodError(
-                    "Can't find this Constructor --> " +
-                            when {
-                                orderIndex == null -> ""
-                                orderIndex.second.not() -> "orderIndex:[last] "
-                                else -> "orderIndex:[${orderIndex.first}] "
-                            } +
-                            when {
-                                matchIndex == null -> ""
-                                matchIndex.second.not() -> "matchIndex:[last] "
-                                else -> "matchIndex:[${matchIndex.first}] "
-                            } +
-                            "paramCount:[${rulesData.paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                            "paramCountRange:[${rulesData.paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
-                            "paramTypes:[${rulesData.paramTypes.typeOfString()}] " +
-                            "modifiers:${rulesData.modifiers ?: "[]"} " +
-                            "in [$classSet] " +
-                            "by $TAG"
-                )
-        }
+            }
+        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putConstructors(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
+    }
+
+    /**
+     * 比较位置下标的前后顺序
+     * @param need 当前位置
+     * @param last 最后位置
+     * @return [Boolean] 返回是否成立
+     */
+    private fun Pair<Int, Boolean>?.compare(need: Int, last: Int) = this == null || ((first >= 0 && first == need && second) ||
+            (first < 0 && abs(first) == (last - need) && second) || (last == need && second.not()))
+
+    /**
+     * 比较位置下标的前后顺序
+     * @param need 当前位置
+     * @param last 最后位置
+     * @param result 回调是否成立
+     */
+    private fun Pair<Int, Boolean>?.compare(need: Int, last: Int, result: (Boolean) -> Unit) {
+        if (this == null) return
+        ((first >= 0 && first == need && second) ||
+                (first < 0 && abs(first) == (last - need) && second) ||
+                (last == need && second.not())).also(result)
+    }
+
+    /**
+     * 创建查找结果方法体
+     * @param result 回调方法体
+     * @return [T]
+     * @throws IllegalStateException 如果没有 [BaseRulesData.isInitialize]
+     */
+    private inline fun <reified T, R : BaseRulesData> R.createResult(result: R.() -> T): T {
+        when (this) {
+            is FieldRulesData -> isInitialize.not()
+            is MethodRulesData -> isInitialize.not()
+            is ConstructorRulesData -> isInitialize.not()
+            is MemberRulesData -> isInitialize.not()
+            else -> true
+        }.takeIf { it }?.also { error("You must set a condition when finding a $objectName") }
+        return result(this)
+    }
+
+    /**
+     * 在 [Class.getSuperclass] 中查找或抛出异常
+     * @param classSet 所在类
+     * @return [T]
+     * @throws NoSuchFieldError 继承于方法 [throwNotFoundError] 的异常
+     * @throws NoSuchMethodError 继承于方法 [throwNotFoundError] 的异常
+     * @throws IllegalStateException 如果 [R] 的类型错误
+     */
+    private inline fun <reified T, R : MemberRulesData> R.findSuperOrThrow(classSet: Class<*>): T = when (this) {
+        is FieldRulesData ->
+            if (isFindInSuper && classSet.hasExtends)
+                findFields(classSet.superclass, rulesData = this) as T
+            else throwNotFoundError(classSet)
+        is MethodRulesData ->
+            if (isFindInSuper && classSet.hasExtends)
+                findMethods(classSet.superclass, rulesData = this) as T
+            else throwNotFoundError(classSet)
+        is ConstructorRulesData ->
+            if (isFindInSuper && classSet.hasExtends)
+                findConstructors(classSet.superclass, rulesData = this) as T
+            else throwNotFoundError(classSet)
+        else -> error("Type [$this] not allowed")
+    }
+
+    /**
+     * 抛出找不到 [Class]、[Member] 的异常
+     * @param instanceSet 所在 [ClassLoader] or [Class]
+     * @throws NoClassDefFoundError 如果找不到 [Class]
+     * @throws NoSuchFieldError 如果找不到 [Field]
+     * @throws NoSuchMethodError 如果找不到 [Method] or [Constructor]
+     * @throws IllegalStateException 如果 [BaseRulesData] 的类型错误
+     */
+    private fun BaseRulesData.throwNotFoundError(instanceSet: Any?): Nothing = when (this) {
+        is FieldRulesData -> throw NoSuchFieldError(
+            "Can't find this Field --> " +
+                    when {
+                        orderIndex == null -> ""
+                        orderIndex!!.second.not() -> "orderIndex:[last] "
+                        else -> "orderIndex:[${orderIndex!!.first}] "
+                    } +
+                    when {
+                        matchIndex == null -> ""
+                        matchIndex!!.second.not() -> "matchIndex:[last] "
+                        else -> "matchIndex:[${matchIndex!!.first}] "
+                    } +
+                    when (nameConditions) {
+                        null -> ""
+                        else -> "nameConditions:${nameConditions} "
+                    } +
+                    "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
+                    "type:[${type ?: "unspecified"}] " +
+                    "modifiers:${modifiers ?: "[]"} " +
+                    "in [$instanceSet] by $TAG"
+        )
+        is MethodRulesData -> throw NoSuchMethodError(
+            "Can't find this Method --> " +
+                    when {
+                        orderIndex == null -> ""
+                        orderIndex!!.second.not() -> "orderIndex:[last] "
+                        else -> "orderIndex:[${orderIndex!!.first}] "
+                    } +
+                    when {
+                        matchIndex == null -> ""
+                        matchIndex!!.second.not() -> "matchIndex:[last] "
+                        else -> "matchIndex:[${matchIndex!!.first}] "
+                    } +
+                    when (nameConditions) {
+                        null -> ""
+                        else -> "nameConditions:${nameConditions} "
+                    } +
+                    "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
+                    "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
+                    "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
+                    "paramTypes:[${paramTypes.typeOfString()}] " +
+                    "returnType:[${returnType ?: "unspecified"}] " +
+                    "modifiers:${modifiers ?: "[]"} " +
+                    "in [$instanceSet] by $TAG"
+        )
+        is ConstructorRulesData -> throw NoSuchMethodError(
+            "Can't find this Constructor --> " +
+                    when {
+                        orderIndex == null -> ""
+                        orderIndex!!.second.not() -> "orderIndex:[last] "
+                        else -> "orderIndex:[${orderIndex!!.first}] "
+                    } +
+                    when {
+                        matchIndex == null -> ""
+                        matchIndex!!.second.not() -> "matchIndex:[last] "
+                        else -> "matchIndex:[${matchIndex!!.first}] "
+                    } +
+                    "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
+                    "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
+                    "paramTypes:[${paramTypes.typeOfString()}] " +
+                    "modifiers:${modifiers ?: "[]"} " +
+                    "in [$instanceSet] by $TAG"
+        )
+        else -> error("Type [$this] not allowed")
     }
 
     /**

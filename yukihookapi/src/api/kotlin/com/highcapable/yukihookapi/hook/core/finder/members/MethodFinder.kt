@@ -63,15 +63,14 @@ class MethodFinder @PublishedApi internal constructor(
     override val classSet: Class<*>? = null
 ) : MemberBaseFinder(tag = "Method", hookInstance, classSet) {
 
+    @PublishedApi
+    override var rulesData = MethodRulesData()
+
     /** 当前使用的 [classSet] */
     private var usedClassSet = classSet
 
     /** 当前重查找结果回调 */
     private var remedyPlansCallback: (() -> Unit)? = null
-
-    /** 当前查询条件规则数据 */
-    @PublishedApi
-    internal var rulesData = MethodRulesData()
 
     /**
      * 设置 [Method] 名称
@@ -247,7 +246,7 @@ class MethodFinder @PublishedApi internal constructor(
      * @return [HashSet]<[Method]>
      * @throws NoSuchMethodError 如果找不到 [Method]
      */
-    private val result get() = ReflectionTool.findMethods(usedClassSet, orderIndex, matchIndex, rulesData)
+    private val result get() = ReflectionTool.findMethods(usedClassSet, rulesData)
 
     /**
      * 设置实例

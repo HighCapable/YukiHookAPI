@@ -47,4 +47,14 @@ internal class MethodRulesData internal constructor(
     var paramCount: Int = -1,
     var paramCountRange: IntRange = IntRange.EMPTY,
     var returnType: Any? = null
-) : MemberRulesData()
+) : MemberRulesData() {
+
+    override val objectName get() = "Method"
+
+    override val isInitialize
+        get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || paramTypes != null ||
+                paramCount >= 0 || paramCountRange != IntRange.EMPTY || returnType != null
+
+    override fun hashCode(other: Any?) =
+        super.hashCode(other) + "[$name][$nameConditions][$paramTypes][$paramCount][$paramCountRange][$returnType]".hashCode()
+}
