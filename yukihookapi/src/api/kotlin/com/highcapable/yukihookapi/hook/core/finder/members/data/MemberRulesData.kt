@@ -46,12 +46,18 @@ internal open class MemberRulesData internal constructor(
     override val objectName get() = "Member"
 
     /**
+     * 判断 [matchCount]、[matchCountRange] 规则是否已经初始化 (设置了任意一个参数)
+     * @return [Boolean]
+     */
+    internal val isInitializeOfMatch get() = matchCount >= 0 || matchCountRange != IntRange.EMPTY
+
+    /**
      * 判断 [BaseRulesData] 规则是否已经初始化 (设置了任意一个参数)
      * @return [Boolean]
      */
     internal val isInitializeOfSuper get() = super.isInitialize
 
-    override val isInitialize get() = isInitializeOfSuper || matchCount >= 0 || matchCountRange != IntRange.EMPTY
+    override val isInitialize get() = isInitializeOfSuper || isInitializeOfMatch
 
     override fun hashCode(other: Any?) = super.hashCode(other) + "[$isFindInSuper][$matchIndex][$matchCountRange]".hashCode()
 }
