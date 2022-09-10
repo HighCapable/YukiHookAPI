@@ -575,6 +575,18 @@ val IllegalStateExceptionClass get() = classOf<IllegalStateException>()
 val RuntimeExceptionClass get() = classOf<RuntimeException>()
 
 /**
+ * 获得 [ClassNotFoundException] 类型
+ * @return [Class]
+ */
+val ClassNotFoundExceptionClass get() = classOf<ClassNotFoundException>()
+
+/**
+ * 获得 [NoClassDefFoundError] 类型
+ * @return [Class]
+ */
+val NoClassDefFoundErrorClass get() = classOf<NoClassDefFoundError>()
+
+/**
  * 获得 [NoSuchMethodError] 类型
  * @return [Class]
  */
