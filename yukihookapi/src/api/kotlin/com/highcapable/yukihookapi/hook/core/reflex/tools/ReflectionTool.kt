@@ -107,38 +107,33 @@ internal object ReflectionTool {
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
-                    var isMatched = false
                     conditions {
                         type?.also {
                             and((it == instance.type).let { hold ->
                                 if (hold) iType++
-                                isMatched = true
                                 hold && matchIndex.compare(iType, iLType)
                             })
                         }
                         name.takeIf { it.isNotBlank() }?.also {
                             and((it == instance.name).let { hold ->
                                 if (hold) iName++
-                                isMatched = true
                                 hold && matchIndex.compare(iName, iLName)
                             })
                         }
                         modifiers?.also {
                             and(it.contains(instance).let { hold ->
                                 if (hold) iModify++
-                                isMatched = true
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
                         nameConditions?.also {
                             and(it.contains(instance).let { hold ->
                                 if (hold) iNameCds++
-                                isMatched = true
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
                         }
-                        orderIndex.compare(index, declares.lastIndex) { and(it); isMatched = it }
-                    }.finally { if (isMatched) fields.add(instance.apply { isAccessible = true }) }
+                        orderIndex.compare(index, declares.lastIndex) { and(it) }
+                    }.finally { fields.add(instance.apply { isAccessible = true }) }
                 }
             }
         }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putFields(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
@@ -176,59 +171,51 @@ internal object ReflectionTool {
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
-                    var isMatched = false
                     conditions {
                         name.takeIf { it.isNotBlank() }?.also {
                             and((it == instance.name).let { hold ->
                                 if (hold) iName++
-                                isMatched = true
                                 hold && matchIndex.compare(iName, iLName)
                             })
                         }
                         returnType?.also {
                             and((it == instance.returnType).let { hold ->
                                 if (hold) iReturnType++
-                                isMatched = true
                                 hold && matchIndex.compare(iReturnType, iLReturnType)
                             })
                         }
                         paramCount.takeIf { it >= 0 }?.also {
                             and((instance.parameterTypes.size == it).let { hold ->
                                 if (hold) iParamCount++
-                                isMatched = true
                                 hold && matchIndex.compare(iParamCount, iLParamCount)
                             })
                         }
                         paramCountRange.takeIf { it.isEmpty().not() }?.also {
                             and((instance.parameterTypes.size in it).let { hold ->
                                 if (hold) iParamCountRange++
-                                isMatched = true
                                 hold && matchIndex.compare(iParamCountRange, iLParamCountRange)
                             })
                         }
                         paramTypes?.also {
                             and(arrayContentsEq(it, instance.parameterTypes).let { hold ->
                                 if (hold) iParamTypes++
-                                isMatched = true
                                 hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
                         }
                         modifiers?.also {
                             and(it.contains(instance).let { hold ->
                                 if (hold) iModify++
-                                isMatched = true
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
                         nameConditions?.also {
                             and(it.contains(instance).let { hold ->
                                 if (hold) iNameCds++
-                                isMatched = true
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
                         }
-                        orderIndex.compare(index, declares.lastIndex) { and(it); isMatched = it }
-                    }.finally { if (isMatched) methods.add(instance.apply { isAccessible = true }) }
+                        orderIndex.compare(index, declares.lastIndex) { and(it) }
+                    }.finally { methods.add(instance.apply { isAccessible = true }) }
                 }
             }
         }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putMethods(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
@@ -259,38 +246,33 @@ internal object ReflectionTool {
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { arrayContentsEq(e, it.parameterTypes) }.lastIndex } ?: -1
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
-                    var isMatched = false
                     conditions {
                         paramCount.takeIf { it >= 0 }?.also {
                             and((instance.parameterTypes.size == it).let { hold ->
                                 if (hold) iParamCount++
-                                isMatched = true
                                 hold && matchIndex.compare(iParamCount, iLParamCount)
                             })
                         }
                         paramCountRange.takeIf { it.isEmpty().not() }?.also {
                             and((instance.parameterTypes.size in it).let { hold ->
                                 if (hold) iParamCountRange++
-                                isMatched = true
                                 hold && matchIndex.compare(iParamCountRange, iLParamCountRange)
                             })
                         }
                         paramTypes?.also {
                             and(arrayContentsEq(it, instance.parameterTypes).let { hold ->
                                 if (hold) iParamTypes++
-                                isMatched = true
                                 hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
                         }
                         modifiers?.also {
                             and(it.contains(instance).let { hold ->
                                 if (hold) iModify++
-                                isMatched = true
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
-                        orderIndex.compare(index, declares.lastIndex) { and(it); isMatched = it }
-                    }.finally { if (isMatched) constructors.add(instance.apply { isAccessible = true }) }
+                        orderIndex.compare(index, declares.lastIndex) { and(it) }
+                    }.finally { constructors.add(instance.apply { isAccessible = true }) }
                 }
             }
         }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putConstructors(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
