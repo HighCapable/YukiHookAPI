@@ -35,6 +35,9 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
+import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
+import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
 import com.highcapable.yukihookapi.hook.utils.conditions
 import com.highcapable.yukihookapi.hook.utils.let
 import com.highcapable.yukihookapi.hook.utils.takeIf
@@ -79,10 +82,7 @@ internal object ReflectionTool {
                 loader == null -> Class.forName(name)
                 else -> loader.loadClass(name)
             }.also { ReflectsCacheStore.putClass(hashCode, it) }
-        }.getOrNull() ?: throw NoClassDefFoundError(
-            "Can't find this Class --> " +
-                    "name:[$name] in [${loader ?: AppParasitics.baseClassLoader}] by $TAG"
-        )
+        }.getOrNull() ?: throw createException(loader ?: AppParasitics.baseClassLoader, name = "Class", "name:[$name]")
     }
 
     /**
@@ -97,7 +97,7 @@ internal object ReflectionTool {
         if (type == UndefinedType) error("Field match type class is not found")
         if (classSet == null) return@createResult hashSetOf()
         ReflectsCacheStore.findFields(hashCode(classSet)) ?: hashSetOf<Field>().also { fields ->
-            classSet.declaredFields.also { declares ->
+            classSet.existFields?.also { declares ->
                 var iType = -1
                 var iName = -1
                 var iModify = -1
@@ -153,7 +153,7 @@ internal object ReflectionTool {
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Method match paramType[$p] class is not found") }
         ReflectsCacheStore.findMethods(hashCode(classSet)) ?: hashSetOf<Method>().also { methods ->
-            classSet.declaredMethods.also { declares ->
+            classSet.existMethods?.also { declares ->
                 var iReturnType = -1
                 var iParamTypes = -1
                 var iParamCount = -1
@@ -234,7 +234,7 @@ internal object ReflectionTool {
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
         ReflectsCacheStore.findConstructors(hashCode(classSet)) ?: hashSetOf<Constructor<*>>().also { constructors ->
-            classSet.declaredConstructors.also { declares ->
+            classSet.existConstructors?.also { declares ->
                 var iParamTypes = -1
                 var iParamCount = -1
                 var iParamCountRange = -1
@@ -350,71 +350,92 @@ internal object ReflectionTool {
      * @throws IllegalStateException 如果 [BaseRulesData] 的类型错误
      */
     private fun BaseRulesData.throwNotFoundError(instanceSet: Any?): Nothing = when (this) {
-        is FieldRulesData -> throw NoSuchFieldError(
-            "Can't find this Field --> " +
-                    when {
-                        orderIndex == null -> ""
-                        orderIndex!!.second.not() -> "orderIndex:[last] "
-                        else -> "orderIndex:[${orderIndex!!.first}] "
-                    } +
-                    when {
-                        matchIndex == null -> ""
-                        matchIndex!!.second.not() -> "matchIndex:[last] "
-                        else -> "matchIndex:[${matchIndex!!.first}] "
-                    } +
-                    when (nameConditions) {
-                        null -> ""
-                        else -> "nameConditions:${nameConditions} "
-                    } +
-                    "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
-                    "type:[${type ?: "unspecified"}] " +
-                    "modifiers:${modifiers ?: "[]"} " +
-                    "in [$instanceSet] by $TAG"
+        is FieldRulesData -> throw createException(
+            instanceSet, name = "Field",
+            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}]",
+            nameConditions?.let { "nameConditions:$it" } ?: "",
+            "type:[${type ?: "unspecified"}] ",
+            "modifiers:${modifiers ?: "[]"} ",
+            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}]",
+            orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
+            matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
         )
-        is MethodRulesData -> throw NoSuchMethodError(
-            "Can't find this Method --> " +
-                    when {
-                        orderIndex == null -> ""
-                        orderIndex!!.second.not() -> "orderIndex:[last] "
-                        else -> "orderIndex:[${orderIndex!!.first}] "
-                    } +
-                    when {
-                        matchIndex == null -> ""
-                        matchIndex!!.second.not() -> "matchIndex:[last] "
-                        else -> "matchIndex:[${matchIndex!!.first}] "
-                    } +
-                    when (nameConditions) {
-                        null -> ""
-                        else -> "nameConditions:${nameConditions} "
-                    } +
-                    "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}] " +
-                    "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                    "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
-                    "paramTypes:[${paramTypes.typeOfString()}] " +
-                    "returnType:[${returnType ?: "unspecified"}] " +
-                    "modifiers:${modifiers ?: "[]"} " +
-                    "in [$instanceSet] by $TAG"
+        is MethodRulesData -> throw createException(
+            instanceSet, name = "Method",
+            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}]",
+            nameConditions?.let { "nameConditions:$it" } ?: "",
+            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}]",
+            "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}]",
+            "paramTypes:[${paramTypes.typeOfString()}]",
+            "returnType:[${returnType ?: "unspecified"}]",
+            "modifiers:${modifiers ?: "[]"}",
+            orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
+            matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
         )
-        is ConstructorRulesData -> throw NoSuchMethodError(
-            "Can't find this Constructor --> " +
-                    when {
-                        orderIndex == null -> ""
-                        orderIndex!!.second.not() -> "orderIndex:[last] "
-                        else -> "orderIndex:[${orderIndex!!.first}] "
-                    } +
-                    when {
-                        matchIndex == null -> ""
-                        matchIndex!!.second.not() -> "matchIndex:[last] "
-                        else -> "matchIndex:[${matchIndex!!.first}] "
-                    } +
-                    "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}] " +
-                    "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}] " +
-                    "paramTypes:[${paramTypes.typeOfString()}] " +
-                    "modifiers:${modifiers ?: "[]"} " +
-                    "in [$instanceSet] by $TAG"
+        is ConstructorRulesData -> throw createException(
+            instanceSet, name = "Constructor",
+            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}]",
+            "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}]",
+            "paramTypes:[${paramTypes.typeOfString()}]",
+            "modifiers:${modifiers ?: "[]"}",
+            orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
+            matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
         )
         else -> error("Type [$this] not allowed")
     }
+
+    /**
+     * 创建一个异常
+     * @param instanceSet 所在 [ClassLoader] or [Class]
+     * @param name 实例名称
+     * @param content 异常内容
+     * @return [Throwable]
+     */
+    private fun createException(instanceSet: Any?, name: String, vararg content: String): Throwable {
+        /**
+         * 获取 [Class.getName] 长度的空格数量并使用 "->" 拼接
+         * @return [String]
+         */
+        fun Class<*>.space(): String {
+            var space = ""
+            for (i in 0..this.name.length) space += " "
+            return "$space -> "
+        }
+        if (content.isEmpty()) return IllegalStateException("Exception content is null")
+        val space = when (name) {
+            "Class" -> NoClassDefFoundErrorClass.space()
+            "Field" -> NoSuchFieldErrorClass.space()
+            "Method", "Constructor" -> NoSuchMethodErrorClass.space()
+            else -> error("Invalid Exception type")
+        }
+        var splicing = ""
+        content.forEach { if (it.isNotBlank()) splicing += "$space$it\n" }
+        val template = "Can't find this $name in [$instanceSet]:\n${splicing}Generated by $TAG"
+        return when (name) {
+            "Class" -> NoClassDefFoundError(template)
+            "Field" -> NoSuchFieldError(template)
+            "Method", "Constructor" -> NoSuchMethodError(template)
+            else -> error("Invalid Exception type")
+        }
+    }
+
+    /**
+     * 获取当前 [Class] 中存在的 [Field] 数组
+     * @return [Array]<[Field]>
+     */
+    private val Class<*>.existFields get() = runCatching { declaredFields }.getOrNull()
+
+    /**
+     * 获取当前 [Class] 中存在的 [Method] 数组
+     * @return [Array]<[Method]>
+     */
+    private val Class<*>.existMethods get() = runCatching { declaredMethods }.getOrNull()
+
+    /**
+     * 获取当前 [Class] 中存在的 [Constructor] 数组
+     * @return [Array]<[Constructor]>
+     */
+    private val Class<*>.existConstructors get() = runCatching { declaredConstructors }.getOrNull()
 
     /**
      * 获取参数数组文本化内容
