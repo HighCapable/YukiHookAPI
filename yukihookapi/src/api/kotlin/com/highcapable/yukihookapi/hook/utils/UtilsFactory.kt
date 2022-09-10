@@ -140,25 +140,25 @@ internal inline fun <T> T.conditions(initiate: Conditions<T>.() -> Unit) = Condi
 internal class Conditions<T>(internal var value: T) {
 
     /** 全部判断条件数组 (与) */
-    private val popularConditions = ArrayList<Boolean>()
+    private val andConditions = ArrayList<Boolean>()
 
     /** 全部判断条件数组 (与成立 - 非忽略) */
-    private val includeConditions = ArrayList<Boolean>()
+    private val optConditions = ArrayList<Boolean>()
 
     /**
      * 添加与 (and) 条件
      * @param value 条件值
      */
     internal fun and(value: Boolean) {
-        popularConditions.add(value)
+        andConditions.add(value)
     }
 
     /**
-     * 添加与 (and) 后成立且不与 (and) 后忽略条件
+     * 添加与 (and) 条件 (可选)
      * @param value 条件值
      */
-    internal fun include(value: Boolean) {
-        includeConditions.add(value)
+    internal fun opt(value: Boolean) {
+        optConditions.add(value)
     }
 
     /**
@@ -177,8 +177,8 @@ internal class Conditions<T>(internal var value: T) {
          * @return [Boolean]
          */
         private val result by lazy {
-            includeConditions.takeIf { it.isNotEmpty() }?.any { it.not() }?.not() == true ||
-                    popularConditions.takeIf { it.isNotEmpty() }?.any { it.not() }?.not() == true
+            optConditions.takeIf { it.isNotEmpty() }?.any { it.not() }?.not() == true ||
+                    andConditions.takeIf { it.isNotEmpty() }?.any { it.not() }?.not() == true
         }
 
         /**
