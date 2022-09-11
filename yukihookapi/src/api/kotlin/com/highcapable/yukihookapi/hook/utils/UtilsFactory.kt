@@ -142,7 +142,7 @@ internal class Conditions<T>(internal var value: T) {
     /** 全部判断条件数组 (与) */
     private val andConditions = ArrayList<Boolean>()
 
-    /** 全部判断条件数组 (与成立 - 非忽略) */
+    /** 全部判断条件数组 (或) */
     private val optConditions = ArrayList<Boolean>()
 
     /**
@@ -154,7 +154,7 @@ internal class Conditions<T>(internal var value: T) {
     }
 
     /**
-     * 添加与 (and) 条件 (可选)
+     * 添加或 (or) 条件
      * @param value 条件值
      */
     internal fun opt(value: Boolean) {
@@ -177,7 +177,7 @@ internal class Conditions<T>(internal var value: T) {
          * @return [Boolean]
          */
         private val result by lazy {
-            optConditions.takeIf { it.isNotEmpty() }?.any { it.not() }?.not() == true ||
+            optConditions.takeIf { it.isNotEmpty() }?.any { it } == true ||
                     andConditions.takeIf { it.isNotEmpty() }?.any { it.not() }?.not() == true
         }
 
