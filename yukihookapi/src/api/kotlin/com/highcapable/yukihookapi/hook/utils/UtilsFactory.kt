@@ -31,6 +31,9 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
+/** 定义 [Int] 方法体类型 */
+internal typealias IntConditions = (Int) -> Boolean
+
 /**
  * 创建当前线程池服务
  * @return [ExecutorService]
