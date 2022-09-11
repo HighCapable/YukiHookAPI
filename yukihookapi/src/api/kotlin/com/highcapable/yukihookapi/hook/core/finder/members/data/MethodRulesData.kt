@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
+import com.highcapable.yukihookapi.hook.utils.IntConditions
 import java.lang.reflect.Method
 
 /**
@@ -37,6 +38,7 @@ import java.lang.reflect.Method
  * @param paramTypes 参数类型数组
  * @param paramCount 参数个数
  * @param paramCountRange 参数个数范围
+ * @param paramCountConditions 参数个数条件
  * @param returnType 返回值类型
  */
 @PublishedApi
@@ -46,6 +48,7 @@ internal class MethodRulesData internal constructor(
     var paramTypes: Array<out Class<*>>? = null,
     var paramCount: Int = -1,
     var paramCountRange: IntRange = IntRange.EMPTY,
+    var paramCountConditions: IntConditions? = null,
     var returnType: Any? = null
 ) : MemberRulesData() {
 
@@ -53,7 +56,7 @@ internal class MethodRulesData internal constructor(
 
     override val isInitialize
         get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || paramTypes != null ||
-                paramCount >= 0 || paramCountRange != IntRange.EMPTY || returnType != null
+                paramCount >= 0 || paramCountRange != IntRange.EMPTY || paramCountConditions != null || returnType != null
 
     override fun hashCode(other: Any?) =
         super.hashCode(other) + "[$name][$nameConditions][$paramTypes][$paramCount][$paramCountRange][$returnType]".hashCode()

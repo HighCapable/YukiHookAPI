@@ -159,6 +159,7 @@ internal object ReflectionTool {
                 var iParamTypes = -1
                 var iParamCount = -1
                 var iParamCountRange = -1
+                var iParamCountCds = -1
                 var iName = -1
                 var iModify = -1
                 var iNameCds = -1
@@ -167,6 +168,8 @@ internal object ReflectionTool {
                     ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
+                val iLParamCountCds = paramCountConditions
+                    ?.let(matchIndex) { e -> declares.filter { e(it.parameterTypes.size) }.lastIndex } ?: -1
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { arrayContentsEq(e, it.parameterTypes) }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
@@ -195,6 +198,12 @@ internal object ReflectionTool {
                             and((instance.parameterTypes.size in it).let { hold ->
                                 if (hold) iParamCountRange++
                                 hold && matchIndex.compare(iParamCountRange, iLParamCountRange)
+                            })
+                        }
+                        paramCountConditions?.also {
+                            and(it(instance.parameterTypes.size).let { hold ->
+                                if (hold) iParamCountCds++
+                                hold && matchIndex.compare(iParamCountCds, iLParamCountCds)
                             })
                         }
                         paramTypes?.also {
@@ -239,11 +248,14 @@ internal object ReflectionTool {
                 var iParamTypes = -1
                 var iParamCount = -1
                 var iParamCountRange = -1
+                var iParamCountCds = -1
                 var iModify = -1
                 val iLParamCount = paramCount.takeIf(matchIndex) { it >= 0 }
                     ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
+                val iLParamCountCds = paramCountConditions
+                    ?.let(matchIndex) { e -> declares.filter { e(it.parameterTypes.size) }.lastIndex } ?: -1
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { arrayContentsEq(e, it.parameterTypes) }.lastIndex } ?: -1
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
@@ -258,6 +270,12 @@ internal object ReflectionTool {
                             and((instance.parameterTypes.size in it).let { hold ->
                                 if (hold) iParamCountRange++
                                 hold && matchIndex.compare(iParamCountRange, iLParamCountRange)
+                            })
+                        }
+                        paramCountConditions?.also {
+                            and(it(instance.parameterTypes.size).let { hold ->
+                                if (hold) iParamCountCds++
+                                hold && matchIndex.compare(iParamCountCds, iLParamCountCds)
                             })
                         }
                         paramTypes?.also {
@@ -367,6 +385,7 @@ internal object ReflectionTool {
             nameConditions?.let { "nameConditions:$it" } ?: "",
             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}]",
             "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}]",
+            "paramCountConditions:[${paramCountConditions?.let { "existed" } ?: "unspecified"}]",
             "paramTypes:[${paramTypes.typeOfString()}]",
             "returnType:[${returnType ?: "unspecified"}]",
             "modifiers:${modifiers ?: "[]"}",
@@ -377,6 +396,7 @@ internal object ReflectionTool {
             instanceSet, name = "Constructor",
             "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}]",
             "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}]",
+            "paramCountConditions:[${paramCountConditions?.let { "existed" } ?: "unspecified"}]",
             "paramTypes:[${paramTypes.typeOfString()}]",
             "modifiers:${modifiers ?: "[]"}",
             orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",

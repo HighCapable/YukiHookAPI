@@ -136,6 +136,24 @@ fun paramCount(numRange: IntRange): IndexTypeCondition
 
 !> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
 
+### paramCount *- method*
+
+```kotlin
+fun paramCount(conditions: IntConditions): IndexTypeCondition
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 设置 `Constructor` 参数个数条件。
+
+你可以不使用 `param` 指定参数类型而是仅使用此方法指定参数个数条件。
+
+!> 存在多个 `IndexTypeCondition` 时除了 `order` 只会生效最后一个。
+
 ### superClass *- method*
 
 ```kotlin

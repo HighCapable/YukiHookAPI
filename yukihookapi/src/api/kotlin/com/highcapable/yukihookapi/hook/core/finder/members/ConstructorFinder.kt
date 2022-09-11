@@ -42,6 +42,7 @@ import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.utils.IntConditions
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import com.highcapable.yukihookapi.hook.utils.unit
 import java.lang.reflect.Constructor
@@ -161,6 +162,26 @@ class ConstructorFinder @PublishedApi internal constructor(
      */
     fun paramCount(numRange: IntRange): IndexTypeCondition {
         rulesData.paramCountRange = numRange
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
+     * 设置 [Constructor] 参数个数条件
+     *
+     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数条件
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * paramCount { it > 5 && it != 0 }
+     * ```
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param conditions 条件方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun paramCount(conditions: IntConditions): IndexTypeCondition {
+        rulesData.paramCountConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 

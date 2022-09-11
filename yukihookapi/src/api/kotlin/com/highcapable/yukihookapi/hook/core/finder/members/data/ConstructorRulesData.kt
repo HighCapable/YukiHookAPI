@@ -27,6 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
+import com.highcapable.yukihookapi.hook.utils.IntConditions
 import java.lang.reflect.Constructor
 
 /**
@@ -34,17 +35,21 @@ import java.lang.reflect.Constructor
  * @param paramTypes 参数类型数组
  * @param paramCount 参数个数
  * @param paramCountRange 参数个数范围
+ * @param paramCountConditions 参数个数条件
  */
 @PublishedApi
 internal class ConstructorRulesData internal constructor(
     var paramTypes: Array<out Class<*>>? = null,
     var paramCount: Int = -1,
-    var paramCountRange: IntRange = IntRange.EMPTY
+    var paramCountRange: IntRange = IntRange.EMPTY,
+    var paramCountConditions: IntConditions? = null
 ) : MemberRulesData() {
 
     override val objectName get() = "Constructor"
 
-    override val isInitialize get() = super.isInitializeOfSuper || paramTypes != null || paramCount >= 0 || paramCountRange != IntRange.EMPTY
+    override val isInitialize
+        get() = super.isInitializeOfSuper || paramTypes != null || paramCount >= 0 ||
+                paramCountRange != IntRange.EMPTY || paramCountConditions != null
 
     override fun hashCode(other: Any?) = super.hashCode(other) + "[$paramTypes][$paramCount][$paramCountRange]".hashCode()
 }
