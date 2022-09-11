@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
-import com.highcapable.yukihookapi.hook.factory.FieldCondition
+import com.highcapable.yukihookapi.hook.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
@@ -228,7 +228,7 @@ class FieldFinder @PublishedApi internal constructor(
          * @param initiate 方法体
          * @return [Result] 结果
          */
-        inline fun field(initiate: FieldCondition) =
+        inline fun field(initiate: FieldConditions) =
             Result().apply { remedyPlans.add(Pair(FieldFinder(hookInstance, classSet).apply(initiate), this)) }
 
         /** 开始重查找 */

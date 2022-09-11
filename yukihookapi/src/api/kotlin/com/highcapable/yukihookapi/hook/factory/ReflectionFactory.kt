@@ -43,13 +43,13 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /** 定义 [FieldFinder] 方法体类型 */
-internal typealias FieldCondition = FieldFinder.() -> Unit
+internal typealias FieldConditions = FieldFinder.() -> Unit
 
 /** 定义 [MethodFinder] 方法体类型 */
-internal typealias MethodCondition = MethodFinder.() -> Unit
+internal typealias MethodConditions = MethodFinder.() -> Unit
 
 /** 定义 [ConstructorFinder] 方法体类型 */
-internal typealias ConstructorCondition = ConstructorFinder.() -> Unit
+internal typealias ConstructorConditions = ConstructorFinder.() -> Unit
 
 /**
  * 定义一个 [Class] 中的 [Member] 类型
@@ -111,21 +111,21 @@ fun String.hasClass(loader: ClassLoader? = null) = ReflectionTool.hasClassByName
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasField(initiate: FieldCondition) = field(initiate).ignored().isNoSuch.not()
+inline fun Class<*>.hasField(initiate: FieldConditions) = field(initiate).ignored().isNoSuch.not()
 
 /**
  * 查找方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasMethod(initiate: MethodCondition) = method(initiate).ignored().isNoSuch.not()
+inline fun Class<*>.hasMethod(initiate: MethodConditions) = method(initiate).ignored().isNoSuch.not()
 
 /**
  * 查找构造方法是否存在
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasConstructor(initiate: ConstructorCondition = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
+inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
 
 /**
  * 查询 [Member] 中匹配的描述符
@@ -146,21 +146,21 @@ inline fun Class<*>.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierR
  * @param initiate 查找方法体
  * @return [FieldFinder.Result]
  */
-inline fun Class<*>.field(initiate: FieldCondition) = FieldFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.field(initiate: FieldConditions) = FieldFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到方法
  * @param initiate 查找方法体
  * @return [MethodFinder.Result]
  */
-inline fun Class<*>.method(initiate: MethodCondition) = MethodFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.method(initiate: MethodConditions) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到构造方法
  * @param initiate 查找方法体
  * @return [ConstructorFinder.Result]
  */
-inline fun Class<*>.constructor(initiate: ConstructorCondition = { emptyParam() }) = ConstructorFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.constructor(initiate: ConstructorConditions = { emptyParam() }) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
  * 获得当前实例的类操作对象
@@ -192,7 +192,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: Curre
  * @return [Any] or null
  */
 @Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "buildOf(*param, initiate)"))
-fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) = buildOf(*param, initiate)
+fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorConditions = { emptyParam() }) = buildOf(*param, initiate)
 
 /**
  * 通过构造方法创建新实例 - 任意类型 [Any]
@@ -200,7 +200,7 @@ fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorCondition = { e
  * @param initiate 查找方法体
  * @return [Any] or null
  */
-inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) =
+inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions = { emptyParam() }) =
     constructor(initiate).get().call(*param)
 
 /**
@@ -210,7 +210,7 @@ inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition =
  * @return [T] or null
  */
 @JvmName(name = "buildOf_Generics")
-inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition = { emptyParam() }) =
+inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions = { emptyParam() }) =
     constructor(initiate).get().newInstance<T>(*param)
 
 /**

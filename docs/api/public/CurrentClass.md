@@ -61,7 +61,7 @@ fun superClass(): SuperClass
 ### field *- method*
 
 ```kotlin
-inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
+inline fun field(initiate: FieldConditions): FieldFinder.Result.Instance
 ```
 
 **变更记录**
@@ -75,7 +75,7 @@ inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
 ### method *- method*
 
 ```kotlin
-inline fun method(initiate: MethodCondition): MethodFinder.Result.Instance
+inline fun method(initiate: MethodConditions): MethodFinder.Result.Instance
 ```
 
 **变更记录**
@@ -131,7 +131,7 @@ val simpleName: String
 #### field *- method*
 
 ```kotlin
-inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
+inline fun field(initiate: FieldConditions): FieldFinder.Result.Instance
 ```
 
 **变更记录**
@@ -145,7 +145,7 @@ inline fun field(initiate: FieldCondition): FieldFinder.Result.Instance
 #### method *- method*
 
 ```kotlin
-inline fun method(initiate: MethodCondition): MethodFinder.Result.Instance
+inline fun method(initiate: MethodConditions): MethodFinder.Result.Instance
 ```
 
 **变更记录**

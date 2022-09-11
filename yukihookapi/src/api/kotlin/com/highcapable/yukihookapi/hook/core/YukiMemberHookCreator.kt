@@ -325,7 +325,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [MethodFinder.Process]
          */
-        inline fun method(initiate: MethodCondition) = runCatching {
+        inline fun method(initiate: MethodConditions) = runCatching {
             isHookMemberSetup = true
             MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
         }.getOrElse {
@@ -340,7 +340,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [ConstructorFinder.Process]
          */
-        inline fun constructor(initiate: ConstructorCondition = { emptyParam() }) = runCatching {
+        inline fun constructor(initiate: ConstructorConditions = { emptyParam() }) = runCatching {
             isHookMemberSetup = true
             ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
         }.getOrElse {
@@ -353,7 +353,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [FieldFinder.Result]
          */
-        inline fun HookParam.field(initiate: FieldCondition) =
+        inline fun HookParam.field(initiate: FieldConditions) =
             if (hookClass.instance == null) FieldFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
             else FieldFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
@@ -362,7 +362,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [MethodFinder.Result]
          */
-        inline fun HookParam.method(initiate: MethodCondition) =
+        inline fun HookParam.method(initiate: MethodConditions) =
             if (hookClass.instance == null) MethodFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
             else MethodFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
@@ -371,7 +371,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          * @param initiate 方法体
          * @return [ConstructorFinder.Result]
          */
-        inline fun HookParam.constructor(initiate: ConstructorCondition = { emptyParam() }) =
+        inline fun HookParam.constructor(initiate: ConstructorConditions = { emptyParam() }) =
             if (hookClass.instance == null) ConstructorFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
             else ConstructorFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 

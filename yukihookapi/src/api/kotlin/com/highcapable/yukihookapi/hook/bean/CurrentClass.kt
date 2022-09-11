@@ -31,8 +31,8 @@ package com.highcapable.yukihookapi.hook.bean
 
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.factory.FieldCondition
-import com.highcapable.yukihookapi.hook.factory.MethodCondition
+import com.highcapable.yukihookapi.hook.factory.FieldConditions
+import com.highcapable.yukihookapi.hook.factory.MethodConditions
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 
@@ -70,14 +70,14 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * @param initiate 查找方法体
      * @return [FieldFinder.Result.Instance]
      */
-    inline fun field(initiate: FieldCondition) = classSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+    inline fun field(initiate: FieldConditions) = classSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
     /**
      * 调用当前实例中的方法
      * @param initiate 查找方法体
      * @return [MethodFinder.Result.Instance]
      */
-    inline fun method(initiate: MethodCondition) = classSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+    inline fun method(initiate: MethodConditions) = classSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
     /**
      * 当前类的父类实例的类操作对象
@@ -111,14 +111,14 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @param initiate 查找方法体
          * @return [FieldFinder.Result.Instance]
          */
-        inline fun field(initiate: FieldCondition) = superClassSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+        inline fun field(initiate: FieldConditions) = superClassSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
         /**
          * 调用父类实例中的方法
          * @param initiate 查找方法体
          * @return [MethodFinder.Result.Instance]
          */
-        inline fun method(initiate: MethodCondition) = superClassSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+        inline fun method(initiate: MethodConditions) = superClassSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
         override fun toString() = "CurrentClass super [${superClassSet}]"
     }

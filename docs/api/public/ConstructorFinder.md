@@ -169,7 +169,7 @@ inner class RemedyPlan internal constructor()
 #### constructor *- method*
 
 ```kotlin
-inline fun constructor(initiate: ConstructorCondition)
+inline fun constructor(initiate: ConstructorConditions)
 ```
 
 **变更记录**

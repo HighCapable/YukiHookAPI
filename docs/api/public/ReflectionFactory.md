@@ -258,7 +258,7 @@ inline fun Class<*>.hasField(initiate: FieldCondition): Boolean
 ### Class.hasMethod *- ext-method*
 
 ```kotlin
-inline fun Class<*>.hasMethod(initiate: MethodCondition): Boolean
+inline fun Class<*>.hasMethod(initiate: MethodConditions): Boolean
 ```
 
 **变更记录**
@@ -284,7 +284,7 @@ inline fun Class<*>.hasMethod(initiate: MethodCondition): Boolean
 ### Class.hasConstructor *- ext-method*
 
 ```kotlin
-inline fun Class<*>.hasConstructor(initiate: ConstructorCondition): Boolean
+inline fun Class<*>.hasConstructor(initiate: ConstructorConditions): Boolean
 ```
 
 **变更记录**
@@ -370,7 +370,7 @@ inline fun Class<*>.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 ### Class.field *- ext-method*
 
 ```kotlin
-inline fun Class<*>.field(initiate: FieldCondition): FieldFinder.Result
+inline fun Class<*>.field(initiate: FieldConditions): FieldFinder.Result
 ```
 
 **变更记录**
@@ -388,7 +388,7 @@ inline fun Class<*>.field(initiate: FieldCondition): FieldFinder.Result
 ### Class.method *- ext-method*
 
 ```kotlin
-inline fun Class<*>.method(initiate: MethodCondition): MethodFinder.Result
+inline fun Class<*>.method(initiate: MethodConditions): MethodFinder.Result
 ```
 
 **变更记录**
@@ -416,7 +416,7 @@ inline fun Class<*>.method(initiate: MethodCondition): MethodFinder.Result
 ### Class.constructor *- ext-method*
 
 ```kotlin
-inline fun Class<*>.constructor(initiate: ConstructorCondition): ConstructorFinder.Result
+inline fun Class<*>.constructor(initiate: ConstructorConditions): ConstructorFinder.Result
 ```
 
 **变更记录**
@@ -504,11 +504,11 @@ inline fun <reified T : Any> T.current(ignored: Boolean, initiate: CurrentClass.
 ### Class.buildOf *- ext-method*
 
 ```kotlin
-inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition): Any?
+inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions): Any?
 ```
 
 ```kotlin
-inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorCondition): T?
+inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions): T?
 ```
 
 **变更记录**

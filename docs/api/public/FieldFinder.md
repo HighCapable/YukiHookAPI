@@ -189,7 +189,7 @@ inner class RemedyPlan internal constructor()
 #### field *- method*
 
 ```kotlin
-inline fun field(initiate: FieldCondition): Result
+inline fun field(initiate: FieldConditions): Result
 ```
 
 **变更记录**

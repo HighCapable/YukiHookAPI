@@ -271,7 +271,7 @@ inner class RemedyPlan internal constructor()
 #### method *- method*
 
 ```kotlin
-inline fun method(initiate: MethodCondition): Result
+inline fun method(initiate: MethodConditions): Result
 ```
 
 **变更记录**
