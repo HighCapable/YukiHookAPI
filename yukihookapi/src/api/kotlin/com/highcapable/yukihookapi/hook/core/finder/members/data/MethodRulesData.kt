@@ -56,7 +56,7 @@ internal class MethodRulesData internal constructor(
 
     override val isInitialize
         get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || paramTypes != null ||
-                paramCount >= 0 || paramCountRange != IntRange.EMPTY || paramCountConditions != null || returnType != null
+                paramCount >= 0 || paramCountRange.isEmpty().not() || paramCountConditions != null || returnType != null
 
     override fun hashCode(other: Any?) =
         super.hashCode(other) + "[$name][$nameConditions][$paramTypes][$paramCount][$paramCountRange][$returnType]".hashCode()

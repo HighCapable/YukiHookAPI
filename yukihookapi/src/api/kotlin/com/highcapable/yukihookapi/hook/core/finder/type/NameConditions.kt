@@ -270,7 +270,7 @@ class NameConditions @PublishedApi internal constructor() {
             if (cdsContains != null) cdsContains?.apply { conditions = conditions && it.contains(first, second) }
             if (cdsMatches != null) cdsMatches?.apply { conditions = conditions && it.matches(regex = this) }
             if (cdsLength >= 0) conditions = conditions && it.length == cdsLength
-            if (cdsLengthRange != IntRange.EMPTY) conditions = conditions && it.length in cdsLengthRange
+            if (cdsLengthRange.isEmpty().not()) conditions = conditions && it.length in cdsLengthRange
         }
         return conditions
     }
@@ -290,7 +290,7 @@ class NameConditions @PublishedApi internal constructor() {
         if (cdsContains != null) cdsContains?.apply { conditions += "<Contains:[other: $first, isIgnoreCase: $second]> " }
         if (cdsMatches != null) cdsMatches?.apply { conditions += "<Matches:[regex: $this]> " }
         if (cdsLength >= 0) conditions += "<Length:[num: $cdsLength]> "
-        if (cdsLengthRange != IntRange.EMPTY) conditions += "<LengthRange:[numRange: $cdsLengthRange]> "
+        if (cdsLengthRange.isEmpty().not()) conditions += "<LengthRange:[numRange: $cdsLengthRange]> "
         return "[${conditions.trim()}]"
     }
 }

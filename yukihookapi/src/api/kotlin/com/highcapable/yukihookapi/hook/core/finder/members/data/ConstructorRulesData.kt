@@ -49,7 +49,7 @@ internal class ConstructorRulesData internal constructor(
 
     override val isInitialize
         get() = super.isInitializeOfSuper || paramTypes != null || paramCount >= 0 ||
-                paramCountRange != IntRange.EMPTY || paramCountConditions != null
+                paramCountRange.isEmpty().not() || paramCountConditions != null
 
     override fun hashCode(other: Any?) = super.hashCode(other) + "[$paramTypes][$paramCount][$paramCountRange]".hashCode()
 }

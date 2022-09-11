@@ -49,7 +49,7 @@ internal open class MemberRulesData internal constructor(
      * 判断 [matchCount]、[matchCountRange] 规则是否已经初始化 (设置了任意一个参数)
      * @return [Boolean]
      */
-    internal val isInitializeOfMatch get() = matchCount >= 0 || matchCountRange != IntRange.EMPTY
+    internal val isInitializeOfMatch get() = matchCount >= 0 || matchCountRange.isEmpty().not()
 
     /**
      * 判断 [BaseRulesData] 规则是否已经初始化 (设置了任意一个参数)
