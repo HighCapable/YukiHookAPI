@@ -207,6 +207,12 @@ class MethodFinder @PublishedApi internal constructor(
      *
      * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数范围
      *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * paramCount(1..5)
+     * ```
+     *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param numRange 个数范围
      * @return [BaseFinder.IndexTypeCondition]
