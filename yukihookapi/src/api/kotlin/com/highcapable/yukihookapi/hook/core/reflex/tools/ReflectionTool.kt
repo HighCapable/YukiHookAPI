@@ -441,6 +441,21 @@ internal object ReflectionTool {
     }
 
     /**
+     * 获取当前 [Class] 中存在的 [Member] 数组
+     * @return [Array]<[Member]>
+     */
+    private val Class<*>.existMembers
+        get() = runCatching {
+            arrayListOf<Member>().apply {
+                addAll(declaredFields.toList())
+                addAll(declaredMethods.toList())
+                addAll(declaredConstructors.toList())
+            }.toTypedArray()
+        }.onFailure {
+            yLoggerW(msg = "Failed to get the declared Members in [$this] because got an exception\n$it")
+        }.getOrNull()
+
+    /**
      * 获取当前 [Class] 中存在的 [Field] 数组
      * @return [Array]<[Field]>
      */
