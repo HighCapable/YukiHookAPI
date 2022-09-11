@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
+import com.highcapable.yukihookapi.hook.utils.IntConditions
 import java.lang.reflect.Member
 
 /**
@@ -35,12 +36,14 @@ import java.lang.reflect.Member
  * @param isFindInSuper 是否在未找到后继续在父类中查找
  * @param matchCount 匹配的字节码个数
  * @param matchCountRange 匹配的字节码个数范围
+ * @param matchCountConditions 匹配的字节码个数条件
  */
 @PublishedApi
 internal open class MemberRulesData internal constructor(
     var isFindInSuper: Boolean = false,
     var matchCount: Int = -1,
-    var matchCountRange: IntRange = IntRange.EMPTY
+    var matchCountRange: IntRange = IntRange.EMPTY,
+    var matchCountConditions: IntConditions? = null
 ) : BaseRulesData() {
 
     override val objectName get() = "Member"
@@ -49,7 +52,7 @@ internal open class MemberRulesData internal constructor(
      * 判断 [matchCount]、[matchCountRange] 规则是否已经初始化 (设置了任意一个参数)
      * @return [Boolean]
      */
-    internal val isInitializeOfMatch get() = matchCount >= 0 || matchCountRange.isEmpty().not()
+    internal val isInitializeOfMatch get() = matchCount >= 0 || matchCountRange.isEmpty().not() || matchCountConditions != null
 
     /**
      * 判断 [BaseRulesData] 规则是否已经初始化 (设置了任意一个参数)
