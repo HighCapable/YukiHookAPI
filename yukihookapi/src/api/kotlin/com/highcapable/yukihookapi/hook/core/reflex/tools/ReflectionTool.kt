@@ -33,6 +33,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.factory.hasExtends
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
@@ -423,19 +424,28 @@ internal object ReflectionTool {
      * 获取当前 [Class] 中存在的 [Field] 数组
      * @return [Array]<[Field]>
      */
-    private val Class<*>.existFields get() = runCatching { declaredFields }.getOrNull()
+    private val Class<*>.existFields
+        get() = runCatching { declaredFields }.onFailure {
+            yLoggerW(msg = "Failed to get the declared Fields in [$this] because got an exception\n$it")
+        }.getOrNull()
 
     /**
      * 获取当前 [Class] 中存在的 [Method] 数组
      * @return [Array]<[Method]>
      */
-    private val Class<*>.existMethods get() = runCatching { declaredMethods }.getOrNull()
+    private val Class<*>.existMethods
+        get() = runCatching { declaredMethods }.onFailure {
+            yLoggerW(msg = "Failed to get the declared Methods in [$this] because got an exception\n$it")
+        }.getOrNull()
 
     /**
      * 获取当前 [Class] 中存在的 [Constructor] 数组
      * @return [Array]<[Constructor]>
      */
-    private val Class<*>.existConstructors get() = runCatching { declaredConstructors }.getOrNull()
+    private val Class<*>.existConstructors
+        get() = runCatching { declaredConstructors }.onFailure {
+            yLoggerW(msg = "Failed to get the declared Constructors in [$this] because got an exception\n$it")
+        }.getOrNull()
 
     /**
      * 获取参数数组文本化内容
