@@ -330,7 +330,6 @@ internal object ReflectionTool {
             is FieldRulesData -> isInitialize.not()
             is MethodRulesData -> isInitialize.not()
             is ConstructorRulesData -> isInitialize.not()
-            is MemberRulesData -> isInitialize.not()
             else -> true
         }.takeIf { it }?.also { error("You must set a condition when finding a $objectName") }
         return result(this)
