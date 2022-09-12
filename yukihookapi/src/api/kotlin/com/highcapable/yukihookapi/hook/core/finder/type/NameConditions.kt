@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.type
 
+import com.highcapable.yukihookapi.hook.utils.IntConditions
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -60,6 +61,9 @@ class NameConditions @PublishedApi internal constructor() {
 
     /** 字符长度范围匹配条件 */
     private var cdsLengthRange = IntRange.EMPTY
+
+    /** 字符长度条件匹配条件 */
+    private var cdsLengthConditions: IntConditions? = null
 
     /** 标识为匿名类的主类调用对象条件 */
     private var isThisSynthetic0 = false
@@ -163,6 +167,14 @@ class NameConditions @PublishedApi internal constructor() {
      */
     fun length(numRange: IntRange) {
         cdsLengthRange = numRange
+    }
+
+    /**
+     * 字符长度条件匹配
+     * @param conditions 条件方法体
+     */
+    fun length(conditions: IntConditions) {
+        cdsLengthConditions = conditions
     }
 
     /**
@@ -271,6 +283,7 @@ class NameConditions @PublishedApi internal constructor() {
             if (cdsMatches != null) cdsMatches?.apply { conditions = conditions && it.matches(regex = this) }
             if (cdsLength >= 0) conditions = conditions && it.length == cdsLength
             if (cdsLengthRange.isEmpty().not()) conditions = conditions && it.length in cdsLengthRange
+            if (cdsLengthConditions != null) conditions = conditions && cdsLengthConditions?.invoke(it.length) == true
         }
         return conditions
     }
@@ -291,6 +304,7 @@ class NameConditions @PublishedApi internal constructor() {
         if (cdsMatches != null) cdsMatches?.apply { conditions += "<Matches:[regex: $this]> " }
         if (cdsLength >= 0) conditions += "<Length:[num: $cdsLength]> "
         if (cdsLengthRange.isEmpty().not()) conditions += "<LengthRange:[numRange: $cdsLengthRange]> "
+        if (cdsLengthConditions != null) conditions += "<LengthConditions:[conditions: existed]> "
         return "[${conditions.trim()}]"
     }
 }

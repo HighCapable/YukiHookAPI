@@ -98,13 +98,17 @@ fun length(num: Int)
 fun length(numRange: IntRange)
 ```
 
+```kotlin
+fun length(conditions: IntConditions)
+```
+
 **变更记录**
 
 `v1.0.93` `新增`
 
 **功能描述**
 
-> 字符长度与范围匹配。
+> 字符长度与范围及条件匹配。
 
 ### thisSynthetic0 *- method*
 
