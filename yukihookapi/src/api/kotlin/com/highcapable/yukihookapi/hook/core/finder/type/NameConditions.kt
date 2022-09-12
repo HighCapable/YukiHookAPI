@@ -89,8 +89,11 @@ class NameConditions @PublishedApi internal constructor() {
     /**
      * 完全字符匹配
      *
-     * 例如匹配 catMonitor 可设置为 equalsOf(other = "catMonitor")
+     * 例如匹配 catMonitor 可设置为 ↓
      *
+     * ```kotlin
+     * equalsOf(other = "catMonitor")
+     * ```
      * @param other 字符匹配
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
      */
@@ -101,8 +104,11 @@ class NameConditions @PublishedApi internal constructor() {
     /**
      * 起始字符匹配
      *
-     * 例如匹配 catMonitor 可设置为 startsWith(prefix = "cat")
+     * 例如匹配 catMonitor 可设置为 ↓
      *
+     * ```kotlin
+     * startsWith(prefix = "cat")
+     * ```
      * @param prefix 起始字符匹配
      * @param startIndex 起始字符下标 - 默认从 0 开始
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
@@ -114,8 +120,11 @@ class NameConditions @PublishedApi internal constructor() {
     /**
      * 结束字符匹配
      *
-     * 例如匹配 catMonitor 可设置为 endsWith(suffix = "Monitor")
+     * 例如匹配 catMonitor 可设置为 ↓
      *
+     * ```kotlin
+     * endsWith(suffix = "Monitor")
+     * ```
      * @param suffix 结束字符匹配
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
      */
@@ -126,8 +135,11 @@ class NameConditions @PublishedApi internal constructor() {
     /**
      * 包含字符匹配
      *
-     * 例如匹配 catMonitor 可设置为 contains(other = "atMoni")
+     * 例如匹配 catMonitor 可设置为 ↓
      *
+     * ```kotlin
+     * contains(other = "atMoni")
+     * ```
      * @param other 包含字符匹配
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
      */
