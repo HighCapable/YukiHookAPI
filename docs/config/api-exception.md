@@ -345,6 +345,28 @@ TargetClass.method {
 
 这是一个安全异常，请检查你设置的条件，使用相关工具查看所在 `Class` 中的字节码对象特征，并再试一次。
 
+!> `loggerE` The number of VagueType must be at least less than the count of paramTypes
+
+**异常原因**
+
+在 `Method`、`Constructor` 查找条件中错误地使用了 `VagueType`。
+
+> 示例如下
+
+```kotlin
+TargetClass.method {
+    name = "test"
+    // <情景1>
+    param(VagueType)
+    // <情景2>
+    param(VagueType, VagueType ...)
+}
+```
+
+**解决方案**
+
+`VagueType` 不能在方法、构造方法参数中完全填充，若存在这样的需求请使用 `paramCount`。
+
 !> `loggerE` Field match type class is not found
 
 **异常原因**
