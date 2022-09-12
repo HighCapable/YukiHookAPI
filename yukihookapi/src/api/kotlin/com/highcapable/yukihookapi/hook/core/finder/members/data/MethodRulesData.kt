@@ -58,6 +58,7 @@ internal class MethodRulesData internal constructor(
         get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || paramTypes != null ||
                 paramCount >= 0 || paramCountRange.isEmpty().not() || paramCountConditions != null || returnType != null
 
-    override fun hashCode(other: Any?) =
-        super.hashCode(other) + "[$name][$nameConditions][$paramTypes][$paramCount][$paramCountRange][$returnType]".hashCode()
+    override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
+
+    override fun toString() = "[$name][$nameConditions][$paramTypes][$paramCount][$paramCountRange][$returnType]"
 }

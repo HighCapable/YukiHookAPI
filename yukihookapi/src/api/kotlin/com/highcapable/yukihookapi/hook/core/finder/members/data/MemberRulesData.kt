@@ -62,5 +62,7 @@ internal open class MemberRulesData internal constructor(
 
     override val isInitialize get() = isInitializeOfSuper || isInitializeOfMatch
 
-    override fun hashCode(other: Any?) = super.hashCode(other) + "[$isFindInSuper][$matchIndex][$matchCountRange]".hashCode()
+    override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
+
+    override fun toString() = "[$isFindInSuper][$matchIndex][$matchCountRange]"
 }
