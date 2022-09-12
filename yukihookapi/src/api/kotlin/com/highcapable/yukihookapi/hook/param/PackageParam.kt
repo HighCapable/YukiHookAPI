@@ -42,7 +42,7 @@ import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
-import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
+import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper

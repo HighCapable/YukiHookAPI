@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
+import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.factory.ConstructorConditions
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends

@@ -34,8 +34,8 @@ import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
+import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.core.reflex.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
