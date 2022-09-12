@@ -373,8 +373,8 @@ internal object ReflectionTool {
             instanceSet, name = "Field",
             "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}]",
             nameConditions?.let { "nameConditions:$it" } ?: "",
-            "type:[${type ?: "unspecified"}] ",
-            "modifiers:${modifiers ?: "[]"} ",
+            "type:[${type ?: "unspecified"}]",
+            "modifiers:${modifiers ?: "[]"}",
             orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
             matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
         )
