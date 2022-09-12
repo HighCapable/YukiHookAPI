@@ -41,20 +41,20 @@ import java.lang.reflect.Method
  */
 class NameConditions @PublishedApi internal constructor() {
 
-    /** 完全字符匹配条件 */
-    private var cdsEqualsOf: Pair<String, Boolean>? = null
+    /** 完全字符匹配条件数组 */
+    private var cdsEqualsOfs = ArrayList<Pair<String, Boolean>>()
 
-    /** 起始字符匹配条件 */
-    private var cdsStartsWith: Triple<String, Int, Boolean>? = null
+    /** 起始字符匹配条件数组 */
+    private var cdsStartsWiths = ArrayList<Triple<String, Int, Boolean>>()
 
-    /** 结束字符匹配条件 */
-    private var cdsEndsWith: Pair<String, Boolean>? = null
+    /** 结束字符匹配条件数组 */
+    private var cdsEndsWiths = ArrayList<Pair<String, Boolean>>()
 
-    /** 包含字符匹配条件 */
-    private var cdsContains: Pair<String, Boolean>? = null
+    /** 包含字符匹配条件数组 */
+    private var cdsContains = ArrayList<Pair<String, Boolean>>()
 
-    /** 正则字符匹配条件 */
-    private var cdsMatches: Regex? = null
+    /** 正则字符匹配条件数组 */
+    private var cdsMatches = ArrayList<Regex>()
 
     /** 字符长度匹配条件 */
     private var cdsLength = -1
@@ -89,47 +89,80 @@ class NameConditions @PublishedApi internal constructor() {
     /**
      * 完全字符匹配
      *
-     * 例如匹配 catMonitor 可设置为 ↓
+     * 例如匹配 "catMonitor" 可设置为 ↓
      *
      * ```kotlin
      * equalsOf(other = "catMonitor")
+     * ```
+     *
+     * - 可以重复使用 - 最终会选择完全匹配的一个
+     *
+     * 例如匹配 "cargoSale" or "catMonitor" 可设置为 ↓
+     *
+     * ```kotlin
+     * name {
+     *     equalsOf(other = "cargoSale")
+     *     equalsOf(other = "catMonitor")
+     * }
      * ```
      * @param other 字符匹配
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
      */
     fun equalsOf(other: String, isIgnoreCase: Boolean = false) {
-        cdsEqualsOf = Pair(other, isIgnoreCase)
+        cdsEqualsOfs.add(Pair(other, isIgnoreCase))
     }
 
     /**
      * 起始字符匹配
      *
-     * 例如匹配 catMonitor 可设置为 ↓
+     * 例如匹配 "catMonitor" 可设置为 ↓
      *
      * ```kotlin
      * startsWith(prefix = "cat")
+     * ```
+     *
+     * - 可以重复使用 - 最终会选择完全匹配的一个
+     *
+     * 例如匹配 "cargoSale" or "catMonitor" 可设置为 ↓
+     *
+     * ```kotlin
+     * name {
+     *     startsWith(prefix = "cargo")
+     *     startsWith(prefix = "cat")
+     * }
      * ```
      * @param prefix 起始字符匹配
      * @param startIndex 起始字符下标 - 默认从 0 开始
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
      */
     fun startsWith(prefix: String, startIndex: Int = 0, isIgnoreCase: Boolean = false) {
-        cdsStartsWith = Triple(prefix, startIndex, isIgnoreCase)
+        cdsStartsWiths.add(Triple(prefix, startIndex, isIgnoreCase))
     }
 
     /**
      * 结束字符匹配
      *
-     * 例如匹配 catMonitor 可设置为 ↓
+     * 例如匹配 "catMonitor" 可设置为 ↓
      *
      * ```kotlin
      * endsWith(suffix = "Monitor")
+     * ```
+     *
+     * - 可以重复使用 - 最终会选择完全匹配的一个
+     *
+     * 例如匹配 "cargoSale" or "catMonitor" 可设置为 ↓
+     *
+     * ```kotlin
+     * name {
+     *     endsWith(suffix = "Sale")
+     *     endsWith(suffix = "Monitor")
+     * }
      * ```
      * @param suffix 结束字符匹配
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
      */
     fun endsWith(suffix: String, isIgnoreCase: Boolean = false) {
-        cdsEndsWith = Pair(suffix, isIgnoreCase)
+        cdsEndsWiths.add(Pair(suffix, isIgnoreCase))
     }
 
     /**
@@ -140,33 +173,48 @@ class NameConditions @PublishedApi internal constructor() {
      * ```kotlin
      * contains(other = "atMoni")
      * ```
+     *
+     * - 可以重复使用 - 最终会选择完全匹配的一个
+     *
+     * 例如匹配 "cargoSale" or "catMonitor" 可设置为 ↓
+     *
+     * ```kotlin
+     * name {
+     *     contains(other = "goSal")
+     *     contains(other = "atMoni")
+     * }
+     * ```
      * @param other 包含字符匹配
      * @param isIgnoreCase 是否忽略字符中的大小写 - 默认否
      */
     fun contains(other: String, isIgnoreCase: Boolean = false) {
-        cdsContains = Pair(other, isIgnoreCase)
+        cdsContains.add(Pair(other, isIgnoreCase))
     }
 
     /**
      * 正则字符匹配
      *
+     * - 可以重复使用 - 最终会选择完全匹配的一个
      * @param regex 正则字符
      */
     fun matches(regex: String) {
-        cdsMatches = regex.toRegex()
+        cdsMatches.add(regex.toRegex())
     }
 
     /**
      * 正则字符匹配
      *
+     * - 可以重复使用 - 最终会选择完全匹配的一个
      * @param regex 正则字符
      */
     fun matches(regex: Regex) {
-        cdsMatches = regex
+        cdsMatches.add(regex)
     }
 
     /**
      * 字符长度匹配
+     *
+     * - 不可重复使用 - 重复使用旧的条件会被当前条件替换
      * @param num 预期的长度
      */
     fun length(num: Int) {
@@ -175,6 +223,8 @@ class NameConditions @PublishedApi internal constructor() {
 
     /**
      * 字符长度范围匹配
+     *
+     * - 不可重复使用 - 重复使用旧的条件会被当前条件替换
      * @param numRange 预期的长度范围
      */
     fun length(numRange: IntRange) {
@@ -183,6 +233,8 @@ class NameConditions @PublishedApi internal constructor() {
 
     /**
      * 字符长度条件匹配
+     *
+     * - 不可重复使用 - 重复使用旧的条件会被当前条件替换
      * @param conditions 条件方法体
      */
     fun length(conditions: IntConditions) {
@@ -280,22 +332,23 @@ class NameConditions @PublishedApi internal constructor() {
             is Method -> reflects.name
             is Field -> reflects.name
             else -> ""
-        }.also {
-            if (isThisSynthetic0) conditions = conditions && it == "this$0"
-            if (isOnlySymbols) conditions = conditions && it.matches("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-_+=<>]+".toRegex())
-            if (isOnlyLetters) conditions = conditions && it.matches("[a-zA-Z]+".toRegex())
-            if (isOnlyNumbers) conditions = conditions && it.matches("[0-9]+".toRegex())
-            if (isOnlyLettersNumbers) conditions = conditions && it.matches("[a-zA-Z0-9]+".toRegex())
-            if (isOnlyLowercase) conditions = conditions && it.matches("[a-z]+".toRegex())
-            if (isOnlyUppercase) conditions = conditions && it.matches("[A-Z]+".toRegex())
-            if (cdsEqualsOf != null) cdsEqualsOf?.apply { conditions = conditions && it.equals(first, second) }
-            if (cdsStartsWith != null) cdsStartsWith?.apply { conditions = conditions && it.startsWith(first, second, third) }
-            if (cdsEndsWith != null) cdsEndsWith?.apply { conditions = conditions && it.endsWith(first, second) }
-            if (cdsContains != null) cdsContains?.apply { conditions = conditions && it.contains(first, second) }
-            if (cdsMatches != null) cdsMatches?.apply { conditions = conditions && it.matches(regex = this) }
-            if (cdsLength >= 0) conditions = conditions && it.length == cdsLength
-            if (cdsLengthRange.isEmpty().not()) conditions = conditions && it.length in cdsLengthRange
-            if (cdsLengthConditions != null) conditions = conditions && cdsLengthConditions?.invoke(it.length) == true
+        }.also { symbolName ->
+            if (isThisSynthetic0) conditions = conditions && symbolName == "this$0"
+            if (isOnlySymbols) conditions = conditions && symbolName.matches("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-_+=<>]+".toRegex())
+            if (isOnlyLetters) conditions = conditions && symbolName.matches("[a-zA-Z]+".toRegex())
+            if (isOnlyNumbers) conditions = conditions && symbolName.matches("[0-9]+".toRegex())
+            if (isOnlyLettersNumbers) conditions = conditions && symbolName.matches("[a-zA-Z0-9]+".toRegex())
+            if (isOnlyLowercase) conditions = conditions && symbolName.matches("[a-z]+".toRegex())
+            if (isOnlyUppercase) conditions = conditions && symbolName.matches("[A-Z]+".toRegex())
+            cdsEqualsOfs.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.equals(e.first, e.second) } }
+            cdsStartsWiths.takeIf { it.isNotEmpty() }
+                ?.also { conditions = conditions && it.any { e -> symbolName.startsWith(e.first, e.second, e.third) } }
+            cdsEndsWiths.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.endsWith(e.first, e.second) } }
+            cdsContains.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.contains(e.first, e.second) } }
+            cdsMatches.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.matches(e) } }
+            cdsLength.takeIf { it >= 0 }?.also { conditions = conditions && symbolName.length == it }
+            cdsLengthRange.takeIf { it.isEmpty().not() }?.also { conditions = conditions && symbolName.length in it }
+            cdsLengthConditions?.also { conditions = conditions && it(symbolName.length) }
         }
         return conditions
     }
@@ -309,14 +362,14 @@ class NameConditions @PublishedApi internal constructor() {
         if (isOnlyLettersNumbers) conditions += "<OnlyLettersNumbers> "
         if (isOnlyLowercase) conditions += "<OnlyLowercase> "
         if (isOnlyUppercase) conditions += "<OnlyUppercase> "
-        if (cdsEqualsOf != null) cdsEqualsOf?.apply { conditions += "<EqualsOf:[other: $first, isIgnoreCase: $second]> " }
-        if (cdsStartsWith != null) cdsStartsWith?.apply { conditions += "<StartsWith:[prefix: $first, startIndex: $second, isIgnoreCase: $third]> " }
-        if (cdsEndsWith != null) cdsEndsWith?.apply { conditions += "<EndsWith:[suffix: $first, isIgnoreCase: $second]> " }
-        if (cdsContains != null) cdsContains?.apply { conditions += "<Contains:[other: $first, isIgnoreCase: $second]> " }
-        if (cdsMatches != null) cdsMatches?.apply { conditions += "<Matches:[regex: $this]> " }
-        if (cdsLength >= 0) conditions += "<Length:[num: $cdsLength]> "
-        if (cdsLengthRange.isEmpty().not()) conditions += "<LengthRange:[numRange: $cdsLengthRange]> "
-        if (cdsLengthConditions != null) conditions += "<LengthConditions:[conditions: existed]> "
+        if (cdsEqualsOfs.isNotEmpty()) conditions += "<EqualsOf:$cdsEqualsOfs> "
+        if (cdsStartsWiths.isNotEmpty()) conditions += "<StartsWith:$cdsStartsWiths> "
+        if (cdsEndsWiths.isNotEmpty()) conditions += "<EndsWith:$cdsEndsWiths> "
+        if (cdsContains.isNotEmpty()) conditions += "<Contains:$cdsContains> "
+        if (cdsMatches.isNotEmpty()) conditions += "<Matches:$cdsMatches> "
+        if (cdsLength >= 0) conditions += "<Length:[$cdsLength]> "
+        if (cdsLengthRange.isEmpty().not()) conditions += "<LengthRange:[$cdsLengthRange]> "
+        if (cdsLengthConditions != null) conditions += "<LengthConditions:[existed]> "
         return "[${conditions.trim()}]"
     }
 }

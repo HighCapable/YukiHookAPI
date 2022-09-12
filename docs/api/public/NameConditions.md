@@ -28,6 +28,8 @@ fun equalsOf(other: String, isIgnoreCase: Boolean)
 
 > 完全字符匹配。
 
+可以重复使用，最终会选择完全匹配的一个。
+
 ### startsWith *- method*
 
 ```kotlin
@@ -41,6 +43,8 @@ fun startsWith(prefix: String, startIndex: Int, isIgnoreCase: Boolean)
 **功能描述**
 
 > 起始字符匹配。
+
+可以重复使用，最终会选择完全匹配的一个。
 
 ### endsWith *- method*
 
@@ -56,6 +60,8 @@ fun endsWith(suffix: String, isIgnoreCase: Boolean)
 
 > 结束字符匹配。
 
+可以重复使用，最终会选择完全匹配的一个。
+
 ### contains *- method*
 
 ```kotlin
@@ -69,6 +75,8 @@ fun contains(other: String, isIgnoreCase: Boolean)
 **功能描述**
 
 > 包含字符匹配。
+
+可以重复使用，最终会选择完全匹配的一个。
 
 ### matches *- method*
 
@@ -87,6 +95,8 @@ fun matches(regex: Regex)
 **功能描述**
 
 > 正则字符匹配。
+
+可以重复使用，最终会选择完全匹配的一个。
 
 ### length *- method*
 
@@ -109,6 +119,8 @@ fun length(conditions: IntConditions)
 **功能描述**
 
 > 字符长度与范围及条件匹配。
+
+不可重复使用，重复使用旧的条件会被当前条件替换。
 
 ### thisSynthetic0 *- method*
 
