@@ -42,6 +42,7 @@ import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import com.highcapable.yukihookapi.hook.utils.IntConditions
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import com.highcapable.yukihookapi.hook.utils.unit
@@ -108,6 +109,20 @@ class ConstructorFinder @PublishedApi internal constructor(
      * 设置 [Constructor] 参数
      *
      * 如果同时使用了 [paramCount] 则 [paramType] 的数量必须与 [paramCount] 完全匹配
+     *
+     * 如果 [Constructor] 中存在一些无意义又很长的类型 - 你可以使用 [VagueType] 来替代它
+     *
+     * 例如下面这个参数结构 ↓
+     *
+     * ```java
+     * Foo(String var1, boolean var2, com.demo.Test var3, int var4)
+     * ```
+     *
+     * 此时就可以简单地写作 ↓
+     *
+     * ```kotlin
+     * param(StringType, BooleanType, VagueType, IntType)
+     * ```
      *
      * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查询条件
      *

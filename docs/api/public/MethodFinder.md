@@ -126,6 +126,8 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 如果同时使用了 `paramCount` 则 `paramType` 的数量必须与 `paramCount` 完全匹配。
 
+如果 `Method` 中存在一些无意义又很长的类型，你可以使用 `VagueType` 来替代它。
+
 !> 无参 `Method` 请使用 `emptyParam` 设置查询条件。
 
 !> 有参 `Method` 必须使用此方法设定参数或使用 `paramCount` 指定个数。

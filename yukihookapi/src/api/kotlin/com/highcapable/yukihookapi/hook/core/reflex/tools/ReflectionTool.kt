@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
+import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
@@ -170,7 +171,7 @@ internal object ReflectionTool {
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
                 val iLParamCountCds = paramCountConditions
                     ?.let(matchIndex) { e -> declares.filter { e(it.parameterTypes.size) }.lastIndex } ?: -1
-                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { arrayContentsEq(e, it.parameterTypes) }.lastIndex } ?: -1
+                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
@@ -207,7 +208,7 @@ internal object ReflectionTool {
                             })
                         }
                         paramTypes?.also {
-                            and(arrayContentsEq(it, instance.parameterTypes).let { hold ->
+                            and(paramTypesEq(it, instance.parameterTypes).let { hold ->
                                 if (hold) iParamTypes++
                                 hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
@@ -256,7 +257,7 @@ internal object ReflectionTool {
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
                 val iLParamCountCds = paramCountConditions
                     ?.let(matchIndex) { e -> declares.filter { e(it.parameterTypes.size) }.lastIndex } ?: -1
-                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { arrayContentsEq(e, it.parameterTypes) }.lastIndex } ?: -1
+                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
@@ -279,7 +280,7 @@ internal object ReflectionTool {
                             })
                         }
                         paramTypes?.also {
-                            and(arrayContentsEq(it, instance.parameterTypes).let { hold ->
+                            and(paramTypesEq(it, instance.parameterTypes).let { hold ->
                                 if (hold) iParamTypes++
                                 hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
@@ -497,21 +498,23 @@ internal object ReflectionTool {
         }.toString()
 
     /**
-     * 判断两个数组是否相等
+     * 判断两个方法、构造方法类型数组是否相等
      *
      * 复制自 [Class] 中的 [Class.arrayContentsEq]
-     * @param fArray 第一个数组
-     * @param lArray 第二个数组
+     * @param compare 用于比较的数组
+     * @param original 方法、构造方法原始数组
      * @return [Boolean] 是否相等
      */
-    private fun arrayContentsEq(fArray: Array<out Any>?, lArray: Array<out Any>?) = run {
-        if (fArray != null) when {
-            lArray == null -> fArray.isEmpty()
-            fArray.size != lArray.size -> false
+    private fun paramTypesEq(compare: Array<out Any>?, original: Array<out Any>?): Boolean {
+        return when {
+            (compare == null && original == null) || (compare?.isEmpty() == true && original?.isEmpty() == true) -> true
+            (compare == null && original != null) || (compare != null && original == null) || (compare?.size != original?.size) -> false
             else -> {
-                for (i in fArray.indices) if (fArray[i] !== lArray[i]) return@run false
+                if (compare == null || original == null) return false
+                if (compare.all { it == VagueType }) error("The number of VagueType must be at least less than the count of paramTypes")
+                for (i in compare.indices) if ((compare[i] !== VagueType) && (compare[i] !== original[i])) return false
                 true
             }
-        } else lArray == null || lArray.isEmpty()
+        }
     }
 }
