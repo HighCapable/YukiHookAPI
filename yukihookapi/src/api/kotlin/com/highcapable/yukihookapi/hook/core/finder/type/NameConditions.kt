@@ -319,37 +319,29 @@ class NameConditions @PublishedApi internal constructor() {
     }
 
     /**
-     * 对比 [Class]、[Member] 类型是否符合条件
-     * @param reflects 实例 - 只支持 [Class]、[Method]、[Field]
-     * @param isUseSimple 是否使用 [Class.getSimpleName] - 只支持 [Class] - 默认否
+     * 对比 [Class]、[Member] 名称是否符合条件
+     * @param symbolName 符号名称 - 可以使用 [Class.getName]、[Class.getSimpleName]、[Field.getName]、[Method.getName] 获取
      * @return [Boolean] 是否符合条件
      */
     @PublishedApi
-    internal fun contains(reflects: Any, isUseSimple: Boolean = false): Boolean {
+    internal fun contains(symbolName: String): Boolean {
         var conditions = true
-        when (reflects) {
-            is Class<*> -> if (isUseSimple) reflects.simpleName else reflects.name
-            is Method -> reflects.name
-            is Field -> reflects.name
-            else -> ""
-        }.also { symbolName ->
-            if (isThisSynthetic0) conditions = conditions && symbolName == "this$0"
-            if (isOnlySymbols) conditions = conditions && symbolName.matches("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-_+=<>]+".toRegex())
-            if (isOnlyLetters) conditions = conditions && symbolName.matches("[a-zA-Z]+".toRegex())
-            if (isOnlyNumbers) conditions = conditions && symbolName.matches("[0-9]+".toRegex())
-            if (isOnlyLettersNumbers) conditions = conditions && symbolName.matches("[a-zA-Z0-9]+".toRegex())
-            if (isOnlyLowercase) conditions = conditions && symbolName.matches("[a-z]+".toRegex())
-            if (isOnlyUppercase) conditions = conditions && symbolName.matches("[A-Z]+".toRegex())
-            cdsEqualsOfs.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.equals(e.first, e.second) } }
-            cdsStartsWiths.takeIf { it.isNotEmpty() }
-                ?.also { conditions = conditions && it.any { e -> symbolName.startsWith(e.first, e.second, e.third) } }
-            cdsEndsWiths.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.endsWith(e.first, e.second) } }
-            cdsContains.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.contains(e.first, e.second) } }
-            cdsMatches.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.matches(e) } }
-            cdsLength.takeIf { it >= 0 }?.also { conditions = conditions && symbolName.length == it }
-            cdsLengthRange.takeIf { it.isEmpty().not() }?.also { conditions = conditions && symbolName.length in it }
-            cdsLengthConditions?.also { conditions = conditions && it(symbolName.length) }
-        }
+        if (isThisSynthetic0) conditions = conditions && symbolName == "this$0"
+        if (isOnlySymbols) conditions = conditions && symbolName.matches("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-_+=<>]+".toRegex())
+        if (isOnlyLetters) conditions = conditions && symbolName.matches("[a-zA-Z]+".toRegex())
+        if (isOnlyNumbers) conditions = conditions && symbolName.matches("[0-9]+".toRegex())
+        if (isOnlyLettersNumbers) conditions = conditions && symbolName.matches("[a-zA-Z0-9]+".toRegex())
+        if (isOnlyLowercase) conditions = conditions && symbolName.matches("[a-z]+".toRegex())
+        if (isOnlyUppercase) conditions = conditions && symbolName.matches("[A-Z]+".toRegex())
+        cdsEqualsOfs.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.equals(e.first, e.second) } }
+        cdsStartsWiths.takeIf { it.isNotEmpty() }
+            ?.also { conditions = conditions && it.any { e -> symbolName.startsWith(e.first, e.second, e.third) } }
+        cdsEndsWiths.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.endsWith(e.first, e.second) } }
+        cdsContains.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.contains(e.first, e.second) } }
+        cdsMatches.takeIf { it.isNotEmpty() }?.also { conditions = conditions && it.any { e -> symbolName.matches(e) } }
+        cdsLength.takeIf { it >= 0 }?.also { conditions = conditions && symbolName.length == it }
+        cdsLengthRange.takeIf { it.isEmpty().not() }?.also { conditions = conditions && symbolName.length in it }
+        cdsLengthConditions?.also { conditions = conditions && it(symbolName.length) }
         return conditions
     }
 

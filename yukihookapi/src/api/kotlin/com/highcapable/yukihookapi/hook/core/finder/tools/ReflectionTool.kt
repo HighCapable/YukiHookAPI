@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
+import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
@@ -107,7 +108,7 @@ internal object ReflectionTool {
                 val iLType = type?.let(matchIndex) { e -> declares.filter { e == it.type }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
-                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it.name) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         type?.also {
@@ -129,7 +130,7 @@ internal object ReflectionTool {
                             })
                         }
                         nameConditions?.also {
-                            and(it.contains(instance).let { hold ->
+                            and(it.contains(instance.name).let { hold ->
                                 if (hold) iNameCds++
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
@@ -174,7 +175,7 @@ internal object ReflectionTool {
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
                 val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
-                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it.name) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         name.takeIf { it.isNotBlank() }?.also {
@@ -220,7 +221,7 @@ internal object ReflectionTool {
                             })
                         }
                         nameConditions?.also {
-                            and(it.contains(instance).let { hold ->
+                            and(it.contains(instance.name).let { hold ->
                                 if (hold) iNameCds++
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
@@ -331,6 +332,7 @@ internal object ReflectionTool {
             is FieldRulesData -> isInitialize.not()
             is MethodRulesData -> isInitialize.not()
             is ConstructorRulesData -> isInitialize.not()
+            is ClassRulesData -> isInitialize.not()
             else -> true
         }.takeIf { it }?.also { error("You must set a condition when finding a $objectName") }
         return result(this)
