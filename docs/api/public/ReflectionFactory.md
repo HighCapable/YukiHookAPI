@@ -64,6 +64,69 @@ CONSTRUCTOR
 
 > 全部 `Constructor`。
 
+### ClassLoader.onLoadClass *- ext-method*
+
+```kotlin
+fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit)
+```
+
+**变更记录**
+
+`v1.0.93` `新增`
+
+**功能描述**
+
+> 监听当前 `ClassLoader` 的 `ClassLoader.loadClass` 方法装载。
+
+!> 请注意只有当前 `ClassLoader` 有主动使用 `ClassLoader.loadClass` 事件时才能被捕获。
+
+!> 这是一个实验性功能，一般情况下不会用到此方法，不保证不会发生错误。
+
+!> 只能在 (Xposed) 宿主环境使用此功能，其它环境下使用将不生效且会打印警告信息。
+
+**功能示例**
+
+针对一些使用特定 `ClassLoader` 装载 `Class` 的宿主应用，你可以使用此方法来监听 `Class` 加载情况。
+
+!> 为了防止发生问题，你需要<u>**得到一个存在的 `ClassLoader` 实例**</u>来使用此功能。
+
+比如我们在 `PackageParam` 中使用 `appClassLoader`。
+
+> 示例如下
+
+```kotlin
+appClassLoader.onLoadClass { clazz ->
+    // 得到 clazz 即加载对象
+    clazz... // 这里进行你需要的操作
+}
+```
+
+或使用你得到的存在的 `ClassLoader` 实例，可以通过 Hook 获取。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+customClassLoader?.onLoadClass { clazz ->
+    // ...
+}
+```
+
+在判断到这个 `Class` 被装载成功时，开始执行你的 Hook 功能。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+customClassLoader?.onLoadClass { clazz ->
+    if(clazz.name == /** 你需要的 Class 名称 */) {
+        clazz.hook {
+            // ...
+        }
+    }
+}
+```
+
 ### ~~hookClass *- field*~~ <!-- {docsify-ignore} -->
 
 **变更记录**

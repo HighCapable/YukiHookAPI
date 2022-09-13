@@ -379,16 +379,6 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name).toHookClass(loader)
 
     /**
-     * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
-     *
-     * - ❗请注意只有当前 [ClassLoader] 有主动使用 [ClassLoader.loadClass] 事件时才能被捕获
-     *
-     * - ❗这是一个实验性功能 - 一般情况下不会用到此方法 - 不保证不会发生错误
-     * @param result 回调 - ([Class] 实例对象,[Boolean] 是否 resolve)
-     */
-    fun ClassLoader.fetching(result: (clazz: Class<*>, resolve: Boolean) -> Unit) = AppParasitics.hookClassLoader(loader = this, result)
-
-    /**
      * Hook 方法、构造方法
      *
      * - 使用当前 [appClassLoader] 装载目标 [Class]

@@ -71,6 +71,12 @@ internal object AppParasitics {
     /** [Activity] 代理是否已经注册 */
     private var isActivityProxyRegister = false
 
+    /** [ClassLoader] 是否已被 Hook */
+    private var isClassLoaderHooked = false
+
+    /** [ClassLoader] 监听回调数组 */
+    private var classLoaderCallbacks = HashMap<Int, (Class<*>) -> Unit>()
+
     /**
      * 当前 Hook APP (宿主) 的全局生命周期 [Application]
      *
@@ -234,16 +240,22 @@ internal object AppParasitics {
     /**
      * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
      * @param loader 当前 [ClassLoader]
-     * @param result 回调 - ([Class] 实例对象,[Boolean] 是否 resolve)
+     * @param result 回调 - ([Class] 实例对象)
      */
-    internal fun hookClassLoader(loader: ClassLoader?, result: (clazz: Class<*>, resolve: Boolean) -> Unit) {
+    internal fun hookClassLoader(loader: ClassLoader?, result: (Class<*>) -> Unit) {
+        if (loader == null) return
+        if (YukiHookBridge.hasXposedBridge.not()) return yLoggerW(msg = "You can only use hook ClassLoader method in Xposed Environment")
+        classLoaderCallbacks[loader.hashCode()] = result
+        if (isClassLoaderHooked) return
         runCatching {
             YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringType, BooleanType) }, object : YukiMemberHook() {
                 override fun afterHookedMember(param: Param) {
-                    if (param.instance?.javaClass?.name == loader?.javaClass?.name)
-                        (param.result as? Class<*>?)?.also { result(it, param.args?.get(1) as? Boolean ?: false) }
+                    param.instance?.also { loader ->
+                        (param.result as? Class<*>?)?.also { classLoaderCallbacks[loader.hashCode()]?.invoke(it) }
+                    }
                 }
             })
+            isClassLoaderHooked = true
         }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
     }
 

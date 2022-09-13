@@ -37,6 +37,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -64,6 +65,18 @@ enum class MembersType {
     /** 全部 [Constructor] */
     CONSTRUCTOR
 }
+
+/**
+ * 监听当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法装载
+ *
+ * - ❗请注意只有当前 [ClassLoader] 有主动使用 [ClassLoader.loadClass] 事件时才能被捕获
+ *
+ * - ❗这是一个实验性功能 - 一般情况下不会用到此方法 - 不保证不会发生错误
+ *
+ * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * @param result 回调 - ([Class] 实例对象)
+ */
+fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit) = AppParasitics.hookClassLoader(loader = this, result)
 
 /**
  * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
