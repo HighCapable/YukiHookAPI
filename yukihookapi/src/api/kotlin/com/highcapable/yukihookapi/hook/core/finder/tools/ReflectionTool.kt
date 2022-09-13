@@ -503,6 +503,7 @@ internal object ReflectionTool {
      * @param compare 用于比较的数组
      * @param original 方法、构造方法原始数组
      * @return [Boolean] 是否相等
+     * @throws IllegalStateException 如果 [VagueType] 配置不正确
      */
     private fun paramTypesEq(compare: Array<out Any>?, original: Array<out Any>?): Boolean {
         return when {
