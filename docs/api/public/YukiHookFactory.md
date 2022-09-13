@@ -132,6 +132,8 @@ fun Resources.injectModuleAppResources()
 
 注入的资源作用域仅限当前 `Context` 或 `Resources`，你需要在每个用到宿主 `Context` 或 `Resources` 的地方重复调用此方法进行注入才能使用。
 
+!> 只能在 (Xposed) 宿主环境使用此功能，其它环境下使用将不生效且会打印警告信息。
+
 ### Context.registerModuleAppActivities *- ext-method*
 
 ```kotlin
@@ -151,6 +153,8 @@ fun Context.registerModuleAppActivities(proxy: Any?)
 使用此方法会在未注册的 `Activity` 在 Hook APP (宿主) 中启动时自动调用 `injectModuleAppResources` 注入当前 Xposed 模块的资源。
 
 你要将需要在宿主启动的 `Activity` 继承于 `ModuleAppActivity` 或 `ModuleAppCompatActivity`。
+
+!> 只能在 (Xposed) 宿主环境使用此功能，其它环境下使用将不生效且会打印警告信息。
 
 ### Context.applyModuleTheme *- ext-method*
 
