@@ -23,35 +23,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/9/4.
+ * This file is Created by fankes on 2022/9/14.
  */
-package com.highcapable.yukihookapi.hook.core.finder.members.data
+package com.highcapable.yukihookapi.hook.core.finder.type.factory
 
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.IntConditions
-import java.lang.reflect.Constructor
+import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 
-/**
- * [Constructor] 规则查询数据类
- * @param paramTypes 参数类型数组
- * @param paramCount 参数个数
- * @param paramCountRange 参数个数范围
- * @param paramCountConditions 参数个数条件
- */
-@PublishedApi
-internal class ConstructorRulesData internal constructor(
-    var paramTypes: Array<out Class<*>>? = null,
-    var paramCount: Int = -1,
-    var paramCountRange: IntRange = IntRange.EMPTY,
-    var paramCountConditions: IntConditions? = null
-) : MemberRulesData() {
+/** 定义 [FieldFinder] 方法体类型 */
+internal typealias FieldConditions = FieldFinder.() -> Unit
 
-    override val objectName get() = "Constructor"
+/** 定义 [MethodFinder] 方法体类型 */
+internal typealias MethodConditions = MethodFinder.() -> Unit
 
-    override val isInitialize
-        get() = super.isInitializeOfSuper || paramTypes != null || paramCount >= 0 ||
-                paramCountRange.isEmpty().not() || paramCountConditions != null
+/** 定义 [ConstructorFinder] 方法体类型 */
+internal typealias ConstructorConditions = ConstructorFinder.() -> Unit
 
-    override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
-
-    override fun toString() = "[$paramTypes][$paramCount][$paramCountRange]"
-}
+/** 定义 [Int] 方法体类型 */
+internal typealias IntConditions = (Int) -> Boolean

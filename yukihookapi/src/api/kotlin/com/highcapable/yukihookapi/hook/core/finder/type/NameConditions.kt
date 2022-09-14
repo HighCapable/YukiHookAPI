@@ -29,7 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.type
 
-import com.highcapable.yukihookapi.hook.utils.IntConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.IntConditions
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method

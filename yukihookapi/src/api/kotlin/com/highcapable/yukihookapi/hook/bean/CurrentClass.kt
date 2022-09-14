@@ -31,8 +31,8 @@ package com.highcapable.yukihookapi.hook.bean
 
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.factory.FieldConditions
-import com.highcapable.yukihookapi.hook.factory.MethodConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 

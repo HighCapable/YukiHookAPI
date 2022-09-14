@@ -36,21 +36,15 @@ import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ConstructorConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
-
-/** 定义 [FieldFinder] 方法体类型 */
-internal typealias FieldConditions = FieldFinder.() -> Unit
-
-/** 定义 [MethodFinder] 方法体类型 */
-internal typealias MethodConditions = MethodFinder.() -> Unit
-
-/** 定义 [ConstructorFinder] 方法体类型 */
-internal typealias ConstructorConditions = ConstructorFinder.() -> Unit
 
 /**
  * 定义一个 [Class] 中的 [Member] 类型
@@ -144,6 +138,7 @@ inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyPara
  * 查询 [Member] 中匹配的描述符
  * @param initiate 方法体
  * @return [Boolean] 是否存在
+ * todo 这个也要改
  */
 inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
 
@@ -151,6 +146,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRul
  * 查询 [Class] 中匹配的描述符
  * @param initiate 方法体
  * @return [Boolean] 是否存在
+ * todo 这个也要改
  */
 inline fun Class<*>.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
 

@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
-import com.highcapable.yukihookapi.hook.factory.FieldConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
