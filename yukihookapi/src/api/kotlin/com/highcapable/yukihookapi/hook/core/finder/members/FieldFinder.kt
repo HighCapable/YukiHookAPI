@@ -36,10 +36,10 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
-import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
@@ -103,11 +103,11 @@ class FieldFinder @PublishedApi internal constructor(
      * - 可不设置筛选条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param initiate 方法体
+     * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
-    inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
-        rulesData.modifiers = ModifierRules().apply(initiate)
+    fun modifiers(conditions: ModifierConditions): IndexTypeCondition {
+        rulesData.modifiers = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -137,11 +137,11 @@ class FieldFinder @PublishedApi internal constructor(
      * - ❗若不填写名称则必须存在一个其它条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param initiate 方法体
+     * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
-    inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition {
-        rulesData.nameConditions = NameConditions().apply(initiate)
+    fun name(conditions: NameConditions): IndexTypeCondition {
+        rulesData.nameConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 

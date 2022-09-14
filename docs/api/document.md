@@ -70,7 +70,7 @@
 
 [filename](public/ModifierRules.md ':include')
 
-[filename](public/NameConditions.md ':include')
+[filename](public/NameRules.md ':include')
 
 [filename](public/HookClass.md ':include')
 

@@ -1,16 +1,16 @@
-## ModifierRules *- class*
+## NameRules *- class*
 
 ```kotlin
-class ModifierRules private constructor()
+class NameRules private constructor()
 ```
 
 **变更记录**
 
-`v1.0.67` `新增`
+`v1.0.88` `新增`
 
 `v1.0.93` `修改`
 
-新增 `Class` 的描述符判断
+`NameConditions` 更名为 `NameRules`
 
 作为 lambda 整体判断条件使用
 

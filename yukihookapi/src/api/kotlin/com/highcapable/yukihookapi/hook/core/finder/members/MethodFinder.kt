@@ -35,16 +35,16 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
-import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.IntConditions
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import com.highcapable.yukihookapi.hook.utils.unit
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
@@ -120,11 +120,11 @@ class MethodFinder @PublishedApi internal constructor(
      * - 可不设置筛选条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param initiate 方法体
+     * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
-    inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition {
-        rulesData.modifiers = ModifierRules().apply(initiate)
+    fun modifiers(conditions: ModifierConditions): IndexTypeCondition {
+        rulesData.modifiers = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -194,11 +194,11 @@ class MethodFinder @PublishedApi internal constructor(
      * - ❗若不填写名称则必须存在一个其它条件
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param initiate 方法体
+     * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
-    inline fun name(initiate: NameConditions.() -> Unit): IndexTypeCondition {
-        rulesData.nameConditions = NameConditions().apply(initiate)
+    fun name(conditions: NameConditions): IndexTypeCondition {
+        rulesData.nameConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 
@@ -246,14 +246,14 @@ class MethodFinder @PublishedApi internal constructor(
      * 使用示例如下 ↓
      *
      * ```kotlin
-     * paramCount { it > 5 && it != 0 }
+     * paramCount { it >= 5 || it.isZero() }
      * ```
      *
      * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
-    fun paramCount(conditions: IntConditions): IndexTypeCondition {
+    fun paramCount(conditions: CountConditions): IndexTypeCondition {
         rulesData.paramCountConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }

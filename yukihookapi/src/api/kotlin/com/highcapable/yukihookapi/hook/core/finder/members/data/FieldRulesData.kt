@@ -27,7 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
-import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import java.lang.reflect.Field
 
 /**

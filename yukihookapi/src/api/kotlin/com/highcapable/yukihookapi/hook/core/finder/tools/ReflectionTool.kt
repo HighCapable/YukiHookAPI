@@ -28,7 +28,6 @@
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
-import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
@@ -107,8 +106,8 @@ internal object ReflectionTool {
                 var iNameCds = -1
                 val iLType = type?.let(matchIndex) { e -> declares.filter { e == it.type }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
-                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it.name) }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e(it.cast()) }.lastIndex } ?: -1
+                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { it.name.let { n -> e(n.cast(), n) } }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         type?.also {
@@ -124,13 +123,13 @@ internal object ReflectionTool {
                             })
                         }
                         modifiers?.also {
-                            and(it.contains(instance).let { hold ->
+                            and(it(instance.cast()).let { hold ->
                                 if (hold) iModify++
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
                         nameConditions?.also {
-                            and(it.contains(instance.name).let { hold ->
+                            and(instance.name.let { n -> it(n.cast(), n) }.let { hold ->
                                 if (hold) iNameCds++
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
@@ -171,11 +170,11 @@ internal object ReflectionTool {
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
                 val iLParamCountCds = paramCountConditions
-                    ?.let(matchIndex) { e -> declares.filter { e(it.parameterTypes.size) }.lastIndex } ?: -1
+                    ?.let(matchIndex) { e -> declares.filter { it.parameterTypes.size.let { s -> e(s.cast(), s) } }.lastIndex } ?: -1
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
-                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { e.contains(it.name) }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e(it.cast()) }.lastIndex } ?: -1
+                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { it.name.let { n -> e(n.cast(), n) } }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         name.takeIf { it.isNotBlank() }?.also {
@@ -203,7 +202,7 @@ internal object ReflectionTool {
                             })
                         }
                         paramCountConditions?.also {
-                            and(it(instance.parameterTypes.size).let { hold ->
+                            and(instance.parameterTypes.size.let { s -> it(s.cast(), s) }.let { hold ->
                                 if (hold) iParamCountCds++
                                 hold && matchIndex.compare(iParamCountCds, iLParamCountCds)
                             })
@@ -215,13 +214,13 @@ internal object ReflectionTool {
                             })
                         }
                         modifiers?.also {
-                            and(it.contains(instance).let { hold ->
+                            and(it(instance.cast()).let { hold ->
                                 if (hold) iModify++
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
                         nameConditions?.also {
-                            and(it.contains(instance.name).let { hold ->
+                            and(instance.name.let { n -> it(n.cast(), n) }.let { hold ->
                                 if (hold) iNameCds++
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
@@ -257,9 +256,9 @@ internal object ReflectionTool {
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
                 val iLParamCountCds = paramCountConditions
-                    ?.let(matchIndex) { e -> declares.filter { e(it.parameterTypes.size) }.lastIndex } ?: -1
+                    ?.let(matchIndex) { e -> declares.filter { it.parameterTypes.size.let { s -> e(s.cast(), s) } }.lastIndex } ?: -1
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e.contains(it) }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e(it.cast()) }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         paramCount.takeIf { it >= 0 }?.also {
@@ -275,7 +274,7 @@ internal object ReflectionTool {
                             })
                         }
                         paramCountConditions?.also {
-                            and(it(instance.parameterTypes.size).let { hold ->
+                            and(instance.parameterTypes.size.let { s -> it(s.cast(), s) }.let { hold ->
                                 if (hold) iParamCountCds++
                                 hold && matchIndex.compare(iParamCountCds, iLParamCountCds)
                             })
@@ -287,7 +286,7 @@ internal object ReflectionTool {
                             })
                         }
                         modifiers?.also {
-                            and(it.contains(instance).let { hold ->
+                            and(it(instance.cast()).let { hold ->
                                 if (hold) iModify++
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
@@ -332,7 +331,6 @@ internal object ReflectionTool {
             is FieldRulesData -> isInitialize.not()
             is MethodRulesData -> isInitialize.not()
             is ConstructorRulesData -> isInitialize.not()
-            is ClassRulesData -> isInitialize.not()
             else -> true
         }.takeIf { it }?.also { error("You must set a condition when finding a $objectName") }
         return result(this)
@@ -373,33 +371,33 @@ internal object ReflectionTool {
     private fun BaseRulesData.throwNotFoundError(instanceSet: Any?): Nothing = when (this) {
         is FieldRulesData -> throw createException(
             instanceSet, name = "Field",
-            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}]",
+            name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
             nameConditions?.let { "nameConditions:$it" } ?: "",
-            "type:[${type ?: "unspecified"}]",
-            "modifiers:${modifiers ?: "[]"}",
+            type?.let { "type:[$it]" } ?: "",
+            modifiers?.let { "modifiers:[existed]" } ?: "",
             orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
             matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
         )
         is MethodRulesData -> throw createException(
             instanceSet, name = "Method",
-            "name:[${name.takeIf { it.isNotBlank() } ?: "unspecified"}]",
+            name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
             nameConditions?.let { "nameConditions:$it" } ?: "",
-            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}]",
-            "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}]",
-            "paramCountConditions:[${paramCountConditions?.let { "existed" } ?: "unspecified"}]",
-            "paramTypes:[${paramTypes.typeOfString()}]",
-            "returnType:[${returnType ?: "unspecified"}]",
-            "modifiers:${modifiers ?: "[]"}",
+            paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
+            paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
+            paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
+            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "",
+            returnType?.let { "returnType:[$it]" } ?: "",
+            modifiers?.let { "modifiers:[existed]" } ?: "",
             orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
             matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
         )
         is ConstructorRulesData -> throw createException(
             instanceSet, name = "Constructor",
-            "paramCount:[${paramCount.takeIf { it >= 0 } ?: "unspecified"}]",
-            "paramCountRange:[${paramCountRange.takeIf { it.isEmpty().not() } ?: "unspecified"}]",
-            "paramCountConditions:[${paramCountConditions?.let { "existed" } ?: "unspecified"}]",
-            "paramTypes:[${paramTypes.typeOfString()}]",
-            "modifiers:${modifiers ?: "[]"}",
+            paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
+            paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
+            paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
+            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "",
+            modifiers?.let { "modifiers:[existed]" } ?: "",
             orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
             matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
         )

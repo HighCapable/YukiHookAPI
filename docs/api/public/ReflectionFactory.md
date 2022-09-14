@@ -369,7 +369,7 @@ inline fun Class<*>.hasConstructor(initiate: ConstructorConditions): Boolean
 ### Member.hasModifiers *- ext-method*
 
 ```kotlin
-inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
+inline fun Member.hasModifiers(conditions: ModifierConditions): Boolean
 ```
 
 **变更记录**
@@ -380,6 +380,10 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 
 将方法体进行 inline
 
+`v1.0.93` `修改`
+
+合并到 `ModifierConditions`
+
 **功能描述**
 
 > 查询 `Member` 中匹配的描述符。
@@ -387,7 +391,7 @@ inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
 ### Class.hasModifiers *- ext-method*
 
 ```kotlin
-inline fun Class<*>.hasModifiers(initiate: ModifierRules.() -> Unit): Boolean
+inline fun Class<*>.hasModifiers(conditions: ModifierConditions): Boolean
 ```
 
 **变更记录**

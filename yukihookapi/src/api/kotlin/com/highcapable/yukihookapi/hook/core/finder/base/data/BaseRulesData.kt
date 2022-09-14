@@ -27,21 +27,48 @@
  */
 package com.highcapable.yukihookapi.hook.core.finder.base.data
 
-import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import java.lang.reflect.Member
 
 /**
  * 这是 [Class] 与 [Member] 规则查询数据基本类实现
- * @param modifiers 描述符
+ * @param modifiers 描述符条件
  * @param orderIndex 字节码、数组顺序下标
  * @param matchIndex 字节码、数组筛选下标
  */
 @PublishedApi
 internal abstract class BaseRulesData internal constructor(
-    var modifiers: ModifierRules? = null,
+    var modifiers: ModifierConditions? = null,
     var orderIndex: Pair<Int, Boolean>? = null,
     var matchIndex: Pair<Int, Boolean>? = null
 ) {
+
+    /**
+     * [String] 转换为 [NameRules]
+     * @return [NameRules]
+     */
+    internal fun String.cast() = NameRules.with(this)
+
+    /**
+     * [Int] 转换为 [CountRules]
+     * @return [CountRules]
+     */
+    internal fun Int.cast() = CountRules.with(this)
+
+    /**
+     * [Class] 转换为 [ModifierRules]
+     * @return [ModifierRules]
+     */
+    internal fun Class<*>.cast() = ModifierRules.with(this)
+
+    /**
+     * [Member] 转换为 [ModifierRules]
+     * @return [ModifierRules]
+     */
+    internal fun Member.cast() = ModifierRules.with(this)
 
     /**
      * 获取规则对象名称

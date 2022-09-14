@@ -27,8 +27,8 @@
  */
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
-import com.highcapable.yukihookapi.hook.core.finder.type.NameConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.IntConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import java.lang.reflect.Method
 
 /**
@@ -48,7 +48,7 @@ internal class MethodRulesData internal constructor(
     var paramTypes: Array<out Class<*>>? = null,
     var paramCount: Int = -1,
     var paramCountRange: IntRange = IntRange.EMPTY,
-    var paramCountConditions: IntConditions? = null,
+    var paramCountConditions: CountConditions? = null,
     var returnType: Any? = null
 ) : MemberRulesData() {
 

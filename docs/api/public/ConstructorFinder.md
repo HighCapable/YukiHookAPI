@@ -43,7 +43,7 @@ var paramCount: Int
 ### modifiers *- method*
 
 ```kotlin
-inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
+fun modifiers(conditions: ModifierConditions): IndexTypeCondition
 ```
 
 **变更记录**
@@ -53,6 +53,10 @@ inline fun modifiers(initiate: ModifierRules.() -> Unit): IndexTypeCondition
 `v1.0.80` `修改`
 
 将方法体进行 inline
+
+`v1.0.93` `修改`
+
+合并到 `ModifierConditions`
 
 **功能描述**
 
@@ -141,7 +145,7 @@ fun paramCount(numRange: IntRange): IndexTypeCondition
 ### paramCount *- method*
 
 ```kotlin
-fun paramCount(conditions: IntConditions): IndexTypeCondition
+fun paramCount(conditions: CountConditions): IndexTypeCondition
 ```
 
 **变更记录**

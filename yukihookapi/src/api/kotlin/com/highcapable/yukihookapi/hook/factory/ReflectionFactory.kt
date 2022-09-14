@@ -31,14 +31,15 @@ package com.highcapable.yukihookapi.hook.factory
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
-import com.highcapable.yukihookapi.hook.core.finder.type.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ConstructorConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.lang.reflect.Constructor
@@ -136,19 +137,17 @@ inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyPara
 
 /**
  * 查询 [Member] 中匹配的描述符
- * @param initiate 方法体
+ * @param conditions 条件方法体
  * @return [Boolean] 是否存在
- * todo 这个也要改
  */
-inline fun Member.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
+inline fun Member.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(this))
 
 /**
  * 查询 [Class] 中匹配的描述符
- * @param initiate 方法体
+ * @param conditions 条件方法体
  * @return [Boolean] 是否存在
- * todo 这个也要改
  */
-inline fun Class<*>.hasModifiers(initiate: ModifierRules.() -> Unit) = ModifierRules().apply(initiate).contains(this)
+inline fun Class<*>.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(this))
 
 /**
  * 查找并得到变量

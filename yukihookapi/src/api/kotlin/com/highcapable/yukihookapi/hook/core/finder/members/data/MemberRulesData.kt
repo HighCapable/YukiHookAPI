@@ -28,7 +28,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.IntConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import java.lang.reflect.Member
 
 /**
@@ -43,7 +43,7 @@ internal open class MemberRulesData internal constructor(
     var isFindInSuper: Boolean = false,
     var matchCount: Int = -1,
     var matchCountRange: IntRange = IntRange.EMPTY,
-    var matchCountConditions: IntConditions? = null
+    var matchCountConditions: CountConditions? = null
 ) : BaseRulesData() {
 
     override val objectName get() = "Member"

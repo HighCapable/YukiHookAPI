@@ -25,29 +25,57 @@
  *
  * This file is Created by fankes on 2022/9/14.
  */
-package com.highcapable.yukihookapi.hook.core.finder.type.factory
+@file:Suppress("unused")
 
-import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
-import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
-import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
-import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
+package com.highcapable.yukihookapi.hook.core.finder.base.rules
 
-/** 定义 [FieldFinder] 方法体类型 */
-internal typealias FieldConditions = FieldFinder.() -> Unit
+import java.lang.reflect.Member
 
-/** 定义 [MethodFinder] 方法体类型 */
-internal typealias MethodConditions = MethodFinder.() -> Unit
+/**
+ * 这是一个模糊 [Class]、[Member] 数组 (下标) 个数条件实现类
+ *
+ * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
+ */
+class CountRules private constructor(private val instance: Int) {
 
-/** 定义 [ConstructorFinder] 方法体类型 */
-internal typealias ConstructorConditions = ConstructorFinder.() -> Unit
+    @PublishedApi
+    internal companion object {
 
-/** 定义 [NameRules] 方法体类型 */
-internal typealias NameConditions = NameRules.(String) -> Boolean
+        /**
+         * 创建实例
+         * @param instance 实例对象
+         * @return [CountRules]
+         */
+        @PublishedApi
+        internal fun with(instance: Int) = CountRules(instance)
+    }
 
-/** 定义 [CountRules] 方法体类型 */
-internal typealias CountConditions = CountRules.(Int) -> Boolean
+    /**
+     * 是否为 0
+     * @return [Boolean]
+     */
+    fun Int.isZero() = this == 0
 
-/** 定义 [ModifierRules] 方法体类型 */
-internal typealias ModifierConditions = ModifierRules.() -> Boolean
+    /**
+     * 大于 [count]
+     * @param count 目标对象
+     * @return [Boolean]
+     */
+    fun Int.moreThan(count: Int) = this > count
+
+    /**
+     * 小于 [count]
+     * @param count 目标对象
+     * @return [Boolean]
+     */
+    fun Int.lessThan(count: Int) = this < count
+
+    /**
+     * 在 [countRange] 区间 A ≤ this ≤ B
+     * @param countRange 区间
+     * @return [Boolean]
+     */
+    fun Int.inInterval(countRange: IntRange) = this in countRange
+
+    override fun toString() = "CountRules [$instance]"
+}
