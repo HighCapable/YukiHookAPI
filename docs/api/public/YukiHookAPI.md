@@ -376,7 +376,7 @@ var isEnableMemberCache: Boolean
 
 为防止 `Member` 复用过高造成的系统 GC 问题，此功能默认启用。
 
-启用后会缓存已经找到的 `Class`、`Method`、`Constructor`、`Field`。
+启用后会缓存已经找到的 `Method`、`Constructor`、`Field`。
 
 缓存的 `Member` 都将处于 `MemberCacheStore` 的全局静态实例中。
 
