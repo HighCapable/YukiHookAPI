@@ -1137,25 +1137,6 @@ encase {
 
 这种情况几乎不存在，除非模块被装载的宿主或目标 Xposed 框架自身存在问题，若真的发生了此问题，请携带详细日志进行反馈。
 
-!> `IllegalStateException` PackageParam got null appContext
-
-**异常原因**
-
-在 `PackageParam` 中调用了 `appContext` 变量但是无法获取到实例对象。
-
-> 示例如下
-
-```kotlin
-encase {
-    // 调用了此变量
-    appContext...
-}
-```
-
-**解决方案**
-
-`appContext` 在宿主环境初始化完成之前有大的概率可能是空的，请延迟获取或在宿主的 Hook 方法回调方法体内再使用此变量。
-
 !> `IllegalStateException` Current Hook Framework not support moduleAppResources
 
 **异常原因**
@@ -1174,23 +1155,6 @@ encase {
 **解决方案**
 
 `moduleAppResources` 需要当前 Hook Framework 支持 `initZygote` 功能，请检查后再试一次。
-
-!> `IllegalStateException` You cannot call to appResources in this time
-
-在 `PackageParam` 中调用了 `appResources` 变量但是无法获取到实例对象。
-
-> 示例如下
-
-```kotlin
-encase {
-    // 调用了此变量
-    appResources...
-}
-```
-
-**解决方案**
-
-`appResources` 不会在 `initZygote` 中装载，另外，这个功能需要当前 Hook Framework 支持并启用资源钩子(Resources Hook)功能，请检查后再试一次。
 
 !> `IllegalStateException` VariousClass match failed of those **CLASSES**
 
