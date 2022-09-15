@@ -88,19 +88,17 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 获取当前 Hook APP 的 [Application] 实例
      *
      * - ❗首次装载可能是空的 - 请延迟一段时间再获取或通过设置 [onAppLifecycle] 监听来完成
-     * @return [Application]
-     * @throws IllegalStateException 如果 [Application] 是空的
+     * @return [Application] or null
      */
-    val appContext get() = AppParasitics.hostApplication ?: YukiHookAppHelper.currentApplication() ?: error("PackageParam got null appContext")
+    val appContext get() = AppParasitics.hostApplication ?: YukiHookAppHelper.currentApplication()
 
     /**
      * 获取当前 Hook APP 的 Resources
      *
      * - ❗你只能在 [HookResources.hook] 方法体内或 [appContext] 装载完毕时进行调用
-     * @return [Resources]
-     * @throws IllegalStateException 如果当前处于 [loadZygote] 或 [appContext] 尚未加载
+     * @return [Resources] or null
      */
-    val appResources get() = wrapper?.appResources ?: appContext.resources ?: error("You cannot call to appResources in this time")
+    val appResources get() = wrapper?.appResources ?: appContext?.resources
 
     /**
      * 获取当前系统框架的 [Context]

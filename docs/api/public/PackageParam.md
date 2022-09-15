@@ -59,12 +59,16 @@ val appUserId: Int
 ### appContext *- field*
 
 ```kotlin
-val appContext: Application
+val appContext: Application?
 ```
 
 **变更记录**
 
 `v1.0.72` `新增`
+
+`v1.0.93` `修改`
+
+加入可空类型 (空安全)
 
 **功能描述**
 
@@ -75,12 +79,16 @@ val appContext: Application
 ### appResources *- field*
 
 ```kotlin
-val appResources：Resources
+val appResources：Resources?
 ```
 
 **变更记录**
 
 `v1.0.80` `新增`
+
+`v1.0.93` `修改`
+
+加入可空类型 (空安全)
 
 **功能描述**
 
