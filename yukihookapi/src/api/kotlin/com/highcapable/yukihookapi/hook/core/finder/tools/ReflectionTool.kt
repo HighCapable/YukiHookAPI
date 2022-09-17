@@ -371,38 +371,9 @@ internal object ReflectionTool {
      * @throws IllegalStateException 如果 [BaseRulesData] 的类型错误
      */
     private fun BaseRulesData.throwNotFoundError(instanceSet: Any?): Nothing = when (this) {
-        is FieldRulesData -> throw createException(
-            instanceSet, name = "Field",
-            name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
-            nameConditions?.let { "nameConditions:$it" } ?: "",
-            type?.let { "type:[$it]" } ?: "",
-            modifiers?.let { "modifiers:[existed]" } ?: "",
-            orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
-            matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
-        )
-        is MethodRulesData -> throw createException(
-            instanceSet, name = "Method",
-            name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
-            nameConditions?.let { "nameConditions:$it" } ?: "",
-            paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
-            paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
-            paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
-            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "",
-            returnType?.let { "returnType:[$it]" } ?: "",
-            modifiers?.let { "modifiers:[existed]" } ?: "",
-            orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
-            matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
-        )
-        is ConstructorRulesData -> throw createException(
-            instanceSet, name = "Constructor",
-            paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
-            paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
-            paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
-            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "",
-            modifiers?.let { "modifiers:[existed]" } ?: "",
-            orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
-            matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
-        )
+        is FieldRulesData -> throw createException(instanceSet, objectName, *templates)
+        is MethodRulesData -> throw createException(instanceSet, objectName, *templates)
+        is ConstructorRulesData -> throw createException(instanceSet, objectName, *templates)
         else -> error("Type [$this] not allowed")
     }
 
@@ -482,21 +453,6 @@ internal object ReflectionTool {
         get() = runCatching { declaredConstructors }.onFailure {
             yLoggerW(msg = "Failed to get the declared Constructors in [$this] because got an exception\n$it")
         }.getOrNull()
-
-    /**
-     * 获取参数数组文本化内容
-     * @return [String]
-     */
-    private fun Array<out Class<*>>?.typeOfString() =
-        StringBuilder("(").also { sb ->
-            var isFirst = true
-            if (this == null || isEmpty()) return "()"
-            forEach {
-                if (isFirst) isFirst = false else sb.append(",")
-                sb.append(it.canonicalName)
-            }
-            sb.append(")")
-        }.toString()
 
     /**
      * 判断两个方法、构造方法类型数组是否相等

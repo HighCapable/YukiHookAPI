@@ -45,14 +45,28 @@ class ModifierRules private constructor(private val instance: Any) {
     @PublishedApi
     internal companion object {
 
+        /** 当前实例数组 */
+        private val instances = HashMap<Long, ModifierRules>()
+
+        /**
+         * 获取模板字符串数组
+         * @param value 唯一标识值
+         * @return [ArrayList]<[String]>
+         */
+        internal fun templates(value: Long) = instances[value]?.templates ?: arrayListOf()
+
         /**
          * 创建实例
          * @param instance 实例对象
+         * @param value 唯一标识值 - 默认 0
          * @return [ModifierRules]
          */
         @PublishedApi
-        internal fun with(instance: Any) = ModifierRules(instance)
+        internal fun with(instance: Any, value: Long = 0) = ModifierRules(instance).apply { instances[value] = this }
     }
+
+    /** 当前模板字符串数组 */
+    private val templates = ArrayList<String>()
 
     /**
      * [Class]、[Member] 类型是否包含 public
@@ -64,7 +78,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isPublic get() = Modifier.isPublic(modifiers)
+    val isPublic get() = Modifier.isPublic(modifiers).also { templates.add("<isPublic> ($it)") }
 
     /**
      * [Class]、[Member] 类型是否包含 private
@@ -76,7 +90,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isPrivate get() = Modifier.isPrivate(modifiers)
+    val isPrivate get() = Modifier.isPrivate(modifiers).also { templates.add("<isPrivate> ($it)") }
 
     /**
      * [Class]、[Member] 类型是否包含 protected
@@ -88,7 +102,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isProtected get() = Modifier.isProtected(modifiers)
+    val isProtected get() = Modifier.isProtected(modifiers).also { templates.add("<isProtected> ($it)") }
 
     /**
      * [Class]、[Member] 类型是否包含 static
@@ -104,7 +118,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * - ❗注意 Kotlin → Jvm 后的 object 类中的方法并不是静态的
      * @return [Boolean]
      */
-    val isStatic get() = Modifier.isStatic(modifiers)
+    val isStatic get() = Modifier.isStatic(modifiers).also { templates.add("<isStatic> ($it)") }
 
     /**
      * [Class]、[Member] 类型是否包含 final
@@ -118,7 +132,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * - ❗注意 Kotlin → Jvm 后没有 open 标识的 [Class]、[Member] 和没有任何关联的 [Class]、[Member] 都将为 final
      * @return [Boolean]
      */
-    val isFinal get() = Modifier.isFinal(modifiers)
+    val isFinal get() = Modifier.isFinal(modifiers).also { templates.add("<isFinal> ($it)") }
 
     /**
      * [Class]、[Member] 类型是否包含 synchronized
@@ -130,7 +144,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isSynchronized get() = Modifier.isSynchronized(modifiers)
+    val isSynchronized get() = Modifier.isSynchronized(modifiers).also { templates.add("<isSynchronized> ($it)") }
 
     /**
      * [Field] 类型是否包含 volatile
@@ -142,7 +156,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isVolatile get() = Modifier.isVolatile(modifiers)
+    val isVolatile get() = Modifier.isVolatile(modifiers).also { templates.add("<isVolatile> ($it)") }
 
     /**
      * [Field] 类型是否包含 transient
@@ -154,7 +168,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isTransient get() = Modifier.isTransient(modifiers)
+    val isTransient get() = Modifier.isTransient(modifiers).also { templates.add("<isTransient> ($it)") }
 
     /**
      * [Method] 类型是否包含 native
@@ -168,7 +182,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isNative get() = Modifier.isNative(modifiers)
+    val isNative get() = Modifier.isNative(modifiers).also { templates.add("<isNative> ($it)") }
 
     /**
      * [Class] 类型是否包含 interface
@@ -180,7 +194,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isInterface get() = Modifier.isInterface(modifiers)
+    val isInterface get() = Modifier.isInterface(modifiers).also { templates.add("<isInterface> ($it)") }
 
     /**
      * [Class]、[Member] 类型是否包含 abstract
@@ -194,7 +208,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isAbstract get() = Modifier.isAbstract(modifiers)
+    val isAbstract get() = Modifier.isAbstract(modifiers).also { templates.add("<isAbstract> ($it)") }
 
     /**
      * [Class]、[Member] 类型是否包含 strictfp
@@ -206,7 +220,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
-    val isStrict get() = Modifier.isStrict(modifiers)
+    val isStrict get() = Modifier.isStrict(modifiers).also { templates.add("<isStrict> ($it)") }
 
     /**
      * 获取当前对象的类型描述符

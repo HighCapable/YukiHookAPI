@@ -45,6 +45,14 @@ internal class ConstructorRulesData internal constructor(
     var paramCountConditions: CountConditions? = null
 ) : MemberRulesData() {
 
+    override val templates
+        get() = arrayOf(
+            paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
+            paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
+            paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
+            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "", *super.templates
+        )
+
     override val objectName get() = "Constructor"
 
     override val isInitialize

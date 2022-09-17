@@ -52,6 +52,17 @@ internal class MethodRulesData internal constructor(
     var returnType: Any? = null
 ) : MemberRulesData() {
 
+    override val templates
+        get() = arrayOf(
+            name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
+            nameConditions?.let { "nameConditions:$it" } ?: "",
+            paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
+            paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
+            paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
+            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "",
+            returnType?.let { "returnType:[$it]" } ?: "", *super.templates
+        )
+
     override val objectName get() = "Method"
 
     override val isInitialize

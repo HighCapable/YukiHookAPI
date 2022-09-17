@@ -31,6 +31,7 @@ import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Member
 
 /**
@@ -45,6 +46,13 @@ internal abstract class BaseRulesData internal constructor(
     var orderIndex: Pair<Int, Boolean>? = null,
     var matchIndex: Pair<Int, Boolean>? = null
 ) {
+
+    /** 当前类唯一标识值 */
+    internal var uniqueValue = 0L
+
+    init {
+        uniqueValue = System.currentTimeMillis()
+    }
 
     /**
      * [String] 转换为 [NameRules]
@@ -62,13 +70,34 @@ internal abstract class BaseRulesData internal constructor(
      * [Class] 转换为 [ModifierRules]
      * @return [ModifierRules]
      */
-    internal fun Class<*>.cast() = ModifierRules.with(this)
+    internal fun Class<*>.cast() = ModifierRules.with(instance = this, uniqueValue)
 
     /**
      * [Member] 转换为 [ModifierRules]
      * @return [ModifierRules]
      */
-    internal fun Member.cast() = ModifierRules.with(this)
+    internal fun Member.cast() = ModifierRules.with(instance = this, uniqueValue)
+
+    /**
+     * 获取参数数组文本化内容
+     * @return [String]
+     */
+    internal fun Array<out Class<*>>?.typeOfString() =
+        StringBuilder("(").also { sb ->
+            var isFirst = true
+            if (this == null || isEmpty()) return "()"
+            forEach {
+                if (isFirst) isFirst = false else sb.append(", ")
+                sb.append(it.takeIf { it.canonicalName != VagueType.canonicalName }?.canonicalName ?: "*vague*")
+            }
+            sb.append(")")
+        }.toString()
+
+    /**
+     * 获取规则对象模板字符串数组
+     * @return [Array]<[String]>
+     */
+    internal abstract val templates: Array<String>
 
     /**
      * 获取规则对象名称

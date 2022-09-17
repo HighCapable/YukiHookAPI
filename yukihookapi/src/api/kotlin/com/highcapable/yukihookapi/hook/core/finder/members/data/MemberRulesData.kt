@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import java.lang.reflect.Member
 
@@ -45,6 +46,13 @@ internal open class MemberRulesData internal constructor(
     var matchCountRange: IntRange = IntRange.EMPTY,
     var matchCountConditions: CountConditions? = null
 ) : BaseRulesData() {
+
+    override val templates
+        get() = arrayOf(
+            modifiers?.let { "modifiers:${ModifierRules.templates(uniqueValue)}" } ?: "",
+            orderIndex?.let { it.takeIf { it.second }?.let { e -> "orderIndex:[${e.first}]" } ?: "orderIndex:[last]" } ?: "",
+            matchIndex?.let { it.takeIf { it.second }?.let { e -> "matchIndex:[${e.first}]" } ?: "matchIndex:[last]" } ?: ""
+        )
 
     override val objectName get() = "Member"
 

@@ -43,6 +43,13 @@ internal class FieldRulesData internal constructor(
     var type: Any? = null
 ) : MemberRulesData() {
 
+    override val templates
+        get() = arrayOf(
+            name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
+            nameConditions?.let { "nameConditions:$it" } ?: "",
+            type?.let { "type:[$it]" } ?: "", *super.templates
+        )
+
     override val objectName get() = "Field"
 
     override val isInitialize get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || type != null

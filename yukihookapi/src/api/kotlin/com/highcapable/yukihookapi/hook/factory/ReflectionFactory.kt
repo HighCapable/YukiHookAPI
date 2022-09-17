@@ -140,14 +140,14 @@ inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyPara
  * @param conditions 条件方法体
  * @return [Boolean] 是否存在
  */
-inline fun Member.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(this))
+inline fun Member.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(instance = this))
 
 /**
  * 查询 [Class] 中匹配的描述符
  * @param conditions 条件方法体
  * @return [Boolean] 是否存在
  */
-inline fun Class<*>.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(this))
+inline fun Class<*>.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(instance = this))
 
 /**
  * 查找并得到变量
