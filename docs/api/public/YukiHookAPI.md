@@ -82,7 +82,7 @@ val isXposedEnvironment: Boolean
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -326,7 +326,7 @@ var isEnableHookSharedPreferences: Boolean
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 

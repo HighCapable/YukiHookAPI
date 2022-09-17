@@ -8,7 +8,7 @@ class ModifierRules private constructor()
 
 `v1.0.67` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `Class` 的描述符判断
 

@@ -8,7 +8,7 @@ class CurrentClass internal constructor(internal val classSet: Class<*>, interna
 
 `v1.0.70` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 调整了构造方法的参数名称
 
@@ -24,7 +24,7 @@ val name: String
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -38,7 +38,7 @@ val simpleName: String
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -108,7 +108,7 @@ val name: String
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -122,7 +122,7 @@ val simpleName: String
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 

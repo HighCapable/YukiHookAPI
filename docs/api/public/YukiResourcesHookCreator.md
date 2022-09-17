@@ -8,7 +8,7 @@ class YukiResourcesHookCreator(internal val packageParam: PackageParam, internal
 
 `v1.0.80` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 修正拼写错误的 **Creater** 命名到 **Creator**
 
@@ -62,7 +62,7 @@ inner class ResourcesHookCreator internal constructor(private val tag: String)
 
 `v1.0.80` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 移除 `packageName`
 
@@ -516,7 +516,7 @@ fun array()
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 

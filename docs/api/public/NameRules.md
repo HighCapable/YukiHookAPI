@@ -8,7 +8,7 @@ class NameRules private constructor()
 
 `v1.0.88` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 `NameConditions` 更名为 `NameRules`
 

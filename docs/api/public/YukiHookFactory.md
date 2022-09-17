@@ -122,7 +122,7 @@ fun Resources.injectModuleAppResources()
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -142,7 +142,7 @@ fun Context.registerModuleAppActivities(proxy: Any?)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -164,7 +164,7 @@ fun Context.applyModuleTheme(theme: Int, configuration: Configuration?): ModuleC
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 

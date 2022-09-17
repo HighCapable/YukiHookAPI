@@ -18,7 +18,7 @@ class YukiResForwarder private constructor(private val baseInstance: XResForward
 
 `v1.0.80` `新增`
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 不再对外公开 `instance` 参数
 

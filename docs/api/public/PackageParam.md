@@ -48,7 +48,7 @@ val appUserId: Int
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -66,7 +66,7 @@ val appContext: Application?
 
 `v1.0.72` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 加入可空类型 (空安全)
 
@@ -86,7 +86,7 @@ val appResources：Resources?
 
 `v1.0.80` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 加入可空类型 (空安全)
 
@@ -104,7 +104,7 @@ val systemContext: Context
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -442,7 +442,7 @@ fun loadHooker(hooker: YukiBaseHooker)
 
 `v1.0` `添加`
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 请转移到 `toClass(...)` 方法
 
@@ -452,7 +452,7 @@ fun loadHooker(hooker: YukiBaseHooker)
 
 `v1.0` `添加`
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 请转移到 `hasClass(...)` 方法
 
@@ -468,7 +468,7 @@ fun VariousClass.toClass(loader: ClassLoader?): Class<*>
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -522,7 +522,7 @@ fun String.hasClass(loader: ClassLoader?): Boolean
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -571,7 +571,7 @@ fun findClass(vararg name: String, loader: ClassLoader?): VariousClass
 
 移除了 ~~`findClass(various: VariousClass)`~~ 方法
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `loader` 参数
 
@@ -669,7 +669,7 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMembe
 
 将方法体进行 inline
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 移除了 ~~`isUseAppClassLoader`~~ 参数
 

@@ -12,7 +12,7 @@ class ConstructorFinder internal constructor(override val hookInstance: YukiMemb
 
 合并到 `BaseFinder`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 合并到 `MemberBaseFinder`
 
@@ -54,7 +54,7 @@ fun modifiers(conditions: ModifierConditions): IndexTypeCondition
 
 将方法体进行 inline
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 合并到 `ModifierConditions`
 
@@ -132,7 +132,7 @@ fun paramCount(numRange: IntRange): IndexTypeCondition
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -150,7 +150,7 @@ fun paramCount(conditions: CountConditions): IndexTypeCondition
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -234,7 +234,7 @@ fun onFind(initiate: HashSet<Constructor<*>>.() -> Unit)
 
 `v1.0.1` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 `initiate` 参数 `Constructor` 变为 `HashSet<Constructor>`
 
@@ -264,7 +264,7 @@ inner class Process internal constructor(internal val isNoSuch: Boolean, interna
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -278,7 +278,7 @@ inline fun result(initiate: Process.() -> Unit): Process
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -308,7 +308,7 @@ fun all(): Process
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -322,7 +322,7 @@ inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -357,7 +357,7 @@ inline fun onNoSuchConstructor(result: (Throwable) -> Unit): Result
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -375,7 +375,7 @@ inner class Result internal constructor(internal val isNoSuch: Boolean, internal
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 继承到接口 `BaseResult`
 
@@ -476,7 +476,7 @@ fun all(): ArrayList<Instance>
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -524,7 +524,7 @@ fun giveAll(): HashSet<Constructor<*>>
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -562,7 +562,7 @@ fun waitAll(initiate: ArrayList<Instance>.() -> Unit)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -641,7 +641,7 @@ fun ignored(): Result
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -657,7 +657,7 @@ fun ignored(): Result
 
 `v1.0.3` `新增`
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 请转移到新方法 `ignored()`
 
@@ -671,7 +671,7 @@ inner class Instance internal constructor(private val constructor: Constructor<*
 
 `v1.0.2` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `constructor` 参数
 

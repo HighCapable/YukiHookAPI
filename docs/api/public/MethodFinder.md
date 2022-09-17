@@ -12,7 +12,7 @@ class MethodFinder internal constructor(override val hookInstance: YukiMemberHoo
 
 合并到 `BaseFinder`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 合并到 `MemberBaseFinder`
 
@@ -88,7 +88,7 @@ fun modifiers(conditions: ModifierConditions): IndexTypeCondition
 
 将方法体进行 inline
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 合并到 `ModifierConditions`
 
@@ -180,7 +180,7 @@ fun name(conditions: NameConditions): IndexTypeCondition
 
 `v1.0.88` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 合并到 `NameConditions`
 
@@ -220,7 +220,7 @@ fun paramCount(numRange: IntRange): IndexTypeCondition
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -238,7 +238,7 @@ fun paramCount(conditions: CountConditions): IndexTypeCondition
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -340,7 +340,7 @@ fun onFind(initiate: HashSet<Method>.() -> Unit)
 
 `v1.0.1` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 `initiate` 参数 `Method` 变为 `HashSet<Method>`
 
@@ -370,7 +370,7 @@ inner class Process internal constructor(internal val isNoSuch: Boolean, interna
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -384,7 +384,7 @@ inline fun result(initiate: Process.() -> Unit): Process
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -414,7 +414,7 @@ fun all(): Process
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -428,7 +428,7 @@ inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -463,7 +463,7 @@ inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -481,7 +481,7 @@ inner class Result internal constructor(internal val isNoSuch: Boolean, private 
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 继承到接口 `BaseResult`
 
@@ -572,7 +572,7 @@ fun all(instance: Any?): ArrayList<Instance>
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -620,7 +620,7 @@ fun giveAll(): HashSet<Method>
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -658,7 +658,7 @@ fun waitAll(instance: Any?, initiate: ArrayList<Instance>.() -> Unit)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -737,7 +737,7 @@ fun ignored(): Result
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -753,7 +753,7 @@ fun ignored(): Result
 
 `v1.0.3` `新增`
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 请转移到新方法 `ignored()`
 
@@ -767,7 +767,7 @@ inner class Instance internal constructor(private val instance: Any?, private va
 
 `v1.0.2` `新增`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `method` 参数
 
@@ -783,7 +783,7 @@ fun original(): Instance
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 

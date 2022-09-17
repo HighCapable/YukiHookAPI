@@ -16,7 +16,7 @@ enum class LoggerType
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -32,7 +32,7 @@ LOGD
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -46,7 +46,7 @@ XPOSEDBRIDGE
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -62,7 +62,7 @@ SCOPE
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -80,7 +80,7 @@ BOTH
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -100,7 +100,7 @@ fun loggerD(tag: String, msg: String, type: LoggerType)
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `type` 参数
 
@@ -120,7 +120,7 @@ fun loggerI(tag: String, msg: String, type: LoggerType)
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `type` 参数
 
@@ -140,7 +140,7 @@ fun loggerW(tag: String, msg: String, type: LoggerType)
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `type` 参数
 
@@ -160,7 +160,7 @@ fun loggerE(tag: String, msg: String, e: Throwable?, type: LoggerType)
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `type` 参数
 

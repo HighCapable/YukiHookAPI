@@ -6,7 +6,7 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -22,7 +22,7 @@ fun applyConfiguration(initiate: Configuration.() -> Unit): ModuleContextThemeWr
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 

@@ -12,7 +12,7 @@ class YukiMemberHookCreator(internal val packageParam: PackageParam, internal va
 
 对 `hookClass` 进行 inline 处理
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 修正拼写错误的 **Creater** 命名到 **Creator**
 
@@ -142,7 +142,7 @@ fun useDangerousOperation(option: String)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -174,7 +174,7 @@ inner class MemberHookCreator internal constructor(private val priority: Int, in
 
 增加 `packageName` 当前 Hook 的 APP 包名
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 移除 `packageName`
 
@@ -190,7 +190,7 @@ inner class MemberHookCreator internal constructor(private val priority: Int, in
 
 `v1.0` `添加`
 
-`v1.0.93` `移除`
+`v1.1.0` `移除`
 
 请转移到 `members`
 
@@ -202,7 +202,7 @@ fun members(vararg member: Member?)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -246,7 +246,7 @@ injectMember {
 
 `v1.0` `添加`
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 请使用 `method { name = /** name */ }.all()` 来取代它
 
@@ -256,7 +256,7 @@ injectMember {
 
 `v1.0` `添加`
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 请使用 `allMembers(MembersType.CONSTRUCTOR)` 来取代它
 
@@ -268,7 +268,7 @@ fun allMembers(type: MembersType)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -480,7 +480,7 @@ fun beforeHook(initiate: HookParam.() -> Unit): HookCallback
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `HookCallback` 返回类型
 
@@ -498,7 +498,7 @@ fun afterHook(initiate: HookParam.() -> Unit): HookCallback
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 新增 `HookCallback` 返回类型
 
@@ -606,7 +606,7 @@ fun removeSelf(result: (Boolean) -> Unit)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -622,7 +622,7 @@ inner class HookCallback internal constructor()
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -636,7 +636,7 @@ fun onFailureThrowToApp()
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -868,7 +868,7 @@ fun remove(result: (Boolean) -> Unit)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 

@@ -8,7 +8,7 @@ class HookClass internal constructor(internal var instance: Class<*>?, internal 
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 `HookClass` 相关功能不再对外开放
 

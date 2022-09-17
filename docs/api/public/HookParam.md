@@ -8,11 +8,11 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 移动 `HookParamWrapper` 到 `YukiHookCallback.Param`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 修正拼写错误的 **creater** 命名到 **creator**
 
@@ -94,7 +94,7 @@ val member: Member
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -152,7 +152,7 @@ val hasThrowable: Boolean
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -166,7 +166,7 @@ val throwable: Throwable?
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -180,7 +180,7 @@ fun Throwable.throwToApp()
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -371,7 +371,7 @@ fun <T> callOriginal(): T?
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -419,7 +419,7 @@ fun <T> invokeOriginal(vararg args: Any?): T?
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 不再需要使用 `member.invokeOriginal` 进行调用
 

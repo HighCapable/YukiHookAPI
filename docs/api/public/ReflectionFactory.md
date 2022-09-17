@@ -16,7 +16,7 @@ enum class MembersType
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -30,7 +30,7 @@ ALL
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -44,7 +44,7 @@ METHOD
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -58,7 +58,7 @@ CONSTRUCTOR
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -72,7 +72,7 @@ fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit)
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -133,7 +133,7 @@ customClassLoader?.onLoadClass { clazz ->
 
 `v1.0` `添加`
 
-`v1.0.93` `移除`
+`v1.1.0` `移除`
 
 `HookClass` 相关功能不再对外开放
 
@@ -143,7 +143,7 @@ customClassLoader?.onLoadClass { clazz ->
 
 `v1.0` `添加`
 
-`v1.0.93` `移除`
+`v1.1.0` `移除`
 
 `HookClass` 相关功能不再对外开放
 
@@ -153,7 +153,7 @@ customClassLoader?.onLoadClass { clazz ->
 
 `v1.0` `添加`
 
-`v1.0.93` `移除`
+`v1.1.0` `移除`
 
 请直接使用 `hasClass()` 无参方法
 
@@ -177,7 +177,7 @@ val Class<*>.hasExtends: Boolean
 
 `v1.0` `添加`
 
-`v1.0.93` `移除`
+`v1.1.0` `移除`
 
 请转到 `toClass(...)` 方法
 
@@ -189,7 +189,7 @@ fun String.toClass(loader: ClassLoader?): Class<*>
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -222,7 +222,7 @@ inline fun <reified T> classOf(loader: ClassLoader?): Class<*>
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -265,7 +265,7 @@ fun String.hasClass(loader: ClassLoader?): Boolean
 
 `v1.0` `添加`
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 支持直接使用空参数方法使用默认 `ClassLoader` 进行判断
 
@@ -380,7 +380,7 @@ inline fun Member.hasModifiers(conditions: ModifierConditions): Boolean
 
 将方法体进行 inline
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 合并到 `ModifierConditions`
 
@@ -396,7 +396,7 @@ inline fun Class<*>.hasModifiers(conditions: ModifierConditions): Boolean
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -544,7 +544,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean, initiate: CurrentClass.
 
 `v1.0.70` `新增`
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 新增 `ignored` 参数，可以忽略在 `CurrentClass` 中出现的异常
 
@@ -564,7 +564,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean, initiate: CurrentClass.
 
 将方法体进行 inline
 
-`v1.0.93` `作废`
+`v1.1.0` `作废`
 
 请转移到 `buildOf` 方法
 
@@ -586,7 +586,7 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditi
 
 将方法体进行 inline
 
-`v1.0.93` `修改`
+`v1.1.0` `修改`
 
 加入无泛型方法 `buildOf`
 

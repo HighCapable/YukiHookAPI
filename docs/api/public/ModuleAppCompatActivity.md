@@ -6,7 +6,7 @@ open class ModuleAppCompatActivity : AppCompatActivity()
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
@@ -26,7 +26,7 @@ open val moduleTheme: Int
 
 **变更记录**
 
-`v1.0.93` `新增`
+`v1.1.0` `新增`
 
 **功能描述**
 
