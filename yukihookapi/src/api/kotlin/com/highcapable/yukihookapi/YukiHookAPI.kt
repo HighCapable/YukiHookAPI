@@ -259,7 +259,7 @@ object YukiHookAPI {
          *
          * 推荐使用 [MethodFinder]、[ConstructorFinder]、[FieldFinder] 来获取 [Member]
          *
-         * 详情请参考 [API 文档](https://fankes.github.io/YukiHookAPI/#/api/home)
+         * 详情请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
          *
          * 除非缓存的 [Member] 发生了混淆的问题 - 例如使用 R8 混淆后的 APP 的目标 [Member] - 否则建议启用
          */
@@ -280,7 +280,7 @@ object YukiHookAPI {
     /**
      * 配置 [YukiHookAPI] 相关参数
      *
-     * 详情请参考 [configs 方法](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=configs-%e6%96%b9%e6%b3%95)
+     * 详情请参考 [configs 方法](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#configs-%E6%96%B9%E6%B3%95)
      * @param initiate 方法体
      */
     inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
@@ -288,9 +288,9 @@ object YukiHookAPI {
     /**
      * 作为模块装载调用入口方法 - Xposed API
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/#/api/home)
+     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      *
-     * 配置请参考 [通过 Lambda 创建](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=%e9%80%9a%e8%bf%87-lambda-%e5%88%9b%e5%bb%ba)
+     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
      * @param initiate Hook 方法体
      */
     fun encase(initiate: PackageParam.() -> Unit) {
@@ -303,9 +303,9 @@ object YukiHookAPI {
     /**
      * 作为模块装载调用入口方法 - Xposed API
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/#/api/home)
+     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      *
-     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=%e9%80%9a%e8%bf%87%e8%87%aa%e5%ae%9a%e4%b9%89-hooker-%e5%88%9b%e5%bb%ba)
+     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
@@ -325,11 +325,11 @@ object YukiHookAPI {
      *
      * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
      *
-     * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/#/guide/quick-start?id=%e4%bd%9c%e4%b8%ba-hook-api-%e4%bd%bf%e7%94%a8)
+     * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     * 配置请参考 [通过 Lambda 创建](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=%e9%80%9a%e8%bf%87-lambda-%e5%88%9b%e5%bb%ba)
+     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/#/api/home)
+     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      * @param baseContext attachBaseContext
      * @param initiate Hook 方法体
      */
@@ -346,11 +346,11 @@ object YukiHookAPI {
      *
      * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
      *
-     * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/#/guide/quick-start?id=%e4%bd%9c%e4%b8%ba-hook-api-%e4%bd%bf%e7%94%a8)
+     * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/#/config/api-example?id=%e9%80%9a%e8%bf%87%e8%87%aa%e5%ae%9a%e4%b9%89-hooker-%e5%88%9b%e5%bb%ba)
+     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/#/api/home)
+     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      * @param baseContext attachBaseContext
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的

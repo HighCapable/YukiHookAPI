@@ -34,7 +34,7 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  *
  * 这个类是对 [YukiHookModulePrefs] 的一个扩展用法
  *
- * - 详情请参考 [API 文档 - PrefsData](https://fankes.github.io/YukiHookAPI/#/api/document?id=prefsdata-class)
+ * - 详情请参考 [API 文档 - PrefsData](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/data/PrefsData)
  * @param key 键值
  * @param value 默认值
  */

@@ -116,7 +116,7 @@ val Context.processName
  *
  * 注入的资源作用域仅限当前 [Context] - 你需要在每个用到宿主 [Context] 的地方重复调用此方法进行注入才能使用
  *
- * 详情请参考 [注入模块资源 (Resources)](https://fankes.github.io/YukiHookAPI/#/guide/special-feature?id=%e6%b3%a8%e5%85%a5%e6%a8%a1%e5%9d%97%e8%b5%84%e6%ba%90-resources)
+ * 详情请参考 [注入模块资源 (Resources)](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%85%A5%E6%A8%A1%E5%9D%97%E8%B5%84%E6%BA%90-resources)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
@@ -129,7 +129,7 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
  *
  * 注入的资源作用域仅限当前 [Resources] - 你需要在每个用到宿主 [Resources] 的地方重复调用此方法进行注入才能使用
  *
- * 详情请参考 [注入模块资源 (Resources)](https://fankes.github.io/YukiHookAPI/#/guide/special-feature?id=%e6%b3%a8%e5%85%a5%e6%a8%a1%e5%9d%97%e8%b5%84%e6%ba%90-resources)
+ * 详情请参考 [注入模块资源 (Resources)](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%85%A5%E6%A8%A1%E5%9D%97%E8%B5%84%E6%BA%90-resources)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
@@ -144,7 +144,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  *
  * - 你要将需要在宿主启动的 [Activity] 继承于 [ModuleAppActivity] 或 [ModuleAppCompatActivity]
  *
- * 详情请参考 [注册模块 Activity](https://fankes.github.io/YukiHookAPI/#/guide/special-feature?id=%e6%b3%a8%e5%86%8c%e6%a8%a1%e5%9d%97-activity)
+ * 详情请参考 [注册模块 Activity](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%86%8C%E6%A8%A1%E5%9D%97-activity)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
@@ -158,7 +158,7 @@ fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.regi
  *
  * - 如果在 Hook APP (宿主) 中使用此方法发生 [ClassCastException] - 请手动设置新的 [configuration]
  *
- * 详情请参考 [创建 ContextThemeWrapper 代理](https://fankes.github.io/YukiHookAPI/#/guide/special-feature?id=%e5%88%9b%e5%bb%ba-contextthemewrapper-%e4%bb%a3%e7%90%86)
+ * 详情请参考 [创建 ContextThemeWrapper 代理](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E5%88%9B%E5%BB%BA-contextthemewrapper-%E4%BB%A3%E7%90%86)
  * @param theme 主题资源 ID
  * @param configuration 使用的 [Configuration] - 默认空
  * @return [ModuleContextThemeWrapper]
