@@ -1,0 +1,171 @@
+$primary-color: rgb(237, 150, 73);
+$accent-color: rgb(244, 200, 161);
+$content-width: 965px;
+$scroll-bar-width: 8px;
+$scroll-bar-height: 6.5px;
+$scroll-bar-border-radius: 50px;
+$scroll-bar-track-color-code: rgb(86, 96, 110);
+$scroll-bar-thumb-hover-color-code: rgb(121, 135, 155);
+
+:root {
+    --c-brand: #{$primary-color};
+    --c-brand-light: #{$accent-color};
+    --content-width: #{$content-width};
+}
+
+code {
+    padding: 3px 5px 3px 5px;
+    border-radius: 5px;
+}
+
+.badge {
+    margin-bottom: 5px;
+}
+
+.custom-container {
+    border-radius: 5px;
+}
+
+.sidebar-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.language-text {
+    ::-webkit-scrollbar-track {
+        background: #{$scroll-bar-track-color-code};
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #{$scroll-bar-thumb-hover-color-code};
+    }
+}
+
+.language-kotlin {
+    ::-webkit-scrollbar-track {
+        background: #{$scroll-bar-track-color-code};
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #{$scroll-bar-thumb-hover-color-code};
+    }
+}
+
+.language-java {
+    ::-webkit-scrollbar-track {
+        background: #{$scroll-bar-track-color-code};
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #{$scroll-bar-thumb-hover-color-code};
+    }
+}
+
+.language-groovy {
+    ::-webkit-scrollbar-track {
+        background: #{$scroll-bar-track-color-code};
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #{$scroll-bar-thumb-hover-color-code};
+    }
+}
+
+.language-xml {
+    ::-webkit-scrollbar-track {
+        background: #{$scroll-bar-track-color-code};
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #{$scroll-bar-thumb-hover-color-code};
+    }
+}
+
+.code-page {
+    h1 {
+        font-size: 24pt;
+    }
+
+    h2 {
+        font-size: 18pt;
+    }
+
+    h3 {
+        font-size: 15pt;
+    }
+
+    h4 {
+        font-size: 12pt;
+    }
+
+    h5 {
+        font-size: 9.6pt;
+    }
+
+    h6 {
+        font-size: 8.4pt;
+    }
+
+    .symbol {
+        color: rgb(142, 155, 168);
+    }
+
+    .deprecated {
+        color: rgb(142, 155, 168);
+        text-decoration: line-through;
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+
+    ::-webkit-scrollbar {
+        width: #{$scroll-bar-width};
+        height: #{$scroll-bar-height};
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgb(234, 236, 239);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgb(189, 189, 189);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgb(133, 133, 133);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+}
+
+html.dark {
+    --c-brand: #{$primary-color};
+    --c-brand-light: #{$accent-color};
+    --content-width: #{$content-width};
+
+    ::-webkit-scrollbar {
+        width: #{$scroll-bar-width};
+        height: #{$scroll-bar-height};
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgb(41, 46, 53);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgb(65, 72, 83);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgb(56, 62, 72);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+}
