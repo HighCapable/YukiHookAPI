@@ -1,6 +1,5 @@
 # Yuki Hook API
 
-![Blank](https://img.shields.io/badge/build-passing-brightgreen)
 ![Blank](https://img.shields.io/badge/license-MIT-blue)
 ![Blank](https://img.shields.io/badge/version-v1.0.92-green)
 [![Telegram](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
@@ -34,14 +33,7 @@
 
 ## 开始使用
 
-- [点击这里](https://fankes.github.io/YukiHookAPI) 前往文档页面查看更多详细教程和内容。
-- 目前只有 **简体中文** 的翻译文档，English 版本将在日后根据需求更新。
-
-> 你大概率会遇到浏览器缓存造成文档不是最新版本的问题，若已经查看过一次文档，请手动在每个页面上刷新一次以同步最新版本，或清除浏览器缓存。
-
-> 面向中国大陆开发者的提示：若打开页面发生 404 问题，可能是由于你的 DNS 受到了污染，请科学上网后清除浏览器缓存再试一次。
-
-最新版本更新时间：2022-07-23 22:33
+- [点击这里](https://fankes.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
 
 ## 联系我们
 
@@ -55,22 +47,22 @@
 
 以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
 
-| Repository                                                                         | Developer                                       |
-|------------------------------------------------------------------------------------|-------------------------------------------------|
-| [TSBattery](https://github.com/fankes/TSBattery)                                   | [fankesyooni](https://github.com/fankes)        |
-| [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon)                      | [fankesyooni](https://github.com/fankes)        |
-| [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon)                      | [fankesyooni](https://github.com/fankes)        |
-| [自由屏幕旋转](https://github.com/Xposed-Modules-Repo/com.fankes.forcerotate)            | [fankesyooni](https://github.com/fankes)        |
-| [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness)       | [fankesyooni](https://github.com/fankes)        |
-| [AppErrorsTracking](https://github.com/KitsunePie/AppErrorsTracking)               | [fankesyooni](https://github.com/fankes)        |
-| [Enable WebView Debugging](https://github.com/WankkoRee/EnableWebViewDebugging)    | [WankkoRee](https://github.com/WankkoRee)       |
-| [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)                  | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
-| [MIUI遮罩进化](https://github.com/GSWXXN/RestoreSplashScreen)                          | [GSWXXN](https://github.com/GSWXXN)             |
-| [Color OS Installer Plus](https://github.com/NextAlone/ColorOSInstallerPlus)       | [NextAlone](https://github.com/NextAlone)       |
-| [Auto NFC](https://github.com/GSWXXN/AutoNFC)                                    | [GSWXXN](https://github.com/GSWXXN)             |
-| [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                        | [WankkoRee](https://github.com/WankkoRee)       |
-| [QDReadHook](https://github.com/xihan123/QDReadHook)                              | [xihan123](https://github.com/xihan123)       |
-| [WxRecordRead](https://github.com/pwh-pwh/wxrecordread)                              | [Coderpwh](https://github.com/pwh-pwh)       |
+| Repository                                                                      | Developer                                       |
+|---------------------------------------------------------------------------------|-------------------------------------------------|
+| [TSBattery](https://github.com/fankes/TSBattery)                                | [fankesyooni](https://github.com/fankes)        |
+| [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon)                   | [fankesyooni](https://github.com/fankes)        |
+| [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon)                   | [fankesyooni](https://github.com/fankes)        |
+| [自由屏幕旋转](https://github.com/Xposed-Modules-Repo/com.fankes.forcerotate)         | [fankesyooni](https://github.com/fankes)        |
+| [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness)    | [fankesyooni](https://github.com/fankes)        |
+| [AppErrorsTracking](https://github.com/KitsunePie/AppErrorsTracking)            | [fankesyooni](https://github.com/fankes)        |
+| [Enable WebView Debugging](https://github.com/WankkoRee/EnableWebViewDebugging) | [WankkoRee](https://github.com/WankkoRee)       |
+| [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)               | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
+| [MIUI遮罩进化](https://github.com/GSWXXN/RestoreSplashScreen)                       | [GSWXXN](https://github.com/GSWXXN)             |
+| [Color OS Installer Plus](https://github.com/NextAlone/ColorOSInstallerPlus)    | [NextAlone](https://github.com/NextAlone)       |
+| [Auto NFC](https://github.com/GSWXXN/AutoNFC)                                   | [GSWXXN](https://github.com/GSWXXN)             |
+| [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                         | [WankkoRee](https://github.com/WankkoRee)       |
+| [QDReadHook](https://github.com/xihan123/QDReadHook)                            | [xihan123](https://github.com/xihan123)         |
+| [WxRecordRead](https://github.com/pwh-pwh/wxrecordread)                         | [Coderpwh](https://github.com/pwh-pwh)          |
 
 你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表(私有仓库可以不需要注明网页链接)。
 
