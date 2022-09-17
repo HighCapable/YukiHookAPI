@@ -25,6 +25,8 @@
  *
  * This file is Created by fankes on 2022/3/27.
  */
+@file:Suppress("KotlinConstantConditions")
+
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
