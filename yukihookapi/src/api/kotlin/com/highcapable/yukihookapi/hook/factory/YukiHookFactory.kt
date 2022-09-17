@@ -112,7 +112,7 @@ val Context.processName
 /**
  * 向 Hook APP (宿主) [Context] 注入当前 Xposed 模块的资源
  *
- * 注入成功后 - 你就可以直接使用例如 [ImageView.setImageResource] 或 [Resources.getString] 装载当前 Xposed 模块的资源 ID
+ * 注入成功后 - 你就可以直接使用例如 [ImageView.setImageResource] or [Resources.getString] 装载当前 Xposed 模块的资源 ID
  *
  * 注入的资源作用域仅限当前 [Context] - 你需要在每个用到宿主 [Context] 的地方重复调用此方法进行注入才能使用
  *
@@ -125,7 +125,7 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
 /**
  * 向 Hook APP (宿主) 指定 [Resources] 直接注入当前 Xposed 模块的资源
  *
- * 注入成功后 - 你就可以直接使用例如 [ImageView.setImageResource] 或 [Resources.getString] 装载当前 Xposed 模块的资源 ID
+ * 注入成功后 - 你就可以直接使用例如 [ImageView.setImageResource] or [Resources.getString] 装载当前 Xposed 模块的资源 ID
  *
  * 注入的资源作用域仅限当前 [Resources] - 你需要在每个用到宿主 [Resources] 的地方重复调用此方法进行注入才能使用
  *
@@ -142,7 +142,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  *
  * 使用此方法会在未注册的 [Activity] 在 Hook APP (宿主) 中启动时自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
  *
- * - 你要将需要在宿主启动的 [Activity] 继承于 [ModuleAppActivity] 或 [ModuleAppCompatActivity]
+ * - 你要将需要在宿主启动的 [Activity] 继承于 [ModuleAppActivity] or [ModuleAppCompatActivity]
  *
  * 详情请参考 [注册模块 Activity](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%86%8C%E6%A8%A1%E5%9D%97-activity)
  *

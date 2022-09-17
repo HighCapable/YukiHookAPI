@@ -196,7 +196,7 @@ fun Throwable.throwToApp()
 
 使用 `throwable` 获取当前设置的方法调用抛出异常。
 
-仅会在回调方法的 `MemberHookCreator.beforeHook` or `MemberHookCreator.afterHook` 中生效。
+仅会在回调方法的 `MemberHookCreator.beforeHook` 或 `MemberHookCreator.afterHook` 中生效。
 
 ::: danger
 
@@ -295,7 +295,7 @@ fun args(): ArgsIndexCondition
 
 **功能描述**
 
-> 获取当前 Hook 对象的 `method` or `constructor` 的参数数组下标实例化类。
+> 获取当前 Hook 对象的 `method` 或 `constructor` 的参数数组下标实例化类。
 
 ## args <span class="symbol">- method</span>
 
@@ -566,7 +566,7 @@ fun first(): ArgsModifyer
 
 **功能描述**
 
-> 获取当前 Hook 对象的 `method` or `constructor` 的参数数组第一位。
+> 获取当前 Hook 对象的 `method` 或 `constructor` 的参数数组第一位。
 
 ### last <span class="symbol">- method</span>
 
@@ -580,7 +580,7 @@ fun last(): ArgsModifyer
 
 **功能描述**
 
-> 获取当前 Hook 对象的 `method` or `constructor` 的参数数组最后一位。
+> 获取当前 Hook 对象的 `method` 或 `constructor` 的参数数组最后一位。
 
 ## ArgsModifyer <span class="symbol">- class</span>
 

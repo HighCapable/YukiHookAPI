@@ -37,7 +37,7 @@ import de.robv.android.xposed.XposedBridge
  *
  * 我们需要监听自己的模块是否被激活 - 可使用以下方法调用
  *
- * 调用 [YukiHookAPI.Status.isModuleActive] 或 [YukiHookAPI.Status.isTaiChiModuleActive]
+ * 调用 [YukiHookAPI.Status.isModuleActive] or [YukiHookAPI.Status.isTaiChiModuleActive]
  *
  * 调用 [YukiHookAPI.Status.isXposedModuleActive]
  *

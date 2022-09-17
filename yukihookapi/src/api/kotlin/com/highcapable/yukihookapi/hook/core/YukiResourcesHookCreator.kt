@@ -311,7 +311,7 @@ class YukiResourcesHookCreator(@PublishedApi internal val packageParam: PackageP
             /**
              * 创建查找对象实例
              * @return [ConditionFinder]
-             * @throws IllegalStateException 如果没有设置 [name] 或 [type]
+             * @throws IllegalStateException 如果没有设置 [name] or [type]
              */
             @PublishedApi
             internal fun build(): ConditionFinder {

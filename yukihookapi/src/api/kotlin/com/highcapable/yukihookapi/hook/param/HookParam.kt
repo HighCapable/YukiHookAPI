@@ -94,7 +94,7 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
     /**
      * 获取当前 Hook 对象的 [Member]
      *
-     * 在不确定 [Member] 类型为 [Method] 或 [Constructor] 时可以使用此方法
+     * 在不确定 [Member] 类型为 [Method] or [Constructor] 时可以使用此方法
      * @return [Member]
      * @throws IllegalStateException 如果 [member] 为空
      */

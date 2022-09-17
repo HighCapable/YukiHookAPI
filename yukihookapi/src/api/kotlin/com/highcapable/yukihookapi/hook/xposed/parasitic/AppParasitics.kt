@@ -80,7 +80,7 @@ internal object AppParasitics {
     /**
      * 当前 Hook APP (宿主) 的全局生命周期 [Application]
      *
-     * 需要 [YukiHookAPI.Configs.isEnableDataChannel] 或 [AppLifecycleCallback.isCallbackSetUp] 才会生效
+     * 需要 [YukiHookAPI.Configs.isEnableDataChannel] or [AppLifecycleCallback.isCallbackSetUp] 才会生效
      */
     internal var hostApplication: Application? = null
 

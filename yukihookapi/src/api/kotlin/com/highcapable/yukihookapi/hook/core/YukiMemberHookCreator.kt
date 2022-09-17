@@ -132,7 +132,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
     @PublishedApi
     internal fun hook() = when {
         YukiHookBridge.hasXposedBridge.not() -> Result()
-        /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.PACKAGE] 或 [HookParam.isCallbackCalled] 已被执行 */
+        /** 过滤 [HookEntryType.ZYGOTE] and [HookEntryType.PACKAGE] or [HookParam.isCallbackCalled] 已被执行 */
         packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
         preHookMembers.isEmpty() -> Result().also { yLoggerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
         else -> Result().await {
@@ -264,10 +264,10 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          *
          * 你可以调用 [instanceClass] 来手动查询要 Hook 的 [Method]、[Constructor]
          *
-         * - ❗不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] 或 [constructor] 方法
+         * - ❗不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] or [constructor] 方法
          *
          * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
-         * @param member 要指定的 [Member] 或 [Member] 数组
+         * @param member 要指定的 [Member] or [Member] 数组
          * @throws IllegalStateException 如果 [member] 参数为空
          */
         fun members(vararg member: Member?) {
@@ -281,7 +281,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [MethodFinder] 或 [allMembers]
+         * - ❗请现在转移到 [MethodFinder] or [allMembers]
          * @param name 方法名称
          * @return [ArrayList]<[MethodFinder.Result.Instance]>
          */
@@ -293,7 +293,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [ConstructorFinder] 或 [allMembers]
+         * - ❗请现在转移到 [ConstructorFinder] or [allMembers]
          * @return [ArrayList]<[ConstructorFinder.Result.Instance]>
          */
         @Deprecated(
