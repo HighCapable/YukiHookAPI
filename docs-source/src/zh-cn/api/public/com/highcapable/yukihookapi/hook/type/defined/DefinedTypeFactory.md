@@ -14,7 +14,7 @@ pageClass: code-page
 
 ## VagueType <span class="symbol">- field</span>
 
-```kotlin
+```kotlin:no-line-numbers
 val VagueType: Class<*>
 ```
 
