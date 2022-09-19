@@ -35,6 +35,7 @@ import java.lang.reflect.Member
  * 这是一个模糊 [Class]、[Member] 数组 (下标) 个数条件实现类
  *
  * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
+ * @param instance 当前实例对象
  */
 class CountRules private constructor(private val instance: Int) {
 
