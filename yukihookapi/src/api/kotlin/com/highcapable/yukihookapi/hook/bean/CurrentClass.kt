@@ -63,7 +63,7 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * 调用父类实例
      * @return [SuperClass]
      */
-    fun superClass() = SuperClass()
+    fun superClass() = SuperClass(classSet.superclass)
 
     /**
      * 调用当前实例中的变量
@@ -83,28 +83,21 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * 当前类的父类实例的类操作对象
      *
      * - ❗请使用 [superClass] 方法来获取 [SuperClass]
+     * @param superClassSet 父类 [Class] 对象
      */
-    inner class SuperClass internal constructor() {
-
-        /**
-         * 获取 [classSet] 的 [Class.getSuperclass] 对象
-         * @return [Class]
-         */
-        @PublishedApi
-        internal val superClassSet
-            get() = classSet.superclass
+    inner class SuperClass internal constructor(@PublishedApi internal val superClassSet: Class<*>) {
 
         /**
          * 获得当前 [classSet] 中父类的 [Class.getName]
          * @return [String]
          */
-        val name get() = superClassSet.name ?: instance.javaClass.superclass.name ?: ""
+        val name get() = superClassSet.name ?: ""
 
         /**
          * 获得当前 [classSet] 中父类的 [Class.getSimpleName]
          * @return [String]
          */
-        val simpleName get() = superClassSet.simpleName ?: instance.javaClass.superclass.simpleName ?: ""
+        val simpleName get() = superClassSet.simpleName ?: ""
 
         /**
          * 调用父类实例中的变量
@@ -118,7 +111,8 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @param initiate 查找方法体
          * @return [MethodFinder.Result.Instance]
          */
-        inline fun method(initiate: MethodConditions) = superClassSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+        inline fun method(initiate: MethodConditions) =
+            superClassSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
 
         override fun toString() = "CurrentClass super [${superClassSet}]"
     }

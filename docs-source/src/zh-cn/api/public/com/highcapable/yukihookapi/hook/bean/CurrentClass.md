@@ -93,12 +93,16 @@ inline fun method(initiate: MethodConditions): MethodFinder.Result.Instance
 ## SuperClass <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class SuperClass internal constructor()
+inner class SuperClass internal constructor(internal val superClassSet: Class<*>)
 ```
 
 **变更记录**
 
 `v1.0.80` `新增`
+
+`v1.1.0` `修改`
+
+新增 `superClassSet` 参数
 
 **功能描述**
 
