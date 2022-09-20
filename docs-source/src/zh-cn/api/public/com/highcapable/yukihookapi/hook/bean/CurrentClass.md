@@ -48,6 +48,38 @@ val simpleName: String
 
 > 获得当前 `classSet` 的 `Class.getSimpleName`。
 
+## generic <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun generic(): GenericClass?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获得当前实例中的泛型父类。
+
+如果当前实例不存在泛型将返回 `null`。
+
+## generic <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+inline fun generic(initiate: GenericClass.() -> Unit): GenericClass?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获得当前实例中的泛型父类。
+
+如果当前实例不存在泛型将返回 `null`。
+
 ## superClass <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
@@ -135,6 +167,38 @@ val simpleName: String
 **功能描述**
 
 > 获得当前 `classSet` 中父类的 `Class.getSimpleName`。
+
+### generic <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun generic(): GenericClass?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获得当前实例父类中的泛型父类。
+
+如果当前实例不存在泛型将返回 `null`。
+
+### generic <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+inline fun generic(initiate: GenericClass.() -> Unit): GenericClass?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获得当前实例父类中的泛型父类。
+
+如果当前实例不存在泛型将返回 `null`。
 
 ### field <span class="symbol">- method</span>
 

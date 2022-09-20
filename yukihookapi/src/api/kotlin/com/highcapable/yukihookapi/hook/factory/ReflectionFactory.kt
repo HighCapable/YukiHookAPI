@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.factory
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
+import com.highcapable.yukihookapi.hook.bean.GenericClass
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
@@ -42,10 +43,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodCondition
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
-import java.lang.reflect.Constructor
-import java.lang.reflect.Field
-import java.lang.reflect.Member
-import java.lang.reflect.Method
+import java.lang.reflect.*
 
 /**
  * 定义一个 [Class] 中的 [Member] 类型
@@ -169,6 +167,26 @@ inline fun Class<*>.method(initiate: MethodConditions) = MethodFinder(classSet =
  * @return [ConstructorFinder.Result]
  */
 inline fun Class<*>.constructor(initiate: ConstructorConditions = { emptyParam() }) = ConstructorFinder(classSet = this).apply(initiate).build()
+
+/**
+ * 获得当前 [Class] 的泛型父类
+ *
+ * 如果当前实例不存在泛型将返回 null
+ * @return [GenericClass] or null
+ */
+fun Class<*>.generic(): GenericClass? {
+    checkingInternal()
+    return genericSuperclass?.let { (it as? ParameterizedType?)?.let { e -> GenericClass(e) } }
+}
+
+/**
+ * 获得当前 [Class] 的泛型父类
+ *
+ * 如果当前实例不存在泛型将返回 null
+ * @param initiate 实例方法体
+ * @return [GenericClass] or null
+ */
+inline fun Class<*>.generic(initiate: GenericClass.() -> Unit) = generic()?.apply(initiate)
 
 /**
  * 获得当前实例的类操作对象

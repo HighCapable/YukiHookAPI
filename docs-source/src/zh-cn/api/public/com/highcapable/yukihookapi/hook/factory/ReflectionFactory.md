@@ -542,6 +542,38 @@ inline fun Class<*>.constructor(initiate: ConstructorConditions): ConstructorFin
 
 `v1.0.2` `移除`
 
+## Class.generic <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+fun Class<*>.generic(): GenericClass?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获得当前 `Class` 的泛型父类。
+
+如果当前实例不存在泛型将返回 `null`。
+
+## Class.generic <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+inline fun Class<*>.generic(initiate: GenericClass.() -> Unit): GenericClass?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获得当前 `Class` 的泛型父类。
+
+如果当前实例不存在泛型将返回 `null`。
+
 ## Any.current <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers

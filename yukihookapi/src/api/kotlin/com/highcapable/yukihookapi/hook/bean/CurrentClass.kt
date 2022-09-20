@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
 import com.highcapable.yukihookapi.hook.factory.field
+import com.highcapable.yukihookapi.hook.factory.generic
 import com.highcapable.yukihookapi.hook.factory.method
 
 /**
@@ -58,6 +59,23 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * @return [String]
      */
     val simpleName get() = classSet.simpleName ?: instance.javaClass.simpleName ?: ""
+
+    /**
+     * 获得当前实例中的泛型父类
+     *
+     * 如果当前实例不存在泛型将返回 null
+     * @return [GenericClass] or null
+     */
+    fun generic() = classSet.generic()
+
+    /**
+     * 获得当前实例中的泛型父类
+     *
+     * 如果当前实例不存在泛型将返回 null
+     * @param initiate 实例方法体
+     * @return [GenericClass] or null
+     */
+    inline fun generic(initiate: GenericClass.() -> Unit) = classSet.generic(initiate)
 
     /**
      * 调用父类实例
@@ -98,6 +116,23 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @return [String]
          */
         val simpleName get() = superClassSet.simpleName ?: ""
+
+        /**
+         * 获得当前实例父类中的泛型父类
+         *
+         * 如果当前实例不存在泛型将返回 null
+         * @return [GenericClass] or null
+         */
+        fun generic() = superClassSet.generic()
+
+        /**
+         * 获得当前实例父类中的泛型父类
+         *
+         * 如果当前实例不存在泛型将返回 null
+         * @param initiate 实例方法体
+         * @return [GenericClass] or null
+         */
+        inline fun generic(initiate: GenericClass.() -> Unit) = superClassSet.generic(initiate)
 
         /**
          * 调用父类实例中的变量
