@@ -34,7 +34,8 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.highcapable.yukihookapi_ksp_xposed.sources.CodeSourceFileTemplate
+import com.highcapable.yukihookapi_ksp_xposed.bean.GenerateData
+import com.highcapable.yukihookapi_ksp_xposed.factory.sources
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import java.io.File
@@ -68,11 +69,11 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
 
         /**
          * 创建一个环境方法体方便调用
-         * @param ignoredError 是否忽略错误 - 默认否
+         * @param ignored 是否忽略错误 - 默认否
          * @param env 方法体
          */
-        private fun environment(ignoredError: Boolean = false, env: SymbolProcessorEnvironment.() -> Unit) {
-            if (ignoredError) runCatching { environment.apply(env) }
+        private fun environment(ignored: Boolean = false, env: SymbolProcessorEnvironment.() -> Unit) {
+            if (ignored) runCatching { environment.apply(env) }
             else environment.apply(env)
         }
 
@@ -87,6 +88,18 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         }
 
         /**
+         * 创建代码文件 - 类型 kt
+         * @param fileName 文件名
+         * @param packageName 包名
+         * @param content 代码内容
+         */
+        private fun SymbolProcessorEnvironment.createCodeFile(fileName: String, packageName: String, content: String?) =
+            codeGenerator.createNewFile(
+                dependencies = Dependencies.ALL_FILES,
+                packageName, fileName
+            ).apply { content?.toByteArray()?.let { write(it) }; flush() }.close()
+
+        /**
          * 发出警告
          * @param msg 错误消息
          */
@@ -98,10 +111,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun String.removeSpecialChars() = replace("\\s*|\t|\r|\n".toRegex(), replacement = "").replace(oldValue = "\"", newValue = "'")
 
-        override fun process(resolver: Resolver) = emptyList<KSAnnotated>().let {
-            startProcess(resolver)
-            it
-        }
+        override fun process(resolver: Resolver) = emptyList<KSAnnotated>().let { startProcess(resolver); it }
 
         /**
          * 开始作业入口
@@ -109,40 +119,28 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun startProcess(resolver: Resolver) = environment {
             var isInjectOnce = true
+            val data = GenerateData()
             resolver.getSymbolsWithAnnotation(annotationName).apply {
                 /**
                  * 检索需要注入的类
                  * @param sourcePath 指定的 source 路径
-                 * @param custMPackageName 自定义模块包名
-                 * @param xInitClassName xposed_init 入口类名
-                 * @param isUsingResourcesHook 是否启用 Resources Hook
                  */
-                fun fetchKSClassDeclaration(
-                    sourcePath: String,
-                    custMPackageName: String,
-                    xInitClassName: String,
-                    isUsingResourcesHook: Boolean
-                ) {
+                fun fetchKSClassDeclaration(sourcePath: String) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
-                                val xInitPatchName = xInitClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
-                                if (xInitClassName == it.simpleName.asString()) problem(msg = "Duplicate entryClassName \"$xInitClassName\"")
-                                generateAssetsFile(
-                                    codePath = (it.location as? FileLocation?)?.filePath ?: "",
-                                    sourcePath = sourcePath,
-                                    packageName = it.packageName.asString(),
-                                    custMPackageName = custMPackageName,
-                                    entryClassName = it.simpleName.asString(),
-                                    xInitClassName = xInitPatchName,
-                                    isUsingResourcesHook = isUsingResourcesHook
-                                )
+                                val xInitPatchName = data.xInitClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
+                                if (data.xInitClassName == it.simpleName.asString())
+                                    problem(msg = "Duplicate entryClassName \"${data.xInitClassName}\"")
+                                data.entryPackageName = it.packageName.asString()
+                                data.entryClassName = it.simpleName.asString()
+                                data.xInitClassName = xInitPatchName
+                                generateAssetsFile(codePath = (it.location as? FileLocation?)?.filePath ?: "", sourcePath = sourcePath, data)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
                                 problem(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
                             else -> problem(msg = "HookEntryClass \"${it.simpleName.asString()}\" must be implements \"IYukiHookXposedInit\"")
-                        }
-                        else problem(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
+                        } else problem(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
                         /** 仅处理第一个标记的类 - 再次处理将拦截并报错 */
                         isInjectOnce = false
                     }
@@ -150,30 +148,27 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 forEach {
                     it.annotations.forEach { annotation ->
                         var sourcePath = "" // 项目相对路径
-                        var custMPackageName = "" // 自定义模块包名
-                        var entryClassName = "" // xposed_init 入口类名
-                        var isUsingResourcesHook = false // 是否启用 Resources Hook
                         annotation.arguments.forEach { args ->
                             if (args.name?.asString() == "sourcePath")
                                 sourcePath = args.value.toString().trim()
                             if (args.name?.asString() == "modulePackageName")
-                                custMPackageName = args.value.toString().trim()
+                                data.customMPackageName = args.value.toString().trim()
                             if (args.name?.asString() == "entryClassName")
-                                entryClassName = args.value.toString().trim()
+                                data.entryClassName = args.value.toString().trim()
                             if (args.name?.asString() == "isUsingResourcesHook")
-                                isUsingResourcesHook = args.value as? Boolean ?: true
+                                data.isUsingResourcesHook = args.value as? Boolean ?: true
                         }
-                        if ((custMPackageName.startsWith(".") ||
-                                    custMPackageName.endsWith(".") ||
-                                    custMPackageName.contains(".").not() ||
-                                    custMPackageName.contains("..")) &&
-                            custMPackageName.isNotEmpty()
-                        ) problem(msg = "Invalid modulePackageName \"$custMPackageName\"")
-                        if ((Pattern.compile("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-+=<>]").matcher(entryClassName).find() ||
-                                    true.let { for (i in 0..9) if (entryClassName.startsWith(i.toString())) return@let true;false })
-                            && entryClassName.isNotEmpty()
-                        ) problem(msg = "Invalid entryClassName \"$entryClassName\"")
-                        else fetchKSClassDeclaration(sourcePath, custMPackageName, entryClassName, isUsingResourcesHook)
+                        if ((data.customMPackageName.startsWith(".") ||
+                                    data.customMPackageName.endsWith(".") ||
+                                    data.customMPackageName.contains(".").not() ||
+                                    data.customMPackageName.contains("..")) &&
+                            data.customMPackageName.isNotEmpty()
+                        ) problem(msg = "Invalid modulePackageName \"${data.customMPackageName}\"")
+                        if ((Pattern.compile("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-+=<>]").matcher(data.entryClassName).find() ||
+                                    true.let { for (i in 0..9) if (data.entryClassName.startsWith(i.toString())) return@let true; false })
+                            && data.entryClassName.isNotEmpty()
+                        ) problem(msg = "Invalid entryClassName \"${data.entryClassName}\"")
+                        else fetchKSClassDeclaration(sourcePath)
                     }
                 }
             }
@@ -183,21 +178,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * 自动生成 Xposed assets 入口文件
          * @param codePath 注解类的完整代码文件路径
          * @param sourcePath 指定的 source 路径
-         * @param packageName 包名
-         * @param custMPackageName 自定义模块包名
-         * @param entryClassName 入口类名
-         * @param xInitClassName xposed_init 入口类名
-         * @param isUsingResourcesHook 是否启用 Resources Hook
+         * @param data 生成的模板数据
          */
-        private fun generateAssetsFile(
-            codePath: String,
-            sourcePath: String,
-            packageName: String,
-            custMPackageName: String,
-            entryClassName: String,
-            xInitClassName: String,
-            isUsingResourcesHook: Boolean
-        ) = environment {
+        private fun generateAssetsFile(codePath: String, sourcePath: String, data: GenerateData) = environment {
             if (codePath.isBlank()) problem(msg = "Project CodePath not available")
             if (sourcePath.isBlank()) problem(msg = "Project SourcePath not available")
             /**
@@ -214,7 +197,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             val projectPath = when {
                 codePath.contains("\\") -> sourcePath.replace("/", "\\")
                 codePath.contains("/") -> sourcePath.replace("\\", "/")
-                else -> error("Unix File Separator unknown")
+                else -> error("Unknown Unix File Separator")
             }.let {
                 if (codePath.contains(it))
                     codePath.split(it)[0].apply { rootPath = this } + it
@@ -226,78 +209,52 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             val manifestFile = File("$projectPath${separator}AndroidManifest.xml")
             if (manifestFile.exists()) {
                 if (assetsFile.exists().not() || assetsFile.isDirectory.not()) assetsFile.apply { delete(); mkdirs() }
-                val modulePackageName = parseModulePackageName(manifestFile, gradleFile, gradleKtsFile)
-                if (modulePackageName.isBlank() && custMPackageName.isBlank())
+                data.modulePackageName = parseModulePackageName(manifestFile, gradleFile, gradleKtsFile)
+                if (data.modulePackageName.isBlank() && data.customMPackageName.isBlank())
                     problem(msg = "Cannot identify your Module App's package name, tried AndroidManifest.xml, build.gradle and build.gradle.kts")
                 File("${assetsFile.absolutePath}${separator}xposed_init")
-                    .writeText(text = "$packageName.$xInitClassName")
+                    .writeText(text = "${data.entryPackageName}.${data.xInitClassName}")
                 File("${assetsFile.absolutePath}${separator}yukihookapi_init")
-                    .writeText(text = "$packageName.$entryClassName")
-                generateClassFile(packageName, modulePackageName, custMPackageName, entryClassName, xInitClassName, isUsingResourcesHook)
+                    .writeText(text = "${data.entryPackageName}.${data.entryClassName}")
+                generateClassFile(data)
             } else problem(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
         }
 
         /**
          * 自动生成指定类文件
-         * @param packageName 包名
-         * @param modulePackageName 模块包名
-         * @param customMPackageName 自定义模块包名
-         * @param entryClassName 入口类名
-         * @param xInitClassName xposed_init 入口类名
-         * @param isUsingResourcesHook 是否启用 Resources Hook
+         * @param data 生成的模板数据
          */
-        private fun generateClassFile(
-            packageName: String,
-            modulePackageName: String,
-            customMPackageName: String,
-            entryClassName: String,
-            xInitClassName: String,
-            isUsingResourcesHook: Boolean
-        ) = environment(ignoredError = true) {
-            if (customMPackageName.isNotBlank())
-                warn(msg = "You set the customize module package name to \"$customMPackageName\", please check for yourself if it is correct")
+        private fun generateClassFile(data: GenerateData) = environment(ignored = true) {
+            if (data.customMPackageName.isNotBlank()) warn(
+                msg = "You set the customize module package name to \"${data.customMPackageName}\", " +
+                        "please check for yourself if it is correct"
+            )
             val mdAppInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
             val ykBridgeInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.bridge.inject"
             /** 插入 ModuleApplication_Injector 代码 */
-            codeGenerator.createNewFile(
-                dependencies = Dependencies.ALL_FILES,
+            createCodeFile(
+                fileName = "ModuleApplication_Injector",
                 packageName = mdAppInjectPackageName,
-                fileName = "ModuleApplication_Injector"
-            ).apply {
-                write(CodeSourceFileTemplate.getModuleApplicationInjectorFileByteArray(mdAppInjectPackageName, packageName, entryClassName))
-                flush()
-                close()
-            }
+                content = data.apply { injectPackageName = mdAppInjectPackageName }.sources()["ModuleApplication_Injector"]
+            )
             /** 插入 YukiHookBridge_Injector 代码 */
-            codeGenerator.createNewFile(
-                dependencies = Dependencies.ALL_FILES,
+            createCodeFile(
+                fileName = "YukiHookBridge_Injector",
                 packageName = ykBridgeInjectPackageName,
-                fileName = "YukiHookBridge_Injector"
-            ).apply {
-                write(CodeSourceFileTemplate.getYukiHookBridgeInjectorFileByteArray(ykBridgeInjectPackageName))
-                flush()
-                close()
-            }
+                content = data.apply { injectPackageName = ykBridgeInjectPackageName }.sources()["YukiHookBridge_Injector"]
+            )
             /** 插入 xposed_init 代码 */
-            codeGenerator.createNewFile(
-                dependencies = Dependencies.ALL_FILES,
-                packageName = packageName,
-                fileName = xInitClassName
-            ).apply {
-                write(CodeSourceFileTemplate.getXposedInitFileByteArray(packageName, entryClassName, xInitClassName, isUsingResourcesHook))
-                flush()
-                close()
-            }
+            createCodeFile(
+                fileName = data.xInitClassName,
+                packageName = data.entryPackageName,
+                content = data.sources()["xposed_init"]
+            )
             /** 插入 xposed_init_Impl 代码 */
-            codeGenerator.createNewFile(
-                dependencies = Dependencies.ALL_FILES,
-                packageName = packageName,
-                fileName = "${entryClassName}_Impl"
-            ).apply {
-                write(CodeSourceFileTemplate.getXposedInitImplFileByteArray(packageName, modulePackageName, customMPackageName, entryClassName))
-                flush()
-                close()
-            }
+            createCodeFile(
+                fileName = "${data.entryClassName}_Impl",
+                packageName = data.entryPackageName,
+                content = data.sources()["xposed_init_Impl"]
+            )
         }
 
         /**
