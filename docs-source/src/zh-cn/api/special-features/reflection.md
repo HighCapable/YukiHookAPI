@@ -1142,6 +1142,74 @@ ABTestClass.hook {
 
 :::
 
+### 调用泛型
+
+在反射过程中，我们可能会遇到泛型问题，在泛型的反射处理上，`YukiHookAPI` 同样提供了一个可在任意地方使用的语法糖。
+
+例如我们有如下的泛型类。
+
+> 示例如下
+
+```kotlin
+class TestGeneric<T, R> (t: T, r: R) {
+
+    fun foo() {
+        // ...
+    }
+}
+```
+
+当我们想在当前 `Class` 中获得泛型 `T` 或 `R` 的 `Class` 实例，只需要如下实现。
+
+> 示例如下
+
+```kotlin
+class TestGeneric<T, R> (t: T, r: R) {
+
+    fun foo() {
+        // 获得当前实例的操作对象
+        // 获得 T 的 Class 实例，在参数第 0 位，默认值可以不写
+        val tClass = current().generic()?.argument()
+        // 获得 R 的 Class 实例，在参数第 1 位
+        val rClass = current().generic()?.argument(index = 1)
+        // 你还可以使用如下写法
+        current().generic {
+             // 获得 T 的 Class 实例，在参数第 0 位，默认值可以不写
+            val tClass = argument()
+            // 获得 R 的 Class 实例，在参数第 1 位
+            val rClass = argument(index = 1)
+        }
+    }
+}
+```
+
+当我们想在外部调用这个 `Class` 时，就可以有如下实现。
+
+> 示例如下
+
+```kotlin
+// 假设这个就是 T 的 Class
+class TI {
+
+    fun foo() {
+        // ...
+    }
+}
+// 假设这个就是 T 的实例
+val tInstance: TI? = ...
+// 获得 T 的 Class 实例，在参数第 0 位，默认值可以不写，并获得其中的方法 foo 并调用
+TestGeneric::class.java.generic()?.argument()?.method {
+    name = "foo"
+    emptyParam()
+}?.get(tInstance)?.invoke<TI>()
+```
+
+::: tip
+
+更多功能请参考 [CurrentClass.generic](../public/com/highcapable/yukihookapi/hook/bean/CurrentClass#generic-method)、[Class.generic](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#class-generic-ext-method) 方法以及 [GenericClass](../public/com/highcapable/yukihookapi/hook/bean/GenericClass)。
+
+:::
+
 ### 注意误区
 
 > 这里列举了使用时可能会遇到的误区部分，可供参考。
