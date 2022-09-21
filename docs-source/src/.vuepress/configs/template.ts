@@ -56,6 +56,12 @@ const navigationLinks = {
         baseApiPath + 'hook/core/finder/members/MethodFinder',
         baseApiPath + 'hook/core/finder/members/ConstructorFinder',
         baseApiPath + 'hook/core/finder/members/FieldFinder',
+        baseApiPath + 'hook/core/finder/classes/DexClassFinder',
+        baseApiPath + 'hook/core/finder/classes/rules/result/MemberRulesResult',
+        baseApiPath + 'hook/core/finder/classes/rules/MemberRules',
+        baseApiPath + 'hook/core/finder/classes/rules/FieldRules',
+        baseApiPath + 'hook/core/finder/classes/rules/MethodRules',
+        baseApiPath + 'hook/core/finder/classes/rules/ConstructorRules',
         baseApiPath + 'hook/core/finder/base/BaseFinder',
         baseApiPath + 'hook/core/finder/base/rules/CountRules',
         baseApiPath + 'hook/core/finder/base/rules/ModifierRules',
@@ -63,6 +69,7 @@ const navigationLinks = {
         baseApiPath + 'hook/bean/HookClass',
         baseApiPath + 'hook/bean/VariousClass',
         baseApiPath + 'hook/bean/CurrentClass',
+        baseApiPath + 'hook/bean/GenericClass',
         baseApiPath + 'hook/bean/HookResources'
     ],
     specialFeature: [

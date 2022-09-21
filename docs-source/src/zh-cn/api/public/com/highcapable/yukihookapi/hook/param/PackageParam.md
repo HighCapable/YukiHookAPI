@@ -472,6 +472,30 @@ fun loadHooker(hooker: YukiBaseHooker)
 
 你可以填入 `hooker` 在 Hooker 中继续装载 Hooker。
 
+## searchClass <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+inline fun searchClass(name: String, async: Boolean, initiate: ClassConditions): DexClassFinder.Result
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 通过 `appClassLoader` 按指定条件查找并得到当前 Hook APP **Dex** 中的 `Class`。
+
+::: danger
+
+此方法在 **Class** 数量过多及查找条件复杂时会非常耗时。
+
+建议启用 **async** 或设置 **name** 参数，**name** 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率。
+
+此功能尚在试验阶段，性能与稳定性可能仍然存在问题，使用过程遇到问题请向我们报告并帮助我们改进。
+
+:::
+
 <h2 class="deprecated">String+VariousClass.clazz - i-ext-field</h2>
 
 **变更记录**

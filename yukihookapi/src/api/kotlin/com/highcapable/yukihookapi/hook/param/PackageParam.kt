@@ -42,7 +42,9 @@ import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
+import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
@@ -291,6 +293,22 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param hooker Hook 子类
      */
     fun loadHooker(hooker: YukiBaseHooker) = hooker.assignInstance(packageParam = this)
+
+    /**
+     * 通过 [appClassLoader] 按指定条件查找并得到当前 Hook APP Dex 中的 [Class]
+     *
+     * - ❗此方法在 [Class] 数量过多及查找条件复杂时会非常耗时
+     *
+     * - ❗建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
+     *
+     * - ❗此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
+     * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存自动启用 [async]
+     * @param async 是否启用异步 - 默认否
+     * @param initiate 方法体
+     * @return [DexClassFinder.Result]
+     */
+    inline fun searchClass(name: String = "", async: Boolean = false, initiate: ClassConditions) =
+        DexClassFinder(name, async = async || name.isNotBlank(), appClassLoader).apply(initiate).build()
 
     /**
      * 通过字符串类名转换为当前 Hook APP 的实体类

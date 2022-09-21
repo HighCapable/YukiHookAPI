@@ -30,28 +30,34 @@
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
+import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.factory.hasExtends
+import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
+import com.highcapable.yukihookapi.hook.type.java.DalvikBaseDexClassLoader
 import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
 import com.highcapable.yukihookapi.hook.utils.conditions
 import com.highcapable.yukihookapi.hook.utils.let
 import com.highcapable.yukihookapi.hook.utils.takeIf
+import com.highcapable.yukihookapi.hook.utils.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
+import java.util.*
 import kotlin.math.abs
 
 /**
@@ -61,6 +67,23 @@ internal object ReflectionTool {
 
     /** 当前工具类的标签 */
     private const val TAG = "YukiHookAPI#ReflectionTool"
+
+    /**
+     * 写出当前 [ClassLoader] 下所有 [Class] 名称数组
+     * @param loader 当前使用的 [ClassLoader]
+     * @return [List]<[String]>
+     * @throws IllegalStateException 如果 [loader] 不是 [BaseDexClassLoader]
+     */
+    private fun findDexClassList(loader: ClassLoader?) = ReflectsCacheStore.findDexClassList(loader.hashCode())
+        ?: DalvikBaseDexClassLoader.field { name = "pathList" }.ignored().get(loader.value().let {
+            while (it.value !is BaseDexClassLoader) {
+                if (it.value?.parent != null) it.value = it.value?.parent
+                else error("ClassLoader [$loader] is not a DexClassLoader")
+            }; it.value ?: error("ClassLoader [$loader] load failed")
+        }).current(ignored = true)?.field { name = "dexElements" }?.array<Any>()?.flatMap { element ->
+            element.current(ignored = true).field { name = "dexFile" }.current(ignored = true)
+                ?.method { name = "entries" }?.invoke<Enumeration<String>>()?.toList().orEmpty()
+        }.orEmpty().also { if (it.isNotEmpty()) ReflectsCacheStore.putDexClassList(loader.hashCode(), it) }
 
     /**
      * 使用字符串类名查询 [Class] 是否存在
@@ -87,6 +110,140 @@ internal object ReflectionTool {
                 else -> loader.loadClass(name)
             }.also { ReflectsCacheStore.putClass(hashCode, it) }
         }.getOrNull() ?: throw createException(loader ?: AppParasitics.baseClassLoader, name = "Class", "name:[$name]")
+    }
+
+    /**
+     * 查找任意 [Class] 或一组 [Class]
+     * @param loaderSet 类所在 [ClassLoader]
+     * @param rulesData 规则查询数据
+     * @return [HashSet]<[Class]>
+     * @throws IllegalStateException 如果 [loaderSet] 为 null 或未设置任何条件
+     * @throws NoClassDefFoundError 如果找不到 [Class]
+     */
+    internal fun findClasses(loaderSet: ClassLoader?, rulesData: ClassRulesData) = rulesData.createResult {
+        ReflectsCacheStore.findClasses(hashCode(loaderSet)) ?: hashSetOf<Class<*>>().also { classes ->
+            /**
+             * 开始查询作业
+             * @param instance 当前 [Class] 实例
+             */
+            fun startProcess(instance: Class<*>) {
+                conditions {
+                    fromPackages.takeIf { it.isNotEmpty() }?.also { and(true) }
+                    fullName?.also { it.equals(instance, it.TYPE_NAME).also { e -> if (it.isOptional) opt(e) else and(e) } }
+                    simpleName?.also { it.equals(instance, it.TYPE_SIMPLE_NAME).also { e -> if (it.isOptional) opt(e) else and(e) } }
+                    singleName?.also { it.equals(instance, it.TYPE_SINGLE_NAME).also { e -> if (it.isOptional) opt(e) else and(e) } }
+                    fullNameConditions?.also { instance.name.also { n -> and(it(n.cast(), n)) } }
+                    simpleNameConditions?.also { instance.simpleName.also { n -> and(it(n.cast(), n)) } }
+                    singleNameConditions?.also { classSingleName(instance).also { n -> and(it(n.cast(), n)) } }
+                    modifiers?.also { and(it(instance.cast())) }
+                    extendsClass.takeIf { it.isNotEmpty() }?.also { and(instance.hasExtends && it.contains(instance.superclass.name)) }
+                    implementsClass.takeIf { it.isNotEmpty() }
+                        ?.also { and(instance.interfaces.isNotEmpty() && instance.interfaces.any { e -> it.contains(e.name) }) }
+                    enclosingClass.takeIf { it.isNotEmpty() }
+                        ?.also { and(instance.enclosingClass != null && it.contains(instance.enclosingClass.name)) }
+                    isAnonymousClass?.also { and(instance.isAnonymousClass && it) }
+                    isNoExtendsClass?.also { and(instance.hasExtends.not() && it) }
+                    isNoImplementsClass?.also { and(instance.interfaces.isEmpty() && it) }
+                    /**
+                     * 匹配 [MemberRulesData]
+                     * @param size [Member] 个数
+                     * @param result 回调是否匹配
+                     */
+                    fun MemberRulesData.matchCount(size: Int, result: (Boolean) -> Unit) {
+                        takeIf { it.isInitializeOfMatch }?.also { rule ->
+                            rule.conditions {
+                                value.matchCount.takeIf { it >= 0 }?.also { and(it == size) }
+                                value.matchCountRange.takeIf { it.isEmpty().not() }?.also { and(size in it) }
+                                value.matchCountConditions?.also { and(it(CountRules.with(size), size)) }
+                            }.finally { result(true) }.without { result(false) }
+                        } ?: result(true)
+                    }
+
+                    /**
+                     * 检查类型中的 [Class] 是否存在 - 即不存在 [UndefinedType]
+                     * @param type 类型
+                     * @return [Boolean]
+                     */
+                    fun MemberRulesData.exists(vararg type: Any?): Boolean {
+                        if (type.isEmpty()) return true
+                        for (i in type.indices) if (type[i] == UndefinedType) {
+                            yLoggerW(msg = "$objectName type[$i] mistake, it will be ignored in current conditions")
+                            return false
+                        }
+                        return true
+                    }
+                    memberRules.takeIf { it.isNotEmpty() }?.forEach { rule ->
+                        instance.existMembers?.apply {
+                            var numberOfFound = 0
+                            if (rule.isInitializeOfSuper) forEach { member ->
+                                rule.conditions {
+                                    value.modifiers?.also { and(it(member.cast())) }
+                                }.finally { numberOfFound++ }
+                            }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
+                            else rule.matchCount(size) { and(it) }
+                        }
+                    }
+                    fieldRules.takeIf { it.isNotEmpty() }?.forEach { rule ->
+                        instance.existFields?.apply {
+                            var numberOfFound = 0
+                            if (rule.isInitialize) forEach { field ->
+                                rule.conditions {
+                                    value.type?.also { value.exists(it) and (it == field.type) }
+                                    value.name.takeIf { it.isNotBlank() }?.also { and(it == field.name) }
+                                    value.modifiers?.also { and(it(field.cast())) }
+                                    value.nameConditions?.also { field.name.also { n -> and(it(n.cast(), n)) } }
+                                }.finally { numberOfFound++ }
+                            }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
+                            else rule.matchCount(size) { and(it) }
+                        }
+                    }
+                    methodRules.takeIf { it.isNotEmpty() }?.forEach { rule ->
+                        instance.existMethods?.apply {
+                            var numberOfFound = 0
+                            if (rule.isInitialize) forEach { method ->
+                                rule.conditions {
+                                    value.name.takeIf { it.isNotBlank() }?.also { and(it == method.name) }
+                                    value.returnType?.also { value.exists(it) and (it == method.returnType) }
+                                    value.paramCount.takeIf { it >= 0 }?.also { and(method.parameterTypes.size == it) }
+                                    value.paramCountRange.takeIf { it.isEmpty().not() }?.also { and(method.parameterTypes.size in it) }
+                                    value.paramCountConditions?.also { method.parameterTypes.size.also { s -> and(it(s.cast(), s)) } }
+                                    value.paramTypes?.also { value.exists(*it) and (paramTypesEq(it, method.parameterTypes)) }
+                                    value.modifiers?.also { and(it(method.cast())) }
+                                    value.nameConditions?.also { method.name.also { n -> and(it(n.cast(), n)) } }
+                                }.finally { numberOfFound++ }
+                            }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
+                            else rule.matchCount(size) { and(it) }
+                        }
+                    }
+                    constroctorRules.takeIf { it.isNotEmpty() }?.forEach { rule ->
+                        instance.existConstructors?.apply {
+                            var numberOfFound = 0
+                            if (rule.isInitialize) forEach { constructor ->
+                                rule.conditions {
+                                    value.paramCount.takeIf { it >= 0 }?.also { and(constructor.parameterTypes.size == it) }
+                                    value.paramCountRange.takeIf { it.isEmpty().not() }?.also { and(constructor.parameterTypes.size in it) }
+                                    value.paramCountConditions?.also { constructor.parameterTypes.size.also { s -> and(it(s.cast(), s)) } }
+                                    value.paramTypes?.also { value.exists(*it) and (paramTypesEq(it, constructor.parameterTypes)) }
+                                    value.modifiers?.also { and(it(constructor.cast())) }
+                                }.finally { numberOfFound++ }
+                            }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
+                            else rule.matchCount(size) { and(it) }
+                        }
+                    }
+                }.finally { classes.add(instance) }
+            }
+            findDexClassList(loaderSet).takeIf { it.isNotEmpty() }?.forEach { className ->
+                /** 分离包名 → com.demo.Test → com.demo (获取最后一个 "." + 简单类名的长度) → 由于末位存在 "." 最后要去掉 1 个长度 */
+                (if (className.contains(other = "."))
+                    className.substring(0, className.length - className.split(".").let { it[it.lastIndex] }.length - 1)
+                else className).also { packageName ->
+                    if ((fromPackages.isEmpty() || fromPackages.any {
+                            if (it.isAbsolute) packageName == it.name else packageName.startsWith(it.name)
+                        }) && className.hasClass(loaderSet)
+                    ) startProcess(className.toClass(loaderSet))
+                }
+            }
+        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putClasses(hashCode(loaderSet), it) } ?: throwNotFoundError(loaderSet)
     }
 
     /**
@@ -333,6 +490,7 @@ internal object ReflectionTool {
             is FieldRulesData -> isInitialize.not()
             is MethodRulesData -> isInitialize.not()
             is ConstructorRulesData -> isInitialize.not()
+            is ClassRulesData -> isInitialize.not()
             else -> true
         }.takeIf { it }?.also { error("You must set a condition when finding a $objectName") }
         return result(this)
@@ -374,6 +532,7 @@ internal object ReflectionTool {
         is FieldRulesData -> throw createException(instanceSet, objectName, *templates)
         is MethodRulesData -> throw createException(instanceSet, objectName, *templates)
         is ConstructorRulesData -> throw createException(instanceSet, objectName, *templates)
+        is ClassRulesData -> throw createException(instanceSet ?: AppParasitics.baseClassLoader, objectName, *templates)
         else -> error("Type [$this] not allowed")
     }
 

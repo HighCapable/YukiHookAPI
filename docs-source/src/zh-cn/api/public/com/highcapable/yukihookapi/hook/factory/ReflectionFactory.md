@@ -68,6 +68,30 @@ CONSTRUCTOR
 
 > 全部 `Constructor`。
 
+## ClassLoader.searchClass <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+inline fun ClassLoader.searchClass(name: String, async: Boolean, initiate: ClassConditions): DexClassFinder.Result
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 通过当前 `ClassLoader` 按指定条件查找并得到 **Dex** 中的 `Class`。
+
+::: danger
+
+此方法在 **Class** 数量过多及查找条件复杂时会非常耗时。
+
+建议启用 **async** 或设置 **name** 参数，**name** 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率。
+
+此功能尚在试验阶段，性能与稳定性可能仍然存在问题，使用过程遇到问题请向我们报告并帮助我们改进。
+
+:::
+
 ## ClassLoader.onLoadClass <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers

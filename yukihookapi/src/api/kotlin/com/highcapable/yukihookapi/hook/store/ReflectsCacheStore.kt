@@ -38,12 +38,20 @@ import java.lang.reflect.Method
  *
  * 为防止 [Class]、[Member] 复用过高造成的系统 GC 问题
  *
- * 查询后的 [Class]、[Member] 在 [YukiHookAPI.Configs.isEnableMemberCache] 启用后自动进入缓存
+ * 查找后的 [Class] 自动进入缓存 - 不受任何控制
+ *
+ * 查找后的 [Member] 在 [YukiHookAPI.Configs.isEnableMemberCache] 启用后自动进入缓存
  */
 internal object ReflectsCacheStore {
 
-    /** 缓存的 [Class] */
+    /** 缓存的 [Class] 列表 */
+    private val dexClassListData = HashMap<Int, List<String>>()
+
+    /** 缓存的 [Class] 对象 */
     private val classData = HashMap<Int, Class<*>?>()
+
+    /** 缓存的 [Class] 数组 */
+    private val classesData = HashMap<Int, HashSet<Class<*>>>()
 
     /** 缓存的 [Method] 数组 */
     private val methodsData = HashMap<Int, HashSet<Method>>()
@@ -55,11 +63,25 @@ internal object ReflectsCacheStore {
     private val fieldsData = HashMap<Int, HashSet<Field>>()
 
     /**
+     * 查找缓存中的 [Class] 列表
+     * @param hashCode 标识符
+     * @return [List]<[Class]>
+     */
+    internal fun findDexClassList(hashCode: Int) = dexClassListData[hashCode]
+
+    /**
      * 查找缓存中的 [Class]
      * @param hashCode 标识符
      * @return [Class] or null
      */
     internal fun findClass(hashCode: Int) = classData[hashCode]
+
+    /**
+     * 查找缓存中的 [Class] 数组
+     * @param hashCode 标识符
+     * @return [HashSet]<[Class]> or null
+     */
+    internal fun findClasses(hashCode: Int) = classesData[hashCode]
 
     /**
      * 查找缓存中的 [Method] 数组
@@ -83,13 +105,30 @@ internal object ReflectsCacheStore {
     internal fun findFields(hashCode: Int) = fieldsData[hashCode]
 
     /**
+     * 写入 [Class] 列表到缓存
+     * @param hashCode 标识符
+     * @param instance 实例
+     */
+    internal fun putDexClassList(hashCode: Int, instance: List<String>) {
+        dexClassListData[hashCode] = instance
+    }
+
+    /**
      * 写入 [Class] 到缓存
      * @param hashCode 标识符
      * @param instance 实例
      */
     internal fun putClass(hashCode: Int, instance: Class<*>?) {
-        if (YukiHookAPI.Configs.isEnableMemberCache.not()) return
         classData[hashCode] = instance
+    }
+
+    /**
+     * 写入 [Class] 数组到缓存
+     * @param hashCode 标识符
+     * @param instance 实例
+     */
+    internal fun putClasses(hashCode: Int, instance: HashSet<Class<*>>) {
+        classesData[hashCode] = instance
     }
 
     /**

@@ -30,9 +30,13 @@ package com.highcapable.yukihookapi.hook.core.finder.type.factory
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
+import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
+
+/** 定义 [DexClassFinder] 方法体类型 */
+internal typealias ClassConditions = DexClassFinder.() -> Unit
 
 /** 定义 [FieldFinder] 方法体类型 */
 internal typealias FieldConditions = FieldFinder.() -> Unit

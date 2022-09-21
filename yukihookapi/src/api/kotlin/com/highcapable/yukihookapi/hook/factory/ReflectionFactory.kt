@@ -33,14 +33,12 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.GenericClass
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
+import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.ConstructorConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.lang.reflect.*
@@ -58,6 +56,22 @@ enum class MembersType {
     /** 全部 [Constructor] */
     CONSTRUCTOR
 }
+
+/**
+ * 通过当前 [ClassLoader] 按指定条件查找并得到 Dex 中的 [Class]
+ *
+ * - ❗此方法在 [Class] 数量过多及查找条件复杂时会非常耗时
+ *
+ * - ❗建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
+ *
+ * - ❗此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
+ * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存自动启用 [async]
+ * @param async 是否启用异步 - 默认否
+ * @param initiate 方法体
+ * @return [DexClassFinder.Result]
+ */
+inline fun ClassLoader.searchClass(name: String = "", async: Boolean = false, initiate: ClassConditions) =
+    DexClassFinder(name, async = async || name.isNotBlank(), loaderSet = this).apply(initiate).build()
 
 /**
  * 监听当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法装载
