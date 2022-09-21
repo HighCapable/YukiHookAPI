@@ -35,6 +35,21 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 var instance = "com.demo.Test".toClass(customClassLoader)
 ```
 
+如果当前 `Class` 并不存在，使用上述方法会抛出异常，如果你不确定 `Class` 是否存在，可以参考下面的解决方案。
+
+> 示例如下
+
+```kotlin
+// 直接得到这个 Class
+// 如果当前正处于 PackageParam 环境，那么你可以不需要考虑 ClassLoader
+// 得不到时结果会为 null 但不会抛出异常
+var instance = "com.demo.Test".toClassOrNull()
+// 自定义 Class 所在的 ClassLoader
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+// 得不到时结果会为 null 但不会抛出异常
+var instance = "com.demo.Test".toClassOrNull(customClassLoader)
+```
+
 我们还可以通过映射来得到一个存在的 `Class` 对象。
 
 > 示例如下
@@ -49,7 +64,7 @@ var instance = classOf<Test>(customClassLoader)
 
 ::: tip
 
-更多功能请参考 [String.toClass](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#string-toclass-ext-method)、[PackageParam → String+VariousClass.toClass](../public/com/highcapable/yukihookapi/hook/param/PackageParam#string-variousclass-toclass-i-ext-method)、[classOf](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#classof-method) 方法。
+更多功能请参考 [classOf](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#classof-method)、[String.toClass](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#string-toclass-ext-method)、[String.toClassOrNull](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#string-toclassornull-ext-method)、[PackageParam → String+VariousClass.toClass](../public/com/highcapable/yukihookapi/hook/param/PackageParam#string-variousclass-toclass-i-ext-method)、[PackageParam → String+VariousClass.toClassOrNull](../public/com/highcapable/yukihookapi/hook/param/PackageParam#string-variousclass-toclassornull-i-ext-method) 方法。
 
 :::
 
