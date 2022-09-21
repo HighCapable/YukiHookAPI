@@ -54,6 +54,12 @@ abstract class MemberBaseFinder internal constructor(
     internal open val classSet: Class<*>? = null
 ) : BaseFinder() {
 
+    internal companion object {
+
+        /** [classSet] 为 null 的提示 */
+        internal const val CLASSSET_IS_NULL = "classSet is null"
+    }
+
     /** 是否使用了重查找功能 */
     @PublishedApi
     internal var isUsingRemedyPlan = false
@@ -121,6 +127,8 @@ abstract class MemberBaseFinder internal constructor(
             if (isNotIgnoredNoSuchMemberFailure && isUsingRemedyPlan.not() && isShutErrorPrinting.not())
                 loggingContent = Pair(msg, throwable)
         }
+        /** 判断是否为 [CLASSSET_IS_NULL] */
+        if (throwable?.message == CLASSSET_IS_NULL) return
         /** 判断绑定到 Hooker 时仅创建日志 */
         if (isBindToHooker) return await { build() }.unit()
         /** 判断始终输出日志或等待结果后输出日志 */

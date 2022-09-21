@@ -196,7 +196,7 @@ class FieldFinder @PublishedApi internal constructor(
                 memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
             }
             Result()
-        } else Result(isNoSuch = true, Throwable("classSet is null"))
+        } else Result(isNoSuch = true, Throwable(CLASSSET_IS_NULL))
     }.getOrElse { e -> Result(isNoSuch = true, e).await { onFailureMsg(throwable = e) } }
 
     @YukiPrivateApi

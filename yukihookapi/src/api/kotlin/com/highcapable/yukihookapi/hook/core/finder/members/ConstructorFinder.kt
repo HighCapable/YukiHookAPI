@@ -237,7 +237,7 @@ class ConstructorFinder @PublishedApi internal constructor(
      * @param isBind 是否将结果设置到目标 [YukiMemberHookCreator.MemberHookCreator]
      */
     private fun build(isBind: Boolean) {
-        if (classSet == null) error("classSet is null")
+        if (classSet == null) error(CLASSSET_IS_NULL)
         classSet.checkingInternal()
         runBlocking {
             isBindToHooker = isBind

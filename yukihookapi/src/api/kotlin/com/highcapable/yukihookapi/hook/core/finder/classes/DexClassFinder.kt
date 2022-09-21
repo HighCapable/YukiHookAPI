@@ -494,7 +494,7 @@ class DexClassFinder @PublishedApi internal constructor(
                     }
                 } else startProcess()
             }
-        } else Result(isNotFound = true, Throwable("loaderSet is null")).await { onFailureMsg() }
+        } else Result(isNotFound = true, Throwable(LOADERSET_IS_NULL)).await { onFailureMsg() }
     }.getOrElse { e -> Result(isNotFound = true, e).await { onFailureMsg(throwable = e) } }
 
     /**

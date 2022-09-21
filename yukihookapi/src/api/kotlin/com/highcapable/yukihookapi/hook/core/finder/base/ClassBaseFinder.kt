@@ -39,6 +39,12 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
  */
 abstract class ClassBaseFinder internal constructor(internal open val loaderSet: ClassLoader? = null) : BaseFinder() {
 
+    internal companion object {
+
+        /** [loaderSet] 为 null 的提示 */
+        internal const val LOADERSET_IS_NULL = "loaderSet is null"
+    }
+
     /** 当前找到的 [Class] 数组 */
     internal var classInstances = HashSet<Class<*>>()
 
@@ -67,6 +73,8 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
      */
     internal fun onFailureMsg(throwable: Throwable? = null) {
         if (isShutErrorPrinting) return
+        /** 判断是否为 [LOADERSET_IS_NULL] */
+        if (throwable?.message == LOADERSET_IS_NULL) return
         yLoggerE(msg = "NoClassDefFound happend in [$loaderSet]", e = throwable)
     }
 
