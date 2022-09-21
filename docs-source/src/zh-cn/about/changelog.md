@@ -99,11 +99,11 @@
 - `PackageParam` 的 `loadApp` 新增不写 `name` 功能，默认筛选全部 APP
 - `PackageParam` 新增 `loadZygote` 方法，可直接 Hook 系统框架
 - `PackageParam` 新增 `resources().hook` 功能
-- 优化方法、构造方法、变量查找功能，找不到的错误日志将优先显示已设置的查询条件
+- 优化方法、构造方法、变量查找功能，找不到的错误日志将优先显示已设置的查找条件
 - 增加 `hasExtends` 扩展方法，可判断当前 `Class` 是否有继承关系
 - 增加 `isSupportResourcesHook` 功能，判断当前是否支持资源钩子(Resources Hook)
 - `current` 功能新增 `superClass` 方法调用父类
-- 查找方法、构造方法、变量新增 `superClass` 查询条件，可继续在父类中查找
+- 查找方法、构造方法、变量新增 `superClass` 查找条件，可继续在父类中查找
 - `YukiHookAPI` 大量方法与 Xposed API 解耦合
 - 新增 Xposed API 的原生 Hook 优先级功能
 - 修复 `isFirstApplication` 可能判断不准确的问题
@@ -139,7 +139,7 @@
 - `HookParam` 中删除了 `firstArgs` 与 `lastArgs` 方法，现在你可以使用 `args().first()` 与 `args().last()` 来取代它
 - `HookParam` 中删除了 `args()` 中的默认参数 `index = 0`，现在你可以使用 `args().first()` 或 `args(index = 0)` 来取代它
 - `HookParam` 中 `result` 功能增加了泛型匹配，现在你可以使用 `result<T>` 来匹配你的目标方法已知返回值类型了
-- 方法、构造方法查询功能新增 `emptyParam` 条件，并完善了文档相关需要注意的查询条件误区
+- 方法、构造方法查找功能新增 `emptyParam` 条件，并完善了文档相关需要注意的查找条件误区
 - 增加了 `type` 中的 `android` 类型
 
 ### 1.0.73 | 2022.04.10

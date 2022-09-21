@@ -31,7 +31,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import java.lang.reflect.Field
 
 /**
- * [Field] 规则查询数据类
+ * [Field] 规则查找数据类
  * @param name 名称
  * @param nameConditions 名称规则
  * @param type 类型

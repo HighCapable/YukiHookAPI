@@ -36,8 +36,8 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import java.lang.reflect.Field
 
 /**
- * [Field] 查询条件实现类
- * @param rulesData 当前查询条件规则数据
+ * [Field] 查找条件实现类
+ * @param rulesData 当前查找条件规则数据
  */
 class FieldRules internal constructor(@PublishedApi internal val rulesData: FieldRulesData) : BaseRules() {
 

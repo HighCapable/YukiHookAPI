@@ -31,7 +31,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import java.lang.reflect.Constructor
 
 /**
- * [Constructor] 规则查询数据类
+ * [Constructor] 规则查找数据类
  * @param paramTypes 参数类型数组
  * @param paramCount 参数个数
  * @param paramCountRange 参数个数范围

@@ -262,7 +262,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
         /**
          * 手动指定要 Hook 的 [Method]、[Constructor]
          *
-         * 你可以调用 [instanceClass] 来手动查询要 Hook 的 [Method]、[Constructor]
+         * 你可以调用 [instanceClass] 来手动查找要 Hook 的 [Method]、[Constructor]
          *
          * - ❗不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] or [constructor] 方法
          *

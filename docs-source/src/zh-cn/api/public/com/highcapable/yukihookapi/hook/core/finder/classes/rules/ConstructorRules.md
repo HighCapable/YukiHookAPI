@@ -14,7 +14,7 @@ class ConstructorRules internal constructor(internal val rulesData: ConstructorR
 
 **功能描述**
 
-> `Constructor` 查询条件实现类。
+> `Constructor` 查找条件实现类。
 
 ## paramCount <span class="symbol">- field</span>
 
@@ -84,7 +84,7 @@ fun param(vararg paramType: Any)
 
 ::: danger
 
-无参 **Constructor** 请使用 **emptyParam** 设置查询条件。
+无参 **Constructor** 请使用 **emptyParam** 设置查找条件。
 
 有参 **Constructor** 必须使用此方法设定参数或使用 **paramCount** 指定个数。
 

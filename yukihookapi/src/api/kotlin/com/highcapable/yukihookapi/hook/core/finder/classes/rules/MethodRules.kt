@@ -41,8 +41,8 @@ import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Method
 
 /**
- * [Method] 查询条件实现类
- * @param rulesData 当前查询条件规则数据
+ * [Method] 查找条件实现类
+ * @param rulesData 当前查找条件规则数据
  */
 class MethodRules internal constructor(@PublishedApi internal val rulesData: MethodRulesData) : BaseRules() {
 
@@ -118,7 +118,7 @@ class MethodRules internal constructor(@PublishedApi internal val rulesData: Met
      * param(StringType, BooleanType, VagueType, IntType)
      * ```
      *
-     * - ❗无参 [Method] 请使用 [emptyParam] 设置查询条件
+     * - ❗无参 [Method] 请使用 [emptyParam] 设置查找条件
      *
      * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]

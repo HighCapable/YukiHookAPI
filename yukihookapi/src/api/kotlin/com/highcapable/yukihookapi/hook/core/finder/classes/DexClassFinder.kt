@@ -113,7 +113,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 完整名称
      *
-     * 只会查询匹配到的 [Class.getName]
+     * 只会查找匹配到的 [Class.getName]
      *
      * 例如 com.demo.Test 需要填写 com.demo.Test
      * @return [String]
@@ -127,7 +127,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 简单名称
      *
-     * 只会查询匹配到的 [Class.getSimpleName]
+     * 只会查找匹配到的 [Class.getSimpleName]
      *
      * 例如 com.demo.Test 只需要填写 Test
      *
@@ -157,9 +157,9 @@ class DexClassFinder @PublishedApi internal constructor(
         }
 
     /**
-     * 设置在指定包名范围查询当前 [Class]
+     * 设置在指定包名范围查找当前 [Class]
      *
-     * 设置后仅会在当前 [name] 开头匹配的包名路径下进行查询 - 可提升查询速度
+     * 设置后仅会在当前 [name] 开头匹配的包名路径下进行查找 - 可提升查找速度
      *
      * 例如 ↓
      *
@@ -167,7 +167,7 @@ class DexClassFinder @PublishedApi internal constructor(
      *
      * com.demo.test.demo
      *
-     * - ❗建议设置此参数指定查询范围 - 否则 [Class] 过多时将会非常慢
+     * - ❗建议设置此参数指定查找范围 - 否则 [Class] 过多时将会非常慢
      * @param name 指定包名
      * @return [FromPackageRules] 可设置 [FromPackageRules.absolute] 标识包名绝对匹配
      */
@@ -189,7 +189,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 完整名称
      *
-     * 只会查询匹配到的 [Class.getName]
+     * 只会查找匹配到的 [Class.getName]
      *
      * 例如 com.demo.Test 需要填写 com.demo.Test
      * @param value 名称
@@ -203,7 +203,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 简单名称
      *
-     * 只会查询匹配到的 [Class.getSimpleName]
+     * 只会查找匹配到的 [Class.getSimpleName]
      *
      * 例如 com.demo.Test 只需要填写 Test
      *
@@ -235,7 +235,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 完整名称条件
      *
-     * 只会查询匹配到的 [Class.getName]
+     * 只会查找匹配到的 [Class.getName]
      * @param conditions 条件方法体
      */
     fun fullName(conditions: NameConditions) {
@@ -245,7 +245,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 简单名称条件
      *
-     * 只会查询匹配到的 [Class.getSimpleName]
+     * 只会查找匹配到的 [Class.getSimpleName]
      * @param conditions 条件方法体
      */
     fun simpleName(conditions: NameConditions) {
@@ -270,7 +270,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 继承的父类
      *
-     * 会同时查询 [name] 中所有匹配的父类
+     * 会同时查找 [name] 中所有匹配的父类
      * @param name [Class] 完整名称
      */
     fun extends(vararg name: String) {
@@ -285,7 +285,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 实现的接口类
      *
-     * 会同时查询 [name] 中所有匹配的接口类
+     * 会同时查找 [name] 中所有匹配的接口类
      * @param name [Class] 完整名称
      */
     fun implements(vararg name: String) {
@@ -343,7 +343,7 @@ class DexClassFinder @PublishedApi internal constructor(
     /**
      * 设置 [Class] 匿名类的 (封闭类) 主类
      *
-     * 会同时查询 [name] 中所有匹配的 (封闭类) 主类
+     * 会同时查找 [name] 中所有匹配的 (封闭类) 主类
      * @param name [Class] 完整名称
      */
     fun enclosing(vararg name: String) {
@@ -393,7 +393,7 @@ class DexClassFinder @PublishedApi internal constructor(
          *
          * 此时可设置类名为 "com.demo.Test" (fullName) / "Test" (simpleName)
          *
-         * 这样就可在完全匹配类名情况下使用类名而忽略其它查询条件 - 否则忽略此条件继续使用其它查询条件
+         * 这样就可在完全匹配类名情况下使用类名而忽略其它查找条件 - 否则忽略此条件继续使用其它查找条件
          */
         fun optional() {
             name.isOptional = true
@@ -528,7 +528,7 @@ class DexClassFinder @PublishedApi internal constructor(
          *
          * - 若有多个 [Class] 结果只会返回第一个
          *
-         * - 在查询条件找不到任何结果的时候将返回 null
+         * - 在查找条件找不到任何结果的时候将返回 null
          *
          * - ❗若你设置了 [async] 请使用 [wait] 方法
          * @return [Class] or null
@@ -538,9 +538,9 @@ class DexClassFinder @PublishedApi internal constructor(
         /**
          * 得到 [Class] 本身数组
          *
-         * - 返回全部查询条件匹配的多个 [Class] 实例
+         * - 返回全部查找条件匹配的多个 [Class] 实例
          *
-         * - 在查询条件找不到任何结果的时候将返回空的 [HashSet]
+         * - 在查找条件找不到任何结果的时候将返回空的 [HashSet]
          *
          * - ❗若你设置了 [async] 请使用 [waitAll] 方法
          * @return [HashSet]<[Class]>
@@ -550,9 +550,9 @@ class DexClassFinder @PublishedApi internal constructor(
         /**
          * 得到 [Class] 本身数组 (依次遍历)
          *
-         * - 回调全部查询条件匹配的多个 [Class] 实例
+         * - 回调全部查找条件匹配的多个 [Class] 实例
          *
-         * - 在查询条件找不到任何结果的时候将不会执行
+         * - 在查找条件找不到任何结果的时候将不会执行
          *
          * - ❗若你设置了 [async] 请使用 [waitAll] 方法
          * @param result 回调每个结果
@@ -568,7 +568,7 @@ class DexClassFinder @PublishedApi internal constructor(
          *
          * - 若有多个 [Class] 结果只会回调第一个
          *
-         * - 在查询条件找不到任何结果的时候将回调 null
+         * - 在查找条件找不到任何结果的时候将回调 null
          *
          * - ❗你需要设置 [async] 后此方法才会被回调 - 否则请使用 [get] 方法
          * @param result 回调 - ([Class] or null)
@@ -582,9 +582,9 @@ class DexClassFinder @PublishedApi internal constructor(
         /**
          * 得到 [Class] 本身数组 (异步)
          *
-         * - 回调全部查询条件匹配的多个 [Class] 实例
+         * - 回调全部查找条件匹配的多个 [Class] 实例
          *
-         * - 在查询条件找不到任何结果的时候将回调空的 [HashSet]
+         * - 在查找条件找不到任何结果的时候将回调空的 [HashSet]
          *
          * - ❗你需要设置 [async] 后此方法才会被回调 - 否则请使用 [all] 方法
          * @param result 回调 - ([HashSet]<[Class]>)

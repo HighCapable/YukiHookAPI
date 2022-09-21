@@ -14,7 +14,7 @@ class FieldRules internal constructor(internal val rulesData: FieldRulesData) : 
 
 **功能描述**
 
-> `Field` 查询条件实现类。
+> `Field` 查找条件实现类。
 
 ## name <span class="symbol">- field</span>
 

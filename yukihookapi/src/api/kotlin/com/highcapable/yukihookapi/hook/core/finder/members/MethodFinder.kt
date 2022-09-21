@@ -154,7 +154,7 @@ class MethodFinder @PublishedApi internal constructor(
      * param(StringType, BooleanType, VagueType, IntType)
      * ```
      *
-     * - ❗无参 [Method] 请使用 [emptyParam] 设置查询条件
+     * - ❗无参 [Method] 请使用 [emptyParam] 设置查找条件
      *
      * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      *
@@ -442,7 +442,7 @@ class MethodFinder @PublishedApi internal constructor(
         inline fun result(initiate: Process.() -> Unit) = apply(initiate)
 
         /**
-         * 设置全部查询条件匹配的多个 [Method] 实例结果到 [hookInstance]
+         * 设置全部查找条件匹配的多个 [Method] 实例结果到 [hookInstance]
          * @return [Process] 可继续向下监听
          */
         fun all(): Process {
@@ -519,7 +519,7 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * 获得 [Method] 实例处理类数组
          *
-         * - 返回全部查询条件匹配的多个 [Method] 实例结果
+         * - 返回全部查找条件匹配的多个 [Method] 实例结果
          *
          * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
          *
@@ -535,7 +535,7 @@ class MethodFinder @PublishedApi internal constructor(
          *
          * - 若有多个 [Method] 结果只会返回第一个
          *
-         * - 在查询条件找不到任何结果的时候将返回 null
+         * - 在查找条件找不到任何结果的时候将返回 null
          * @return [Method] or null
          */
         fun give() = giveAll().takeIf { it.isNotEmpty() }?.first()
@@ -543,9 +543,9 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * 得到 [Method] 本身数组
          *
-         * - 返回全部查询条件匹配的多个 [Method] 实例
+         * - 返回全部查找条件匹配的多个 [Method] 实例
          *
-         * - 在查询条件找不到任何结果的时候将返回空的 [HashSet]
+         * - 在查找条件找不到任何结果的时候将返回空的 [HashSet]
          * @return [HashSet]<[Method]>
          */
         fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.methods() ?: HashSet()
@@ -569,7 +569,7 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * 获得 [Method] 实例处理类数组
          *
-         * - 返回全部查询条件匹配的多个 [Method] 实例结果
+         * - 返回全部查找条件匹配的多个 [Method] 实例结果
          *
          * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
          *

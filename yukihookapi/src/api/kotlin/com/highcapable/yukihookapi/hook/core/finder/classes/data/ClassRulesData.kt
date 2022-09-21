@@ -42,7 +42,7 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * [Class] 规则查询数据类
+ * [Class] 规则查找数据类
  * @param fromPackages 指定包名范围名称数组
  * @param fullName 完整名称
  * @param simpleName 简单名称
@@ -56,10 +56,10 @@ import java.lang.reflect.Method
  * @param extendsClass 继承的父类名称数组
  * @param implementsClass 实现的接口类名称数组
  * @param enclosingClass 包含的封闭类 (主类) 名称数组
- * @param memberRules [Member] 查询条件数据数组
- * @param fieldRules [Field] 查询条件数据数组
- * @param methodRules [Method] 查询条件数据数组
- * @param constroctorRules [Constructor] 查询条件数据数组
+ * @param memberRules [Member] 查找条件数据数组
+ * @param fieldRules [Field] 查找条件数据数组
+ * @param methodRules [Method] 查找条件数据数组
+ * @param constroctorRules [Constructor] 查找条件数据数组
  */
 @PublishedApi
 internal class ClassRulesData internal constructor(
@@ -83,14 +83,14 @@ internal class ClassRulesData internal constructor(
 ) : BaseRulesData() {
 
     /**
-     * 创建类名匹配条件查询数据类
+     * 创建类名匹配条件查找数据类
      * @param name 包名
      * @return [NameRulesData]
      */
     internal fun createNameRulesData(name: String) = NameRulesData(name)
 
     /**
-     * 创建包名范围名称过滤匹配条件查询数据类
+     * 创建包名范围名称过滤匹配条件查找数据类
      * @param name 包名
      * @return [PackageRulesData]
      */
@@ -105,7 +105,7 @@ internal class ClassRulesData internal constructor(
         ?: instance.enclosingClass?.let { it.simpleName + instance.name.replace(it.name, newValue = "") } ?: ""
 
     /**
-     * 类名匹配条件查询数据类
+     * 类名匹配条件查找数据类
      * @param name 包名
      * @param isOptional 是否可选 - 默认否
      */
@@ -137,7 +137,7 @@ internal class ClassRulesData internal constructor(
     }
 
     /**
-     * 包名范围名称过滤匹配条件查询数据类
+     * 包名范围名称过滤匹配条件查找数据类
      * @param name 包名
      * @param isAbsolute 是否绝对匹配 - 默认否
      */

@@ -228,7 +228,7 @@ fun members(vararg member: Member?)
 
 **功能示例**
 
-你可以调用 `instanceClass` 来手动查询要 Hook 的 `Method`、`Constructor`。
+你可以调用 `instanceClass` 来手动查找要 Hook 的 `Method`、`Constructor`。
 
 > 示例如下
 
@@ -332,7 +332,7 @@ injectMember {
 }
 ```
 
-若想 Hook 当前查询 `method { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
+若想 Hook 当前查找 `method { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
 
 > 示例如下
 
@@ -347,11 +347,11 @@ injectMember {
 }
 ```
 
-此时 `beforeHook` 与 `afterHook` 会在每个查询到的结果中多次回调 Hook 方法体。
+此时 `beforeHook` 与 `afterHook` 会在每个查找到的结果中多次回调 Hook 方法体。
 
 ::: warning
 
-若没有 **all**，默认只会 Hook 当前条件查询到的数组下标结果第一位。
+若没有 **all**，默认只会 Hook 当前条件查找到的数组下标结果第一位。
 
 :::
 
@@ -387,7 +387,7 @@ injectMember {
 }
 ```
 
-若想 Hook 当前查询 `constructor { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
+若想 Hook 当前查找 `constructor { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
 
 > 示例如下
 
@@ -399,11 +399,11 @@ injectMember {
 }
 ```
 
-此时 `beforeHook` 与 `afterHook` 会在每个查询到的结果中多次回调 Hook 方法体。
+此时 `beforeHook` 与 `afterHook` 会在每个查找到的结果中多次回调 Hook 方法体。
 
 ::: warning
 
-若没有 **all**，默认只会 Hook 当前条件查询到的数组下标结果第一位。
+若没有 **all**，默认只会 Hook 当前条件查找到的数组下标结果第一位。
 
 :::
 
@@ -439,7 +439,7 @@ injectMember {
         returnType = UnitType
     }
     afterHook {
-        // 这里不需要再调用 instanceClass.field 进行查询
+        // 这里不需要再调用 instanceClass.field 进行查找
         field {
             name = "isSweet"
             type = BooleanType

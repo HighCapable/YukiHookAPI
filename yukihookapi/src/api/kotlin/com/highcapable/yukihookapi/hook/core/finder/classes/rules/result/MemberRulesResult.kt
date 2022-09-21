@@ -34,19 +34,19 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import java.lang.reflect.Member
 
 /**
- * 当前 [Member] 查询条件结果实现类
- * @param rulesData 当前查询条件规则数据
+ * 当前 [Member] 查找条件结果实现类
+ * @param rulesData 当前查找条件规则数据
  */
 class MemberRulesResult internal constructor(private val rulesData: MemberRulesData) {
 
     /**
-     * 设置当前 [Member] 在查询条件中个数为 0
+     * 设置当前 [Member] 在查找条件中个数为 0
      * @return [MemberRulesResult] 可继续向下监听
      */
     fun none() = count(num = 0)
 
     /**
-     * 设置当前 [Member] 在查询条件中需要全部匹配的个数
+     * 设置当前 [Member] 在查找条件中需要全部匹配的个数
      * @param num 个数
      * @return [MemberRulesResult] 可继续向下监听
      */
@@ -56,7 +56,7 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
     }
 
     /**
-     * 设置当前 [Member] 在查询条件中需要全部匹配的个数范围
+     * 设置当前 [Member] 在查找条件中需要全部匹配的个数范围
      *
      * 使用示例如下 ↓
      *
@@ -72,7 +72,7 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
     }
 
     /**
-     * 设置当前 [Member] 在查询条件中需要全部匹配的个数条件
+     * 设置当前 [Member] 在查找条件中需要全部匹配的个数条件
      *
      * 使用示例如下 ↓
      *

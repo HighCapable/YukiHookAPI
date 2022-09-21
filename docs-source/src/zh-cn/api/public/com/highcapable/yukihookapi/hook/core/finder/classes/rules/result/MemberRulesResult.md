@@ -14,7 +14,7 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
 
 **功能描述**
 
-> 当前 `Member` 查询条件结果实现类。
+> 当前 `Member` 查找条件结果实现类。
 
 ## none <span class="symbol">- method</span>
 
@@ -28,7 +28,7 @@ fun none(): MemberRulesResult
 
 **功能描述**
 
-> 设置当前 `Member` 在查询条件中个数为 `0`。
+> 设置当前 `Member` 在查找条件中个数为 `0`。
 
 ## count <span class="symbol">- method</span>
 
@@ -42,7 +42,7 @@ fun count(num: Int): MemberRulesResult
 
 **功能描述**
 
-> 设置当前 `Member` 在查询条件中需要全部匹配的个数。
+> 设置当前 `Member` 在查找条件中需要全部匹配的个数。
 
 ## count <span class="symbol">- method</span>
 
@@ -56,7 +56,7 @@ fun count(numRange: IntRange): MemberRulesResult
 
 **功能描述**
 
-> 设置当前 `Member` 在查询条件中需要全部匹配的个数范围。
+> 设置当前 `Member` 在查找条件中需要全部匹配的个数范围。
 
 ## count <span class="symbol">- method</span>
 
@@ -70,4 +70,4 @@ fun count(conditions: CountConditions): MemberRulesResult
 
 **功能描述**
 
-> 设置当前 `Member` 在查询条件中需要全部匹配的个数条件。
+> 设置当前 `Member` 在查找条件中需要全部匹配的个数条件。

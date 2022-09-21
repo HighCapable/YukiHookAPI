@@ -40,7 +40,7 @@ import kotlin.math.abs
  */
 abstract class BaseFinder {
 
-    /** 当前查询条件规则数据 */
+    /** 当前查找条件规则数据 */
     @PublishedApi
     internal abstract val rulesData: BaseRulesData
 

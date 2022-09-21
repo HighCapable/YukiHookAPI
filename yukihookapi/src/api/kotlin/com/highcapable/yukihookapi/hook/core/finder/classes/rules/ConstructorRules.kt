@@ -40,8 +40,8 @@ import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Constructor
 
 /**
- * [Constructor] 查询条件实现类
- * @param rulesData 当前查询条件规则数据
+ * [Constructor] 查找条件实现类
+ * @param rulesData 当前查找条件规则数据
  */
 class ConstructorRules internal constructor(@PublishedApi internal val rulesData: ConstructorRulesData) : BaseRules() {
 
@@ -93,7 +93,7 @@ class ConstructorRules internal constructor(@PublishedApi internal val rulesData
      * param(StringType, BooleanType, VagueType, IntType)
      * ```
      *
-     * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查询条件
+     * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查找条件
      *
      * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]

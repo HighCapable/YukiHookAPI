@@ -14,7 +14,7 @@ class MemberRules internal constructor(internal val rulesData: MemberRulesData) 
 
 **功能描述**
 
-> `Member` 查询条件实现类。
+> `Member` 查找条件实现类。
 
 ## modifiers <span class="symbol">- method</span>
 

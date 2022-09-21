@@ -33,7 +33,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import java.lang.reflect.Member
 
 /**
- * [Member] 规则查询数据类
+ * [Member] 规则查找数据类
  * @param isFindInSuper 是否在未找到后继续在父类中查找
  * @param matchCount 匹配的字节码个数
  * @param matchCountRange 匹配的字节码个数范围

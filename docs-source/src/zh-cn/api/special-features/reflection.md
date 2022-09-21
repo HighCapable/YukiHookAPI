@@ -169,7 +169,7 @@ public class a extends Activity implements Serializable {
 
 ```kotlin
 searchClass {
-    // 从指定的包名范围搜索，实际使用时，你可以同时指定多个包名范围
+    // 从指定的包名范围开始查找，实际使用时，你可以同时指定多个包名范围
     from("com.demo")
     // 指定当前 Class 的 getSimpleName 的结果，你可以直接对这个字符串进行逻辑判断
     // 这里我们不确定它的名称是不是 a，可以只判断字符串长度
@@ -448,9 +448,9 @@ public class Test extends BaseTest {
 }
 ```
 
-### 查询与反射调用
+### 查找与反射调用
 
-假设我们要得到 `Test`(以下统称“当前 `Class`”)的 `doTask` 方法并执行，通常情况下，我们可以使用标准的反射 API 去查询这个方法。
+假设我们要得到 `Test`(以下统称“当前 `Class`”)的 `doTask` 方法并执行，通常情况下，我们可以使用标准的反射 API 去查找这个方法。
 
 > 示例如下
 
@@ -530,7 +530,7 @@ Test::class.java.constructor().get().call() // 可创建一个新的实例
 
 :::
 
-### 可选的查询条件
+### 可选的查找条件
 
 假设我们要得到 `Class` 中的 `getName` 方法，可以使用如下实现。
 
@@ -561,15 +561,15 @@ Test::class.java.method {
 }.get(instance).string() // 得到方法的结果
 ```
 
-是的，对于确切不会变化的方法，你可以精简查询条件。
+是的，对于确切不会变化的方法，你可以精简查找条件。
 
-在只使用 `get` 或 `wait` 方法得到结果时 `YukiHookAPI` **会默认按照字节码顺序匹配第一个查询到的结果**。
+在只使用 `get` 或 `wait` 方法得到结果时 `YukiHookAPI` **会默认按照字节码顺序匹配第一个查找到的结果**。
 
 问题又来了，这个 `Class` 中有一个 `release` 方法，但是它的方法参数很长，而且部分类型可能无法直接得到。
 
-通常情况下我们会使用 `param(...)` 来查询这个方法，但是有没有更简单的方法呢。
+通常情况下我们会使用 `param(...)` 来查找这个方法，但是有没有更简单的方法呢。
 
-此时，在确定方法唯一性后，你可以使用 `paramCount` 来查询到这个方法。
+此时，在确定方法唯一性后，你可以使用 `paramCount` 来查找到这个方法。
 
 > 示例如下
 
@@ -599,11 +599,11 @@ Test::class.java.method {
 }.get(instance) // 得到这个方法
 ```
 
-### 在父类查询
+### 在父类查找
 
 你会注意到 `Test` 继承于 `BaseTest`，现在我们想得到 `BaseTest` 的 `doBaseTask` 方法，在不知道父类名称的情况下，要怎么做呢？
 
-参照上面的查询条件，我们只需要在查询条件中加入一个 `superClass` 即可实现这个功能。
+参照上面的查找条件，我们只需要在查找条件中加入一个 `superClass` 即可实现这个功能。
 
 > 示例如下
 
@@ -621,9 +621,9 @@ Test::class.java.method {
 
 这个时候我们就可以在父类中取到这个方法了。
 
-`superClass` 有一个参数为 `isOnlySuperClass`，设置为 `true` 后，可以跳过当前 `Class` 仅查询当前 `Class` 的父类。
+`superClass` 有一个参数为 `isOnlySuperClass`，设置为 `true` 后，可以跳过当前 `Class` 仅查找当前 `Class` 的父类。
 
-由于我们现在已知 `doBaseTask` 方法只存在于父类，可以加上这个条件节省查询时间。
+由于我们现在已知 `doBaseTask` 方法只存在于父类，可以加上这个条件节省查找时间。
 
 > 示例如下
 
@@ -634,14 +634,14 @@ val instance = Test()
 Test::class.java.method {
     name = "doBaseTask"
     param(StringType)
-    // 加入一个查询条件
+    // 加入一个查找条件
     superClass(isOnlySuperClass = true)
 }.get(instance).call("task_name")
 ```
 
 这个时候我们同样可以得到父类中的这个方法。
 
-`superClass` 一旦设置就会自动循环向后查找全部继承的父类中是否有这个方法，直到查询到目标没有父类(继承关系为 `java.lang.Object`)为止。
+`superClass` 一旦设置就会自动循环向后查找全部继承的父类中是否有这个方法，直到查找到目标没有父类(继承关系为 `java.lang.Object`)为止。
 
 ::: tip
 
@@ -651,13 +651,13 @@ Test::class.java.method {
 
 ::: danger
 
-当前查询的 **Method** 除非指定 **superClass** 条件，否则只能查询到当前 **Class** 的 **Method**，这是 Java 反射 API 的默认行为。
+当前查找的 **Method** 除非指定 **superClass** 条件，否则只能查找到当前 **Class** 的 **Method**，这是 Java 反射 API 的默认行为。
 
 :::
 
-### 模糊查询
+### 模糊查找
 
-如果我们想查询一个方法名称，但是又不确定它在每个版本中是否发生变化，此时我们就可以使用模糊查询功能。
+如果我们想查找一个方法名称，但是又不确定它在每个版本中是否发生变化，此时我们就可以使用模糊查找功能。
 
 假设我们要得到 `Class` 中的 `doTask` 方法，可以使用如下实现。
 
@@ -710,7 +710,7 @@ Test::class.java.method {
 }.get(instance).call("task_name")
 ```
 
-通过观察发现这个方法名称中只包含字母，我们还可以再增加一个精确的查询条件。
+通过观察发现这个方法名称中只包含字母，我们还可以再增加一个精确的查找条件。
 
 > 示例如下
 
@@ -737,11 +737,11 @@ Test::class.java.method {
 
 :::
 
-### 多重查询
+### 多重查找
 
-有些时候，我们可能需要查询一个 `Class` 中具有相同特征的一组方法、构造方法、变量，此时，我们就可以利用相对条件匹配来完成。
+有些时候，我们可能需要查找一个 `Class` 中具有相同特征的一组方法、构造方法、变量，此时，我们就可以利用相对条件匹配来完成。
 
-在查询条件结果的基础上，我们只需要把 `get` 换为 `all` 即可得到匹配条件的全部字节码。
+在查找条件结果的基础上，我们只需要把 `get` 换为 `all` 即可得到匹配条件的全部字节码。
 
 假设这次我们要得到 `Class` 中方法参数个数范围在 `1..3` 的全部方法，可以使用如下实现。
 
@@ -854,7 +854,7 @@ Test::class.java.field {
 Test::class.java.field {
     name = "TAG"
     type = StringType
-    // 标识查询的这个变量需要是静态
+    // 标识查找的这个变量需要是静态
     modifiers { isStatic }
 }.get().string() // Field 的类型是字符串，可直接进行 cast
 ```
@@ -878,7 +878,7 @@ Test::class.java.method {
 Test::class.java.method {
     name = "init"
     emptyParam()
-    // 标识查询的这个方法需要是静态
+    // 标识查找的这个方法需要是静态
     modifiers { isStatic }
 }.get().call()
 ```
@@ -1235,7 +1235,7 @@ val result = Test::class.java.method {
 
 :::
 
-### 再次查询
+### 再次查找
 
 假设有三个不同版本的 `Class`，它们都是这个宿主不同版本相同的 `Class`。
 
@@ -1307,11 +1307,11 @@ Test::class.java.method {
 
 ::: danger
 
-使用了 **RemedyPlan** 的方法查询结果不能再使用 **get** 的方式得到方法实例，应当使用 **wait** 方法。
+使用了 **RemedyPlan** 的方法查找结果不能再使用 **get** 的方式得到方法实例，应当使用 **wait** 方法。
 
 :::
 
-另外，你还可以在使用 [多重查询](#多重查询) 的情况下继续使用 `RemedyPlan`。
+另外，你还可以在使用 [多重查找](#多重查找) 的情况下继续使用 `RemedyPlan`。
 
 > 示例如下
 
@@ -1340,7 +1340,7 @@ Test::class.java.method {
 }
 ```
 
-以当前 `Class` 举例，若 [多重查询](#多重查询) 结合 `RemedyPlan` 在创建 Hook 的时候使用，你需要稍微改变一下用法。
+以当前 `Class` 举例，若 [多重查找](#多重查找) 结合 `RemedyPlan` 在创建 Hook 的时候使用，你需要稍微改变一下用法。
 
 > 示例如下
 
@@ -1405,10 +1405,10 @@ public class BTest {
 > 示例如下
 
 ```kotlin
-// 首先查询到这个 Class
+// 首先查找到这个 Class
 val currentClass = 
     if("com.demo.ATest".hasClass()) "com.demo.ATest".toClass() else "com.demo.BTest".toClass()
-// 然后再查询这个方法并调用
+// 然后再查找这个方法并调用
 currentClass.method {
     name = "doTask"
     emptyParam()
@@ -1558,11 +1558,11 @@ TestGeneric::class.java.generic()?.argument()?.method {
 
 > 这里列举了使用时可能会遇到的误区部分，可供参考。
 
-#### 限制性查询条件
+#### 限制性查找条件
 
 ::: danger
 
-在查询条件中，除了 **order** 你只能使用一次 **index** 功能。
+在查找条件中，除了 **order** 你只能使用一次 **index** 功能。
 
 :::
 
@@ -1577,7 +1577,7 @@ method {
 }
 ```
 
-以下查询条件的使用是没有任何问题的。
+以下查找条件的使用是没有任何问题的。
 
 > 示例如下
 
@@ -1589,11 +1589,11 @@ method {
 }
 ```
 
-#### 必要的查询条件
+#### 必要的查找条件
 
 ::: danger
 
-在普通方法查询条件中，<u>**即使是无参的方法也需要设置查询条件**</u>。
+在普通方法查找条件中，<u>**即使是无参的方法也需要设置查找条件**</u>。
 
 :::
 
@@ -1628,9 +1628,9 @@ TestFoo::class.java.method {
 
 你会发现这个 `Class` 中有两个 `foo` 方法，其中一个带有方法参数。
 
-由于上述例子没有设置 `param` 的查询条件，得到的结果将会是匹配名称且匹配字节码顺序的第一个方法 `public void foo(String string)`，而不是我们需要的最后一个方法。
+由于上述例子没有设置 `param` 的查找条件，得到的结果将会是匹配名称且匹配字节码顺序的第一个方法 `public void foo(String string)`，而不是我们需要的最后一个方法。
 
-这是一个**经常会出现的错误**，**没有方法参数就会丢失方法参数查询条件**的使用问题。
+这是一个**经常会出现的错误**，**没有方法参数就会丢失方法参数查找条件**的使用问题。
 
 正确的使用方法如下。
 
@@ -1652,9 +1652,9 @@ TestFoo::class.java.method {
 
 :::
 
-#### 可简写查询条件
+#### 可简写查找条件
 
-> 在构造方法查询条件中，<u>**无参的构造方法可以不需要填写查询条件**</u>。
+> 在构造方法查找条件中，<u>**无参的构造方法可以不需要填写查找条件**</u>。
 
 假设我们有如下的 `Class`。
 
@@ -1689,7 +1689,7 @@ TestFoo::class.java.constructor()
 
 ::: tip 兼容性说明
 
-在过往历史版本的 API 中构造方法不填写任何查询参数会直接找不到构造方法，<u>**这是一个 BUG，最新版本已经进行修复**</u>，请确保你使用的是最新的 API 版本。
+在过往历史版本的 API 中构造方法不填写任何查找参数会直接找不到构造方法，<u>**这是一个 BUG，最新版本已经进行修复**</u>，请确保你使用的是最新的 API 版本。
 
 :::
 
@@ -1727,7 +1727,7 @@ field {
 
 ## 常用类型扩展
 
-在查询方法、变量的时候我们通常需要指定所查询的类型。
+在查找方法、变量的时候我们通常需要指定所查找的类型。
 
 > 示例如下
 
@@ -1763,9 +1763,9 @@ field {
 
 同时由于 `String` 是常见类型，所以还可以直接使用 `StringArrayClass` 来得到这个类型。
 
-一些常见的 Hook 中查询的方法，都有其对应的封装类型以供使用，格式为 **类型 + Class**。
+一些常见的 Hook 中查找的方法，都有其对应的封装类型以供使用，格式为 **类型 + Class**。
 
-例如 Hook `onCreate` 方法需要查询 `Bundle::class.java` 类型。
+例如 Hook `onCreate` 方法需要查找 `Bundle::class.java` 类型。
 
 > 示例如下
 

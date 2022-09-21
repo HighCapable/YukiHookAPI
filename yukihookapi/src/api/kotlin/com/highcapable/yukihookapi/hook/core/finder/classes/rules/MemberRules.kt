@@ -34,8 +34,8 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditi
 import java.lang.reflect.Member
 
 /**
- * [Member] 查询条件实现类
- * @param rulesData 当前查询条件规则数据
+ * [Member] 查找条件实现类
+ * @param rulesData 当前查找条件规则数据
  */
 class MemberRules internal constructor(@PublishedApi internal val rulesData: MemberRulesData) : BaseRules() {
 

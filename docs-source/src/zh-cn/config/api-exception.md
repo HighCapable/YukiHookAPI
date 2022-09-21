@@ -194,7 +194,7 @@ Hooked Member cannot be non-null by **CLASS**
 
 ```kotlin
 injectMember {
-    // 这里并没有设置需要 Hook 的方法、构造方法的查询条件
+    // 这里并没有设置需要 Hook 的方法、构造方法的查找条件
     afterHook {
         // ...
     }
@@ -203,7 +203,7 @@ injectMember {
 
 **解决方案**
 
-请确认你已经在 Hook 之前正确设置了要 Hook 的方法、构造方法的查询方式。
+请确认你已经在 Hook 之前正确设置了要 Hook 的方法、构造方法的查找方式。
 
 > 示例如下
 
@@ -309,7 +309,7 @@ Method/Constructor/Field match type "**TYPE**" not allowed
 > 示例如下
 
 ```kotlin
-// 查询一个方法
+// 查找一个方法
 method {
     // ❗设置了无效的类型举例
     param(false, 1, 0)
@@ -317,7 +317,7 @@ method {
     returnType = false
 }
 
-// 查询一个变量
+// 查找一个变量
 field {
     // ❗设置了无效的类型举例
     type = false
@@ -326,12 +326,12 @@ field {
 
 **解决方案**
 
-在查询中 `param`、`returnType`、`type` 中仅接受 `Class`、`String`、`VariousClass` 类型的传值，不可传入参数实例。
+在查找中 `param`、`returnType`、`type` 中仅接受 `Class`、`String`、`VariousClass` 类型的传值，不可传入参数实例。
 
 > 示例如下
 
 ```kotlin
-// 查询一个方法
+// 查找一个方法
 method {
     // ✅ 正确的使用方法举例
     param(BooleanType, IntType, IntType)
@@ -341,7 +341,7 @@ method {
     returnType = "java.lang.Boolean"
 }
 
-// 查询一个变量
+// 查找一个变量
 field {
     // ✅ 正确的使用方法举例
     type = BooleanType
@@ -360,7 +360,7 @@ NoSuchMethod/NoSuchConstructor/NoSuchField happend in \[**NAME**\]
 
 **解决方案**
 
-请确认你的查询条件是否能正确匹配到目标 `Class` 中的指定方法、构造方法以及变量。
+请确认你的查找条件是否能正确匹配到目标 `Class` 中的指定方法、构造方法以及变量。
 
 ::: danger loggerE
 
@@ -396,7 +396,7 @@ method {
 
 **解决方案**
 
-请将查询条件补充完整并再试一次。
+请将查找条件补充完整并再试一次。
 
 ::: danger loggerE
 
@@ -478,7 +478,7 @@ Field match type class is not found
 
 **异常原因**
 
-在查找变量时所设置的查询条件中 `type` 的 `Class` 实例未被找到。
+在查找变量时所设置的查找条件中 `type` 的 `Class` 实例未被找到。
 
 > 示例如下
 
@@ -492,7 +492,7 @@ field {
 
 **解决方案**
 
-请检查查询条件中 `type` 的 `Class` 是否存在，然后再试一次。
+请检查查找条件中 `type` 的 `Class` 是否存在，然后再试一次。
 
 ::: danger loggerE
 
@@ -502,7 +502,7 @@ Method match returnType class is not found
 
 **异常原因**
 
-在查找方法时所设置的查询条件中 `returnType` 的 `Class` 实例未被找到。
+在查找方法时所设置的查找条件中 `returnType` 的 `Class` 实例未被找到。
 
 > 示例如下
 
@@ -516,7 +516,7 @@ method {
 
 **解决方案**
 
-请检查查询条件中 `returnType` 的 `Class` 是否存在，然后再试一次。
+请检查查找条件中 `returnType` 的 `Class` 是否存在，然后再试一次。
 
 ::: danger loggerE
 
@@ -526,7 +526,7 @@ Method/Constructor match paramType\[**INDEX**\] class is not found
 
 **异常原因**
 
-在查找方法、构造方法时所设置的查询条件中 `param` 的 `index` 号下标的 `Class` 实例未被找到。
+在查找方法、构造方法时所设置的查找条件中 `param` 的 `index` 号下标的 `Class` 实例未被找到。
 
 ```kotlin
 method {
@@ -538,7 +538,7 @@ method {
 
 **解决方案**
 
-请检查查询条件中 `param` 的 `index` 号下标的 `Class` 是否存在，然后再试一次。
+请检查查找条件中 `param` 的 `index` 号下标的 `Class` 是否存在，然后再试一次。
 
 ::: danger loggerE
 
@@ -566,7 +566,7 @@ conditions {
 
 **解决方案**
 
-Resources 的 Hook 并非类似方法的 Hook，其必须拥有完整的名称和类型描述才能查询成功，请将查询条件补充完整并再试一次。
+Resources 的 Hook 并非类似方法的 Hook，其必须拥有完整的名称和类型描述才能查找成功，请将查找条件补充完整并再试一次。
 
 ::: danger loggerE
 

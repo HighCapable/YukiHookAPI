@@ -422,7 +422,7 @@ inline fun Member.hasModifiers(conditions: ModifierConditions): Boolean
 
 **功能描述**
 
-> 查询 `Member` 中匹配的描述符。
+> 查找 `Member` 中匹配的描述符。
 
 ## Class.hasModifiers <span class="symbol">- ext-method</span>
 
@@ -436,7 +436,7 @@ inline fun Class<*>.hasModifiers(conditions: ModifierConditions): Boolean
 
 **功能描述**
 
-> 查询 `Class` 中匹配的描述符。
+> 查找 `Class` 中匹配的描述符。
 
 <h2 class="deprecated">obtainStaticFieldAny - method</h2>
 

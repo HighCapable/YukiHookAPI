@@ -108,7 +108,7 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 ::: danger
 
-无参 **Constructor** 请使用 **emptyParam** 设置查询条件。
+无参 **Constructor** 请使用 **emptyParam** 设置查找条件。
 
 有参 **Constructor** 必须使用此方法设定参数或使用 **paramCount** 指定个数。
 
@@ -340,7 +340,7 @@ fun all(): Process
 
 **功能描述**
 
-> 设置全部查询条件匹配的多个 `Constructor` 实例结果到 `hookInstance`。
+> 设置全部查找条件匹配的多个 `Constructor` 实例结果到 `hookInstance`。
 
 ### remedys <span class="symbol">- method</span>
 
@@ -518,7 +518,7 @@ fun all(): ArrayList<Instance>
 
 > 获得 `Constructor` 实例处理类数组。
 
-返回全部查询条件匹配的多个 `Constructor` 实例结果。
+返回全部查找条件匹配的多个 `Constructor` 实例结果。
 
 **功能示例**
 
@@ -550,7 +550,7 @@ fun give(): Constructor<*>?
 
 若有多个 `Constructor` 结果只会返回第一个。
 
-在查询条件找不到任何结果的时候将返回 `null`。
+在查找条件找不到任何结果的时候将返回 `null`。
 
 ### giveAll <span class="symbol">- method</span>
 
@@ -566,9 +566,9 @@ fun giveAll(): HashSet<Constructor<*>>
 
 > 得到 `Constructor` 本身数组。
 
-返回全部查询条件匹配的多个 `Constructor` 实例。
+返回全部查找条件匹配的多个 `Constructor` 实例。
 
-在查询条件找不到任何结果的时候将返回空的 `HashSet`。
+在查找条件找不到任何结果的时候将返回空的 `HashSet`。
 
 ### wait <span class="symbol">- method</span>
 
@@ -608,7 +608,7 @@ fun waitAll(initiate: ArrayList<Instance>.() -> Unit)
 
 > 获得 `Constructor` 实例处理类数组，配合 `RemedyPlan` 使用。
 
-返回全部查询条件匹配的多个 `Constructor` 实例结果。
+返回全部查找条件匹配的多个 `Constructor` 实例结果。
 
 ::: danger
 

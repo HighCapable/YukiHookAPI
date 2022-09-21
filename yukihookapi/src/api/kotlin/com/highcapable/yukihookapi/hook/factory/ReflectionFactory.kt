@@ -148,14 +148,14 @@ inline fun Class<*>.hasMethod(initiate: MethodConditions) = method(initiate).ign
 inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
 
 /**
- * 查询 [Member] 中匹配的描述符
+ * 查找 [Member] 中匹配的描述符
  * @param conditions 条件方法体
  * @return [Boolean] 是否存在
  */
 inline fun Member.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(instance = this))
 
 /**
- * 查询 [Class] 中匹配的描述符
+ * 查找 [Class] 中匹配的描述符
  * @param conditions 条件方法体
  * @return [Boolean] 是否存在
  */

@@ -86,7 +86,7 @@ internal object ReflectionTool {
         }.orEmpty().also { if (it.isNotEmpty()) ReflectsCacheStore.putDexClassList(loader.hashCode(), it) }
 
     /**
-     * 使用字符串类名查询 [Class] 是否存在
+     * 使用字符串类名查找 [Class] 是否存在
      * @param name [Class] 完整名称
      * @param loader [Class] 所在的 [ClassLoader]
      * @return [Boolean]
@@ -115,7 +115,7 @@ internal object ReflectionTool {
     /**
      * 查找任意 [Class] 或一组 [Class]
      * @param loaderSet 类所在 [ClassLoader]
-     * @param rulesData 规则查询数据
+     * @param rulesData 规则查找数据
      * @return [HashSet]<[Class]>
      * @throws IllegalStateException 如果 [loaderSet] 为 null 或未设置任何条件
      * @throws NoClassDefFoundError 如果找不到 [Class]
@@ -123,7 +123,7 @@ internal object ReflectionTool {
     internal fun findClasses(loaderSet: ClassLoader?, rulesData: ClassRulesData) = rulesData.createResult {
         ReflectsCacheStore.findClasses(hashCode(loaderSet)) ?: hashSetOf<Class<*>>().also { classes ->
             /**
-             * 开始查询作业
+             * 开始查找作业
              * @param instance 当前 [Class] 实例
              */
             fun startProcess(instance: Class<*>) {
@@ -249,7 +249,7 @@ internal object ReflectionTool {
     /**
      * 查找任意 [Field] 或一组 [Field]
      * @param classSet [Field] 所在类
-     * @param rulesData 规则查询数据
+     * @param rulesData 规则查找数据
      * @return [HashSet]<[Field]>
      * @throws IllegalStateException 如果未设置任何条件或 [FieldRulesData.type] 目标类不存在
      * @throws NoSuchFieldError 如果找不到 [Field]
@@ -303,7 +303,7 @@ internal object ReflectionTool {
     /**
      * 查找任意 [Method] 或一组 [Method]
      * @param classSet [Method] 所在类
-     * @param rulesData 规则查询数据
+     * @param rulesData 规则查找数据
      * @return [HashSet]<[Method]>
      * @throws IllegalStateException 如果未设置任何条件或 [MethodRulesData.paramTypes] 以及 [MethodRulesData.returnType] 目标类不存在
      * @throws NoSuchMethodError 如果找不到 [Method]
@@ -394,7 +394,7 @@ internal object ReflectionTool {
     /**
      * 查找任意 [Constructor] 或一组 [Constructor]
      * @param classSet [Constructor] 所在类
-     * @param rulesData 规则查询数据
+     * @param rulesData 规则查找数据
      * @return [HashSet]<[Constructor]>
      * @throws IllegalStateException 如果未设置任何条件或 [ConstructorRulesData.paramTypes] 目标类不存在
      * @throws NoSuchMethodError 如果找不到 [Constructor]

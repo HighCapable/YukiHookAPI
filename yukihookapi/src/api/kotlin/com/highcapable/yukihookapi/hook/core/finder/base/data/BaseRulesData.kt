@@ -35,7 +35,7 @@ import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Member
 
 /**
- * 这是 [Class] 与 [Member] 规则查询数据基本类实现
+ * 这是 [Class] 与 [Member] 规则查找数据基本类实现
  * @param modifiers 描述符条件
  * @param orderIndex 字节码、数组顺序下标
  * @param matchIndex 字节码、数组筛选下标

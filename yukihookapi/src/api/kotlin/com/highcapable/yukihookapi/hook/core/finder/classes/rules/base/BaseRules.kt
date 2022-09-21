@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import java.lang.reflect.Member
 
 /**
- * [Member] 查询条件实现父类
+ * [Member] 查找条件实现父类
  * @param instance 当前查找类实例
  */
 open class BaseRules internal constructor(internal var instance: DexClassFinder? = null) {
@@ -48,7 +48,7 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
     internal companion object {
 
         /**
-         * 创建查询条件规则数据
+         * 创建查找条件规则数据
          * @param instance 当前查找类实例
          * @return [MemberRulesData]
          */
@@ -57,7 +57,7 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
             MemberRules(MemberRulesData().apply { instance.rulesData.memberRules.add(this) }).apply { this.instance = instance }
 
         /**
-         * 创建查询条件规则数据
+         * 创建查找条件规则数据
          * @return [FieldRulesData]
          */
         @PublishedApi
@@ -65,7 +65,7 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
             FieldRules(FieldRulesData().apply { instance.rulesData.fieldRules.add(this) }).apply { this.instance = instance }
 
         /**
-         * 创建查询条件规则数据
+         * 创建查找条件规则数据
          * @return [MethodRulesData]
          */
         @PublishedApi
@@ -73,7 +73,7 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
             MethodRules(MethodRulesData().apply { instance.rulesData.methodRules.add(this) }).apply { this.instance = instance }
 
         /**
-         * 创建查询条件规则数据
+         * 创建查找条件规则数据
          * @return [ConstructorRulesData]
          */
         @PublishedApi
