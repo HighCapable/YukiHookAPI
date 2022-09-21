@@ -58,7 +58,7 @@ private fun createCommentContent(entryClassName: String = "", currrentClassTag: 
 fun GenerateData.sources() = mapOf(
     "ModuleApplication_Injector" to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
-            "package $entryPackageName\n" +
+            "package $injectPackageName\n" +
             "\n" +
             "import $entryPackageName.$entryClassName\n" +
             "\n" +
@@ -73,7 +73,7 @@ fun GenerateData.sources() = mapOf(
             "}"),
     "YukiHookBridge_Injector" to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
-            "package $entryPackageName\n" +
+            "package $injectPackageName\n" +
             "\n" +
             createCommentContent(currrentClassTag = "YukiHookBridge") +
             "object YukiHookBridge_Injector {\n" +
