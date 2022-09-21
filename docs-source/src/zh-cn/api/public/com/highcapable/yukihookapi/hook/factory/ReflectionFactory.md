@@ -250,6 +250,26 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 "com.example.demo.DemoClass".toClass(customClassLoader)
 ```
 
+## String.toClassOrNull <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+fun String.toClassOrNull(loader: ClassLoader?): Class<*>?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 通过字符串类名转换为 `loader` 中的实体类。
+
+找不到 `Class` 会返回 `null`，不会抛出异常。
+
+**功能示例**
+
+用法请参考 [String.toClass](#string-toclass-ext-method) 方法。
+
 ## classOf <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers

@@ -357,12 +357,30 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun String.toClass(loader: ClassLoader? = appClassLoader) = ReflectionTool.findClassByName(name = this, loader)
 
     /**
+     * 通过字符串类名转换为 [loader] 中的实体类
+     *
+     * 找不到 [Class] 会返回 null - 不会抛出异常
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @return [Class] or null
+     */
+    fun String.toClassOrNull(loader: ClassLoader? = appClassLoader) = runCatching { toClass(loader) }.getOrNull()
+
+    /**
      * [VariousClass] 转换为 [loader] 中的实体类
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
     fun VariousClass.toClass(loader: ClassLoader? = appClassLoader) = get(loader)
+
+    /**
+     * [VariousClass] 转换为 [loader] 中的实体类
+     *
+     * 匹配不到 [Class] 会返回 null - 不会抛出异常
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @return [Class] or null
+     */
+    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader) = runCatching { toClass(loader) }.getOrNull()
 
     /**
      * 通过字符串类名查找是否存在

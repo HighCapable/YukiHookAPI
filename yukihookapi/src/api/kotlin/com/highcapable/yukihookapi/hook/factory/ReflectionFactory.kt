@@ -112,6 +112,15 @@ fun classOf(name: String, loader: ClassLoader? = null) = name.toClass(loader)
 fun String.toClass(loader: ClassLoader? = null) = ReflectionTool.findClassByName(name = this, loader)
 
 /**
+ * 通过字符串类名转换为 [loader] 中的实体类
+ *
+ * 找不到 [Class] 会返回 null - 不会抛出异常
+ * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [Class] or null
+ */
+fun String.toClassOrNull(loader: ClassLoader? = null) = runCatching { toClass(loader) }.getOrNull()
+
+/**
  * 通过 [T] 得到其 [Class] 实例并转换为实体类
  * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
  * @return [Class]

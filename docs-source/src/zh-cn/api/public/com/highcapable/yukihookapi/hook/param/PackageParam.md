@@ -574,6 +574,32 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").toClass(customClassLoader)
 ```
 
+## String+VariousClass.toClassOrNull <span class="symbol">- i-ext-method</span>
+
+```kotlin:no-line-numbers
+fun String.toClassOrNull(loader: ClassLoader?): Class<*>?
+```
+
+```kotlin:no-line-numbers
+fun VariousClass.toClassOrNull(loader: ClassLoader?): Class<*>?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 通过字符串类名、`VariousClass` 转换为 `loader` 中的实体类。
+
+默认使用当前 `appClassLoader` 装载目标 `Class`。
+
+找不到 `Class` 会返回 `null`，不会抛出异常。
+
+**功能示例**
+
+用法请参考 [String+VariousClass.toClass](#string-variousclass-toclass-i-ext-method) 方法。
+
 ## String.hasClass <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
