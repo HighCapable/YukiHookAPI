@@ -122,3 +122,47 @@ java.lang.Throwable
 更多功能请参考 [loggerE](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#loggere-method) 方法。
 
 :::
+
+## 保存日志与自定义元素
+
+你可以调用 [YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) 方法直接保存当前已打印的全部日志到文件。
+
+> 示例如下
+
+```kotlin
+// 请注意保存的文件路径必须拥有读写权限，否则会抛出异常
+YukiHookLogger.saveToFile("/sdcard/Documents/debug_log.log")
+```
+
+你还可以使用 [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field) 获取当前已打印的全部日志文件内容。
+
+> 示例如下
+
+```kotlin
+// 获取当前已打印的全部日志文件内容
+val fileContent = YukiHookLogger.contents
+```
+
+以上功能需要启用 [YukiHookLogger.Configs.isRecord](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#isrecord-field)。
+
+你还可以使用 [YukiHookLogger.Configs.elements](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#elements-method) 自定义调试日志对外显示的元素。
+
+此功能需要在 Hook 入口类的 `onInit` 中对 `YukiHookAPI.Configs` 进行配置。
+
+> 示例如下
+
+```kotlin
+override fun onInit() = configs {
+    debugLog {
+        // ...
+        elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+    }
+    // ...
+}
+```
+
+::: tip
+
+更多功能请参考 [YukiHookLogger](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#yukihooklooger-object)。
+
+:::
