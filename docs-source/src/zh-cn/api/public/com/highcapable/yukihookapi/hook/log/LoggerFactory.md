@@ -98,6 +98,266 @@ BOTH
 
 模块环境仅使用 `LOGD`。
 
+## YukiHookLogger <span class="symbol">- object</span>
+
+```kotlin:no-line-numbers
+object YukiHookLogger
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 调试日志实现类。
+
+### contents <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val contents: String
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获取当前日志文件内容。
+
+如果当前没有已记录的日志会返回空字符串。
+
+### clear <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun clear()
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 清除全部已记录的日志。
+
+### saveToFile <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun saveToFile(fileName: String)
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 保存当前日志到文件。
+
+若当前未开启 `Configs.isRecord` 或记录为空则不会进行任何操作。
+
+日志文件会追加到 `fileName` 的文件结尾，若文件不存在会自动创建。
+
+::: danger 
+
+文件读写权限取决于当前宿主已获取的权限。
+
+:::
+
+### Configs <span class="symbol">- object</span>
+
+```kotlin:no-line-numbers
+object Configs
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 配置 `YukiHookLogger`。
+
+#### TAG <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+const val TAG: Int
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 标签。
+
+#### PRIORITY <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+const val PRIORITY: Int
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 优先级。
+
+#### PACKAGE_NAME <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+const val PACKAGE_NAME: Int
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 当前宿主的包名。
+
+#### USER_ID <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+const val USER_ID: Int
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 当前宿主的用户 ID (主用户不显示)。
+
+#### isEnable <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+var isEnable: Boolean
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 是否启用调试日志的输出功能。
+
+关闭后将会停用 `YukiHookAPI` 对全部日志的输出。
+
+但是不影响当你手动调用下面这些方法输出日志。
+
+`loggerD`、`loggerI`、`loggerW`、`loggerE`。
+
+当 `isEnable` 关闭后 `YukiHookAPI.Configs.isDebug` 也将同时关闭。
+
+#### isRecord <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+var isRecord: Boolean
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 是否启用调试日志的记录功能。
+
+开启后将会在内存中记录全部可用的日志和异常堆栈。
+
+需要同时启用 [isEnable](#isenable-field) 才能有效。
+
+::: danger
+
+过量的日志可能会导致宿主运行缓慢或造成频繁 GC。
+
+:::
+
+开启后你可以调用 [YukiHookLogger.saveToFile](#savetofile-method) 实时保存日志到文件或使用 [YukiHookLogger.contents](#contents-field) 获取实时日志文件。
+
+#### tag <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+var tag: String
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 这是一个调试日志的全局标识。
+
+默认文案为 `YukiHookAPI`。
+
+你可以修改为你自己的文案。
+
+#### elements <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun elements(vararg item: Int)
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 自定义调试日志对外显示的元素。
+
+只对日志记录和 `XposedBridge.log` 生效。
+
+日志元素的排列将按照你在 `item` 中设置的顺序进行显示。
+
+你还可以留空 `item` 以不显示除日志内容外的全部元素。
+
+可用的元素有：`TAG`、`PRIORITY`、`PACKAGE_NAME`、`USER_ID`。
+
+**功能示例**
+
+打印的日志样式将按照你设置的排列顺序和元素内容进行。
+
+> 示例如下
+
+```kotlin
+elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+```
+
+以上内容定义的日志将显示为如下样式。
+
+> 示例如下
+
+```:no-line-numbers
+[YukiHookAPI][D][com.demo.test][999]--> This is a log
+```
+
+如果我们调整元素顺序以及减少个数，那么结果又会不一样。
+
+> 示例如下
+
+```kotlin
+elements(PACKAGE_NAME, USER_ID, PRIORITY)
+```
+
+以上内容定义的日志将显示为如下样式。
+
+> 示例如下
+
+```:no-line-numbers
+[com.demo.test][999][D]--> This is a log
+```
+
 ## loggerD <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers

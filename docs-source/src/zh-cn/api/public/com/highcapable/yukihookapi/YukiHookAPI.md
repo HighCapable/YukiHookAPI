@@ -242,21 +242,29 @@ object Configs
 
 > 对 API 相关功能的配置类。
 
-### debugTag <span class="symbol">- field</span>
+### debugLog <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-var debugTag: String
+inline fun debugLog(initiate: YukiHookLogger.Configs.() -> Unit)
 ```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 配置 `YukiHookLogger.Configs` 相关参数。
+
+<h3 class="deprecated">debugTag - field</h3>
 
 **变更记录**
 
 `v1.0` `添加`
 
-**功能描述**
+`v1.1.0` `作废`
 
-> 模块在调用 `logger` 时打印的日志 `TAG` 名称。
-
-你可以方便地进行自定义，并可以在 `Logcat` 和 `XposedBridge.log` 中找到它们。
+请转移到 `YukiHookLogger.Configs.tag`
 
 ### isDebug <span class="symbol">- field</span>
 
@@ -274,25 +282,15 @@ var isDebug: Boolean
 
 默认为开启状态，开启后模块将会向 `Logcat` 和 `XposedBridge.log` 打印详细的 Hook 日志，关闭后仅会打印 `E` 级别的日志。
 
-### isAllowPrintingLogs <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-var isAllowPrintingLogs: Boolean
-```
+<h3 class="deprecated">isAllowPrintingLogs - field</h3>
 
 **变更记录**
 
 `v1.0.4` `新增`
 
-**功能描述**
+`v1.1.0` `作废`
 
-> 是否启用调试日志的输出功能。
-
-::: warning
-
-关闭后将会停用 **YukiHookAPI** 对全部日志的输出，但是不影响当你手动调用日志方法输出日志。
-
-:::
+请转移到 `YukiHookLogger.Configs.isEnable`
 
 ### isEnableModulePrefsCache <span class="symbol">- field</span>
 
@@ -446,7 +444,7 @@ inline fun configs(initiate: Configs.() -> Unit)
 
 **功能示例**
 
-你可以在 `HookEntryClass` 的 `onInit` 方法中调用 `configs` 方法完成对 API 的功能配置，实时生效。
+你可以在 `HookEntryClass` 的 `onInit` 方法中调用 `configs` 方法和 `debugLog` 方法完成对 API 的功能配置，实时生效。
 
 > 示例如下
 
@@ -455,12 +453,17 @@ class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() {
         YukiHookAPI.configs {
-            debugTag = "YukiHookAPI"
+            debugLog {
+                tag = "YukiHookAPI"
+                isEnable = true
+                isRecord = false
+                elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+            }
             isDebug = BuildConfig.DEBUG
-            isAllowPrintingLogs = true
             isEnableModulePrefsCache = true
             isEnableModuleAppResourcesCache = true
             isEnableHookModuleStatus = true
+            isEnableHookSharedPreferences = false
             isEnableDataChannel = true
             isEnableMemberCache = true
         }
@@ -480,12 +483,17 @@ class HookEntryClass : IYukiHookXposedInit {
 class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() = configs {
-        debugTag = "YukiHookAPI"
+        debugLog {
+            tag = "YukiHookAPI"
+            isEnable = true
+            isRecord = false
+            elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+        }
         isDebug = BuildConfig.DEBUG
-        isAllowPrintingLogs = true
         isEnableModulePrefsCache = true
         isEnableModuleAppResourcesCache = true
         isEnableHookModuleStatus = true
+        isEnableHookSharedPreferences = false
         isEnableDataChannel = true
         isEnableMemberCache = true
     }
@@ -496,7 +504,7 @@ class HookEntryClass : IYukiHookXposedInit {
 }
 ```
 
-你也可以不通过 `configs` 方法，直接进行配置。
+你也可以不通过 `configs` 和 `debugLog` 方法，直接进行配置。
 
 > 示例如下
 
@@ -504,12 +512,20 @@ class HookEntryClass : IYukiHookXposedInit {
 class HookEntryClass : IYukiHookXposedInit {
 
     override fun onInit() {
-        YukiHookAPI.Configs.debugTag = "YukiHookAPI"
+        YukiHookLogger.Configs.tag = "YukiHookAPI"
+        YukiHookLogger.Configs.isEnable = true
+        YukiHookLogger.Configs.isRecord = false
+        YukiHookLogger.Configs.elements(
+            YukiHookLogger.Configs.TAG,
+            YukiHookLogger.Configs.PRIORITY,
+            YukiHookLogger.Configs.PACKAGE_NAME,
+            YukiHookLogger.Configs.USER_ID
+        )
         YukiHookAPI.Configs.isDebug = BuildConfig.DEBUG
-        YukiHookAPI.Configs.isAllowPrintingLogs = true
         YukiHookAPI.Configs.isEnableModulePrefsCache = true
         YukiHookAPI.Configs.isEnableModuleAppResourcesCache = true
         YukiHookAPI.Configs.isEnableHookModuleStatus = true
+        YukiHookAPI.Configs.isEnableHookSharedPreferences = false
         YukiHookAPI.Configs.isEnableDataChannel = true
         YukiHookAPI.Configs.isEnableMemberCache = true
     }

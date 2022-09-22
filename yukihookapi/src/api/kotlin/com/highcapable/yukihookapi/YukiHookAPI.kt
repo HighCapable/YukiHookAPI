@@ -42,7 +42,9 @@ import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.processName
-import com.highcapable.yukihookapi.hook.log.*
+import com.highcapable.yukihookapi.hook.log.YukiHookLogger
+import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
@@ -165,13 +167,24 @@ object YukiHookAPI {
     object Configs {
 
         /**
+         * 配置 [YukiHookLogger.Configs] 相关参数
+         * @param initiate 方法体
+         */
+        inline fun debugLog(initiate: YukiHookLogger.Configs.() -> Unit) = YukiHookLogger.Configs.apply(initiate).build()
+
+        /**
          * 这是一个调试日志的全局标识
          *
-         * 默认文案为 YukiHookAPI
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * 你可以修改为你自己的文案
+         * - ❗请现在转移到 [debugLog] 并使用 [YukiHookLogger.Configs.tag]
          */
-        var debugTag = "YukiHookAPI"
+        @Deprecated(message = "请使用新方式来实现此功能")
+        var debugTag
+            get() = YukiHookLogger.Configs.tag
+            set(value) {
+                YukiHookLogger.Configs.tag = value
+            }
 
         /**
          * 是否开启调试模式 - 默认启用
@@ -182,22 +195,23 @@ object YukiHookAPI {
          *
          * 请过滤 [debugTag] 即可找到每条日志
          *
-         * 当 [isAllowPrintingLogs] 关闭后 [isDebug] 也将同时关闭
+         * 当 [YukiHookLogger.Configs.isEnable] 关闭后 [isDebug] 也将同时关闭
          */
         var isDebug = true
 
         /**
          * 是否启用调试日志的输出功能
          *
-         * - ❗关闭后将会停用 [YukiHookAPI] 对全部日志的输出
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * 但是不影响当你手动调用下面这些方法输出日志
-         *
-         * [loggerD]、[loggerI]、[loggerW]、[loggerE]
-         *
-         * 当 [isAllowPrintingLogs] 关闭后 [isDebug] 也将同时关闭
+         * - ❗请现在转移到 [debugLog] 并使用 [YukiHookLogger.Configs.isEnable]
          */
-        var isAllowPrintingLogs = true
+        @Deprecated(message = "请使用新方式来实现此功能")
+        var isAllowPrintingLogs
+            get() = YukiHookLogger.Configs.isEnable
+            set(value) {
+                YukiHookLogger.Configs.isEnable = value
+            }
 
         /**
          * 是否启用 [YukiHookModulePrefs] 的键值缓存功能
@@ -315,7 +329,7 @@ object YukiHookAPI {
             YukiHookBridge.packageParamCallback = {
                 if (hooker.isNotEmpty())
                     hooker.forEach { it.assignInstance(packageParam = this) }
-                else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isShowProcessName = false)
+                else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true)
             }
         else printNoXposedEnvLog()
     }
@@ -362,7 +376,7 @@ object YukiHookAPI {
                 if (hooker.isNotEmpty()) {
                     printSplashLog()
                     hooker.forEach { it.assignInstance(packageParam = baseContext.packageParam) }
-                } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isShowProcessName = false))
+                } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true))
         else printNoXposedEnvLog()
     }
 
@@ -372,12 +386,12 @@ object YukiHookAPI {
         isShowSplashLogOnceTime = false
         yLoggerI(
             msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using ${Status.executorName} API ${Status.executorVersion}",
-            isShowProcessName = false
+            isImplicit = true
         )
     }
 
     /** 输出找不到 [XposedBridge] 的错误日志 */
-    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted", isShowProcessName = false)
+    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted", isImplicit = true)
 
     /**
      * 通过 baseContext 创建 Hook 入口类
