@@ -163,7 +163,7 @@ Then, you can start writing Hook code.
 
 For configuration details related to use as an Xposed Module, you can [click here](../config/xposed-using) to continue reading.
 
-If you are currently using Xposed API, you can refer to [Migrating from Xposed API](../guide/move-to-new-api).
+If you are currently using Xposed API, you can refer to [Migrate from Xposed API](../guide/move-to-new-api).
 
 ### Use as Hook API
 
