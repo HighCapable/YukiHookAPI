@@ -90,7 +90,7 @@ fun encase(vararg hooker: YukiBaseHooker)
 
 ::: tip
 
-更多功能请参考 [YukiBaseHooker](../api/public/com/highcapable/yukihookapi/entity/YukiBaseHooker)。
+更多功能请参考 [YukiBaseHooker](../api/public/com/highcapable/yukihookapi/hook/entity/YukiBaseHooker)。
 
 :::
 
