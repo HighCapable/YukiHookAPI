@@ -27,6 +27,8 @@
  */
 package com.highcapable.yukihookapi.hook.utils
 
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -84,6 +86,12 @@ internal inline fun <T> T.takeIf(other: Any?, predicate: (T) -> Boolean) = if (o
  * @return [R] or null
  */
 internal inline fun <T, R> T.let(other: Any?, block: (T) -> R) = if (other != null) let(block) else null
+
+/**
+ * 获取完整的异常堆栈内容
+ * @return [String]
+ */
+internal fun Throwable.toStackTrace() = ByteArrayOutputStream().also { printStackTrace(PrintStream(it)) }.toString()
 
 /**
  * 计算方法执行耗时
