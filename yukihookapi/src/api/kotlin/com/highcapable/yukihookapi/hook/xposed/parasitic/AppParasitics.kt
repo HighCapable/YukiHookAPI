@@ -122,11 +122,12 @@ internal object AppParasitics {
      * @param packageName 当前包名
      * @return [Int]
      */
-    internal fun findUserId(packageName: String) =
+    internal fun findUserId(packageName: String) = runCatching {
         UserHandleClass.method {
             name = "getUserId"
             param(IntType)
         }.ignored().get().int(systemContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES).uid)
+    }.getOrNull() ?: 0
 
     /**
      * Hook 模块 APP 相关功能 - 包括自身激活状态、Resources Hook 支持状态以及 [SharedPreferences]
