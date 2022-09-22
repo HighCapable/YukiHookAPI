@@ -125,7 +125,7 @@ java.lang.Throwable
 
 ## 保存日志与自定义元素
 
-你可以调用 [YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) 方法直接保存当前已打印的全部日志到文件。
+你可以使用 `YukiHookLogger.saveToFile` 方法直接保存当前已打印的全部日志到文件。
 
 > 示例如下
 
@@ -134,7 +134,7 @@ java.lang.Throwable
 YukiHookLogger.saveToFile("/sdcard/Documents/debug_log.log")
 ```
 
-你还可以使用 [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field) 获取当前已打印的全部日志文件内容。
+你还可以使用 `YukiHookLogger.contents` 获取当前已打印的全部日志文件内容。
 
 > 示例如下
 
@@ -143,9 +143,9 @@ YukiHookLogger.saveToFile("/sdcard/Documents/debug_log.log")
 val fileContent = YukiHookLogger.contents
 ```
 
-以上功能需要启用 [YukiHookLogger.Configs.isRecord](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#isrecord-field)。
+以上功能需要启用 `YukiHookLogger.Configs.isRecord`。
 
-你还可以使用 [YukiHookLogger.Configs.elements](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#elements-method) 自定义调试日志对外显示的元素。
+你还可以使用 `YukiHookLogger.Configs.elements` 自定义调试日志对外显示的元素。
 
 此功能需要在 Hook 入口类的 `onInit` 中对 `YukiHookAPI.Configs` 进行配置。
 
@@ -163,6 +163,6 @@ override fun onInit() = configs {
 
 ::: tip
 
-更多功能请参考 [YukiHookLogger](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#yukihooklooger-object)。
+更多功能请参考 [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field)、[YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) 方法以及 [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object)。
 
 :::
