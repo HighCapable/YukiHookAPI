@@ -31,4 +31,4 @@ annotation class InjectYukiHookWithXposed(
 
 **功能示例**
 
-详情请参考 [InjectYukiHookWithXposed 注解](../../config/xposed-using#injectyukihookwithxposed-注解)。
+详情请参考 [InjectYukiHookWithXposed 注解](../../../../../../../config/xposed-using#injectyukihookwithxposed-注解)。
