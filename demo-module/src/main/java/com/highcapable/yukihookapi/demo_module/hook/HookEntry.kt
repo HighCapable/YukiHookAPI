@@ -56,18 +56,32 @@ class HookEntry : IYukiHookXposedInit {
         // 配置 YuKiHookAPI
         // 可简写为 configs {}
         YukiHookAPI.configs {
-            // 全局调试用的 TAG
-            // 在 Logcat 控制台过滤此 TAG 可找到详细日志
-            debugTag = "YukiHookAPI-Demo"
+            // 配置 YukiHookLogger
+            debugLog {
+                // 全局调试用的 TAG
+                // 在 Logcat 控制台过滤此 TAG 可找到详细日志
+                tag = "YukiHookAPI-Demo"
+                // 是否启用调试日志的输出功能 - 默认启用
+                // 一旦关闭后除手动日志外 API 将停止全部日志的输出 - 建议不要随意关掉这个选项
+                // 虽然说对用户的设备写入大量日志是不正确的 - 但是没有日志你将无法调试
+                // 关于日志是否会影响设备的流畅度一直是一个伪命题
+                // 但是不设置这个选项可能会引起一些非议 - 建议不要关闭就是了
+                isEnable = true
+                // 是否启用调试日志的记录功能 - 默认不启用
+                // 开启后将会在内存中记录全部可用的日志和异常堆栈
+                // 请注意 - 过量的日志可能会导致宿主运行缓慢或造成频繁 GC
+                // 开启后你可以调用 [YukiHookLogger.saveToFile] 实时保存日志到文件或使用 [YukiHookLogger.contents] 获取实时日志文件
+                isRecord = false
+                // 自定义调试日志对外显示的元素
+                // 只对日志记录和 [XposedBridge.log] 生效
+                // 日志元素的排列将按照你在 [item] 中设置的顺序进行显示
+                // 你还可以留空 [item] 以不显示除日志内容外的全部元素
+                // 可用的元素有：[TAG]、[PRIORITY]、[PACKAGE_NAME]、[USER_ID]
+                elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+            }
             // 是否开启调试模式
             // 请注意 - 若作为发布版本请务必关闭调试功能防止对用户设备造成大量日志填充
             isDebug = true
-            // 是否启用调试日志的输出功能
-            // 一旦关闭后除手动日志外 API 将停止全部日志的输出 - 建议不要随意关掉这个选项
-            // 虽然说对用户的设备写入大量日志是不正确的 - 但是没有日志你将无法调试
-            // 关于日志是否会影响设备的流畅度一直是一个伪命题
-            // 但是不设置这个选项可能会引起一些非议 - 建议不要关闭就是了
-            isAllowPrintingLogs = true
             // 是否启用 [YukiHookModulePrefs] 的键值缓存功能
             // 若无和模块频繁交互数据在宿主重新启动之前建议开启
             // 若需要实时交互数据建议关闭或从 [YukiHookModulePrefs] 中进行动态配置

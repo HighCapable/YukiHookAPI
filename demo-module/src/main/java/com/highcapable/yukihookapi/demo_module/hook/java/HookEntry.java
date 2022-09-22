@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.highcapable.yukihookapi.YukiHookAPI;
+import com.highcapable.yukihookapi.hook.log.YukiHookLogger;
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent;
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit;
 
@@ -44,9 +45,16 @@ public class HookEntry implements IYukiHookXposedInit {
     @Override
     public void onInit() {
         YukiHookAPI.Configs config = YukiHookAPI.Configs.INSTANCE;
-        config.setDebugTag("YukiHookAPI-Demo");
+        YukiHookLogger.Configs.INSTANCE.setTag("YukiHookAPI-Demo");
+        YukiHookLogger.Configs.INSTANCE.setEnable(true);
+        YukiHookLogger.Configs.INSTANCE.setRecord(false);
+        YukiHookLogger.Configs.INSTANCE.elements(
+                YukiHookLogger.Configs.TAG,
+                YukiHookLogger.Configs.PRIORITY,
+                YukiHookLogger.Configs.PACKAGE_NAME,
+                YukiHookLogger.Configs.USER_ID
+        );
         config.setDebug(true);
-        config.setAllowPrintingLogs(true);
         config.setEnableModulePrefsCache(true);
         config.setEnableModuleAppResourcesCache(true);
         config.setEnableHookModuleStatus(true);
