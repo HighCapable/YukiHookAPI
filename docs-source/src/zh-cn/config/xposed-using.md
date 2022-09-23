@@ -170,7 +170,7 @@ class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 
 ::: danger
 
-你定义的 **entryClassName** 不可与 **xposed_init** 中的类名相同，否则自动处理程序<u>会在编译时抛出异常</u>。
+你定义的 **entryClassName** 不可与 **xposed_init** 中的类名相同，否则自动处理程序<u>**会在编译时抛出异常**</u>。
 
 :::
 
