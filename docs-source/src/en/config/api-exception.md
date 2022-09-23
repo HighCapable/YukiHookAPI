@@ -1,3 +1,7 @@
+---
+pageClass: hidden-anchor-page
+---
+
 # API Exception Handling *
 
 ::: warning

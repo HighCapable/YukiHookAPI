@@ -1,3 +1,7 @@
+---
+pageClass: hidden-anchor-page
+---
+
 # API 异常处理
 
 > 异常是在开发过程经常遇到的主要问题，这里介绍了 `YukiHookAPI` 在使用过程中可能遇到的常见异常以及处理方式。
@@ -8,7 +12,7 @@
 
 > 这些异常不会导致 APP 停止运行(FC)，但是会在控制台打印 `E` 级别的日志，也可能会停止继续执行相关功能。
 
-#### <Badge type="danger" text="Case 01" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -24,7 +28,7 @@ Could not found XposedBridge in current space! Aborted
 
 请确认你在正确的地方装载了 `YukiHookAPI` 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](../config/xposed-using) 以及 [作为 Hook API 使用的相关配置](../config/api-using)。
 
-#### <Badge type="danger" text="Case 02" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -86,7 +90,7 @@ class HookEntry : IYukiHookXposedInit {
 }
 ```
 
-#### <Badge type="danger" text="Case 03" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -102,7 +106,7 @@ Hooking Process exception occurred
 
 通常情况下这种错误不会轻易发生，若一旦发生此错误，可直接提交日志进行反馈。
 
-#### <Badge type="danger" text="Case 04" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -118,7 +122,7 @@ YukiHookAPI try to load HookEntryClass failed
 
 通常情况下这种错误不会轻易发生，若一旦发生此错误，请自行查看控制台打印的日志定位问题，确定并非自己的代码发生的问题后，可提交日志进行反馈。
 
-#### <Badge type="danger" text="Case 05" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -134,7 +138,7 @@ YukiHookAPI bind initZygote failed
 
 通常情况下这种错误不会轻易发生，若一旦发生此错误，请自行查看控制台打印的日志定位问题，确定并非自己的代码发生的问题后，可提交日志进行反馈。
 
-#### <Badge type="danger" text="Case 06" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -150,7 +154,7 @@ Failed to execute method "**NAME**", maybe your Hook Framework not support Resou
 
 通常这种情况不会发生，请仔细检查错误日志的详细信息，若发生 `ClassNotFound` 等情况可能是 Hook Framework 不支持 Resources Hook(资源钩子)。
 
-#### <Badge type="danger" text="Case 07" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -166,7 +170,7 @@ HookClass \[**NAME**\] not found
 
 请检查目标 `Class` 是否存在，若想忽略此错误请使用 `ignoredHookClassNotFoundFailure` 方法。
 
-#### <Badge type="danger" text="Case 08" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -182,7 +186,7 @@ Hook 目标方法、构造方法时发生错误。
 
 此问题通常由 Hook Framework 产生，请检查对应的日志内容，若问题持续出现请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 09" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -198,7 +202,7 @@ Hooked Member with a finding error by **CLASS**
 
 请检查此错误发生前的上一个错误日志，或许在查找方法、构造方法的时候发生了找不到方法、构造方法的错误。
 
-#### <Badge type="danger" text="Case 10" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -239,7 +243,7 @@ injectMember {
 }
 ```
 
-#### <Badge type="danger" text="Case 11" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -290,7 +294,7 @@ injectMember {
 
 请确认当前被 Hook 方法的正确返回值类型，修改后再试一次。
 
-#### <Badge type="danger" text="Case 12" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -306,7 +310,7 @@ Hook initialization failed because got an Exception
 
 这是一个准备 Hook 阶段就发生异常的提醒，请仔细查看具体的异常是什么以重新确定问题。
 
-#### <Badge type="danger" text="Case 13" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -322,7 +326,7 @@ Try to hook **NAME**\[**NAME**\] got an Exception
 
 这是一个 Hook 开始就发生异常的提醒，请仔细查看具体的异常是什么以重新确定问题。
 
-#### <Badge type="danger" text="Case 14" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -376,7 +380,7 @@ field {
 }
 ```
 
-#### <Badge type="danger" text="Case 15" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -392,7 +396,7 @@ NoSuchMethod/NoSuchConstructor/NoSuchField happend in \[**NAME**\]
 
 请确认你的查找条件是否能正确匹配到目标 `Class` 中的指定方法、构造方法以及变量。
 
-#### <Badge type="danger" text="Case 16" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -408,7 +412,7 @@ Trying **COUNT** times and all failure by RemedyPlan
 
 请确认你设置的 `RemedyPlan` 参数以及宿主内存在的 `Class`，再试一次。
 
-#### <Badge type="danger" text="Case 17" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -432,7 +436,7 @@ method {
 
 请将查找条件补充完整并再试一次。
 
-#### <Badge type="danger" text="Case 18" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -457,7 +461,7 @@ customClassLoader?.searchClass {
 
 这是一个安全异常，请检查你设置的条件，使用相关工具查看所在 **Dex** 中的 `Class` 以及字节码对象特征，并再试一次。
 
-#### <Badge type="danger" text="Case 19" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -482,7 +486,7 @@ TargetClass.method {
 
 这是一个安全异常，请检查你设置的条件，使用相关工具查看所在 `Class` 中的字节码对象特征，并再试一次。
 
-#### <Badge type="danger" text="Case 20" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -510,7 +514,7 @@ TargetClass.method {
 
 `VagueType` 不能在方法、构造方法参数中完全填充，若存在这样的需求请使用 `paramCount`。
 
-#### <Badge type="danger" text="Case 21" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -536,7 +540,7 @@ field {
 
 请检查查找条件中 `type` 的 `Class` 是否存在，然后再试一次。
 
-#### <Badge type="danger" text="Case 22" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -562,7 +566,7 @@ method {
 
 请检查查找条件中 `returnType` 的 `Class` 是否存在，然后再试一次。
 
-#### <Badge type="danger" text="Case 23" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -586,7 +590,7 @@ method {
 
 请检查查找条件中 `param` 的 `index` 号下标的 `Class` 是否存在，然后再试一次。
 
-#### <Badge type="danger" text="Case 24" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -616,7 +620,7 @@ conditions {
 
 Resources 的 Hook 并非类似方法的 Hook，其必须拥有完整的名称和类型描述才能查找成功，请将查找条件补充完整并再试一次。
 
-#### <Badge type="danger" text="Case 25" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -632,7 +636,7 @@ Resources Hook type is invalid \[**TAG**\]
 
 `YukiHookAPI` 会尝试在 `initZygote` 与 `handleInitPackageResources` 中装载 Resources Hook，若全部装载失败可能会发生此异常，当前 Hook Framework 需要支持并启用资源钩子(Resources Hook)功能，请检查后再试一次。
 
-#### <Badge type="danger" text="Case 26" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -648,7 +652,7 @@ Resources Hook got an Exception \[**TAG**\]
 
 这是一个异常汇总，请自行向下查看日志具体的异常是什么，例如找不到 Resources Id 的问题。
 
-#### <Badge type="danger" text="Case 27" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -664,7 +668,7 @@ Received action "**ACTION**" failed
 
 一般情况下，此错误基本上不会发生，一旦发生错误，排除自身代码的问题后，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 28" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -680,7 +684,7 @@ Failed to sendBroadcast like "**KEY**", because got null context in "**PACKAGENA
 
 一般情况下，此错误基本上不会发生，在最新版本中已经修复宿主使用时可能发生的问题，若最新版本依然发生错误，排除自身代码的问题后，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 29" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -696,7 +700,7 @@ Failed to inject module resources into \[**RESOURCES**\]
 
 一般情况下，此错误基本上不会发生，排除自身代码的问题后，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 30" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -712,7 +716,7 @@ Activity Proxy initialization failed because got an Exception
 
 请检查此错误发生后的下一个错误日志，或许在配置参数上可能发生了一些问题，若找不到相关错误日志的说明，排除自身代码的问题后，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 31" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -728,7 +732,7 @@ Activity Proxy got an Exception in msg.what \[**WHAT**\]
 
 一般情况下，此错误基本上不会发生，但根据系统版本差异性并未做详细测试，排除自身代码的问题后，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 32" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -751,7 +755,7 @@ registerModuleAppActivities(proxy = false)
 
 方法中的 `proxy` 参数只接受 `String`、`CharSequence`、`Class` 类型，请查看相关使用方法正确填入方法参数。
 
-#### <Badge type="danger" text="Case 33" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -774,7 +778,7 @@ registerModuleAppActivities()
 
 默认参数 (无参) 只能用于可被启动的 APP，若 APP 并未声明启动入口 `Activity`，你就需要手动指定方法的 `proxy` 参数。
 
-#### <Badge type="danger" text="Case 34" vertical="middle" />
+###### exception
 
 ::: danger loggerE
 
@@ -800,7 +804,7 @@ registerModuleAppActivities(proxy = "com.demo.test.TestActivity")
 
 > 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
 
-#### <Badge type="danger" text="Case 35" vertical="middle" />
+###### exception
 
 ::: danger RuntimeException
 
@@ -848,7 +852,7 @@ YourClass.method {
 
 不允许内联、反射、Hook `YukiHookAPI` 自身的 `Class` 以及内部功能，防止发生错误。
 
-#### <Badge type="danger" text="Case 36" vertical="middle" />
+###### exception
 
 ::: danger UnsupportedOperationException
 
@@ -890,7 +894,7 @@ JavaMethod.hook {
 
 :::
 
-#### <Badge type="danger" text="Case 37" vertical="middle" />
+###### exception
 
 ::: danger NoClassDefFoundError
 
@@ -912,7 +916,7 @@ Can't find this Class in \[**CLASSLOADER**\]: **CONTENT** Generated by YukiHookA
 
 请检查当前字符串或实体匹配到的 `Class` 是否存在于当前 `ClassLoader`，并再试一次。
 
-#### <Badge type="danger" text="Case 38" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -928,7 +932,7 @@ ClassLoader \[**CLASSLOADER**\] is not a DexClassLoader
 
 这种情况基本不存在，除非当前 APP 引用了非 ART 平台的可执行文件 (但是这种情况还是不会存在) 或当前 `ClassLoader` 为空。
 
-#### <Badge type="danger" text="Case 39" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException
 
@@ -953,7 +957,7 @@ encase {
 
 这种情况不应该存在，由于 `systemContext` 通过反射从 `ActivityThread` 中得到，除非系统进程发生异常，否则获取到的对象不会为空。
 
-#### <Badge type="danger" text="Case 40" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -997,7 +1001,7 @@ ModuleApplication.appContext...
 
 这种情况基本不存在，由于 `appContext` 是在 `onCreate` 中被赋值的，除非遇到多进程并发启动或 APP 没有启动完成前被反射调用了父类的 `onCreate` 方法。
 
-#### <Badge type="danger" text="Case 41" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1028,7 +1032,7 @@ class MyApplication : Application() {
 
 你只能在 [作为 Xposed 模块使用](../config/xposed-using) 时使用 `YukiHookModulePrefs`，在 Hook 自身 APP 中请使用原生的 `Sp` 存储。
 
-#### <Badge type="danger" text="Case 42" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1052,7 +1056,7 @@ encase {
 
 一般情况下不会发生此问题，若持续无法获取 `XSharedPreferences` 对象则可能是你使用的 Hook Framework 不支持此功能或自身存在错误。
 
-#### <Badge type="danger" text="Case 43" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1085,7 +1089,7 @@ class MyApplication : Application() {
 
 你只能在 [作为 Xposed 模块使用](../config/xposed-using) 时使用 `YukiHookDataChannel`。
 
-#### <Badge type="danger" text="Case 44" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1101,7 +1105,7 @@ YukiHookDataChannel only support used on an Activity, but this current context i
 
 你只能在 `Activity` 或 `Fragment` 中使用 `YukiHookDataChannel`。
 
-#### <Badge type="danger" text="Case 45" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1117,7 +1121,7 @@ Xposed modulePackageName load failed, please reset and rebuild it
 
 请仔细阅读 [这里](../config/xposed-using#modulepackagename-参数) 的帮助文档，正确配置模块的 Hook 入口类包名。
 
-#### <Badge type="danger" text="Case 46" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1160,7 +1164,7 @@ class MainActivity : AppCompatActivity() {
 }
 ```
 
-#### <Badge type="danger" text="Case 47" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1178,7 +1182,7 @@ Key-Value type **TYPE** is not allowed
 
 `YukiHookDataChannel` 支持的类型为 `Intent.putExtra` 限制的类型，请传入支持的类型。
 
-#### <Badge type="danger" text="Case 48" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1203,7 +1207,7 @@ loadZygote {
 
 `YukiHookDataChannel` 只能在 `loadSystem`、`loadApp` 中使用。
 
-#### <Badge type="danger" text="Case 49" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1231,7 +1235,7 @@ injectMember {
 
 若要使用 `members()` 设置自定义 Hook 方法，你必须保证其方法参数里的 `Member` 数组对象不能为空。
 
-#### <Badge type="danger" text="Case 50" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1261,7 +1265,7 @@ injectMember {
 
 请确认你 Hook 的目标方法、构造方法的方法参数数量是否不为空，且不能对 `args` 的下标设置小于 0 的数值。
 
-#### <Badge type="danger" text="Case 51" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1291,7 +1295,7 @@ injectMember {
 
 请确认你 Hook 的方法是否为静态类型，静态类型的方法没有实例，不能使用此功能，若非静态方法，请检查实例是否已经销毁。
 
-#### <Badge type="danger" text="Case 52" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1319,7 +1323,7 @@ injectMember {
 
 这种问题一般不会发生，真的发生了此问题，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 53" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1347,7 +1351,7 @@ injectMember {
 
 这种问题一般不会发生，真的发生了此问题，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 54" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1375,7 +1379,7 @@ injectMember {
 
 请确认你 Hook 的方法是构造方法还是普通方法并使用对应类型的方法获取指定的实例，若不知道字节码的类型可以直接使用 `member` 来获取。
 
-#### <Badge type="danger" text="Case 55" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1403,7 +1407,7 @@ injectMember {
 
 请确认你 Hook 的方法是普通方法还是构造方法并使用对应类型的方法获取指定的实例，若不知道字节码的类型可以直接使用 `member` 来获取。
 
-#### <Badge type="danger" text="Case 56" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1431,7 +1435,7 @@ injectMember {
 
 请确认当前 Hook 实例的正确类型并重新填写泛型中的类型，若不能确定请使用 `Any` 或直接使用 `instance` 变量。
 
-#### <Badge type="danger" text="Case 57" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1459,7 +1463,7 @@ injectMember {
 
 请确认你 Hook 的目标方法、构造方法的方法参数数量是否不为空，否则你无法使用此功能。
 
-#### <Badge type="danger" text="Case 58" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1487,7 +1491,7 @@ injectMember {
 
 请确认你 Hook 的目标方法、构造方法的方法参数个数，并重新设置数组下标。
 
-#### <Badge type="danger" text="Case 59" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1512,7 +1516,7 @@ encase {
 
 这种情况几乎不存在，除非模块被装载的宿主或目标 Xposed 框架自身存在问题，若真的发生了此问题，请携带详细日志进行反馈。
 
-#### <Badge type="danger" text="Case 60" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1537,7 +1541,7 @@ encase {
 
 `moduleAppResources` 需要当前 Hook Framework 支持 `initZygote` 功能，请检查后再试一次。
 
-#### <Badge type="danger" text="Case 61" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1553,7 +1557,7 @@ VariousClass match failed of those **CLASSES**
 
 检查当前 Hook 的宿主内是否存在其中能够匹配的 `Class` 后，再试一次。
 
-#### <Badge type="danger" text="Case 62" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1580,7 +1584,7 @@ TargetClass.hook {
 
 详情请参考 [状态监听](../guide/example#状态监听)。
 
-#### <Badge type="danger" text="Case 63" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1611,7 +1615,7 @@ injectResource {
 
 这种情况基本上不存在，除非被 Hook 的宿主当前 `Activity` 已经销毁或 Hook Framework 自身存在问题。
 
-#### <Badge type="danger" text="Case 64" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1634,7 +1638,7 @@ moduleAppResources.fwd(...).resources
 
 这种情况基本上不存在，除非 Hook Framework 自身存在问题。
 
-#### <Badge type="danger" text="Case 65" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1682,7 +1686,7 @@ method {
 }
 ```
 
-#### <Badge type="danger" text="Case 66" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1698,7 +1702,7 @@ Invalid YukiHookCallback type
 
 这种情况基本上不存在，若发生上述问题，确定并非自己的代码发生的问题后，可提交日志进行反馈。
 
-#### <Badge type="danger" text="Case 67" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
@@ -1721,7 +1725,7 @@ context.applyTheme(R.style.Theme_AppCompat).applyTheme(R.style.Theme_AppCompat)
 
 在 `Context` 中只能创建一次 `ModuleContextThemeWrapper`，请检查代码是否有循环调用问题。
 
-#### <Badge type="danger" text="Case 68" vertical="middle" />
+###### exception
 
 ::: danger IllegalStateException 
 
