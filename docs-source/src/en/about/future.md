@@ -34,7 +34,7 @@ You can submit **issues** with us.
 
 :::
 
-We have provided the Xposed native API listening interface, you can find or view the implementation method of the Demo [here](../config/xposed-using#native-xposed-api-event).
+We have provided the Xposed native API listening interface, you can find or view the implementation method of the Demo [here](../config/xposed-using#native-xposed-api-events).
 
 ### Support for more Hook Framework
 
