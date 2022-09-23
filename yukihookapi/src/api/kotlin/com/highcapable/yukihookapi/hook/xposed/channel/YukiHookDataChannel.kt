@@ -302,8 +302,6 @@ class YukiHookDataChannel private constructor() {
                     when (it.value) {
                         null -> Unit
                         is Bundle -> putExtra(it.key, it.value as Bundle)
-                        is Parcelable -> putExtra(it.key, it.value as Parcelable)
-                        is Serializable -> putExtra(it.key, it.value as Serializable)
                         is Array<*> -> putExtra(it.key, it.value as Array<*>)
                         is Boolean -> putExtra(it.key, it.value as Boolean)
                         is BooleanArray -> putExtra(it.key, it.value as BooleanArray)
@@ -311,7 +309,6 @@ class YukiHookDataChannel private constructor() {
                         is ByteArray -> putExtra(it.key, it.value as ByteArray)
                         is Char -> putExtra(it.key, it.value as Char)
                         is CharArray -> putExtra(it.key, it.value as CharArray)
-                        is CharSequence -> putExtra(it.key, it.value as CharSequence)
                         is Double -> putExtra(it.key, it.value as Double)
                         is DoubleArray -> putExtra(it.key, it.value as DoubleArray)
                         is Float -> putExtra(it.key, it.value as Float)
@@ -323,6 +320,9 @@ class YukiHookDataChannel private constructor() {
                         is Short -> putExtra(it.key, it.value as Short)
                         is ShortArray -> putExtra(it.key, it.value as ShortArray)
                         is String -> putExtra(it.key, it.value as String)
+                        is CharSequence -> putExtra(it.key, it.value as CharSequence)
+                        is Parcelable -> putExtra(it.key, it.value as CharSequence)
+                        is Serializable -> putExtra(it.key, it.value as Serializable)
                         else -> error("Key-Value type ${it.value?.javaClass?.name} is not allowed")
                     }
                 }
