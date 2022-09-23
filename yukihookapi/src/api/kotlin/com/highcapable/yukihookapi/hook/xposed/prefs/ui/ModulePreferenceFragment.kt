@@ -52,6 +52,8 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  * 然后请将重写方法由 [onCreatePreferences] 替换为 [onCreatePreferencesInModuleApp] 即可
  *
  * 详情请参考 [API 文档 - ModulePreferenceFragment](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/ModulePreferenceFragment)
+ *
+ * For English version, see [API Document - ModulePreferenceFragment](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/ModulePreferenceFragment)
  */
 abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 

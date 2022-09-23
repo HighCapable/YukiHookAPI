@@ -48,6 +48,8 @@ import de.robv.android.xposed.XposedBridge
  * 调用 [YukiHookAPI.Status.executorVersion] 来获取当前 Hook 框架的版本
  *
  * 详情请参考 [Xposed 模块判断自身激活状态](https://fankes.github.io/YukiHookAPI/zh-cn/guide/example#xposed-%E6%A8%A1%E5%9D%97%E5%88%A4%E6%96%AD%E8%87%AA%E8%BA%AB%E6%BF%80%E6%B4%BB%E7%8A%B6%E6%80%81)
+ *
+ * For English version, see [Xposed Module own Active State](https://fankes.github.io/YukiHookAPI/en/guide/example#xposed-module-own-active-state)
  */
 internal object YukiHookModuleStatus {
 

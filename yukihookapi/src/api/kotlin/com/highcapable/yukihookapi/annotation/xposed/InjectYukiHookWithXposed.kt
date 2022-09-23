@@ -51,6 +51,8 @@ import de.robv.android.xposed.IXposedHookInitPackageResources
  * - ❗只能拥有一个 Hook 入口 - 若存在多个注解编译会报错
  *
  * 详情请参考 [InjectYukiHookWithXposed 注解](https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using#injectyukihookwithxposed-%E6%B3%A8%E8%A7%A3)
+ *
+ * For English version, see [InjectYukiHookWithXposed Annotation](https://fankes.github.io/YukiHookAPI/en/config/xposed-using#injectyukihookwithxposed-annotation)
  * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
  * @param modulePackageName 模块包名 - 不填默认自动生成
  * @param entryClassName 定义 [YukiHookAPI] 自动生成 Xposed 模块入口类的名称 - 不填默认使用 HookEntryClass_YukiHookXposedInit 进行生成

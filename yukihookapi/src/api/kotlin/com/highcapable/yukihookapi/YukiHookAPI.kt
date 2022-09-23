@@ -275,6 +275,8 @@ object YukiHookAPI {
          *
          * 详情请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
          *
+         * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+         *
          * 除非缓存的 [Member] 发生了混淆的问题 - 例如使用 R8 混淆后的 APP 的目标 [Member] - 否则建议启用
          */
         var isEnableMemberCache = true
@@ -295,6 +297,8 @@ object YukiHookAPI {
      * 配置 [YukiHookAPI] 相关参数
      *
      * 详情请参考 [configs 方法](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#configs-%E6%96%B9%E6%B3%95)
+     *
+     * For English version, see [configs Method](https://fankes.github.io/YukiHookAPI/en/config/api-example#configs-method)
      * @param initiate 方法体
      */
     inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
@@ -304,7 +308,11 @@ object YukiHookAPI {
      *
      * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      *
+     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     *
      * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     *
+     * For English version, see [Created by lambda](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
      * @param initiate Hook 方法体
      */
     fun encase(initiate: PackageParam.() -> Unit) {
@@ -319,7 +327,11 @@ object YukiHookAPI {
      *
      * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      *
-     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
+     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     *
+     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     *
+     * For English version, see [Created by lambda](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
@@ -341,9 +353,15 @@ object YukiHookAPI {
      *
      * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     * For English version, see [Use as Hook API](https://fankes.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
      *
      * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
+     *
+     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     *
+     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     *
+     * For English version, see [Created by lambda](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
      * @param baseContext attachBaseContext
      * @param initiate Hook 方法体
      */
@@ -362,9 +380,15 @@ object YukiHookAPI {
      *
      * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
+     * For English version, see [Use as Hook API](https://fankes.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
      *
      * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
+     *
+     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     *
+     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     *
+     * For English version, see [Created by lambda](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
      * @param baseContext attachBaseContext
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的

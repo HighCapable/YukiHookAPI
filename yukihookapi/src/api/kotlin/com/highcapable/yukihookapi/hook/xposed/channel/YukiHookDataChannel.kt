@@ -58,7 +58,9 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * - ❗模块与宿主需要保持存活状态 - 否则无法建立通讯
  *
- * - 详情请参考 [API 文档 - YukiHookDataChannel](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel)
+ * 详情请参考 [API 文档 - YukiHookDataChannel](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel)
+ *
+ * For English version, see [API Document - YukiHookDataChannel](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel)
  */
 class YukiHookDataChannel private constructor() {
 

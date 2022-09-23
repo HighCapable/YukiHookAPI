@@ -52,6 +52,8 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
  * 你还可以实现监听原生 Xposed API 功能 - 重写 [onXposedEvent] 方法即可
  *
  * 详情请参考 [IYukiHookXposedInit 接口](https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using#iyukihookxposedinit-%E6%8E%A5%E5%8F%A3)
+ *
+ * For English version, see [IYukiHookXposedInit Interface](https://fankes.github.io/YukiHookAPI/en/config/xposed-using#iyukihookxposedinit-interface)
  */
 interface IYukiHookXposedInit {
 

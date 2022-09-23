@@ -61,7 +61,9 @@ import java.io.File
  *
  * - 若你正在使用 [PreferenceFragmentCompat] - 请迁移到 [ModulePreferenceFragment] 以适配上述功能特性
  *
- * - 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookModulePrefs)
+ * 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookModulePrefs)
+ *
+ * For English version, see [API Document - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookModulePrefs)
  * @param context 上下文实例 - 默认空
  */
 class YukiHookModulePrefs private constructor(private var context: Context? = null) {

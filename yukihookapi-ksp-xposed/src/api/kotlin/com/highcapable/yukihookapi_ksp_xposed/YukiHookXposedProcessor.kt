@@ -82,7 +82,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param msg 错误消息
          */
         private fun SymbolProcessorEnvironment.problem(msg: String) {
-            val helpMsg = "Looking for help? see https://fankes.github.io/YukiHookAPI/en/config/xposed-using"
+            val helpMsg = "Looking for help? Please see the documentation link below\n" +
+                    "- English: https://fankes.github.io/YukiHookAPI/en/config/xposed-using\n" +
+                    "- Chinese(Simplified): https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using"
             logger.error(message = "[$TAG] $msg\n$helpMsg")
             throw RuntimeException("[$TAG] $msg\n$helpMsg")
         }
