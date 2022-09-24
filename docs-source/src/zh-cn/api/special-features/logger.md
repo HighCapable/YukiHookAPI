@@ -16,7 +16,7 @@ loggerD(msg = "This is a log")
 
 此时，`YukiHookAPI` 会调用 `android.util.Log` 与 `XposedBridge.log` 同时打印这条日志。
 
-日志默认的 `TAG` 为你在 `YukiHookAPI.Configs.debugTag` 中设置的值。
+日志默认的 `TAG` 为你在 `YukiHookLogger.Configs.tag` 中设置的值。
 
 你也可以动态自定义这个值，但是不建议轻易修改 `TAG` 防止过滤不到日志。
 
