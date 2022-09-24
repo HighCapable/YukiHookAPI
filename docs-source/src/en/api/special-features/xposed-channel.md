@@ -1,9 +1,185 @@
-# Xposed Module and Host Channel *
+# Xposed Module and Host Channel
 
-::: warning
+> This is a solution that uses system out-of-order broadcasting to send and receive data between the Module App and the Host App.
 
-The current page has not been translated yet.
+::: danger Condition that needs to be met
 
-If necessary, please temporarily switch to the **Simplified Chinese** page, or help us improve the translation of this page.
+The Module App and the Host App need to remain alive, otherwise communication cannot be established.
+
+:::
+
+## Basic Usage
+
+> The basic usage of the `wait` and `put` methods is described here.
+
+By using `dataChannel` to realize the communication bridge between the Module App and the Host App, the principle is to send and receive system out-of-order broadcasts.
+
+> The Module App example is as follows
+
+```kotlin
+// Get from the Host App of the specified package name
+dataChannel(packageName = "com.example.demo").wait<String>(key = "key_from_host") { value ->
+    // Your code here.
+}
+// Send to the Host App with the specified package name
+dataChannel(packageName = "com.example.demo").put(key = "key_from_module", value = "I am module")
+```
+
+> The Host App example is as follows
+
+```kotlin
+// Get from the Module App
+dataChannel.wait<String>(key = "key_from_module") { value ->
+    // Your code here.
+}
+// Send to the Module App
+dataChannel.put(key = "key_from_host", value = "I am host")
+```
+
+You can leave the `value` of `dataChannel` unset to only notify the Module App or Host App to call back the `wait` method.
+
+> The Module App example is as follows
+
+```kotlin
+// Get from the Host App of the specified package name
+dataChannel(packageName = "com.example.demo").wait(key = "listener_from_host") {
+    // Your code here.
+}
+// Send to the Host App with the specified package name
+dataChannel(packageName = "com.example.demo").put(key = "listener_from_module")
+```
+
+> The Host App example is as follows
+
+```kotlin
+// Get from the Module App
+dataChannel.wait(key = "listener_from_module") {
+    // Your code here.
+}
+// Send to the Module App
+dataChannel.put(key = "listener_from_host")
+```
+
+::: danger
+
+The receiver needs to stay alive to receive the communication data.
+
+:::
+
+::: tip
+
+For more functions, please refer to [YukiHookDataChannel](../public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel).
+
+:::
+
+## Determine Module App and Host App Version Match
+
+> Through the communication bridge function, `YukiHookAPI` also provides a solution for you to determine whether the Module App matches the Host App version after the user updates the Module App.
+
+We only need to call the `checkingVersionEquals` method to achieve this function.
+
+Bidirectional judgment can be performed between the Module App and the Host App.
+
+You can check in the Module App whether the Host App of the specified package name matches the version of the current Module App.
+
+> The following example
+
+```kotlin
+// Get from the Host App of the specified package name
+dataChannel(packageName = "com.example.demo").checkingVersionEquals { isEquals ->
+    // Your code here.
+}
+```
+
+You can also determine in the Host App whether it matches the current Module App version.
+
+> The following example
+
+```kotlin
+// Get from the Module App
+dataChannel.checkingVersionEquals { isEquals ->
+    // Your code here.
+}
+```
+
+::: warning Condition of method callback
+
+The Host App and Module App must be stay alive, and after activating the Module App restart the Hook target Host App object in scope.
+
+:::
+
+::: tip
+
+For more functions, please refer to [YukiHookDataChannel](../public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel).
+
+:::
+
+## Rules for Callback Event Response
+
+Only examples used in Module App are listed here, the same `key` in the Host App is always not allowed to be created repeatedly.
+
+::: danger
+
+In the Module App and Host App, each **key** callback event corresponding to **dataChannel** is not allowed to be repeatedly created, if repeated, the previous callback event will be replaced by the newly added callback event.
+
+When used in the Module App, it cannot be repeated in the same **Activity**, and the same **key** in different **Activity** is allowed to be repeated.
+
+:::
+
+> The following example
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Callback event A
+        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+            // Your code here.
+        }
+        // Callback event B
+        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+            // Your code here.
+        }
+        // Callback event C
+        dataChannel(packageName = "com.example.demo").wait(key = "other_test_key") {
+            // Your code here.
+        }
+    }
+}
+
+class OtherActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Callback event D
+        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+            // Your code here.
+        }
+    }
+}
+```
+
+In the above example, the callback event A will be replaced by the callback event B, the `key` of the callback event C is not repeated with others, and the callback event D is in another Activity, So the final callback events B, C, and D can all be created successfully.
+
+::: danger
+
+A callback event with the same **key** will only call back the callback event registered in the **Activity** that the current Module App is displaying, such as **test_key** in the above, if **OtherActivity** is being displayed, then **test_key** in **MainActivity** will not be called back.
+
+The same **key** registers **dataChannel** in the same **Activity** but different **Fragment**, they will still be called back in the current **Activity** at the same time.
+
+In a Module App, you can only use **Context** of **Activity** to register **dataChannel**, you cannot use **dataChannel** in **Application** and **Service**.
+
+If you want to use **dataChannel** in **Fragment**, use **activity?.dataChannel(...)**.
+
+:::
+
+## Security Instructions
+
+In the Module environment, you can only receive communication data sent by <u>**the Host App with the specified package name**</u> and only send it to <u>**the Host App with the specified package name**</u>.
+
+::: danger
+
+In order to further prevent broadcast abuse, the API in the communication data will automatically specify the package name of the Host App and Module App to prevent other apps from monitoring and using broadcast to make overrun behaviors.
 
 :::
