@@ -118,7 +118,7 @@ val Context.processName
  *
  * 详情请参考 [注入模块资源 (Resources)](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%85%A5%E6%A8%A1%E5%9D%97%E8%B5%84%E6%BA%90-resources)
  *
- * For English version, see [Inject Module Resources](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#inject-module-resources)
+ * For English version, see [Inject Module App's Resources](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#inject-module-app-s-resources)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
@@ -133,7 +133,7 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
  *
  * 详情请参考 [注入模块资源 (Resources)](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%85%A5%E6%A8%A1%E5%9D%97%E8%B5%84%E6%BA%90-resources)
  *
- * For English version, see [Inject Module Resources](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#inject-module-resources)
+ * For English version, see [Inject Module App's Resources](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#inject-module-app-s-resources)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
@@ -150,7 +150,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  *
  * 详情请参考 [注册模块 Activity](https://fankes.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%86%8C%E6%A8%A1%E5%9D%97-activity)
  *
- * For English version, see [Register Module Activity](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#register-module-activity)
+ * For English version, see [Register Module App's Activity](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#register-module-app-s-activity)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
