@@ -75,7 +75,7 @@ const navigationLinks = {
     specialFeature: [
         '/api/special-features/reflection',
         '/api/special-features/logger',
-        '/api/special-features/xposed-prefs',
+        '/api/special-features/xposed-storage',
         '/api/special-features/xposed-channel',
         '/api/special-features/host-lifecycle',
         '/api/special-features/host-inject'
