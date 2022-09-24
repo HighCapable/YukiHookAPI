@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import dalvik.system.PathClassLoader
 
 /**
  * 用于包装 [PackageParam]
@@ -55,6 +56,16 @@ class PackageParamWrapper internal constructor(
     var appInfo: ApplicationInfo? = null,
     var appResources: YukiResources? = null
 ) {
+
+    /**
+     * 获取当前正在进行的 Hook 进程是否正确
+     *
+     * 此功能为修复在 Hook 系统框架、系统 APP 等情况时会出现 [ClassLoader] 不匹配的问题
+     *
+     * 如果 [type] 不是 [HookEntryType.ZYGOTE] 那么 [appClassLoader] 就应该得到 [PathClassLoader]
+     * @return [Boolean] 是否正确
+     */
+    internal val isCorrectProcess get() = type == HookEntryType.ZYGOTE || (type != HookEntryType.ZYGOTE && appClassLoader is PathClassLoader)
 
     override fun toString() =
         "PackageParamWrapper [type] $type [packageName] $packageName [processName] $processName [appInfo] $appInfo [appResources] $appResources"

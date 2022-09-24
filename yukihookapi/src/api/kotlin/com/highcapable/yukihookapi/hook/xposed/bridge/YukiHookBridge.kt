@@ -190,13 +190,13 @@ object YukiHookBridge {
                     appResources = appResources
                 ).also { packageParamWrappers[packageName ?: SYSTEM_FRAMEWORK_NAME] = it }
             else null
-        else packageParamWrappers[packageName]?.also {
-            it.type = type
-            if (packageName?.isNotBlank() == true) it.packageName = packageName
-            if (processName?.isNotBlank() == true) it.processName = processName
-            if (appClassLoader != null && (type == HookEntryType.ZYGOTE || appClassLoader is PathClassLoader)) it.appClassLoader = appClassLoader
-            if (appInfo != null) it.appInfo = appInfo
-            if (appResources != null) it.appResources = appResources
+        else packageParamWrappers[packageName]?.also { wrapper ->
+            wrapper.type = type
+            packageName?.takeIf { it.isNotBlank() }?.also { wrapper.packageName = it }
+            processName?.takeIf { it.isNotBlank() }?.also { wrapper.processName = it }
+            appClassLoader?.takeIf { type == HookEntryType.ZYGOTE || it is PathClassLoader }?.also { wrapper.appClassLoader = it }
+            appInfo?.also { wrapper.appInfo = it }
+            appResources?.also { wrapper.appResources = it }
         }
     }
 
@@ -256,7 +256,7 @@ object YukiHookBridge {
                 else null
             else -> null
         }?.also {
-            YukiHookAPI.onXposedLoaded(it)
+            if (it.isCorrectProcess) YukiHookAPI.onXposedLoaded(it)
             if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
                 AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
             if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
