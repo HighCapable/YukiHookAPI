@@ -152,7 +152,11 @@ Failed to execute method "**NAME**", maybe your Hook Framework not support Resou
 
 **解决方案**
 
-通常这种情况不会发生，请仔细检查错误日志的详细信息，若发生 `ClassNotFound` 等情况可能是 Hook Framework 不支持 Resources Hook(资源钩子)。
+请仔细检查错误日志的详细信息。
+
+若发生 `Resources$NotFoundException` 则可能为你查找的 Resources Id 不正确。
+
+若发生 `ClassNotFound` 或 `NoClassDefFoundError` 可能是 Hook Framework 不支持 Resources Hook(资源钩子)。
 
 ###### exception
 
