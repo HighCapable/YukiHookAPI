@@ -166,7 +166,9 @@ class OtherActivity : AppCompatActivity() {
 
 相同的 **key** 在同一个 **Activity** 不同的 **Fragment** 中注册 **dataChannel**，它们依然会在当前 **Activity** 中同时被回调。 
 
-在模块中，你只能使用 **Activity** 的 **Context** 注册 **dataChannel**，你不能在 **Application** 以及 **Service** 等地方使用 **dataChannel**，若要在 **Fragment** 中使用 **dataChannel**，请使用 **activity?.dataChannel(...)**。
+在模块中，你只能使用 **Activity** 的 **Context** 注册 **dataChannel**，你不能在 **Application** 以及 **Service** 等地方使用 **dataChannel**。
+
+若要在 **Fragment** 中使用 **dataChannel**，请使用 **activity?.dataChannel(...)**。
 
 :::
 
