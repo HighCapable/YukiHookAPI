@@ -67,7 +67,7 @@ loadApp(name = "com.example.demo") {
         registerReceiver(Intent.ACTION_USER_PRESENT) { context, intent ->
             // ...
         }
-        // 注册多个广播监听 - 会同时回调多次
+        // 注册多个广播监听，会同时回调多次
         registerReceiver(Intent.ACTION_PACKAGE_CHANGED, Intent.ACTION_TIME_TICK) { context, intent ->
             // ...
         }
