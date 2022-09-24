@@ -10,7 +10,7 @@
 
 > 这里描述了在 `Activity` 中装载 `YukiHookModulePrefs` 的场景。
 
-通常情况下我们可以这样在 Hook 内对其进行初始化。
+通常情况下我们可以这样在 Hook APP (宿主) 内对其进行初始化。
 
 > 示例如下
 
@@ -28,7 +28,7 @@ XSharedPreferences(BuildConfig.APPLICATION_ID)
 modulePrefs.putString("test_name", "saved_value")
 ```
 
-当你在 Hook 中读取数据时，可以使用如下方法。
+当你在 Hook APP (宿主) 中读取数据时，可以使用如下方法。
 
 > 示例如下
 
@@ -51,7 +51,7 @@ modulePrefs("specify_file_name").putString("test_name", "saved_value")
 modulePrefs.name("specify_file_name").putString("test_name", "saved_value")
 ```
 
-在 Hook 中这样读取。
+在 Hook APP (宿主) 中这样读取。
 
 > 示例如下
 
