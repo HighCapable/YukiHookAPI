@@ -1052,7 +1052,8 @@ Cannot load the XSharedPreferences, maybe is your Hook Framework not support it
 
 ```kotlin
 encase {
-    prefs... // 调用了此变量
+    // 调用了此变量
+    prefs...
 }
 ```
 
@@ -1518,7 +1519,7 @@ encase {
 
 **解决方案**
 
-这种情况几乎不存在，除非模块被装载的宿主或目标 Xposed 框架自身存在问题，若真的发生了此问题，请携带详细日志进行反馈。
+这种情况几乎不存在，除非模块被装载的宿主或目标 Hook Framework 自身存在问题，若真的发生了此问题，请携带详细日志进行反馈。
 
 ###### exception
 
@@ -1716,13 +1717,13 @@ ModuleContextThemeWrapper already loaded
 
 **异常原因**
 
-在 `Context` 中使用 `applyTheme` 方法时重复进行调用。
+在 `Context` 中使用 `applyModuleTheme` 方法时重复进行调用。
 
 > 示例如下
 
 ```kotlin
 // 假设这就是当前的 Context 对象
-context.applyTheme(R.style.Theme_AppCompat).applyTheme(R.style.Theme_AppCompat)
+context.applyModuleTheme(R.style.Theme_AppCompat).applyModuleTheme(R.style.Theme_AppCompat)
 ```
 
 **解决方案**
