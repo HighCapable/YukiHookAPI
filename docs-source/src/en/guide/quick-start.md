@@ -18,13 +18,13 @@
 
 - JVM 11 and above (Since API `1.0.80`)
 
-## Automatically build the project
+## Automatically Build Project
 
 `YukiHookAPI` provides an automated build tool that can help you quickly build an Android standard project template with Xposed Module dependencies, and use the built template to start the next step directly.
 
 You can [click here](../tools/yukihookapi-projectbuilder) to check it out.
 
-## Manually configure the project
+## Manually Configure Project
 
 If you don't want to use automated build tools, you can still manually configure project dependencies as follows.
 
