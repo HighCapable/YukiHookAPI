@@ -55,7 +55,7 @@ internal class MethodRulesData internal constructor(
     override val templates
         get() = arrayOf(
             name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
-            nameConditions?.let { "nameConditions:$it" } ?: "",
+            nameConditions?.let { "nameConditions:[existed]" } ?: "",
             paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
             paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
             paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",

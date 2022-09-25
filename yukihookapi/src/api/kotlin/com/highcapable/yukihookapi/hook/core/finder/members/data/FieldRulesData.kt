@@ -46,7 +46,7 @@ internal class FieldRulesData internal constructor(
     override val templates
         get() = arrayOf(
             name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
-            nameConditions?.let { "nameConditions:$it" } ?: "",
+            nameConditions?.let { "nameConditions:[existed]" } ?: "",
             type?.let { "type:[$it]" } ?: "", *super.templates
         )
 
