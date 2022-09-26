@@ -202,8 +202,10 @@ class HookEntry : IYukiHookXposedInit {
                         }
                         // 在方法执行之前拦截
                         beforeHook {
-                            // 设置 0 号 param
+                            // 设置 0 号 param (推荐)
                             args().first().set("I am hook method param")
+                            // 下面这种方式也是可以的
+                            // args[0] = "I am hook method param"
                         }
                     }
                     // 注入要 Hook 的方法
