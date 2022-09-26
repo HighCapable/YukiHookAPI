@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/demo-module" />
             <option value="$PROJECT_DIR$/yukihookapi" />
             <option value="$PROJECT_DIR$/yukihookapi-ksp-xposed" />
+            <option value="$PROJECT_DIR$/yukihookapi-stub" />
           </set>
         </option>
       </GradleProjectSettings>
