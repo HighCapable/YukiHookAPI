@@ -39,6 +39,8 @@ import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.modulePrefs
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : ModuleAppCompatActivity() {
 
@@ -69,6 +71,8 @@ class MainActivity : ModuleAppCompatActivity() {
             moduleDemoNewXshareZhText.text = if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences 是否可用" else "New XShare 模式支持状态"
             moduleDemoResHookText.text = "Support Resources Hook：${YukiHookAPI.Status.isSupportResourcesHook}"
             moduleDemoResHookZhText.text = "资源钩子支持状态"
+            moduleDemoComTimeStampText.text =
+                "Compiled Time：${SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))}"
             moduleDemoEditText.also {
                 hostEnvironment {
                     it.isEnabled = false
