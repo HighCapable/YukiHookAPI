@@ -78,6 +78,20 @@ object Status
 
 > 当前 `YukiHookAPI` 的状态。
 
+### compiledTimestamp <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val compiledTimestamp: Long
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获取项目编译完成的时间戳 (当前本地时间)。
+
 ### isXposedEnvironment <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
