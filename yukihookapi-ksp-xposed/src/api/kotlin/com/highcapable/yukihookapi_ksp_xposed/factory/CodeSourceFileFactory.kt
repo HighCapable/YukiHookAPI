@@ -32,6 +32,22 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
+ * 包名常量定义类
+ */
+object PackageName {
+    const val ModuleApplication_Impl = "com.highcapable.yukihookapi.hook.xposed.application"
+    const val YukiHookBridge_Impl = "com.highcapable.yukihookapi.hook.xposed.bridge"
+}
+
+/**
+ * 类名常量定义类
+ */
+object ClassName {
+    const val ModuleApplication_Impl = "ModuleApplication_Impl"
+    const val YukiHookBridge_Impl = "YukiHookBridge_Impl"
+}
+
+/**
  * 创建文件注释
  * @param entryClassName 入口类名 - 空则不生成
  * @param currrentClassTag 当前注入类标签
@@ -39,7 +55,7 @@ import java.util.*
  */
 private fun createCommentContent(entryClassName: String = "", currrentClassTag: String) =
     ("/**\n" +
-            " * $currrentClassTag Inject Class\n" +
+            " * $currrentClassTag Class\n" +
             " *\n" +
             " * Compiled from YukiHookXposedProcessor\n" +
             " *\n" +
@@ -56,26 +72,26 @@ private fun createCommentContent(entryClassName: String = "", currrentClassTag: 
  * @return [Map]<[String],[String]>
  */
 fun GenerateData.sources() = mapOf(
-    "ModuleApplication_Impl" to ("@file:Suppress(\"ClassName\")\n" +
+    ClassName.ModuleApplication_Impl to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
-            "package com.highcapable.yukihookapi.hook.xposed.application\n" +
+            "package ${PackageName.ModuleApplication_Impl}\n" +
             "\n" +
             "import $entryPackageName.$entryClassName\n" +
             "\n" +
-            createCommentContent(entryClassName, currrentClassTag = "ModuleApplication") +
-            "object ModuleApplication_Impl {\n" +
+            createCommentContent(entryClassName, ClassName.ModuleApplication_Impl) +
+            "object ${ClassName.ModuleApplication_Impl} {\n" +
             "\n" +
             "    fun callHookEntryInit() = try {\n" +
             "        $entryClassName().onInit()\n" +
             "    } catch (_: Throwable) {\n" +
             "    }\n" +
             "}"),
-    "YukiHookBridge_Impl" to ("@file:Suppress(\"ClassName\")\n" +
+    ClassName.YukiHookBridge_Impl to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
-            "package com.highcapable.yukihookapi.hook.xposed.bridge\n" +
+            "package ${PackageName.YukiHookBridge_Impl}\n" +
             "\n" +
-            createCommentContent(currrentClassTag = "YukiHookBridge") +
-            "object YukiHookBridge_Impl {\n" +
+            createCommentContent(currrentClassTag = ClassName.YukiHookBridge_Impl) +
+            "object ${ClassName.YukiHookBridge_Impl} {\n" +
             "\n" +
             "    val compiledTimestamp get() = ${System.currentTimeMillis()}\n" +
             "}"),

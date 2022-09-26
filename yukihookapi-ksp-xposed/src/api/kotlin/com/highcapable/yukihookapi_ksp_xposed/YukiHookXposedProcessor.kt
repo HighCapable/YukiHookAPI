@@ -35,6 +35,8 @@ import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.highcapable.yukihookapi_ksp_xposed.bean.GenerateData
+import com.highcapable.yukihookapi_ksp_xposed.factory.ClassName
+import com.highcapable.yukihookapi_ksp_xposed.factory.PackageName
 import com.highcapable.yukihookapi_ksp_xposed.factory.sources
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -233,15 +235,15 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             )
             /** 插入 ModuleApplication_Impl 代码 */
             createCodeFile(
-                fileName = "ModuleApplication_Impl",
-                packageName = "com.highcapable.yukihookapi.hook.xposed.application",
-                content = data.sources()["ModuleApplication_Impl"]
+                fileName = ClassName.ModuleApplication_Impl,
+                packageName = PackageName.ModuleApplication_Impl,
+                content = data.sources()[ClassName.ModuleApplication_Impl]
             )
             /** 插入 YukiHookBridge_Impl 代码 */
             createCodeFile(
-                fileName = "YukiHookBridge_Impl",
-                packageName = "com.highcapable.yukihookapi.hook.xposed.bridge",
-                content = data.sources()["YukiHookBridge_Impl"]
+                fileName = ClassName.YukiHookBridge_Impl,
+                packageName = PackageName.YukiHookBridge_Impl,
+                content = data.sources()[ClassName.YukiHookBridge_Impl]
             )
             /** 插入 xposed_init 代码 */
             createCodeFile(
