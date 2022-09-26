@@ -183,10 +183,6 @@ internal object YukiHookHelper {
             set(value) {
                 this@compat.throwable = value
             }
-
-        override fun args(index: Int, value: Any?) {
-            this@compat.args[index] = value
-        }
     }
 }
 
@@ -298,12 +294,5 @@ internal abstract class YukiHookCallback(open val priority: Int) {
          * @throws Throwable
          */
         var throwable: Throwable?
-
-        /**
-         * 设置方法参数
-         * @param index 数组下标
-         * @param value 参数对象实例
-         */
-        fun args(index: Int, value: Any?)
     }
 }

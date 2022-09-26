@@ -380,7 +380,7 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
             if (index < 0) error("HookParam Method args index must be >= 0")
             if (args.isEmpty()) error("HookParam Method args is empty, mabe not has args")
             if (index > args.lastIndex) error("HookParam Method args index out of bounds, max is ${args.lastIndex}")
-            param?.args(index, any)
+            param?.args?.set(index, any)
         }
 
         /**
