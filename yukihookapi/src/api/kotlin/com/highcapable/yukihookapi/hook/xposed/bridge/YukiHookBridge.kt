@@ -39,7 +39,6 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
-import com.highcapable.yukihookapi.hook.xposed.bridge.inject.YukiHookBridge_Injector
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.PathClassLoader
@@ -89,10 +88,18 @@ object YukiHookBridge {
     internal val hostProcessName get() = if (isInitializingZygote) "android-zygote" else YukiHookAppHelper.currentPackageName() ?: "unknown"
 
     /**
+     * 获取项目编译完成的时间戳 (当前本地时间)
+     * @return [Long]
+     */
+    internal val compiledTimestamp get() = runCatching { YukiHookBridge_Impl.compiledTimestamp }.getOrNull() ?: 0L
+
+    /**
      * 自动生成的 Xposed 模块构建版本号
+     *
+     * 获取 [compiledTimestamp] 并转换为字符串
      * @return [String]
      */
-    internal val moduleGeneratedVersion get() = YukiHookBridge_Injector.getModuleGeneratedVersion()
+    internal val moduleGeneratedVersion get() = compiledTimestamp.toString()
 
     /**
      * 预设的 Xposed 模块包名

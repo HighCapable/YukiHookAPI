@@ -31,7 +31,6 @@ import android.app.Application
 import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication.Companion.appContext
-import com.highcapable.yukihookapi.hook.xposed.application.inject.ModuleApplication_Injector
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import com.highcapable.yukihookapi.thirdparty.me.weishu.reflection.Reflection
@@ -82,10 +81,8 @@ open class ModuleApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         currentContext = this
-        callApiInit()
+        /** 调用 Hook 入口类的 [IYukiHookXposedInit.onInit] 方法 */
+        runCatching { ModuleApplication_Impl.callHookEntryInit() }
         YukiHookDataChannel.instance().register(context = this)
     }
-
-    /** 调用入口类的 [IYukiHookXposedInit.onInit] 方法 */
-    private fun callApiInit() = runCatching { ModuleApplication_Injector.callApiInit() }
 }

@@ -23,24 +23,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/9/20.
+ * This file is Created by fankes on 2022/9/26.
  */
-package com.highcapable.yukihookapi_ksp_xposed.bean
+@file:Suppress("ClassName")
+
+package com.highcapable.yukihookapi.hook.xposed.bridge
 
 /**
- * 生成的模板数据实例
- * @param entryPackageName 入口类包名
- * @param modulePackageName 模块包名 (命名空间)
- * @param customMPackageName 自定义模块包名
- * @param entryClassName 入口类名
- * @param xInitClassName xposed_init 入口类名
- * @param isUsingResourcesHook 是否启用 Resources Hook
+ * YukiHookBridge 注入 Stub
  */
-data class GenerateData(
-    var entryPackageName: String = "",
-    var modulePackageName: String = "",
-    var customMPackageName: String = "",
-    var entryClassName: String = "",
-    var xInitClassName: String = "",
-    var isUsingResourcesHook: Boolean = true
-)
+object YukiHookBridge_Impl {
+
+    /**
+     * 获取项目编译完成的时间戳 (当前本地时间)
+     *
+     * 返回值将在每次编译时自动生成
+     * @return [Long]
+     */
+    val compiledTimestamp: Long get() = error("Stub!")
+}

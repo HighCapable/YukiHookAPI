@@ -56,30 +56,28 @@ private fun createCommentContent(entryClassName: String = "", currrentClassTag: 
  * @return [Map]<[String],[String]>
  */
 fun GenerateData.sources() = mapOf(
-    "ModuleApplication_Injector" to ("@file:Suppress(\"ClassName\")\n" +
+    "ModuleApplication_Impl" to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
-            "package $injectPackageName\n" +
+            "package com.highcapable.yukihookapi.hook.xposed.application\n" +
             "\n" +
             "import $entryPackageName.$entryClassName\n" +
             "\n" +
             createCommentContent(entryClassName, currrentClassTag = "ModuleApplication") +
-            "object ModuleApplication_Injector {\n" +
+            "object ModuleApplication_Impl {\n" +
             "\n" +
-            "    @JvmStatic\n" +
-            "    fun callApiInit() = try {\n" +
+            "    fun callHookEntryInit() = try {\n" +
             "        $entryClassName().onInit()\n" +
             "    } catch (_: Throwable) {\n" +
             "    }\n" +
             "}"),
-    "YukiHookBridge_Injector" to ("@file:Suppress(\"ClassName\")\n" +
+    "YukiHookBridge_Impl" to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
-            "package $injectPackageName\n" +
+            "package com.highcapable.yukihookapi.hook.xposed.bridge\n" +
             "\n" +
             createCommentContent(currrentClassTag = "YukiHookBridge") +
-            "object YukiHookBridge_Injector {\n" +
+            "object YukiHookBridge_Impl {\n" +
             "\n" +
-            "    @JvmStatic\n" +
-            "    fun getModuleGeneratedVersion() = \"${System.currentTimeMillis()}\"\n" +
+            "    val compiledTimestamp get() = ${System.currentTimeMillis()}\n" +
             "}"),
     "xposed_init" to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +

@@ -46,6 +46,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 dependencies {
     // Used 82 API Version
     compileOnly 'de.robv.android.xposed:api:82'
+    compileOnly project(':yukihookapi-stub')
     compileOnly fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.annotation:annotation:1.4.0'
 }

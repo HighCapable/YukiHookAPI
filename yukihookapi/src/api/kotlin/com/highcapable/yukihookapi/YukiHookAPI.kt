@@ -92,7 +92,7 @@ object YukiHookAPI {
          * 获取项目编译完成的时间戳 (当前本地时间)
          * @return [Long]
          */
-        val compiledTimestamp get() = YukiHookBridge.moduleGeneratedVersion.toLongOrNull() ?: 0L
+        val compiledTimestamp get() = YukiHookBridge.compiledTimestamp
 
         /**
          * 获取当前是否为 (Xposed) 宿主环境

@@ -231,19 +231,17 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 msg = "You set the customize module package name to \"${data.customMPackageName}\", " +
                         "please check for yourself if it is correct"
             )
-            val mdAppInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.application.inject"
-            val ykBridgeInjectPackageName = "com.highcapable.yukihookapi.hook.xposed.bridge.inject"
-            /** 插入 ModuleApplication_Injector 代码 */
+            /** 插入 ModuleApplication_Impl 代码 */
             createCodeFile(
-                fileName = "ModuleApplication_Injector",
-                packageName = mdAppInjectPackageName,
-                content = data.apply { injectPackageName = mdAppInjectPackageName }.sources()["ModuleApplication_Injector"]
+                fileName = "ModuleApplication_Impl",
+                packageName = "com.highcapable.yukihookapi.hook.xposed.application",
+                content = data.sources()["ModuleApplication_Impl"]
             )
-            /** 插入 YukiHookBridge_Injector 代码 */
+            /** 插入 YukiHookBridge_Impl 代码 */
             createCodeFile(
-                fileName = "YukiHookBridge_Injector",
-                packageName = ykBridgeInjectPackageName,
-                content = data.apply { injectPackageName = ykBridgeInjectPackageName }.sources()["YukiHookBridge_Injector"]
+                fileName = "YukiHookBridge_Impl",
+                packageName = "com.highcapable.yukihookapi.hook.xposed.bridge",
+                content = data.sources()["YukiHookBridge_Impl"]
             )
             /** 插入 xposed_init 代码 */
             createCodeFile(
