@@ -156,9 +156,9 @@ export const navBarItems = {
             text: 'About',
             children: [
                 { text: 'Changelog', link: i18n.string(navigationLinks.about[0], 'en') },
-                { text: 'Looking for future', link: i18n.string(navigationLinks.about[1], 'en') },
+                { text: 'Looking for Future', link: i18n.string(navigationLinks.about[1], 'en') },
                 { text: 'Contact Us', link: i18n.string(navigationLinks.about[2], 'en') },
-                { text: 'About this document', link: i18n.string(navigationLinks.about[3], 'en') }
+                { text: 'About this Document', link: i18n.string(navigationLinks.about[3], 'en') }
             ]
         }]
     }, {
