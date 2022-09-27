@@ -1,0 +1,63 @@
+---
+pageClass: code-page
+---
+
+::: warning
+
+The English translation of this page has not been completed, you are welcome to contribute translations to us.
+
+You can use the **Chrome Translation Plugin** to translate entire pages for reference.
+
+:::
+
+# YukiResForwarder <span class="symbol">- class</span>
+
+```kotlin:no-line-numbers
+class YukiResForwarder private constructor(private val baseInstance: XResForwarder)
+```
+
+**Change Records**
+
+`v1.0.80` `added`
+
+**Function Illustrate**
+
+> 对接 `XResForwarder` 的中间层实例。
+
+<h2 class="deprecated">instance - field</h2>
+
+**Change Records**
+
+`v1.0.80` `added`
+
+`v1.1.0` `deprecated`
+
+不再对外公开 `instance` 参数
+
+## id <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val id: Int
+```
+
+**Change Records**
+
+`v1.0.80` `added`
+
+**Function Illustrate**
+
+> 获得当前 APP 的 Resources Id。
+
+## resources <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val resources: Resources
+```
+
+**Change Records**
+
+`v1.0.80` `added`
+
+**Function Illustrate**
+
+> 获得当前 APP 的 Resources。
