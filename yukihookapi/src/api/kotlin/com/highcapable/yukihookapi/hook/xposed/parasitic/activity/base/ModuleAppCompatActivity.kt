@@ -34,7 +34,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
-import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
@@ -67,7 +66,7 @@ open class ModuleAppCompatActivity : AppCompatActivity() {
 
     @CallSuper
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.getBundle("android:viewHierarchyState")?.classLoader = classOf<ModuleAppActivity>().classLoader
+        savedInstanceState.getBundle("android:viewHierarchyState")?.classLoader = classLoader
         super.onRestoreInstanceState(savedInstanceState)
     }
 
