@@ -34,6 +34,10 @@ import androidx.appcompat.app.AlertDialog
 import com.highcapable.yukihookapi.hook.factory.current
 
 /**
+ * Fixed [AlertDialog] dialog button issue after injecting Module App's Resources in some Host Apps
+ *
+ * Reset button text color and background by reflection [Drawable]
+ *
  * 修复 [AlertDialog] 对话框按钮在一些宿主中注入模块资源后会发生问题
  *
  * 通过反射重新设置按钮的文字颜色和背景 [Drawable]

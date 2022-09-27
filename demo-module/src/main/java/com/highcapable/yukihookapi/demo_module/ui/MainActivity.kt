@@ -93,16 +93,20 @@ class MainActivity : ModuleAppCompatActivity() {
     }
 
     /**
+     * Running only in (Xposed) Host environment
+     *
      * 仅在 (Xposed) 宿主环境执行
-     * @param callback 在模块环境执行
+     * @param callback Running in the (Xposed) Host environment / 在宿主环境执行
      */
     private inline fun hostEnvironment(callback: () -> Unit) {
         if (YukiHookAPI.Status.isXposedEnvironment) callback()
     }
 
     /**
+     * Running only in Module environment
+     *
      * 仅在模块环境执行
-     * @param callback 在模块环境执行
+     * @param callback Running in the Module environment / 在模块环境执行
      */
     private inline fun moduleEnvironment(callback: () -> Unit) {
         if (YukiHookAPI.Status.isXposedEnvironment.not()) callback()

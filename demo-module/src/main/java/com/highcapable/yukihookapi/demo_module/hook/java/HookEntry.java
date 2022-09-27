@@ -35,10 +35,16 @@ import com.highcapable.yukihookapi.hook.log.YukiHookLogger;
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent;
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit;
 
+// ========
+// This only demonstrates how to use it in the Java case (Java 1.8+ only)
+// The code here is for demonstration only， does not mean that it will work in the future， Demo will only sync the latest Kotlin usage
+// It is recommended to use Kotlin to complete the writing of the Hook part
+// Please remove the code note "//" below to use this demo, but make sure to comment out the HookEntry annotation on the Kotlin side
 // 这里仅演示了 Java 情况下的使用方式 (仅限 Java 1.8+)
 // 这里的代码仅供演示 - 并不代表今后都可以正常运行 - Demo 只会同步最新的 Kotlin 使用方法
 // 建议还是使用 Kotlin 来完成 Hook 部分的编写
-// 请删除下方的注释以使用此 Demo - 但要确保注释掉 Kotlin 一边的 HookEntry 的注解
+// 请删除下方的注释 "//" 以使用此 Demo - 但要确保注释掉 Kotlin 一边的 HookEntry 的注解
+// ========
 // @InjectYukiHookWithXposed
 public class HookEntry implements IYukiHookXposedInit {
 
@@ -64,6 +70,8 @@ public class HookEntry implements IYukiHookXposedInit {
 
     @Override
     public void onHook() {
+        // Here is the Java writing method that is more similar to the Kotlin writing method, just for reference
+        // Calling Kotlin's lambda in Java also needs to return null in the Unit case
         // 这里介绍了比较近似于 Kotlin 写法的 Java 写法 - 仅供参考
         // 在 Java 中调用 Kotlin 的 lambda 在 Unit 情况下也需要 return null
         YukiHookAPI.INSTANCE.encase(e -> {
@@ -86,6 +94,7 @@ public class HookEntry implements IYukiHookXposedInit {
                 });
                 return null;
             });
+            // The rest of the code has been omitted, you can continue to refer to the above method to complete
             // 余下部分代码已略 - 可继续参考上述方式完成
             // ...
             return null;
@@ -94,18 +103,23 @@ public class HookEntry implements IYukiHookXposedInit {
 
     @Override
     public void onXposedEvent() {
+        // Since Java does not support some methods that do not override Kotlin Interface
+        // So this method is not needed here, you can leave the content blank
         // 由于 Java 不支持不重写 Kotlin Interface 的部分方法
         // 所以不需要此方法这里可以不填写内容
         YukiXposedEvent event = YukiXposedEvent.INSTANCE;
         event.onInitZygote(startupParam -> {
+            // Write the startupParam method here
             // 这里编写 startupParam 方法
             return null;
         });
         event.onHandleLoadPackage(loadPackageParam -> {
+            // Write the loadPackageParam method here
             // 这里编写 loadPackageParam 方法
             return null;
         });
         event.onHandleInitPackageResources(resourcesParam -> {
+            // Write the resourcesParam method here
             // 这里编写 resourcesParam 方法
             return null;
         });
