@@ -111,7 +111,7 @@ export const configs = {
     github: {
         repo: 'https://github.com/fankes/YukiHookAPI',
         branch: 'master',
-        dir: 'docs/src'
+        dir: 'docs-source/src'
     }
 };
 
