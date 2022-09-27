@@ -8,13 +8,82 @@
 
 :::
 
-### 1.0.92 | 2022.05.31 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.0 | 2022.09.28 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 这是一次大版本更新，有关更新日志中提到的变化及用法请参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection)
+- 更换帮助文档框架到 [VuePress](https://v2.vuepress.vuejs.org)
+- 统一并规范文档中的术语名词，例如“查询”一律更改为了“查找”，`XposedHelper` 拼写错误修改为了 `XposedHelpers`
+- 文档 入门 → 基础知识 页面加入友情链接，仅限简体中文
+- 将 Hook App Demo 的 `Class` 与 `Method` 转为 Java 以提供更好的演示效果
+- 修正了 Hook Module Demo 中的代码注释命名
+- 重构了大量底层 Hook 逻辑及 Xposed API 的对接方式
+- 移除了 `HookParamWrapper`，现已将其直接与 `YukiBridgeFactory` 对接
+- 移动部分 `YukiHookBridge` 中的方法到 `AppParasitics`
+- 移除了 `HookParam.args` 与底层的直接对接方法 `setArgs`，直接获取并设置当前数组的对象
+- 优化自动处理程序，将引用的 `jar` 合并到 `stub` 项目
+- 修复多项目打包时模块包名无法正确匹配的问题以及修改自动处理程序的模块包名匹配逻辑，感谢 [5ec1cff](https://github.com/5ec1cff) 的反馈及提供的解决方案
+- 对 API 私有工具类的方法进行了 internal 闭包处理，避免污染顶级命名空间
+- 修正了所有反射和 Hook 类的 `Creater` 命名到 `Creator`
+- 新增 `YukiHookAPI.Status.compiledTimestamp` 功能，可以在作为 Xposed 模块使用时获取编译完成的时间戳
+- 新增 `YukiHookAPI.Status.isXposedEnvironment` 功能，可以判断当前为 (Xposed) 宿主环境还是模块环境
+- 调试日志功能进行了大改版，现已将 `YukiHookAPI.Configs.debugTag` 等功能合并到 `YukiHookLogger.Configs` 中
+- 调试日志新增可指定打印使用的方法为 `XposedBridge.log` 或 `Logd`
+- 调试日志中默认加入当前宿主的包名以及当前用户 ID，以供调试，你可以在 `debugLog` 配置中自行更改
+- 新增 `generic` 功能，可对泛型进行反射和调用，你可以在 `Class` 或 `CurrentClass` 中使用它
+- 作废 `buildOfAny` 方法，现在请直接使用 `buildOf` 方法 (不带泛型) 来使用构造方法创建新对象并得到结果 `Any`
+- 修复 `hasExtends` 使用过程发生空指针异常的问题
+- `CurrentClass` 新增非 `lambda` 方式的调用方法
+- `CurrentClass` 新增 `name` 与 `simpleName` 功能
+- 完全重写 `ReflectionTool` 的核心方法，将不同的查找条件进行了整理分类
+- 修复 `ReflectionTool` 中可能的直接调用 `declared` 获取的 `Member` 抛出异常的问题
+- 修复 `ReflectionTool` 中 `UndefinedType` 未在 `Method` 与 `Constructor` 条件中正确判断的问题
+- 新增反射查找结果发生异常时的友好提示方式，可具体定位到指定条件找不到 `Member` 的问题
+- 反射查找 `Method`、`Constructor` 中新增 `VagueType` 条件，可使用在 `param` 条件中用于忽略你不想填写的参数
+- 反射查找 `Method`、`Constructor` 中新增 `paramCount { ... }` 条件，现在你可以直接拿到其中的 `it` 来自定义你的判断条件
+- `FieldFinder` 结果中新增 `current` 方法，可直接对结果实例创建调用空间
+- 修改了反射查找功能中的 `modifiers` 条件以及 `name` 条件，现在你需要对此方法体结尾返回一个 `Boolean` 以使条件成立
+- `ModifierRules` 中的 `as*` 功能改名为 `is*`，感谢 [Kitsune](https://github.com/KyuubiRan) 的建议
+- `FieldFinder` 中新增 `RemedyPlan` 功能
+- 新增 `Dex` 中的 `Class` 模糊查找功能 (Beta)，你现在可以直接使用 `searchClass` 功能来使用指定条件模糊查找 `Class`
+- 新增反射查找中的多重查找功能，可使用相对查找条件同时获取多个查找结果，感谢 **AA** 以及 [Kitsune](https://github.com/KyuubiRan) 的建议
+- 修复 `appClassLoader` 获取到的对象在某些系统中的系统应用中不正确的问题，感谢 [Luckyzyx](https://github.com/luckyzyx) 的反馈
+- 修改了 `XposedBridge.invokeOriginalMethod` 的调用方式并在 `MethodFinder.Result.Instance` 中增加 `original` 功能
+- 修复 `YukiHookModulePrefs` 中 `getStringSet` 方法取值错误的问题并优化代码风格，感谢 [Teddy_Zhu](https://github.com/Teddy-Zhu) 的 [PR](https://github.com/fankes/YukiHookAPI/pull/19)
+- 修改 `YukiHookModulePrefs`，拦截 `XSharePreference` 可能不存在的异常
+- 修复 `YukiHookDataChannel` 在某些第三方 ROM 系统框架中无法注册成功的问题
+- 安全化 `YukiHookDataChannel`，现在它只能在来自指定包名的模块与宿主之间通信
+- 新增自动 Hook `SharedPreferences` 以修复部分系统中文件权限不是 `0664` 的问题，感谢 [5ec1cff](https://github.com/5ec1cff) 的反馈及提供的实现代码
+- 新增 `YukiHookAPI.Configs.isEnableHookSharedPreferences` 功能，默认关闭，若 `SharedPreferences` 的权限错误可进行启用
+- 修复查找 `Constructor` 时无参构造方法在不填写查找条件时无法找到的 BUG，感谢 **B5 KAKA** 的反馈
+- 分离位于 `injectMember` 中 `method`、`constructor` 的 `Result` 实例到 `Process`
+- 在 Hook 过程中新增 `useDangerousOperation` 方法，未进行声明时在 Hook 危险列表中的功能后会自动停止 Hook 并打印错误
+- 新增模块资源注入与 `Activity` 代理功能，你可以调用 `injectModuleAppResources` 及 `registerModuleAppActivities` 来使用
+- 新增 `ModuleContextThemeWrapper` 功能，你可以调用 `applyModuleTheme` 在任意 `Activity` 中创建模块的 `Context`
+- 新增 `ClassLoader.onLoadClass` 功能，可用于监听 `ClassLoader` 的 `loadClass` 方法被调用的事件
+- 作废了 `classOf` 与 `clazz` 扩展方法，新增 `toClass` 以及 `toClassOrNull` 用法，请现在转移到新的方法
+- `VariousClass` 新增 `getOrNull` 方法，可在匹配不到 `Class` 的时候不抛出异常而是返回 `null`
+- `PackageParam.hook` 中移除了 `isUseAppClassLoader` 参数，修改为 `isForceUseAbsolute` 并自动匹配目标 `Class`
+- `PackageParam` 新增 `systemContext` 功能，你可以在任意时间调用此功能获取一个持久化的 `Context`
+- 不再对外开放 `HookClass` 中的任何方法
+- `HookParam` 中新增 `throwToApp` 功能，可将异常直接抛给宿主
+- Hook 回调中新增 `onFailureThrowToApp` 功能，可在发生异常时直接抛给宿主
+- 修改了调试日志的打印逻辑，反射查找功能中的耗时记录仅会在 Hook 过程中进行打印
+- Hook 过程中新增解除 Hook 功能，可使用 `remove` 及 `removeSelf` 方法解除 Hook
+- 修复在 ReplaceHook 失败的时候导致宿主抛出异常的问题，现修改为调用原始方法保证宿主功能正常运行
+- 新增 Hook 过程中对方法返回值的检查功能，在返回值不匹配的情况下会根据情景自动抛出异常或打印错误
+- Resources Hook 中新增 `array` 类型，感谢 [GSWXXN](https://github.com/GSWXXN) 的 [PR](https://github.com/fankes/YukiHookAPI/pull/12)
+- 移动 `me.weishu.reflection` 到 `thirdparty` 防止同时引入的同名依赖冲突
+- 移除 Hook 方法体为空时抛出的异常，修改为打印警告日志
+- 修改 `AppLifecycle` 的异常处理逻辑，当其发生异常时直接抛给宿主
+- 更新 Demo 的 API 版本到 33
+
+### 1.0.92 | 2022.05.31 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 修正了大量方法中 callback 的命名方法
 - 更换方案再次修复 `YukiHookDataChannel` 在低于 **Android 12** 的设备上不能回调当前 `Activity` 广播的问题
 - `InjectYukiHookWithXposed` 注解新增 `isUsingResourcesHook` 功能，现在你可以选择性关闭自动生成 `IXposedHookInitPackageResources` 的依赖接口了
 
-### 1.0.91 | 2022.05.29 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.0.91 | 2022.05.29 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复部分设备的定制系统在 LSPosed 环境下开机启动获取的 `ClassLoader` 错误的问题，感谢 [Luckyzyx](https://github.com/luckyzyx) 的反馈
 - 修复 `YukiHookDataChannel` 在 **ZUI** 以及低于 **Android 12** 的系统上不能回调当前 `Activity` 广播的问题

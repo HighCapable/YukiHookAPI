@@ -16,13 +16,82 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.0.92 | 2022.05.31 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.0 | 2022.09.28 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- This is a major version update, please refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) for the changes and usage mentioned in the changelog
+- Change the help documentation framework to [VuePress](https://v2.vuepress.vuejs.org)
+- Unify and standardize the terms and nouns in the document, for example, "query" is always changed to "find", `XposedHelper` is misspelled and changed to `XposedHelpers`
+- Documentation Getting Started → Basic Knowledge page to add a link, Simplified Chinese only
+- Convert `Class` and `Method` of Hook App Demo to Java to provide better demo effect
+- Fixed code comment naming in Hook Module Demo
+- Refactored a lot of low-level Hook logic and the docking method of Xposed API
+- Removed `HookParamWrapper`, it now interfaces directly with `YukiBridgeFactory`
+- Moved methods in section `YukiHookBridge` to `AppParasitics`
+- Removed `HookParam.args` and the underlying direct connection method `setArgs`, directly get and set the object of the current array
+- Optimized automatic handler to merge referenced `jar` into `stub` project
+- Fix the problem that the module package name cannot be correctly matched when multi-project packaging, and modify the module package name matching logic of the automatic handler, thanks to [5ec1cff](https://github.com/5ec1cff) for the feedback and solutions provided
+- Internal closure processing for the methods of API private tool classes to avoid polluting the top-level namespace
+- Fixed `Creater` naming to `Creator` for all reflection and Hook classes
+- Added `YukiHookAPI.Status.compiledTimestamp` function, which can get the compilation completion timestamp when used as an Xposed module
+- Added `YukiHookAPI.Status.isXposedEnvironment` function, which can determine whether the current (Xposed) host environment or module environment is
+- The debug logging function has been overhauled, and functions such as `YukiHookAPI.Configs.debugTag` have been merged into `YukiHookLogger.Configs`
+- The debug log can be added to specify the printing method as `XposedBridge.log` or `Logd`
+- The package name of the current host and the current user ID are added to the debug log by default for debugging, you can change it yourself in the `debugLog` configuration
+- Added `generic` function to reflect and call generics, you can use it in `Class` or `CurrentClass`
+- obsolete the `buildOfAny` method, now use the `buildOf` method directly (without generics) to use the constructor to create a new object and get the result `Any`
+- Fixed the issue of null pointer exception when using `hasExtends`
+- `CurrentClass` added non-`lambda` method of calling
+- `CurrentClass` adds `name` and `simpleName` functions
+- Completely rewrite the core method of `ReflectionTool`, sorting and classifying different search conditions
+- Fix the problem that `Member` obtained by directly calling `declared` in `ReflectionTool` throws an exception
+- Fix `UndefinedType` in `ReflectionTool` is not correctly judged in `Method` and `Constructor` conditions
+- Added a friendly prompt method when the reflection search result is abnormal, which can specifically locate the problem that `Member` cannot be found under specified conditions
+- Added `VagueType` condition in `Method` and `Constructor` for reflection search, which can be used in `param` condition to ignore parameters you don't want to fill in
+- Added `paramCount { ... }` condition in `Method` and `Constructor` of reflection search, now you can directly get `it` in it to customize your judgment condition
+- The `current` method is added to the `FieldFinder` result, which can directly create a call space for the result instance
+- Modified the `modifiers` condition and `name` condition in the reflection lookup function, now you need to return a `Boolean` at the end of the method body to make the condition true
+- `as*` function in `ModifierRules` renamed to `is*`, thanks to [Kitsune](https://github.com/KyuubiRan) suggestion
+- Added `RemedyPlan` feature in `FieldFinder`
+- Added `Class` fuzzy search function (Beta) in `Dex`, you can now directly use `searchClass` function to fuzzy search `Class` with specified conditions
+- Added multiple search function in reflection search, you can use relative search conditions to obtain multiple search results at the same time, thanks to **AA** and [Kitsune](https://github.com/KyuubiRan) for suggestions
+- Fix the problem that the object obtained by `appClassLoader` is incorrect in system applications in some systems, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
+- Modified the calling method of `XposedBridge.invokeOriginalMethod` and added `original` function in `MethodFinder.Result.Instance`
+- Fix the problem of wrong value of `getStringSet` method in `YukiHookModulePrefs` and optimize the code style, thanks to [Teddy_Zhu](https://github.com/Teddy-Zhu) [PR](https://github.com/fankes/YukiHookAPI/pull/19)
+- Modify `YukiHookModulePrefs` to intercept exceptions that may not exist in `XSharePreference`
+- Fixed the problem that `YukiHookDataChannel` could not be successfully registered in some third-party ROM system frameworks
+- Secured `YukiHookDataChannel`, now it can only communicate between modules from the specified package name and the host
+- Added automatic hook `SharedPreferences` to fix the problem that file permissions are not `0664` in some systems, thanks to [5ec1cff](https://github.com/5ec1cff) for the feedback and implementation code provided
+- Added `YukiHookAPI.Configs.isEnableHookSharedPreferences` function, which is disabled by default and can be enabled if the permission of `SharedPreferences` is incorrect
+- Fixed the bug that the no-parameter construction method cannot be found when searching for `Constructor` without filling in the search conditions, thanks **B5 KAKA** for the feedback
+- Detach `Result` instances located in `method`, `constructor` in `injectMember` to `Process`
+- Added the `useDangerousOperation` method in the Hook process, which will automatically stop the Hook and print an error after the function in the Hook Dangerous List is not declared
+- Added module resource injection and `Activity` proxy functions, you can call `injectModuleAppResources` and `registerModuleAppActivities` to use
+- Added `ModuleContextThemeWrapper` function, you can call `applyModuleTheme` to create the `Context` of a module in any `Activity`
+- Added `ClassLoader.onLoadClass` function, which can be used to listen for events when the `loadClass` method of `ClassLoader` is called
+- obsolete `classOf` and `clazz` extension methods, add `toClass` and `toClassOrNull` usage, please move to the new method now
+- `VariousClass` adds a `getOrNull` method, which can return `null` instead of throwing an exception when it can't match `Class`
+- Removed `isUseAppClassLoader` parameter in `PackageParam.hook`, changed it to `isForceUseAbsolute` and automatically matched the target `Class`
+- `PackageParam` adds `systemContext` function, you can call this function at any time to get a persistent `Context`
+- no longer expose any methods in `HookClass`
+- Added `throwToApp` function in `HookParam`, which can throw exceptions directly to the host
+- The `onFailureThrowToApp` function is added to the Hook callback, which can be directly thrown to the host when an exception occurs
+- Modified the printing logic of the debug log, the time-consuming records in the reflection search function will only be printed during the Hook process
+- Added the function of removing Hook in the Hook process, you can use the `remove` and `removeSelf` methods to remove the hook
+- Fixed the issue that caused the host to throw an exception when ReplaceHook failed, and now it is modified to call the original method to ensure the normal operation of the host function
+- Added the function of checking the return value of the method in the Hook process. If the return value does not match, it will automatically throw an exception or print an error according to the situation
+- Added `array` type to Resources Hook, thanks to [PR](https://github.com/fankes/YukiHookAPI/pull/12) of [GSWXXN](https://github.com/GSWXXN)
+- Moved `me.weishu.reflection` to `thirdparty` to prevent conflicting dependencies of the same name introduced at the same time
+- Remove the exception thrown when the Hook method body is empty, and modify it to print the warning log
+- Modify the exception handling logic of `AppLifecycle` and throw it directly to the host when an exception occurs
+- Updated Demo API version to 33
+
+### 1.0.92 | 2022.05.31 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Fixed the naming method of callback in a large number of methods
 - Changed the solution to fix the problem that `YukiHookDataChannel` cannot call back the current `Activity` broadcast on devices lower than **Android 12**
 - The `InjectYukiHookWithXposed` annotation adds the `isUsingResourcesHook` function, now you can selectively disable the dependency interface that automatically generates `IXposedHookInitPackageResources`
 
-### 1.0.91 | 2022.05.29 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+### 1.0.91 | 2022.05.29 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Fixed the `ClassLoader` error when the customized system of some devices is booted in the LSPosed environment, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
 - Fixed `YukiHookDataChannel` not being able to call back the current `Activity` broadcast on **ZUI** and systems below **Android 12**
