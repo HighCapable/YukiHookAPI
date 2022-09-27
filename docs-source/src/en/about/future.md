@@ -20,9 +20,9 @@ In the later period, the permissions of the Android system will become more and 
 
 > Features that `YukiHookAPI` may add later are included here.
 
-### Lite version supported for standalone use
+### Lite Version Supported for Standalone Use
 
-::: tip To be discussed
+::: tip To be Discussed
 
 At present, the API only supports binding to **xposed_init** through the automatic handler.
 
@@ -36,7 +36,7 @@ You can submit **issues** with us.
 
 We have provided the Xposed native API listening interface, you can find or view the implementation method of the Demo [here](../config/xposed-using#native-xposed-api-events).
 
-### Support for more Hook Framework
+### Support for More Hook Framework
 
 As an API, currently only docking `XposedBridge` as a compatibility layer still has certain limitations.
 

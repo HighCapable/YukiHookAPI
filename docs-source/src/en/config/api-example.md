@@ -300,7 +300,8 @@ class HookEntry : IYukiHookXposedInit {
 object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        // ❗ Wrong method of use, because there is no judgment object in the outer layer, you cannot start Hook directly
+        // ❗ Wrong method of use
+        // Because there is no judgment object in the outer layer, you cannot start Hook directly
         findClass(name = "com.example.demo.DemoClass").hook {
             // ...
         }

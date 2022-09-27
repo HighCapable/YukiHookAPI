@@ -121,23 +121,24 @@ Add the base code to your `AndroidManifest.xml`.
     android:name="xposedmodule"
     android:value="true" />
 
-<!-- set your module description -->
+<!-- Set your module description -->
 <meta-data
     android:name="xposeddescription"
     android:value="Fill in your Xposed Module description" />
 
-<!-- The minimum Xposed version number, if you are using EdXposed/LSPosed, the minimum recommended is 93 -->
+<!-- The minimum Xposed version number -->
+<!-- If you are using EdXposed/LSPosed, the minimum recommended is 93 -->
 <meta-data
     android:name="xposedminversion"
     android:value="93" />
 
-<!-- Optional: configure support for New XSharePrefs without adjusting xposedminversion to 93 -->
+<!-- Optional: Configure support for New XSharePrefs without adjusting xposedminversion to 93 -->
 <meta-data
     android:name="xposedsharedprefs"
     android:value="true"/>
 ```
 
-Create a Hook entry class in your project, inherit from `IYukiHookXposedInit` and add the annotation `@InjectYukiHookWithXposed`.
+Create a Hook entry class in your project, implements `IYukiHookXposedInit` and add the annotation `@InjectYukiHookWithXposed`.
 
 > The following example
 
@@ -153,7 +154,7 @@ class HookEntry : IYukiHookXposedInit {
 
 ::: tip Suggestion
 
-You can inherit **Application** of your module app from **ModuleApplication** to achieve a complete user experience.
+You can extends **Application** of your Module App from **ModuleApplication** to achieve a complete user experience.
 
 For more functions, please refer to [ModuleApplication](../api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication).
 

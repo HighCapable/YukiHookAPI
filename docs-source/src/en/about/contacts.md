@@ -6,7 +6,7 @@ Join us [Click to join Telegram group](https://t.me/YukiHookAPI)
 
 Find me on **Twitter** [@fankesyooni](https://twitter.com/fankesyooni)
 
-## Help with maintenance
+## Help with Maintenance
 
 Thank you for choosing and using `YukiHookAPI`.
 
