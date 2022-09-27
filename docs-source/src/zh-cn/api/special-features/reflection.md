@@ -1381,7 +1381,7 @@ injectMember {
 
 ::: tip
 
-在创建 Hook 的时候使用可参考 [MethodFinder.Process.all](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#all-method)、[ConstructorFinder.Process.all](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#all-method)。
+在创建 Hook 的时候使用可参考 [MethodFinder.Process.all](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#all-method)、[ConstructorFinder.Process.all](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#all-method) 方法。
 
 更多功能请参考 [MethodFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#remedyplan-class)、[ConstructorFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#remedyplan-class)、[FieldFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#remedyplan-class)。
 
@@ -1453,6 +1453,18 @@ VariousClass("com.demo.ATest", "com.demo.BTest").get(customClassLoader).method {
     name = "doTask"
     emptyParam()
 }.get().call()
+```
+
+若你不确定所有的 `Class` 一定会被匹配到，你可以使用 `getOrNull` 方法。
+
+> 示例如下
+
+```kotlin
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+VariousClass("com.demo.ATest", "com.demo.BTest").getOrNull(customClassLoader)?.method {
+    name = "doTask"
+    emptyParam()
+}?.get()?.call()
 ```
 
 若你正在 `PackageParam` 中操作 (Xposed) 宿主环境的 `Class`，可以直接使用 `toClass()` 进行设置。
