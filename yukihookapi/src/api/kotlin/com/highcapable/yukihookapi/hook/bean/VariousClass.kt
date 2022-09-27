@@ -56,6 +56,17 @@ class VariousClass(vararg var name: String) {
         return finalClass ?: error("VariousClass match failed of those $this")
     }
 
+    /**
+     * 获取匹配的实体类
+     *
+     * - 使用当前 [loader] 装载目标 [Class]
+     *
+     * 匹配不到 [Class] 会返回 null - 不会抛出异常
+     * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
+     * @return [Class] or null
+     */
+    fun getOrNull(loader: ClassLoader? = null) = runCatching { get(loader) }.getOrNull()
+
     override fun toString(): String {
         var result = ""
         return if (name.isNotEmpty()) {

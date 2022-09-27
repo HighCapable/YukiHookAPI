@@ -380,7 +380,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Class] or null
      */
-    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader) = runCatching { toClass(loader) }.getOrNull()
+    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader) = getOrNull(loader)
 
     /**
      * 通过字符串类名查找是否存在

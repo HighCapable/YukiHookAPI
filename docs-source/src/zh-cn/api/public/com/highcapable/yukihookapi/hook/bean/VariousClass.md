@@ -31,3 +31,21 @@ fun get(loader: ClassLoader? = null): Class<*>
 > 获取匹配的实体类。
 
 使用当前 `loader` 装载目标 `Class`。
+
+## getOrNull <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun getOrNull(loader: ClassLoader? = null): Class<*>?
+```
+
+**变更记录**
+
+`v1.1.0` `新增`
+
+**功能描述**
+
+> 获取匹配的实体类。
+
+使用当前 `loader` 装载目标 `Class`。
+
+匹配不到 `Class` 会返回 `null`，不会抛出异常。
