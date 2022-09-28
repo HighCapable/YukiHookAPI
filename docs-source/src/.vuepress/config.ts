@@ -12,7 +12,7 @@ export default {
     description: configs.website.locales['/en/'].description,
     locales: configs.website.locales,
     theme: defaultTheme({
-        logo: configs.website.icon,
+        logo: configs.website.logo,
         repo: configs.github.repo,
         docsRepo: configs.github.repo,
         docsBranch: configs.github.branch,

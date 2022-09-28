@@ -95,7 +95,8 @@ export const configs = {
     },
     website: {
         base: '/YukiHookAPI/',
-        icon: '/images/logo.png',
+        icon: '/YukiHookAPI/images/logo.png',
+        logo: '/images/logo.png',
         title: 'Yuki Hook API',
         locales: {
             '/en/': {
