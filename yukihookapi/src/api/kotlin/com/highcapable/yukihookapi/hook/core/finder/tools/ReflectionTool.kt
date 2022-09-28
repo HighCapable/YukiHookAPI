@@ -188,7 +188,7 @@ internal object ReflectionTool {
                             var numberOfFound = 0
                             if (rule.isInitialize) forEach { field ->
                                 rule.conditions {
-                                    value.type?.also { value.exists(it) and (it == field.type) }
+                                    value.type?.takeIf { value.exists(it) }?.also { and(it == field.type) }
                                     value.name.takeIf { it.isNotBlank() }?.also { and(it == field.name) }
                                     value.modifiers?.also { and(it(field.cast())) }
                                     value.nameConditions?.also { field.name.also { n -> and(it(n.cast(), n)) } }
@@ -203,11 +203,11 @@ internal object ReflectionTool {
                             if (rule.isInitialize) forEach { method ->
                                 rule.conditions {
                                     value.name.takeIf { it.isNotBlank() }?.also { and(it == method.name) }
-                                    value.returnType?.also { value.exists(it) and (it == method.returnType) }
+                                    value.returnType?.takeIf { value.exists(it) }?.also { and(it == method.returnType) }
                                     value.paramCount.takeIf { it >= 0 }?.also { and(method.parameterTypes.size == it) }
                                     value.paramCountRange.takeIf { it.isEmpty().not() }?.also { and(method.parameterTypes.size in it) }
                                     value.paramCountConditions?.also { method.parameterTypes.size.also { s -> and(it(s.cast(), s)) } }
-                                    value.paramTypes?.also { value.exists(*it) and (paramTypesEq(it, method.parameterTypes)) }
+                                    value.paramTypes?.takeIf { value.exists(*it) }?.also { and(paramTypesEq(it, method.parameterTypes)) }
                                     value.modifiers?.also { and(it(method.cast())) }
                                     value.nameConditions?.also { method.name.also { n -> and(it(n.cast(), n)) } }
                                 }.finally { numberOfFound++ }
@@ -223,7 +223,7 @@ internal object ReflectionTool {
                                     value.paramCount.takeIf { it >= 0 }?.also { and(constructor.parameterTypes.size == it) }
                                     value.paramCountRange.takeIf { it.isEmpty().not() }?.also { and(constructor.parameterTypes.size in it) }
                                     value.paramCountConditions?.also { constructor.parameterTypes.size.also { s -> and(it(s.cast(), s)) } }
-                                    value.paramTypes?.also { value.exists(*it) and (paramTypesEq(it, constructor.parameterTypes)) }
+                                    value.paramTypes?.takeIf { value.exists(*it) }?.also { and(paramTypesEq(it, constructor.parameterTypes)) }
                                     value.modifiers?.also { and(it(constructor.cast())) }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
