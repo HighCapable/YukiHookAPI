@@ -8,12 +8,18 @@
 
 :::
 
-### 1.1.0 | 2022.09.28 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.1 | 2022.09.28 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 修复了文档 [基础知识](../guide/knowledge) 页面友情链接错误的问题
+- 修复了文档 `favicon` 不显示的问题
+- 修复 `DexClassFinder` 查找条件中的 BUG
+
+### 1.1.0 | 2022.09.28 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 这是一次大版本更新，有关更新日志中提到的变化及用法请参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection)
 - 更换帮助文档框架到 [VuePress](https://v2.vuepress.vuejs.org)
 - 统一并规范文档中的术语名词，例如“查询”一律更改为了“查找”，`XposedHelper` 拼写错误修改为了 `XposedHelpers`
-- 文档 入门 → 基础知识 页面加入友情链接，仅限简体中文
+- 文档 [基础知识](../guide/knowledge) 页面加入友情链接，仅限简体中文
 - 将 Hook App Demo 的 `Class` 与 `Method` 转为 Java 以提供更好的演示效果
 - 修正了 Hook Module Demo 中的代码注释命名
 - 重构了大量底层 Hook 逻辑及 Xposed API 的对接方式
@@ -77,7 +83,7 @@
 - 修改 `AppLifecycle` 的异常处理逻辑，当其发生异常时直接抛给宿主
 - 更新 Demo 的 API 版本到 33
 
-### 1.0.92 | 2022.05.31 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.0.92 | 2022.05.31 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修正了大量方法中 callback 的命名方法
 - 更换方案再次修复 `YukiHookDataChannel` 在低于 **Android 12** 的设备上不能回调当前 `Activity` 广播的问题

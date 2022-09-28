@@ -16,12 +16,18 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.0 | 2022.09.28 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.1 | 2022.09.28 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Fixed the problem of wrong document link in [Basic Knowledge](../guide/knowledge) page
+- Fixed document `favicon` not showing up
+- Fixed bug in `DexClassFinder` search conditions
+
+### 1.1.0 | 2022.09.28 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - This is a major version update, please refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) for the changes and usage mentioned in the changelog
 - Change the help documentation framework to [VuePress](https://v2.vuepress.vuejs.org)
 - Unify and standardize the terms and nouns in the document, for example, "query" is always changed to "find", `XposedHelper` is misspelled and changed to `XposedHelpers`
-- Documentation Getting Started → Basic Knowledge page to add a link, Simplified Chinese only
+- Documentation [Basic Knowledge](../guide/knowledge) page to add a link, Simplified Chinese only
 - Convert `Class` and `Method` of Hook App Demo to Java to provide better demo effect
 - Fixed code comment naming in Hook Module Demo
 - Refactored a lot of low-level Hook logic and the docking method of Xposed API
@@ -85,7 +91,7 @@ Time zone of version release date: **UTC+8**
 - Modify the exception handling logic of `AppLifecycle` and throw it directly to the host when an exception occurs
 - Updated Demo API version to 33
 
-### 1.0.92 | 2022.05.31 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+### 1.0.92 | 2022.05.31 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Fixed the naming method of callback in a large number of methods
 - Changed the solution to fix the problem that `YukiHookDataChannel` cannot call back the current `Activity` broadcast on devices lower than **Android 12**
