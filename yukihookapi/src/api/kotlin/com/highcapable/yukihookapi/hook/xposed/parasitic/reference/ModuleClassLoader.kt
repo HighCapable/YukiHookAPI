@@ -52,8 +52,8 @@ internal class ModuleClassLoader private constructor() : ClassLoader(AppParasiti
     override fun loadClass(name: String, resolve: Boolean): Class<*> {
         if (YukiHookBridge.hasXposedBridge.not()) return AppParasitics.baseClassLoader.loadClass(name)
         return YukiHookAppHelper.currentApplication()?.classLoader?.let { loader ->
-            runCatching { return@let AppParasitics.baseClassLoader.loadClass(name) }
             runCatching { if (name == "androidx.lifecycle.ReportFragment") return@let loader.loadClass(name) }
+            runCatching { return@let AppParasitics.baseClassLoader.loadClass(name) }
             runCatching { AppParasitics.baseClassLoader.loadClass(name) }.getOrNull() ?: loader.loadClass(name)
         } ?: super.loadClass(name, resolve)
     }
