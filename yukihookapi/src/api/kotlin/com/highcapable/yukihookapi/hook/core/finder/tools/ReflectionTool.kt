@@ -74,7 +74,7 @@ internal object ReflectionTool {
      * @return [List]<[String]>
      * @throws IllegalStateException 如果 [loader] 不是 [BaseDexClassLoader]
      */
-    private fun findDexClassList(loader: ClassLoader?) = ReflectsCacheStore.findDexClassList(loader.hashCode())
+    internal fun findDexClassList(loader: ClassLoader?) = ReflectsCacheStore.findDexClassList(loader.hashCode())
         ?: DalvikBaseDexClassLoader.field { name = "pathList" }.ignored().get(loader.value().let {
             while (it.value !is BaseDexClassLoader) {
                 if (it.value?.parent != null) it.value = it.value?.parent

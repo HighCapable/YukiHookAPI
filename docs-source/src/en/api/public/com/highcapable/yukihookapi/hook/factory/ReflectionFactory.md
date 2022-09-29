@@ -76,6 +76,28 @@ CONSTRUCTOR
 
 > 全部 `Constructor`。
 
+## ClassLoader.listOfClasses <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+fun ClassLoader.listOfClasses(): List<String>
+```
+
+**Change Records**
+
+`v1.1.2` `added`
+
+**Function Illustrate**
+
+> 写出当前 `ClassLoader` 下所有 `Class` 名称数组。
+
+::: warning
+
+此方法在 **Class** 数量过多时会非常耗时。
+
+若要按指定规则查找一个 **Class**，请使用 [ClassLoader.searchClass](#classloader-searchclass-ext-method) 方法。
+
+:::
+
 ## ClassLoader.searchClass <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers

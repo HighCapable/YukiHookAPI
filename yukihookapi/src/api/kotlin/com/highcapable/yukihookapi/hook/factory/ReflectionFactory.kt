@@ -41,6 +41,7 @@ import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.*
 
 /**
@@ -56,6 +57,17 @@ enum class MembersType {
     /** 全部 [Constructor] */
     CONSTRUCTOR
 }
+
+/**
+ * 写出当前 [ClassLoader] 下所有 [Class] 名称数组
+ *
+ * - ❗此方法在 [Class] 数量过多时会非常耗时
+ *
+ * - ❗若要按指定规则查找一个 [Class] - 请使用 [searchClass] 方法
+ * @return [List]<[String]>
+ * @throws IllegalStateException 如果当前 [ClassLoader] 不是 [BaseDexClassLoader]
+ */
+fun ClassLoader.listOfClasses() = ReflectionTool.findDexClassList(loader = this)
 
 /**
  * 通过当前 [ClassLoader] 按指定条件查找并得到 Dex 中的 [Class]
