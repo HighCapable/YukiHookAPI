@@ -38,6 +38,7 @@ const navigationLinks = {
         baseApiPath + 'hook/xposed/parasitic/activity/base/ModuleAppActivity',
         baseApiPath + 'hook/xposed/parasitic/activity/base/ModuleAppCompatActivity',
         baseApiPath + 'hook/xposed/parasitic/context/wrapper/ModuleContextThemeWrapper',
+        baseApiPath + 'hook/xposed/parasitic/reference/ModuleClassLoader',
         baseApiPath + 'hook/xposed/bridge/dummy/YukiModuleResources',
         baseApiPath + 'hook/xposed/bridge/dummy/YukiResources',
         baseApiPath + 'hook/xposed/bridge/dummy/YukiResForwarder',
