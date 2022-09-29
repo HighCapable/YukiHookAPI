@@ -106,6 +106,29 @@ BOTH
 
 模块环境仅使用 `LOGD`。
 
+## YukiLoggerData <span class="symbol">- class</span>
+
+```kotlin:no-line-numbers
+class YukiLoggerData internal constructor(
+    var timestamp: Long,
+    var time: String,
+    var tag: String,
+    var priority: String,
+    var packageName: String,
+    var userId: Int,
+    var msg: String,
+    var throwable: Throwable?
+)
+```
+
+**Change Records**
+
+`v1.1.2` `added`
+
+**Function Illustrate**
+
+> 调试日志数据实现类。
+
 ## YukiHookLogger <span class="symbol">- object</span>
 
 ```kotlin:no-line-numbers
@@ -119,6 +142,20 @@ object YukiHookLogger
 **Function Illustrate**
 
 > 调试日志实现类。
+
+### inMemoryData <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val inMemoryData: HashSet<YukiLoggerData>
+```
+
+**Change Records**
+
+`v1.1.2` `added`
+
+**Function Illustrate**
+
+> 当前全部已记录的日志数据。
 
 ### contents <span class="symbol">- field</span>
 
@@ -149,6 +186,8 @@ fun clear()
 **Function Illustrate**
 
 > 清除全部已记录的日志。
+
+你也可以直接获取 [inMemoryData](#inmemorydata-field) 来清除。
 
 ### saveToFile <span class="symbol">- method</span>
 

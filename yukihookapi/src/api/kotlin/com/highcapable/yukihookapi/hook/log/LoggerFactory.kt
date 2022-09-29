@@ -78,29 +78,32 @@ enum class LoggerType {
 
 /**
  * 调试日志数据实现类
- * @param time 当前时间
+ * @param timestamp 当前时间戳
+ * @param time 当前 UTC 时间
  * @param tag 当前标签
- * @param priority 当前优先级
+ * @param priority 当前优先级 - D、I、W、E
  * @param packageName 当前包名
  * @param userId 当前用户 ID
  * @param msg 当前日志内容
  * @param throwable 当前异常堆栈
  */
-internal class LoggerData internal constructor(
-    internal var time: String = "",
-    internal var tag: String = YukiHookLogger.Configs.tag,
-    internal var priority: String = "",
-    internal var packageName: String = "",
-    internal var userId: Int = 0,
-    internal var msg: String = "",
-    internal var throwable: Throwable? = null
+class YukiLoggerData internal constructor(
+    var timestamp: Long = 0L,
+    var time: String = "",
+    var tag: String = YukiHookLogger.Configs.tag,
+    var priority: String = "",
+    var packageName: String = "",
+    var userId: Int = 0,
+    var msg: String = "",
+    var throwable: Throwable? = null
 ) {
 
     /** 是否隐式打印 */
     internal var isImplicit = false
 
     init {
-        time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT).format(Date())
+        timestamp = System.currentTimeMillis()
+        time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT).format(Date(timestamp))
         packageName = YukiHookBridge.hostProcessName.takeIf { it != "unknown" } ?: YukiHookBridge.modulePackageName
         userId = AppParasitics.findUserId(packageName)
     }
@@ -128,8 +131,8 @@ internal class LoggerData internal constructor(
  */
 object YukiHookLogger {
 
-    /** 当前全部已记录的日志 */
-    internal val inMemoryData = HashSet<LoggerData>()
+    /** 当前全部已记录的日志数据 */
+    val inMemoryData = HashSet<YukiLoggerData>()
 
     /**
      * 获取当前日志文件内容
@@ -150,7 +153,11 @@ object YukiHookLogger {
             return content
         }
 
-    /** 清除全部已记录的日志 */
+    /**
+     * 清除全部已记录的日志
+     *
+     * 你也可以直接获取 [inMemoryData] 来清除
+     */
     fun clear() = inMemoryData.clear()
 
     /**
@@ -289,7 +296,7 @@ object YukiHookLogger {
  * @param data 日志数据
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
  */
-private fun baseLogger(type: LoggerType, data: LoggerData, isImplicit: Boolean = false) {
+private fun baseLogger(type: LoggerType, data: YukiLoggerData, isImplicit: Boolean = false) {
     /** 打印到 [Log] */
     fun loggerInLogd() = when (data.priority) {
         "D" -> Log.d(data.tag, data.msg)
@@ -324,7 +331,7 @@ private fun baseLogger(type: LoggerType, data: LoggerData, isImplicit: Boolean =
  */
 internal fun yLoggerD(msg: String, isImplicit: Boolean = false, isDisableLog: Boolean = false) {
     if (YukiHookLogger.Configs.isEnable.not() || isDisableLog) return
-    baseLogger(LoggerType.BOTH, LoggerData(priority = "D", msg = msg), isImplicit)
+    baseLogger(LoggerType.BOTH, YukiLoggerData(priority = "D", msg = msg), isImplicit)
 }
 
 /**
@@ -335,7 +342,7 @@ internal fun yLoggerD(msg: String, isImplicit: Boolean = false, isDisableLog: Bo
  */
 internal fun yLoggerI(msg: String, isImplicit: Boolean = false, isDisableLog: Boolean = false) {
     if (YukiHookLogger.Configs.isEnable.not() || isDisableLog) return
-    baseLogger(LoggerType.BOTH, LoggerData(priority = "I", msg = msg), isImplicit)
+    baseLogger(LoggerType.BOTH, YukiLoggerData(priority = "I", msg = msg), isImplicit)
 }
 
 /**
@@ -346,7 +353,7 @@ internal fun yLoggerI(msg: String, isImplicit: Boolean = false, isDisableLog: Bo
  */
 internal fun yLoggerW(msg: String, isImplicit: Boolean = false, isDisableLog: Boolean = false) {
     if (YukiHookLogger.Configs.isEnable.not() || isDisableLog) return
-    baseLogger(LoggerType.BOTH, LoggerData(priority = "W", msg = msg), isImplicit)
+    baseLogger(LoggerType.BOTH, YukiLoggerData(priority = "W", msg = msg), isImplicit)
 }
 
 /**
@@ -358,7 +365,7 @@ internal fun yLoggerW(msg: String, isImplicit: Boolean = false, isDisableLog: Bo
  */
 internal fun yLoggerE(msg: String, e: Throwable? = null, isImplicit: Boolean = false, isDisableLog: Boolean = false) {
     if (YukiHookLogger.Configs.isEnable.not() || isDisableLog) return
-    baseLogger(LoggerType.BOTH, LoggerData(priority = "E", msg = msg, throwable = e), isImplicit)
+    baseLogger(LoggerType.BOTH, YukiLoggerData(priority = "E", msg = msg, throwable = e), isImplicit)
 }
 
 /**
@@ -370,7 +377,7 @@ internal fun yLoggerE(msg: String, e: Throwable? = null, isImplicit: Boolean = f
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
  */
 fun loggerD(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerType = LoggerType.BOTH) =
-    baseLogger(type, LoggerData(priority = "D", tag = tag, msg = msg))
+    baseLogger(type, YukiLoggerData(priority = "D", tag = tag, msg = msg))
 
 /**
  * 向控制台和 [XposedBridge] 打印日志 - I
@@ -381,7 +388,7 @@ fun loggerD(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerT
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
  */
 fun loggerI(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerType = LoggerType.BOTH) =
-    baseLogger(type, LoggerData(priority = "I", tag = tag, msg = msg))
+    baseLogger(type, YukiLoggerData(priority = "I", tag = tag, msg = msg))
 
 /**
  * 向控制台和 [XposedBridge] 打印日志 - W
@@ -392,7 +399,7 @@ fun loggerI(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerT
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
  */
 fun loggerW(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerType = LoggerType.BOTH) =
-    baseLogger(type, LoggerData(priority = "W", tag = tag, msg = msg))
+    baseLogger(type, YukiLoggerData(priority = "W", tag = tag, msg = msg))
 
 /**
  * 向控制台和 [XposedBridge] 打印日志 - E
@@ -404,4 +411,4 @@ fun loggerW(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerT
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
  */
 fun loggerE(tag: String = YukiHookLogger.Configs.tag, msg: String, e: Throwable? = null, type: LoggerType = LoggerType.BOTH) =
-    baseLogger(type, LoggerData(priority = "E", tag = tag, msg = msg, throwable = e))
+    baseLogger(type, YukiLoggerData(priority = "E", tag = tag, msg = msg, throwable = e))
