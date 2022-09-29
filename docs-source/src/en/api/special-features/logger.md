@@ -147,6 +147,22 @@ You can also use `YukiHookLogger.contents` to get all the log file contents that
 val fileContent = YukiHookLogger.contents
 ```
 
+If you need an array of real-time log data structures, you can directly get the content of `YukiHookLogger.inMemoryData`.
+
+> The following example
+
+```kotlin
+// Get the currently printed real-time log data structure array
+YukiHookLogger.inMemoryData.forEach {
+     it.timestamp // Get timestamp
+     it.time // Get UTC time
+     it.priority // Get priority
+     it.msg // Get message
+     it.throwable // Get exception
+     // ...
+}
+```
+
 The above features require `YukiHookLogger.Configs.isRecord` to be enabled.
 
 You can also use `YukiHookLogger.Configs.elements` to customize the elements that debug logs display externally.
@@ -167,6 +183,6 @@ override fun onInit() = configs {
 
 ::: tip
 
-For more functions, please refer to [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field), [YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) methods and [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object).
+For more functions, please refer to [YukiHookLogger.inMemoryData](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#inmemorydata-field), [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field), [YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) methods and [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object).
 
 :::

@@ -143,6 +143,22 @@ YukiHookLogger.saveToFile("/sdcard/Documents/debug_log.log")
 val fileContent = YukiHookLogger.contents
 ```
 
+如果你需要一个实时日志的数据结构数组，你可以直接获取 `YukiHookLogger.inMemoryData` 的内容。
+
+> 示例如下
+
+```kotlin
+// 获取当前已打印的实时日志数据结构数组
+YukiHookLogger.inMemoryData.forEach {
+    it.timestamp // 获取时间戳
+    it.time // 获取 UTC 时间
+    it.priority // 获取优先级
+    it.msg // 获取消息
+    it.throwable // 获取异常
+    // ...
+}
+```
+
 以上功能需要启用 `YukiHookLogger.Configs.isRecord`。
 
 你还可以使用 `YukiHookLogger.Configs.elements` 自定义调试日志对外显示的元素。
@@ -163,6 +179,6 @@ override fun onInit() = configs {
 
 ::: tip
 
-更多功能请参考 [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field)、[YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) 方法以及 [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object)。
+更多功能请参考 [YukiHookLogger.inMemoryData](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#inmemorydata-field)、[YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field)、[YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) 方法以及 [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object)。
 
 :::
