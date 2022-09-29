@@ -16,9 +16,19 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.1 | 2022.09.28 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.2 | 2022.09.30 &ensp;<Badge type="tip" text="latest" vertical="middle" />
 
-- Fixed the problem of wrong document link in [Basic Knowledge](../guide/knowledge) page
+- Documentation [Basic Knowledge](../guide/knowledge) page add a friend link to the English version
+- Fixed `YukiBaseHooker` comments in English code note link errors
+- Fixed `ClassCastException` in `ModuleClassLoader`
+- Fixed and standardize some code notes
+- Added `ModuleClassLoader` exclusion list function, you can use `excludeHostClasses` and `excludeModuleClasses` methods to customize the exclusion list
+- Added `YukiLoggerData` real-time log data class, you can get the log array in real time through `YukiHookLogger.inMemoryData`
+- Added `ClassLoader.listOfClasses` method, which can directly get all `Class` in the current `Dex`
+
+### 1.1.1 | 2022.09.28 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+
+- Fixed the problem of wrong document friend links in [Basic Knowledge](../guide/knowledge) page
 - Fixed document `favicon` not showing up
 - Fixed bug in `DexClassFinder` search conditions
 
@@ -27,7 +37,7 @@ Time zone of version release date: **UTC+8**
 - This is a major version update, please refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) for the changes and usage mentioned in the changelog
 - Change the help documentation framework to [VuePress](https://v2.vuepress.vuejs.org)
 - Unify and standardize the terms and nouns in the document, for example, "query" is always changed to "find", `XposedHelper` is misspelled and changed to `XposedHelpers`
-- Documentation [Basic Knowledge](../guide/knowledge) page to add a link, Simplified Chinese only
+- Documentation [Basic Knowledge](../guide/knowledge) page to add friend links, Simplified Chinese only
 - Convert `Class` and `Method` of Hook App Demo to Java to provide better demo effect
 - Fixed code comment naming in Hook Module Demo
 - Refactored a lot of low-level Hook logic and the docking method of Xposed API
@@ -35,7 +45,7 @@ Time zone of version release date: **UTC+8**
 - Moved methods in section `YukiHookBridge` to `AppParasitics`
 - Removed `HookParam.args` and the underlying direct connection method `setArgs`, directly get and set the object of the current array
 - Optimized automatic handler to merge referenced `jar` into `stub` project
-- Fix the problem that the module package name cannot be correctly matched when multi-project packaging, and modify the module package name matching logic of the automatic handler, thanks to [5ec1cff](https://github.com/5ec1cff) for the feedback and solutions provided
+- Fixed the problem that the module package name cannot be correctly matched when multi-project packaging, and modify the module package name matching logic of the automatic handler, thanks to [5ec1cff](https://github.com/5ec1cff) for the feedback and solutions provided
 - Internal closure processing for the methods of API private tool classes to avoid polluting the top-level namespace
 - Fixed `Creater` naming to `Creator` for all reflection and Hook classes
 - Added `YukiHookAPI.Status.compiledTimestamp` function, which can get the compilation completion timestamp when used as an Xposed module
@@ -49,8 +59,8 @@ Time zone of version release date: **UTC+8**
 - `CurrentClass` added non-`lambda` method of calling
 - `CurrentClass` adds `name` and `simpleName` functions
 - Completely rewrite the core method of `ReflectionTool`, sorting and classifying different search conditions
-- Fix the problem that `Member` obtained by directly calling `declared` in `ReflectionTool` throws an exception
-- Fix `UndefinedType` in `ReflectionTool` is not correctly judged in `Method` and `Constructor` conditions
+- Fixed the problem that `Member` obtained by directly calling `declared` in `ReflectionTool` throws an exception
+- Fixed `UndefinedType` in `ReflectionTool` is not correctly judged in `Method` and `Constructor` conditions
 - Added a friendly prompt method when the reflection search result is abnormal, which can specifically locate the problem that `Member` cannot be found under specified conditions
 - Added `VagueType` condition in `Method` and `Constructor` for reflection search, which can be used in `param` condition to ignore parameters you don't want to fill in
 - Added `paramCount { ... }` condition in `Method` and `Constructor` of reflection search, now you can directly get `it` in it to customize your judgment condition
@@ -60,9 +70,9 @@ Time zone of version release date: **UTC+8**
 - Added `RemedyPlan` feature in `FieldFinder`
 - Added `Class` fuzzy search function (Beta) in `Dex`, you can now directly use `searchClass` function to fuzzy search `Class` with specified conditions
 - Added multiple search function in reflection search, you can use relative search conditions to obtain multiple search results at the same time, thanks to **AA** and [Kitsune](https://github.com/KyuubiRan) for suggestions
-- Fix the problem that the object obtained by `appClassLoader` is incorrect in system applications in some systems, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
+- Fixed the problem that the object obtained by `appClassLoader` is incorrect in system applications in some systems, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
 - Modified the calling method of `XposedBridge.invokeOriginalMethod` and added `original` function in `MethodFinder.Result.Instance`
-- Fix the problem of wrong value of `getStringSet` method in `YukiHookModulePrefs` and optimize the code style, thanks to [Teddy_Zhu](https://github.com/Teddy-Zhu) [PR](https://github.com/fankes/YukiHookAPI/pull/19)
+- Fixed the problem of wrong value of `getStringSet` method in `YukiHookModulePrefs` and optimize the code style, thanks to [Teddy_Zhu](https://github.com/Teddy-Zhu) [PR](https://github.com/fankes/YukiHookAPI/pull/19)
 - Modify `YukiHookModulePrefs` to intercept exceptions that may not exist in `XSharePreference`
 - Fixed the problem that `YukiHookDataChannel` could not be successfully registered in some third-party ROM system frameworks
 - Secured `YukiHookDataChannel`, now it can only communicate between modules from the specified package name and the host
@@ -126,7 +136,7 @@ Time zone of version release date: **UTC+8**
 - Separate `YukiHookModuleStatus` from auto-generated code and add `isEnableHookModuleStatus` switch, it is up to you to enable or not
 - Internal closure processing for the constructors of a large number of classes in the API
 - Set `YukiHookModulePrefs` to run as a singleton to prevent repeated creation and waste of system resources
-- Fix the bug that Hook cannot be nested since version `1.0.80`, and optimize the related functions of nested Hook
+- Fixed the bug that Hook cannot be nested since version `1.0.80`, and optimize the related functions of nested Hook
 - Modify the Hooker storage scheme from HashSet to HashMap to prevent the problem of repeatedly adding Hookers
 - Modify the core implementation method of Hook, add duplicate checking to avoid repeating the Hook multiple callbacks to the `HookParam` method
 - `MethodFinder` and `FieldFinder` add the function of finding fuzzy methods and variable names, you can call `name { ... }` to set search conditions, and support regular expressions
@@ -166,7 +176,7 @@ Time zone of version release date: **UTC+8**
 
 ### 1.0.81 | 2022.05.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
-- Fix the problem that the method and constructor that cannot be found in the Hook method body still output the error log after setting the condition using the `by` method
+- Fixed the problem that the method and constructor that cannot be found in the Hook method body still output the error log after setting the condition using the `by` method
 - Added a global log to display the package name of the current Hook APP during the execution of the Hook, and fixed a problem with the printing style of the error log
 
 ### 1.0.80 | 2022.05.01 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
@@ -176,7 +186,7 @@ Time zone of version release date: **UTC+8**
 - Added `initZygote` and Resources Hook functions to support Hook Layout
 - Added `onXposedEvent` method to listen to all events of native Xposed API
 - Perform `inline` processing on the `lambda` of the Hook function to avoid generating excessively broken anonymous classes and improve the running performance after compilation
-- Fix `PrefsData` compiled method body copy is too large
+- Fixed `PrefsData` compiled method body copy is too large
 - Added `XSharePreference` readability test, which will automatically print a warning log if it fails
 - `PackageParam` adds `appResources`, `moduleAppResources`, `moduleAppFilePath` functions
 - `loadApp` of `PackageParam` adds the function of not writing `name`, and all APPs are filtered by default
@@ -189,10 +199,10 @@ Time zone of version release date: **UTC+8**
 - New `superClass` query conditions for search methods, construction methods and variables, you can continue to search in the parent class
 - `YukiHookAPI` lots of methods are decoupled from Xposed API
 - Added native Hook priority function of Xposed API
-- Fix the problem that `isFirstApplication` may be inaccurate
+- Fixed the problem that `isFirstApplication` may be inaccurate
 - Block the problem that MiuiCatcherPatch repeatedly calls the Hook entry method on the MIUI system
 - Optimize Hook entry calling method to avoid multiple calls due to Hook Framework issues
-- Fix the problem that Hook `ClassLoader` causes Hook to freeze, thanks to [WankkoRee](https://github.com/WankkoRee) for the feedback
+- Fixed the problem that Hook `ClassLoader` causes Hook to freeze, thanks to [WankkoRee](https://github.com/WankkoRee) for the feedback
 - Improve the performance after the `XC_Callback` interface is connected
 - Java `type` added `ClassLoader` type
 - Optimize the API help documentation, fix the problem that the page may be continuously cached
@@ -228,14 +238,14 @@ Time zone of version release date: **UTC+8**
 ### 1.0.73 | 2022.04.10 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Fixed some Chinese translation errors in documents, thanks to [WankkoRee](https://github.com/WankkoRee) for their contributions
-- Fix the problem that `XC_LoadPackage.LoadPackageParam` throws an exception when the content is empty in some cases, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
-- Fix some known bugs and improve Hook stability
+- Fixed the problem that `XC_LoadPackage.LoadPackageParam` throws an exception when the content is empty in some cases, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
+- Fixed some known bugs and improve Hook stability
 
 ### 1.0.72 | 2022.04.09 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Update API documentation to new address
 - Add `appContext` function to `PackageParam`
-- Fix some known bugs and improve Hook stability
+- Fixed some known bugs and improve Hook stability
 
 ### 1.0.71 | 2022.04.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
@@ -270,7 +280,7 @@ Time zone of version release date: **UTC+8**
 - Removed and modified `MethodFinder`, `FieldFinder` and `HookParam` related method calls
 - Add more `cast` types in `Finder` and support `cast` as array
 - Overall performance and stability improvements
-- Fix bugs that may exist in the previous version
+- Fixed bugs that may exist in the previous version
 
 ### 1.0.67 | 2022.03.27 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
@@ -286,13 +296,13 @@ Time zone of version release date: **UTC+8**
 
 - Fixed a serious bug in `MethodFinder`
 - Added `args` call method in `hookParam`
-- Fix other possible problems and fix some class annotation problems
+- Fixed other possible problems and fix some class annotation problems
 
 ### 1.0.65 | 2022.03.25 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Republished version to fix the incorrect new version of the Maven repository due to cache issues
 - Added `MethodFinder` and `FieldFinder` new return value calling methods
-- Fix possible problems and fix possible problems during the use of Tai Chi
+- Fixed possible problems and fix possible problems during the use of Tai Chi
 - Fixed possible problems with auto-generated Xposed entry classes
 - Added `android` type and `java` type in `type`
 
@@ -305,14 +315,14 @@ Time zone of version release date: **UTC+8**
 - Decoupling Xposed API in `ReflectionUtils`
 - Added `YukiHookModuleStatus` method name confusion to reduce the size of module generation
 - The welcome message will no longer be printed when loading the module's own Hook
-- Fix some bugs that still exist in the previous version
+- Fixed some bugs that still exist in the previous version
 
 ### 1.0.55 | 2022.03.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Fixed an annotation error
 - Temporarily fix a bug
 - Added a large number of `android` types in `type` and a small number of `java` types
-- Fix compatibility issues between new and old Kotlin APIs
+- Fixed compatibility issues between new and old Kotlin APIs
 
 ### 1.0.5 | 2022.03.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
@@ -325,7 +335,7 @@ Time zone of version release date: **UTC+8**
 
 ### 1.0.4 | 2022.03.06 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
-- Fix LSPosed cannot find `XposedBridge` after enabling "Only module classloader can use Xposed API" option in latest version
+- Fixed LSPosed cannot find `XposedBridge` after enabling "Only module classloader can use Xposed API" option in latest version
 - Added constant version name and version number for `YukiHookAPI`
 - Added `hasField` method and `isAllowPrintingLogs` configuration parameter
 - Added `isDebug` to enable the API to automatically print the welcome message to test whether the module is valid
@@ -339,7 +349,7 @@ Time zone of version release date: **UTC+8**
 
 ### 1.0.2 | 2022.02.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
-- Fix the problem that the project path cannot be found under Windows
+- Fixed the problem that the project path cannot be found under Windows
 - Remove part of reflection API, merge into `BaseFinder` for integration
 - Add a method to create Hook directly using string
 

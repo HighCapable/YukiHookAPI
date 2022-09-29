@@ -8,7 +8,17 @@
 
 :::
 
-### 1.1.1 | 2022.09.28 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.2 | 2022.09.30 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 文档 [基础知识](../guide/knowledge) 页面新增 English 版本友情链接
+- 修复 `YukiBaseHooker` 注释中的 English 文档链接错误问题
+- 修复 `ModuleClassLoader` 中的 `ClassCastException` 问题
+- 修正并规范部分代码注释
+- 新增 `ModuleClassLoader` 排除列表功能，可使用 `excludeHostClasses` 和 `excludeModuleClasses` 方法来自定义排除列表
+- 新增 `YukiLoggerData` 实时日志数据类，可实时通过 `YukiHookLogger.inMemoryData` 获取日志数组
+- 新增 `ClassLoader.listOfClasses` 方法，可直接获取当前 `Dex` 中的全部 `Class`
+
+### 1.1.1 | 2022.09.28 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 修复了文档 [基础知识](../guide/knowledge) 页面友情链接错误的问题
 - 修复了文档 `favicon` 不显示的问题
