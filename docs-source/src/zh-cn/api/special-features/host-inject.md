@@ -273,3 +273,42 @@ injectMember {
 更多功能请参考 [Context.applyModuleTheme](../public/com/highcapable/yukihookapi/hook/factory/YukiHookFactory#context-applymoduletheme-ext-method) 方法。
 
 :::
+
+## ClassLoader 冲突问题
+
+本页面所介绍的内容都是直接将模块的资源注入到了宿主，由于模块与宿主不在同一个进程 (同一个 **APK**) 中，其可能存在 `ClassLoader` 冲突的问题。
+
+若发生了 `ClassLoader` 冲突，你可能会遇到 `ClassCastException` 异常。
+
+`YukiHookAPI` 默认已解决了可能冲突的问题，其余情况需要你自行配置排除列表。
+
+排除列表决定了这些 `Class` 需要被模块还是宿主的 `ClassLoader` 进行装载。
+
+> 示例如下
+
+```kotlin
+// 排除属于宿主的 Class 类名
+// 它们将会被宿主的 ClassLoader 装载
+// ❗以下内容仅供演示，不要直接使用，请以你的实际情况为准
+ModuleClassLoader.excludeHostClasses(
+    "androidx.core.app.ActivityCompat",
+    "com.demo.Test"
+)
+// 排除属于模块的 Class 类名
+// 它们将会被模块 (当前 Hook 进程) 的 ClassLoader 装载
+// ❗以下内容仅供演示，不要直接使用，请以你的实际情况为准
+ModuleClassLoader.excludeModuleClasses(
+    "com.demo.entry.HookEntry",
+    "com.demo.controller.ModuleController"
+)
+```
+
+你需要在向宿主注入模块资源的方法执行之前进行设置才能生效。
+
+此功能仅为解决宿主与模块中可能存在**同名的 `Class`** 情况，例如共用的 SDK 以及依赖，在大部分情况下你不会用到此功能。
+
+::: tip
+
+更多功能请参考 [ModuleClassLoader](../public/com/highcapable/yukihookapi/hook/xposed/parasitic/reference/ModuleClassLoader)。
+
+:::

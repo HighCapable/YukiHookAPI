@@ -285,3 +285,48 @@ You can refer to the **Module App Demo** in this case and see [here is the sampl
 For more functions, please refer to the [Context.applyModuleTheme](../public/com/highcapable/yukihookapi/hook/factory/YukiHookFactory#context-applymoduletheme-ext-method) method.
 
 :::
+
+## ClassLoader Conflict Problem
+
+The content introduced on this page is to directly inject the resources of the Module App into the Host App.
+
+Since the Module App and the Host App are not in the same process (the same **APK**), there may be a `ClassLoader` conflict.
+
+If a `ClassLoader` conflict occurs, you may encounter a `ClassCastException`.
+
+`YukiHookAPI` has solved the problem of possible conflicts by default, and you need to configure the exclusion list by yourself in other cases.
+
+The exclusion list determines whether these `Class` need to be loaded by the Module App or the Host App's `ClassLoader`.
+
+> The following example
+
+```kotlin
+// Exclude Class names belonging to the Host App
+// They will be loaded by the Host App's ClassLoader
+// ❗The following content is for demonstration only
+// DO NOT USE IT DIRECTLY, please refer to your actual situation
+ModuleClassLoader.excludeHostClasses(
+    "androidx.core.app.ActivityCompat",
+    "com.demo.Test"
+)
+// Exclude Class names belonging to the Module App
+// They will be loaded by the ClassLoader of the Module App (the current Hook process)
+// ❗The following content is for demonstration only
+// DO NOT USE IT DIRECTLY, please refer to your actual situation
+ModuleClassLoader.excludeModuleClasses(
+    "com.demo.entry.HookEntry",
+    "com.demo.controller.ModuleController"
+)
+```
+
+You need to set it before the method of injecting Module App's resources into the Host App is executed to take effect.
+
+This function is only to solve the situation that **`Class` with the same name** may exist in the Host App and Module App, such as shared SDK and dependencies.
+
+In most cases, you will not use this function.
+
+::: tip
+
+For more functions, please refer to [ModuleClassLoader](../public/com/highcapable/yukihookapi/hook/xposed/parasitic/reference/ModuleClassLoader).
+
+:::
