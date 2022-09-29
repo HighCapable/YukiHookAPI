@@ -82,7 +82,7 @@ Before starting, you need to have the following basics to better use `YukiHookAP
 
 - Grasp and proficient in using Java reflection, understand simple Smali syntax, understand Dex file structure, and use reverse analysis to locate method locations
 
-- Grasp the basic native [Xposed API](https://api.xposed.info) usage, understand the operation principle of Xposed
+- Grasp the basic native [Xposed API](https://api.xposed.info) usage, understand the operation principle of Xposed, see [here](https://blog.ketal.icu/en/Xposed%E6%A8%A1%E5%9D%97%E5%BC%80%E5%8F%91%E5%85%A5%E9%97%A8%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B/) **(Friend Link)**
 
 - Grasp Kotlin language and learn to use **Kotlin lambda**
 
