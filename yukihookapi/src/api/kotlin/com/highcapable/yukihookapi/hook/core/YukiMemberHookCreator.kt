@@ -115,7 +115,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
      *
      * 请在 [option] 中键入 "Yes do as I say!" 代表你同意允许所有危险行为
      *
-     * 你还需要在整个作用域中声明注解 [CauseProblemsApi] 以消除警告
+     * 你还需要在整个调用域中声明注解 [CauseProblemsApi] 以消除警告
      *
      * - ❗若你不知道允许此功能会带来何种后果 - 请勿使用
      * @param option 操作选项内容
