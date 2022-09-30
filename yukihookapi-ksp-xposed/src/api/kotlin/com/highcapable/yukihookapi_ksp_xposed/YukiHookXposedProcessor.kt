@@ -158,7 +158,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                             if (args.name?.asString() == "modulePackageName")
                                 data.customMPackageName = args.value.toString().trim()
                             if (args.name?.asString() == "entryClassName")
-                                data.entryClassName = args.value.toString().trim()
+                                data.xInitClassName = args.value.toString().trim()
                             if (args.name?.asString() == "isUsingResourcesHook")
                                 data.isUsingResourcesHook = args.value as? Boolean ?: true
                         }
