@@ -161,6 +161,14 @@ YukiHookLogger.inMemoryData.forEach {
 
 以上功能需要启用 `YukiHookLogger.Configs.isRecord`。
 
+::: danger
+
+获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的。
+
+你只能在对应的进程中获取对应的日志数据，如果你需要在任何地方实时得到这些日志数据，请参考 [Xposed 模块与宿主通讯桥](xposed-channel)、[注册模块 Activity](host-inject#注册模块-activity)。
+
+:::
+
 你还可以使用 `YukiHookLogger.Configs.elements` 自定义调试日志对外显示的元素。
 
 此功能需要在 Hook 入口类的 `onInit` 中对 `YukiHookAPI.Configs` 进行配置。

@@ -165,6 +165,16 @@ YukiHookLogger.inMemoryData.forEach {
 
 The above features require `YukiHookLogger.Configs.isRecord` to be enabled.
 
+::: danger
+
+The obtained log data is isolated from each other in the Host App and the Module App's process.
+
+You can only get the corresponding log data in the corresponding process.
+
+If you need to get these log data in real time anywhere, please refer to [Xposed Module and Host Channel](xposed-channel), [Register Module App's Activity](host-inject#register-module-app-s-activity).
+
+:::
+
 You can also use `YukiHookLogger.Configs.elements` to customize the elements that debug logs display externally.
 
 This function requires `YukiHookAPI.Configs` to be configured in `onInit` of the Hook entry class.
