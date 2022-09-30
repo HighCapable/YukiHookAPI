@@ -8,7 +8,12 @@
 
 :::
 
-### 1.1.2 | 2022.09.30 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.3 | 2022.09.30 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 修复一个无法自定义 Hook 入口类名的致命错误
+- 添加 `LoggerFactory` 中的部分代码注释文案并更新特色功能文档
+
+### 1.1.2 | 2022.09.30 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 文档 [基础知识](../guide/knowledge) 页面新增 English 版本友情链接
 - 修复 `YukiBaseHooker` 注释中的 English 文档链接错误问题

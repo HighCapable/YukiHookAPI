@@ -16,7 +16,12 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.2 | 2022.09.30 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.3 | 2022.09.30 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Fixed a fatal bug where the Hook entry class name could not be customized
+- Added some code notes in `LoggerFactory` and updated special features documentation
+
+### 1.1.2 | 2022.09.30 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Documentation [Basic Knowledge](../guide/knowledge) page add a friend link to the English version
 - Fixed `YukiBaseHooker` comments in English code note link errors
