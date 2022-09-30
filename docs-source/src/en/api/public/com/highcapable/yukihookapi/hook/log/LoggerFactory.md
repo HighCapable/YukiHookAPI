@@ -157,6 +157,12 @@ val inMemoryData: HashSet<YukiLoggerData>
 
 > 当前全部已记录的日志数据。
 
+::: danger
+
+获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的。
+
+:::
+
 ### contents <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
@@ -173,6 +179,12 @@ val contents: String
 
 如果当前没有已记录的日志会返回空字符串。
 
+::: danger
+
+获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的。
+
+:::
+
 ### clear <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
@@ -186,6 +198,12 @@ fun clear()
 **Function Illustrate**
 
 > 清除全部已记录的日志。
+
+::: danger
+
+获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的。
+
+:::
 
 你也可以直接获取 [inMemoryData](#inmemorydata-field) 来清除。
 
@@ -209,7 +227,7 @@ fun saveToFile(fileName: String)
 
 ::: danger 
 
-文件读写权限取决于当前宿主已获取的权限。
+文件读写权限取决于当前宿主、模块已获取的权限。
 
 :::
 

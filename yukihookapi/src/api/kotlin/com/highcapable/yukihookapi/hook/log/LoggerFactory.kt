@@ -131,13 +131,19 @@ class YukiLoggerData internal constructor(
  */
 object YukiHookLogger {
 
-    /** 当前全部已记录的日志数据 */
+    /**
+     * 当前全部已记录的日志数据
+     *
+     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     */
     val inMemoryData = HashSet<YukiLoggerData>()
 
     /**
      * 获取当前日志文件内容
      *
      * 如果当前没有已记录的日志会返回空字符串
+     *
+     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      * @return [String]
      */
     val contents: String
@@ -157,6 +163,8 @@ object YukiHookLogger {
      * 清除全部已记录的日志
      *
      * 你也可以直接获取 [inMemoryData] 来清除
+     *
+     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      */
     fun clear() = inMemoryData.clear()
 
@@ -167,7 +175,7 @@ object YukiHookLogger {
      *
      * 日志文件会追加到 [fileName] 的文件结尾 - 若文件不存在会自动创建
      *
-     * - ❗文件读写权限取决于当前宿主已获取的权限
+     * - ❗文件读写权限取决于当前宿主、模块已获取的权限
      * @param fileName 完整文件名 - 例如 /data/data/.../files/xxx.log
      * @throws ErrnoException 如果目标路径不可写
      */
