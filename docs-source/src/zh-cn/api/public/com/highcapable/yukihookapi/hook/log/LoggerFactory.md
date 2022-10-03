@@ -101,7 +101,7 @@ BOTH
 ## YukiLoggerData <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class YukiLoggerData internal constructor(
+data class YukiLoggerData internal constructor(
     var timestamp: Long,
     var time: String,
     var tag: String,
@@ -110,12 +110,16 @@ class YukiLoggerData internal constructor(
     var userId: Int,
     var msg: String,
     var throwable: Throwable?
-)
+) : Serializable
 ```
 
 **变更记录**
 
 `v1.1.2` `新增`
+
+`v1.1.4` `修改`
+
+实现 `Serializable` 接口并标识为 `data class`
 
 **功能描述**
 

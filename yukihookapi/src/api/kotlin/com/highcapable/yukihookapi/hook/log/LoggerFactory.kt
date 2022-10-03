@@ -38,6 +38,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import de.robv.android.xposed.XposedBridge
 import java.io.File
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -87,7 +88,7 @@ enum class LoggerType {
  * @param msg 当前日志内容
  * @param throwable 当前异常堆栈
  */
-class YukiLoggerData internal constructor(
+data class YukiLoggerData internal constructor(
     var timestamp: Long = 0L,
     var time: String = "",
     var tag: String = YukiHookLogger.Configs.tag,
@@ -96,7 +97,7 @@ class YukiLoggerData internal constructor(
     var userId: Int = 0,
     var msg: String = "",
     var throwable: Throwable? = null
-) {
+) : Serializable {
 
     /** 是否隐式打印 */
     internal var isImplicit = false
