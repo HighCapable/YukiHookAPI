@@ -69,7 +69,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.Instr
 internal object AppParasitics {
 
     /** [Activity] 代理是否已经注册 */
-    private var isActivityProxyRegister = false
+    private var isActivityProxyRegistered = false
 
     /** [ClassLoader] 是否已被 Hook */
     private var isClassLoaderHooked = false
@@ -283,7 +283,7 @@ internal object AppParasitics {
      * @param proxy 代理的 [Activity]
      */
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
-        if (isActivityProxyRegister) return
+        if (isActivityProxyRegistered) return
         if (YukiHookBridge.hasXposedBridge.not()) return yLoggerW(msg = "You can only register Activity Proxy in Xposed Environment")
         runCatching {
             ActivityProxyConfig.apply {
@@ -328,7 +328,7 @@ internal object AppParasitics {
                     }
                 }
             }
-            isActivityProxyRegister = true
+            isActivityProxyRegistered = true
         }.onFailure { yLoggerE(msg = "Activity Proxy initialization failed because got an Exception", e = it) }
     }
 
