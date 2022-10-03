@@ -173,6 +173,8 @@ You can only get the corresponding log data in the corresponding process.
 
 If you need to get these log data in real time anywhere, please refer to [Xposed Module and Host Channel](xposed-channel), [Register Module App's Activity](host-inject#register-module-app-s-activity).
 
+If you only want to get log data in real time through Module App or Host App, Please refer to the optional solution [YukiHookDataChannel.obtainLoggerInMemoryData](../public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel#obtainloggerinmemorydata-method) method.
+
 :::
 
 You can also use `YukiHookLogger.Configs.elements` to customize the elements that debug logs display externally.
