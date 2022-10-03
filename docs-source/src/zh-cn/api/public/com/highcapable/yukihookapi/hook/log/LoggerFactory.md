@@ -142,12 +142,16 @@ object YukiHookLogger
 ### inMemoryData <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
-val inMemoryData: HashSet<YukiLoggerData>
+val inMemoryData: ArrayList<YukiLoggerData>
 ```
 
 **变更记录**
 
 `v1.1.2` `新增`
+
+`v1.1.4` `修改`
+
+类型由 `HashSet` 修改为 `ArrayList`
 
 **功能描述**
 

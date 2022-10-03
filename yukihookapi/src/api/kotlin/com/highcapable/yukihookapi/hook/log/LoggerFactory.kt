@@ -137,7 +137,7 @@ object YukiHookLogger {
      *
      * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      */
-    val inMemoryData = HashSet<YukiLoggerData>()
+    val inMemoryData = ArrayList<YukiLoggerData>()
 
     /**
      * 获取当前日志文件内容
