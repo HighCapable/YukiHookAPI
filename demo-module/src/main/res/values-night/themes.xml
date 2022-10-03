@@ -14,5 +14,6 @@
         <item name="android:navigationBarColor">@android:color/background_dark</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <!-- Customize your theme here. -->
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@mipmap/ic_launcher</item>
     </style>
 </resources>

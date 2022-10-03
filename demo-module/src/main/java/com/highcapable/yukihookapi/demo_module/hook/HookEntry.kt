@@ -203,7 +203,7 @@ class HookEntry : IYukiHookXposedInit {
                         // Module App's Resources can be obfuscated with R8, results are not affected
                         // 替换为当前模块的 Resources
                         // 模块的 Resources 可以使用 R8 混淆 - 结果不受影响
-                        replaceToModuleResource(R.mipmap.ic_icon)
+                        replaceToModuleResource(R.mipmap.ic_launcher)
                     }
                 }
             }
