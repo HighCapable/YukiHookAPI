@@ -159,3 +159,27 @@ fun checkingVersionEquals(result: (Boolean) -> Unit)
 > 获取模块与宿主的版本是否匹配。
 
 通过此方法可原生判断 Xposed 模块更新后宿主并未重新装载造成两者不匹配的情况。
+
+### obtainLoggerInMemoryData <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun obtainLoggerInMemoryData(result: (ArrayList<YukiLoggerData>) -> Unit)
+```
+
+**Change Records**
+
+`v1.1.4` `added`
+
+**Function Illustrate**
+
+> 获取模块与宿主之间的 `ArrayList<YukiLoggerData>` 数据。
+
+由于模块与宿主处于不同的进程，我们可以使用数据通讯桥访问各自的调试日志数据。
+
+::: danger
+
+模块与宿主必须启用 [YukiHookLogger.Configs.isRecord](../../log/LoggerFactory#isrecord-field) 才能获取到调试日志数据。
+
+由于 Android 限制了数据传输大小的最大值，如果调试日志过多可能会造成 **TransactionTooLargeException** 异常。
+
+:::

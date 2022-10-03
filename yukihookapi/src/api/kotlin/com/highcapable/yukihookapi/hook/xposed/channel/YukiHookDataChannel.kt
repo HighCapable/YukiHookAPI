@@ -39,7 +39,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcelable
+import android.os.TransactionTooLargeException
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.log.YukiHookLogger
+import com.highcapable.yukihookapi.hook.log.YukiLoggerData
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
@@ -74,6 +77,12 @@ class YukiHookDataChannel private constructor() {
 
         /** 模块构建版本号结果标签 */
         private const val RESULT_MODULE_GENERATED_VERSION = "module_generated_version_result"
+
+        /** 调试日志数据获取标签 */
+        private const val GET_YUKI_LOGGER_INMEMORY_DATA = "yuki_logger_inmemory_data_get"
+
+        /** 调试日志数据结果标签 */
+        private val RESULT_YUKI_LOGGER_INMEMORY_DATA = ChannelData<ArrayList<YukiLoggerData>>("yuki_logger_inmemory_data_result")
 
         /** 仅监听结果键值 */
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
@@ -170,9 +179,15 @@ class YukiHookDataChannel private constructor() {
                 addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
             }
         )
-        /** 注册监听模块与宿主的版本是否匹配 */
-        nameSpace(context, packageName, isSecure = false).wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
-            nameSpace(context, fromPackageName, isSecure = false).put(RESULT_MODULE_GENERATED_VERSION, YukiHookBridge.moduleGeneratedVersion)
+        nameSpace(context, packageName, isSecure = false).with {
+            /** 注册监听模块与宿主的版本是否匹配 */
+            wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
+                nameSpace(context, fromPackageName, isSecure = false).put(RESULT_MODULE_GENERATED_VERSION, YukiHookBridge.moduleGeneratedVersion)
+            }
+            /** 注册监听模块与宿主之间的调试日志数据 */
+            wait<String>(GET_YUKI_LOGGER_INMEMORY_DATA) { fromPackageName ->
+                nameSpace(context, fromPackageName, isSecure = false).put(RESULT_YUKI_LOGGER_INMEMORY_DATA, YukiHookLogger.inMemoryData)
+            }
         }
     }
 
@@ -285,6 +300,21 @@ class YukiHookDataChannel private constructor() {
         fun checkingVersionEquals(result: (Boolean) -> Unit) {
             wait<String>(RESULT_MODULE_GENERATED_VERSION) { result(it == YukiHookBridge.moduleGeneratedVersion) }
             put(GET_MODULE_GENERATED_VERSION, packageName)
+        }
+
+        /**
+         * 获取模块与宿主之间的 [ArrayList]<[YukiLoggerData]> 数据
+         *
+         * 由于模块与宿主处于不同的进程 - 我们可以使用数据通讯桥访问各自的调试日志数据
+         *
+         * - ❗模块与宿主必须启用 [YukiHookLogger.Configs.isRecord] 才能获取到调试日志数据
+         *
+         * - ❗由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多可能会造成 [TransactionTooLargeException] 异常
+         * @param result 回调 [ArrayList]<[YukiLoggerData]>
+         */
+        fun obtainLoggerInMemoryData(result: (ArrayList<YukiLoggerData>) -> Unit) {
+            wait(RESULT_YUKI_LOGGER_INMEMORY_DATA) { result(it) }
+            put(GET_YUKI_LOGGER_INMEMORY_DATA, packageName)
         }
 
         /**
