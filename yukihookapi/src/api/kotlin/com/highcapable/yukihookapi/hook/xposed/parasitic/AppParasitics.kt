@@ -56,6 +56,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.HandlerDelegate
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.IActivityManagerProxy
@@ -67,6 +68,9 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.Instr
  * 通过这些功能即可轻松实现对 (Xposed) 宿主环境的 [Resources] 注入以及 [Activity] 代理
  */
 internal object AppParasitics {
+
+    /** [YukiHookDataChannel] 是否已经注册 */
+    private var isDataChannelRegistered = false
 
     /** [Activity] 代理是否已经注册 */
     private var isActivityProxyRegistered = false
@@ -230,7 +234,15 @@ internal object AppParasitics {
                                         }
                                     }, IntentFilter().apply { e.first.forEach { e -> addAction(e) } })
                                 }
-                                runCatching { YukiHookDataChannel.instance().register(it, packageName) }
+                                runCatching {
+                                    /** 过滤系统框架与一系列服务组件包名不唯一的情况 */
+                                    if (isDataChannelRegistered ||
+                                        (YukiHookAppHelper.currentPackageName() == YukiHookBridge.SYSTEM_FRAMEWORK_NAME &&
+                                                packageName != YukiHookBridge.SYSTEM_FRAMEWORK_NAME)
+                                    ) return
+                                    YukiHookDataChannel.instance().register(it, packageName)
+                                    isDataChannelRegistered = true
+                                }
                             }
                         }.onFailure { param.throwable = it }
                     }

@@ -299,7 +299,9 @@ class YukiHookDataChannel private constructor() {
             /** 发送广播 */
             (context ?: YukiHookAppHelper.currentApplication())?.sendBroadcast(Intent().apply {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
-                setPackage(if (isXposedEnvironment) YukiHookBridge.modulePackageName else packageName)
+                /** 由于系统框架的包名可能不唯一 - 为防止发生问题不再对系统框架的广播设置接收者包名 */
+                if (packageName != YukiHookBridge.SYSTEM_FRAMEWORK_NAME)
+                    setPackage(if (isXposedEnvironment) YukiHookBridge.modulePackageName else packageName)
                 data.takeIf { it.isNotEmpty() }?.forEach {
                     when (it.value) {
                         null -> Unit
