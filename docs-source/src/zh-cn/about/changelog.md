@@ -8,7 +8,17 @@
 
 :::
 
-### 1.1.3 | 2022.09.30 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.4 | 2022.10.04 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 修复 `YukiHookDataChannel` 可能不能响应系统框架中响应广播事件的问题，在 Android 13 中复现
+- 修复 `YukiHookDataChannel` 长达多个版本在 (Xposed) 宿主环境无法与模块通讯的问题
+- `YukiHookDataChannel` 中新增 `obtainLoggerInMemoryData` 方法，可在模块与宿主之间共享调试日志数据
+- 修改 `YukiHookLogger.inMemoryData` 的类型为 `ArrayList` 并修改 `YukiLoggerData` 为 `data class`
+- 修复 `YukiLoggerData` 在模块中包名为空打印空白的问题
+- `PackageParam` 中新增 `loadApp`、`loadZygote`、`loadSystem`、`withProcess` 的同名多参数方法
+- 修复了一些可能存在的 BUG
+
+### 1.1.3 | 2022.09.30 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 修复一个无法自定义 Hook 入口类名的致命错误
 - 添加 `LoggerFactory` 中的部分代码注释文案并更新特色功能文档

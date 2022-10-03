@@ -16,7 +16,17 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.3 | 2022.09.30 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.4 | 2022.10.04 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Fixed the issue that `YukiHookDataChannel` may not respond to broadcast events in the system framework, reproduced in A13
+- Fixed the issue that `YukiHookDataChannel` could not communicate with Module App in Host App for multiple versions
+- Added `obtainLoggerInMemoryData` method in `YukiHookDataChannel` to share debug log data between module and host
+- Modify the type of `YukiHookLogger.inMemoryData` to `ArrayList` and change `YukiLoggerData` to `data class`
+- Fixed `YukiLoggerData` printing blank when the package name is empty in the module
+- Added `loadApp`, `loadZygote`, `loadSystem`, `withProcess` multi-parameter methods of the same name in `PackageParam`
+- Fixed some possible bugs
+
+### 1.1.3 | 2022.09.30 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Fixed a fatal bug where the Hook entry class name could not be customized
 - Added some code notes in `LoggerFactory` and updated special features documentation
