@@ -120,7 +120,7 @@ data class YukiLoggerData internal constructor(
         YukiHookLogger.Configs.elements.takeIf { it.isNotEmpty() }?.forEach {
             if (it == YukiHookLogger.Configs.TAG) content += "[$tag]"
             if (it == YukiHookLogger.Configs.PRIORITY) content += "[$priority]"
-            if (it == YukiHookLogger.Configs.PACKAGE_NAME && isImplicit.not()) content += "[$packageName]"
+            if (it == YukiHookLogger.Configs.PACKAGE_NAME && isImplicit.not() && packageName.isNotBlank()) content += "[$packageName]"
             if (it == YukiHookLogger.Configs.USER_ID && isImplicit.not() && userId != 0) content += "[$userId]"
         }
         return content.takeIf { it.isNotBlank() }?.let { "$content--> $msg" } ?: msg
