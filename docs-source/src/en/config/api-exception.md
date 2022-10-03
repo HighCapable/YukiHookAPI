@@ -1225,6 +1225,33 @@ The supported types of `YukiHookModulePrefs` are only `String`, `Set<String>`, `
 
 The supported types of `YukiHookDataChannel` are the types restricted by `Intent.putExtra`, please pass in the supported types.
 
+::: danger IllegalStateException
+
+loadApp/loadZygote/loadSystem/withProcess method need a "**NAME**" param
+
+:::
+
+**Abnormal**
+
+The variable array variable parameter that needs to be filled is missing in `loadApp`, `loadZygote`, `loadSystem`, `withProcess`.
+
+> The following example
+
+```kotlin
+// <Scenario 1>
+loadApp()
+// <Scenario 2>
+loadZygote()
+// <Scenario 3>
+loadSystem()
+// <Scenario 4>
+withProcess()
+```
+
+**Solution**
+
+Please see the usage in `PackageParam` to use this function correctly.
+
 ###### exception
 
 ::: danger IllegalStateException

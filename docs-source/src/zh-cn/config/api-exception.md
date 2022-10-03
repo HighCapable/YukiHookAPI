@@ -1191,6 +1191,35 @@ Key-Value type **TYPE** is not allowed
 
 ::: danger IllegalStateException 
 
+loadApp/loadZygote/loadSystem/withProcess method need a "**NAME**" param
+
+:::
+
+**异常原因**
+
+在 `loadApp`、`loadZygote`、`loadSystem`、`withProcess` 中缺少了需要填写的可变数组变量参数。
+
+> 示例如下
+
+```kotlin
+// <情景 1>
+loadApp()
+// <情景 2> 
+loadZygote()
+// <情景 3>
+loadSystem()
+// <情景 4>
+withProcess()
+```
+
+**解决方案**
+
+请查看 `PackageParam` 中的用法正确地使用此功能。
+
+###### exception
+
+::: danger IllegalStateException 
+
 YukiHookDataChannel cannot used in zygote
 
 :::
