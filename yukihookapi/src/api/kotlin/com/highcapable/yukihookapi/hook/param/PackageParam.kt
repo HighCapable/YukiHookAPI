@@ -233,11 +233,39 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
      *
      * 若要 Hook 系统框架 - 请使用 [loadSystem]
+     * @param name 包名数组 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
+     * @param initiate 方法体
+     */
+    inline fun loadApp(vararg name: String, initiate: PackageParam.() -> Unit) {
+        if (name.isEmpty()) return loadApp(initiate = initiate)
+        if (wrapper?.type != HookEntryType.ZYGOTE && name.any { it == packageName }) initiate(this)
+    }
+
+    /**
+     * 装载并 Hook 指定、全部包名的 APP
+     *
+     * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadSystem]
      * @param name 包名 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
      * @param hooker Hook 子类
      */
     fun loadApp(name: String = "", hooker: YukiBaseHooker) {
         if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) loadHooker(hooker)
+    }
+
+    /**
+     * 装载并 Hook 指定、全部包名的 APP
+     *
+     * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadSystem]
+     * @param name 包名 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
+     * @param hooker Hook 子类数组
+     */
+    fun loadApp(name: String = "", vararg hooker: YukiBaseHooker) {
+        if (hooker.isEmpty()) error("loadApp method need a \"hooker\" param")
+        if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) hooker.forEach { loadHooker(it) }
     }
 
     /**
@@ -251,6 +279,15 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param hooker Hook 子类
      */
     fun loadSystem(hooker: YukiBaseHooker) = loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, hooker)
+
+    /**
+     * 装载并 Hook 系统框架
+     * @param hooker Hook 子类数组
+     */
+    fun loadSystem(vararg hooker: YukiBaseHooker) {
+        if (hooker.isEmpty()) error("loadSystem method need a \"hooker\" param")
+        loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, *hooker)
+    }
 
     /**
      * 装载 APP Zygote 事件
@@ -269,6 +306,15 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     }
 
     /**
+     * 装载 APP Zygote 事件
+     * @param hooker Hook 子类数组
+     */
+    fun loadZygote(vararg hooker: YukiBaseHooker) {
+        if (hooker.isEmpty()) error("loadZygote method need a \"hooker\" param")
+        if (wrapper?.type == HookEntryType.ZYGOTE) hooker.forEach { loadHooker(it) }
+    }
+
+    /**
      * 装载并 Hook APP 的指定进程
      * @param name 进程名 - 若要指定主进程可填写 [mainProcessName] - 效果与 [isFirstApplication] 一致
      * @param initiate 方法体
@@ -279,11 +325,31 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
 
     /**
      * 装载并 Hook APP 的指定进程
+     * @param name 进程名数组 - 若要指定主进程可填写 [mainProcessName] - 效果与 [isFirstApplication] 一致
+     * @param initiate 方法体
+     */
+    inline fun withProcess(vararg name: String, initiate: PackageParam.() -> Unit) {
+        if (name.isEmpty()) error("withProcess method need a \"name\" param")
+        if (name.any { it == processName }) initiate(this)
+    }
+
+    /**
+     * 装载并 Hook APP 的指定进程
      * @param name 进程名 - 若要指定主进程可填写 [mainProcessName] - 效果与 [isFirstApplication] 一致
      * @param hooker Hook 子类
      */
     fun withProcess(name: String, hooker: YukiBaseHooker) {
         if (processName == name) loadHooker(hooker)
+    }
+
+    /**
+     * 装载并 Hook APP 的指定进程
+     * @param name 进程名 - 若要指定主进程可填写 [mainProcessName] - 效果与 [isFirstApplication] 一致
+     * @param hooker Hook 子类数组
+     */
+    fun withProcess(name: String, vararg hooker: YukiBaseHooker) {
+        if (name.isEmpty()) error("withProcess method need a \"hooker\" param")
+        if (processName == name) hooker.forEach { loadHooker(it) }
     }
 
     /**

@@ -356,6 +356,14 @@ inline fun loadApp(name: String, initiate: PackageParam.() -> Unit)
 fun loadApp(name: String, hooker: YukiBaseHooker)
 ```
 
+```kotlin:no-line-numbers
+inline fun loadApp(vararg name: String, initiate: PackageParam.() -> Unit)
+```
+
+```kotlin:no-line-numbers
+fun loadApp(name: String, vararg hooker: YukiBaseHooker)
+```
+
 **Change Records**
 
 `v1.0` `first`
@@ -363,6 +371,10 @@ fun loadApp(name: String, hooker: YukiBaseHooker)
 `v1.0.80` `modified`
 
 将方法体进行 inline
+
+`v1.1.4` `modified`
+
+新增两个方法，可以同时装载多个 APP 与子 Hooker
 
 **Function Illustrate**
 
@@ -404,6 +416,26 @@ loadApp {
 loadApp(hooker = CustomHooker)
 ```
 
+若想要同时装载多个需要 Hook 的 APP，可以直接使用如下方式。
+
+> The following example
+
+```kotlin
+// 同时装载多个需要 Hook 的 APP
+loadApp("com.example.test", "com.example.next") {
+    // Your code here.
+}
+```
+
+若想要同时装载多个子 Hooker，可以直接使用如下方式，但此时只能指定一个需要 Hook 的 APP。
+
+> The following example
+
+```kotlin
+// 同时装载多个子 Hooker
+loadApp("com.example.test", CustomHooker1, CustomHooker2)
+```
+
 ## loadZygote <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
@@ -414,9 +446,17 @@ inline fun loadZygote(initiate: PackageParam.() -> Unit)
 fun loadZygote(hooker: YukiBaseHooker)
 ```
 
+```kotlin:no-line-numbers
+fun loadZygote(vararg hooker: YukiBaseHooker)
+```
+
 **Change Records**
 
 `v1.0.80` `added`
+
+`v1.1.4` `modified`
+
+新增一个方法，可以同时装载多个子 Hooker
 
 **Function Illustrate**
 
@@ -434,9 +474,17 @@ inline fun loadSystem(initiate: PackageParam.() -> Unit)
 fun loadSystem(hooker: YukiBaseHooker)
 ```
 
+```kotlin:no-line-numbers
+fun loadSystem(vararg hooker: YukiBaseHooker)
+```
+
 **Change Records**
 
 `v1.0.82` `added`
+
+`v1.1.4` `modified`
+
+新增一个方法，可以同时装载多个子 Hooker
 
 **Function Illustrate**
 
@@ -454,9 +502,21 @@ inline fun withProcess(name: String, initiate: PackageParam.() -> Unit)
 fun withProcess(name: String, hooker: YukiBaseHooker)
 ```
 
+```kotlin:no-line-numbers
+fun withProcess(vararg name: String, hooker: YukiBaseHooker)
+```
+
+```kotlin:no-line-numbers
+fun withProcess(name: String, vararg hooker: YukiBaseHooker)
+```
+
 **Change Records**
 
 `v1.0.70` `added`
+
+`v1.1.4` `modified`
+
+新增两个方法，可以同时装载多个进程与子 Hooker
 
 **Function Illustrate**
 
