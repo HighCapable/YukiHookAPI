@@ -25,8 +25,6 @@
  *
  * This file is Created by fankes on 2022/7/28.
  */
-@file:Suppress("NewApi")
-
 package com.highcapable.yukihookapi.hook.xposed.bridge.factory
 
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
@@ -87,13 +85,12 @@ internal object YukiHookHelper {
      * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
      */
     internal fun hook(traction: BaseFinder.BaseResult, callback: YukiHookCallback) = runCatching {
-        hookMember(
-            when (traction) {
-                is MethodFinder.Result -> traction.ignored().give()
-                is ConstructorFinder.Result -> traction.ignored().give()
-                else -> error("Unexpected BaseFinder result interface type")
-            }, callback
-        )
+        val member: Member? = when (traction) {
+            is MethodFinder.Result -> traction.ignored().give()
+            is ConstructorFinder.Result -> traction.ignored().give()
+            else -> error("Unexpected BaseFinder result interface type")
+        }
+        hookMember(member, callback)
     }.onFailure { yLoggerE(msg = "Hooking Process exception occurred", e = it) }.getOrNull() ?: Pair(null, false)
 
     /**
