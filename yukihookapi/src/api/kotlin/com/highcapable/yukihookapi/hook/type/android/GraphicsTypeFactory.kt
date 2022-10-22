@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.type.android
 
 import android.graphics.*
 import android.graphics.drawable.*
+import android.os.Build
 import android.text.*
 import android.util.Size
 import android.util.SizeF
@@ -52,9 +53,9 @@ val BitmapClass get() = classOf<Bitmap>()
  * 获得 [Icon] 类型
  *
  * - ❗在 Android M (23) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val IconClass get() = classOf<Icon>()
+val IconClass get() = if (Build.VERSION.SDK_INT >= 23) classOf<Icon>() else null
 
 /**
  * 获得 [Outline] 类型

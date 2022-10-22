@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.type.java
 
+import android.os.Build
 import com.highcapable.yukihookapi.hook.factory.classOf
 import dalvik.system.BaseDexClassLoader
 import dalvik.system.DexClassLoader
@@ -348,9 +349,9 @@ val ThreadClass get() = classOf<Thread>()
  * 获得 [Base64] 类型
  *
  * - ❗在 Android O (26) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val Base64Class_Java get() = classOf<Base64>()
+val Base64Class_Java get() = if (Build.VERSION.SDK_INT >= 26) classOf<Base64>() else null
 
 /**
  * 获得 [Observer] 类型

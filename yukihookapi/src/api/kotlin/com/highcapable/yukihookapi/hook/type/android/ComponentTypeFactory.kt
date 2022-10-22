@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "KDocUnresolvedReference", "DEPRECATION", "NewApi")
+@file:Suppress("unused", "KDocUnresolvedReference", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.type.android
 
@@ -56,6 +56,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.toClass
+import com.highcapable.yukihookapi.hook.factory.toClassOrNull
 import org.w3c.dom.UserDataHandler
 import java.awt.Component
 
@@ -139,15 +140,19 @@ val ActivityManagerNativeClass get() = "android.app.ActivityManagerNative".toCla
 
 /**
  * 获得 [IActivityTaskManager] 类型
- * @return [Class]
+ *
+ * - ❗在 Android O (26) 及以上系统加入
+ * @return [Class] or null
  */
-val IActivityTaskManagerClass get() = "android.app.IActivityTaskManager".toClass()
+val IActivityTaskManagerClass get() = "android.app.IActivityTaskManager".toClassOrNull()
 
 /**
  * 获得 [ActivityTaskManager] 类型
- * @return [Class]
+ *
+ * - ❗在 Android O (26) 及以上系统加入
+ * @return [Class] or null
  */
-val ActivityTaskManagerClass get() = "android.app.ActivityTaskManager".toClass()
+val ActivityTaskManagerClass get() = "android.app.ActivityTaskManager".toClassOrNull()
 
 /**
  * 获得 [IPackageManager] 类型
@@ -349,11 +354,11 @@ val ArrayMapClass get() = classOf<ArrayMap<*, *>>()
 
 /**
  * 获得 [ArraySet] 类型
- * @return [Class]
  *
  * - ❗在 Android M (23) 及以上系统加入
+ * @return [Class] or null
  */
-val ArraySetClass get() = classOf<ArraySet<*>>()
+val ArraySetClass get() = if (Build.VERSION.SDK_INT >= 23) classOf<ArraySet<*>>() else null
 
 /**
  * 获得 [Handler] 类型
@@ -395,9 +400,9 @@ val AsyncTaskClass get() = classOf<AsyncTask<*, *, *>>()
  * 获得 [SimpleDateFormat] 类型
  *
  * - ❗在 Android N (24) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val SimpleDateFormatClass_Android get() = classOf<SimpleDateFormat>()
+val SimpleDateFormatClass_Android get() = if (Build.VERSION.SDK_INT >= 24) classOf<SimpleDateFormat>() else null
 
 /**
  * 获得 [Base64] 类型
@@ -421,9 +426,9 @@ val WindowClass get() = classOf<Window>()
  * 获得 [WindowMetrics] 类型
  *
  * - ❗在 Android R (30) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val WindowMetricsClass get() = classOf<WindowMetrics>()
+val WindowMetricsClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<WindowMetrics>() else null
 
 /**
  * 获得 [WindowInsets] 类型
@@ -435,9 +440,9 @@ val WindowInsetsClass get() = classOf<WindowInsets>()
  * 获得 [WindowInsets.Type] 类型
  *
  * - ❗在 Android R (30) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val WindowInsets_TypeClass get() = classOf<WindowInsets.Type>()
+val WindowInsets_TypeClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<WindowInsets.Type>() else null
 
 /**
  * 获得 [WindowManager] 类型
@@ -665,17 +670,17 @@ val VibratorClass get() = classOf<Vibrator>()
  * 获得 [VibrationEffect] 类型
  *
  * - ❗在 Android O (26) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val VibrationEffectClass get() = classOf<VibrationEffect>()
+val VibrationEffectClass get() = if (Build.VERSION.SDK_INT >= 26) classOf<VibrationEffect>() else null
 
 /**
  * 获得 [VibrationAttributes] 类型
  *
  * - ❗在 Android R (30) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val VibrationAttributesClass get() = classOf<VibrationAttributes>()
+val VibrationAttributesClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<VibrationAttributes>() else null
 
 /**
  * 获得 [SystemClock] 类型
@@ -711,25 +716,25 @@ val UserDataHandlerClass get() = classOf<UserDataHandler>()
  * 获得 [ShortcutInfo] 类型
  *
  * - ❗在 Android N_MR1 (25) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val ShortcutInfoClass get() = classOf<ShortcutInfo>()
+val ShortcutInfoClass get() = if (Build.VERSION.SDK_INT >= 25) classOf<ShortcutInfo>() else null
 
 /**
  * 获得 [ShortcutManager] 类型
  *
  * - ❗在 Android R (30) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val ShortcutManagerClass get() = classOf<ShortcutManager>()
+val ShortcutManagerClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<ShortcutManager>() else null
 
 /**
  * 获得 [ShortcutQuery] 类型
  *
  * - ❗在 Android N_MR1 (25) 及以上系统加入
- * @return [Class]
+ * @return [Class] or null
  */
-val ShortcutQueryClass get() = classOf<ShortcutQuery>()
+val ShortcutQueryClass get() = if (Build.VERSION.SDK_INT >= 25) classOf<ShortcutQuery>() else null
 
 /**
  * 获得 [KeyboardShortcutInfo] 类型
