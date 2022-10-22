@@ -334,7 +334,7 @@ internal object AppParasitics {
             }.getOrNull()?.also { default ->
                 SingletonClass.field { name = "mInstance" }.ignored().result {
                     get(default).apply { any()?.also { set(IActivityManagerProxy.wrapper(IActivityManagerClass, it)) } }
-                    ActivityTaskManagerClass.field { name = "IActivityTaskManagerSingleton" }.ignored().get().any().also { singleton ->
+                    ActivityTaskManagerClass?.field { name = "IActivityTaskManagerSingleton" }?.ignored()?.get()?.any()?.also { singleton ->
                         SingletonClass.method { name = "get" }.ignored().get(singleton).call()
                         get(singleton).apply { any()?.also { set(IActivityManagerProxy.wrapper(IActivityTaskManagerClass, it)) } }
                     }

@@ -52,7 +52,7 @@ internal class IActivityManagerProxy private constructor(private val baseInstanc
          * @param instance 代理的目标实例
          * @return [Any] 代理包装后的实例
          */
-        internal fun wrapper(clazz: Class<*>, instance: Any) =
+        internal fun wrapper(clazz: Class<*>?, instance: Any) =
             Proxy.newProxyInstance(AppParasitics.baseClassLoader, arrayOf(clazz), IActivityManagerProxy(instance))
     }
 
