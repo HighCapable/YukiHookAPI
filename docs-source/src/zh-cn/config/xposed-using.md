@@ -199,7 +199,7 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXpos
 }
 ```
 
-若你当前的项目并不需要用到 Reources Hook，可以设置 `isUsingResourcesHook = false` 来关闭自动生成。
+若你当前的项目并不需要用到 Resources Hook，可以设置 `isUsingResourcesHook = false` 来关闭自动生成。
 
 >  示例如下
 

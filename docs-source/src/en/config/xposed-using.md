@@ -205,7 +205,7 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXpos
 }
 ```
 
-If your current project does not need to use Reources Hook, you can set `isUsingResourcesHook = false` to disable automatic generation.
+If your current project does not need to use Resources Hook, you can set `isUsingResourcesHook = false` to disable automatic generation.
 
 > The following example
 
