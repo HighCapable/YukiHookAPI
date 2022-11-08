@@ -4,7 +4,7 @@
 ![Blank](https://img.shields.io/badge/version-v1.1.4-green)
 [![Telegram](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
 <br/><br/>
-<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png" width = "100" height = "100"/>
+<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100"/>
 <br/>
 <br/>
 ⛱️ An efficient Kotlin version of the Xposed Hook API.
