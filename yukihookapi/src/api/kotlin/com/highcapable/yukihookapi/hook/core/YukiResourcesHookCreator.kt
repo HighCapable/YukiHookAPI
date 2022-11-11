@@ -253,17 +253,17 @@ class YukiResourcesHookCreator(@PublishedApi internal val packageParam: PackageP
                 type = "animator"
             }
 
-            /** 设置 Resources 类型为布朗(Boolean) */
+            /** 设置 Resources 类型为布朗 (Boolean) */
             fun bool() {
                 type = "bool"
             }
 
-            /** 设置 Resources 类型为颜色(Color) */
+            /** 设置 Resources 类型为颜色 (Color) */
             fun color() {
                 type = "color"
             }
 
-            /** 设置 Resources 类型为尺寸(Dimention) */
+            /** 设置 Resources 类型为尺寸 (Dimention) */
             fun dimen() {
                 type = "dimen"
             }
@@ -273,12 +273,12 @@ class YukiResourcesHookCreator(@PublishedApi internal val packageParam: PackageP
                 type = "drawable"
             }
 
-            /** 设置 Resources 类型为整型(Integer) */
+            /** 设置 Resources 类型为整型 (Integer) */
             fun integer() {
                 type = "integer"
             }
 
-            /** 设置 Resources 类型为布局(Layout) */
+            /** 设置 Resources 类型为布局 (Layout) */
             fun layout() {
                 type = "layout"
             }
@@ -288,7 +288,7 @@ class YukiResourcesHookCreator(@PublishedApi internal val packageParam: PackageP
                 type = "plurals"
             }
 
-            /** 设置 Resources 类型为字符串(String) */
+            /** 设置 Resources 类型为字符串 (String) */
             fun string() {
                 type = "string"
             }
@@ -298,12 +298,12 @@ class YukiResourcesHookCreator(@PublishedApi internal val packageParam: PackageP
                 type = "xml"
             }
 
-            /** 设置 Resources 类型为位图(Mipmap) */
+            /** 设置 Resources 类型为位图 (Mipmap) */
             fun mipmap() {
                 type = "mipmap"
             }
 
-            /** 设置 Resources 类型为数组(Array) */
+            /** 设置 Resources 类型为数组 (Array) */
             fun array() {
                 type = "array"
             }
