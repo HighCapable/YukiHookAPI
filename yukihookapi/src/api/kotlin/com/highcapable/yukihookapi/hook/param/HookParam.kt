@@ -214,7 +214,7 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
      * @return [T] or null
      */
     @JvmName(name = "invokeOriginal_Generics")
-    fun <T> invokeOriginal(vararg args: Any?) = YukiHookHelper.invokeOriginalMember(member, instance, *args) as T?
+    fun <T> invokeOriginal(vararg args: Any?) = YukiHookHelper.invokeOriginalMember(member, param?.instance, *args) as T?
 
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 true
