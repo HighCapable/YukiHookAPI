@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate", "KotlinConstantConditions")
 
 package com.highcapable.yukihookapi.hook.core.finder.members
 
@@ -56,10 +56,8 @@ import java.lang.reflect.Field
  * @param classSet 当前需要查找的 [Class] 实例
  */
 class FieldFinder @PublishedApi internal constructor(
-    @PublishedApi
-    override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
-    @PublishedApi
-    override val classSet: Class<*>? = null
+    @PublishedApi override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
+    @PublishedApi override val classSet: Class<*>? = null
 ) : MemberBaseFinder(tag = "Field", hookInstance, classSet) {
 
     @PublishedApi

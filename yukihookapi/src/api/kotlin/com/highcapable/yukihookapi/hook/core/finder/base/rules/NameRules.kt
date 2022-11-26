@@ -89,7 +89,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
-    fun String.isOnlyNumbers() = matches("[0-9]+".toRegex())
+    fun String.isOnlyNumbers() = matches("\\d+".toRegex())
 
     /**
      * 是否只有字母或数字
@@ -99,7 +99,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
-    fun String.isOnlyLettersNumbers() = matches("[a-zA-Z0-9]+".toRegex())
+    fun String.isOnlyLettersNumbers() = matches("[a-zA-Z\\d]+".toRegex())
 
     /**
      * 是否只有小写字母

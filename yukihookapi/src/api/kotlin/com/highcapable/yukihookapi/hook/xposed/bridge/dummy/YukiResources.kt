@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/4/29.
  */
-@file:Suppress("DEPRECATION", "unused")
+@file:Suppress("unused", "DEPRECATION", "DiscouragedApi")
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.dummy
 

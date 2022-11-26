@@ -48,10 +48,8 @@ import java.lang.reflect.Method
  */
 abstract class MemberBaseFinder internal constructor(
     private val tag: String,
-    @PublishedApi
-    internal open val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
-    @PublishedApi
-    internal open val classSet: Class<*>? = null
+    @PublishedApi internal open val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
+    @PublishedApi internal open val classSet: Class<*>? = null
 ) : BaseFinder() {
 
     internal companion object {

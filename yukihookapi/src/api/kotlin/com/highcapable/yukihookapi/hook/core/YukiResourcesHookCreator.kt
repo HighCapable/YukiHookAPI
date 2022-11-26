@@ -46,7 +46,10 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookResources 要 Hook 的 [HookResources] 实例
  */
-class YukiResourcesHookCreator(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookResources: HookResources) {
+class YukiResourcesHookCreator @PublishedApi internal constructor(
+    @PublishedApi internal val packageParam: PackageParam,
+    @PublishedApi internal val hookResources: HookResources
+) {
 
     /** 设置要 Hook 的 Resources */
     @PublishedApi

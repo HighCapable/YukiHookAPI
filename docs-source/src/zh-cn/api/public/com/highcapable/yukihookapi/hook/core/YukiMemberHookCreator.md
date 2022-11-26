@@ -5,7 +5,7 @@ pageClass: code-page
 # YukiMemberHookCreator <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class YukiMemberHookCreator(internal val packageParam: PackageParam, internal val hookClass: HookClass)
+class YukiMemberHookCreator internal constructor(internal val packageParam: PackageParam, internal val hookClass: HookClass)
 ```
 
 **变更记录**
@@ -19,6 +19,10 @@ class YukiMemberHookCreator(internal val packageParam: PackageParam, internal va
 `v1.1.0` `修改`
 
 修正拼写错误的 **Creater** 命名到 **Creator**
+
+`v1.1.5` `修改`
+
+私有化构造方法
 
 **功能描述**
 

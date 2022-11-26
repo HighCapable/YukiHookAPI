@@ -65,7 +65,10 @@ import java.lang.reflect.Method
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
-class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackageParam, @PublishedApi internal val hookClass: HookClass) {
+class YukiMemberHookCreator @PublishedApi internal constructor(
+    @PublishedApi internal val packageParam: PackageParam,
+    @PublishedApi internal val hookClass: HookClass
+) {
 
     /** 默认 Hook 回调优先级 */
     val PRIORITY_DEFAULT = YukiHookPriority.PRIORITY_DEFAULT

@@ -5,7 +5,7 @@ pageClass: code-page
 # YukiResourcesHookCreator <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class YukiResourcesHookCreator(internal val packageParam: PackageParam, internal val hookResources: HookResources)
+class YukiResourcesHookCreator internal constructor(internal val packageParam: PackageParam, internal val hookResources: HookResources)
 ```
 
 **变更记录**
@@ -15,6 +15,10 @@ class YukiResourcesHookCreator(internal val packageParam: PackageParam, internal
 `v1.1.0` `修改`
 
 修正拼写错误的 **Creater** 命名到 **Creator**
+
+`v1.1.5` `修改`
+
+私有化构造方法
 
 **功能描述**
 
