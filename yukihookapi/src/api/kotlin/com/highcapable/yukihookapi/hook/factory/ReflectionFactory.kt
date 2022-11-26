@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.factory
 
@@ -135,10 +135,10 @@ fun String.toClassOrNull(loader: ClassLoader? = null) = runCatching { toClass(lo
 /**
  * 通过 [T] 得到其 [Class] 实例并转换为实体类
  * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
- * @return [Class]
+ * @return [Class]<[T]>
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
-inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { T::class.java.name.toClass(loader) } ?: T::class.java
+inline fun <reified T> classOf(loader: ClassLoader? = null) = loader?.let { T::class.java.name.toClass(loader) as Class<T> } ?: T::class.java
 
 /**
  * 通过字符串类名使用指定的 [ClassLoader] 查找是否存在

@@ -295,12 +295,16 @@ fun String.toClassOrNull(loader: ClassLoader?): Class<*>?
 ## classOf <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun <reified T> classOf(loader: ClassLoader?): Class<*>
+inline fun <reified T> classOf(loader: ClassLoader?): Class<T>
 ```
 
 **变更记录**
 
 `v1.1.0` `新增`
+
+`v1.1.5` `修改`
+
+将返回类型由 `Class<*>` cast 为 `Class<T>`
 
 **功能描述**
 
