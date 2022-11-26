@@ -25,12 +25,13 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "KDocUnresolvedReference", "DEPRECATION", "FunctionName", "NewApi")
+@file:Suppress("unused", "KDocUnresolvedReference", "DEPRECATION", "FunctionName", "NewApi", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.type.java
 
 import android.os.Build
 import com.highcapable.yukihookapi.hook.factory.classOf
+import com.highcapable.yukihookapi.hook.factory.toClass
 import dalvik.system.BaseDexClassLoader
 import dalvik.system.DexClassLoader
 import dalvik.system.InMemoryDexClassLoader
@@ -55,87 +56,217 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
+import java.lang.reflect.Array as JavaArray
 
 /**
- * 任意类型的数组
+ * 获得任意类型的数组
  *
- * Java 中表示：array[]
+ * 它在 Java 中表示为：([type])[]
  * @param type 类型
- * @return [Class]
+ * @return [Class]<[JavaArray]>
  */
-fun ArrayClass(type: Class<*>) = java.lang.reflect.Array.newInstance(type, 0).javaClass
+fun ArrayClass(type: Class<*>) = JavaArray.newInstance(type, 0).javaClass as Class<JavaArray>
 
 /**
  * 获得 [Any] 类型
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [AnyClass]
  * @return [Class]
  */
-val AnyType get() = classOf<Any>()
-
-/**
- * 获得 [Unit] 类型
- * @return [Class]
- */
-val UnitType get() = Void.TYPE ?: classOf<Unit>()
+@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "AnyClass"))
+val AnyType get() = AnyClass
 
 /**
  * 获得 [Boolean] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "boolean"
  * @return [Class]
  */
-val BooleanType get() = Boolean::class.javaPrimitiveType ?: UnitType
-
-/**
- * 获得 [Int] 类型
- * @return [Class]
- */
-val IntType get() = Int::class.javaPrimitiveType ?: UnitType
-
-/**
- * 获得 [Long] 类型
- * @return [Class]
- */
-val LongType get() = Long::class.javaPrimitiveType ?: UnitType
-
-/**
- * 获得 [Short] 类型
- * @return [Class]
- */
-val ShortType get() = Short::class.javaPrimitiveType ?: UnitType
-
-/**
- * 获得 [Float] 类型
- * @return [Class]
- */
-val FloatType get() = Float::class.javaPrimitiveType ?: UnitType
-
-/**
- * 获得 [Double] 类型
- * @return [Class]
- */
-val DoubleType get() = Double::class.javaPrimitiveType ?: UnitType
-
-/**
- * 获得 [String] 类型
- * @return [Class]
- */
-val StringType get() = classOf<String>()
+val BooleanType get() = "boolean".toClass()
 
 /**
  * 获得 [Char] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "char"
  * @return [Class]
  */
-val CharType get() = classOf<Char>()
+val CharType get() = "char".toClass()
 
 /**
  * 获得 [Byte] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "byte"
  * @return [Class]
  */
-val ByteType get() = classOf<Byte>()
+val ByteType get() = "byte".toClass()
+
+/**
+ * 获得 [Short] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "short"
+ * @return [Class]
+ */
+val ShortType get() = "short".toClass()
+
+/**
+ * 获得 [Int] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "int"
+ * @return [Class]
+ */
+val IntType get() = "int".toClass()
+
+/**
+ * 获得 [Float] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "float"
+ * @return [Class]
+ */
+val FloatType get() = "float".toClass()
+
+/**
+ * 获得 [Long] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "long"
+ * @return [Class]
+ */
+val LongType get() = "long".toClass()
+
+/**
+ * 获得 [Double] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "double"
+ * @return [Class]
+ */
+val DoubleType get() = "double".toClass()
+
+/**
+ * 获得 [Unit] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "void"
+ * @return [Class]
+ */
+val UnitType get() = "void".toClass()
+
+/**
+ * 获得 [Any] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Object]
+ * @return [Class]
+ */
+val AnyClass get() = classOf<Any>()
+
+/**
+ * 获得 [Boolean] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Boolean]
+ * @return [Class]
+ */
+val BooleanClass get() = classOf<Boolean>()
+
+/**
+ * 获得 [Char] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Character]
+ * @return [Class]
+ */
+val CharClass get() = classOf<Char>()
+
+/**
+ * 获得 [Byte] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Byte]
+ * @return [Class]
+ */
+val ByteClass get() = classOf<Byte>()
+
+/**
+ * 获得 [Short] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Short]
+ * @return [Class]
+ */
+val ShortClass get() = classOf<Short>()
+
+/**
+ * 获得 [Int] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Integer]
+ * @return [Class]
+ */
+val IntClass get() = classOf<Int>()
+
+/**
+ * 获得 [Float] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Float]
+ * @return [Class]
+ */
+val FloatClass get() = classOf<Float>()
+
+/**
+ * 获得 [Long] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Long]
+ * @return [Class]
+ */
+val LongClass get() = classOf<Long>()
+
+/**
+ * 获得 [Double] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Double]
+ * @return [Class]
+ */
+val DoubleClass get() = classOf<Double>()
+
+/**
+ * 获得 [Unit] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Void]
+ * @return [Class]
+ */
+val UnitClass get() = classOf<Void>()
+
+/**
+ * 获得 [String] 类型
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [StringClass]
+ * @return [Class]
+ */
+@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "StringClass"))
+val StringType get() = StringClass
 
 /**
  * 获得 [CharSequence] 类型
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [CharSequenceClass]
  * @return [Class]
  */
-val CharSequenceType get() = classOf<CharSequence>()
+@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "CharSequenceClass"))
+val CharSequenceType get() = CharSequenceClass
+
+/**
+ * 获得 [String] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.String]
+ * @return [Class]
+ */
+val StringClass get() = classOf<String>()
+
+/**
+ * 获得 [CharSequence] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.CharSequence]
+ * @return [Class]
+ */
+val CharSequenceClass get() = classOf<CharSequence>()
 
 /**
  * 获得 [Serializable] 类型
@@ -145,73 +276,163 @@ val SerializableClass get() = classOf<Serializable>()
 
 /**
  * 获得 [Array] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.reflect.Array]
  * @return [Class]
  */
-val ArrayClass get() = classOf<Array<*>>()
+val ArrayClass get() = classOf<JavaArray>()
 
 /**
- * 获得 [Any] - [Array] 类型
+ * 获得 [Boolean] - [Array] 类型
  *
- * Java 中表示：Object[]
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "boolean[]"
  * @return [Class]
  */
-val AnyArrayClass get() = ArrayClass(AnyType)
+val BooleanArrayType get() = ArrayClass(BooleanType)
+
+/**
+ * 获得 [Char] - [Array] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "char[]"
+ * @return [Class]
+ */
+val CharArrayType get() = ArrayClass(CharType)
 
 /**
  * 获得 [Byte] - [Array] 类型
  *
- * Java 中表示：byte[]
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "byte[]"
  * @return [Class]
  */
-val ByteArrayClass get() = ArrayClass(ByteType)
-
-/**
- * 获得 [Int] - [Array] 类型
- *
- * Java 中表示：int[]
- * @return [Class]
- */
-val IntArrayClass get() = ArrayClass(IntType)
-
-/**
- * 获得 [String] - [Array] 类型
- *
- * Java 中表示：String[]
- * @return [Class]
- */
-val StringArrayClass get() = ArrayClass(StringType)
-
-/**
- * 获得 [Long] - [Array] 类型
- *
- * Java 中表示：long[]
- * @return [Class]
- */
-val LongArrayClass get() = ArrayClass(LongType)
+val ByteArrayType get() = ArrayClass(ByteType)
 
 /**
  * 获得 [Short] - [Array] 类型
  *
- * Java 中表示：short[]
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "short[]"
  * @return [Class]
  */
-val ShortArrayClass get() = ArrayClass(ShortType)
+val ShortArraytType get() = ArrayClass(ShortType)
+
+/**
+ * 获得 [Int] - [Array] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "int[]"
+ * @return [Class]
+ */
+val IntArrayType get() = ArrayClass(IntType)
 
 /**
  * 获得 [Float] - [Array] 类型
  *
- * Java 中表示：float[]
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "float[]"
  * @return [Class]
  */
-val FloatArrayClass get() = ArrayClass(FloatType)
+val FloatArrayType get() = ArrayClass(FloatType)
+
+/**
+ * 获得 [Long] - [Array] 类型
+ *
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "long[]"
+ * @return [Class]
+ */
+val LongArrayType get() = ArrayClass(LongType)
 
 /**
  * 获得 [Double] - [Array] 类型
  *
- * Java 中表示：double[]
+ * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "double[]"
  * @return [Class]
  */
-val DoubleArrayClass get() = ArrayClass(DoubleType)
+val DoubleArrayType get() = ArrayClass(DoubleType)
+
+/**
+ * 获得 [Any] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Object[]
+ * @return [Class]
+ */
+val AnyArrayClass get() = ArrayClass(AnyClass)
+
+/**
+ * 获得 [Boolean] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Boolean[]
+ * @return [Class]
+ */
+val BooleanArrayClass get() = ArrayClass(BooleanClass)
+
+/**
+ * 获得 [Char] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Character[]
+ * @return [Class]
+ */
+val CharArrayClass get() = ArrayClass(CharClass)
+
+/**
+ * 获得 [Byte] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Byte[]
+ * @return [Class]
+ */
+val ByteArrayClass get() = ArrayClass(ByteClass)
+
+/**
+ * 获得 [Short] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Short[]
+ * @return [Class]
+ */
+val ShortArrayClass get() = ArrayClass(ShortClass)
+
+/**
+ * 获得 [Int] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Integer[]
+ * @return [Class]
+ */
+val IntArrayClass get() = ArrayClass(IntClass)
+
+/**
+ * 获得 [Float] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Float[]
+ * @return [Class]
+ */
+val FloatArrayClass get() = ArrayClass(FloatClass)
+
+/**
+ * 获得 [Long] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Long[]
+ * @return [Class]
+ */
+val LongArrayClass get() = ArrayClass(LongClass)
+
+/**
+ * 获得 [Double] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Double[]
+ * @return [Class]
+ */
+val DoubleArrayClass get() = ArrayClass(DoubleClass)
+
+/**
+ * 获得 [String] - [Array] 类型
+ *
+ * 它在 Java 中表示为：String[]
+ * @return [Class]
+ */
+val StringArrayClass get() = ArrayClass(StringClass)
+
+/**
+ * 获得 [CharSequence] - [Array] 类型
+ *
+ * 它在 Java 中表示为：CharSequence[]
+ * @return [Class]
+ */
+val CharSequenceArrayClass get() = ArrayClass(CharSequenceClass)
 
 /**
  * 获得 [Cloneable] 类型

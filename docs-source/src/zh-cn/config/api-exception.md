@@ -586,7 +586,7 @@ Method/Constructor match paramType\[**INDEX**\] class is not found
 method {
     name = "test"
     // 假设这里设置的 1 号下标的 Class 并不存在
-    param(StringType, "com.example.TestClass", BooleanType)
+    param(StringClass, "com.example.TestClass", BooleanType)
 }
 ```
 
@@ -832,7 +832,7 @@ PackageParam::class.java.hook {
 // <情景3>
 MethodFinder::class.java.method {
     name = "name"
-    param(StringType)
+    param(StringClass)
 }.get().call("name")
 // ...
 ```

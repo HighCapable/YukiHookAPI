@@ -198,9 +198,9 @@ searchClass {
     // 指定实现的接口，可以直接写为完整类名，你还可以同时指定多个
     implements("java.io.Serializable")
     // 指定构造方法的类型与样式，以及在当前类中存在的个数 count
-    constructor { param(StringType) }.count(num = 1)
+    constructor { param(StringClass) }.count(num = 1)
     // 指定变量的类型与样式，以及在当前类中存在的个数 count
-    field { type = StringType }.count(num = 2)
+    field { type = StringClass }.count(num = 2)
     // 指定变量的类型与样式，以及在当前类中存在的个数 count
     field { type = BooleanType }.count(num = 1)
     // 直接指定所有变量在当前类中存在的个数 count
@@ -216,14 +216,14 @@ searchClass {
     // 指定方法的类型与样式，同时指定修饰符，以及在当前类中存在的个数 count
     method {
         modifiers { isStatic && isPrivate }
-        param(StringType)
+        param(StringClass)
         returnType = UnitType
     }.count(num = 1)
     // 指定方法的类型与样式，同时指定修饰符，以及在当前类中存在的个数 count
     method {
         modifiers { isPrivate && isStatic.not() }
-        param(BooleanType, StringType)
-        returnType = StringType
+        param(BooleanType, StringClass)
+        returnType = StringClass
     }.count(num = 1)
     // 指定方法的类型与样式，同时指定修饰符，以及在当前类中存在的个数 count
     method {
@@ -234,7 +234,7 @@ searchClass {
     // 指定方法的类型与样式，同时指定修饰符和模糊类型 VagueType，以及在当前类中存在的个数 count
     method {
         modifiers { isPrivate && isStatic.not() }
-        param(BooleanType, VagueType, VagueType, StringType)
+        param(BooleanType, VagueType, VagueType, StringClass)
         returnType = UnitType
     }.count(num = 1)
     // 直接指定所有方法在当前类中存在的个数 count
@@ -491,7 +491,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
     name = "doTask"
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -558,7 +558,7 @@ val instance = Test()
 Test::class.java.method {
     name = "getName"
     emptyParam()
-    returnType = StringType
+    returnType = StringClass
 }.get(instance).string() // 得到方法的结果
 ```
 
@@ -610,7 +610,7 @@ val instance = Test()
 Test::class.java.method {
     name = "release"
     // 使用 VagueType 来填充不想填写的类型，同时保证其它类型能够匹配
-    param(StringType, VagueType, BooleanType)
+    param(StringClass, VagueType, BooleanType)
 }.get(instance) // 得到这个方法
 ```
 
@@ -628,7 +628,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
     name = "doBaseTask"
-    param(StringType)
+    param(StringClass)
     // 只需要添加这个条件
     superClass()
 }.get(instance).call("task_name")
@@ -648,7 +648,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
     name = "doBaseTask"
-    param(StringType)
+    param(StringClass)
     // 加入一个查找条件
     superClass(isOnlySuperClass = true)
 }.get(instance).call("task_name")
@@ -687,7 +687,7 @@ Test::class.java.method {
         // 设置名称不区分大小写
         it.equals("dotask", isIgnoreCase = true)
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -704,7 +704,7 @@ Test::class.java.method {
         // 仅包含 oTas
         it.contains("oTas")
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -721,7 +721,7 @@ Test::class.java.method {
         // 开头包含 do，结尾包含 Task
         it.startsWith("do") && it.endsWith("Task")
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -738,7 +738,7 @@ Test::class.java.method {
         // 开头包含 do，结尾包含 Task，仅包含字母
         it.startsWith("do") && it.endsWith("Task") && it.isOnlyLetters()
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -855,7 +855,7 @@ Test::class.java.method {
 ```kotlin
 Test::class.java.field {
     name = "TAG"
-    type = StringType
+    type = StringClass
 }.get().string() // Field 的类型是字符串，可直接进行 cast
 ```
 
@@ -868,7 +868,7 @@ Test::class.java.field {
 ```kotlin
 Test::class.java.field {
     name = "TAG"
-    type = StringType
+    type = StringClass
     // 标识查找的这个变量需要是静态
     modifiers { isStatic }
 }.get().string() // Field 的类型是字符串，可直接进行 cast
@@ -957,7 +957,7 @@ val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
     name = "b"
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("test_string") // 得到名称为 b 方法参数为 [String] 的方法
 ```
 
@@ -970,7 +970,7 @@ Test::class.java.method {
 val instance = Test()
 // 使用 YukiHookAPI 调用并执行
 Test::class.java.method {
-    param(StringType).index().first()
+    param(StringClass).index().first()
 }.get(instance).call("test_string") // 得到第一个方法参数为 [String] 的方法
 ```
 
@@ -1009,7 +1009,7 @@ instance.current {
     // 执行 doTask 方法
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
     // 执行 stop 方法
     method {
@@ -1033,7 +1033,7 @@ instance.current {
     // 执行父类的 doBaseTask 方法
     superClass().method {
         name = "doBaseTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 }
 ```
@@ -1050,7 +1050,7 @@ instance
     .current()
     .method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 // 执行 stop 方法
 instance
@@ -1074,7 +1074,7 @@ val instance = Test()
 instance.current {
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 }.current()
     .method {
@@ -1100,7 +1100,7 @@ instance.current {
     }.current {
         method {
             name = "doBaseTask"
-            param(StringType)
+            param(StringClass)
         }.call("task_name")
     }
     // <方案2>
@@ -1109,7 +1109,7 @@ instance.current {
     }.current()
         ?.method {
             name = "doBaseTask"
-            param(StringType)
+            param(StringClass)
         }?.call("task_name")
 }
 ```
@@ -1157,7 +1157,7 @@ Test(true).doTask("task_name")
 "com.demo.Test".toClass().buildOf(true) { param(BooleanType) }?.current {
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 }
 ```
@@ -1211,7 +1211,7 @@ Test::class.java.hook {
         method {
             name = "getString"
             emptyParam()
-            returnType = StringType
+            returnType = StringClass
         }
         replaceTo("Hooked")
     }
@@ -1227,7 +1227,7 @@ Test::class.java.hook {
 val result = Test::class.java.method {
     name = "getString"
     emptyParam()
-    returnType = StringType
+    returnType = StringClass
 }.get().string()
 ```
 
@@ -1240,7 +1240,7 @@ val result = Test::class.java.method {
 val result = Test::class.java.method {
     name = "getString"
     emptyParam()
-    returnType = StringType
+    returnType = StringClass
 }.get().original().string()
 ```
 
@@ -1305,13 +1305,13 @@ Test::class.java.method {
 }.remedys {
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.onFind {
         // 可在这里实现找到的逻辑
     }
     method {
         name = "doTask"
-        param(StringType, IntType)
+        param(StringClass, IntType)
     }.onFind {
         // 可在这里实现找到的逻辑
     }
@@ -1600,7 +1600,7 @@ method {
     name = "test"
     param(BooleanType).index(num = 2)
     // ❗错误的使用方法，请仅保留一个 index 方法
-    returnType(StringType).index(num = 1)
+    returnType(StringClass).index(num = 1)
 }
 ```
 
@@ -1761,13 +1761,13 @@ field {
 ```kotlin
 field {
     name = "test"
-    type = Boolean::class.java
+    type = Boolean::class.javaPrimitiveType
 }
 ```
 
-在 `Kotlin` 中表达出 `Boolean::class.java` 这个类型的写法很长，感觉并不方便。
+在 `Kotlin` 中表达出 `Boolean::class.javaPrimitiveType` 这个类型的写法很长，感觉并不方便。
 
-因此，`YukiHookAPI` 为开发者封装了常见的类型调用，其中包含了 Android 的基本类型和 Java 的基本类型。
+因此，`YukiHookAPI` 为开发者封装了常见的类型调用，其中包含了 Android 的相关类型和 Java 的常见类型与**原始类型关键字**。
 
 这个时候上面的类型就可以写作如下形式了。
 
@@ -1780,13 +1780,13 @@ field {
 }
 ```
 
-在 Java 中常见的基本类型都已被封装为 **类型 + Type** 的方式，例如 `IntType`、`FloatType`。
+在 Java 常见类型中的**原始类型 (或基本类型) 关键字**都已被封装为 **类型 + Type** 的方式，例如 `IntType`、`FloatType` (它们的字节码类型为 `int`、`float`)。
 
 相应地，数组类型也有方便的使用方法，假设我们要获得 `String[]` 类型的数组。
 
 需要写做 `java.lang.reflect.Array.newInstance(String::class.java, 0).javaClass` 才能得到这个类型。
 
-感觉是不是很麻烦，这个时候我们可以使用扩展方法 `ArrayClass(StringType)` 来得到这个类型。
+感觉是不是很麻烦，这个时候我们可以使用方法 `ArrayClass(StringClass)` 来得到这个类型。
 
 同时由于 `String` 是常见类型，所以还可以直接使用 `StringArrayClass` 来得到这个类型。
 
@@ -1802,6 +1802,32 @@ method {
     param(BundleClass)
 }
 ```
+
+以下是 Java 中一些特例类型在 `YukiHookAPI` 中的封装名称。
+
+- `void` → `UnitType`
+
+- `java.lang.Void` → `UnitClass`
+
+- `java.lang.Object` → `AnyClass`
+
+- `java.lang.Integer` → `IntClass`
+
+- `java.lang.Character` → `CharClass`
+
+::: warning
+
+以 **类型 + Type** 封装类型会且仅会表示为 Java **原始类型关键字**，由于 Kotlin 中不存在**原始类型**这个概念，所以它们都会被定义为 **KClass**。
+
+Java 中共有 9 个**原始类型关键字**，其中 8 个为**原始类型**，分别为 **boolean**、**char**、**byte**、**short**、**int**、**float**、**long**、**double**，其中 **void** 类型是一个特例。
+
+同时它们都有 Java 自身对应的封装类型，例如 **java.lang.Boolean**、**java.lang.Integer**，这些类型是<u>**不相等的**</u>，请注意区分。
+
+同样地，数组也有对应的封装类型，它们也需要与 Java **原始类型关键字** 进行区分。
+
+例如 **byte[]** 的封装类型为 **ByteArrayType** 或 **ArrayClass(ByteType)**，而 **Byte[]** 的封装类型为 **ByteArrayClass** 或 **ArrayClass(ByteClass)**，这些类型也是<u>**不相等的**</u>。
+
+:::
 
 ::: tip
 

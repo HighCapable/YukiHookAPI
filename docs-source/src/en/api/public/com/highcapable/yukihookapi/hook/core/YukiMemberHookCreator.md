@@ -242,7 +242,7 @@ fun members(vararg member: Member?)
 
 ```kotlin
 injectMember {
-    members(instanceClass.getDeclaredMethod("test", StringType))
+    members(instanceClass.getDeclaredMethod("test", StringClass))
     beforeHook {}
     afterHook {}
 }
@@ -255,9 +255,9 @@ injectMember {
 ```kotlin
 injectMember {
     members(
-        instanceClass.getDeclaredMethod("test1", StringType),
-        instanceClass.getDeclaredMethod("test2", StringType),
-        instanceClass.getDeclaredMethod("test3", StringType)
+        instanceClass.getDeclaredMethod("test1", StringClass),
+        instanceClass.getDeclaredMethod("test2", StringClass),
+        instanceClass.getDeclaredMethod("test3", StringClass)
     )
     beforeHook {}
     afterHook {}
@@ -332,7 +332,7 @@ inline fun method(initiate: MethodConditions): MethodFinder.Result
 injectMember {
     method {
         name = "test"
-        param(StringType)
+        param(StringClass)
         returnType = UnitType
     }
     beforeHook {}
@@ -389,7 +389,7 @@ inline fun constructor(initiate: ConstructorConditions): ConstructorFinder.Resul
 
 ```kotlin
 injectMember {
-    constructor { param(StringType) }
+    constructor { param(StringClass) }
     beforeHook {}
     afterHook {}
 }
@@ -443,7 +443,7 @@ inline fun HookParam.field(initiate: FieldConditions): FieldFinder.Result
 injectMember {
     method {
         name = "test"
-        param(StringType)
+        param(StringClass)
         returnType = UnitType
     }
     afterHook {

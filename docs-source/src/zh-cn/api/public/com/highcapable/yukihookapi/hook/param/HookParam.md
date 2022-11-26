@@ -419,8 +419,8 @@ fun <T> callOriginal(): T?
 injectMember {
     method {
         name = "test"
-        param(StringType)
-        returnType = StringType
+        param(StringClass)
+        returnType = StringClass
     }
     afterHook {
         // <方案1> 不使用泛型，不获取方法执行结果，调用将使用原方法传入的 args 自动传参
@@ -470,8 +470,8 @@ fun <T> invokeOriginal(vararg args: Any?): T?
 injectMember {
     method {
         name = "test"
-        param(StringType)
-        returnType = StringType
+        param(StringClass)
+        returnType = StringClass
     }
     afterHook {
         // <方案1> 不使用泛型，不获取方法执行结果

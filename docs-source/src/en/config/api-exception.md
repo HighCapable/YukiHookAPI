@@ -598,7 +598,7 @@ The `Class` instance subscripted by the `index` number of `param` was not found 
 method {
     name = "test"
     // Assume that the Class with subscript "No.1" set here does not exist
-    param(StringType, "com.example.TestClass", BooleanType)
+    param(StringClass, "com.example.TestClass", BooleanType)
 }
 ```
 
@@ -867,7 +867,7 @@ PackageParam::class.java.hook {
 // <Scenario 3>
 MethodFinder::class.java.method {
     name = "name"
-    param(StringType)
+    param(StringClass)
 }.get().call("name")
 // ...
 ```

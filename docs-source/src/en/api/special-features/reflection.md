@@ -222,10 +222,10 @@ searchClass {
     implements("java.io.Serializable")
     // Specify the type and style of the constructor
     // And the number count that exists in the current class
-    constructor { param(StringType) }.count(num = 1)
+    constructor { param(StringClass) }.count(num = 1)
     // Specify the type and style of the variable
     // And the number that exists in the current class count
-    field { type = StringType }.count(num = 2)
+    field { type = StringClass }.count(num = 2)
     // Specify the type and style of the variable
     // And the number that exists in the current class count
     field { type = BooleanType }.count(num = 1)
@@ -245,15 +245,15 @@ searchClass {
     // Specify the modifier, and the number count in the current class
     method {
         modifiers { isStatic && isPrivate }
-        param(StringType)
+        param(StringClass)
         returnType = UnitType
     }.count(num = 1)
     // Specify the type and style of the method
     // Specify the modifier, and the number count in the current class
     method {
         modifiers { isPrivate && isStatic.not() }
-        param(BooleanType, StringType)
-        returnType = StringType
+        param(BooleanType, StringClass)
+        returnType = StringClass
     }.count(num = 1)
     // Specify the type and style of the method
     // Specify the modifier, and the number count in the current class
@@ -267,7 +267,7 @@ searchClass {
     // And the number count that exists in the current class
     method {
         modifiers { isPrivate && isStatic.not() }
-        param(BooleanType, VagueType, VagueType, StringType)
+        param(BooleanType, VagueType, VagueType, StringClass)
         returnType = UnitType
     }.count(num = 1)
     // Directly specify the number of all methods that exist in the current class count
@@ -532,7 +532,7 @@ val instance = Test()
 // Call and execute using YukiHookAPI
 Test::class.java.method {
     name = "doTask"
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -599,7 +599,7 @@ val instance = Test()
 Test::class.java.method {
     name = "getName"
     emptyParam()
-    returnType = StringType
+    returnType = StringClass
 }.get(instance).string() // Get the result of the method
 ```
 
@@ -655,7 +655,7 @@ Test::class.java.method {
     name = "release"
     // Use VagueType to fill in the type you don't want to fill in
     // While ensuring that other types can match
-    param(StringType, VagueType, BooleanType)
+    param(StringClass, VagueType, BooleanType)
 }.get(instance) // Get this method
 ```
 
@@ -673,7 +673,7 @@ val instance = Test()
 // Call and execute using YukiHookAPI
 Test::class.java.method {
     name = "doBaseTask"
-    param(StringType)
+    param(StringClass)
     // Just add this condition
     superClass()
 }.get(instance).call("task_name")
@@ -693,7 +693,7 @@ val instance = Test()
 // Call and execute using YukiHookAPI
 Test::class.java.method {
     name = "doBaseTask"
-    param(StringType)
+    param(StringClass)
     // Add a find condition
     superClass(isOnlySuperClass = true)
 }.get(instance).call("task_name")
@@ -732,7 +732,7 @@ Test::class.java.method {
         // Set name is case insensitive
         it.equals("dotask", isIgnoreCase = true)
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -749,7 +749,7 @@ Test::class.java.method {
         // Only contains oTas
         it.contains("oTas")
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -766,7 +766,7 @@ Test::class.java.method {
         // Contains do at the beginning and Task at the end
         it.startsWith("do") && it.endsWith("Task")
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -783,7 +783,7 @@ Test::class.java.method {
         // Start with do, end with Task, just letters
         it.startsWith("do") && it.endsWith("Task") && it.isOnlyLetters()
     }
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("task_name")
 ```
 
@@ -902,7 +902,7 @@ Suppose we want to get the contents of the static field `TAG` this time.
 ```kotlin
 Test::class.java.field {
     name = "TAG"
-    type = StringType
+    type = StringClass
 }.get().string() // The type of Field is string and can be cast directly
 ```
 
@@ -915,7 +915,7 @@ Just add a filter.
 ```kotlin
 Test::class.java.field {
     name = "TAG"
-    type = StringType
+    type = StringClass
     // This field to identify the lookup needs to be static
     modifiers { isStatic }
 }.get().string() // The type of Field is string and can be cast directly
@@ -1004,7 +1004,7 @@ val instance = Test()
 // Call and execute using YukiHookAPI
 Test::class.java.method {
     name = "b"
-    param(StringType)
+    param(StringClass)
 }.get(instance).call("test_string") // Get the method whose name is b and whose parameter is [String]
 ```
 
@@ -1017,7 +1017,7 @@ The second option is to determine where the parameters of the method are located
 val instance = Test()
 // Call and execute using YukiHookAPI
 Test::class.java.method {
-    param(StringType).index().first()
+    param(StringClass).index().first()
 }.get(instance).call("test_string") // Get the method whose first method parameter is [String]
 ```
 
@@ -1058,7 +1058,7 @@ instance.current {
     // Execute the doTask method
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
     // Execute the stop method
     method {
@@ -1082,7 +1082,7 @@ instance.current {
     // Execute the doBaseTask method of the parent class
     superClass().method {
         name = "doBaseTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 }
 ```
@@ -1099,7 +1099,7 @@ instance
     .current()
     .method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 // Execute the stop method
 instance
@@ -1123,7 +1123,7 @@ val instance = Test()
 instance.current {
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 }.current()
     .method {
@@ -1150,7 +1150,7 @@ instance.current {
     }.current {
         method {
             name = "doBaseTask"
-            param(StringType)
+            param(StringClass)
         }.call("task_name")
     }
     // <Plan 2>
@@ -1159,7 +1159,7 @@ instance.current {
     }.current()
         ?.method {
             name = "doBaseTask"
-            param(StringType)
+            param(StringClass)
         }?.call("task_name")
 }
 ```
@@ -1209,7 +1209,7 @@ At this time, we can also use the `buildOf` method to create an instance.
 "com.demo.Test".toClass().buildOf(true) { param(BooleanType) }?.current {
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.call("task_name")
 }
 ```
@@ -1263,7 +1263,7 @@ Test::class.java.hook {
         method {
             name = "getString"
             emptyParam()
-            returnType = StringType
+            returnType = StringClass
         }
         replaceTo("Hooked")
     }
@@ -1279,7 +1279,7 @@ At this point, we use reflection to call this method, and we will get the result
 val result = Test::class.java.method {
     name = "getString"
     emptyParam()
-    returnType = StringType
+    returnType = StringClass
 }.get().string()
 ```
 
@@ -1292,7 +1292,7 @@ If we want to get the original method and result of this method without hooking,
 val result = Test::class.java.method {
     name = "getString"
     emptyParam()
-    returnType = StringType
+    returnType = StringClass
 }.get().original().string()
 ```
 
@@ -1357,13 +1357,13 @@ Test::class.java.method {
 }.remedys {
     method {
         name = "doTask"
-        param(StringType)
+        param(StringClass)
     }.onFind {
         // Found logic can be implemented here
     }
     method {
         name = "doTask"
-        param(StringType, IntType)
+        param(StringClass, IntType)
     }.onFind {
         // Found logic can be implemented here
     }
@@ -1658,7 +1658,7 @@ method {
     name = "test"
     param(BooleanType).index(num = 2)
     // ❗ Wrong usage, please keep only one index method
-    returnType(StringType).index(num = 1)
+    returnType(StringClass).index(num = 1)
 }
 ```
 
@@ -1821,13 +1821,13 @@ When find methods and fields, we usually need to specify the type in find condit
 ```kotlin
 field {
     name = "test"
-    type = Boolean::class.java
+    type = Boolean::class.javaPrimitiveType
 }
 ```
 
-Expressing the type `Boolean::class.java` in `Kotlin` is very long and not convenient.
+Expressing the type of `Boolean::class.javaPrimitiveType` in `Kotlin` is very long and inconvenient.
 
-Therefore, `YukiHookAPI` encapsulates common type calls for developers, including Android's basic types and Java's basic types.
+Therefore, `YukiHookAPI` encapsulates common type calls for developers, including Android related types and Java common types and **primitive type keywords**.
 
 At this time, the above type can be written in the following form.
 
@@ -1840,19 +1840,19 @@ field {
 }
 ```
 
-Common basic types in Java have been encapsulated as **Name + Type**, such as `IntType`, `FloatType`.
+The **primitive type keywords** in common Java types have been encapsulated as **Type(Class Name) + Type**, such as `IntType`, `FloatType` (their bytecode types are `int`, ` float`).
 
 Correspondingly, array types also have convenient usage methods, assuming we want to get an array of type `String[]`.
 
 You need to write `java.lang.reflect.Array.newInstance(String::class.java, 0).javaClass` to get this type.
 
-Does it feel very troublesome? At this time, we can use the extension method `ArrayClass(StringType)` to get this type.
+Does it feel very troublesome, at this time we can use the method `ArrayClass(StringClass)` to get this type.
 
 At the same time, since `String` is a common type, you can also directly use `StringArrayClass` to get this type.
 
-Some common methods found in Hook have their corresponding encapsulation types for use, in the format **Name + Class**.
+Some common methods found in Hook have their corresponding encapsulation types for use, in the format **Type(Class Name) + Class**.
 
-For example, the Hook `onCreate` method needs to find the `Bundle::class.java` type.
+For example, the Hook `onCreate` method needs to look up the `Bundle::class.java` type.
 
 > The following example
 
@@ -1862,6 +1862,34 @@ method {
     param(BundleClass)
 }
 ```
+
+The following are wrapper names for some special case types in Java represented in `YukiHookAPI`.
+
+- `void` → `UnitType`
+
+- `java.lang.Void` → `UnitClass`
+
+- `java.lang.Object` → `AnyClass`
+
+- `java.lang.Integer` → `IntClass`
+
+- `java.lang.Character` → `CharClass`
+
+::: warning
+
+Encapsulating types with **Type(Class Name) + Type** will and only be represented as Java **primitive type keywords**.
+
+Since the concept of **primitive types** does not exist in Kotlin, they will all be defined as **KClass**.
+
+There are 9 **primitive type keywords** in Java, of which 8 are **primitive type**, namely **boolean**, **char**, **byte**, **short** , **int**, **float**, **long**, **double**, of which the **void** type is a special case.
+
+At the same time, they all have their own corresponding package types in Java, such as **java.lang.Boolean**, **java.lang.Integer**, these types are <u>**unequal**</u>, Please note the distinction.
+
+Similarly, arrays also have corresponding wrapper types, which also need to be distinguished from Java **primitive type keywords**.
+
+For example, the encapsulation type of **byte[]** is **ByteArrayType** or **ArrayClass(ByteType)**, and the encapsulation type of **Byte[]** is **ByteArrayClass** or **ArrayClass(ByteClass )**, these types are also <u>**unequal**</u>.
+
+:::
 
 ::: tip
 

@@ -173,7 +173,7 @@ class YukiMemberHookCreator(@PublishedApi internal val packageParam: PackagePara
             )
         }
         when (hookClass.name) {
-            AnyType.name -> throwProblem(
+            AnyClass.name -> throwProblem(
                 name = "Object",
                 content = "This is the parent Class of all objects, if you hook it, it may cause a lot of memory leaks"
             )

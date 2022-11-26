@@ -45,10 +45,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.type.android.*
-import com.highcapable.yukihookapi.hook.type.java.BooleanType
-import com.highcapable.yukihookapi.hook.type.java.IntType
-import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
-import com.highcapable.yukihookapi.hook.type.java.StringType
+import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
@@ -261,7 +258,7 @@ internal object AppParasitics {
         classLoaderCallbacks[loader.hashCode()] = result
         if (isClassLoaderHooked) return
         runCatching {
-            YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringType, BooleanType) }, object : YukiMemberHook() {
+            YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringClass, BooleanType) }, object : YukiMemberHook() {
                 override fun afterHookedMember(param: Param) {
                     param.instance?.also { loader ->
                         (param.result as? Class<*>?)?.also { classLoaderCallbacks[loader.hashCode()]?.invoke(it) }
@@ -278,7 +275,7 @@ internal object AppParasitics {
      */
     internal fun injectModuleAppResources(hostResources: Resources) {
         if (YukiHookBridge.hasXposedBridge) runCatching {
-            hostResources.assets.current(ignored = true).method { name = "addAssetPath"; param(StringType) }.call(moduleAppFilePath)
+            hostResources.assets.current(ignored = true).method { name = "addAssetPath"; param(StringClass) }.call(moduleAppFilePath)
         }.onFailure {
             yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
         } else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
