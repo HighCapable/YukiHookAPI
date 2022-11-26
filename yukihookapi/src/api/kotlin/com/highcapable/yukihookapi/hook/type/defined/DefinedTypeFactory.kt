@@ -34,14 +34,14 @@ import com.highcapable.yukihookapi.hook.factory.classOf
  *
  * 请使用 [UndefinedType] 来调用它
  */
-internal class UndefinedClass
+internal class UndefinedClass private constructor()
 
 /**
  * 模糊类型实例
  *
  * 请使用 [VagueType] 来调用它
  */
-internal class VagueClass
+class VagueClass private constructor()
 
 /**
  * 得到未定义类型
