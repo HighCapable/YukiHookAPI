@@ -43,9 +43,7 @@ import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.type.android.ActivityClass
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
-import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
-import com.highcapable.yukihookapi.hook.type.java.StringType
-import com.highcapable.yukihookapi.hook.type.java.UnitType
+import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
@@ -222,7 +220,7 @@ class HookEntry : IYukiHookXposedInit {
                         method {
                             name = "getFirstText"
                             emptyParam()
-                            returnType = StringType
+                            returnType = StringClass
                         }
                         // Replaced hook
                         // 执行替换 Hook
@@ -240,7 +238,7 @@ class HookEntry : IYukiHookXposedInit {
                         beforeHook {
                             field {
                                 name = "secondText"
-                                type = StringType
+                                type = StringClass
                             }.get(instance).set("I am hook result")
                         }
                         // After hook the method
@@ -264,8 +262,8 @@ class HookEntry : IYukiHookXposedInit {
                     injectMember {
                         method {
                             name = "getRegularText"
-                            param(StringType)
-                            returnType = StringType
+                            param(StringClass)
+                            returnType = StringClass
                         }
                         // Before hook the method
                         // 在方法执行之前拦截
@@ -330,7 +328,7 @@ class HookEntry : IYukiHookXposedInit {
                         method {
                             name = "getDataText"
                             emptyParam()
-                            returnType = StringType
+                            returnType = StringClass
                         }
                         // Replaced hook
                         // 执行替换 Hook
@@ -343,7 +341,7 @@ class HookEntry : IYukiHookXposedInit {
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
                     injectMember {
-                        constructor { param(StringType) }
+                        constructor { param(StringClass) }
                         // Before hook the method
                         // 在方法执行之前拦截
                         beforeHook {
