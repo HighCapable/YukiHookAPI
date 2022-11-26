@@ -59,7 +59,7 @@ import java.util.zip.ZipOutputStream
 /**
  * 任意类型的数组
  *
- * Java 中的表示：array[]
+ * Java 中表示：array[]
  * @param type 类型
  * @return [Class]
  */
