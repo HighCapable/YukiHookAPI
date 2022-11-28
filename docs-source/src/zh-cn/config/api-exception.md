@@ -836,6 +836,22 @@ You cannot register Activity Proxy into yourself
 
 由于模块自身也可以被自身 Hook，但你并不可以在模块自身注入自己 (不能递归自身的资源)，若你一定要获取模块自身的资源，请直接使用即可，无需任何其它操作。
 
+###### exception
+
+::: danger loggerE
+
+An exception occurred during AppLifecycle event
+
+:::
+
+**异常原因**
+
+在 (Xposed) 宿主环境中使用 `onAppLifecycle` 监听宿主生命周期期间发生异常。
+
+**解决方案**
+
+此异常为 `onAppLifecycle` 中抛出，由于你设置了参数 `isOnFailureThrowToApp = false`，异常没有在宿主中被抛出而是在 (Xposed) 宿主环境中进行打印，这不属于 API 的异常，请仔细检查自身代码的问题。
+
 ## 阻断异常
 
 > 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。

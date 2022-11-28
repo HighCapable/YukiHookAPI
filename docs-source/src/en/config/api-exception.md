@@ -742,7 +742,7 @@ You cannot inject module resources into yourself
 
 Use `injectModuleAppResources` in the (Xposed) Host environment (the Module App's own Xposed Environment) to inject the Module App's own resources into itself.
 
-**solution**
+**Solution**
 
 Since the Module App itself can also be Hooked by itself, you cannot inject yourself into the Module App itself (you cannot recurse its own resources).
 
@@ -869,11 +869,31 @@ You cannot register Activity Proxy into yourself
 
 Use `registerModuleAppActivities` to inject the Module App's own `Activity` into itself in the (Xposed) Host environment (the Module App's own Xposed Environment).
 
-**solution**
+**Solution**
 
 Since the Module App itself can also be Hooked by itself, you cannot inject yourself into the Module App itself (you cannot recurse its own resources).
 
 If you must obtain the resources of the Module App itself, please use it directly without any other operations.
+
+###### exception
+
+::: danger loggerE
+
+An exception occurred during AppLifecycle event
+
+:::
+
+**Abnormal**
+
+Use `onAppLifecycle` in the (Xposed) Host environment to listen for exceptions during the Host App's lifecycle.
+
+**Solution**
+
+This exception is thrown in `onAppLifecycle`.
+
+Since you set the parameter `isOnFailureThrowToApp = false`, the exception is not thrown in the Host App but printed in the (Xposed) Host environment.
+
+This is not an API exception, please be careful check your own code for problems.
 
 ## Blocking Exceptions
 
