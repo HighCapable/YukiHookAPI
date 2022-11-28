@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.hasClass
+import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
@@ -263,11 +264,13 @@ object YukiHookBridge {
                 else null
             else -> null
         }?.also {
-            if (it.isCorrectProcess) YukiHookAPI.onXposedLoaded(it)
-            if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
-                AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
-            if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
-            if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
+            runCatching {
+                if (it.isCorrectProcess) YukiHookAPI.onXposedLoaded(it)
+                if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
+                    AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
+                if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
+                if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
+            }.onFailure { yLoggerE(msg = "An exception occurred in the Hooking Process of YukiHookAPI", e = it) }
         }
     }
 }

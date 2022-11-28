@@ -91,7 +91,7 @@ internal object YukiHookHelper {
             else -> error("Unexpected BaseFinder result interface type")
         }
         hookMember(member, callback)
-    }.onFailure { yLoggerE(msg = "Hooking Process exception occurred", e = it) }.getOrNull() ?: Pair(null, false)
+    }.onFailure { yLoggerE(msg = "An exception occurred when hooking internal function", e = it) }.getOrNull() ?: Pair(null, false)
 
     /**
      * Hook [Member]
