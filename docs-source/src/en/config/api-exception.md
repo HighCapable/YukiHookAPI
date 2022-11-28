@@ -94,7 +94,27 @@ class HookEntry : IYukiHookXposedInit {
 
 ::: danger loggerE
 
-Hooking Process exception occurred
+An exception occurred in the Hooking Process of YukiHookAPI
+
+:::
+
+**Abnormal**
+
+`YukiHookAPI` exception occurred while loading Xposed entry method.
+
+**Solution**
+
+This is an exception summary.
+
+If any exception occurs in your current Hook Process (Hook Process crashes), it will be printed to the console using this method.
+
+Please trace the stack where the exception occurred to locate your code problem.
+
+###### exception
+
+::: danger loggerE
+
+An exception occurred when hooking internal function
 
 :::
 

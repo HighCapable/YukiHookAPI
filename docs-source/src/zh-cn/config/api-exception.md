@@ -94,7 +94,23 @@ class HookEntry : IYukiHookXposedInit {
 
 ::: danger loggerE
 
-Hooking Process exception occurred
+An exception occurred in the Hooking Process of YukiHookAPI
+
+:::
+
+**异常原因**
+
+`YukiHookAPI` 在装载 Xposed 入口方法时发生异常。
+
+**解决方案**
+
+这是一个异常汇总，如果你当前的 Hook 进程中发生了任何异常 (Hook 进程崩溃)，都会使用此方式打印到控制台，请追溯异常发生的堆栈以定位你的代码问题位置。
+
+###### exception
+
+::: danger loggerE
+
+An exception occurred when hooking internal function
 
 :::
 
