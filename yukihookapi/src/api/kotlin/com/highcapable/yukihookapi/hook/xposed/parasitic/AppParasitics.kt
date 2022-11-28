@@ -275,6 +275,8 @@ internal object AppParasitics {
      */
     internal fun injectModuleAppResources(hostResources: Resources) {
         if (YukiHookBridge.hasXposedBridge) runCatching {
+            if (YukiHookAppHelper.currentPackageName() == YukiHookBridge.modulePackageName)
+                return yLoggerE(msg = "You cannot inject module resources into yourself")
             hostResources.assets.current(ignored = true).method { name = "addAssetPath"; param(StringClass) }.call(moduleAppFilePath)
         }.onFailure {
             yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
@@ -294,6 +296,7 @@ internal object AppParasitics {
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
         if (isActivityProxyRegistered) return
         if (YukiHookBridge.hasXposedBridge.not()) return yLoggerW(msg = "You can only register Activity Proxy in Xposed Environment")
+        if (context.packageName == YukiHookBridge.modulePackageName) return yLoggerE(msg = "You cannot register Activity Proxy into yourself")
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${YukiHookBridge.modulePackageName}.ACTIVITY_PROXY_INTENT"
