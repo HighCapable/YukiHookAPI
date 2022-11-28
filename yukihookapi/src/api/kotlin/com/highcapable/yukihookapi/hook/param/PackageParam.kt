@@ -215,25 +215,25 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit) = AppLifecycle().apply(initiate).build()
 
     /**
-     * 装载并 Hook 指定、全部包名的 APP
+     * 装载并 Hook 指定包名的 APP
      *
      * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
      *
      * 若要 Hook 系统框架 - 请使用 [loadSystem]
-     * @param name 包名 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
+     * @param name 包名
      * @param initiate 方法体
      */
-    inline fun loadApp(name: String = "", initiate: PackageParam.() -> Unit) {
+    inline fun loadApp(name: String, initiate: PackageParam.() -> Unit) {
         if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) initiate(this)
     }
 
     /**
-     * 装载并 Hook 指定、全部包名的 APP
+     * 装载并 Hook 指定包名的 APP
      *
      * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
      *
      * 若要 Hook 系统框架 - 请使用 [loadSystem]
-     * @param name 包名数组 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
+     * @param name 包名数组
      * @param initiate 方法体
      */
     inline fun loadApp(vararg name: String, initiate: PackageParam.() -> Unit) {
@@ -242,20 +242,20 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     }
 
     /**
-     * 装载并 Hook 指定、全部包名的 APP
+     * 装载并 Hook 指定包名的 APP
      *
      * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
      *
      * 若要 Hook 系统框架 - 请使用 [loadSystem]
-     * @param name 包名 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
+     * @param name 包名
      * @param hooker Hook 子类
      */
-    fun loadApp(name: String = "", hooker: YukiBaseHooker) {
+    fun loadApp(name: String, hooker: YukiBaseHooker) {
         if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) loadHooker(hooker)
     }
 
     /**
-     * 装载并 Hook 指定、全部包名的 APP
+     * 装载并 Hook 指定包名的 APP
      *
      * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
      *
@@ -263,9 +263,55 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param name 包名 - 不填将过滤除了 [loadZygote] 事件外的全部 APP
      * @param hooker Hook 子类数组
      */
-    fun loadApp(name: String = "", vararg hooker: YukiBaseHooker) {
+    fun loadApp(name: String, vararg hooker: YukiBaseHooker) {
         if (hooker.isEmpty()) error("loadApp method need a \"hooker\" param")
         if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) hooker.forEach { loadHooker(it) }
+    }
+
+    /**
+     * 装载并 Hook 全部 APP
+     *
+     * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadSystem]
+     * @param isExcludeSelf 是否排除模块自身 - 默认否 - 启用后被 Hook 的 APP 将不包含当前模块自身
+     * @param initiate 方法体
+     */
+    inline fun loadApp(isExcludeSelf: Boolean = false, initiate: PackageParam.() -> Unit) {
+        if (wrapper?.type != HookEntryType.ZYGOTE &&
+            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiHookBridge.modulePackageName)
+        ) initiate(this)
+    }
+
+    /**
+     * 装载并 Hook 全部 APP
+     *
+     * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadSystem]
+     * @param isExcludeSelf 是否排除模块自身 - 默认否 - 启用后被 Hook 的 APP 将不包含当前模块自身
+     * @param hooker Hook 子类
+     */
+    fun loadApp(isExcludeSelf: Boolean = false, hooker: YukiBaseHooker) {
+        if (wrapper?.type != HookEntryType.ZYGOTE &&
+            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiHookBridge.modulePackageName)
+        ) loadHooker(hooker)
+    }
+
+    /**
+     * 装载并 Hook 全部 APP
+     *
+     * 若要装载 APP Zygote 事件 - 请使用 [loadZygote]
+     *
+     * 若要 Hook 系统框架 - 请使用 [loadSystem]
+     * @param isExcludeSelf 是否排除模块自身 - 默认否 - 启用后被 Hook 的 APP 将不包含当前模块自身
+     * @param hooker Hook 子类数组
+     */
+    fun loadApp(isExcludeSelf: Boolean = false, vararg hooker: YukiBaseHooker) {
+        if (hooker.isEmpty()) error("loadApp method need a \"hooker\" param")
+        if (wrapper?.type != HookEntryType.ZYGOTE &&
+            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiHookBridge.modulePackageName)
+        ) hooker.forEach { loadHooker(it) }
     }
 
     /**

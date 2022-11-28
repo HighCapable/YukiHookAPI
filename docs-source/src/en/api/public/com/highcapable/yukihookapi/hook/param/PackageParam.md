@@ -364,6 +364,18 @@ inline fun loadApp(vararg name: String, initiate: PackageParam.() -> Unit)
 fun loadApp(name: String, vararg hooker: YukiBaseHooker)
 ```
 
+```kotlin:no-line-numbers
+inline fun loadApp(isExcludeSelf: Boolean, initiate: PackageParam.() -> Unit)
+```
+
+```kotlin:no-line-numbers
+fun loadApp(isExcludeSelf: Boolean, hooker: YukiBaseHooker)
+```
+
+```kotlin:no-line-numbers
+fun loadApp(isExcludeSelf: Boolean, vararg hooker: YukiBaseHooker)
+```
+
 **Change Records**
 
 `v1.0` `first`
@@ -376,9 +388,13 @@ fun loadApp(name: String, vararg hooker: YukiBaseHooker)
 
 新增两个方法，可以同时装载多个 APP 与子 Hooker
 
+`v1.1.5` `modified`
+
+新增三个方法，可以使用参数 `isExcludeSelf` 排除模块自身
+
 **Function Illustrate**
 
-> 装载并 Hook 指定包名的 APP。
+> 装载并 Hook 指定、全部包名的 APP。
 
 `name` 为 APP 的包名，后方的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
 
@@ -414,6 +430,19 @@ loadApp {
 }
 // 使用 Hooker
 loadApp(hooker = CustomHooker)
+```
+
+若要在全部可被 Hook 的 APP 中过滤掉模块自身，你只需加入 `isExcludeSelf = true`。
+
+> 示例如下
+
+```kotlin
+// 使用 lambda
+loadApp(isExcludeSelf = true) {
+    // Your code here.
+}
+// 使用 Hooker
+loadApp(isExcludeSelf = true, hooker = CustomHooker)
 ```
 
 若想要同时装载多个需要 Hook 的 APP，可以直接使用如下方式。
