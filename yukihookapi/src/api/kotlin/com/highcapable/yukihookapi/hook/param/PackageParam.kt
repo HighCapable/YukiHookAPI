@@ -63,14 +63,25 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  */
 open class PackageParam internal constructor(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
 
+    /** 当前设置的 [ClassLoader] */
+    private var currentClassLoader: ClassLoader? = null
+
     /**
-     * 获取当前 Hook APP 的 [ClassLoader]
+     * 获取、设置当前 Hook APP 的 [ClassLoader]
+     *
+     * 你可以在这里手动设置当前 Hook APP 的 [ClassLoader] - 默认情况下会自动获取
+     *
+     * - ❗如果设置了错误或无效的 [ClassLoader] 会造成功能异常 - 请谨慎操作
      * @return [ClassLoader]
      * @throws IllegalStateException 如果 [ClassLoader] 是空的
      */
-    val appClassLoader
-        get() = wrapper?.appClassLoader ?: YukiHookAppHelper.currentApplication()?.classLoader ?: javaClass.classLoader
-        ?: error("PackageParam got null ClassLoader")
+    var appClassLoader
+        get() = currentClassLoader ?: wrapper?.appClassLoader
+        ?: YukiHookAppHelper.currentApplication()?.classLoader
+        ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
+        set(value) {
+            currentClassLoader = value
+        }
 
     /**
      * 获取当前 Hook APP 的 [ApplicationInfo]

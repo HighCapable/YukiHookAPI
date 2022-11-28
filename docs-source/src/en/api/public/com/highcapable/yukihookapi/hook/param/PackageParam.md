@@ -27,16 +27,28 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
 ## appClassLoader <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
-val appClassLoader：ClassLoader
+var appClassLoader：ClassLoader
 ```
 
 **Change Records**
 
 `v1.0` `first`
 
+`v1.1.5` `modified`
+
+可以动态修改此变量的值
+
 **Function Illustrate**
 
-> 获取当前 Hook APP 的 `ClassLoader`。
+> 获取、设置当前 Hook APP 的 `ClassLoader`。
+
+你可以在这里手动设置当前 Hook APP 的 `ClassLoader`，默认情况下会自动获取。
+
+::: danger
+
+如果设置了错误或无效的 **ClassLoader** 会造成功能异常，请谨慎操作。
+
+:::
 
 ## appInfo <span class="symbol">- field</span>
 
