@@ -2,9 +2,9 @@
 
 > This is an extension of the lifecycle of an automatic hooking Host App.
 
-## Monitor Lifecycle
+## Listener Lifecycle
 
-> Implement the monitoring function by automating the lifecycle method of the Host App.
+> Implement the listening function by automating the lifecycle method of the Host App.
 
 We need to listen to the startup and lifecycle methods of the Host App's `Application`, just use the following methods.
 
@@ -13,7 +13,11 @@ We need to listen to the startup and lifecycle methods of the Host App's `Applic
 ```kotlin
 loadApp(name = "com.example.demo") {
     // Register lifecycle listeners
-    onAppLifecycle {
+    // Optional parameter:
+    // You can set isOnFailureThrowToApp = false
+    // So that the exception will not be thrown to the Host App to prevent the Host App from crashing
+    // The default is true
+    onAppLifecycle(isOnFailureThrowToApp = true) {
         // You can implement lifecycle method listeners in Application here
         attachBaseContext { baseContext, hasCalledSuper ->
             // Determine whether
@@ -54,7 +58,7 @@ For more functions, please refer to [AppLifecycle](../public/com/highcapable/yuk
 
 ## Register System Broadcast
 
-> Register system broadcast through the `Application.onCreate` method to monitor system broadcast.
+> Register system broadcast through the `Application.onCreate` method to listening system broadcast.
 
 We can also register system broadcast in the Host App's `Application`.
 
@@ -64,7 +68,7 @@ We can also register system broadcast in the Host App's `Application`.
 loadApp(name = "com.example.demo") {
     // Register lifecycle listeners
     onAppLifecycle {
-        // Broadcast monitoring when the registered user is unlocked
+        // Broadcast listening when the registered user is unlocked
         registerReceiver(Intent.ACTION_USER_PRESENT) { context, intent ->
             // ...
         }

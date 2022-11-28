@@ -319,12 +319,16 @@ fun refreshModuleAppResources()
 ## onAppLifecycle <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit)
+inline fun onAppLifecycle(isOnFailureThrowToApp: Boolean, initiate: AppLifecycle.() -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.88` `新增`
+
+`v1.1.5` `修改`
+
+新增 `isOnFailureThrowToApp` 参数，可选择将异常在 (Xposed) 宿主环境打印而不是抛出给宿主
 
 **功能描述**
 
@@ -967,12 +971,16 @@ resources().hook {
 ## AppLifecycle <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class AppLifecycle internal constructor()
+inner class AppLifecycle internal constructor(private val isOnFailureThrowToApp: Boolean)
 ```
 
 **变更记录**
 
 `v1.0.88` `新增`
+
+`v1.1.5` `修改`
+
+新增 `isOnFailureThrowToApp` 参数，可选择将异常在 (Xposed) 宿主环境打印而不是抛出给宿主
 
 **功能描述**
 

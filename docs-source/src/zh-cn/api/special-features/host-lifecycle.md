@@ -13,7 +13,8 @@
 ```kotlin
 loadApp(name = "com.example.demo") {
     // 注册生命周期监听
-    onAppLifecycle {
+    // 可选参数：你可以设置 isOnFailureThrowToApp = false 使得其中的异常不会抛出给宿主防止宿主崩溃，默认为 true
+    onAppLifecycle(isOnFailureThrowToApp = true) {
         // 你可以在这里实现 Application 中的生命周期方法监听
         attachBaseContext { baseContext, hasCalledSuper ->
             // 通过判断 hasCalledSuper 来确定是否已执行 super.attachBaseContext(base) 方法

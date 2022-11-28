@@ -210,9 +210,11 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗在 [loadZygote] 中不会被装载 - 仅会在 [loadSystem]、[loadApp] 中装载
      *
      * - ❗作为 Hook API 装载时请使用原生的 [Application] 实现生命周期监听
+     * @param isOnFailureThrowToApp 是否在发生异常时将异常抛出给宿主 - 默认是
      * @param initiate 方法体
      */
-    inline fun onAppLifecycle(initiate: AppLifecycle.() -> Unit) = AppLifecycle().apply(initiate).build()
+    inline fun onAppLifecycle(isOnFailureThrowToApp: Boolean = true, initiate: AppLifecycle.() -> Unit) =
+        AppLifecycle(isOnFailureThrowToApp).apply(initiate).build()
 
     /**
      * 装载并 Hook 指定包名的 APP
@@ -597,8 +599,9 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 当前 Hook APP 的生命周期实例处理类
      *
      * - ❗请使用 [onAppLifecycle] 方法来获取 [AppLifecycle]
+     * @param isOnFailureThrowToApp 是否在发生异常时将异常抛出给宿主
      */
-    inner class AppLifecycle @PublishedApi internal constructor() {
+    inner class AppLifecycle @PublishedApi internal constructor(private val isOnFailureThrowToApp: Boolean) {
 
         /**
          * 监听当前 Hook APP 装载 [Application.attachBaseContext]
@@ -660,6 +663,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         /** 设置创建生命周期监听回调 */
         @PublishedApi
         internal fun build() {
+            AppParasitics.AppLifecycleCallback.isOnFailureThrowToApp = isOnFailureThrowToApp
             AppParasitics.AppLifecycleCallback.isCallbackSetUp = true
         }
     }

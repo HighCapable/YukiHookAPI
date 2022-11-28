@@ -41,6 +41,7 @@ import android.content.res.Resources
 import android.os.Handler
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.factory.*
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
@@ -48,6 +49,7 @@ import com.highcapable.yukihookapi.hook.type.android.*
 import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookCallback
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
@@ -167,6 +169,14 @@ internal object AppParasitics {
      * @param packageName 包名
      */
     internal fun registerToAppLifecycle(packageName: String) {
+        /**
+         * 向当前 Hook APP (宿主) 抛出异常或打印错误日志
+         * @param throwable 当前异常
+         */
+        fun YukiHookCallback.Param.throwToAppOrLogger(throwable: Throwable) {
+            if (AppLifecycleCallback.isOnFailureThrowToApp) this.throwable = throwable
+            else loggerE(msg = "An exception occurred during AppLifecycle event", e = throwable)
+        }
         /** Hook [Application] 装载方法 */
         runCatching {
             if (AppLifecycleCallback.isCallbackSetUp) {
@@ -174,27 +184,27 @@ internal object AppParasitics {
                     override fun beforeHookedMember(param: Param) {
                         runCatching {
                             (param.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
-                        }.onFailure { param.throwable = it }
+                        }.onFailure { param.throwToAppOrLogger(it) }
                     }
 
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             (param.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
-                        }.onFailure { param.throwable = it }
+                        }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onTerminate" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             (param.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
-                        }.onFailure { param.throwable = it }
+                        }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onLowMemory" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             (param.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
-                        }.onFailure { param.throwable = it }
+                        }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onTrimMemory"; param(IntType) }, object : YukiMemberHook() {
@@ -203,7 +213,7 @@ internal object AppParasitics {
                             val self = param.instance as? Application? ?: return
                             val type = param.args?.get(0) as? Int? ?: return
                             AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
-                        }.onFailure { param.throwable = it }
+                        }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onConfigurationChanged" }, object : YukiMemberHook() {
@@ -212,7 +222,7 @@ internal object AppParasitics {
                             val self = param.instance as? Application? ?: return
                             val config = param.args?.get(0) as? Configuration? ?: return
                             AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
-                        }.onFailure { param.throwable = it }
+                        }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
             }
@@ -241,7 +251,7 @@ internal object AppParasitics {
                                     isDataChannelRegistered = true
                                 }
                             }
-                        }.onFailure { param.throwable = it }
+                        }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
         }
@@ -351,6 +361,9 @@ internal object AppParasitics {
 
         /** 是否已设置回调 */
         internal var isCallbackSetUp = false
+
+        /** 是否在发生异常时将异常抛出给宿主 */
+        internal var isOnFailureThrowToApp = true
 
         /** [Application.attachBaseContext] 回调 */
         internal var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null
