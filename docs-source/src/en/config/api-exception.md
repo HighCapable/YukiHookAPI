@@ -734,6 +734,24 @@ Under normal circumstances, this error basically does not occur. After eliminati
 
 ::: danger loggerE
 
+You cannot inject module resources into yourself
+
+:::
+
+**Abnormal**
+
+Use `injectModuleAppResources` in the (Xposed) Host environment (the Module App's own Xposed Environment) to inject the Module App's own resources into itself.
+
+**solution**
+
+Since the Module App itself can also be Hooked by itself, you cannot inject yourself into the Module App itself (you cannot recurse its own resources).
+
+If you must obtain the resources of the Module App itself, please use it directly without any other operations.
+
+###### exception
+
+::: danger loggerE
+
 Activity Proxy initialization failed because got an Exception
 
 :::
@@ -838,6 +856,24 @@ registerModuleAppActivities(proxy = "com.demo.test.TestActivity")
 **Solution**
 
 Please make sure that the `Activity` name you fill in really and effectively exists in the Host App, and the target `Class` extends `Activity`.
+
+###### exception
+
+::: danger loggerE
+
+You cannot register Activity Proxy into yourself
+
+:::
+
+**Abnormal**
+
+Use `registerModuleAppActivities` to inject the Module App's own `Activity` into itself in the (Xposed) Host environment (the Module App's own Xposed Environment).
+
+**solution**
+
+Since the Module App itself can also be Hooked by itself, you cannot inject yourself into the Module App itself (you cannot recurse its own resources).
+
+If you must obtain the resources of the Module App itself, please use it directly without any other operations.
 
 ## Blocking Exceptions
 

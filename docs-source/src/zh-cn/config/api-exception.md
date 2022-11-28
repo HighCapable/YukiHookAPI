@@ -708,6 +708,22 @@ Failed to inject module resources into \[**RESOURCES**\]
 
 ::: danger loggerE
 
+You cannot inject module resources into yourself
+
+:::
+
+**异常原因**
+
+在 (Xposed) 宿主环境 (模块自身的 Xposed 环境) 中使用 `injectModuleAppResources` 将模块自身的资源注入自身。
+
+**解决方案**
+
+由于模块自身也可以被自身 Hook，但你并不可以在模块自身注入自己 (不能递归自身的资源)，若你一定要获取模块自身的资源，请直接使用即可，无需任何其它操作。
+
+###### exception
+
+::: danger loggerE
+
 Activity Proxy initialization failed because got an Exception
 
 :::
@@ -803,6 +819,22 @@ registerModuleAppActivities(proxy = "com.demo.test.TestActivity")
 **解决方案**
 
 请确认你填入的 `Activity` 名称真实有效地存在于宿主中，且目标 `Class` 继承于 `Activity`。
+
+###### exception
+
+::: danger loggerE
+
+You cannot register Activity Proxy into yourself
+
+:::
+
+**异常原因**
+
+在 (Xposed) 宿主环境 (模块自身的 Xposed 环境) 中使用 `registerModuleAppActivities` 将模块自身 `Activity` 注入自身。
+
+**解决方案**
+
+由于模块自身也可以被自身 Hook，但你并不可以在模块自身注入自己 (不能递归自身的资源)，若你一定要获取模块自身的资源，请直接使用即可，无需任何其它操作。
 
 ## 阻断异常
 
