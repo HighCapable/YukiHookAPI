@@ -113,7 +113,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * 移除字符串中的空格与换行符并将双引号替换为单引号
          * @return [String]
          */
-        private fun String.removeSpecialChars() = replace("\\s*|\t|\r|\n".toRegex(), replacement = "").replace(oldValue = "\"", newValue = "'")
+        private fun String.removeSpecialChars() = replace("\\s*|\t|\r|\n".toRegex(), "").replace("\"", "'")
 
         override fun process(resolver: Resolver) = emptyList<KSAnnotated>().let { startProcess(resolver); it }
 
@@ -276,8 +276,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             gradleKtsFile.exists() -> runCatching {
                 gradleKtsFile.readText()
                     .removeSpecialChars()
-                    .replace(oldValue = "varnamespace", newValue = "")
-                    .replace(oldValue = "valnamespace", newValue = "")
+                    .replace("varnamespace", "")
+                    .replace("valnamespace", "")
                     .split("namespace='")[1]
                     .split("'")[0]
             }.getOrNull()

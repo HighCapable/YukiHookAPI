@@ -129,7 +129,7 @@ object YukiHookBridge {
     internal val executorName
         get() = runCatching {
             classOf<XposedBridge>().field { name = "TAG" }.ignored().get().string().takeIf { it.isNotBlank() }
-                ?.replace(oldValue = "Bridge", newValue = "")?.replace(oldValue = "-", newValue = "")?.trim() ?: "unknown"
+                ?.replace("Bridge", "")?.replace("-", "")?.trim() ?: "unknown"
         }.getOrNull() ?: "invalid"
 
     /**

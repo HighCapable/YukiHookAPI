@@ -73,8 +73,7 @@ internal object YukiHookModuleStatus {
      * 请使用 [YukiHookAPI.Status.executorName] 获取
      * @return [String] 模块未激活会返回 unknown
      */
-    internal val executorName
-        get() = getXposedBridgeTag().replace(oldValue = "Bridge", newValue = "").replace(oldValue = "-", newValue = "").trim()
+    internal val executorName get() = getXposedBridgeTag().replace("Bridge", "").replace("-", "").trim()
 
     /**
      * 获取当前 Hook 框架的版本

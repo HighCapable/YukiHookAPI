@@ -632,16 +632,16 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
              * @return [String]
              */
             fun Class<*>.objectName() =
-                name.replace(Unit.toString(), newValue = "void")
-                    .replace(oldValue = "java.lang.Void", newValue = "void")
-                    .replace(oldValue = "java.lang.Boolean", newValue = "boolean")
-                    .replace(oldValue = "java.lang.Integer", newValue = "int")
-                    .replace(oldValue = "java.lang.Float", newValue = "float")
-                    .replace(oldValue = "java.lang.Double", newValue = "double")
-                    .replace(oldValue = "java.lang.Long", newValue = "long")
-                    .replace(oldValue = "java.lang.Short", newValue = "short")
-                    .replace(oldValue = "java.lang.Character", newValue = "char")
-                    .replace(oldValue = "java.lang.Byte", newValue = "byte")
+                name.replace(Unit.toString(), "void")
+                    .replace("java.lang.Void", "void")
+                    .replace("java.lang.Boolean", "boolean")
+                    .replace("java.lang.Integer", "int")
+                    .replace("java.lang.Float", "float")
+                    .replace("java.lang.Double", "double")
+                    .replace("java.lang.Long", "long")
+                    .replace("java.lang.Short", "short")
+                    .replace("java.lang.Character", "char")
+                    .replace("java.lang.Byte", "byte")
             if (origin == null || target == null) return
             val originName = origin.objectName()
             val targetName = target.objectName()
