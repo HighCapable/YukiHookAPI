@@ -229,6 +229,165 @@ val Class<*>.hasExtends: Boolean
 
 > 当前 `Class` 是否有继承关系，父类是 `Any` 将被认为没有继承关系。
 
+## Class?.extends <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+infix fun Class<*>?.extends(other: Class<*>?): Boolean
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 当前 `Class` 是否继承于 `other`。
+
+如果当前 `Class` 就是 `other` 也会返回 `true`。
+
+如果当前 `Class` 为 `null` 或 `other` 为 `null` 会返回 `false`。
+
+**功能示例**
+
+你可以使用此方法来判断两个 `Class` 是否存在继承关系。
+
+> 示例如下
+
+```kotlin
+// 假设下面这两个 Class 就是你需要判断的 Class
+val classA: Class<*>?
+val classB: Class<*>?
+// 判断 A 是否继承于 B
+if (classA extends classB) {
+    // Your code here.
+}
+```
+
+## Class?.notExtends <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+infix fun Class<*>?.notExtends(other: Class<*>?): Boolean
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 当前 `Class` 是否不继承于 `other`。
+
+此方法相当于 `extends` 的反向判断。
+
+**功能示例**
+
+你可以使用此方法来判断两个 `Class` 是否不存在继承关系。
+
+> 示例如下
+
+```kotlin
+// 假设下面这两个 Class 就是你需要判断的 Class
+val classA: Class<*>?
+val classB: Class<*>?
+// 判断 A 是否不继承于 B
+if (classA notExtends classB) {
+    // Your code here.
+}
+```
+
+## Class?.implements <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+infix fun Class<*>?.implements(other: Class<*>?): Boolean
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 当前 `Class` 是否实现了 `other` 接口类。
+
+如果当前 `Class` 为 `null` 或 `other` 为 `null` 会返回 `false`。
+
+**功能示例**
+
+你可以使用此方法来判断两个 `Class` 是否存在依赖关系。
+
+> 示例如下
+
+```kotlin
+// 假设下面这两个 Class 就是你需要判断的 Class
+val classA: Class<*>?
+val classB: Class<*>?
+// 判断 A 是否实现了 B 接口类
+if (classA implements classB) {
+    // Your code here.
+}
+```
+
+## Class?.notImplements <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+infix fun Class<*>?.notImplements(other: Class<*>?): Boolean
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 当前 `Class` 是否未实现 `other` 接口类。
+
+此方法相当于 `implements` 的反向判断。
+
+**功能示例**
+
+你可以使用此方法来判断两个 `Class` 是否不存在依赖关系。
+
+> 示例如下
+
+```kotlin
+// 假设下面这两个 Class 就是你需要判断的 Class
+val classA: Class<*>?
+val classB: Class<*>?
+// 判断 A 是否未实现 B 接口类
+if (classA notImplements classB) {
+    // Your code here.
+}
+```
+
+## Class.toJavaPrimitiveType <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+fun Class<*>.toJavaPrimitiveType(): Class<*>
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 自动转换当前 `Class` 为 Java 原始类型 (Primitive Type)。
+
+如果当前 `Class` 为 Java 或 Kotlin 基本类型将自动执行类型转换。
+
+当前能够自动转换的基本类型如下。
+
+- `kotlin.Unit`
+- `java.lang.Void`
+- `java.lang.Boolean`
+- `java.lang.Integer`
+- `java.lang.Float`
+- `java.lang.Double`
+- `java.lang.Long`
+- `java.lang.Short`
+- `java.lang.Character`
+- `java.lang.Byte`
+
 <h2 class="deprecated">classOf - method</h2>
 
 **变更记录**

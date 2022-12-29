@@ -105,6 +105,93 @@ fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit) = AppParasitics.hookClas
 val Class<*>.hasExtends get() = superclass != null && superclass != AnyClass
 
 /**
+ * 当前 [Class] 是否继承于 [other]
+ *
+ * 如果当前 [Class] 就是 [other] 也会返回 true
+ *
+ * 如果当前 [Class] 为 null 或 [other] 为 null 会返回 false
+ * @param other 需要判断的 [Class]
+ * @return [Boolean]
+ */
+infix fun Class<*>?.extends(other: Class<*>?): Boolean {
+    if (this == null || other == null) return false
+    var isMatched = false
+
+    /**
+     * 查找是否存在父类
+     * @param current 当前 [Class]
+     */
+    fun findSuperClass(current: Class<*>) {
+        if (current == other)
+            isMatched = true
+        else if (current != AnyClass && current.superclass != null) findSuperClass(current.superclass)
+    }
+    findSuperClass(current = this)
+    return isMatched
+}
+
+/**
+ * 当前 [Class] 是否不继承于 [other]
+ *
+ * 此方法相当于 [extends] 的反向判断
+ * @param other 需要判断的 [Class]
+ * @return [Boolean]
+ */
+infix fun Class<*>?.notExtends(other: Class<*>?) = extends(other).not()
+
+/**
+ * 当前 [Class] 是否实现了 [other] 接口类
+ *
+ * 如果当前 [Class] 为 null 或 [other] 为 null 会返回 false
+ * @param other 需要判断的 [Class]
+ * @return [Boolean]
+ */
+infix fun Class<*>?.implements(other: Class<*>?): Boolean {
+    if (this == null || other == null) return false
+    return interfaces.takeIf { it.isNotEmpty() }?.any { it.name == other.name } ?: false
+}
+
+/**
+ * 当前 [Class] 是否未实现 [other] 接口类
+ *
+ * 此方法相当于 [implements] 的反向判断
+ * @param other 需要判断的 [Class]
+ * @return [Boolean]
+ */
+infix fun Class<*>?.notImplements(other: Class<*>?) = implements(other).not()
+
+/**
+ * 自动转换当前 [Class] 为 Java 原始类型 (Primitive Type)
+ *
+ * 如果当前 [Class] 为 Java 或 Kotlin 基本类型将自动执行类型转换
+ *
+ * 当前能够自动转换的基本类型如下 ↓
+ *
+ * - [kotlin.Unit]
+ * - [java.lang.Void]
+ * - [java.lang.Boolean]
+ * - [java.lang.Integer]
+ * - [java.lang.Float]
+ * - [java.lang.Double]
+ * - [java.lang.Long]
+ * - [java.lang.Short]
+ * - [java.lang.Character]
+ * - [java.lang.Byte]
+ * @return [Class]
+ */
+fun Class<*>.toJavaPrimitiveType() =
+    (name.replace(Unit.toString(), "void")
+        .replace("java.lang.Void", "void")
+        .replace("java.lang.Boolean", "boolean")
+        .replace("java.lang.Integer", "int")
+        .replace("java.lang.Float", "float")
+        .replace("java.lang.Double", "double")
+        .replace("java.lang.Long", "long")
+        .replace("java.lang.Short", "short")
+        .replace("java.lang.Character", "char")
+        .replace("java.lang.Byte", "byte")).toClass()
+
+/**
  * 通过字符串类名转换为 [loader] 中的实体类
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
