@@ -190,28 +190,41 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 获取 [XSharedPreferences] 是否可读
      *
-     * - ❗只能在 (Xposed) 宿主环境中使用 - 模块环境中始终返回 false
-     * @return [Boolean] 是否可读
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [isPreferencesAvailable]
+     * @return [Boolean]
      */
-    val isXSharePrefsReadable
-        get() = if (isXposedEnvironment) (runCatching { xPrefs.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false) else false
+    @Deprecated(message = "请使用新方式来实现此功能", replaceWith = ReplaceWith(expression = "isPreferencesAvailable"))
+    val isXSharePrefsReadable get() = isPreferencesAvailable
 
     /**
      * 获取 [YukiHookModulePrefs] 是否正处于 EdXposed/LSPosed 的最高权限运行
      *
-     * - 前提条件为当前 Xposed 模块已被激活
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗只能在模块环境中使用 - (Xposed) 宿主环境中始终返回 false
-     * @return [Boolean] 仅限在模块中判断 - 在 (Xposed) 宿主环境中始终返回 false
+     * - ❗请现在转移到 [isPreferencesAvailable]
+     * @return [Boolean]
      */
-    val isRunInNewXShareMode
-        get() = if (isXposedEnvironment.not())
-            runCatching {
-                /** 执行一次装载 */
-                sPrefs.edit()
-                isUsingNewXSharedPreferences
-            }.getOrNull() ?: false
-        else false
+    @Deprecated(message = "请使用新方式来实现此功能", replaceWith = ReplaceWith(expression = "isPreferencesAvailable"))
+    val isRunInNewXShareMode get() = isPreferencesAvailable
+
+    /**
+     * 获取当前 [YukiHookModulePrefs] 的可用状态
+     *
+     * - 在 (Xposed) 宿主环境中返回 [XSharedPreferences] 可用状态 (可读)
+     *
+     * - 在模块环境中返回当前是否处于 New XSharedPreferences 模式 (可读可写)
+     * @return [Boolean]
+     */
+    val isPreferencesAvailable
+        get() = if (isXposedEnvironment)
+            (runCatching { xPrefs.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false)
+        else runCatching {
+            /** 执行一次装载 */
+            sPrefs.edit()
+            isUsingNewXSharedPreferences
+        }.getOrNull() ?: false
 
     /**
      * 自定义 Sp 存储名称

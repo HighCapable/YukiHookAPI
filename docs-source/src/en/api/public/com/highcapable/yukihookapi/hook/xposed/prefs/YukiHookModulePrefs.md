@@ -50,7 +50,7 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
 
 若你正在使用 `PreferenceFragmentCompat`，请迁移到 `ModulePreferenceFragment` 以适配上述功能特性。
 
-**可选配置**
+**Optional Configuration**
 
 若你不想将你的模块的 `xposedminversion` 最低设置为 `93`，你可以在 `AndroidManifest.xml` 中添加 `xposedsharedprefs` 来实现支持。
 
@@ -64,47 +64,43 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
     android:value="true"/>
 ```
 
-## isXSharePrefsReadable <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-val isXSharePrefsReadable: Boolean
-```
+<h2 class="deprecated">isXSharePrefsReadable - field</h2>
 
 **Change Records**
 
 `v1.0.90` `added`
 
-**Function Illustrate**
+`v1.1.5` `deprecated`
 
-> 获取 `XSharedPreferences` 是否可读。
+请转移到 `isPreferencesAvailable`
 
-::: danger
-
-只能在 (Xposed) 宿主环境中使用，模块环境中始终返回 false。
-
-:::
-
-## isRunInNewXShareMode <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-val isRunInNewXShareMode: Boolean
-```
+<h2 class="deprecated">isRunInNewXShareMode - field</h2>
 
 **Change Records**
 
 `v1.0.78` `added`
 
+`v1.1.5` `deprecated`
+
+请转移到 `isPreferencesAvailable`
+
+## isPreferencesAvailable <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val isPreferencesAvailable: Boolean
+```
+
+**Change Records**
+
+`v1.1.5` `added`
+
 **Function Illustrate**
 
-> 获取 `YukiHookModulePrefs` 是否正处于 EdXposed/LSPosed 的最高权限运行。
+> 获取当前 `YukiHookModulePrefs` 的可用状态。
 
-前提条件为当前 Xposed 模块已被激活。
+在 (Xposed) 宿主环境中返回 `XSharedPreferences` 可用状态 (可读)。
 
-::: danger
-
-只能在模块环境中使用，(Xposed) 宿主环境中始终返回 false。
-
-:::
+在模块环境中返回当前是否处于 New XSharedPreferences 模式 (可读可写)。
 
 ## name <span class="symbol">- method</span>
 
