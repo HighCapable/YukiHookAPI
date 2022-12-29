@@ -82,7 +82,7 @@ internal class HandlerDelegate private constructor(private val baseInstance: Han
             EXECUTE_TRANSACTION -> msg.obj?.runCatching client@{
                 ClientTransactionClass.method { name = "getCallbacks" }.ignored().get(this).list<Any?>().takeIf { it.isNotEmpty() }
                     ?.forEach { item ->
-                        item?.current(ignored = true)?.takeIf { it.name.contains(other = "LaunchActivityItem") }?.field { name = "mIntent" }
+                        item?.current(ignored = true)?.takeIf { it.name.contains("LaunchActivityItem") }?.field { name = "mIntent" }
                             ?.apply {
                                 cast<Intent?>()?.also { intent ->
                                     IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()

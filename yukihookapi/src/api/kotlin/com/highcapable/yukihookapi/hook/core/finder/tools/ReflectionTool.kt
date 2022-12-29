@@ -236,7 +236,7 @@ internal object ReflectionTool {
             }
             findDexClassList(loaderSet).takeIf { it.isNotEmpty() }?.forEach { className ->
                 /** 分离包名 → com.demo.Test → com.demo (获取最后一个 "." + 简单类名的长度) → 由于末位存在 "." 最后要去掉 1 个长度 */
-                (if (className.contains(other = "."))
+                (if (className.contains("."))
                     className.substring(0, className.length - className.split(".").let { it[it.lastIndex] }.length - 1)
                 else className).also { packageName ->
                     if ((fromPackages.isEmpty() || fromPackages.any {

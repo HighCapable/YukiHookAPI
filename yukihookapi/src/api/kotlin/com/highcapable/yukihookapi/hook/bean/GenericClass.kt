@@ -25,6 +25,8 @@
  *
  * This file is Created by fankes on 2022/9/20.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.hook.bean
 
 import java.lang.reflect.ParameterizedType
