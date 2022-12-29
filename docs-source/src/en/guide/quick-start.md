@@ -132,7 +132,7 @@ Add the base code to your `AndroidManifest.xml`.
     android:name="xposedminversion"
     android:value="93" />
 
-<!-- Optional: Configure support for New XSharePrefs without adjusting xposedminversion to 93 -->
+<!-- Optional: Configure support for New XSharedPreferences without adjusting xposedminversion to 93 -->
 <meta-data
     android:name="xposedsharedprefs"
     android:value="true"/>

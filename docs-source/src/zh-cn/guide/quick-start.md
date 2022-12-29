@@ -131,7 +131,7 @@ android {
     android:name="xposedminversion"
     android:value="93" />
 
-<!-- 可选：配置支持 New XSharePrefs 可无需调整 xposedminversion 为 93 -->
+<!-- 可选：配置支持 New XSharedPreferences 可无需调整 xposedminversion 为 93 -->
 <meta-data
     android:name="xposedsharedprefs"
     android:value="true"/>
