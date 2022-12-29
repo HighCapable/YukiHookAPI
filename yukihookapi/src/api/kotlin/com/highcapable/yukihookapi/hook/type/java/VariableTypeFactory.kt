@@ -148,7 +148,7 @@ val DoubleType get() = "double".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "void"
  * @return [Class]
  */
-val UnitType get() = "void".toClass()
+val UnitType get() = Void.TYPE ?: "void".toClass()
 
 /**
  * 获得 [Any] 类型
