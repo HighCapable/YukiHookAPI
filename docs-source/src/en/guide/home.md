@@ -183,4 +183,4 @@ The following are the `Hook Framework` and Xposed framework supported by `YukiHo
 | [FastHook](https://github.com/turing-technician/FastHook) | ❗   | Need to implement the Xposed API yourself                                                 |
 | [Epic](https://github.com/tiann/epic)                     | ❗   | Need [Dexposed](https://github.com/alibaba/dexposed) by yourself                          |
 | [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕   | Only available for Xposed Module                                                          |
-| [Xposed](https://github.com/rovo89/Xposed)                | ❎   | Not test, no longer recommended                                                           |
+| [Xposed](https://github.com/rovo89/Xposed)                | ⭕   | Recommended minimum system version is Android 7.0                                         |

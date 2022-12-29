@@ -183,4 +183,4 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
 | [FastHook](https://github.com/turing-technician/FastHook) | ❗   | 需要自行实现 Xposed API                                                                   |
 | [Epic](https://github.com/tiann/epic)                     | ❗   | 需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)                              |
 | [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕   | 可以作为模块使用                                                                          |
-| [Xposed](https://github.com/rovo89/Xposed)                | ❎   | 未测试，不再推荐使用                                                                      |
+| [Xposed](https://github.com/rovo89/Xposed)                | ⭕   | 建议最低系统版本为 Android 7.0                                                            |
