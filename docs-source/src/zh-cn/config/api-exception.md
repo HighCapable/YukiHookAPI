@@ -856,6 +856,22 @@ You cannot register Activity Proxy into yourself
 
 ::: danger loggerE
 
+Activity Proxy only support for Android 7.0 (API 24) or higher
+
+:::
+
+**异常原因**
+
+在 (Xposed) 宿主环境 (模块自身的 Xposed 环境) 中使用 `registerModuleAppActivities` 但是当前系统版本不满足 Android 7.0 (API 24) 最低要求。
+
+**解决方案**
+
+Activity Proxy 仅支持高于或等于 Android 7.0 (API 24) 的系统，请尝试升级你的系统或对模块 APP 最低系统版本兼容性做出要求，例如设置 Min API 为 24。
+
+###### exception
+
+::: danger loggerE
+
 An exception occurred during AppLifecycle event
 
 :::

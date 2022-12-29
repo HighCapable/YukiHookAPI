@@ -899,6 +899,24 @@ If you must obtain the resources of the Module App itself, please use it directl
 
 ::: danger loggerE
 
+Activity Proxy only support for Android 7.0 (API 24) or higher
+
+:::
+
+**Abnormal**
+
+Use `registerModuleAppActivities` in the (Xposed) Host environment but the current system version does not meet the minimum requirements of Android 7.0 (API 24).
+
+**Solution**
+
+Activity Proxy only supports systems higher than or equal to Android 7.0 (API 24).
+
+Please try to upgrade your system or make requirements for the minimum api version compatibility of the Module App, for example, set the minimum api to 24.
+
+###### exception
+
+::: danger loggerE
+
 An exception occurred during AppLifecycle event
 
 :::
