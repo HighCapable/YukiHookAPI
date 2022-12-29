@@ -66,9 +66,9 @@ class MainActivity : ModuleAppCompatActivity() {
             moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.API_VERSION_NAME}(${YukiHookAPI.API_VERSION_CODE})"
             moduleDemoYukiHookApiVersionZhText.text = "YukiHookAPI 版本"
             moduleDemoNewXshareText.text =
-                if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences：${modulePrefs.isXSharePrefsReadable}"
-                else "New XShare Mode：${modulePrefs.isRunInNewXShareMode}"
-            moduleDemoNewXshareZhText.text = if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences 是否可用" else "New XShare 模式支持状态"
+                "${if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences Readable" else "New XSharedPreferences"}：${modulePrefs.isPreferencesAvailable}"
+            moduleDemoNewXshareZhText.text =
+                if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences 是否可用" else "New XSharedPreferences 支持状态"
             moduleDemoResHookText.text = "Support Resources Hook：${YukiHookAPI.Status.isSupportResourcesHook}"
             moduleDemoResHookZhText.text = "资源钩子支持状态"
             moduleDemoComTimeStampText.text =
