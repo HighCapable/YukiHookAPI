@@ -153,7 +153,19 @@ class HookEntry : IYukiHookXposedInit {
 
 ::: tip 建议
 
-你可以将你的模块 APP 的 **Application** 继承于 **ModuleApplication** 以实现完整使用体验。
+请在 **onInit** 方法中配置 **YukiHookAPI** 并将 **isDebug** 模式设置为如下形式。
+
+> 示例如下
+
+```kotlin
+override fun onInit() = configs {
+    isDebug = BuildConfig.DEBUG
+}
+```
+
+**YukiHookAPI** 默认会打印所有用于调试的日志，若作为发布版本请务必关闭调试功能防止对用户设备造成大量日志填充。
+
+你还可以将你的模块 APP 的 **Application** 继承于 **ModuleApplication** 以实现完整使用体验。
 
 更多功能请参考 [ModuleApplication](../api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication)。
 
