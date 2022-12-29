@@ -1918,3 +1918,35 @@ loadSystem {
 **Solution**
 
 Since the cache will store the found `Class` name in `SharedPreferences`, but the data directory does not exist in the System Framework, so please do not use this function in the System Framework.
+
+###### exception
+
+::: danger IllegalStateException
+
+Target Class type cannot cast to **TYPE**
+
+:::
+
+**Abnormal**
+
+Wrong type declared when converting a string class name to the target `Class` using the `toClass` method.
+
+> The following example
+
+```kotlin
+// Assume the target type is Activity but it was wrongly cast to WrongClass type
+val clazz = "android.app.Activity".toClass<WrongClass>()
+```
+
+**Solution**
+
+> The following example
+
+```kotlin
+// <Solution 1> Fill in the correct type
+val clazz1 = "android.app.Activity".toClass<Activity>()
+// <Solution 2> Do not fill in the generic declaration
+val clazz2 = "android.app.Activity".toClass()
+```
+
+Please ensure that the generic type declared after the `toClass` method is the specified target `Class` type, and you do not need to fill in the generic declaration if the target type is not sure.

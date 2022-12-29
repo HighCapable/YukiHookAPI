@@ -1849,3 +1849,35 @@ loadSystem {
 **解决方案**
 
 由于缓存会将找到的 `Class` 名称存入 `SharedPreferences`，但是系统框架不存在 data 目录，所以请不要在系统框架中使用此功能。
+
+###### exception
+
+::: danger IllegalStateException 
+
+Target Class type cannot cast to **TYPE**
+
+:::
+
+**异常原因**
+
+使用 `toClass` 方法将字符串类名转换为目标 `Class` 时声明了错误的类型。
+
+> 示例如下
+
+```kotlin
+// 假设目标类型是 Activity 但是被错误地转换为了 WrongClass 类型
+val clazz = "android.app.Activity".toClass<WrongClass>()
+```
+
+**解决方案**
+
+> 示例如下
+
+```kotlin
+// <解决方案 1> 填写正确的类型
+val clazz1 = "android.app.Activity".toClass<Activity>()
+// <解决方案 2> 不填写泛型声明
+val clazz2 = "android.app.Activity".toClass()
+```
+
+请确保 `toClass` 方法后声明的泛型是指定的目标 `Class` 类型，在不确定目标类型的情况下你可以不需要填写泛型声明。
