@@ -35,10 +35,12 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.view.ContextThemeWrapper
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
@@ -153,8 +155,11 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  * For English version, see [Register Module App's Activity](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#register-module-app-s-activity)
  *
  * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ *
+ * - ❗最低支持 Android 7.0 (API 24)
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
  */
+@RequiresApi(Build.VERSION_CODES.N)
 fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)
 
 /**

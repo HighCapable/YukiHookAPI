@@ -38,7 +38,9 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.Build
 import android.os.Handler
+import androidx.annotation.RequiresApi
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.loggerE
@@ -303,10 +305,12 @@ internal object AppParasitics {
      * @param context 当前 [Context]
      * @param proxy 代理的 [Activity]
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
         if (isActivityProxyRegistered) return
         if (YukiHookBridge.hasXposedBridge.not()) return yLoggerW(msg = "You can only register Activity Proxy in Xposed Environment")
         if (context.packageName == YukiHookBridge.modulePackageName) return yLoggerE(msg = "You cannot register Activity Proxy into yourself")
+        if (Build.VERSION.SDK_INT < 24) return yLoggerE(msg = "Activity Proxy only support for Android 7.0 (API 24) or higher")
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${YukiHookBridge.modulePackageName}.ACTIVITY_PROXY_INTENT"

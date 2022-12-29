@@ -164,6 +164,10 @@ fun Context.registerModuleAppActivities(proxy: Any?)
 
 `v1.1.0` `added`
 
+`v1.1.5` `modified`
+
+加入最低 API 版本限制
+
 **Function Illustrate**
 
 > 向 Hook APP (宿主) 注册当前 Xposed 模块的 `Activity`。
@@ -177,6 +181,8 @@ fun Context.registerModuleAppActivities(proxy: Any?)
 ::: danger
 
 只能在 (Xposed) 宿主环境使用此功能，其它环境下使用将不生效且会打印警告信息。
+
+最低支持 Android 7.0 (API 24)。
 
 :::
 
