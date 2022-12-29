@@ -39,6 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
+import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
@@ -101,7 +102,7 @@ fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit) = AppParasitics.hookClas
  * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
  * @return [Boolean]
  */
-val Class<*>.hasExtends get() = superclass != null && superclass?.name != "java.lang.Object"
+val Class<*>.hasExtends get() = superclass != null && superclass != AnyClass
 
 /**
  * 通过字符串类名转换为 [loader] 中的实体类
