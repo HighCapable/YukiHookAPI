@@ -125,12 +125,33 @@ fun String.toClass(loader: ClassLoader? = null) = ReflectionTool.findClassByName
 
 /**
  * 通过字符串类名转换为 [loader] 中的实体类
+ * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [Class]<[T]>
+ * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+ * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
+ */
+@JvmName("toClass_Generics")
+inline fun <reified T> String.toClass(loader: ClassLoader? = null) =
+    ReflectionTool.findClassByName(name = this, loader) as? Class<T> ?: error("Target Class type cannot cast to ${T::class.java}")
+
+/**
+ * 通过字符串类名转换为 [loader] 中的实体类
  *
  * 找不到 [Class] 会返回 null - 不会抛出异常
  * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
  * @return [Class] or null
  */
 fun String.toClassOrNull(loader: ClassLoader? = null) = runCatching { toClass(loader) }.getOrNull()
+
+/**
+ * 通过字符串类名转换为 [loader] 中的实体类
+ *
+ * 找不到 [Class] 会返回 null - 不会抛出异常
+ * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [Class]<[T]> or null
+ */
+@JvmName("toClassOrNull_Generics")
+inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = null) = runCatching { toClass<T>(loader) }.getOrNull()
 
 /**
  * 通过 [T] 得到其 [Class] 实例并转换为实体类

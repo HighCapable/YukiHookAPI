@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -483,12 +483,33 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
 
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @return [Class]<[T]>
+     * @throws NoClassDefFoundError 如果找不到 [Class]
+     * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
+     */
+    @JvmName("toClass_Generics")
+    inline fun <reified T> String.toClass(loader: ClassLoader? = appClassLoader) =
+        ReflectionTool.findClassByName(name = this, loader) as? Class<T> ?: error("Target Class type cannot cast to ${T::class.java}")
+
+    /**
+     * 通过字符串类名转换为 [loader] 中的实体类
      *
      * 找不到 [Class] 会返回 null - 不会抛出异常
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Class] or null
      */
     fun String.toClassOrNull(loader: ClassLoader? = appClassLoader) = runCatching { toClass(loader) }.getOrNull()
+
+    /**
+     * 通过字符串类名转换为 [loader] 中的实体类
+     *
+     * 找不到 [Class] 会返回 null - 不会抛出异常
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @return [Class]<[T]> or null
+     */
+    @JvmName("toClassOrNull_Generics")
+    inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = appClassLoader) = runCatching { toClass<T>(loader) }.getOrNull()
 
     /**
      * [VariousClass] 转换为 [loader] 中的实体类

@@ -253,9 +253,17 @@ val Class<*>.hasExtends: Boolean
 fun String.toClass(loader: ClassLoader?): Class<*>
 ```
 
+```kotlin:no-line-numbers
+inline fun <reified T> String.toClass(loader: ClassLoader?): Class<T>
+```
+
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.1.5` `modified`
+
+新增泛型返回值 `Class<T>` 方法
 
 **Function Illustrate**
 
@@ -280,15 +288,32 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 "com.example.demo.DemoClass".toClass(customClassLoader)
 ```
 
+你还可以指定 `Class` 的目标类型。
+
+> The following example
+
+```kotlin
+// 指定的 DemoClass 必须存在或为可访问的 stub
+"com.example.demo.DemoClass".toClass<DemoClass>()
+```
+
 ## String.toClassOrNull <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers
 fun String.toClassOrNull(loader: ClassLoader?): Class<*>?
 ```
 
+```kotlin:no-line-numbers
+inline fun <reified T> String.toClassOrNull(loader: ClassLoader?): Class<T>?
+```
+
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.1.5` `modified`
+
+新增泛型返回值 `Class<T>` 方法
 
 **Function Illustrate**
 

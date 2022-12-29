@@ -628,12 +628,20 @@ fun String.toClass(loader: ClassLoader?): Class<*>
 ```
 
 ```kotlin:no-line-numbers
+inline fun <reified T> String.toClass(loader: ClassLoader?): Class<T>
+```
+
+```kotlin:no-line-numbers
 fun VariousClass.toClass(loader: ClassLoader?): Class<*>
 ```
 
 **变更记录**
 
 `v1.1.0` `新增`
+
+`v1.1.5` `修改`
+
+新增泛型返回值 `Class<T>` 方法
 
 **功能描述**
 
@@ -658,6 +666,15 @@ fun VariousClass.toClass(loader: ClassLoader?): Class<*>
 ```kotlin
 val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
 "com.example.demo.DemoClass".toClass(customClassLoader)
+```
+
+你还可以指定 `Class` 的目标类型。
+
+> 示例如下
+
+```kotlin
+// 指定的 DemoClass 必须存在或为可访问的 stub
+"com.example.demo.DemoClass".toClass<DemoClass>()
 ```
 
 你还可以创建一个 `VariousClass`，并转换为实体类。
@@ -686,12 +703,20 @@ fun String.toClassOrNull(loader: ClassLoader?): Class<*>?
 ```
 
 ```kotlin:no-line-numbers
+inline fun <reified T> String.toClassOrNull(loader: ClassLoader?): Class<T>?
+```
+
+```kotlin:no-line-numbers
 fun VariousClass.toClassOrNull(loader: ClassLoader?): Class<*>?
 ```
 
 **变更记录**
 
 `v1.1.0` `新增`
+
+`v1.1.5` `修改`
+
+新增泛型返回值 `Class<T>` 方法
 
 **功能描述**
 
