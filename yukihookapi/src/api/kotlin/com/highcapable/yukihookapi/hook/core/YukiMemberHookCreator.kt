@@ -627,25 +627,13 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * @throws IllegalStateException 如果返回值不正确
          */
         private fun checkingReturnType(origin: Class<*>?, target: Class<*>?) {
-            /**
-             * 获取当前 [Class] 的 Java 基本类型
-             * @return [String]
-             */
-            fun Class<*>.objectName() =
-                name.replace(Unit.toString(), "void")
-                    .replace("java.lang.Void", "void")
-                    .replace("java.lang.Boolean", "boolean")
-                    .replace("java.lang.Integer", "int")
-                    .replace("java.lang.Float", "float")
-                    .replace("java.lang.Double", "double")
-                    .replace("java.lang.Long", "long")
-                    .replace("java.lang.Short", "short")
-                    .replace("java.lang.Character", "char")
-                    .replace("java.lang.Byte", "byte")
             if (origin == null || target == null) return
-            val originName = origin.objectName()
-            val targetName = target.objectName()
-            if (originName != targetName) error("Hooked method return type match failed, required [$originName] but got [$targetName]")
+            origin.toJavaPrimitiveType().also { o ->
+                target.toJavaPrimitiveType().also { t ->
+                    if (o notExtends t && t notExtends o && o notImplements t && t notImplements o)
+                        error("Hooked method return type match failed, required [$origin] but got [$target]")
+                }
+            }
         }
 
         /**
