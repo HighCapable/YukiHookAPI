@@ -28,11 +28,13 @@
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
 import java.lang.reflect.Constructor
 
 /**
  * [Constructor] 规则查找数据类
  * @param paramTypes 参数类型数组
+ * @param paramTypesConditions 参数类型条件
  * @param paramCount 参数个数
  * @param paramCountRange 参数个数范围
  * @param paramCountConditions 参数个数条件
@@ -40,6 +42,7 @@ import java.lang.reflect.Constructor
 @PublishedApi
 internal class ConstructorRulesData internal constructor(
     var paramTypes: Array<out Class<*>>? = null,
+    var paramTypesConditions: ObjectsConditions? = null,
     var paramCount: Int = -1,
     var paramCountRange: IntRange = IntRange.EMPTY,
     var paramCountConditions: CountConditions? = null
@@ -50,16 +53,17 @@ internal class ConstructorRulesData internal constructor(
             paramCount.takeIf { it >= 0 }?.let { "paramCount:[$it]" } ?: "",
             paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
             paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
-            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "", *super.templates
+            paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "",
+            paramTypesConditions?.let { "paramTypesConditions:[existed]" } ?: "", *super.templates
         )
 
     override val objectName get() = "Constructor"
 
     override val isInitialize
-        get() = super.isInitializeOfSuper || paramTypes != null || paramCount >= 0 ||
+        get() = super.isInitializeOfSuper || paramTypes != null || paramTypesConditions != null || paramCount >= 0 ||
                 paramCountRange.isEmpty().not() || paramCountConditions != null
 
     override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
 
-    override fun toString() = "[$paramTypes][$paramCount][$paramCountRange]"
+    override fun toString() = "[$paramTypes][$paramTypesConditions][$paramCount][$paramCountRange]"
 }

@@ -40,6 +40,7 @@ import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
@@ -154,6 +155,26 @@ class FieldFinder @PublishedApi internal constructor(
      */
     fun type(value: Any): IndexTypeCondition {
         rulesData.type = value.compat()
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
+     * 设置 [Field] 类型条件
+     *
+     * - 可不填写类型
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * type { it == StringClass || it.name == "java.lang.String" }
+     * ```
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param conditions 条件方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun type(conditions: ObjectConditions): IndexTypeCondition {
+        rulesData.typeConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 

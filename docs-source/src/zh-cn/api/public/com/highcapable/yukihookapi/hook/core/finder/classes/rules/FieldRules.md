@@ -75,3 +75,19 @@ fun name(conditions: NameConditions)
 **功能描述**
 
 > 设置 `Field` 名称条件。
+
+## type <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun type(conditions: ObjectConditions)
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 设置 `Field` 类型条件。
+
+可不填写类型。

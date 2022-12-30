@@ -39,6 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ConstructorConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
@@ -133,6 +134,28 @@ class ConstructorFinder @PublishedApi internal constructor(
     fun param(vararg paramType: Any): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         rulesData.paramTypes = arrayListOf<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
+     * 设置 [Constructor] 参数条件
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * param { it[1] == StringClass || it[2].name == "java.lang.String" }
+     * ```
+     *
+     * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查找条件
+     *
+     * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param conditions 条件方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun param(conditions: ObjectsConditions): IndexTypeCondition {
+        rulesData.paramTypesConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 

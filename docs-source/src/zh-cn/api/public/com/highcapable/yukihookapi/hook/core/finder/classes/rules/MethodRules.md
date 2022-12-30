@@ -120,6 +120,28 @@ fun param(vararg paramType: Any)
 
 :::
 
+## param <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun param(conditions: ObjectsConditions)
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 设置 `Method` 参数条件。
+
+::: danger
+
+无参 **Method** 请使用 **emptyParam** 设置查找条件。
+
+有参 **Method** 必须使用此方法设定参数或使用 **paramCount** 指定个数。
+
+:::
+
 ## name <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
@@ -165,3 +187,19 @@ fun paramCount(conditions: CountConditions)
 > 设置 `Method` 参数个数条件。
 
 你可以不使用 `param` 指定参数类型而是仅使用此方法指定参数个数条件。
+
+## returnType <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun returnType(conditions: ObjectConditions)
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 设置 `Method` 返回值条件。
+
+可不填写返回值。

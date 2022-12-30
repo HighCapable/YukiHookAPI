@@ -33,9 +33,7 @@ import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.base.BaseRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberRulesResult
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Method
@@ -130,6 +128,24 @@ class MethodRules internal constructor(@PublishedApi internal val rulesData: Met
     }
 
     /**
+     * 设置 [Method] 参数条件
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * param { it[1] == StringClass || it[2].name == "java.lang.String" }
+     * ```
+     *
+     * - ❗无参 [Method] 请使用 [emptyParam] 设置查找条件
+     *
+     * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * @param conditions 条件方法体
+     */
+    fun param(conditions: ObjectsConditions) {
+        rulesData.paramTypesConditions = conditions
+    }
+
+    /**
      * 设置 [Method] 名称条件
      * @param conditions 条件方法体
      */
@@ -167,6 +183,22 @@ class MethodRules internal constructor(@PublishedApi internal val rulesData: Met
      */
     fun paramCount(conditions: CountConditions) {
         rulesData.paramCountConditions = conditions
+    }
+
+    /**
+     * 设置 [Method] 返回值条件
+     *
+     * - 可不填写返回值
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * returnType { it == StringClass || it.name == "java.lang.String" }
+     * ```
+     * @param conditions 条件方法体
+     */
+    fun returnType(conditions: ObjectConditions) {
+        rulesData.returnTypeConditions = conditions
     }
 
     /**

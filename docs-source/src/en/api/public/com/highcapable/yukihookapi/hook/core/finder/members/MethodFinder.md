@@ -162,6 +162,30 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 :::
 
+## param <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun param(conditions: ObjectsConditions): IndexTypeCondition
+```
+
+**Change Records**
+
+`v1.1.5` `added`
+
+**Function Illustrate**
+
+> 设置 `Method` 参数条件。
+
+::: danger
+
+无参 **Method** 请使用 **emptyParam** 设置查找条件。
+
+有参 **Method** 必须使用此方法设定参数或使用 **paramCount** 指定个数。
+
+存在多个 **IndexTypeCondition** 时除了 **order** 只会生效最后一个。
+
+:::
+
 ## order <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
@@ -305,6 +329,28 @@ fun returnType(value: Any): IndexTypeCondition
 **Function Illustrate**
 
 > 设置 `Method` 返回值。
+
+可不填写返回值。
+
+::: danger
+
+存在多个 **IndexTypeCondition** 时除了 **order** 只会生效最后一个。
+
+:::
+
+## returnType <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun returnType(conditions: ObjectConditions): IndexTypeCondition
+```
+
+**Change Records**
+
+`v1.1.5` `added`
+
+**Function Illustrate**
+
+> 设置 `Method` 返回值条件。
 
 可不填写返回值。
 

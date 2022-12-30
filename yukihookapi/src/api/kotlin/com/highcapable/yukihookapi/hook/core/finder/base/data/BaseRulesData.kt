@@ -30,9 +30,13 @@ package com.highcapable.yukihookapi.hook.core.finder.base.data
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.ObjectRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
+import java.lang.reflect.Constructor
+import java.lang.reflect.Field
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * 这是 [Class] 与 [Member] 规则查找数据基本类实现
@@ -77,6 +81,30 @@ internal abstract class BaseRulesData internal constructor(
      * @return [ModifierRules]
      */
     internal fun Member.cast() = ModifierRules.with(instance = this, uniqueValue)
+
+    /**
+     * [Field.getType] 转换为 [ObjectRules]
+     * @return [ObjectRules]
+     */
+    internal fun Field.type() = ObjectRules.with(type)
+
+    /**
+     * [Method.getParameterTypes] 转换为 [ObjectRules]
+     * @return [ObjectRules]
+     */
+    internal fun Method.paramTypes() = ObjectRules.with(parameterTypes)
+
+    /**
+     * [Method.getReturnType] 转换为 [ObjectRules]
+     * @return [ObjectRules]
+     */
+    internal fun Method.returnType() = ObjectRules.with(returnType)
+
+    /**
+     * [Constructor.getParameterTypes] 转换为 [ObjectRules]
+     * @return [ObjectRules]
+     */
+    internal fun Constructor<*>.paramTypes() = ObjectRules.with(parameterTypes)
 
     /**
      * 获取参数数组文本化内容

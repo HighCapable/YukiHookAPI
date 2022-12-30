@@ -180,9 +180,31 @@ fun type(value: Any): IndexTypeCondition
 
 > 设置 `Field` 类型。
 
+可不填写类型。
+
 ::: danger
 
+存在多个 **IndexTypeCondition** 时除了 **order** 只会生效最后一个。
+
+:::
+
+## type <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun type(conditions: ObjectConditions): IndexTypeCondition
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 设置 `Field` 类型条件。
+
 可不填写类型。
+
+::: danger
 
 存在多个 **IndexTypeCondition** 时除了 **order** 只会生效最后一个。
 

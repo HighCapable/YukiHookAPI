@@ -33,6 +33,7 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberR
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import java.lang.reflect.Field
 
 /**
@@ -81,6 +82,22 @@ class FieldRules internal constructor(@PublishedApi internal val rulesData: Fiel
      */
     fun name(conditions: NameConditions) {
         rulesData.nameConditions = conditions
+    }
+
+    /**
+     * 设置 [Field] 类型条件
+     *
+     * - 可不填写类型
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * type { it == StringClass || it.name == "java.lang.String" }
+     * ```
+     * @param conditions 条件方法体
+     */
+    fun type(conditions: ObjectConditions) {
+        rulesData.typeConditions = conditions
     }
 
     /**

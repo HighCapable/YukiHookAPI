@@ -29,6 +29,8 @@ package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
 import java.lang.reflect.Method
 
 /**
@@ -36,20 +38,24 @@ import java.lang.reflect.Method
  * @param name 名称
  * @param nameConditions 名称规则
  * @param paramTypes 参数类型数组
+ * @param paramTypesConditions 参数类型条件
  * @param paramCount 参数个数
  * @param paramCountRange 参数个数范围
  * @param paramCountConditions 参数个数条件
  * @param returnType 返回值类型
+ * @param returnTypeConditions 返回值类型条件
  */
 @PublishedApi
 internal class MethodRulesData internal constructor(
     var name: String = "",
     var nameConditions: NameConditions? = null,
     var paramTypes: Array<out Class<*>>? = null,
+    var paramTypesConditions: ObjectsConditions? = null,
     var paramCount: Int = -1,
     var paramCountRange: IntRange = IntRange.EMPTY,
     var paramCountConditions: CountConditions? = null,
-    var returnType: Any? = null
+    var returnType: Any? = null,
+    var returnTypeConditions: ObjectConditions? = null
 ) : MemberRulesData() {
 
     override val templates
@@ -60,16 +66,20 @@ internal class MethodRulesData internal constructor(
             paramCountRange.takeIf { it.isEmpty().not() }?.let { "paramCountRange:[$it]" } ?: "",
             paramCountConditions?.let { "paramCountConditions:[existed]" } ?: "",
             paramTypes?.typeOfString()?.let { "paramTypes:[$it]" } ?: "",
-            returnType?.let { "returnType:[$it]" } ?: "", *super.templates
+            paramTypesConditions?.let { "paramTypesConditions:[existed]" } ?: "",
+            returnType?.let { "returnType:[$it]" } ?: "",
+            returnTypeConditions?.let { "returnTypeConditions:[existed]" } ?: "", *super.templates
         )
 
     override val objectName get() = "Method"
 
     override val isInitialize
-        get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || paramTypes != null ||
-                paramCount >= 0 || paramCountRange.isEmpty().not() || paramCountConditions != null || returnType != null
+        get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || paramTypes != null || paramTypesConditions != null ||
+                paramCount >= 0 || paramCountRange.isEmpty().not() || paramCountConditions != null ||
+                returnType != null || returnTypeConditions != null
 
     override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
 
-    override fun toString() = "[$name][$nameConditions][$paramTypes][$paramCount][$paramCountRange][$returnType]"
+    override fun toString() = "[$name][$nameConditions][$paramTypes][$paramTypesConditions][$paramCount]" +
+            "[$paramCountRange][$returnType][$returnTypeConditions]"
 }

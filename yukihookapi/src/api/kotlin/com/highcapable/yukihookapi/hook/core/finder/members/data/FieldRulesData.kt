@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import java.lang.reflect.Field
 
 /**
@@ -35,26 +36,30 @@ import java.lang.reflect.Field
  * @param name 名称
  * @param nameConditions 名称规则
  * @param type 类型
+ * @param typeConditions 类型条件
  */
 @PublishedApi
 internal class FieldRulesData internal constructor(
     var name: String = "",
     var nameConditions: NameConditions? = null,
-    var type: Any? = null
+    var type: Any? = null,
+    var typeConditions: ObjectConditions? = null
 ) : MemberRulesData() {
 
     override val templates
         get() = arrayOf(
             name.takeIf { it.isNotBlank() }?.let { "name:[$it]" } ?: "",
             nameConditions?.let { "nameConditions:[existed]" } ?: "",
-            type?.let { "type:[$it]" } ?: "", *super.templates
+            type?.let { "type:[$it]" } ?: "",
+            typeConditions?.let { "typeConditions:[existed]" } ?: "", *super.templates
         )
 
     override val objectName get() = "Field"
 
-    override val isInitialize get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || type != null
+    override val isInitialize
+        get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || type != null || typeConditions != null
 
     override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
 
-    override fun toString() = "[$name][$nameConditions][$type]"
+    override fun toString() = "[$name][$nameConditions][$type][$typeConditions]"
 }

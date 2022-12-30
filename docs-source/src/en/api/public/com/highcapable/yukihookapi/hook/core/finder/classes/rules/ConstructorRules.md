@@ -98,6 +98,28 @@ fun param(vararg paramType: Any)
 
 :::
 
+## param <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun param(conditions: ObjectsConditions)
+```
+
+**Change Records**
+
+`v1.1.5` `added`
+
+**Function Illustrate**
+
+> 设置 `Constructor` 参数条件。
+
+::: danger
+
+无参 **Constructor** 请使用 **emptyParam** 设置查找条件。
+
+有参 **Constructor** 必须使用此方法设定参数或使用 **paramCount** 指定个数。
+
+:::
+
 ## paramCount <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers

@@ -67,6 +67,7 @@ const navigationLinks = {
         baseApiPath + 'hook/core/finder/base/rules/CountRules',
         baseApiPath + 'hook/core/finder/base/rules/ModifierRules',
         baseApiPath + 'hook/core/finder/base/rules/NameRules',
+        baseApiPath + 'hook/core/finder/base/rules/ObjectRules',
         baseApiPath + 'hook/bean/HookClass',
         baseApiPath + 'hook/bean/VariousClass',
         baseApiPath + 'hook/bean/CurrentClass',

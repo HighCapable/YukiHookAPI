@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberR
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Constructor
@@ -102,6 +103,24 @@ class ConstructorRules internal constructor(@PublishedApi internal val rulesData
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         rulesData.paramTypes =
             arrayListOf<Class<*>>().apply { paramType.forEach { add(it.compat(tag = "Constructor") ?: UndefinedType) } }.toTypedArray()
+    }
+
+    /**
+     * 设置 [Constructor] 参数条件
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * param { it[1] == StringClass || it[2].name == "java.lang.String" }
+     * ```
+     *
+     * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查找条件
+     *
+     * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * @param conditions 条件方法体
+     */
+    fun param(conditions: ObjectsConditions) {
+        rulesData.paramTypesConditions = conditions
     }
 
     /**

@@ -30,6 +30,7 @@ package com.highcapable.yukihookapi.hook.core.finder.type.factory
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
+import com.highcapable.yukihookapi.hook.core.finder.base.rules.ObjectRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
@@ -55,3 +56,9 @@ internal typealias CountConditions = CountRules.(Int) -> Boolean
 
 /** 定义 [ModifierRules] 方法体类型 */
 internal typealias ModifierConditions = ModifierRules.() -> Boolean
+
+/** 定义 [ObjectRules] 方法体类型 */
+internal typealias ObjectConditions = ObjectRules.(Class<*>) -> Boolean
+
+/** 定义 [ObjectRules] 方法体类型 */
+internal typealias ObjectsConditions = ObjectRules.(Array<Class<*>>) -> Boolean

@@ -36,10 +36,7 @@ import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
 import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
@@ -167,6 +164,28 @@ class MethodFinder @PublishedApi internal constructor(
     }
 
     /**
+     * 设置 [Method] 参数条件
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * param { it[1] == StringClass || it[2].name == "java.lang.String" }
+     * ```
+     *
+     * - ❗无参 [Method] 请使用 [emptyParam] 设置查找条件
+     *
+     * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param conditions 条件方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun param(conditions: ObjectsConditions): IndexTypeCondition {
+        rulesData.paramTypesConditions = conditions
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
      * 顺序筛选字节码的下标
      * @return [BaseFinder.IndexTypeCondition]
      */
@@ -267,6 +286,26 @@ class MethodFinder @PublishedApi internal constructor(
      */
     fun returnType(value: Any): IndexTypeCondition {
         rulesData.returnType = value.compat()
+        return IndexTypeCondition(IndexConfigType.MATCH)
+    }
+
+    /**
+     * 设置 [Method] 返回值条件
+     *
+     * - 可不填写返回值
+     *
+     * 使用示例如下 ↓
+     *
+     * ```kotlin
+     * returnType { it == StringClass || it.name == "java.lang.String" }
+     * ```
+     *
+     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param conditions 条件方法体
+     * @return [BaseFinder.IndexTypeCondition]
+     */
+    fun returnType(conditions: ObjectConditions): IndexTypeCondition {
+        rulesData.returnTypeConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 

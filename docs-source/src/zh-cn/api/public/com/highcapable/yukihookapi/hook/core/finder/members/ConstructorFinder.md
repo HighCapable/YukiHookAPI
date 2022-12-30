@@ -116,6 +116,30 @@ fun param(vararg paramType: Any): IndexTypeCondition
 
 :::
 
+## param <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun param(conditions: ObjectsConditions): IndexTypeCondition
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 设置 `Constructor` 参数条件。
+
+::: danger
+
+无参 **Constructor** 请使用 **emptyParam** 设置查找条件。
+
+有参 **Constructor** 必须使用此方法设定参数或使用 **paramCount** 指定个数。
+
+存在多个 **IndexTypeCondition** 时除了 **order** 只会生效最后一个。
+
+:::
+
 ## paramCount <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers

@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
-import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
@@ -45,9 +44,7 @@ import com.highcapable.yukihookapi.hook.type.java.DalvikBaseDexClassLoader
 import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
-import com.highcapable.yukihookapi.hook.utils.conditions
-import com.highcapable.yukihookapi.hook.utils.let
-import com.highcapable.yukihookapi.hook.utils.takeIf
+import com.highcapable.yukihookapi.hook.utils.*
 import com.highcapable.yukihookapi.hook.utils.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
@@ -134,10 +131,10 @@ internal object ReflectionTool {
                     fullName?.also { it.equals(instance, it.TYPE_NAME).also { e -> if (it.isOptional) opt(e) else and(e) } }
                     simpleName?.also { it.equals(instance, it.TYPE_SIMPLE_NAME).also { e -> if (it.isOptional) opt(e) else and(e) } }
                     singleName?.also { it.equals(instance, it.TYPE_SINGLE_NAME).also { e -> if (it.isOptional) opt(e) else and(e) } }
-                    fullNameConditions?.also { instance.name.also { n -> and(it(n.cast(), n)) } }
-                    simpleNameConditions?.also { instance.simpleName.also { n -> and(it(n.cast(), n)) } }
-                    singleNameConditions?.also { classSingleName(instance).also { n -> and(it(n.cast(), n)) } }
-                    modifiers?.also { and(it(instance.cast())) }
+                    fullNameConditions?.also { instance.name.also { n -> runCatching { and(it(n.cast(), n)) } } }
+                    simpleNameConditions?.also { instance.simpleName.also { n -> runCatching { and(it(n.cast(), n)) } } }
+                    singleNameConditions?.also { classSingleName(instance).also { n -> runCatching { and(it(n.cast(), n)) } } }
+                    modifiers?.also { runCatching { and(it(instance.cast())) } }
                     extendsClass.takeIf { it.isNotEmpty() }?.also { and(instance.hasExtends && it.contains(instance.superclass.name)) }
                     implementsClass.takeIf { it.isNotEmpty() }
                         ?.also { and(instance.interfaces.isNotEmpty() && instance.interfaces.any { e -> it.contains(e.name) }) }
@@ -156,7 +153,7 @@ internal object ReflectionTool {
                             rule.conditions {
                                 value.matchCount.takeIf { it >= 0 }?.also { and(it == size) }
                                 value.matchCountRange.takeIf { it.isEmpty().not() }?.also { and(size in it) }
-                                value.matchCountConditions?.also { and(it(CountRules.with(size), size)) }
+                                value.matchCountConditions?.also { runCatching { and(it(size.cast(), size)) } }
                             }.finally { result(true) }.without { result(false) }
                         } ?: result(true)
                     }
@@ -179,7 +176,7 @@ internal object ReflectionTool {
                             var numberOfFound = 0
                             if (rule.isInitializeOfSuper) forEach { member ->
                                 rule.conditions {
-                                    value.modifiers?.also { and(it(member.cast())) }
+                                    value.modifiers?.also { runCatching { and(it(member.cast())) } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
                             else rule.matchCount(size) { and(it) }
@@ -192,8 +189,9 @@ internal object ReflectionTool {
                                 rule.conditions {
                                     value.type?.takeIf { value.exists(it) }?.also { and(it == field.type) }
                                     value.name.takeIf { it.isNotBlank() }?.also { and(it == field.name) }
-                                    value.modifiers?.also { and(it(field.cast())) }
-                                    value.nameConditions?.also { field.name.also { n -> and(it(n.cast(), n)) } }
+                                    value.modifiers?.also { runCatching { and(it(field.cast())) } }
+                                    value.nameConditions?.also { field.name.also { n -> runCatching { and(it(n.cast(), n)) } } }
+                                    value.typeConditions?.also { field.also { t -> runCatching { and(it(t.type(), t.type)) } } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
                             else rule.matchCount(size) { and(it) }
@@ -206,12 +204,17 @@ internal object ReflectionTool {
                                 rule.conditions {
                                     value.name.takeIf { it.isNotBlank() }?.also { and(it == method.name) }
                                     value.returnType?.takeIf { value.exists(it) }?.also { and(it == method.returnType) }
+                                    value.returnTypeConditions
+                                        ?.also { method.also { r -> runCatching { and(it(r.returnType(), r.returnType)) } } }
                                     value.paramCount.takeIf { it >= 0 }?.also { and(method.parameterTypes.size == it) }
                                     value.paramCountRange.takeIf { it.isEmpty().not() }?.also { and(method.parameterTypes.size in it) }
-                                    value.paramCountConditions?.also { method.parameterTypes.size.also { s -> and(it(s.cast(), s)) } }
+                                    value.paramCountConditions
+                                        ?.also { method.parameterTypes.size.also { s -> runCatching { and(it(s.cast(), s)) } } }
                                     value.paramTypes?.takeIf { value.exists(*it) }?.also { and(paramTypesEq(it, method.parameterTypes)) }
-                                    value.modifiers?.also { and(it(method.cast())) }
-                                    value.nameConditions?.also { method.name.also { n -> and(it(n.cast(), n)) } }
+                                    value.paramTypesConditions
+                                        ?.also { method.also { t -> runCatching { and(it(t.paramTypes(), t.parameterTypes)) } } }
+                                    value.modifiers?.also { runCatching { and(it(method.cast())) } }
+                                    value.nameConditions?.also { method.name.also { n -> runCatching { and(it(n.cast(), n)) } } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
                             else rule.matchCount(size) { and(it) }
@@ -224,9 +227,12 @@ internal object ReflectionTool {
                                 rule.conditions {
                                     value.paramCount.takeIf { it >= 0 }?.also { and(constructor.parameterTypes.size == it) }
                                     value.paramCountRange.takeIf { it.isEmpty().not() }?.also { and(constructor.parameterTypes.size in it) }
-                                    value.paramCountConditions?.also { constructor.parameterTypes.size.also { s -> and(it(s.cast(), s)) } }
+                                    value.paramCountConditions
+                                        ?.also { constructor.parameterTypes.size.also { s -> runCatching { and(it(s.cast(), s)) } } }
                                     value.paramTypes?.takeIf { value.exists(*it) }?.also { and(paramTypesEq(it, constructor.parameterTypes)) }
-                                    value.modifiers?.also { and(it(constructor.cast())) }
+                                    value.paramTypesConditions
+                                        ?.also { constructor.also { t -> runCatching { and(it(t.paramTypes(), t.parameterTypes)) } } }
+                                    value.modifiers?.also { runCatching { and(it(constructor.cast())) } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
                             else rule.matchCount(size) { and(it) }
@@ -265,10 +271,13 @@ internal object ReflectionTool {
                 var iName = -1
                 var iModify = -1
                 var iNameCds = -1
+                var iTypeCds = -1
                 val iLType = type?.let(matchIndex) { e -> declares.filter { e == it.type }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e(it.cast()) }.lastIndex } ?: -1
-                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { it.name.let { n -> e(n.cast(), n) } }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.cast()) } }.lastIndex } ?: -1
+                val iLNameCds = nameConditions
+                    ?.let(matchIndex) { e -> declares.filter { it.name.let { n -> runOrFalse { e(n.cast(), n) } } }.lastIndex } ?: -1
+                val iLTypeCds = typeConditions?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.type(), it.type) } }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         type?.also {
@@ -284,15 +293,21 @@ internal object ReflectionTool {
                             })
                         }
                         modifiers?.also {
-                            and(it(instance.cast()).let { hold ->
+                            and(runOrFalse { it(instance.cast()) }.let { hold ->
                                 if (hold) iModify++
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
                         nameConditions?.also {
-                            and(instance.name.let { n -> it(n.cast(), n) }.let { hold ->
+                            and(instance.name.let { n -> runOrFalse { it(n.cast(), n) } }.let { hold ->
                                 if (hold) iNameCds++
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
+                            })
+                        }
+                        typeConditions?.also {
+                            and(instance.let { t -> runOrFalse { it(t.type(), t.type) } }.let { hold ->
+                                if (hold) iTypeCds++
+                                hold && matchIndex.compare(iTypeCds, iLTypeCds)
                             })
                         }
                         orderIndex.compare(index, declares.lastIndex) { and(it) }
@@ -318,7 +333,9 @@ internal object ReflectionTool {
         ReflectsCacheStore.findMethods(hashCode(classSet)) ?: hashSetOf<Method>().also { methods ->
             classSet.existMethods?.also { declares ->
                 var iReturnType = -1
+                var iReturnTypeCds = -1
                 var iParamTypes = -1
+                var iParamTypesCds = -1
                 var iParamCount = -1
                 var iParamCountRange = -1
                 var iParamCountCds = -1
@@ -326,16 +343,22 @@ internal object ReflectionTool {
                 var iModify = -1
                 var iNameCds = -1
                 val iLReturnType = returnType?.let(matchIndex) { e -> declares.filter { e == it.returnType }.lastIndex } ?: -1
+                val iLReturnTypeCds = returnTypeConditions
+                    ?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.returnType(), it.returnType) } }.lastIndex } ?: -1
                 val iLParamCount = paramCount.takeIf(matchIndex) { it >= 0 }
                     ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
-                val iLParamCountCds = paramCountConditions
-                    ?.let(matchIndex) { e -> declares.filter { it.parameterTypes.size.let { s -> e(s.cast(), s) } }.lastIndex } ?: -1
+                val iLParamCountCds = paramCountConditions?.let(matchIndex) { e ->
+                    declares.filter { it.parameterTypes.size.let { s -> runOrFalse { e(s.cast(), s) } } }.lastIndex
+                } ?: -1
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
+                val iLParamTypesCds = paramTypesConditions
+                    ?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.paramTypes(), it.parameterTypes) } }.lastIndex } ?: -1
                 val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e(it.cast()) }.lastIndex } ?: -1
-                val iLNameCds = nameConditions?.let(matchIndex) { e -> declares.filter { it.name.let { n -> e(n.cast(), n) } }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.cast()) } }.lastIndex } ?: -1
+                val iLNameCds = nameConditions
+                    ?.let(matchIndex) { e -> declares.filter { it.name.let { n -> runOrFalse { e(n.cast(), n) } } }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         name.takeIf { it.isNotBlank() }?.also {
@@ -348,6 +371,12 @@ internal object ReflectionTool {
                             and((it == instance.returnType).let { hold ->
                                 if (hold) iReturnType++
                                 hold && matchIndex.compare(iReturnType, iLReturnType)
+                            })
+                        }
+                        returnTypeConditions?.also {
+                            and(instance.let { r -> runOrFalse { it(r.returnType(), r.returnType) } }.let { hold ->
+                                if (hold) iReturnTypeCds++
+                                hold && matchIndex.compare(iReturnTypeCds, iLReturnTypeCds)
                             })
                         }
                         paramCount.takeIf { it >= 0 }?.also {
@@ -363,7 +392,7 @@ internal object ReflectionTool {
                             })
                         }
                         paramCountConditions?.also {
-                            and(instance.parameterTypes.size.let { s -> it(s.cast(), s) }.let { hold ->
+                            and(instance.parameterTypes.size.let { s -> runOrFalse { it(s.cast(), s) } }.let { hold ->
                                 if (hold) iParamCountCds++
                                 hold && matchIndex.compare(iParamCountCds, iLParamCountCds)
                             })
@@ -374,14 +403,20 @@ internal object ReflectionTool {
                                 hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
                         }
+                        paramTypesConditions?.also {
+                            and(instance.let { t -> runOrFalse { it(t.paramTypes(), t.parameterTypes) } }.let { hold ->
+                                if (hold) iParamTypesCds++
+                                hold && matchIndex.compare(iParamTypesCds, iLParamTypesCds)
+                            })
+                        }
                         modifiers?.also {
-                            and(it(instance.cast()).let { hold ->
+                            and(runOrFalse { it(instance.cast()) }.let { hold ->
                                 if (hold) iModify++
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
                         nameConditions?.also {
-                            and(instance.name.let { n -> it(n.cast(), n) }.let { hold ->
+                            and(instance.name.let { n -> runOrFalse { it(n.cast(), n) } }.let { hold ->
                                 if (hold) iNameCds++
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
@@ -408,6 +443,7 @@ internal object ReflectionTool {
         ReflectsCacheStore.findConstructors(hashCode(classSet)) ?: hashSetOf<Constructor<*>>().also { constructors ->
             classSet.existConstructors?.also { declares ->
                 var iParamTypes = -1
+                var iParamTypesCds = -1
                 var iParamCount = -1
                 var iParamCountRange = -1
                 var iParamCountCds = -1
@@ -416,10 +452,13 @@ internal object ReflectionTool {
                     ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
                     ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
-                val iLParamCountCds = paramCountConditions
-                    ?.let(matchIndex) { e -> declares.filter { it.parameterTypes.size.let { s -> e(s.cast(), s) } }.lastIndex } ?: -1
+                val iLParamCountCds = paramCountConditions?.let(matchIndex) { e ->
+                    declares.filter { it.parameterTypes.size.let { s -> runOrFalse { e(s.cast(), s) } } }.lastIndex
+                } ?: -1
                 val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { e(it.cast()) }.lastIndex } ?: -1
+                val iLParamTypesCds = paramTypesConditions
+                    ?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.paramTypes(), it.parameterTypes) } }.lastIndex } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.cast()) } }.lastIndex } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         paramCount.takeIf { it >= 0 }?.also {
@@ -435,7 +474,7 @@ internal object ReflectionTool {
                             })
                         }
                         paramCountConditions?.also {
-                            and(instance.parameterTypes.size.let { s -> it(s.cast(), s) }.let { hold ->
+                            and(instance.parameterTypes.size.let { s -> runOrFalse { it(s.cast(), s) } }.let { hold ->
                                 if (hold) iParamCountCds++
                                 hold && matchIndex.compare(iParamCountCds, iLParamCountCds)
                             })
@@ -446,8 +485,14 @@ internal object ReflectionTool {
                                 hold && matchIndex.compare(iParamTypes, iLParamTypes)
                             })
                         }
+                        paramTypesConditions?.also {
+                            and(instance.let { t -> runOrFalse { it(t.paramTypes(), t.parameterTypes) } }.let { hold ->
+                                if (hold) iParamTypesCds++
+                                hold && matchIndex.compare(iParamTypesCds, iLParamTypesCds)
+                            })
+                        }
                         modifiers?.also {
-                            and(it(instance.cast()).let { hold ->
+                            and(runOrFalse { it(instance.cast()) }.let { hold ->
                                 if (hold) iModify++
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
