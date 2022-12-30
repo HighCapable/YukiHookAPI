@@ -25,6 +25,8 @@
  *
  * This file is Created by fankes on 2022/2/5.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.hook.utils
 
 import java.io.ByteArrayOutputStream
@@ -86,6 +88,20 @@ internal inline fun <T> T.takeIf(other: Any?, predicate: (T) -> Boolean) = if (o
  * @return [R] or null
  */
 internal inline fun <T, R> T.let(other: Any?, block: (T) -> R) = if (other != null) let(block) else null
+
+/**
+ * 条件判断方法体捕获异常返回 true
+ * @param block 原始方法体
+ * @return [Boolean]
+ */
+internal inline fun runOrTrue(block: () -> Boolean) = runCatching { block() }.getOrNull() ?: true
+
+/**
+ * 条件判断方法体捕获异常返回 false
+ * @param block 原始方法体
+ * @return [Boolean]
+ */
+internal inline fun runOrFalse(block: () -> Boolean) = runCatching { block() }.getOrNull() ?: false
 
 /**
  * 获取完整的异常堆栈内容
