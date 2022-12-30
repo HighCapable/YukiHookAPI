@@ -895,7 +895,7 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditi
 ## Class.allMethods <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers
-inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit)
+inline fun Class<*>.allMethods(isAccessible: Boolean, result: (index: Int, method: Method) -> Unit)
 ```
 
 **变更记录**
@@ -905,6 +905,10 @@ inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit)
 `v1.0.80` `修改`
 
 将方法体进行 inline
+
+`v1.1.5` `修改`
+
+新增 `isAccessible` 参数
 
 **功能描述**
 
@@ -913,7 +917,7 @@ inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit)
 ## Class.allConstructors <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers
-inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructor<*>) -> Unit)
+inline fun Class<*>.allConstructors(isAccessible: Boolean, result: (index: Int, constructor: Constructor<*>) -> Unit)
 ```
 
 **变更记录**
@@ -923,6 +927,10 @@ inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructo
 `v1.0.80` `修改`
 
 将方法体进行 inline
+
+`v1.1.5` `修改`
+
+新增 `isAccessible` 参数
 
 **功能描述**
 
@@ -931,7 +939,7 @@ inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructo
 ## Class.allFields <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers
-inline fun Class<*>.allFields(result: (index: Int, field: Field) -> Unit)
+inline fun Class<*>.allFields(isAccessible: Boolean, result: (index: Int, field: Field) -> Unit)
 ```
 
 **变更记录**
@@ -941,6 +949,10 @@ inline fun Class<*>.allFields(result: (index: Int, field: Field) -> Unit)
 `v1.0.80` `修改`
 
 将方法体进行 inline
+
+`v1.1.5` `修改`
+
+新增 `isAccessible` 参数
 
 **功能描述**
 

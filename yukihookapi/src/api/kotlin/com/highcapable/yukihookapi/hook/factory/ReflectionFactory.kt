@@ -386,24 +386,27 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditi
 
 /**
  * 遍历当前类中的所有方法
+ * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
  * @param result 回调 - ([Int] 下标,[Method] 实例)
  */
-inline fun Class<*>.allMethods(result: (index: Int, method: Method) -> Unit) =
-    declaredMethods.forEachIndexed { p, it -> result(p, it.apply { isAccessible = true }) }
+inline fun Class<*>.allMethods(isAccessible: Boolean = true, result: (index: Int, method: Method) -> Unit) =
+    declaredMethods.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
 
 /**
  * 遍历当前类中的所有构造方法
+ * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
  * @param result 回调 - ([Int] 下标,[Constructor] 实例)
  */
-inline fun Class<*>.allConstructors(result: (index: Int, constructor: Constructor<*>) -> Unit) =
-    declaredConstructors.forEachIndexed { p, it -> result(p, it.apply { isAccessible = true }) }
+inline fun Class<*>.allConstructors(isAccessible: Boolean = true, result: (index: Int, constructor: Constructor<*>) -> Unit) =
+    declaredConstructors.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
 
 /**
  * 遍历当前类中的所有变量
+ * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
  * @param result 回调 - ([Int] 下标,[Field] 实例)
  */
-inline fun Class<*>.allFields(result: (index: Int, field: Field) -> Unit) =
-    declaredFields.forEachIndexed { p, it -> result(p, it.apply { isAccessible = true }) }
+inline fun Class<*>.allFields(isAccessible: Boolean = true, result: (index: Int, field: Field) -> Unit) =
+    declaredFields.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
 
 /**
  * 检查内部类调用
