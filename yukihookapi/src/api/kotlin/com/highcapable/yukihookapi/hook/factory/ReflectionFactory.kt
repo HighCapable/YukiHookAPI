@@ -39,8 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
-import com.highcapable.yukihookapi.hook.type.java.AnyClass
-import com.highcapable.yukihookapi.hook.type.java.UnitType
+import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
@@ -180,17 +179,18 @@ infix fun Class<*>?.notImplements(other: Class<*>?) = implements(other).not()
  * - [java.lang.Byte]
  * @return [Class]
  */
-fun Class<*>.toJavaPrimitiveType() =
-    if (name != Unit.toString() && name != "java.lang.Void" && name != "void")
-        (name.replace("java.lang.Boolean", "boolean")
-            .replace("java.lang.Integer", "int")
-            .replace("java.lang.Float", "float")
-            .replace("java.lang.Double", "double")
-            .replace("java.lang.Long", "long")
-            .replace("java.lang.Short", "short")
-            .replace("java.lang.Character", "char")
-            .replace("java.lang.Byte", "byte")).toClass()
-    else UnitType
+fun Class<*>.toJavaPrimitiveType() = when (this) {
+    classOf<Unit>(), UnitClass, UnitType -> UnitType
+    BooleanClass, BooleanType -> BooleanType
+    IntClass, IntType -> IntType
+    FloatClass, FloatType -> FloatType
+    DoubleClass, DoubleType -> DoubleType
+    LongClass, LongType -> LongType
+    ShortClass, ShortType -> ShortType
+    CharClass, CharType -> CharType
+    ByteClass, ByteType -> ByteType
+    else -> this
+}
 
 /**
  * 通过字符串类名转换为 [loader] 中的实体类

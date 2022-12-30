@@ -84,7 +84,7 @@ val AnyType get() = AnyClass
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "boolean"
  * @return [Class]
  */
-val BooleanType get() = "boolean".toClass()
+val BooleanType get() = Boolean::class.javaPrimitiveType ?: "boolean".toClass()
 
 /**
  * 获得 [Char] 类型
@@ -92,7 +92,7 @@ val BooleanType get() = "boolean".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "char"
  * @return [Class]
  */
-val CharType get() = "char".toClass()
+val CharType get() = Char::class.javaPrimitiveType ?: "char".toClass()
 
 /**
  * 获得 [Byte] 类型
@@ -100,7 +100,7 @@ val CharType get() = "char".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "byte"
  * @return [Class]
  */
-val ByteType get() = "byte".toClass()
+val ByteType get() = Byte::class.javaPrimitiveType ?: "byte".toClass()
 
 /**
  * 获得 [Short] 类型
@@ -108,7 +108,7 @@ val ByteType get() = "byte".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "short"
  * @return [Class]
  */
-val ShortType get() = "short".toClass()
+val ShortType get() = Short::class.javaPrimitiveType ?: "short".toClass()
 
 /**
  * 获得 [Int] 类型
@@ -116,7 +116,7 @@ val ShortType get() = "short".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "int"
  * @return [Class]
  */
-val IntType get() = "int".toClass()
+val IntType get() = Int::class.javaPrimitiveType ?: "int".toClass()
 
 /**
  * 获得 [Float] 类型
@@ -124,7 +124,7 @@ val IntType get() = "int".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "float"
  * @return [Class]
  */
-val FloatType get() = "float".toClass()
+val FloatType get() = Float::class.javaPrimitiveType ?: "float".toClass()
 
 /**
  * 获得 [Long] 类型
@@ -132,7 +132,7 @@ val FloatType get() = "float".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "long"
  * @return [Class]
  */
-val LongType get() = "long".toClass()
+val LongType get() = Long::class.javaPrimitiveType ?: "long".toClass()
 
 /**
  * 获得 [Double] 类型
@@ -140,7 +140,7 @@ val LongType get() = "long".toClass()
  * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "double"
  * @return [Class]
  */
-val DoubleType get() = "double".toClass()
+val DoubleType get() = Double::class.javaPrimitiveType ?: "double".toClass()
 
 /**
  * 获得 [Unit] 类型
