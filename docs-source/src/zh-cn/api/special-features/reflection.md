@@ -614,6 +614,31 @@ Test::class.java.method {
 }.get(instance) // 得到这个方法
 ```
 
+如果你并不确定每一个参数的类型，你可以通过 `param { ... }` 方法来创建一个条件方法体。
+
+> 示例如下
+
+```kotlin
+// 假设这就是这个 Class 的实例
+val instance = Test()
+// 使用 YukiHookAPI 调用并执行
+Test::class.java.method {
+    name = "release"
+    // 得到 it (Class) 方法参数类型数组实例来仅判断已知的类型和它的位置
+    param { it[0] == StringClass && it[2] == BooleanType }
+}.get(instance) // 得到这个方法
+```
+
+::: tip
+
+使用 **param { ... }** 创建一个条件方法体，其中的变量 **it** 即当前方法参数的 **Class** 类型数组实例，此时你就可以自由使用 **Class** 中的所有对象及其方法。
+
+方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
+
+更多功能请参考 [FieldFinder.type](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#type-method-1)、[MethodFinder.param](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#param-method-1)、[MethodFinder.returnType](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#returntype-method-1)、[ConstructorFinder.param](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#param-method-1) 方法。
+
+:::
+
 ### 在父类查找
 
 你会注意到 `Test` 继承于 `BaseTest`，现在我们想得到 `BaseTest` 的 `doBaseTask` 方法，在不知道父类名称的情况下，要怎么做呢？
@@ -748,7 +773,7 @@ Test::class.java.method {
 
 方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
 
-更多功能请参考 [NameRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/NameRules)。
+更多功能请参考 [FieldFinder.name](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#name-method-1)、[MethodFinder.name](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#name-method-1) 方法以及 [NameRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/NameRules)。
 
 :::
 
@@ -840,7 +865,7 @@ Test::class.java.method {
 
 方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
 
-更多功能请参考 [CountRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/CountRules)。
+更多功能请参考 [MethodFinder.paramCount](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#paramcount-method-2)、[ConstructorFinder.paramCount](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#paramcount-method-2) 方法以及 [CountRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/CountRules)。
 
 :::
 
@@ -904,7 +929,7 @@ Test::class.java.method {
 
 方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
 
-更多功能请参考 [ModifierRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/ModifierRules)。
+更多功能请参考 [FieldFinder.modifiers](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#modifiers-method)、[MethodFinder.modifiers](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#modifiers-method)、[ConstructorFinder.modifiers](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#modifiers-method) 方法以及 [ModifierRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/ModifierRules)。
 
 :::
 

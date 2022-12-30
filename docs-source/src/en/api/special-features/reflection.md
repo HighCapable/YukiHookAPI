@@ -659,6 +659,32 @@ Test::class.java.method {
 }.get(instance) // Get this method
 ```
 
+If you are not sure about the type of each parameter, you can create a conditional method body with the `param { ... }` method.
+
+> The following example
+
+```kotlin
+// Assume this is an instance of this Class
+val instance = Test()
+// Call and execute using YukiHookAPI
+Test::class.java.method {
+     name = "release"
+     // Get the it (Class) method parameter type array instance
+     // To only determine the known type and its position
+     param { it[0] == StringClass && it[2] == BooleanType }
+}.get(instance) // Get this method
+```
+
+::: tip
+
+Use **param { ... }** to create a conditional method body, where the variable **it** is the **Class** type array instance of the current method parameter, and you can freely use **Class** all objects and their methods in.
+
+The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
+
+For more functions, please refer to [FieldFinder.type](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#type-method-1), [MethodFinder.param](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#param-method-1), [MethodFinder.returnType](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#returntype-method-1), [ConstructorFinder.param](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#param-method-1) method.
+
+:::
+
 ### Find in Super Class
 
 You will notice that `Test` extends `BaseTest`, now we want to get the `doBaseTask` method of `BaseTest`, how do we do it without knowing the name of the super class?
@@ -793,7 +819,7 @@ Use **name { ... }** to create a conditional method body, where the variable **i
 
 The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
 
-For more functions, please refer to [NameRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/NameRules).
+For more functions, please refer to [FieldFinder.name](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#name-method-1), [MethodFinder.name](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#name-method-1) methods and [NameRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/NameRules).
 
 :::
 
@@ -887,7 +913,7 @@ Use **paramCount { ... }** to create a conditional method body, where the variab
 
 The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
 
-For more functions, please refer to [CountRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/CountRules).
+For more functions, please refer to [MethodFinder.paramCount](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#paramcount-method-2), [ConstructorFinder.paramCount](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#paramcount-method-2) methods and [CountRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/CountRules).
 
 :::
 
@@ -951,7 +977,7 @@ Use **modifiers { ... }** to create a conditional method body, at which point yo
 
 The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
 
-For more features, please refer to [ModifierRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/ModifierRules).
+For more functions, please refer to [FieldFinder.modifiers](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#modifiers-method), [MethodFinder.modifiers](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#modifiers-method), [ConstructorFinder.modifiers](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#modifiers-method) methods and [ModifierRules](../public/com/highcapable/yukihookapi/hook/core/finder/base/rules/ModifierRules).
 
 :::
 
