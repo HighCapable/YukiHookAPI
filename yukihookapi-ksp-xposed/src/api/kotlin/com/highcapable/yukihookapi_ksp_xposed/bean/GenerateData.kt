@@ -34,6 +34,7 @@ package com.highcapable.yukihookapi_ksp_xposed.bean
  * @param customMPackageName 自定义模块包名
  * @param entryClassName 入口类名
  * @param xInitClassName xposed_init 入口类名
+ * @param isEntryClassKindOfObject 入口类种类 (类型) 是否为 object (单例)
  * @param isUsingResourcesHook 是否启用 Resources Hook
  */
 data class GenerateData(
@@ -42,5 +43,6 @@ data class GenerateData(
     var customMPackageName: String = "",
     var entryClassName: String = "",
     var xInitClassName: String = "",
+    var isEntryClassKindOfObject: Boolean = false,
     var isUsingResourcesHook: Boolean = true
 )

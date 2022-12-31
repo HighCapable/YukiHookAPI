@@ -82,7 +82,7 @@ fun GenerateData.sources() = mapOf(
             "object ${ClassName.ModuleApplication_Impl} {\n" +
             "\n" +
             "    fun callHookEntryInit() = try {\n" +
-            "        $entryClassName().onInit()\n" +
+            "        " + (if (isEntryClassKindOfObject) "$entryClassName.onInit()\n" else "$entryClassName().onInit()\n") +
             "    } catch (_: Throwable) {\n" +
             "    }\n" +
             "}"),
@@ -150,7 +150,7 @@ fun GenerateData.sources() = mapOf(
             "\n" +
             "    private var isZygoteBinded = false\n" +
             "\n" +
-            "    private val hookEntry = $entryClassName()\n" +
+            "    private val hookEntry = " + (if (isEntryClassKindOfObject) "$entryClassName\n" else "$entryClassName()\n") +
             "\n" +
             "    private fun callXposedLoaded(\n" +
             "        isZygoteLoaded: Boolean = false,\n" +

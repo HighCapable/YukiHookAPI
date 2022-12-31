@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi_ksp_xposed
 
 import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -140,6 +141,11 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 data.entryPackageName = it.packageName.asString()
                                 data.entryClassName = it.simpleName.asString()
                                 data.xInitClassName = xInitPatchName
+                                data.isEntryClassKindOfObject = when (it.classKind) {
+                                    ClassKind.CLASS -> false
+                                    ClassKind.OBJECT -> true
+                                    else -> problem(msg = "Invalid HookEntryClass \"${it.simpleName.asString()}\" kind \"${it.classKind}\"")
+                                }
                                 generateAssetsFile(codePath = (it.location as? FileLocation?)?.filePath ?: "", sourcePath = sourcePath, data)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
