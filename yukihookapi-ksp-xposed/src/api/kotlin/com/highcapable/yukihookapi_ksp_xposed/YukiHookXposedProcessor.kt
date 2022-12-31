@@ -82,8 +82,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         /**
          * 终止并报错
          * @param msg 错误消息
+         * @return [Nothing]
          */
-        private fun SymbolProcessorEnvironment.problem(msg: String) {
+        private fun SymbolProcessorEnvironment.problem(msg: String): Nothing {
             val helpMsg = "Looking for help? Please see the documentation link below\n" +
                     "- English: https://fankes.github.io/YukiHookAPI/en/config/xposed-using\n" +
                     "- Chinese(Simplified): https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using"
