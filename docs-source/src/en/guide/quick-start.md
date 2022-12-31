@@ -144,7 +144,7 @@ Create a Hook entry class in your project, implements `IYukiHookXposedInit` and 
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = YukiHookAPI.encase {
         // Your code here.

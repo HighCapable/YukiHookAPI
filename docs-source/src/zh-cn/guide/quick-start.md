@@ -143,7 +143,7 @@ android {
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = YukiHookAPI.encase {
         // Your code here.

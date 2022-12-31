@@ -120,7 +120,7 @@ You set the customize module package name to "com.example.demo", please check fo
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry: IYukiHookXposedInit
+object HookEntry : IYukiHookXposedInit
 ```
 
 Xposed 入口类处理如下。
@@ -128,7 +128,7 @@ Xposed 入口类处理如下。
 > 示例如下
 
 ```kotlin:no-line-numbers
-class HookEntry_YukiHookXposedInit: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
+class HookEntry_YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 ```
 
 编译后的类名结构如下。
@@ -147,7 +147,7 @@ class HookEntry_YukiHookXposedInit: IXposedHookZygoteInit, IXposedHookLoadPackag
 
 ```kotlin
 @InjectYukiHookWithXposed(entryClassName = "HookXposedEntry")
-class HookEntry: IYukiHookXposedInit
+object HookEntry : IYukiHookXposedInit
 ```
 
 Xposed 入口类处理如下。
@@ -155,7 +155,7 @@ Xposed 入口类处理如下。
 > 示例如下
 
 ```kotlin:no-line-numbers
-class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
+class HookXposedEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 ```
 
 编译后的类名结构如下。
@@ -167,6 +167,12 @@ class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 ...hook.HookEntry_Impl ← 自动生成的 Impl 类
 ...hook.HookXposedEntry ← 自动生成的 Xposed 入口类
 ```
+
+::: tip
+
+入口类可以使用 **class** 或 **object** 定义，但是建议使用 **object** 定义来保证每一个注入的进程都是单例运行。
+
+:::
 
 ::: danger
 
@@ -248,7 +254,7 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry: IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() {
         // Your code here.

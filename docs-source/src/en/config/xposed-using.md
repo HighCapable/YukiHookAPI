@@ -126,7 +126,7 @@ Suppose this is your entry class.
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry: IYukiHookXposedInit
+object HookEntry : IYukiHookXposedInit
 ```
 
 The Xposed entry class is handled as follows.
@@ -134,7 +134,7 @@ The Xposed entry class is handled as follows.
 > The following example
 
 ```kotlin:no-line-numbers
-class HookEntry_YukiHookXposedInit: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
+class HookEntry_YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 ```
 
 The compiled class name structure is as follows.
@@ -153,7 +153,7 @@ We now define the entry class name as `HookXposedEntry`.
 
 ```kotlin
 @InjectYukiHookWithXposed(entryClassName = "HookXposedEntry")
-class HookEntry: IYukiHookXposedInit
+object HookEntry : IYukiHookXposedInit
 ```
 
 The Xposed entry class is handled as follows.
@@ -161,7 +161,7 @@ The Xposed entry class is handled as follows.
 > The following example
 
 ```kotlin:no-line-numbers
-class HookXposedEntry: IXposedHookZygoteInit, IXposedHookLoadPackage, ...
+class HookXposedEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 ```
 
 The compiled class name structure is as follows.
@@ -173,6 +173,12 @@ The compiled class name structure is as follows.
 ...hook.HookEntry_Impl ← Auto-generated Impl class
 ...hook.HookXposedEntry ← Automatically generated Xposed entry class
 ```
+
+::: tip
+
+The entry class can be defined using **class** or **object**, but it is recommended to use **object** definition to ensure that each injected process is a single instance.
+
+:::
 
 ::: danger
 
@@ -254,7 +260,7 @@ If your current Xposed Module uses third-party resources, but may not be able to
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry: IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() {
         // Your code here.
