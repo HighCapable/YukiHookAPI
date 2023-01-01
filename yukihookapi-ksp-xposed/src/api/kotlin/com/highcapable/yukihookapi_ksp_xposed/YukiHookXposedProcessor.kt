@@ -62,10 +62,10 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         private const val TAG = "YukiHookAPI"
 
         /** 查找的注解名称 */
-        private const val annotationName = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
+        private const val ANNOTATION_NAME = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
 
         /** 插入 Xposed 尾部的名称 */
-        private const val xposedClassShortName = "_YukiHookXposedInit"
+        private const val XPOSED_CLASS_SHORT_NAME = "_YukiHookXposedInit"
     }
 
     override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
@@ -126,7 +126,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         private fun startProcess(resolver: Resolver) = environment {
             var isInjectOnce = true
             val data = GenerateData()
-            resolver.getSymbolsWithAnnotation(annotationName).apply {
+            resolver.getSymbolsWithAnnotation(ANNOTATION_NAME).apply {
                 /**
                  * 检索需要注入的类
                  * @param sourcePath 指定的 source 路径
@@ -135,7 +135,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
-                                val xInitPatchName = data.xInitClassName.ifBlank { "${it.simpleName.asString()}$xposedClassShortName" }
+                                val xInitPatchName = data.xInitClassName.ifBlank { "${it.simpleName.asString()}$XPOSED_CLASS_SHORT_NAME" }
                                 if (data.xInitClassName == it.simpleName.asString())
                                     problem(msg = "Duplicate entryClassName \"${data.xInitClassName}\"")
                                 data.entryPackageName = it.packageName.asString()
