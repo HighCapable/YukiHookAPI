@@ -27,9 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.xposed.bridge.status
 
-import androidx.annotation.Keep
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.log.yLoggerD
 import de.robv.android.xposed.XposedBridge
 
 /**
@@ -65,6 +63,9 @@ internal object YukiHookModuleStatus {
     /** 定义 Jvm 方法名 */
     internal const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
 
+    /** [YukiHookModuleStatus_Impl] 完整类名 */
+    internal const val IMPL_CLASS_NAME = "com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus_Impl"
+
     /**
      * 获取当前 Hook 框架的名称
      *
@@ -73,7 +74,10 @@ internal object YukiHookModuleStatus {
      * 请使用 [YukiHookAPI.Status.executorName] 获取
      * @return [String] 模块未激活会返回 unknown
      */
-    internal val executorName get() = getXposedBridgeTag().replace("Bridge", "").replace("-", "").trim()
+    internal val executorName
+        get() = runCatching {
+            YukiHookModuleStatus_Impl.getXposedBridgeTag().replace("Bridge", "").replace("-", "").trim()
+        }.getOrNull() ?: "unknown"
 
     /**
      * 获取当前 Hook 框架的版本
@@ -83,7 +87,7 @@ internal object YukiHookModuleStatus {
      * 请使用 [YukiHookAPI.Status.executorVersion] 获取
      * @return [Int] 模块未激活会返回 -1
      */
-    internal val executorVersion get() = getXposedVersion()
+    internal val executorVersion get() = runCatching { YukiHookModuleStatus_Impl.getXposedVersion() }.getOrNull() ?: -1
 
     /**
      * 此方法经过 Hook 后返回 true 即模块已激活
@@ -91,12 +95,7 @@ internal object YukiHookModuleStatus {
      * 请使用 [YukiHookAPI.Status.isModuleActive]、[YukiHookAPI.Status.isXposedModuleActive]、[YukiHookAPI.Status.isTaiChiModuleActive] 判断模块激活状态
      * @return [Boolean]
      */
-    @Keep
-    @JvmName(IS_ACTIVE_METHOD_NAME)
-    internal fun isActive(): Boolean {
-        yLoggerD(msg = IS_ACTIVE_METHOD_NAME, isDisableLog = true)
-        return false
-    }
+    internal fun isActive() = runCatching { YukiHookModuleStatus_Impl.isActive() }.getOrNull() ?: false
 
     /**
      * 此方法经过 Hook 后返回 true 即当前 Hook Framework 支持资源钩子(Resources Hook)
@@ -104,32 +103,5 @@ internal object YukiHookModuleStatus {
      * 请使用 [YukiHookAPI.Status.isSupportResourcesHook] 判断支持状态
      * @return [Boolean]
      */
-    @Keep
-    @JvmName(HAS_RESOURCES_HOOK_METHOD_NAME)
-    internal fun hasResourcesHook(): Boolean {
-        yLoggerD(msg = HAS_RESOURCES_HOOK_METHOD_NAME, isDisableLog = true)
-        return false
-    }
-
-    /**
-     * 此方法经过 Hook 后返回 [XposedBridge.getXposedVersion]
-     * @return [Int]
-     */
-    @Keep
-    @JvmName(GET_XPOSED_VERSION_METHOD_NAME)
-    private fun getXposedVersion(): Int {
-        yLoggerD(msg = GET_XPOSED_VERSION_METHOD_NAME, isDisableLog = true)
-        return -1
-    }
-
-    /**
-     * 此方法经过 Hook 后返回 [XposedBridge] 的 TAG
-     * @return [String]
-     */
-    @Keep
-    @JvmName(GET_XPOSED_TAG_METHOD_NAME)
-    private fun getXposedBridgeTag(): String {
-        yLoggerD(msg = GET_XPOSED_TAG_METHOD_NAME, isDisableLog = true)
-        return "unknown"
-    }
+    internal fun hasResourcesHook() = runCatching { YukiHookModuleStatus_Impl.hasResourcesHook() }.getOrNull() ?: false
 }

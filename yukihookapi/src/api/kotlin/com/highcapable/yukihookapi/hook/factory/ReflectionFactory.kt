@@ -421,7 +421,7 @@ inline fun Class<*>.allFields(isAccessible: Boolean = true, result: (index: Int,
  */
 @PublishedApi
 internal fun Class<*>.checkingInternal() {
-    if (name == classOf<YukiHookModuleStatus>().name) return
+    if (name == YukiHookModuleStatus.IMPL_CLASS_NAME) return
     if (name == classOf<YukiHookAPI>().name || name.startsWith("com.highcapable.yukihookapi.hook")) throw RuntimeException(
         "!!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself, " +
                 "The called class is [$this]"

@@ -148,7 +148,7 @@ internal object AppParasitics {
                     if ((param.args?.get(0) as? String?)?.endsWith("preferences.xml") == true) param.args?.set(1, 1)
                 }
             })
-        if (YukiHookAPI.Configs.isEnableHookModuleStatus) classOf<YukiHookModuleStatus>(loader).apply {
+        if (YukiHookAPI.Configs.isEnableHookModuleStatus) YukiHookModuleStatus.IMPL_CLASS_NAME.toClassOrNull(loader)?.apply {
             if (type != HookEntryType.RESOURCES) {
                 YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME }, object : YukiMemberReplacement() {
                     override fun replaceHookedMember(param: Param) = true

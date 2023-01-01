@@ -75,7 +75,7 @@ open class ModuleApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
-        Reflection.unseal(base)
+        runCatching { Reflection.unseal(base) }
     }
 
     override fun onCreate() {

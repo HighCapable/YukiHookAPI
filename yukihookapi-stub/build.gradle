@@ -7,3 +7,9 @@ java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
+
+dependencies {
+    // Used 82 API Version
+    compileOnly 'de.robv.android.xposed:api:82'
+    compileOnly fileTree(include: ['*.jar'], dir: '../yukihookapi/libs')
+}

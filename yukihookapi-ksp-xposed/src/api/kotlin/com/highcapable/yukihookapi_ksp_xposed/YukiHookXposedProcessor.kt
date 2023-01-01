@@ -263,6 +263,12 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 packageName = PackageName.YukiHookBridge_Impl,
                 content = data.sources()[ClassName.YukiHookBridge_Impl]
             )
+            /** 插入 YukiHookModuleStatus_Impl 代码 */
+            createCodeFile(
+                fileName = ClassName.YukiHookModuleStatus_Impl,
+                packageName = PackageName.YukiHookModuleStatus_Impl,
+                content = data.sources()[ClassName.YukiHookModuleStatus_Impl]
+            )
             /** 插入 xposed_init 代码 */
             createCodeFile(
                 fileName = data.xInitClassName,
@@ -274,6 +280,20 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 fileName = "${data.entryClassName}_Impl",
                 packageName = data.entryPackageName,
                 content = data.sources()[ClassName.XposedInit_Impl]
+            )
+            /* 插入 FreeReflection 代码 */
+            createCodeFile(
+                fileName = ClassName.BootstrapClass,
+                packageName = PackageName.BootstrapReflectionClass,
+                content = data.sources()[ClassName.BootstrapClass],
+                extensionName = JAVA_FILE_EXT_NAME
+            )
+            /* 插入 FreeReflection 代码 */
+            createCodeFile(
+                fileName = ClassName.Reflection,
+                packageName = PackageName.BootstrapReflectionClass,
+                content = data.sources()[ClassName.Reflection],
+                extensionName = JAVA_FILE_EXT_NAME
             )
         }
 

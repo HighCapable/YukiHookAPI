@@ -37,6 +37,8 @@ import java.util.*
 object PackageName {
     const val ModuleApplication_Impl = "com.highcapable.yukihookapi.hook.xposed.application"
     const val YukiHookBridge_Impl = "com.highcapable.yukihookapi.hook.xposed.bridge"
+    const val YukiHookModuleStatus_Impl = "com.highcapable.yukihookapi.hook.xposed.bridge.status"
+    const val BootstrapReflectionClass = "com.highcapable.yukihookapi.thirdparty.me.weishu.reflection"
 }
 
 /**
@@ -45,8 +47,21 @@ object PackageName {
 object ClassName {
     const val ModuleApplication_Impl = "ModuleApplication_Impl"
     const val YukiHookBridge_Impl = "YukiHookBridge_Impl"
+    const val YukiHookModuleStatus_Impl = "YukiHookModuleStatus_Impl"
     const val XposedInit = "xposed_init"
     const val XposedInit_Impl = "xposed_init_Impl"
+    const val BootstrapClass = "BootstrapClass"
+    const val Reflection = "Reflection"
+}
+
+/**
+ * YukiHookModuleStatus 方法名称定义类
+ */
+object YukiHookModuleStatusJvmName {
+    const val IS_ACTIVE_METHOD_NAME = "__--"
+    const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
+    const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
+    const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
 }
 
 /**
@@ -64,7 +79,7 @@ private fun createCommentContent(entryClassName: String = "", currrentClassTag: 
             (if (entryClassName.isNotBlank()) " * HookEntryClass: [$entryClassName]\n *\n" else "") +
             " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
             " *\n" +
-            " * Powered by YukiHookAPI (C) HighCapable 2022\n" +
+            " * Powered by YukiHookAPI (C) HighCapable 2019-2022\n" +
             " *\n" +
             " * Project Address: [YukiHookAPI](https://github.com/fankes/YukiHookAPI)\n" +
             " */\n")
@@ -96,6 +111,28 @@ fun GenerateData.sources() = mapOf(
             "object ${ClassName.YukiHookBridge_Impl} {\n" +
             "\n" +
             "    val compiledTimestamp get() = ${System.currentTimeMillis()}\n" +
+            "}"),
+    ClassName.YukiHookModuleStatus_Impl to ("@file:Suppress(\"ClassName\")\n" +
+            "\n" +
+            "package com.highcapable.yukihookapi.hook.xposed.bridge.status\n" +
+            "\n" +
+            "import androidx.annotation.Keep\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.YukiHookModuleStatus_Impl) +
+            "@Keep\n" +
+            "object YukiHookModuleStatus_Impl {\n" +
+            "\n" +
+            "    @JvmName(\"${YukiHookModuleStatusJvmName.IS_ACTIVE_METHOD_NAME}\")\n" +
+            "    fun isActive() = false\n" +
+            "\n" +
+            "    @JvmName(\"${YukiHookModuleStatusJvmName.HAS_RESOURCES_HOOK_METHOD_NAME}\")\n" +
+            "    fun hasResourcesHook() = false\n" +
+            "\n" +
+            "    @JvmName(\"${YukiHookModuleStatusJvmName.GET_XPOSED_VERSION_METHOD_NAME}\")\n" +
+            "    fun getXposedVersion() = -1\n" +
+            "\n" +
+            "    @JvmName(\"${YukiHookModuleStatusJvmName.GET_XPOSED_TAG_METHOD_NAME}\")\n" +
+            "    fun getXposedBridgeTag() = \"unknown\"\n" +
             "}"),
     ClassName.XposedInit to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
@@ -191,6 +228,150 @@ fun GenerateData.sources() = mapOf(
             "    @YukiGenerateApi\n" +
             "    fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
             "        if (resparam != null) callXposedLoaded(resparam = resparam)\n" +
+            "    }\n" +
+            "}"),
+    ClassName.BootstrapClass to ("package ${PackageName.BootstrapReflectionClass};\n" +
+            "\n" +
+            "import static android.os.Build.VERSION.SDK_INT;\n" +
+            "\n" +
+            "import android.os.Build;\n" +
+            "import android.util.Log;\n" +
+            "\n" +
+            "import androidx.annotation.Keep;\n" +
+            "\n" +
+            "import java.lang.reflect.Method;\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.BootstrapClass) +
+            "@Keep\n" +
+            "public final class BootstrapClass {\n" +
+            "\n" +
+            "    private static final String TAG = \"BootstrapClass\";\n" +
+            "\n" +
+            "    private static Object sVmRuntime;\n" +
+            "    private static Method setHiddenApiExemptions;\n" +
+            "\n" +
+            "    static {\n" +
+            "        if (SDK_INT >= Build.VERSION_CODES.P) {\n" +
+            "            try {\n" +
+            "                Method forName = Class.class.getDeclaredMethod(\"forName\", String.class);\n" +
+            "                Method getDeclaredMethod = Class.class.getDeclaredMethod(\"getDeclaredMethod\", String.class, Class[].class);\n" +
+            "                Class<?> vmRuntimeClass = (Class<?>) forName.invoke(null, \"dalvik.system.VMRuntime\");\n" +
+            "                Method getRuntime = (Method) getDeclaredMethod.invoke(vmRuntimeClass, \"getRuntime\", null);\n" +
+            "                setHiddenApiExemptions = (Method) getDeclaredMethod.invoke(vmRuntimeClass, \"setHiddenApiExemptions\", new Class[]{String[].class});\n" +
+            "                sVmRuntime = getRuntime.invoke(null);\n" +
+            "            } catch (Throwable e) {\n" +
+            "                Log.w(TAG, \"reflect bootstrap failed:\", e);\n" +
+            "            }\n" +
+            "        }\n" +
+            "    }\n" +
+            "\n" +
+            "    public static boolean exempt(String method) {\n" +
+            "        return exempt(new String[]{method});\n" +
+            "    }\n" +
+            "\n" +
+            "    public static boolean exempt(String... methods) {\n" +
+            "        if (sVmRuntime == null || setHiddenApiExemptions == null) {\n" +
+            "            return false;\n" +
+            "        }\n" +
+            "\n" +
+            "        try {\n" +
+            "            setHiddenApiExemptions.invoke(sVmRuntime, new Object[]{methods});\n" +
+            "            return true;\n" +
+            "        } catch (Throwable e) {\n" +
+            "            return false;\n" +
+            "        }\n" +
+            "    }\n" +
+            "\n" +
+            "    public static boolean exemptAll() {\n" +
+            "        return exempt(new String[]{\"L\"});\n" +
+            "    }\n" +
+            "}"),
+    ClassName.Reflection to ("package ${PackageName.BootstrapReflectionClass};\n" +
+            "\n" +
+            "import static android.os.Build.VERSION.SDK_INT;\n" +
+            "import static com.highcapable.yukihookapi.thirdparty.me.weishu.reflection.BootstrapClass.exemptAll;\n" +
+            "\n" +
+            "import android.content.Context;\n" +
+            "import android.text.TextUtils;\n" +
+            "import android.util.Base64;\n" +
+            "\n" +
+            "import androidx.annotation.Keep;\n" +
+            "\n" +
+            "import java.io.File;\n" +
+            "import java.io.FileOutputStream;\n" +
+            "import java.lang.reflect.Method;\n" +
+            "\n" +
+            "import dalvik.system.DexFile;\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.Reflection) +
+            "@Keep\n" +
+            "public class Reflection {\n" +
+            "    private static final String TAG = \"Reflection\";\n" +
+            "\n" +
+            "    private static final String DEX = \"ZGV4CjAzNQCXDT0vQ44GJqsrjm32y0qlQmxUevbk56r0CwAAcAAAAHhWNBIAAAAAAAAAADwLAABDAAAAcAAAABMAAAB8AQAACwAAAMgBAAAMAAAATAIAAA8AAACsAgAAAwAAACQDAABwCAAAhAMAAIQDAACGAwAAiwMAAJUDAACdAwAArQMAALkDAADJAwAA3gMAAPADAAD3AwAA/wMAAAIEAAAGBAAACgQAABAEAAATBAAAGAQAADMEAABZBAAAdQQAAIkEAADYBAAAJgUAAHAFAACDBQAAmQUAAK0FAADBBQAA1QUAAOwFAAAIBgAAFAYAACUGAAAuBgAAMwYAADYGAABEBgAAUgYAAFYGAABZBgAAXQYAAHEGAACGBgAAmwYAAKQGAAC9BgAAwAYAAMgGAADTBgAA3AYAAO0GAAABBwAAFAcAACAHAAAoBwAANQcAAE8HAABXBwAAYAcAAHsHAACEBwAAkAcAAKgHAAC6BwAAwgcAANAHAAALAAAAEQAAABIAAAATAAAAFAAAABUAAAAWAAAAFwAAABgAAAAaAAAAGwAAABwAAAAdAAAAHgAAACMAAAAnAAAAKQAAACoAAAArAAAADAAAAAAAAAD4BwAADQAAAAAAAAAMCAAADgAAAAAAAAAACAAADwAAAAIAAAAAAAAAEAAAAAkAAAAUCAAAEAAAAA0AAADoBwAAIwAAAA4AAAAAAAAAJgAAAA4AAADgBwAAJwAAAA8AAAAAAAAAKAAAAA8AAADgBwAAKAAAAA8AAADwBwAAAgAAAD8AAAADAAAAIQAAAAUACgAEAAAABQAKAAUAAAAFAA8ACQAAAAUACgAKAAAABQAAACQAAAAFAAoAJQAAAAYACgAiAAAABgAJAD0AAAAGAA0APgAAAAcACgAiAAAAAQADADMAAAAEAAIALgAAAAUABgADAAAABgAGAAIAAAAGAAYAAwAAAAYACQAvAAAABgAKAC8AAAAGAAgAMAAAAAcABgADAAAABwABAEAAAAAHAAAAQQAAAAgABQA0AAAACQAGAAMAAAALAAcANwAAAA0ABAA2AAAABQAAABEAAAAJAAAAAAAAAAgAAAAAAAAA7AoAAB8IAAAGAAAAEQAAAAkAAAAAAAAABwAAAAAAAAACCwAAHAgAAAcAAAABAAAACQAAAAAAAAAgAAAAAAAAACULAAArCAAAAAADMS4wAAg8Y2xpbml0PgAGPGluaXQ+AA5BUFBMSUNBVElPTl9JRAAKQlVJTERfVFlQRQAOQm9vdHN0cmFwQ2xhc3MAE0Jvb3RzdHJhcENsYXNzLmphdmEAEEJ1aWxkQ29uZmlnLmphdmEABURFQlVHAAZGTEFWT1IAAUkAAklJAAJJTAAESUxMTAABTAADTExMABlMYW5kcm9pZC9jb250ZW50L0NvbnRleHQ7ACRMYW5kcm9pZC9jb250ZW50L3BtL0FwcGxpY2F0aW9uSW5mbzsAGkxhbmRyb2lkL29zL0J1aWxkJFZFUlNJT047ABJMYW5kcm9pZC91dGlsL0xvZzsATUxjb20vaGlnaGNhcGFibGUveXVraWhvb2thcGkvdGhpcmRwYXJ0eS9tZS93ZWlzaHUvZnJlZXJlZmxlY3Rpb24vQnVpbGRDb25maWc7AExMY29tL2hpZ2hjYXBhYmxlL3l1a2lob29rYXBpL3RoaXJkcGFydHkvbWUvd2Vpc2h1L3JlZmxlY3Rpb24vQm9vdHN0cmFwQ2xhc3M7AEhMY29tL2hpZ2hjYXBhYmxlL3l1a2lob29rYXBpL3RoaXJkcGFydHkvbWUvd2Vpc2h1L3JlZmxlY3Rpb24vUmVmbGVjdGlvbjsAEUxqYXZhL2xhbmcvQ2xhc3M7ABRMamF2YS9sYW5nL0NsYXNzPCo+OwASTGphdmEvbGFuZy9PYmplY3Q7ABJMamF2YS9sYW5nL1N0cmluZzsAEkxqYXZhL2xhbmcvU3lzdGVtOwAVTGphdmEvbGFuZy9UaHJvd2FibGU7ABpMamF2YS9sYW5nL3JlZmxlY3QvTWV0aG9kOwAKUmVmbGVjdGlvbgAPUmVmbGVjdGlvbi5qYXZhAAdTREtfSU5UAANUQUcAAVYADFZFUlNJT05fQ09ERQAMVkVSU0lPTl9OQU1FAAJWTAABWgACWkwAEltMamF2YS9sYW5nL0NsYXNzOwATW0xqYXZhL2xhbmcvT2JqZWN0OwATW0xqYXZhL2xhbmcvU3RyaW5nOwAHY29udGV4dAAXZGFsdmlrLnN5c3RlbS5WTVJ1bnRpbWUAAWUABmV4ZW1wdAAJZXhlbXB0QWxsAAdmb3JOYW1lAA9mcmVlLXJlZmxlY3Rpb24AEmdldEFwcGxpY2F0aW9uSW5mbwARZ2V0RGVjbGFyZWRNZXRob2QACmdldFJ1bnRpbWUABmludm9rZQALbG9hZExpYnJhcnkAGG1lLndlaXNodS5mcmVlcmVmbGVjdGlvbgAGbWV0aG9kAAdtZXRob2RzABlyZWZsZWN0IGJvb3RzdHJhcCBmYWlsZWQ6AAdyZWxlYXNlAApzVm1SdW50aW1lABZzZXRIaWRkZW5BcGlFeGVtcHRpb25zABB0YXJnZXRTZGtWZXJzaW9uAAZ1bnNlYWwADHVuc2VhbE5hdGl2ZQAOdm1SdW50aW1lQ2xhc3MAAQAAAAoAAAACAAAACgAQAAEAAAASAAAAAQAAAAAAAAADAAAACgAKAAwAAAABAAAAAQAAAAIAAAAJABEAARcGBhc4FzwfFwAEARcBARcfAAAAAAAABgAHDgAWAAcOav8DATIOARUQAwI1DvAEBEMJGgESDwMDNg4BGw+pBQIFAwUEGR4DAC8NAA4ABw4ALAE6Bw4ANgE7ByydGuIBAQMALw0eAEgABw4ADQAHDgATAS0HHXIZa1oAAAEAAQABAAAANAgAAAQAAABwEAwAAAAOAAoAAAADAAEAOQgAAHsAAABgBQEAEwYcADRlbQAcBQgAGgYxABIXI3cQABIIHAkKAE0JBwhuMAsAZQcMARwFCAAaBjQAEicjdxAAEggcCQoATQkHCBIYHAkQAE0JBwhuMAsAZQcMAhIFEhYjZhEAEgcaCC0ATQgGB24wDgBRBgwEHwQIABIlI1URABIGGgc1AE0HBQYSFhIHTQcFBm4wDgBCBQwDHwMNABIlI1URABIGGgc+AE0HBQYSFhIXI3cQABIIHAkSAE0JBwhNBwUGbjAOAEIFDAUfBQ0AaQUKABIFEgYjZhEAbjAOAFMGDAVpBQkADgANABoFBgAaBjsAcTABAGUAKPcAAAYAAABrAAEAAQEMcgEAAQABAAAAaAgAAAQAAABwEAwAAAAOAAMAAQABAAAAbQgAAAsAAAASECMAEgASAU0CAAFxEAYAAAAKAA8AAAAIAAEAAwABAHMIAAAdAAAAEhESAmIDCQA4AwYAYgMKADkDBAABIQ8BYgMKAGIECQASFSNVEQASBk0HBQZuMA4AQwUo8g0AASEo7wAADAAAAA0AAQABAQwaAwAAAAEAAACDCAAADQAAABIQIwASABIBGgIPAE0CAAFxEAYAAAAKAA8AAAABAAEAAQAAAIgIAAAEAAAAcBAMAAAADgAEAAEAAQAAAI0IAAAeAAAAEgBgAQEAEwIcADUhAwAPAHEABwAAAAoBOQH7/xoAMgBxEA0AAABuEAAAAwAMAFIAAABxEAoAAAAKACjqBgABAAIZARkBGQEZARkBGQKBgASYEQMABQAIGgEKAQoDiIAEsBEBgYAExBMBCdwTAYkBhBQBCdwUAQADAAsaCIGABIgVAQmgFQGKAgAAAAAPAAAAAAAAAAEAAAAAAAAAAQAAAEMAAABwAAAAAgAAABMAAAB8AQAAAwAAAAsAAADIAQAABAAAAAwAAABMAgAABQAAAA8AAACsAgAABgAAAAMAAAAkAwAAAiAAAEMAAACEAwAAARAAAAcAAADgBwAABSAAAAMAAAAcCAAAAxAAAAEAAAAwCAAAAyAAAAgAAAA0CAAAASAAAAgAAACYCAAAACAAAAMAAADsCgAAABAAAAEAAAA8CwAA\";\n" +
+            "\n" +
+            "    private static native int unsealNative(int targetSdkVersion);\n" +
+            "\n" +
+            "    public static int unseal(Context context) {\n" +
+            "        if (SDK_INT < 28) {\n" +
+            "            // Below Android P, ignore\n" +
+            "            return 0;\n" +
+            "        }\n" +
+            "\n" +
+            "        // try exempt API first.\n" +
+            "        if (exemptAll()) {\n" +
+            "            return 0;\n" +
+            "        }\n" +
+            "        if (unsealByDexFile(context)) {\n" +
+            "            return 0;\n" +
+            "        }\n" +
+            "\n" +
+            "        return -1;\n" +
+            "    }\n" +
+            "\n" +
+            "    @SuppressWarnings({\"deprecation\", \"ResultOfMethodCallIgnored\"})\n" +
+            "    private static boolean unsealByDexFile(Context context) {\n" +
+            "        byte[] bytes = Base64.decode(DEX, Base64.NO_WRAP);\n" +
+            "        File codeCacheDir = getCodeCacheDir(context);\n" +
+            "        if (codeCacheDir == null) {\n" +
+            "            return false;\n" +
+            "        }\n" +
+            "        File code = new File(codeCacheDir, \"__temp_\" + System.currentTimeMillis() + \".dex\");\n" +
+            "        try {\n" +
+            "\n" +
+            "            try (FileOutputStream fos = new FileOutputStream(code)) {\n" +
+            "                fos.write(bytes);\n" +
+            "            }\n" +
+            "\n" +
+            "            DexFile dexFile = new DexFile(code);\n" +
+            "            // This class is hardcoded in the dex, Don't use BootstrapClass.class to reference it\n" +
+            "            // it maybe obfuscated!!\n" +
+            "            Class<?> bootstrapClass = dexFile.loadClass(\"com.highcapable.yukihookapi.thirdparty.me.weishu.reflection.BootstrapClass\", null);\n" +
+            "            Method exemptAll = bootstrapClass.getDeclaredMethod(\"exemptAll\");\n" +
+            "            return (boolean) exemptAll.invoke(null);\n" +
+            "        } catch (Throwable e) {\n" +
+            "            e.printStackTrace();\n" +
+            "            return false;\n" +
+            "        } finally {\n" +
+            "            if (code.exists()) {\n" +
+            "                code.delete();\n" +
+            "            }\n" +
+            "        }\n" +
+            "    }\n" +
+            "\n" +
+            "    private static File getCodeCacheDir(Context context) {\n" +
+            "        if (context != null) {\n" +
+            "            return context.getCodeCacheDir();\n" +
+            "        }\n" +
+            "        String tmpDir = System.getProperty(\"java.io.tmpdir\");\n" +
+            "        if (TextUtils.isEmpty(tmpDir)) {\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        File tmp = new File(tmpDir);\n" +
+            "        if (!tmp.exists()) {\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        return tmp;\n" +
             "    }\n" +
             "}")
 )
