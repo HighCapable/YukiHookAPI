@@ -256,13 +256,13 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             createCodeFile(
                 fileName = data.xInitClassName,
                 packageName = data.entryPackageName,
-                content = data.sources()["xposed_init"]
+                content = data.sources()[ClassName.XposedInit]
             )
             /** 插入 xposed_init_Impl 代码 */
             createCodeFile(
                 fileName = "${data.entryClassName}_Impl",
                 packageName = data.entryPackageName,
-                content = data.sources()["xposed_init_Impl"]
+                content = data.sources()[ClassName.XposedInit_Impl]
             )
         }
 

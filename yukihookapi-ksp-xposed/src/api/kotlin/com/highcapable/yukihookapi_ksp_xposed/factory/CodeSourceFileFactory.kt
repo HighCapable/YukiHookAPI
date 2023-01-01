@@ -45,6 +45,8 @@ object PackageName {
 object ClassName {
     const val ModuleApplication_Impl = "ModuleApplication_Impl"
     const val YukiHookBridge_Impl = "YukiHookBridge_Impl"
+    const val XposedInit = "xposed_init"
+    const val XposedInit_Impl = "xposed_init_Impl"
 }
 
 /**
@@ -95,7 +97,7 @@ fun GenerateData.sources() = mapOf(
             "\n" +
             "    val compiledTimestamp get() = ${System.currentTimeMillis()}\n" +
             "}"),
-    "xposed_init" to ("@file:Suppress(\"ClassName\")\n" +
+    ClassName.XposedInit to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
             "package $entryPackageName\n" +
             "\n" +
@@ -129,7 +131,7 @@ fun GenerateData.sources() = mapOf(
                         "        YukiXposedEvent.EventHandler.callHandleInitPackageResources(resparam)\n" +
                         "    }\n") else "") +
             "}"),
-    "xposed_init_Impl" to ("@file:Suppress(\"ClassName\")\n" +
+    ClassName.XposedInit_Impl to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
             "package $entryPackageName\n" +
             "\n" +
