@@ -13,12 +13,16 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # VariousClass <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class VariousClass(vararg var name: String)
+class VariousClass(private vararg val name: String)
 ```
 
 **Change Records**
 
 `v1.0` `first`
+
+`v1.1.5` `modified`
+
+私有化 `name` 参数并设置为不可修改
 
 **Function Illustrate**
 

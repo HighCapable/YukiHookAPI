@@ -5,12 +5,16 @@ pageClass: code-page
 # VariousClass <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class VariousClass(vararg var name: String)
+class VariousClass(private vararg val name: String)
 ```
 
 **变更记录**
 
 `v1.0` `添加`
+
+`v1.1.5` `修改`
+
+私有化 `name` 参数并设置为不可修改
 
 **功能描述**
 

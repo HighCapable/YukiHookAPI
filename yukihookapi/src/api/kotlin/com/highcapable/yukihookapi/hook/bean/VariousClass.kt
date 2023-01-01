@@ -33,7 +33,7 @@ import com.highcapable.yukihookapi.hook.factory.toClass
  * 这是一个不确定性 [Class] 类名装载器
  * @param name 可指定多个类名 - 将会自动匹配存在的第一个类名
  */
-class VariousClass(vararg var name: String) {
+class VariousClass(private vararg val name: String) {
 
     /**
      * 获取匹配的实体类
