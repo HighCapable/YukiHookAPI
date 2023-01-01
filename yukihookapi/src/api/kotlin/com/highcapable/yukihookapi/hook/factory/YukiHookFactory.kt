@@ -36,7 +36,6 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Process
 import android.view.ContextThemeWrapper
 import android.widget.ImageView
@@ -189,23 +188,14 @@ fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration?
  */
 internal val Context.isTaiChiModuleActive: Boolean
     get() {
-        var isModuleActive = false
-        runCatching {
-            var result: Bundle? = null
-            Uri.parse("content://me.weishu.exposed.CP/").also { uri ->
-                runCatching {
-                    result = contentResolver.call(uri, "active", null, null)
-                }.onFailure {
-                    // TaiChi is killed, try invoke
-                    runCatching {
-                        startActivity(Intent("me.weishu.exp.ACTION_ACTIVE").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
-                    }.onFailure { return false }
-                }
-                if (result == null)
-                    result = contentResolver.call(Uri.parse("content://me.weishu.exposed.CP/"), "active", null, null)
-                if (result == null) return false
-            }
-            isModuleActive = result?.getBoolean("active", false) == true
-        }
-        return isModuleActive
+        /**
+         * 获取模块是否激活
+         * @return [Boolean] or null
+         */
+        fun isModuleActive() =
+            contentResolver?.call(Uri.parse("content://me.weishu.exposed.CP/"), "active", null, null)?.getBoolean("active", false)
+        return runCatching { isModuleActive() }.getOrNull() ?: runCatching {
+            startActivity(Intent("me.weishu.exp.ACTION_ACTIVE").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+            isModuleActive()
+        }.getOrNull() ?: false
     }
