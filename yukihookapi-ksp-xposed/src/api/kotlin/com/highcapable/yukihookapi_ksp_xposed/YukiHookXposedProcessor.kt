@@ -66,6 +66,12 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
 
         /** 插入 Xposed 尾部的名称 */
         private const val XPOSED_CLASS_SHORT_NAME = "_YukiHookXposedInit"
+
+        /** "kt" 文件扩展名 */
+        private const val KOTLIN_FILE_EXT_NAME = "kt"
+
+        /** "java" 文件扩展名 */
+        private const val JAVA_FILE_EXT_NAME = "java"
     }
 
     override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
@@ -94,16 +100,21 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         }
 
         /**
-         * 创建代码文件 - 类型 kt
+         * 创建代码文件
          * @param fileName 文件名
          * @param packageName 包名
          * @param content 代码内容
+         * @param extensionName 文件扩展名 - 默认为 [KOTLIN_FILE_EXT_NAME]
          */
-        private fun SymbolProcessorEnvironment.createCodeFile(fileName: String, packageName: String, content: String?) =
-            codeGenerator.createNewFile(
-                dependencies = Dependencies.ALL_FILES,
-                packageName, fileName
-            ).apply { content?.toByteArray()?.let { write(it) }; flush() }.close()
+        private fun SymbolProcessorEnvironment.createCodeFile(
+            fileName: String,
+            packageName: String,
+            content: String?,
+            extensionName: String = KOTLIN_FILE_EXT_NAME
+        ) = codeGenerator.createNewFile(
+            dependencies = Dependencies.ALL_FILES,
+            packageName, fileName, extensionName
+        ).apply { content?.toByteArray()?.let { write(it) }; flush() }.close()
 
         /**
          * 发出警告
