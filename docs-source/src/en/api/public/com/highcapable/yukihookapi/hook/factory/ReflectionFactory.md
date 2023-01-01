@@ -409,11 +409,11 @@ fun Class<*>.toJavaPrimitiveType(): Class<*>
 ## String.toClass <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers
-fun String.toClass(loader: ClassLoader?): Class<*>
+fun String.toClass(loader: ClassLoader?, initialize: Boolean): Class<*>
 ```
 
 ```kotlin:no-line-numbers
-inline fun <reified T> String.toClass(loader: ClassLoader?): Class<T>
+inline fun <reified T> String.toClass(loader: ClassLoader?, initialize: Boolean): Class<T>
 ```
 
 **Change Records**
@@ -423,6 +423,8 @@ inline fun <reified T> String.toClass(loader: ClassLoader?): Class<T>
 `v1.1.5` `modified`
 
 新增泛型返回值 `Class<T>` 方法
+
+新增 `initialize` 参数
 
 **Function Illustrate**
 
@@ -456,14 +458,40 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 "com.example.demo.DemoClass".toClass<DemoClass>()
 ```
 
+你还可以设置在获取到这个 `Class` 时是否自动执行其默认的静态方法块，默认情况下不会执行。
+
+> The following example
+
+```kotlin
+// 获取并执行 DemoClass 默认的静态方法块
+"com.example.demo.DemoClass".toClass(initialize = true)
+```
+
+默认的静态方法块在 Java 中使用如下方式定义。
+
+> The following example
+
+```java:no-line-numbers
+public class DemoClass {
+
+    static {
+        // 这里是静态方法块的内容
+    }
+
+    public DemoClass() {
+        // ...
+    }
+}
+```
+
 ## String.toClassOrNull <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers
-fun String.toClassOrNull(loader: ClassLoader?): Class<*>?
+fun String.toClassOrNull(loader: ClassLoader?, initialize: Boolean): Class<*>?
 ```
 
 ```kotlin:no-line-numbers
-inline fun <reified T> String.toClassOrNull(loader: ClassLoader?): Class<T>?
+inline fun <reified T> String.toClassOrNull(loader: ClassLoader?, initialize: Boolean): Class<T>?
 ```
 
 **Change Records**
@@ -473,6 +501,8 @@ inline fun <reified T> String.toClassOrNull(loader: ClassLoader?): Class<T>?
 `v1.1.5` `modified`
 
 新增泛型返回值 `Class<T>` 方法
+
+新增 `initialize` 参数
 
 **Function Illustrate**
 
@@ -487,7 +517,7 @@ inline fun <reified T> String.toClassOrNull(loader: ClassLoader?): Class<T>?
 ## classOf <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun <reified T> classOf(loader: ClassLoader?): Class<T>
+inline fun <reified T> classOf(loader: ClassLoader?, initialize: Boolean): Class<T>
 ```
 
 **Change Records**
@@ -497,6 +527,8 @@ inline fun <reified T> classOf(loader: ClassLoader?): Class<T>
 `v1.1.5` `modified`
 
 将返回类型由 `Class<*>` cast 为 `Class<T>`
+
+新增 `initialize` 参数
 
 **Function Illustrate**
 

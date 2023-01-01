@@ -27,7 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.bean
 
-import com.highcapable.yukihookapi.hook.factory.toClass
+import com.highcapable.yukihookapi.hook.factory.toClassOrNull
 
 /**
  * 这是一个不确定性 [Class] 类名装载器
@@ -40,17 +40,16 @@ class VariousClass(private vararg val name: String) {
      *
      * - 使用当前 [loader] 装载目标 [Class]
      * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    fun get(loader: ClassLoader? = null): Class<*> {
+    fun get(loader: ClassLoader? = null, initialize: Boolean = false): Class<*> {
         var finalClass: Class<*>? = null
         if (name.isNotEmpty()) run {
             name.forEach {
-                runCatching {
-                    finalClass = it.toClass(loader)
-                    return@run
-                }
+                finalClass = it.toClassOrNull(loader, initialize)
+                if (finalClass != null) return@run
             }
         }
         return finalClass ?: error("VariousClass match failed of those $this")
@@ -63,9 +62,10 @@ class VariousClass(private vararg val name: String) {
      *
      * 匹配不到 [Class] 会返回 null - 不会抛出异常
      * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class] or null
      */
-    fun getOrNull(loader: ClassLoader? = null) = runCatching { get(loader) }.getOrNull()
+    fun getOrNull(loader: ClassLoader? = null, initialize: Boolean = false) = runCatching { get(loader, initialize) }.getOrNull()
 
     override fun toString(): String {
         var result = ""

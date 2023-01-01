@@ -476,57 +476,67 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
-    fun String.toClass(loader: ClassLoader? = appClassLoader) = ReflectionTool.findClassByName(name = this, loader)
+    fun String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+        ReflectionTool.findClassByName(name = this, loader, initialize)
 
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class]<[T]>
      * @throws NoClassDefFoundError 如果找不到 [Class]
      * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
      */
     @JvmName("toClass_Generics")
-    inline fun <reified T> String.toClass(loader: ClassLoader? = appClassLoader) =
-        ReflectionTool.findClassByName(name = this, loader) as? Class<T> ?: error("Target Class type cannot cast to ${T::class.java}")
+    inline fun <reified T> String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+        ReflectionTool.findClassByName(name = this, loader, initialize) as? Class<T>?
+            ?: error("Target Class type cannot cast to ${T::class.java}")
 
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
      *
      * 找不到 [Class] 会返回 null - 不会抛出异常
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class] or null
      */
-    fun String.toClassOrNull(loader: ClassLoader? = appClassLoader) = runCatching { toClass(loader) }.getOrNull()
+    fun String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+        runCatching { toClass(loader, initialize) }.getOrNull()
 
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
      *
      * 找不到 [Class] 会返回 null - 不会抛出异常
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class]<[T]> or null
      */
     @JvmName("toClassOrNull_Generics")
-    inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = appClassLoader) = runCatching { toClass<T>(loader) }.getOrNull()
+    inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+        runCatching { toClass<T>(loader, initialize) }.getOrNull()
 
     /**
      * [VariousClass] 转换为 [loader] 中的实体类
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    fun VariousClass.toClass(loader: ClassLoader? = appClassLoader) = get(loader)
+    fun VariousClass.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = get(loader, initialize)
 
     /**
      * [VariousClass] 转换为 [loader] 中的实体类
      *
      * 匹配不到 [Class] 会返回 null - 不会抛出异常
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class] or null
      */
-    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader) = getOrNull(loader)
+    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = getOrNull(loader, initialize)
 
     /**
      * 通过字符串类名查找是否存在

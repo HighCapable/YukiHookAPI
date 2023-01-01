@@ -23,12 +23,16 @@ class VariousClass(private vararg val name: String)
 ## get <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun get(loader: ClassLoader? = null): Class<*>
+fun get(loader: ClassLoader? = null, initialize: Boolean): Class<*>
 ```
 
 **变更记录**
 
 `v1.0.70` `新增`
+
+`v1.1.5` `修改`
+
+新增 `initialize` 参数
 
 **功能描述**
 
@@ -39,12 +43,16 @@ fun get(loader: ClassLoader? = null): Class<*>
 ## getOrNull <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun getOrNull(loader: ClassLoader? = null): Class<*>?
+fun getOrNull(loader: ClassLoader? = null, initialize: Boolean): Class<*>?
 ```
 
 **变更记录**
 
 `v1.1.0` `新增`
+
+`v1.1.5` `修改`
+
+新增 `initialize` 参数
 
 **功能描述**
 

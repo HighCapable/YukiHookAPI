@@ -632,15 +632,15 @@ inline fun searchClass(name: String, async: Boolean, initiate: ClassConditions):
 ## String+VariousClass.toClass <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
-fun String.toClass(loader: ClassLoader?): Class<*>
+fun String.toClass(loader: ClassLoader?, initialize: Boolean): Class<*>
 ```
 
 ```kotlin:no-line-numbers
-inline fun <reified T> String.toClass(loader: ClassLoader?): Class<T>
+inline fun <reified T> String.toClass(loader: ClassLoader?, initialize: Boolean): Class<T>
 ```
 
 ```kotlin:no-line-numbers
-fun VariousClass.toClass(loader: ClassLoader?): Class<*>
+fun VariousClass.toClass(loader: ClassLoader?, initialize: Boolean): Class<*>
 ```
 
 **Change Records**
@@ -650,6 +650,8 @@ fun VariousClass.toClass(loader: ClassLoader?): Class<*>
 `v1.1.5` `modified`
 
 新增泛型返回值 `Class<T>` 方法
+
+新增 `initialize` 参数
 
 **Function Illustrate**
 
@@ -685,6 +687,32 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 "com.example.demo.DemoClass".toClass<DemoClass>()
 ```
 
+你还可以设置在获取到这个 `Class` 时是否自动执行其默认的静态方法块，默认情况下不会执行。
+
+> The following example
+
+```kotlin
+// 获取并执行 DemoClass 默认的静态方法块
+"com.example.demo.DemoClass".toClass(initialize = true)
+```
+
+默认的静态方法块在 Java 中使用如下方式定义。
+
+> The following example
+
+```java:no-line-numbers
+public class DemoClass {
+
+    static {
+        // 这里是静态方法块的内容
+    }
+
+    public DemoClass() {
+        // ...
+    }
+}
+```
+
 你还可以创建一个 `VariousClass`，并转换为实体类。
 
 `VariousClass` 会枚举所有设置的 `Class` 并最终获得第一个存在的 `Class`。
@@ -707,15 +735,15 @@ VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").toCla
 ## String+VariousClass.toClassOrNull <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
-fun String.toClassOrNull(loader: ClassLoader?): Class<*>?
+fun String.toClassOrNull(loader: ClassLoader?, initialize: Boolean): Class<*>?
 ```
 
 ```kotlin:no-line-numbers
-inline fun <reified T> String.toClassOrNull(loader: ClassLoader?): Class<T>?
+inline fun <reified T> String.toClassOrNull(loader: ClassLoader?, initialize: Boolean): Class<T>?
 ```
 
 ```kotlin:no-line-numbers
-fun VariousClass.toClassOrNull(loader: ClassLoader?): Class<*>?
+fun VariousClass.toClassOrNull(loader: ClassLoader?, initialize: Boolean): Class<*>?
 ```
 
 **Change Records**
@@ -725,6 +753,8 @@ fun VariousClass.toClassOrNull(loader: ClassLoader?): Class<*>?
 `v1.1.5` `modified`
 
 新增泛型返回值 `Class<T>` 方法
+
+新增 `initialize` 参数
 
 **Function Illustrate**
 

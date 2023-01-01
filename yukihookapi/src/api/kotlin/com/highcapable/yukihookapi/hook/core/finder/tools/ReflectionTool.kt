@@ -95,18 +95,35 @@ internal object ReflectionTool {
      * 使用字符串类名获取 [Class]
      * @param name [Class] 完整名称
      * @param loader [Class] 所在的 [ClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
      */
     @PublishedApi
-    internal fun findClassByName(name: String, loader: ClassLoader?): Class<*> {
+    internal fun findClassByName(name: String, loader: ClassLoader?, initialize: Boolean = false): Class<*> {
         val hashCode = ("[$name][$loader]").hashCode()
+
+        /**
+         * 获取 [Class.forName] 的 [Class] 对象
+         * @param name [Class] 完整名称
+         * @param initialize 是否初始化 [Class] 的静态方法块
+         * @param loader [Class] 所在的 [ClassLoader] - 默认为 [AppParasitics.baseClassLoader]
+         * @return [Class]
+         */
+        fun classForName(name: String, initialize: Boolean, loader: ClassLoader? = AppParasitics.baseClassLoader) =
+            Class.forName(name, initialize, loader)
+
+        /**
+         * 使用默认方式和 [ClassLoader] 装载 [Class]
+         * @return [Class] or null
+         */
+        fun loadWithDefaultClassLoader() = if (initialize.not()) loader?.loadClass(name) else classForName(name, initialize, loader)
         return ReflectsCacheStore.findClass(hashCode) ?: runCatching {
             when {
-                YukiHookBridge.hasXposedBridge -> runCatching { YukiHookHelper.findClass(name, loader) }
-                    .getOrNull() ?: (if (loader == null) Class.forName(name) else loader.loadClass(name))
-                loader == null -> Class.forName(name)
-                else -> loader.loadClass(name)
+                YukiHookBridge.hasXposedBridge -> runCatching { if (initialize.not()) YukiHookHelper.findClass(name, loader) else null }
+                    .getOrNull() ?: loadWithDefaultClassLoader() ?: classForName(name, initialize)
+                loader == null -> classForName(name, initialize)
+                else -> loadWithDefaultClassLoader()
             }.also { ReflectsCacheStore.putClass(hashCode, it) }
         }.getOrNull() ?: throw createException(loader ?: AppParasitics.baseClassLoader, name = "Class", "name:[$name]")
     }
