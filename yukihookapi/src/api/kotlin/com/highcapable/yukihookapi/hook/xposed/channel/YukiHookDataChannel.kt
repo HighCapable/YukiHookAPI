@@ -220,7 +220,14 @@ class YukiHookDataChannel private constructor() {
          * @param type 类型
          * @return [String]
          */
-        private fun keyShortName(type: CallbackKeyType) = "_${if (isXposedEnvironment) "X" else context?.javaClass?.name ?: "M"}_${type.ordinal}"
+        private fun keyShortName(type: CallbackKeyType) =
+            "${keyNonRepeatName}_${if (isXposedEnvironment) "X" else context?.javaClass?.name ?: "M"}_${type.ordinal}"
+
+        /**
+         * 键值不重复名称 - 确保每个宿主使用的键值名称互不干扰
+         * @return [String]
+         */
+        private val keyNonRepeatName get() = "_${packageName.hashCode()}"
 
         /**
          * 创建一个调用空间
@@ -262,8 +269,9 @@ class YukiHookDataChannel private constructor() {
          */
         fun <T> wait(key: String, result: (value: T) -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.SINGLE)] = Pair(context) { action, intent ->
-                if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    (intent.extras?.get(key) as? T?)?.let { result(it) }
+                if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context)) {
+                    (intent.extras?.get(key + keyNonRepeatName) as? T?)?.let { result(it) }
+                }
             }
         }
 
@@ -275,7 +283,7 @@ class YukiHookDataChannel private constructor() {
         fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit) {
             receiverCallbacks[data.key + keyShortName(CallbackKeyType.CDATA)] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    (intent.extras?.get(data.key) as? T?)?.let { result(it) }
+                    (intent.extras?.get(data.key + keyNonRepeatName) as? T?)?.let { result(it) }
             }
         }
 
@@ -289,7 +297,7 @@ class YukiHookDataChannel private constructor() {
         fun wait(key: String, callback: () -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
                 if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    if (intent.getStringExtra(key) == VALUE_WAIT_FOR_LISTENER) callback()
+                    if (intent.getStringExtra(key + keyNonRepeatName) == VALUE_WAIT_FOR_LISTENER) callback()
             }
         }
 
@@ -337,28 +345,28 @@ class YukiHookDataChannel private constructor() {
                 data.takeIf { it.isNotEmpty() }?.forEach {
                     when (it.value) {
                         null -> Unit
-                        is Bundle -> putExtra(it.key, it.value as Bundle)
-                        is Array<*> -> putExtra(it.key, it.value as Array<*>)
-                        is Boolean -> putExtra(it.key, it.value as Boolean)
-                        is BooleanArray -> putExtra(it.key, it.value as BooleanArray)
-                        is Byte -> putExtra(it.key, it.value as Byte)
-                        is ByteArray -> putExtra(it.key, it.value as ByteArray)
-                        is Char -> putExtra(it.key, it.value as Char)
-                        is CharArray -> putExtra(it.key, it.value as CharArray)
-                        is Double -> putExtra(it.key, it.value as Double)
-                        is DoubleArray -> putExtra(it.key, it.value as DoubleArray)
-                        is Float -> putExtra(it.key, it.value as Float)
-                        is FloatArray -> putExtra(it.key, it.value as FloatArray)
-                        is Int -> putExtra(it.key, it.value as Int)
-                        is IntArray -> putExtra(it.key, it.value as IntArray)
-                        is Long -> putExtra(it.key, it.value as Long)
-                        is LongArray -> putExtra(it.key, it.value as LongArray)
-                        is Short -> putExtra(it.key, it.value as Short)
-                        is ShortArray -> putExtra(it.key, it.value as ShortArray)
-                        is String -> putExtra(it.key, it.value as String)
-                        is CharSequence -> putExtra(it.key, it.value as CharSequence)
-                        is Parcelable -> putExtra(it.key, it.value as CharSequence)
-                        is Serializable -> putExtra(it.key, it.value as Serializable)
+                        is Bundle -> putExtra(it.key + keyNonRepeatName, it.value as Bundle)
+                        is Array<*> -> putExtra(it.key + keyNonRepeatName, it.value as Array<*>)
+                        is Boolean -> putExtra(it.key + keyNonRepeatName, it.value as Boolean)
+                        is BooleanArray -> putExtra(it.key + keyNonRepeatName, it.value as BooleanArray)
+                        is Byte -> putExtra(it.key + keyNonRepeatName, it.value as Byte)
+                        is ByteArray -> putExtra(it.key + keyNonRepeatName, it.value as ByteArray)
+                        is Char -> putExtra(it.key + keyNonRepeatName, it.value as Char)
+                        is CharArray -> putExtra(it.key + keyNonRepeatName, it.value as CharArray)
+                        is Double -> putExtra(it.key + keyNonRepeatName, it.value as Double)
+                        is DoubleArray -> putExtra(it.key + keyNonRepeatName, it.value as DoubleArray)
+                        is Float -> putExtra(it.key + keyNonRepeatName, it.value as Float)
+                        is FloatArray -> putExtra(it.key + keyNonRepeatName, it.value as FloatArray)
+                        is Int -> putExtra(it.key + keyNonRepeatName, it.value as Int)
+                        is IntArray -> putExtra(it.key + keyNonRepeatName, it.value as IntArray)
+                        is Long -> putExtra(it.key + keyNonRepeatName, it.value as Long)
+                        is LongArray -> putExtra(it.key + keyNonRepeatName, it.value as LongArray)
+                        is Short -> putExtra(it.key + keyNonRepeatName, it.value as Short)
+                        is ShortArray -> putExtra(it.key + keyNonRepeatName, it.value as ShortArray)
+                        is String -> putExtra(it.key + keyNonRepeatName, it.value as String)
+                        is CharSequence -> putExtra(it.key + keyNonRepeatName, it.value as CharSequence)
+                        is Parcelable -> putExtra(it.key + keyNonRepeatName, it.value as CharSequence)
+                        is Serializable -> putExtra(it.key + keyNonRepeatName, it.value as Serializable)
                         else -> error("Key-Value type ${it.value?.javaClass?.name} is not allowed")
                     }
                 }
