@@ -147,18 +147,28 @@ object YukiHookLogger {
      * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      * @return [String]
      */
-    val contents: String
-        get() {
-            var content = ""
-            inMemoryData.takeIf { it.isNotEmpty() }?.forEach {
-                content += "${it.head}$it\n"
-                it.throwable?.also { e ->
-                    content += "${it.head}Dump stack trace for \"${e.current().name}\":\n"
-                    content += e.toStackTrace()
-                }
+    val contents get() = contents()
+
+    /**
+     * 获取、格式化当前日志文件内容
+     *
+     * 如果当前没有已记录的日志 ([data] 为空) 会返回空字符串
+     *
+     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * @param data 日志数据 - 默认为 [inMemoryData]
+     * @return [String]
+     */
+    fun contents(data: ArrayList<YukiLoggerData> = inMemoryData): String {
+        var content = ""
+        data.takeIf { it.isNotEmpty() }?.forEach {
+            content += "${it.head}$it\n"
+            it.throwable?.also { e ->
+                content += "${it.head}Dump stack trace for \"${e.current().name}\":\n"
+                content += e.toStackTrace()
             }
-            return content
         }
+        return content
+    }
 
     /**
      * 清除全部已记录的日志
@@ -178,10 +188,11 @@ object YukiHookLogger {
      *
      * - ❗文件读写权限取决于当前宿主、模块已获取的权限
      * @param fileName 完整文件名 - 例如 /data/data/.../files/xxx.log
+     * @param data 日志数据 - 默认为 [inMemoryData]
      * @throws ErrnoException 如果目标路径不可写
      */
-    fun saveToFile(fileName: String) {
-        if (inMemoryData.isNotEmpty()) File(fileName).appendText(contents)
+    fun saveToFile(fileName: String, data: ArrayList<YukiLoggerData> = inMemoryData) {
+        if (data.isNotEmpty()) File(fileName).appendText(contents(data))
     }
 
     /**

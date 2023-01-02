@@ -193,6 +193,28 @@ val contents: String
 
 :::
 
+### contents <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun contents(data: ArrayList<YukiLoggerData>): String
+```
+
+**Change Records**
+
+`v1.1.5` `added`
+
+**Function Illustrate**
+
+> 获取、格式化当前日志文件内容。
+
+如果当前没有已记录的日志 (`data` 为空) 会返回空字符串。
+
+::: danger
+
+获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的。
+
+:::
+
 ### clear <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
@@ -218,12 +240,16 @@ fun clear()
 ### saveToFile <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun saveToFile(fileName: String)
+fun saveToFile(fileName: String, data: ArrayList<YukiLoggerData>)
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.1.5` `modified`
+
+新增 `data` 参数
 
 **Function Illustrate**
 
