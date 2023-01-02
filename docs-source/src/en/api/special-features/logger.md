@@ -163,9 +163,25 @@ YukiHookLogger.inMemoryData.forEach {
 }
 ```
 
-The above features require `YukiHookLogger.Configs.isRecord` to be enabled.
+If you want to format or save the obtained custom log data to a file, you only need to use the following method.
+
+> The following example
+
+```kotlin
+// Assume this is the custom log data you get
+val data: ArrayList<YukiLoggerData>
+// Format log data to String
+val dataString = YukiHookLogger.contents(data)
+// Save log data to file
+// Please note
+// The saved file path must have read and write permissions
+// Otherwise an exception will be thrown
+YukiHookLogger.saveToFile("/sdcard/Documents/debug_log.log", data)
+```
 
 ::: danger
+
+You need to enable **YukiHookLogger.Configs.isRecord** to get the contents of **YukiHookLogger.inMemoryData**.
 
 The obtained log data is isolated from each other in the Host App and the Module App's process.
 
@@ -195,6 +211,6 @@ override fun onInit() = configs {
 
 ::: tip
 
-For more functions, please refer to [YukiHookLogger.inMemoryData](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#inmemorydata-field), [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field), [YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) methods and [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object).
+For more functions, please refer to [YukiHookLogger.inMemoryData](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#inmemorydata-field), [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field), [YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-method), [YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) methods and [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object).
 
 :::

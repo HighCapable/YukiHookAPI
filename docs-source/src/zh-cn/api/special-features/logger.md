@@ -159,9 +159,23 @@ YukiHookLogger.inMemoryData.forEach {
 }
 ```
 
-以上功能需要启用 `YukiHookLogger.Configs.isRecord`。
+如果你想对得到的自定义日志数据进行格式化或保存到文件，你只需要使用如下方法即可。
+
+> 示例如下
+
+```kotlin
+// 假设这就是你得到的自定义日志数据
+val data: ArrayList<YukiLoggerData>
+// 格式化日志数据到字符串
+val dataString = YukiHookLogger.contents(data)
+// 保存日志数据到文件
+// 请注意保存的文件路径必须拥有读写权限，否则会抛出异常
+YukiHookLogger.saveToFile("/sdcard/Documents/debug_log.log", data)
+```
 
 ::: danger
+
+你需要启用 **YukiHookLogger.Configs.isRecord** 才能获取到 **YukiHookLogger.inMemoryData** 的内容。
 
 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的。
 
@@ -189,6 +203,6 @@ override fun onInit() = configs {
 
 ::: tip
 
-更多功能请参考 [YukiHookLogger.inMemoryData](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#inmemorydata-field)、[YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field)、[YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) 方法以及 [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object)。
+更多功能请参考 [YukiHookLogger.inMemoryData](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#inmemorydata-field)、[YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-field)、[YukiHookLogger.contents](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#contents-method)、[YukiHookLogger.saveToFile](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#savetofile-method) 方法以及 [YukiHookLogger.Configs](../public/com/highcapable/yukihookapi/hook/log/LoggerFactory#configs-object)。
 
 :::
