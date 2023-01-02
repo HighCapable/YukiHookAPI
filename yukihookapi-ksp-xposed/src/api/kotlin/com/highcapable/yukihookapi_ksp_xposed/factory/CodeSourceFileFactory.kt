@@ -116,6 +116,7 @@ fun GenerateData.sources() = mapOf(
             "\n" +
             "package com.highcapable.yukihookapi.hook.xposed.bridge.status\n" +
             "\n" +
+            "import android.util.Log\n" +
             "import androidx.annotation.Keep\n" +
             "\n" +
             createCommentContent(currrentClassTag = ClassName.YukiHookModuleStatus_Impl) +
@@ -123,16 +124,32 @@ fun GenerateData.sources() = mapOf(
             "object YukiHookModuleStatus_Impl {\n" +
             "\n" +
             "    @JvmName(\"${YukiHookModuleStatusJvmName.IS_ACTIVE_METHOD_NAME}\")\n" +
-            "    fun isActive() = false\n" +
+            "    fun isActive(): Boolean {\n" +
+            "        placeholderExecution()\n" +
+            "        return false\n" +
+            "    }\n" +
             "\n" +
             "    @JvmName(\"${YukiHookModuleStatusJvmName.HAS_RESOURCES_HOOK_METHOD_NAME}\")\n" +
-            "    fun hasResourcesHook() = false\n" +
+            "    fun hasResourcesHook(): Boolean {\n" +
+            "        placeholderExecution()\n" +
+            "        return false\n" +
+            "    }\n" +
             "\n" +
             "    @JvmName(\"${YukiHookModuleStatusJvmName.GET_XPOSED_VERSION_METHOD_NAME}\")\n" +
-            "    fun getXposedVersion() = -1\n" +
+            "    fun getXposedVersion(): Int {\n" +
+            "        placeholderExecution()\n" +
+            "        return -1\n" +
+            "    }\n" +
             "\n" +
             "    @JvmName(\"${YukiHookModuleStatusJvmName.GET_XPOSED_TAG_METHOD_NAME}\")\n" +
-            "    fun getXposedBridgeTag() = \"unknown\"\n" +
+            "    fun getXposedBridgeTag(): String {\n" +
+            "        placeholderExecution()\n" +
+            "        return \"unknown\"\n" +
+            "    }\n" +
+            "\n" +
+            "    private fun placeholderExecution() {\n" +
+            "        Log.d(\"YukiHookAPI-Placeholder\", \"No trace of hook in this time\")\n" +
+            "    }\n" +
             "}"),
     ClassName.XposedInit to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
