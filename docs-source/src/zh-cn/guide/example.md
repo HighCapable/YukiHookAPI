@@ -666,6 +666,26 @@ if(YukiHookAPI.Status.isModuleActive) {
 
 ::: warning
 
+如果你的模块 API 版本高于 29 且正在目标 API 为 29 以上的系统中运行，你需要在 **AndroidManifest.xml** 中添加如下权限声明才能正常判断模块在太极、无极中的激活状态。
+
+> 示例如下
+
+```xml
+<queries>
+    <intent>
+        <action android:name="android.intent.action.MAIN" />
+    </intent>
+</queries>
+```
+
+还有一种方案，你可以直接声明 **android.permission.QUERY_ALL_PACKAGES** 权限，但是不推荐且会被代码检查警告。
+
+> 示例如下
+
+```xml
+<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+```
+
 若模块激活判断中包含太极、无极中的激活状态，就必须将模块的 **Application** 继承于 **ModuleApplication** 或直接使用 **ModuleApplication**；
 
 **1.0.91** 版本后的 API 修改了激活逻辑判断方式，现在你可以在模块与 Hook APP (宿主) 中同时使用此 API；

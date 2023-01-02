@@ -666,6 +666,26 @@ For more functions, please refer to [YukiHookAPI.Status](../api/public/com/highc
 
 ::: warning
 
+If your Module App's API version is higher than 29 and is running on a system whose target API is 29 or higher, you need to add the following permission statement in **AndroidManifest.xml** to judge the activation status of the Module App in TaiChi and Wuji.
+
+> The following example
+
+```xml
+<queries>
+    <intent>
+        <action android:name="android.intent.action.MAIN" />
+    </intent>
+</queries>
+```
+
+There is another solution, you can directly declare the **android.permission.QUERY_ALL_PACKAGES** permission, but it is not recommended and will be warned by code inspection.
+
+> The following example
+
+```xml
+<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+```
+
 If the activation state of TaiChi and Wuji is included in the Module App activation judgment, the **Application** of the Module App must be extends **ModuleApplication** or **ModuleApplication** must be used directly;
 
 The API after **1.0.91** has modified the activation logic judgment method, now you can use this API in the Module App and Host App at the same time;
