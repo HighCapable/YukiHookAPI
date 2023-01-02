@@ -116,7 +116,9 @@ For more functions, please refer to [YukiHookDataChannel](../public/com/highcapa
 
 ## Rules for Callback Event Response
 
-Only examples used in Module App are listed here, the same `key` in the Host App is always not allowed to be created repeatedly.
+Only the examples used in Module App are listed here.
+
+The same `key` in **same Host App** is always not allowed to be created repeatedly, but the same `key` is allowed in **different Host Apps**.
 
 ::: danger
 
@@ -134,15 +136,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Callback event A
-        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+        dataChannel(packageName = "com.example.demo1").wait(key = "test_key") {
             // Your code here.
         }
         // Callback event B
-        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+        dataChannel(packageName = "com.example.demo1").wait(key = "test_key") {
             // Your code here.
         }
         // Callback event C
-        dataChannel(packageName = "com.example.demo").wait(key = "other_test_key") {
+        dataChannel(packageName = "com.example.demo1").wait(key = "other_test_key") {
+            // Your code here.
+        }
+        // Callback event D
+        dataChannel(packageName = "com.example.demo2").wait(key = "other_test_key") {
             // Your code here.
         }
     }
@@ -152,15 +158,33 @@ class OtherActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Callback event D
-        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+        // Callback event E
+        dataChannel(packageName = "com.example.demo1").wait(key = "test_key") {
+            // Your code here.
+        }
+        // Callback event F
+        dataChannel(packageName = "com.example.demo2").wait(key = "test_key") {
             // Your code here.
         }
     }
 }
 ```
 
-In the above example, the callback event A will be replaced by the callback event B, the `key` of the callback event C is not repeated with others, and the callback event D is in another Activity, So the final callback events B, C, and D can all be created successfully.
+In the above example, although callback events A and B are callback events in the same Host App, their `key` is the same, so callback event A will be replaced by callback event B.
+
+The `key` of callback event C is not duplicated with others.
+
+Although the `key` of callback event D is the same as that of callback event C, their Host Apps are different, so they can exist at the same time.
+
+Callback event E is in another Activity, although the `key` of callback event F and callback event E is the same, but they are not the same Host App, so they can exist at the same time.
+
+In summary, the final callback events B, C, D, E, and F can all be created successfully.
+
+::: tip Compatibility Notes
+
+Setting the same **key** on different Host Apps in previous historical versions of the API would result in only the last event callback, but the latest version has corrected this problem, please make sure you are using the latest API version.
+
+:::
 
 ::: danger
 
@@ -176,7 +200,7 @@ If you want to use **dataChannel** in **Fragment**, use **activity?.dataChannel(
 
 ## Security Instructions
 
-In the Module environment, you can only receive communication data sent by <u>**the Host App with the specified package name**</u> and only send it to <u>**the Host App with the specified package name**</u>.
+In the Module environment, you can only receive the communication data sent by <u>**the Host App of the specified package name**</u> and can only send to <u>**the Host App of the specified package name**</u>, except for System Framework.
 
 ::: danger
 

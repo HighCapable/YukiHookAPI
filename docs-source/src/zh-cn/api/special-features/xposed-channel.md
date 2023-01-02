@@ -116,7 +116,7 @@ dataChannel.checkingVersionEquals { isEquals ->
 
 ## 回调事件响应的规则
 
-这里只列出了在模块中使用的例子，在宿主中相同的 `key` 始终不允许重复创建。
+这里只列出了在模块中使用的例子，在**同一个宿主**中相同的 `key` 始终不允许重复创建，但**不同的宿主**中允许存在相同的 `key`。
 
 ::: danger
 
@@ -132,15 +132,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 回调事件 A
-        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+        dataChannel(packageName = "com.example.demo1").wait(key = "test_key") {
             // Your code here.
         }
         // 回调事件 B
-        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+        dataChannel(packageName = "com.example.demo1").wait(key = "test_key") {
             // Your code here.
         }
         // 回调事件 C
-        dataChannel(packageName = "com.example.demo").wait(key = "other_test_key") {
+        dataChannel(packageName = "com.example.demo1").wait(key = "other_test_key") {
+            // Your code here.
+        }
+        // 回调事件 D
+        dataChannel(packageName = "com.example.demo2").wait(key = "other_test_key") {
             // Your code here.
         }
     }
@@ -150,15 +154,31 @@ class OtherActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 回调事件 D
-        dataChannel(packageName = "com.example.demo").wait(key = "test_key") {
+        // 回调事件 E
+        dataChannel(packageName = "com.example.demo1").wait(key = "test_key") {
+            // Your code here.
+        }
+        // 回调事件 F
+        dataChannel(packageName = "com.example.demo2").wait(key = "test_key") {
             // Your code here.
         }
     }
 }
 ```
 
-在上述示例中，回调事件 A 会被回调事件 B 替换掉，回调事件 C 的 `key` 不与其它重复，回调事件 D 在另一个 Activity 中，所以最终回调事件 B、C、D 都可被创建成功。
+在上述示例中，虽然回调事件 A 与 B 是同一个宿主中的回调事件，但是它们的 `key` 相同，所以回调事件 A 会被回调事件 B 替换掉。
+
+回调事件 C 的 `key` 不与其它重复，虽然回调事件 D 的 `key` 与回调事件 C 相同，但是它们的宿主不同，所以可以同时存在。
+
+回调事件 E 在另一个 Activity 中，回调事件 F 与回调事件 E 的 `key` 虽然相同，但它们也不是同一个宿主，所以可以同时存在。
+
+综上所述，最终回调事件 B、C、D、E、F 都可被创建成功。
+
+::: tip 兼容性说明
+
+在过往历史版本的 API 中不同的宿主设置相同的 **key** 会造成只有最后一个事件回调，但是最新版本更正了这一问题，请确保你使用的是最新的 API 版本。
+
+:::
 
 ::: danger
 
@@ -174,7 +194,7 @@ class OtherActivity : AppCompatActivity() {
 
 ## 安全性说明
 
-在模块环境中，你只能接收<u>**指定包名的宿主**</u>发送的通讯数据且只能发送给<u>**指定包名的宿主**</u>。
+在模块环境中，你只能接收<u>**指定包名的宿主**</u>发送的通讯数据且只能发送给<u>**指定包名的宿主**</u>，系统框架除外。
 
 ::: danger
 
