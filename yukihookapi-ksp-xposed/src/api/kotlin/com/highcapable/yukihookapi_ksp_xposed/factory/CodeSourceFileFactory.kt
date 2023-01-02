@@ -59,7 +59,7 @@ object ClassName {
  */
 object YukiHookModuleStatusJvmName {
     const val IS_ACTIVE_METHOD_NAME = "__--"
-    const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
+    const val IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME = "_--_"
     const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
     const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
 }
@@ -129,8 +129,8 @@ fun GenerateData.sources() = mapOf(
             "        return false\n" +
             "    }\n" +
             "\n" +
-            "    @JvmName(\"${YukiHookModuleStatusJvmName.HAS_RESOURCES_HOOK_METHOD_NAME}\")\n" +
-            "    fun hasResourcesHook(): Boolean {\n" +
+            "    @JvmName(\"${YukiHookModuleStatusJvmName.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME}\")\n" +
+            "    fun isSupportResourcesHook(): Boolean {\n" +
             "        placeholderExecution()\n" +
             "        return false\n" +
             "    }\n" +

@@ -40,7 +40,7 @@ object YukiHookModuleStatus_Impl {
     private const val IS_ACTIVE_METHOD_NAME = "__--"
 
     /** 定义 Jvm 方法名 */
-    private const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
+    private const val IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME = "_--_"
 
     /** 定义 Jvm 方法名 */
     private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
@@ -58,13 +58,13 @@ object YukiHookModuleStatus_Impl {
     fun isActive(): Boolean = error("Stub!")
 
     /**
-     * 此方法经过 Hook 后返回 true 即当前 Hook Framework 支持资源钩子(Resources Hook)
+     * 此方法经过 Hook 后返回 true 即当前 Hook Framework 支持资源钩子 (Resources Hook)
      *
      * 返回值将在每次编译时自动生成
      * @return [Boolean]
      */
-    @JvmName(HAS_RESOURCES_HOOK_METHOD_NAME)
-    fun hasResourcesHook(): Boolean = error("Stub!")
+    @JvmName(IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME)
+    fun isSupportResourcesHook(): Boolean = error("Stub!")
 
     /**
      * 此方法经过 Hook 后返回 [XposedBridge.getXposedVersion]

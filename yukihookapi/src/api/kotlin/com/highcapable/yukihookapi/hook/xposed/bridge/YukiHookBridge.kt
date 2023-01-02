@@ -40,6 +40,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.PathClassLoader
@@ -128,7 +129,9 @@ object YukiHookBridge {
      */
     internal val executorName
         get() = runCatching {
-            classOf<XposedBridge>().field { name = "TAG" }.ignored().get().string().takeIf { it.isNotBlank() }
+            if (YukiHookModuleStatus.EXPOSED_BRIDGE_CLASS_NAME.hasClass(YukiHookAppHelper.currentApplication()?.classLoader))
+                YukiHookModuleStatus.TAICHI_XPOSED_NAME
+            else classOf<XposedBridge>().field { name = "TAG" }.ignored().get().string().takeIf { it.isNotBlank() }
                 ?.replace("Bridge", "")?.replace("-", "")?.trim() ?: "unknown"
         }.getOrNull() ?: "invalid"
 

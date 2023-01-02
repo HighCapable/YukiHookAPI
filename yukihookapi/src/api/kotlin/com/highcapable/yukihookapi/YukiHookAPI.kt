@@ -108,7 +108,12 @@ object YukiHookAPI {
          * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          * @return [String] 无法获取会返回 unknown - [YukiHookBridge.hasXposedBridge] 不存在会返回 invalid
          */
-        val executorName get() = YukiHookBridge.executorName.takeIf { isXposedEnvironment } ?: YukiHookModuleStatus.executorName
+        val executorName
+            get() = YukiHookBridge.executorName.takeIf { isXposedEnvironment } ?: when {
+                isXposedModuleActive -> YukiHookModuleStatus.executorName
+                isTaiChiModuleActive -> YukiHookModuleStatus.TAICHI_XPOSED_NAME
+                else -> YukiHookModuleStatus.executorName
+            }
 
         /**
          * 获取当前 Hook 框架的版本
@@ -130,7 +135,7 @@ object YukiHookAPI {
          * - ❗在 (Xposed) 宿主环境中仅返回非 [isTaiChiModuleActive] 的激活状态
          * @return [Boolean] 是否激活
          */
-        val isModuleActive get() = isXposedEnvironment || YukiHookModuleStatus.isActive() || isTaiChiModuleActive
+        val isModuleActive get() = isXposedEnvironment || YukiHookModuleStatus.isActive || isTaiChiModuleActive
 
         /**
          * 仅判断模块是否在 Xposed 中激活
@@ -140,7 +145,7 @@ object YukiHookAPI {
          * - ❗在 (Xposed) 宿主环境中始终返回 true
          * @return [Boolean] 是否激活
          */
-        val isXposedModuleActive get() = isXposedEnvironment || YukiHookModuleStatus.isActive()
+        val isXposedModuleActive get() = isXposedEnvironment || YukiHookModuleStatus.isActive
 
         /**
          * 仅判断模块是否在太极、无极中激活
@@ -163,7 +168,7 @@ object YukiHookAPI {
          * @return [Boolean] 是否支持
          */
         val isSupportResourcesHook
-            get() = YukiHookBridge.isSupportResourcesHook.takeIf { isXposedEnvironment } ?: YukiHookModuleStatus.hasResourcesHook()
+            get() = YukiHookBridge.isSupportResourcesHook.takeIf { isXposedEnvironment } ?: YukiHookModuleStatus.isSupportResourcesHook
     }
 
     /**

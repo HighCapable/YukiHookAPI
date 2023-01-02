@@ -159,8 +159,8 @@ internal object AppParasitics {
                 YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME }, object : YukiMemberReplacement() {
                     override fun replaceHookedMember(param: Param) = YukiHookBridge.executorVersion
                 })
-            } else
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.HAS_RESOURCES_HOOK_METHOD_NAME }, object : YukiMemberReplacement() {
+            } else YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME },
+                object : YukiMemberReplacement() {
                     override fun replaceHookedMember(param: Param) = true
                 })
         }

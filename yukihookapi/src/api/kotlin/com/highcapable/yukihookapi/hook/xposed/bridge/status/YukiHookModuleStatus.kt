@@ -55,13 +55,19 @@ internal object YukiHookModuleStatus {
     internal const val IS_ACTIVE_METHOD_NAME = "__--"
 
     /** 定义 Jvm 方法名 */
-    internal const val HAS_RESOURCES_HOOK_METHOD_NAME = "_--_"
+    internal const val IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME = "_--_"
 
     /** 定义 Jvm 方法名 */
     internal const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
 
     /** 定义 Jvm 方法名 */
     internal const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
+
+    /** TaiChi Xposed 框架名称 */
+    internal const val TAICHI_XPOSED_NAME = "TaiChi"
+
+    /** TaiChi ExposedBridge 完整类名 */
+    internal const val EXPOSED_BRIDGE_CLASS_NAME = "me.weishu.exposed.ExposedBridge"
 
     /** [YukiHookModuleStatus_Impl] 完整类名 */
     internal const val IMPL_CLASS_NAME = "com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus_Impl"
@@ -74,10 +80,7 @@ internal object YukiHookModuleStatus {
      * 请使用 [YukiHookAPI.Status.executorName] 获取
      * @return [String] 模块未激活会返回 unknown
      */
-    internal val executorName
-        get() = runCatching {
-            YukiHookModuleStatus_Impl.getXposedBridgeTag().replace("Bridge", "").replace("-", "").trim()
-        }.getOrNull() ?: "unknown"
+    internal val executorName get() = runCatching { YukiHookModuleStatus_Impl.getXposedBridgeTag() }.getOrNull() ?: "unknown"
 
     /**
      * 获取当前 Hook 框架的版本
@@ -90,18 +93,18 @@ internal object YukiHookModuleStatus {
     internal val executorVersion get() = runCatching { YukiHookModuleStatus_Impl.getXposedVersion() }.getOrNull() ?: -1
 
     /**
-     * 此方法经过 Hook 后返回 true 即模块已激活
+     * 获取当前模块的激活状态
      *
      * 请使用 [YukiHookAPI.Status.isModuleActive]、[YukiHookAPI.Status.isXposedModuleActive]、[YukiHookAPI.Status.isTaiChiModuleActive] 判断模块激活状态
      * @return [Boolean]
      */
-    internal fun isActive() = runCatching { YukiHookModuleStatus_Impl.isActive() }.getOrNull() ?: false
+    internal val isActive get() = runCatching { YukiHookModuleStatus_Impl.isActive() }.getOrNull() ?: false
 
     /**
-     * 此方法经过 Hook 后返回 true 即当前 Hook Framework 支持资源钩子(Resources Hook)
+     * 获取当前 Hook Framework 是否支持资源钩子 (Resources Hook)
      *
      * 请使用 [YukiHookAPI.Status.isSupportResourcesHook] 判断支持状态
      * @return [Boolean]
      */
-    internal fun hasResourcesHook() = runCatching { YukiHookModuleStatus_Impl.hasResourcesHook() }.getOrNull() ?: false
+    internal val isSupportResourcesHook get() = runCatching { YukiHookModuleStatus_Impl.isSupportResourcesHook() }.getOrNull() ?: false
 }
