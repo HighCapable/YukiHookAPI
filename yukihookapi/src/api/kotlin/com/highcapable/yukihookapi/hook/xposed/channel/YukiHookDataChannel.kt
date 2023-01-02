@@ -179,6 +179,8 @@ class YukiHookDataChannel private constructor() {
                 addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
             }
         )
+        /** 排除模块环境下模块注册自身广播 */
+        if (isXposedEnvironment.not()) return
         nameSpace(context, packageName, isSecure = false).with {
             /** 注册监听模块与宿主的版本是否匹配 */
             wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
