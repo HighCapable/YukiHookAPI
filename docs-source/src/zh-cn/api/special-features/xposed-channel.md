@@ -170,7 +170,7 @@ class OtherActivity : AppCompatActivity() {
 
 回调事件 C 的 `key` 不与其它重复，虽然回调事件 D 的 `key` 与回调事件 C 相同，但是它们的宿主不同，所以可以同时存在。
 
-回调事件 E 在另一个 Activity 中，回调事件 F 与回调事件 E 的 `key` 虽然相同，但它们也不是同一个宿主，所以可以同时存在。
+回调事件 E 在另一个 **Activity** 中，回调事件 F 与回调事件 E 的 `key` 虽然相同，但它们也不是同一个宿主，所以可以同时存在。
 
 综上所述，最终回调事件 B、C、D、E、F 都可被创建成功。
 
@@ -191,6 +191,63 @@ class OtherActivity : AppCompatActivity() {
 若要在 **Fragment** 中使用 **dataChannel**，请使用 **activity?.dataChannel(...)**。
 
 :::
+
+如果你希望在同一个 **Activity** 中手动设置每个回调事件的响应优先级 (条件)，你可以使用 `ChannelPriority`。
+
+例如，你正在使用一个 **Activity** 绑定多个 **Fragment** 的情况，这将能够解决这个问题。
+
+> 示例如下
+
+```kotlin
+open class BaseFragment : Fragment() {
+
+    /** 标识当前 Fragment 处于 onResume 生命周期 */
+    var isResume = false
+
+    override fun onResume() {
+        super.onResume()
+        isResume = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isResume = false
+    }
+
+    override fun onStop() {
+        super.onStop()
+        isResume = false
+    }
+}
+
+class FragmentA : BaseFragment() {
+
+    // 省略部分装载代码
+    // ...
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // 使用自定义的 isResume 结合 isVisible 条件判断当前 Fragment 正处于显示状态
+        activity?.dataChannel(packageName = "com.example.demo1")
+            ?.wait(key = "test_key", ChannelPriority { isResume && isVisible }) {
+                // Your code here.
+            }
+    }
+}
+
+class FragmentB : BaseFragment() {
+
+    // 省略部分装载代码
+    // ...
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // 使用自定义的 isResume 结合 isVisible 条件判断当前 Fragment 正处于显示状态
+        activity?.dataChannel(packageName = "com.example.demo2")
+            ?.wait(key = "test_key", ChannelPriority { isResume && isVisible }) {
+                // Your code here.
+            }
+    }
+}
+```
 
 ## 安全性说明
 

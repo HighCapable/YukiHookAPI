@@ -176,7 +176,7 @@ The `key` of callback event C is not duplicated with others.
 
 Although the `key` of callback event D is the same as that of callback event C, their Host Apps are different, so they can exist at the same time.
 
-Callback event E is in another Activity, although the `key` of callback event F and callback event E is the same, but they are not the same Host App, so they can exist at the same time.
+Callback event E is in another **Activity**, although the `key` of callback event F and callback event E is the same, but they are not the same Host App, so they can exist at the same time.
 
 In summary, the final callback events B, C, D, E, and F can all be created successfully.
 
@@ -197,6 +197,65 @@ In a Module App, you can only use **Context** of **Activity** to register **data
 If you want to use **dataChannel** in **Fragment**, use **activity?.dataChannel(...)**.
 
 :::
+
+If you want to manually set the response priority (condition) of each callback event in the same **Activity**, you can use `ChannelPriority`.
+
+For example, if you are using one **Activity** binding multiple **Fragment** cases, this will be able to solve this problem.
+
+> The following example
+
+```kotlin
+open class BaseFragment : Fragment() {
+
+    /** Identify that the current Fragment is in the onResume lifecycle */
+    var isResume = false
+
+    override fun onResume() {
+        super. onResume()
+        isResume = true
+    }
+
+    override fun onPause() {
+        super. onPause()
+        isResume = false
+    }
+
+    override fun onStop() {
+        super. onStop()
+        isResume = false
+    }
+}
+
+class FragmentA : BaseFragment() {
+
+    // Omit part of initialization code
+    //...
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Use the custom isResume combined with the isVisible condition
+        // To judge that the current Fragment is in the displayed state
+        activity?.dataChannel(packageName = "com.example.demo1")
+            ?.wait(key = "test_key", ChannelPriority { isResume && isVisible }) {
+                // Your code here.
+            }
+    }
+}
+
+class FragmentB : BaseFragment() {
+
+    // Omit part of initialization code
+    //...
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Use the custom isResume combined with the isVisible condition
+        // To judge that the current Fragment is in the displayed state
+        activity?.dataChannel(packageName = "com.example.demo2")
+            ?.wait(key = "test_key", ChannelPriority { isResume && isVisible }) {
+                // Your code here.
+            }
+    }
+}
+```
 
 ## Security Instructions
 
