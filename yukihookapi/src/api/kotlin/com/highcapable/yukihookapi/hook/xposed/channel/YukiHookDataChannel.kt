@@ -48,6 +48,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
+import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
@@ -265,25 +266,28 @@ class YukiHookDataChannel private constructor() {
         /**
          * 获取键值数据
          * @param key 键值名称
+         * @param priority 响应优先级 - 默认不设置
          * @param result 回调结果数据
          */
-        fun <T> wait(key: String, result: (value: T) -> Unit) {
+        fun <T> wait(key: String, priority: ChannelPriority? = null, result: (value: T) -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.SINGLE)] = Pair(context) { action, intent ->
-                if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context)) {
-                    (intent.extras?.get(key + keyNonRepeatName) as? T?)?.let { result(it) }
-                }
+                if (priority == null || priority.result)
+                    if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+                        (intent.extras?.get(key + keyNonRepeatName) as? T?)?.let { result(it) }
             }
         }
 
         /**
          * 获取键值数据
          * @param data 键值实例
+         * @param priority 响应优先级 - 默认不设置
          * @param result 回调结果数据
          */
-        fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit) {
+        fun <T> wait(data: ChannelData<T>, priority: ChannelPriority? = null, result: (value: T) -> Unit) {
             receiverCallbacks[data.key + keyShortName(CallbackKeyType.CDATA)] = Pair(context) { action, intent ->
-                if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    (intent.extras?.get(data.key + keyNonRepeatName) as? T?)?.let { result(it) }
+                if (priority == null || priority.result)
+                    if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+                        (intent.extras?.get(data.key + keyNonRepeatName) as? T?)?.let { result(it) }
             }
         }
 
@@ -292,12 +296,14 @@ class YukiHookDataChannel private constructor() {
          *
          * - ❗仅限使用 [VALUE_WAIT_FOR_LISTENER] 发送的监听才能被接收
          * @param key 键值名称
+         * @param priority 响应优先级 - 默认不设置
          * @param callback 回调结果
          */
-        fun wait(key: String, callback: () -> Unit) {
+        fun wait(key: String, priority: ChannelPriority? = null, callback: () -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
-                if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                    if (intent.getStringExtra(key + keyNonRepeatName) == VALUE_WAIT_FOR_LISTENER) callback()
+                if (priority == null || priority.result)
+                    if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+                        if (intent.getStringExtra(key + keyNonRepeatName) == VALUE_WAIT_FOR_LISTENER) callback()
             }
         }
 
@@ -305,10 +311,11 @@ class YukiHookDataChannel private constructor() {
          * 获取模块与宿主的版本是否匹配
          *
          * 通过此方法可原生判断 Xposed 模块更新后宿主并未重新装载造成两者不匹配的情况
+         * @param priority 响应优先级 - 默认不设置
          * @param result 回调是否匹配
          */
-        fun checkingVersionEquals(result: (Boolean) -> Unit) {
-            wait<String>(RESULT_MODULE_GENERATED_VERSION) { result(it == YukiHookBridge.moduleGeneratedVersion) }
+        fun checkingVersionEquals(priority: ChannelPriority? = null, result: (Boolean) -> Unit) {
+            wait<String>(RESULT_MODULE_GENERATED_VERSION, priority) { result(it == YukiHookBridge.moduleGeneratedVersion) }
             put(GET_MODULE_GENERATED_VERSION, packageName)
         }
 
@@ -320,10 +327,11 @@ class YukiHookDataChannel private constructor() {
          * - ❗模块与宿主必须启用 [YukiHookLogger.Configs.isRecord] 才能获取到调试日志数据
          *
          * - ❗由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多可能会造成 [TransactionTooLargeException] 异常
+         * @param priority 响应优先级 - 默认不设置
          * @param result 回调 [ArrayList]<[YukiLoggerData]>
          */
-        fun obtainLoggerInMemoryData(result: (ArrayList<YukiLoggerData>) -> Unit) {
-            wait(RESULT_YUKI_LOGGER_INMEMORY_DATA) { result(it) }
+        fun obtainLoggerInMemoryData(priority: ChannelPriority? = null, result: (ArrayList<YukiLoggerData>) -> Unit) {
+            wait(RESULT_YUKI_LOGGER_INMEMORY_DATA, priority) { result(it) }
             put(GET_YUKI_LOGGER_INMEMORY_DATA, packageName)
         }
 

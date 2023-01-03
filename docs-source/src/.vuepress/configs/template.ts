@@ -34,6 +34,7 @@ const navigationLinks = {
         baseApiPath + 'hook/xposed/prefs/data/PrefsData',
         baseApiPath + 'hook/xposed/channel/YukiHookDataChannel',
         baseApiPath + 'hook/xposed/channel/data/ChannelData',
+        baseApiPath + 'hook/xposed/channel/priority/ChannelPriority',
         baseApiPath + 'hook/xposed/application/ModuleApplication',
         baseApiPath + 'hook/xposed/parasitic/activity/base/ModuleAppActivity',
         baseApiPath + 'hook/xposed/parasitic/activity/base/ModuleAppCompatActivity',

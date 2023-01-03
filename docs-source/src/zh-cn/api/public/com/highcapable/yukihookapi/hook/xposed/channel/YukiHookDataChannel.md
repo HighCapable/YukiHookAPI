@@ -97,11 +97,11 @@ fun put(key: String)
 ### wait <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun <T> wait(key: String, result: (value: T) -> Unit)
+fun <T> wait(key: String, priority: ChannelPriority?, result: (value: T) -> Unit)
 ```
 
 ```kotlin:no-line-numbers
-fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit)
+fun <T> wait(data: ChannelData<T>, priority: ChannelPriority?, result: (value: T) -> Unit)
 ```
 
 **变更记录**
@@ -112,6 +112,10 @@ fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit)
 
 移除默认值 `value`
 
+`v1.1.5` `修改`
+
+新增 `priority` 参数
+
 **功能描述**
 
 > 获取键值数据。
@@ -119,12 +123,16 @@ fun <T> wait(data: ChannelData<T>, result: (value: T) -> Unit)
 ### wait <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun wait(key: String, callback: () -> Unit)
+fun wait(key: String, priority: ChannelPriority?, callback: () -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.88` `新增`
+
+`v1.1.5` `修改`
+
+新增 `priority` 参数
 
 **功能描述**
 
@@ -139,12 +147,16 @@ fun wait(key: String, callback: () -> Unit)
 ### checkingVersionEquals <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun checkingVersionEquals(result: (Boolean) -> Unit)
+fun checkingVersionEquals(priority: ChannelPriority?, result: (Boolean) -> Unit)
 ```
 
 **变更记录**
 
 `v1.0.88` `新增`
+
+`v1.1.5` `修改`
+
+新增 `priority` 参数
 
 **功能描述**
 
@@ -155,12 +167,16 @@ fun checkingVersionEquals(result: (Boolean) -> Unit)
 ### obtainLoggerInMemoryData <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun obtainLoggerInMemoryData(result: (ArrayList<YukiLoggerData>) -> Unit)
+fun obtainLoggerInMemoryData(priority: ChannelPriority?, result: (ArrayList<YukiLoggerData>) -> Unit)
 ```
 
 **变更记录**
 
 `v1.1.4` `新增`
+
+`v1.1.5` `修改`
+
+新增 `priority` 参数
 
 **功能描述**
 
