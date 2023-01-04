@@ -223,6 +223,14 @@ val LongClass get() = classOf<Long>()
 val DoubleClass get() = classOf<Double>()
 
 /**
+ * 获得 [Number] 类型
+ *
+ * 它等价于 Java 中的 [java.lang.Number]
+ * @return [Class]
+ */
+val NumberClass get() = classOf<Number>()
+
+/**
  * 获得 [Unit] 类型
  *
  * 它等价于 Java 中的 [java.lang.Void]
@@ -417,6 +425,14 @@ val LongArrayClass get() = ArrayClass(LongClass)
  * @return [Class]
  */
 val DoubleArrayClass get() = ArrayClass(DoubleClass)
+
+/**
+ * 获得 [Number] - [Array] 类型
+ *
+ * 它在 Java 中表示为：Number[]
+ * @return [Class]
+ */
+val NumberArrayClass get() = ArrayClass(NumberClass)
 
 /**
  * 获得 [String] - [Array] 类型
