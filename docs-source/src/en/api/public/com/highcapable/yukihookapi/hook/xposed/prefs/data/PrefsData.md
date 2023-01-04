@@ -13,12 +13,16 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # PrefsData <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-data class PrefsData<T>(var key: String, var value: T)
+data class PrefsData<T>(var key: String, var value: T) : Serializable
 ```
 
 **Change Records**
 
 `v1.0.67` `added`
+
+`v1.1.5` `modified`
+
+实现了 `Serializable` 接口
 
 **Function Illustrate**
 

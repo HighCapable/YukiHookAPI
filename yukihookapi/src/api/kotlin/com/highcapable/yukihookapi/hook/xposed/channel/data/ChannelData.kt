@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.xposed.channel.data
 
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import java.io.Serializable
 
 /**
  * 数据通讯桥键值构造类
@@ -40,4 +41,4 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
  * @param key 键值
  * @param value 键值数据 - 作为接收数据时可空
  */
-data class ChannelData<T>(var key: String, var value: T? = null)
+data class ChannelData<T>(var key: String, var value: T? = null) : Serializable

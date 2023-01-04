@@ -5,12 +5,16 @@ pageClass: code-page
 # PrefsData <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-data class PrefsData<T>(var key: String, var value: T)
+data class PrefsData<T>(var key: String, var value: T) : Serializable
 ```
 
 **变更记录**
 
 `v1.0.67` `新增`
+
+`v1.1.5` `修改`
+
+实现了 `Serializable` 接口
 
 **功能描述**
 

@@ -28,6 +28,7 @@
 package com.highcapable.yukihookapi.hook.xposed.prefs.data
 
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
+import java.io.Serializable
 
 /**
  * 键值对存储构造类
@@ -40,4 +41,4 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  * @param key 键值
  * @param value 默认值
  */
-data class PrefsData<T>(var key: String, var value: T)
+data class PrefsData<T>(var key: String, var value: T) : Serializable
