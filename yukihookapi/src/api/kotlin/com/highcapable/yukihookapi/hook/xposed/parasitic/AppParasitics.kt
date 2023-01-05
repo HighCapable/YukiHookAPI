@@ -43,7 +43,6 @@ import android.os.Handler
 import androidx.annotation.RequiresApi
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.factory.*
-import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.type.HookEntryType
@@ -177,7 +176,7 @@ internal object AppParasitics {
          */
         fun YukiHookCallback.Param.throwToAppOrLogger(throwable: Throwable) {
             if (AppLifecycleCallback.isOnFailureThrowToApp) this.throwable = throwable
-            else loggerE(msg = "An exception occurred during AppLifecycle event", e = throwable)
+            else yLoggerE(msg = "An exception occurred during AppLifecycle event", e = throwable)
         }
         /** Hook [Application] 装载方法 */
         runCatching {
