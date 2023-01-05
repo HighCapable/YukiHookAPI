@@ -1947,7 +1947,9 @@ Target Class type cannot cast to **TYPE**
 
 **Abnormal**
 
-Wrong type declared when converting a string class name to the target `Class` using the `toClass` method.
+Wrong type declared when converting string class name to target `Class` using `Class.toClass`, `Class.toClassOrNull`, `GenericClass.argument` methods.
+
+The following uses the `Class.toClass` method as an example.
 
 > The following example
 
@@ -1967,4 +1969,4 @@ val clazz1 = "android.app.Activity".toClass<Activity>()
 val clazz2 = "android.app.Activity".toClass()
 ```
 
-Please ensure that the generic type declared after the `toClass` method is the specified target `Class` type, and you do not need to fill in the generic declaration if the target type is not sure.
+Please ensure that the generic type declared after executing the method is the specified target `Class` type, and you do not need to fill in the generic declaration if the target type is not sure.

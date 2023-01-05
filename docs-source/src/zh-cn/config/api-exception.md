@@ -1876,7 +1876,9 @@ Target Class type cannot cast to **TYPE**
 
 **异常原因**
 
-使用 `toClass` 方法将字符串类名转换为目标 `Class` 时声明了错误的类型。
+使用 `Class.toClass`、`Class.toClassOrNull`、`GenericClass.argument` 方法将字符串类名转换为目标 `Class` 时声明了错误的类型。
+
+以下使用 `Class.toClass` 方法来进行示例。
 
 > 示例如下
 
@@ -1896,4 +1898,4 @@ val clazz1 = "android.app.Activity".toClass<Activity>()
 val clazz2 = "android.app.Activity".toClass()
 ```
 
-请确保 `toClass` 方法后声明的泛型是指定的目标 `Class` 类型，在不确定目标类型的情况下你可以不需要填写泛型声明。
+请确保执行方法后声明的泛型是指定的目标 `Class` 类型，在不确定目标类型的情况下你可以不需要填写泛型声明。
