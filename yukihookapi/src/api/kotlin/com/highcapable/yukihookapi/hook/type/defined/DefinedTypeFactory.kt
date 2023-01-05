@@ -45,12 +45,12 @@ class VagueClass private constructor()
 
 /**
  * 得到未定义类型
- * @return [Class]
+ * @return [Class]<[UndefinedClass]>
  */
 internal val UndefinedType get() = classOf<UndefinedClass>()
 
 /**
  * 得到模糊类型
- * @return [Class]
+ * @return [Class]<[VagueClass]>
  */
 val VagueType get() = classOf<VagueClass>()
