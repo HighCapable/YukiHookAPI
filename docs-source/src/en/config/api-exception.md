@@ -630,6 +630,26 @@ Please check if the `Class` subscripted by the `index` number of `param` in the 
 
 ::: danger loggerE
 
+Invoke original Member \[**MEMBER**\] failed
+
+:::
+
+**Abnormal**
+
+An error occurred when using `HookParam.callOriginal`, `HookParam.invokeOriginal`, `method { ... }.get(...).original()` to call the original method without Hook.
+
+**Solution**
+
+Under normal circumstances, this error will basically not occur.
+
+If this error occurs, it may be a problem with the currently used Hook Framework.
+
+After troubleshooting your own code problems, please provide detailed logs for feedback.
+
+###### exception
+
+::: danger loggerE
+
 Resources Hook condition name/type cannot be empty \[**TAG**\]
 
 :::

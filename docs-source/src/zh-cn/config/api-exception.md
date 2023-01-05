@@ -614,6 +614,22 @@ method {
 
 ::: danger loggerE
 
+Invoke original Member \[**MEMBER**\] failed
+
+:::
+
+**异常原因**
+
+在使用 `HookParam.callOriginal`、`HookParam.invokeOriginal`、`method { ... }.get(...).original()` 调用未经 Hook 的原始方法时发生错误。
+
+**解决方案**
+
+一般情况下，此错误基本上不会发生，若发生此错误，可能为当前使用的 Hook Framework 问题，排除自身代码的问题后，请携带详细日志进行反馈。
+
+###### exception
+
+::: danger loggerE
+
 Resources Hook condition name/type cannot be empty \[**TAG**\]
 
 :::
