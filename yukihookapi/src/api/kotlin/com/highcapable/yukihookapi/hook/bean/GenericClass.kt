@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/9/20.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.bean
 
@@ -35,7 +35,7 @@ import java.lang.reflect.ParameterizedType
  * 当前 [Class] 的泛型父类操作对象
  * @param type 类型声明实例
  */
-class GenericClass internal constructor(private val type: ParameterizedType) {
+class GenericClass internal constructor(@PublishedApi internal val type: ParameterizedType) {
 
     /**
      * 获得泛型参数数组下标的 [Class] 实例
@@ -43,4 +43,14 @@ class GenericClass internal constructor(private val type: ParameterizedType) {
      * @return [Class]
      */
     fun argument(index: Int = 0) = type.actualTypeArguments[index] as Class<*>
+
+    /**
+     * 获得泛型参数数组下标的 [Class] 实例
+     * @param index 数组下标 - 默认 0
+     * @return [Class]<[T]>
+     * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
+     */
+    @JvmName("argument_Generics")
+    inline fun <reified T> argument(index: Int = 0) =
+        type.actualTypeArguments[index] as? Class<T> ?: error("Target Class type cannot cast to ${T::class.java}")
 }

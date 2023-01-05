@@ -22,9 +22,17 @@ class GenericClass internal constructor(private val type: ParameterizedType)
 fun argument(index: Int): Class<*>
 ```
 
+```kotlin:no-line-numbers
+inline fun <reified T> argument(index: Int): Class<T>
+```
+
 **变更记录**
 
 `v1.1.0` `新增`
+
+`v1.1.5` `修改`
+
+新增泛型返回值 `Class<T>` 方法
 
 **功能描述**
 
