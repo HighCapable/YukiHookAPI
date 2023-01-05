@@ -128,7 +128,11 @@ internal object YukiHookHelper {
      */
     internal fun invokeOriginalMember(member: Member?, instance: Any?, vararg args: Any?) =
         if (YukiHookBridge.hasXposedBridge && YukiHookedMembers.hookedMembers.any { it.member.toString() == member.toString() })
-            member?.let { XposedBridge.invokeOriginalMethod(it, instance, args) }
+            member?.let {
+                runCatching { XposedBridge.invokeOriginalMethod(it, instance, args) }
+                    .onFailure { yLoggerE(msg = "Invoke original Member [$member] failed", e = it) }
+                    .getOrNull()
+            }
         else null
 
     /**
