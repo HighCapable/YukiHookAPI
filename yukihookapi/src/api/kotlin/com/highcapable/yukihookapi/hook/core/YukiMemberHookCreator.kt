@@ -182,7 +182,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
             )
             JavaClassLoader.name -> throwProblem(
                 name = "ClassLoader",
-                content = "If you only want to listen to \"loadClass\", just use \"ClassLoader.fetching\" instead it"
+                content = "If you only want to listen to \"loadClass\", just use \"ClassLoader.onLoadClass\" instead it"
             )
             JavaClass.name, JavaMethodClass.name, JavaFieldClass.name,
             JavaConstructorClass.name, JavaMemberClass.name -> throwProblem(
