@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/5/16.
  */
-@file:Suppress("StaticFieldLeak", "UNCHECKED_CAST", "unused", "MemberVisibilityCanBePrivate", "DEPRECATION")
+@file:Suppress("StaticFieldLeak", "UNCHECKED_CAST", "unused", "MemberVisibilityCanBePrivate", "DEPRECATION", "KotlinConstantConditions")
 
 package com.highcapable.yukihookapi.hook.xposed.channel
 
@@ -38,9 +38,11 @@ import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Parcel
 import android.os.Parcelable
 import android.os.TransactionTooLargeException
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.log.YukiLoggerData
 import com.highcapable.yukihookapi.hook.log.yLoggerE
@@ -48,10 +50,12 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
+import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataWrapper
 import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
 import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.round
 
 /**
  * 实现 Xposed 模块的数据通讯桥
@@ -72,6 +76,17 @@ class YukiHookDataChannel private constructor() {
 
         /** 是否为 (Xposed) 宿主环境 */
         private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
+
+        /**
+         * 系统广播允许发送的最大数据字节大小
+         *
+         * 标准为 1 MB - 实测不同系统目前已知能得到的数据分别有 1、2、3 MB
+         *
+         * 经过测试分段发送 900 KB 数据在 1 台 Android 13 系统的设备上依然会发生异常
+         *
+         * 综上所述 - 为了防止系统不同限制不同 - 最终决定设置为 500 KB - 超出后以此大小分段发送数据
+         */
+        private const val RECEIVER_DATA_MAX_BYTE_SIZE = 500 * 1024
 
         /** 模块构建版本号获取标签 */
         private const val GET_MODULE_GENERATED_VERSION = "module_generated_version_get"
@@ -109,6 +124,9 @@ class YukiHookDataChannel private constructor() {
     /** 当前注册广播的 [Context] */
     private var receiverContext: Context? = null
 
+    /** 是否允许发送超出 [RECEIVER_DATA_MAX_BYTE_SIZE] 大小的数据 */
+    private var isAllowSendTooLargeData = false
+
     /** 广播接收器 */
     private val handlerReceiver by lazy {
         object : BroadcastReceiver() {
@@ -138,6 +156,7 @@ class YukiHookDataChannel private constructor() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookDataChannel not allowed in Custom Hook API")
         if (YukiHookBridge.hasXposedBridge && YukiHookBridge.modulePackageName.isBlank())
             error("Xposed modulePackageName load failed, please reset and rebuild it")
+        isAllowSendTooLargeData = false
     }
 
     /**
@@ -207,6 +226,20 @@ class YukiHookDataChannel private constructor() {
     }
 
     /**
+     * 分段数据临时集合实例
+     * @param listData [List] 数据数组
+     * @param mapData [Map] 数据数组
+     * @param setData [Set] 数据数组
+     * @param stringData [String] 数据数组
+     */
+    internal inner class SegmentsTempData(
+        var listData: ArrayList<List<*>> = arrayListOf(),
+        var mapData: ArrayList<Map<*, *>> = arrayListOf(),
+        var setData: ArrayList<Set<*>> = arrayListOf(),
+        var stringData: ArrayList<String> = arrayListOf()
+    )
+
+    /**
      * [YukiHookDataChannel] 命名空间
      *
      * - ❗请使用 [nameSpace] 方法来获取 [NameSpace]
@@ -215,6 +248,9 @@ class YukiHookDataChannel private constructor() {
      * @param isSecure 是否启用安全检查
      */
     inner class NameSpace internal constructor(private val context: Context?, private val packageName: String, private val isSecure: Boolean) {
+
+        /** 当前分段数据临时集合数据 */
+        private val segmentsTempData = ConcurrentHashMap<String, SegmentsTempData>()
 
         /**
          * 键值尾部名称
@@ -231,6 +267,22 @@ class YukiHookDataChannel private constructor() {
         private val keyNonRepeatName get() = "_${packageName.hashCode()}"
 
         /**
+         * 解除发送数据的大小限制并禁止开启分段发送功能
+         *
+         * 仅会在每次调用时生效 - 下一次没有调用此方法则此功能将被自动关闭
+         *
+         * 你还需要在整个调用域中声明注解 [CauseProblemsApi] 以消除警告
+         *
+         * - ❗若你不知道允许此功能会带来何种后果 - 请勿使用
+         * @return [NameSpace]
+         */
+        @CauseProblemsApi
+        fun allowSendTooLargeData(): NameSpace {
+            isAllowSendTooLargeData = true
+            return this
+        }
+
+        /**
          * 创建一个调用空间
          * @param initiate 方法体
          * @return [NameSpace] 可继续向下监听
@@ -242,26 +294,26 @@ class YukiHookDataChannel private constructor() {
          * @param key 键值名称
          * @param value 键值数据
          */
-        fun <T> put(key: String, value: T) = pushReceiver(ChannelData(key, value))
+        fun <T> put(key: String, value: T) = parseSendingData(ChannelData(key, value).toWrapper())
 
         /**
          * 发送键值数据
          * @param data 键值实例
          * @param value 键值数据 - 未指定为 [ChannelData.value]
          */
-        fun <T> put(data: ChannelData<T>, value: T? = data.value) = pushReceiver(ChannelData(data.key, value))
+        fun <T> put(data: ChannelData<T>, value: T? = data.value) = parseSendingData(ChannelData(data.key, value).toWrapper())
 
         /**
          * 发送键值数据
          * @param data 键值实例
          */
-        fun put(vararg data: ChannelData<*>) = data.takeIf { it.isNotEmpty() }?.let { pushReceiver(*it) }
+        fun put(vararg data: ChannelData<*>) = data.takeIf { it.isNotEmpty() }?.forEach { parseSendingData(it.toWrapper()) }
 
         /**
          * 仅发送键值监听 - 使用默认值 [VALUE_WAIT_FOR_LISTENER] 发送键值数据
          * @param key 键值名称
          */
-        fun put(key: String) = pushReceiver(ChannelData(key, VALUE_WAIT_FOR_LISTENER))
+        fun put(key: String) = put(key, VALUE_WAIT_FOR_LISTENER)
 
         /**
          * 获取键值数据
@@ -273,7 +325,7 @@ class YukiHookDataChannel private constructor() {
             receiverCallbacks[key + keyShortName(CallbackKeyType.SINGLE)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
                     if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                        (intent.extras?.get(key + keyNonRepeatName) as? T?)?.let { result(it) }
+                        parseReceivedData(intent.extras?.get(key + keyNonRepeatName)?.toChannelWrapper(), result)
             }
         }
 
@@ -287,7 +339,7 @@ class YukiHookDataChannel private constructor() {
             receiverCallbacks[data.key + keyShortName(CallbackKeyType.CDATA)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
                     if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                        (intent.extras?.get(data.key + keyNonRepeatName) as? T?)?.let { result(it) }
+                        parseReceivedData(intent.extras?.get(data.key + keyNonRepeatName)?.toChannelWrapper(), result)
             }
         }
 
@@ -303,7 +355,8 @@ class YukiHookDataChannel private constructor() {
             receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
                     if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                        if (intent.getStringExtra(key + keyNonRepeatName) == VALUE_WAIT_FOR_LISTENER) callback()
+                        intent.extras?.get(key + keyNonRepeatName)?.toChannelWrapper<String>()
+                            ?.let { if (it.instance.value == VALUE_WAIT_FOR_LISTENER) callback() }
             }
         }
 
@@ -336,11 +389,264 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 发送广播
-         * @param data 键值数据
+         * 接收到的任意类型数据转换为 [ChannelDataWrapper]<[T]> 实例
+         * @return [ChannelDataWrapper]<[T]>
+         * @throws IllegalStateException 如果数据类型不正确
          */
-        private fun pushReceiver(vararg data: ChannelData<*>) {
+        private fun <T> Any.toChannelWrapper() =
+            this as? ChannelDataWrapper<T> ?: error("Received data type ${javaClass.name} is not a vailed YukiHookDataChannel's data")
+
+        /**
+         * [ChannelData]<[T]> 转换为 [ChannelDataWrapper]<[T]> 实例
+         * @param id 包装实例 ID - 默认为 [ChannelDataWrapper.createWrapperId]
+         * @param size 分段数据总大小 (长度) - 默认为 -1
+         * @param index 分段数据当前接收到的下标 - 默认为 -1
+         * @return [ChannelDataWrapper]<[T]>
+         */
+        private fun <T> ChannelData<T>.toWrapper(id: String = ChannelDataWrapper.createWrapperId(), size: Int = -1, index: Int = -1) =
+            ChannelDataWrapper(id, size > 0, size, index, this)
+
+        /**
+         * 计算 [ChannelData] 所占空间的字节大小
+         * @return [Int] 字节大小
+         */
+        private fun ChannelData<*>.calDataByteSize(): Int {
+            val bundle = Bundle().apply {
+                when (value) {
+                    null -> Unit
+                    is Boolean -> putBoolean(key, value as Boolean)
+                    is BooleanArray -> putBooleanArray(key, value as BooleanArray)
+                    is Byte -> putByte(key, value as Byte)
+                    is ByteArray -> putByteArray(key, value as ByteArray)
+                    is Char -> putChar(key, value as Char)
+                    is CharArray -> putCharArray(key, value as CharArray)
+                    is Double -> putDouble(key, value as Double)
+                    is DoubleArray -> putDoubleArray(key, value as DoubleArray)
+                    is Float -> putFloat(key, value as Float)
+                    is FloatArray -> putFloatArray(key, value as FloatArray)
+                    is Int -> putInt(key, value as Int)
+                    is IntArray -> putIntArray(key, value as IntArray)
+                    is Long -> putLong(key, value as Long)
+                    is LongArray -> putLongArray(key, value as LongArray)
+                    is Short -> putShort(key, value as Short)
+                    is ShortArray -> putShortArray(key, value as ShortArray)
+                    is String -> putString(key, value as String)
+                    is Array<*> -> putSerializable(key, value as Array<*>)
+                    is CharSequence -> putCharSequence(key, value as CharSequence)
+                    is Parcelable -> putParcelable(key, value as Parcelable)
+                    is Serializable -> putSerializable(key, value as Serializable)
+                    else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
+                }
+            }
+            return runCatching {
+                Parcel.obtain().let { parcel ->
+                    parcel.writeBundle(bundle)
+                    val size = parcel.dataSize()
+                    parcel.recycle()
+                    size
+                }
+            }.getOrNull() ?: -1
+        }
+
+        /**
+         * 处理收到的广播数据
+         * @param wrapper 键值数据包装类
+         * @param result 回调结果数据
+         */
+        private fun <T> parseReceivedData(wrapper: ChannelDataWrapper<T>?, result: (value: T) -> Unit) {
             if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
+            if (wrapper == null) return
+            if (wrapper.isSegmentsType) runCatching {
+                val tempData = segmentsTempData[wrapper.wrapperId] ?: SegmentsTempData().apply { segmentsTempData[wrapper.wrapperId] = this }
+                when (wrapper.instance.value) {
+                    is List<*> -> (wrapper.instance.value as List<*>).also { value ->
+                        if (tempData.listData.isEmpty() && wrapper.segmentsIndex > 0) return
+                        tempData.listData.add(wrapper.segmentsIndex, value)
+                        if (tempData.listData.size == wrapper.segmentsSize) {
+                            result(arrayListOf<Any?>().also { list -> tempData.listData.forEach { list.addAll(it) } } as T)
+                            tempData.listData.clear()
+                            segmentsTempData.remove(wrapper.wrapperId)
+                        }
+                    }
+                    is Map<*, *> -> (wrapper.instance.value as Map<*, *>).also { value ->
+                        if (tempData.mapData.isEmpty() && wrapper.segmentsIndex > 0) return
+                        tempData.mapData.add(wrapper.segmentsIndex, value)
+                        if (tempData.mapData.size == wrapper.segmentsSize) {
+                            result(hashMapOf<Any?, Any?>().also { map -> tempData.mapData.forEach { it.forEach { (k, v) -> map[k] = v } } } as T)
+                            tempData.mapData.clear()
+                            segmentsTempData.remove(wrapper.wrapperId)
+                        }
+                    }
+                    is Set<*> -> (wrapper.instance.value as Set<*>).also { value ->
+                        if (tempData.setData.isEmpty() && wrapper.segmentsIndex > 0) return
+                        tempData.setData.add(wrapper.segmentsIndex, value)
+                        if (tempData.setData.size == wrapper.segmentsSize) {
+                            result(hashSetOf<Any?>().also { set -> tempData.setData.forEach { set.addAll(it) } } as T)
+                            tempData.setData.clear()
+                            segmentsTempData.remove(wrapper.wrapperId)
+                        }
+                    }
+                    is String -> (wrapper.instance.value as String).also { value ->
+                        if (tempData.stringData.isEmpty() && wrapper.segmentsIndex > 0) return
+                        tempData.stringData.add(wrapper.segmentsIndex, value)
+                        if (tempData.stringData.size == wrapper.segmentsSize) {
+                            result(StringBuilder().apply { tempData.stringData.forEach { append(it) } }.toString() as T)
+                            tempData.stringData.clear()
+                            segmentsTempData.remove(wrapper.wrapperId)
+                        }
+                    }
+                    else -> yLoggerE(msg = "Unsupported segments data key of \"${wrapper.instance.key}\"'s type")
+                }
+            }.onFailure {
+                yLoggerE(msg = "YukiHookDataChannel cannot merge this segments data key of \"${wrapper.instance.key}\"", e = it)
+            } else wrapper.instance.value?.let { e -> result(e) }
+        }
+
+        /**
+         * 处理需要发送的广播数据
+         * @param wrapper 键值数据包装类
+         */
+        private fun parseSendingData(wrapper: ChannelDataWrapper<*>) {
+            if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
+            /** 当前包装实例 ID */
+            val wrapperId = ChannelDataWrapper.createWrapperId()
+
+            /** 当前需要发送的数据字节大小 */
+            val dataByteSize = wrapper.instance.calDataByteSize()
+            if (dataByteSize < 0 && isAllowSendTooLargeData.not()) return yLoggerE(
+                msg = "YukiHookDataChannel cannot calculate the byte size of the data key of \"${wrapper.instance.key}\" to be sent, " +
+                        "so this data cannot be sent\n" +
+                        "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
+                        "but this may cause the app crash"
+            )
+            /**
+             * 如果数据过大打印警告信息 - 仅限 [YukiHookAPI.Configs.isDebug] 启用时生效
+             * @param name 数据类型名称
+             * @param size 分段总大小 (长度)
+             */
+            fun loggerForTooLargeData(name: String, size: Int) {
+                if (YukiHookAPI.Configs.isDebug) yLoggerW(
+                    msg = "This data key of \"${wrapper.instance.key}\" type $name is too large (total ${dataByteSize / 1024f} KB, " +
+                            "limit ${RECEIVER_DATA_MAX_BYTE_SIZE / 1024f} KB), will be segmented to $size piece to send"
+                )
+            }
+
+            /**
+             * 如果数据过大且无法分段打印错误信息
+             * @param suggestionMessage 建议内容 - 默认空
+             */
+            fun loggerForUnprocessableData(suggestionMessage: String = "") = yLoggerE(
+                msg = "YukiHookDataChannel cannot send this data key of \"${wrapper.instance.key}\" type ${wrapper.instance.value?.javaClass}, " +
+                        "because it is too large (total ${dataByteSize / 1024f} KB, " +
+                        "limit ${RECEIVER_DATA_MAX_BYTE_SIZE / 1024f} KB) and cannot be segmented\n" +
+                        (if (suggestionMessage.isNotBlank()) "$suggestionMessage\n" else "") +
+                        "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
+                        "but this may cause the app crash"
+            )
+
+            /**
+             * 计算需要的大小 (预估大小)
+             * @param size 集合大小 (长度)
+             * @return [Int]
+             */
+            fun calIntendCountBySize(size: Int) = round(size / round(dataByteSize.toFloat() / RECEIVER_DATA_MAX_BYTE_SIZE)).toInt()
+
+            /**
+             * 计算需要的大小 (预估大小)
+             * @return [Int]
+             */
+            fun Collection<*>.calIntendCount() = calIntendCountBySize(size)
+
+            /**
+             * 计算需要的大小 (预估大小)
+             * @return [Int]
+             */
+            fun Map<*, *>.calIntendCount() = calIntendCountBySize(size)
+            when {
+                wrapper.isSegmentsType || isAllowSendTooLargeData -> pushReceiver(wrapper)
+                dataByteSize >= RECEIVER_DATA_MAX_BYTE_SIZE -> when (wrapper.instance.value) {
+                    is List<*> -> (wrapper.instance.value as List<*>).also { value ->
+                        val segments = arrayListOf<List<*>>()
+                        var segment = arrayListOf<Any?>()
+                        val intendCount = value.calIntendCount()
+                        value.forEach {
+                            segment.add(it)
+                            if (segment.size >= intendCount) {
+                                segments.add(segment)
+                                segment = arrayListOf()
+                            }
+                        }
+                        if (segment.isNotEmpty()) segments.add(segment)
+                        loggerForTooLargeData(name = "List", segments.size)
+                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
+                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
+                        }
+                    }
+                    is Map<*, *> -> (wrapper.instance.value as Map<*, *>).also { value ->
+                        val segments = arrayListOf<Map<*, *>>()
+                        var segment = hashMapOf<Any?, Any?>()
+                        val intendCount = value.calIntendCount()
+                        value.forEach { (k, v) ->
+                            segment[k] = v
+                            if (segment.size >= intendCount) {
+                                segments.add(segment)
+                                segment = hashMapOf()
+                            }
+                        }
+                        if (segment.isNotEmpty()) segments.add(segment)
+                        loggerForTooLargeData(name = "Map", segments.size)
+                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
+                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
+                        }
+                    }
+                    is Set<*> -> (wrapper.instance.value as Set<*>).also { value ->
+                        val segments = arrayListOf<Set<*>>()
+                        var segment = hashSetOf<Any?>()
+                        val intendCount = value.calIntendCount()
+                        value.forEach {
+                            segment.add(it)
+                            if (segment.size >= intendCount) {
+                                segments.add(segment)
+                                segment = hashSetOf()
+                            }
+                        }
+                        if (segment.isNotEmpty()) segments.add(segment)
+                        loggerForTooLargeData(name = "Set", segments.size)
+                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
+                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
+                        }
+                    }
+                    is String -> (wrapper.instance.value as String).also { value ->
+                        /** 由于字符会被按照双字节计算 - 所以这里将限制字节大小除以 2 */
+                        val twoByteMaxSize = RECEIVER_DATA_MAX_BYTE_SIZE / 2
+                        val segments = arrayListOf<String>()
+                        for (i in 0..value.length step twoByteMaxSize)
+                            if (i + twoByteMaxSize <= value.length)
+                                segments.add(value.substring(i, i + twoByteMaxSize))
+                            else segments.add(value.substring(i, value.length))
+                        if (segments.size == 1) return pushReceiver(wrapper)
+                        loggerForTooLargeData(name = "String", segments.size)
+                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
+                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
+                        }
+                    }
+                    is ByteArray, is CharArray, is ShortArray,
+                    is IntArray, is LongArray, is FloatArray,
+                    is DoubleArray, is BooleanArray, is Array<*> -> loggerForUnprocessableData(
+                        suggestionMessage = "Primitive Array type like String[], int[] ... cannot be segmented, " +
+                                "the suggestion is send those data using List type"
+                    )
+                    else -> loggerForUnprocessableData()
+                }
+                else -> pushReceiver(wrapper)
+            }
+        }
+
+        /**
+         * 发送广播
+         * @param wrapper 键值数据包装类
+         */
+        private fun pushReceiver(wrapper: ChannelDataWrapper<*>) {
             /** 在 [isSecure] 启用的情况下 - 在模块环境中只能使用 [Activity] 发送广播 */
             if (isSecure && context != null) if (isXposedEnvironment.not() && context !is Activity)
                 error("YukiHookDataChannel only support used on an Activity, but this current context is \"${context.javaClass.name}\"")
@@ -350,38 +656,8 @@ class YukiHookDataChannel private constructor() {
                 /** 由于系统框架的包名可能不唯一 - 为防止发生问题不再对系统框架的广播设置接收者包名 */
                 if (packageName != YukiHookBridge.SYSTEM_FRAMEWORK_NAME)
                     setPackage(if (isXposedEnvironment) YukiHookBridge.modulePackageName else packageName)
-                data.takeIf { it.isNotEmpty() }?.forEach {
-                    when (it.value) {
-                        null -> Unit
-                        is Bundle -> putExtra(it.key + keyNonRepeatName, it.value as Bundle)
-                        is Array<*> -> putExtra(it.key + keyNonRepeatName, it.value as Array<*>)
-                        is Boolean -> putExtra(it.key + keyNonRepeatName, it.value as Boolean)
-                        is BooleanArray -> putExtra(it.key + keyNonRepeatName, it.value as BooleanArray)
-                        is Byte -> putExtra(it.key + keyNonRepeatName, it.value as Byte)
-                        is ByteArray -> putExtra(it.key + keyNonRepeatName, it.value as ByteArray)
-                        is Char -> putExtra(it.key + keyNonRepeatName, it.value as Char)
-                        is CharArray -> putExtra(it.key + keyNonRepeatName, it.value as CharArray)
-                        is Double -> putExtra(it.key + keyNonRepeatName, it.value as Double)
-                        is DoubleArray -> putExtra(it.key + keyNonRepeatName, it.value as DoubleArray)
-                        is Float -> putExtra(it.key + keyNonRepeatName, it.value as Float)
-                        is FloatArray -> putExtra(it.key + keyNonRepeatName, it.value as FloatArray)
-                        is Int -> putExtra(it.key + keyNonRepeatName, it.value as Int)
-                        is IntArray -> putExtra(it.key + keyNonRepeatName, it.value as IntArray)
-                        is Long -> putExtra(it.key + keyNonRepeatName, it.value as Long)
-                        is LongArray -> putExtra(it.key + keyNonRepeatName, it.value as LongArray)
-                        is Short -> putExtra(it.key + keyNonRepeatName, it.value as Short)
-                        is ShortArray -> putExtra(it.key + keyNonRepeatName, it.value as ShortArray)
-                        is String -> putExtra(it.key + keyNonRepeatName, it.value as String)
-                        is CharSequence -> putExtra(it.key + keyNonRepeatName, it.value as CharSequence)
-                        is Parcelable -> putExtra(it.key + keyNonRepeatName, it.value as CharSequence)
-                        is Serializable -> putExtra(it.key + keyNonRepeatName, it.value as Serializable)
-                        else -> error("Key-Value type ${it.value?.javaClass?.name} is not allowed")
-                    }
-                }
-            }) ?: yLoggerE(
-                msg = "Failed to sendBroadcast like \"${data.takeIf { it.isNotEmpty() }?.get(0)?.key ?: "unknown"}\", " +
-                        "because got null context in \"$packageName\""
-            )
+                putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
+            }) ?: yLoggerE(msg = "Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
         }
     }
 }

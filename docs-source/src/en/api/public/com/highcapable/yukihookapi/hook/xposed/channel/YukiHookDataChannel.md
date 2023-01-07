@@ -66,6 +66,30 @@ inline fun with(initiate: NameSpace.() -> Unit): NameSpace
 
 > 创建一个调用空间。
 
+### allowSendTooLargeData <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun allowSendTooLargeData(): NameSpace
+```
+
+**变更记录**
+
+`v1.1.5` `added`
+
+**功能描述**
+
+> 解除发送数据的大小限制并禁止开启分段发送功能。
+
+仅会在每次调用时生效，下一次没有调用此方法则此功能将被自动关闭。
+
+你还需要在整个调用域中声明注解 `CauseProblemsApi` 以消除警告。
+
+::: danger
+
+若你不知道允许此功能会带来何种后果，请勿使用。
+
+:::
+
 ### put <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
