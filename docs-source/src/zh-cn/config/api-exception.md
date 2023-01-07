@@ -702,7 +702,101 @@ Received action "**ACTION**" failed
 
 **解决方案**
 
-一般情况下，此错误基本上不会发生，一旦发生错误，排除自身代码的问题后，请携带详细日志进行反馈。
+此异常多为一些关联性异常引发，请检查自身代码是否存在问题，排除自身代码的问题后，请携带详细日志进行反馈。
+
+###### exception
+
+::: danger loggerE
+
+Received data type **TYPE** is not a vailed YukiHookDataChannel's data
+
+:::
+
+**异常原因**
+
+使用 `YukiHookDataChannel` 时回调广播收到了不属于 `YukiHookDataChannel` 的数据。
+
+**解决方案**
+
+为了确保数据安全性，`YukiHookDataChannel` 会对发送的数据进行包装，任何第三方广播事件均不能被 `YukiHookDataChannel` 接收，请检查你的代码是否正确。
+
+###### exception
+
+::: danger loggerE
+
+Unsupported segments data key of \"**KEY**\"'s type
+
+:::
+
+**异常原因**
+
+使用 `YukiHookDataChannel` 时回调广播收到了不支持的分段数据类型。
+
+**解决方案**
+
+一般情况下，此错误不可能发生，因为 `YukiHookDataChannel` 所支持的分段数据类型是固定的，不会动态改变，若发生这种情况，请检查是否改动了 API 相关代码。
+
+###### exception
+
+::: danger loggerE
+
+YukiHookDataChannel cannot merge this segments data key of \"**KEY**\"
+
+:::
+
+**异常原因**
+
+使用 `YukiHookDataChannel` 时回调广播收到了无法处理的分段数据导致无法合并分段数据。
+
+**解决方案**
+
+一般情况下，此错误基本上不会发生，除非收到连续发送或重复发送的广播 (时序异常) 或在接收数据时设置了错误的泛型类型，排除自身代码的问题后，请携带详细日志进行反馈。
+
+###### exception
+
+::: danger loggerE
+
+YukiHookDataChannel cannot calculate the byte size of the data key of \"**KEY**\" to be sent, so this data cannot be sent
+
+If you want to lift this restriction, use the allowSendTooLargeData function when calling, but this may cause the app crash
+
+:::
+
+**异常原因**
+
+使用 `YukiHookDataChannel` 发送广播数据时计算数据大小失败。
+
+**解决方案**
+
+一般情况下，此错误基本上不会发生，排除自身代码的问题后，请携带详细日志进行反馈。
+
+###### exception
+
+::: danger loggerE
+
+YukiHookDataChannel cannot send this data key of \"**KEY**\" type **TYPE**, because it is too large (total **TOTAL** KB, limit **LIMIT** KB) and cannot be segmented
+
+**SUGGESTION_MESSAGE**
+
+If you want to lift this restriction, use the allowSendTooLargeData function when calling, but this may cause the app crash
+
+:::
+
+**异常原因**
+
+使用 `YukiHookDataChannel` 发送广播数据时数据过大，但是此数据类型并不支持被分段发送。
+
+**解决方案**
+
+当你发送的数据超出系统广播的上限时，`YukiHookDataChannel` 默认情况下会将此数据分段后依次发送，但仅支持处理 **List**、**Map**、**Set**、**String** 常见类型的自动分段功能。
+
+::: tip
+
+若你仍要使用此功能，请参考 [YukiHookDataChannel.NameSpace.allowSendTooLargeData](../api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel#allowsendtoolargedata-method) 方法。
+
+但是<u>**强烈建议不要这样做**</u>，<u>**这有可能会导致系统不允许过大的数据发送而造成应用崩溃**</u>。
+
+:::
 
 ###### exception
 
@@ -988,7 +1082,7 @@ JavaMethod.hook {
 
 ::: tip
 
-若你仍要使用此功能，请参考 [YukiMemberHookCreator.useDangerousOperation](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#usedangerousoperation-method)。
+若你仍要使用此功能，请参考 [YukiMemberHookCreator.useDangerousOperation](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#usedangerousoperation-method) 方法。
 
 但是**强烈建议不要这样做，发生问题请不要反馈，<u>自行承担一切后果</u>**。
 

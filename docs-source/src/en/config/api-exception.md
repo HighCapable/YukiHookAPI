@@ -730,9 +730,109 @@ Callback broadcast event exception when using `YukiHookDataChannel`.
 
 **Solution**
 
-Under normal circumstances, this error basically does not occur.
+This exception is mostly caused by some related exceptions.
 
-Once an error occurs, after eliminating the problem of your own code, please bring detailed logs for feedback.
+Please check whether there is any problem in your own code.
+
+After troubleshooting your own code, please bring detailed logs to give feedback.
+
+###### exception
+
+::: danger loggerE
+
+Received data type **TYPE** is not a vailed YukiHookDataChannel's data
+
+:::
+
+**Abnormal**
+
+When using `YukiHookDataChannel`, the callback broadcast received data that does not belong to `YukiHookDataChannel`.
+
+**Solution**
+
+In order to ensure data security, `YukiHookDataChannel` will wrap the sent data, any third-party broadcast events cannot be received by `YukiHookDataChannel`, please check whether your code is correct.
+
+###### exception
+
+::: danger loggerE
+
+Unsupported segments data key of \"**KEY**\"'s type
+
+:::
+
+**Abnormal**
+
+Callback broadcast received unsupported segments data type when using `YukiHookDataChannel`.
+
+**Solution**
+
+Under normal circumstances, this error cannot occur, because the segments data type supported by `YukiHookDataChannel` is fixed and will not change dynamically.
+
+If this happens, please check whether the API-related code has been changed.
+
+###### exception
+
+::: danger loggerE
+
+YukiHookDataChannel cannot merge this segments data key of \"**KEY**\"
+
+:::
+
+**Abnormal**
+
+When using `YukiHookDataChannel`, the callback broadcast received segments data that could not be processed, so the segments data could not be merged.
+
+**Solution**
+
+Under normal circumstances, this error will basically not occur, unless you receive broadcasts that are continuously sent or repeatedly sent (timing exceptions) or you set the wrong generic type when receiving data, after troubleshooting your own code problems, please bring detailed logs give feedback.
+
+###### exception
+
+::: danger loggerE
+
+YukiHookDataChannel cannot calculate the byte size of the data key of \"**KEY**\" to be sent, so this data cannot be sent
+
+If you want to lift this restriction, use the allowSendTooLargeData function when calling, but this may cause the app crash
+
+:::
+
+**Abnormal**
+
+Failed to calculate data size when sending broadcast data using `YukiHookDataChannel`.
+
+**Solution**
+
+Under normal circumstances, this error will basically not occur.
+
+After troubleshooting your own code problems, please bring detailed logs for feedback.
+
+###### exception
+
+::: danger loggerE
+
+YukiHookDataChannel cannot send this data key of \"**KEY**\" type **TYPE**, because it is too large (total **TOTAL** KB, limit **LIMIT** KB) and cannot be segmented
+
+**SUGGESTION_MESSAGE**
+
+If you want to lift this restriction, use the allowSendTooLargeData function when calling, but this may cause the app crash
+
+:::
+
+**Abnormal**
+
+When using `YukiHookDataChannel` to send broadcast data, the data is too large, but this data type does not support being sent in segments.
+
+**Solution**
+
+When the data you send exceeds the upper limit of the system broadcast, `YukiHookDataChannel` will send the data in segments by default, but only supports processing **List**, **Map**, **Set**, **String** automatic segmentation function for common types.
+
+::: tip
+
+If you still want to use this feature, please refer to [YukiHookDataChannel.NameSpace.allowSendTooLargeData](../api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel#allowsendtoolargedata-method) method.
+
+But <u>**it is strongly recommended not to do this**</u>, <u>**this may cause the system to not allow too large data to be sent and cause the app crash**</u>.
+
+:::
 
 ###### exception
 
@@ -1042,7 +1142,7 @@ These functions are internal to the system, <u>**they should not be hooked, may 
 
 ::: tip
 
-If you still want to use this feature, please refer to [YukiMemberHookCreator.useDangerousOperation](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#usedangerousoperation-method).
+If you still want to use this feature, please refer to [YukiMemberHookCreator.useDangerousOperation](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#usedangerousoperation-method) method.
 
 But **It is strongly recommended not to do this, please do not report any problems, <u>all the consequences will be borne by yourself</u>**.
 
