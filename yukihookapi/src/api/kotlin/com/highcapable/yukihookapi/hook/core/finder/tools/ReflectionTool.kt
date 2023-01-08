@@ -35,9 +35,9 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRule
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
+import com.highcapable.yukihookapi.hook.core.finder.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import com.highcapable.yukihookapi.hook.type.java.DalvikBaseDexClassLoader

@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/3/29.
  */
-package com.highcapable.yukihookapi.hook.store
+package com.highcapable.yukihookapi.hook.core.finder.store
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import java.lang.reflect.Constructor
