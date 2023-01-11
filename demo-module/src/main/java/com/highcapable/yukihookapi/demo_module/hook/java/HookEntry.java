@@ -35,6 +35,8 @@ import com.highcapable.yukihookapi.hook.log.YukiHookLogger;
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent;
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit;
 
+import kotlin.Unit;
+
 // ========
 // This only demonstrates how to use it in the Java case (Java 1.8+ only)
 // The code here is for demonstration only， does not mean that it will work in the future， Demo will only sync the latest Kotlin usage
@@ -86,18 +88,18 @@ public class HookEntry implements IYukiHookXposedInit {
                         i.afterHook(a -> {
                             Activity instance = ((Activity) a.getInstance());
                             instance.setTitle(instance.getTitle() + " [Active]");
-                            return null;
+                            return Unit.INSTANCE;
                         });
-                        return null;
+                        return Unit.INSTANCE;
                     });
-                    return null;
+                    return Unit.INSTANCE;
                 });
-                return null;
+                return Unit.INSTANCE;
             });
             // The rest of the code has been omitted, you can continue to refer to the above method to complete
             // 余下部分代码已略 - 可继续参考上述方式完成
             // ...
-            return null;
+            return Unit.INSTANCE;
         });
     }
 
@@ -111,17 +113,17 @@ public class HookEntry implements IYukiHookXposedInit {
         event.onInitZygote(startupParam -> {
             // Write the startupParam method here
             // 这里编写 startupParam 方法
-            return null;
+            return Unit.INSTANCE;
         });
         event.onHandleLoadPackage(loadPackageParam -> {
             // Write the loadPackageParam method here
             // 这里编写 loadPackageParam 方法
-            return null;
+            return Unit.INSTANCE;
         });
         event.onHandleInitPackageResources(resourcesParam -> {
             // Write the resourcesParam method here
             // 这里编写 resourcesParam 方法
-            return null;
+            return Unit.INSTANCE;
         });
     }
 }
