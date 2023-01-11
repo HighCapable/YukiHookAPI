@@ -16,13 +16,13 @@ The exception description here will only synchronize the latest API version, and
 
 ::: danger loggerE
 
-Could not found XposedBridge in current space! Aborted
+Could not found any available Hook APIs in current environment! Aborted
 
 :::
 
 **Abnormal**
 
-Your Hook Framework is not working or `XposedBridge` has not been successfully loaded.
+Your Hook Framework is not working or did not successfully load the current Hook API.
 
 **Solution**
 
@@ -150,13 +150,13 @@ After confirming that the problem is not caused by your own code, you can submit
 
 ::: danger loggerE
 
-YukiHookAPI bind initZygote failed
+An exception occurred when YukiHookAPI loading Xposed Module
 
 :::
 
 **Abnormal**
 
-`YukiHookAPI` encountered an unhandled exception when trying to load the Xposed native interface `initZygote` method.
+`YukiHookAPI` encountered an unhandled exception when trying to load a Xposed Module using the Xposed native interface.
 
 **Solution**
 
@@ -1059,6 +1059,22 @@ This is not an API exception, please be careful check your own code for problems
 
 ###### exception
 
+::: danger IllegalStateException
+
+YukiHookAPI cannot support current Hook API or cannot find any available Hook APIs in current environment
+
+:::
+
+**Abnormal**
+
+`YukiHookAPI` does not support the Hook API used by the current environment or there is no Hook API that can be called.
+
+**Solution**
+
+Please make sure you have loaded the `encase` method of `YukiHookAPI` in the correct place. For details, please refer to [Use as Xposed Module Configs](../config/xposed-using) and [Use as Hook API Configs](../config/api-using).
+
+###### exception
+
 ::: danger RuntimeException
 
 !!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself, The called class is \[**CLASS**\]
@@ -1841,7 +1857,9 @@ encase {
 
 **Solution**
 
-`moduleAppResources` requires the current Hook Framework to support the `initZygote` function, please check and try again.
+This situation hardly exists, unless there is a problem with the target Hook Framework itself.
+
+If this problem does occur, please provide feedback with detailed logs.
 
 ###### exception
 

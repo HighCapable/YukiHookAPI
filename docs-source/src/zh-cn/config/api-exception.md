@@ -16,13 +16,13 @@ pageClass: hidden-anchor-page
 
 ::: danger loggerE
 
-Could not found XposedBridge in current space! Aborted
+Could not found any available Hook APIs in current environment! Aborted
 
 :::
 
 **异常原因**
 
-你的 Hook Framework 未在工作或并未成功装载 `XposedBridge`。
+你的 Hook Framework 未在工作或并未成功装载当前 Hook API。
 
 **解决方案**
 
@@ -142,13 +142,13 @@ YukiHookAPI try to load HookEntryClass failed
 
 ::: danger loggerE
 
-YukiHookAPI bind initZygote failed
+An exception occurred when YukiHookAPI loading Xposed Module
 
 :::
 
 **异常原因**
 
-`YukiHookAPI` 在尝试装载 Xposed 原生接口 `initZygote` 方法时发生了不能处理的异常。
+`YukiHookAPI` 在尝试使用 Xposed 原生接口装载 Xposed 模块时发生了不能处理的异常。
 
 **解决方案**
 
@@ -670,7 +670,7 @@ Resources Hook type is invalid \[**TAG**\]
 
 **解决方案**
 
-`YukiHookAPI` 会尝试在 `initZygote` 与 `handleInitPackageResources` 中装载 Resources Hook，若全部装载失败可能会发生此异常，当前 Hook Framework 需要支持并启用资源钩子(Resources Hook)功能，请检查后再试一次。
+`YukiHookAPI` 会尝试在 `initZygote` 与 `handleInitPackageResources` 中装载 Resources Hook，若全部装载失败可能会发生此异常，当前 Hook Framework 需要支持并启用资源钩子 (Resources Hook) 功能，请检查后再试一次。
 
 ###### exception
 
@@ -997,6 +997,22 @@ An exception occurred during AppLifecycle event
 ## 阻断异常
 
 > 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
+
+###### exception
+
+::: danger IllegalStateException
+
+YukiHookAPI cannot support current Hook API or cannot found any available Hook APIs in current environment
+
+:::
+
+**异常原因**
+
+`YukiHookAPI` 不支持当前环境使用的 Hook API 或不存在 Hook API 可被调用。
+
+**解决方案**
+
+请确认你在正确的地方装载了 `YukiHookAPI` 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](../config/xposed-using) 以及 [作为 Hook API 使用的相关配置](../config/api-using)。
 
 ###### exception
 
@@ -1763,7 +1779,7 @@ encase {
 
 **解决方案**
 
-`moduleAppResources` 需要当前 Hook Framework 支持 `initZygote` 功能，请检查后再试一次。
+这种情况几乎不存在，除非目标 Hook Framework 自身存在问题，若真的发生了此问题，请携带详细日志进行反馈。
 
 ###### exception
 
