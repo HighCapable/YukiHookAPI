@@ -252,8 +252,8 @@ object HookEntry : IYukiHookXposedInit {
                                     .setTitle("Hooked")
                                     .setMessage(
                                         "This App has been hooked!\n\n" +
-                                                "Hook Framework: ${YukiHookAPI.Status.executorName}\n\n" +
-                                                "Xposed API Version: ${YukiHookAPI.Status.executorVersion}\n\n" +
+                                                "Hook Framework: ${YukiHookAPI.Status.Executor.name}\n\n" +
+                                                "Xposed API Version: ${YukiHookAPI.Status.Executor.apiLevel}\n\n" +
                                                 "Support Resources Hook: ${YukiHookAPI.Status.isSupportResourcesHook}"
                                     )
                                     .setPositiveButton("OK", null)

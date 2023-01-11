@@ -59,9 +59,9 @@ class MainActivity : ModuleAppCompatActivity() {
             }
             moduleDemoActiveText.text = "Module is Active：${YukiHookAPI.Status.isModuleActive}"
             moduleDemoActiveZhText.text = "Xposed 模块激活状态"
-            moduleDemoFrameworkText.text = "Hook Framework：${YukiHookAPI.Status.executorName}"
+            moduleDemoFrameworkText.text = "Hook Framework：${YukiHookAPI.Status.Executor.name}"
             moduleDemoFrameworkZhText.text = "当前的 Hook 框架"
-            moduleDemoApiVersionText.text = "Xposed API Version：${YukiHookAPI.Status.executorVersion}"
+            moduleDemoApiVersionText.text = "Xposed API Version：${YukiHookAPI.Status.Executor.apiLevel}"
             moduleDemoApiVersionZhText.text = "Xposed API 版本"
             moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.API_VERSION_NAME}(${YukiHookAPI.API_VERSION_CODE})"
             moduleDemoYukiHookApiVersionZhText.text = "YukiHookAPI 版本"
