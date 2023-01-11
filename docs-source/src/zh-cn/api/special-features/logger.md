@@ -14,7 +14,7 @@
 loggerD(msg = "This is a log")
 ```
 
-此时，`YukiHookAPI` 会调用 `android.util.Log` 与 `XposedBridge.log` 同时打印这条日志。
+此时，`YukiHookAPI` 会调用 `android.util.Log` 与 (Xposed) 宿主环境中的日志功能同时打印这条日志。
 
 日志默认的 `TAG` 为你在 `YukiHookLogger.Configs.tag` 中设置的值。
 
@@ -34,7 +34,7 @@ loggerD(tag = "YukiHookAPI", msg = "This is a log")
 [YukiHookAPI][D][宿主包名]--> This is a log
 ```
 
-你还可以使用 `LoggerType` 自定义日志打印的类型，可选择使用 `android.util.Log` 还是 `XposedBridge.log` 来打印日志。
+你还可以使用 `LoggerType` 自定义日志打印的类型，可选择使用 `android.util.Log` 还是 (Xposed) 宿主环境中的日志功能来打印日志。
 
 默认类型为 `LoggerType.BOTH`，含义为同时使用这两个方法来打印日志。
 
@@ -51,7 +51,7 @@ loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.LOGD)
 > 示例如下
 
 ```kotlin
-loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.XPOSEDBRIDGE)
+loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.XPOSED_ENVIRONMENT)
 ```
 
 若你想智能区分 (Xposed) 宿主环境与模块环境，可以写为如下形式。

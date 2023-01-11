@@ -14,7 +14,7 @@ The usage method is as follows.
 loggerD(msg = "This is a log")
 ```
 
-At this point, `YukiHookAPI` will call `android.util.Log` and `XposedBridge.log` to print this log at the same time.
+At this ponit, `YukiHookAPI` will call `android.util.Log` and log function in (Xposed) Host environment to print this log at the same time.
 
 The default `TAG` of the log is the value you set in `YukiHookLogger.Configs.tag`.
 
@@ -36,7 +36,7 @@ The printed result is as shown below.
 
 You can also use `LoggerType` to customize the type of log printing.
 
-You can choose to use `android.util.Log` or `XposedBridge.log` to print logs.
+You can choose to use `android.util.Log` or the log function in the (Xposed) Host environment to print logs.
 
 The default type is `LoggerType.BOTH`, which means that both methods are used to print logs.
 
@@ -53,7 +53,7 @@ Or just use `XposedBridge.log` to print the log, this method can only be used in
 > The following example
 
 ```kotlin
-loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.XPOSEDBRIDGE)
+loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.XPOSED_ENVIRONMENT)
 ```
 
 If you want to intelligently distinguish the (Xposed) Host environment from the Module environment, you can write it in the following form.
