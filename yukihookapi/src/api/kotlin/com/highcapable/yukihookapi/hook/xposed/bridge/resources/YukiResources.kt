@@ -27,14 +27,14 @@
  */
 @file:Suppress("unused", "DEPRECATION", "DiscouragedApi")
 
-package com.highcapable.yukihookapi.hook.xposed.bridge.dummy
+package com.highcapable.yukihookapi.hook.xposed.bridge.resources
 
 import android.content.res.Resources
 import android.content.res.XResources
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources.LayoutInflatedParam
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources.LayoutInflatedParam
 import de.robv.android.xposed.callbacks.XC_LayoutInflated
 
 /**

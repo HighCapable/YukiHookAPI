@@ -25,10 +25,7 @@
  *
  * This file is Created by fankes on 2022/2/8.
  */
-@file:Suppress(
-    "SetWorldReadable", "CommitPrefEdits", "DEPRECATION", "WorldReadableFiles",
-    "unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate", "StaticFieldLeak"
-)
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "StaticFieldLeak", "SetWorldReadable", "CommitPrefEdits", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.xposed.prefs
 
@@ -38,7 +35,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 import de.robv.android.xposed.XSharedPreferences
@@ -70,8 +67,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
 
     internal companion object {
 
-        /** 是否为 (Xposed) 宿主环境 */
-        private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
+        /** 当前是否为 (Xposed) 宿主环境 */
+        private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
         /** 当前 [YukiHookModulePrefs] 单例 */
         private var instance: YukiHookModulePrefs? = null
@@ -102,7 +99,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     }
 
     /** 存储名称 - 默认包名 + _preferences */
-    private var prefsName = "${YukiHookBridge.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
+    private var prefsName = "${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
 
     /** 是否使用键值缓存 */
     private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
@@ -147,7 +144,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /** 检查 API 装载状态 */
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
-        if (isXposedEnvironment && YukiHookBridge.modulePackageName.isBlank())
+        if (isXposedEnvironment && YukiXposedModule.modulePackageName.isBlank())
             error("Xposed modulePackageName load failed, please reset and rebuild it")
     }
 
@@ -158,7 +155,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     private val xPrefs
         get() = checkApi().let {
             runCatching {
-                XSharedPreferences(YukiHookBridge.modulePackageName, prefsName).apply {
+                XSharedPreferences(YukiXposedModule.modulePackageName, prefsName).apply {
                     checkApi()
                     makeWorldReadable()
                     reload()
@@ -174,6 +171,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     private val sPrefs
         get() = checkApi().let {
             runCatching {
+                @Suppress("DEPRECATION", "WorldReadableFiles")
                 context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharedPreferences = true }
                     ?: error("YukiHookModulePrefs missing Context instance")
             }.getOrElse {

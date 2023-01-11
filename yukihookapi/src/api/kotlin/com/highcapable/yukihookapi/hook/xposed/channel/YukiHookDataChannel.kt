@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/5/16.
  */
-@file:Suppress("StaticFieldLeak", "UNCHECKED_CAST", "unused", "MemberVisibilityCanBePrivate", "DEPRECATION", "KotlinConstantConditions")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "StaticFieldLeak", "KotlinConstantConditions")
 
 package com.highcapable.yukihookapi.hook.xposed.channel
 
@@ -48,11 +48,11 @@ import com.highcapable.yukihookapi.hook.log.YukiLoggerData
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataWrapper
 import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
-import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.round
@@ -75,7 +75,10 @@ class YukiHookDataChannel private constructor() {
     internal companion object {
 
         /** 是否为 (Xposed) 宿主环境 */
-        private val isXposedEnvironment = YukiHookBridge.hasXposedBridge
+        private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
+
+        /** 自动生成的 Xposed 模块构建版本号 */
+        private val moduleGeneratedVersion = YukiHookAPI.Status.compiledTimestamp.toString()
 
         /**
          * 系统广播允许发送的最大数据字节大小
@@ -154,7 +157,7 @@ class YukiHookDataChannel private constructor() {
     /** 检查 API 装载状态 */
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookDataChannel not allowed in Custom Hook API")
-        if (YukiHookBridge.hasXposedBridge && YukiHookBridge.modulePackageName.isBlank())
+        if (isXposedEnvironment && YukiXposedModule.modulePackageName.isBlank())
             error("Xposed modulePackageName load failed, please reset and rebuild it")
         isAllowSendTooLargeData = false
     }
@@ -165,6 +168,7 @@ class YukiHookDataChannel private constructor() {
      * @return [Boolean]
      */
     private fun isCurrentBroadcast(context: Context?) = runCatching {
+        @Suppress("DEPRECATION")
         context is Application || isXposedEnvironment || (((context ?: receiverContext)
             ?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager?)
             ?.getRunningTasks(9999)?.filter { context?.javaClass?.name == it?.topActivity?.className }?.size ?: 0) > 0
@@ -183,7 +187,7 @@ class YukiHookDataChannel private constructor() {
      * @return [String]
      */
     private fun moduleActionName(context: Context? = null) = "yukihookapi.intent.action.MODULE_DATA_CHANNEL_${
-        YukiHookBridge.modulePackageName.ifBlank { context?.packageName ?: "" }.trim().hashCode()
+        YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" }.trim().hashCode()
     }"
 
     /**
@@ -204,7 +208,7 @@ class YukiHookDataChannel private constructor() {
         nameSpace(context, packageName, isSecure = false).with {
             /** 注册监听模块与宿主的版本是否匹配 */
             wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
-                nameSpace(context, fromPackageName, isSecure = false).put(RESULT_MODULE_GENERATED_VERSION, YukiHookBridge.moduleGeneratedVersion)
+                nameSpace(context, fromPackageName, isSecure = false).put(RESULT_MODULE_GENERATED_VERSION, moduleGeneratedVersion)
             }
             /** 注册监听模块与宿主之间的调试日志数据 */
             wait<String>(GET_YUKI_LOGGER_INMEMORY_DATA) { fromPackageName ->
@@ -368,7 +372,7 @@ class YukiHookDataChannel private constructor() {
          * @param result 回调是否匹配
          */
         fun checkingVersionEquals(priority: ChannelPriority? = null, result: (Boolean) -> Unit) {
-            wait<String>(RESULT_MODULE_GENERATED_VERSION, priority) { result(it == YukiHookBridge.moduleGeneratedVersion) }
+            wait<String>(RESULT_MODULE_GENERATED_VERSION, priority) { result(it == moduleGeneratedVersion) }
             put(GET_MODULE_GENERATED_VERSION, packageName)
         }
 
@@ -651,11 +655,11 @@ class YukiHookDataChannel private constructor() {
             if (isSecure && context != null) if (isXposedEnvironment.not() && context !is Activity)
                 error("YukiHookDataChannel only support used on an Activity, but this current context is \"${context.javaClass.name}\"")
             /** 发送广播 */
-            (context ?: YukiHookAppHelper.currentApplication())?.sendBroadcast(Intent().apply {
+            (context ?: AppParasitics.currentApplication)?.sendBroadcast(Intent().apply {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
                 /** 由于系统框架的包名可能不唯一 - 为防止发生问题不再对系统框架的广播设置接收者包名 */
-                if (packageName != YukiHookBridge.SYSTEM_FRAMEWORK_NAME)
-                    setPackage(if (isXposedEnvironment) YukiHookBridge.modulePackageName else packageName)
+                if (packageName != AppParasitics.SYSTEM_FRAMEWORK_NAME)
+                    setPackage(if (isXposedEnvironment) YukiXposedModule.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
             }) ?: yLoggerE(msg = "Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
         }

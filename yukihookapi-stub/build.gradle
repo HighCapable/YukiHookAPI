@@ -8,8 +8,17 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = 11
+        freeCompilerArgs = [
+                '-Xno-param-assertions',
+                '-Xno-call-assertions',
+                '-Xno-receiver-assertions'
+        ]
+    }
+}
+
 dependencies {
-    // Used 82 API Version
-    compileOnly 'de.robv.android.xposed:api:82'
     compileOnly fileTree(include: ['*.jar'], dir: '../yukihookapi/libs')
 }

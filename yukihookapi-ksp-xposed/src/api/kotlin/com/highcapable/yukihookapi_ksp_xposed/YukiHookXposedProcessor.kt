@@ -251,23 +251,23 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 msg = "You set the customize module package name to \"${data.customMPackageName}\", " +
                         "please check for yourself if it is correct"
             )
+            /** 插入 YukiHookAPI_Impl 代码 */
+            createCodeFile(
+                fileName = ClassName.YukiHookAPI_Impl,
+                packageName = PackageName.YukiHookAPI_Impl,
+                content = data.sources()[ClassName.YukiHookAPI_Impl]
+            )
             /** 插入 ModuleApplication_Impl 代码 */
             createCodeFile(
                 fileName = ClassName.ModuleApplication_Impl,
                 packageName = PackageName.ModuleApplication_Impl,
                 content = data.sources()[ClassName.ModuleApplication_Impl]
             )
-            /** 插入 YukiHookBridge_Impl 代码 */
+            /** 插入 YukiXposedModuleStatus_Impl 代码 */
             createCodeFile(
-                fileName = ClassName.YukiHookBridge_Impl,
-                packageName = PackageName.YukiHookBridge_Impl,
-                content = data.sources()[ClassName.YukiHookBridge_Impl]
-            )
-            /** 插入 YukiHookModuleStatus_Impl 代码 */
-            createCodeFile(
-                fileName = ClassName.YukiHookModuleStatus_Impl,
-                packageName = PackageName.YukiHookModuleStatus_Impl,
-                content = data.sources()[ClassName.YukiHookModuleStatus_Impl]
+                fileName = ClassName.YukiXposedModuleStatus_Impl,
+                packageName = PackageName.YukiXposedModuleStatus_Impl,
+                content = data.sources()[ClassName.YukiXposedModuleStatus_Impl]
             )
             /** 插入 xposed_init 代码 */
             createCodeFile(

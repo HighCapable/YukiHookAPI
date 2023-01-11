@@ -40,7 +40,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
 import com.highcapable.yukihookapi.hook.type.java.*
-import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.*
@@ -421,7 +421,7 @@ inline fun Class<*>.allFields(isAccessible: Boolean = true, result: (index: Int,
  */
 @PublishedApi
 internal fun Class<*>.checkingInternal() {
-    if (name == YukiHookModuleStatus.IMPL_CLASS_NAME) return
+    if (name == YukiXposedModuleStatus.IMPL_CLASS_NAME) return
     if (name == classOf<YukiHookAPI>().name || name.startsWith("com.highcapable.yukihookapi.hook")) throw RuntimeException(
         "!!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself, " +
                 "The called class is [$this]"

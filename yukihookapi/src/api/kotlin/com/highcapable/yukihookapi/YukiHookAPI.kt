@@ -33,9 +33,12 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import com.highcapable.yukihookapi.YukiHookAPI.Configs.debugLog
 import com.highcapable.yukihookapi.YukiHookAPI.configs
 import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
+import com.highcapable.yukihookapi.hook.core.api.compat.HookApiProperty
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
@@ -47,14 +50,13 @@ import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
-import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -65,7 +67,7 @@ import java.lang.reflect.Method
  *
  * 可以实现作为模块装载和自定义 Hook 装载两种方式
  *
- * 模块装载方式已经自动对接 Xposed API - 可直接调用 [encase] 完成操作
+ * Xposed 模块装载方式已经自动对接相关 API - 可直接调用 [encase] 完成操作
  *
  * 你可以调用 [configs] 对 [YukiHookAPI] 进行配置
  */
@@ -92,38 +94,41 @@ object YukiHookAPI {
          * 获取项目编译完成的时间戳 (当前本地时间)
          * @return [Long]
          */
-        val compiledTimestamp get() = YukiHookBridge.compiledTimestamp
+        val compiledTimestamp get() = runCatching { YukiHookAPI_Impl.compiledTimestamp }.getOrNull() ?: 0L
 
         /**
          * 获取当前是否为 (Xposed) 宿主环境
          * @return [Boolean]
          */
-        val isXposedEnvironment get() = YukiHookBridge.hasXposedBridge
+        val isXposedEnvironment get() = YukiXposedModule.isXposedEnvironment
 
         /**
          * 获取当前 Hook 框架的名称
          *
-         * 从 [XposedBridge] 获取 TAG
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
-         * @return [String] 无法获取会返回 unknown - [YukiHookBridge.hasXposedBridge] 不存在会返回 invalid
+         * - ❗请现在转移到 [Executor.name]
+         * @return [String]
          */
-        val executorName
-            get() = YukiHookBridge.executorName.takeIf { isXposedEnvironment } ?: when {
-                isXposedModuleActive -> YukiHookModuleStatus.executorName
-                isTaiChiModuleActive -> YukiHookModuleStatus.TAICHI_XPOSED_NAME
-                else -> YukiHookModuleStatus.executorName
-            }
+        @Deprecated(
+            message = "请使用新方式来实现此功能",
+            ReplaceWith("Executor.name", "com.highcapable.yukihookapi.YukiHookAPI.Status.Executor")
+        )
+        val executorName get() = Executor.name
 
         /**
          * 获取当前 Hook 框架的版本
          *
-         * 获取 [XposedBridge.getXposedVersion]
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
-         * @return [Int] 无法获取会返回 -1
+         * - ❗请现在转移到 [Executor.apiLevel]、[Executor.versionName]、[Executor.versionCode]
+         * @return [Int]
          */
-        val executorVersion get() = YukiHookBridge.executorVersion.takeIf { isXposedEnvironment } ?: YukiHookModuleStatus.executorVersion
+        @Deprecated(
+            message = "请使用新方式来实现此功能",
+            ReplaceWith("Executor.apiLevel", "com.highcapable.yukihookapi.YukiHookAPI.Status.Executor")
+        )
+        val executorVersion get() = Executor.apiLevel
 
         /**
          * 判断模块是否在 Xposed 或太极、无极中激活
@@ -135,7 +140,7 @@ object YukiHookAPI {
          * - ❗在 (Xposed) 宿主环境中仅返回非 [isTaiChiModuleActive] 的激活状态
          * @return [Boolean] 是否激活
          */
-        val isModuleActive get() = isXposedEnvironment || YukiHookModuleStatus.isActive || isTaiChiModuleActive
+        val isModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive || isTaiChiModuleActive
 
         /**
          * 仅判断模块是否在 Xposed 中激活
@@ -145,7 +150,7 @@ object YukiHookAPI {
          * - ❗在 (Xposed) 宿主环境中始终返回 true
          * @return [Boolean] 是否激活
          */
-        val isXposedModuleActive get() = isXposedEnvironment || YukiHookModuleStatus.isActive
+        val isXposedModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive
 
         /**
          * 仅判断模块是否在太极、无极中激活
@@ -168,7 +173,50 @@ object YukiHookAPI {
          * @return [Boolean] 是否支持
          */
         val isSupportResourcesHook
-            get() = YukiHookBridge.isSupportResourcesHook.takeIf { isXposedEnvironment } ?: YukiHookModuleStatus.isSupportResourcesHook
+            get() = YukiXposedModule.isSupportResourcesHook.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.isSupportResourcesHook
+
+        /**
+         * 当前 [YukiHookAPI] 使用的 Hook 框架相关信息
+         */
+        object Executor {
+
+            /**
+             * 获取当前 Hook 框架的名称
+             *
+             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * @return [String] 无法获取会返回 unknown - 获取失败会返回 invalid
+             */
+            val name
+                get() = HookApiProperty.name.takeIf { isXposedEnvironment } ?: when {
+                    isXposedModuleActive -> YukiXposedModuleStatus.executorName
+                    isTaiChiModuleActive -> HookApiProperty.TAICHI_XPOSED_NAME
+                    else -> YukiXposedModuleStatus.executorName
+                }
+
+            /**
+             * 获取当前 Hook 框架的 API 版本
+             *
+             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * @return [Int] 无法获取会返回 -1
+             */
+            val apiLevel get() = HookApiProperty.apiLevel.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorApiLevel
+
+            /**
+             * 获取当前 Hook 框架的版本名称
+             *
+             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * @return [String] 无法获取会返回 unknown - 不支持会返回 unsupported
+             */
+            val versionName get() = HookApiProperty.versionName.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionName
+
+            /**
+             * 获取当前 Hook 框架的版本号
+             *
+             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * @return [Int] 无法获取会返回 -1 - 不支持会返回 0
+             */
+            val versionCode get() = HookApiProperty.versionCode.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionCode
+        }
     }
 
     /**
@@ -297,13 +345,6 @@ object YukiHookAPI {
     }
 
     /**
-     * 装载 Xposed API 回调核心实现方法
-     * @param wrapper 代理包装 [PackageParamWrapper]
-     */
-    internal fun onXposedLoaded(wrapper: PackageParamWrapper) =
-        YukiHookBridge.packageParamCallback?.invoke(PackageParam(wrapper).apply { printSplashLog() })
-
-    /**
      * 配置 [YukiHookAPI] 相关参数
      *
      * 详情请参考 [configs 方法](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#configs-%E6%96%B9%E6%B3%95)
@@ -314,7 +355,7 @@ object YukiHookAPI {
     inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
 
     /**
-     * 作为模块装载调用入口方法 - Xposed API
+     * 作为 Xposed 模块装载调用入口方法
      *
      * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      *
@@ -327,13 +368,13 @@ object YukiHookAPI {
      */
     fun encase(initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = false
-        if (YukiHookBridge.hasXposedBridge)
-            YukiHookBridge.packageParamCallback = initiate
-        else printNoXposedEnvLog()
+        if (YukiXposedModule.isXposedEnvironment)
+            YukiXposedModule.packageParamCallback = initiate
+        else printNotFoundHookApiError()
     }
 
     /**
-     * 作为模块装载调用入口方法 - Xposed API
+     * 作为 Xposed 模块装载调用入口方法
      *
      * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
      *
@@ -347,13 +388,13 @@ object YukiHookAPI {
      */
     fun encase(vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = false
-        if (YukiHookBridge.hasXposedBridge)
-            YukiHookBridge.packageParamCallback = {
+        if (YukiXposedModule.isXposedEnvironment)
+            YukiXposedModule.packageParamCallback = {
                 if (hooker.isNotEmpty())
                     hooker.forEach { it.assignInstance(packageParam = this) }
                 else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true)
             }
-        else printNoXposedEnvLog()
+        else printNotFoundHookApiError()
     }
 
     /**
@@ -378,8 +419,9 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = true
         when {
-            YukiHookBridge.hasXposedBridge && baseContext != null -> initiate(baseContext.packageParam.apply { printSplashLog() })
-            else -> printNoXposedEnvLog()
+            HookApiCategoryHelper.hasAvailableHookApi && baseContext != null ->
+                initiate(baseContext.createPackageParam().apply { printSplashInfo() })
+            else -> printNotFoundHookApiError()
         }
     }
 
@@ -405,32 +447,33 @@ object YukiHookAPI {
      */
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = true
-        if (YukiHookBridge.hasXposedBridge)
+        if (HookApiCategoryHelper.hasAvailableHookApi)
             (if (baseContext != null)
                 if (hooker.isNotEmpty()) {
-                    printSplashLog()
-                    hooker.forEach { it.assignInstance(packageParam = baseContext.packageParam) }
+                    printSplashInfo()
+                    hooker.forEach { it.assignInstance(packageParam = baseContext.createPackageParam()) }
                 } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true))
-        else printNoXposedEnvLog()
+        else printNotFoundHookApiError()
     }
 
     /** 输出欢迎信息调试日志 */
-    private fun printSplashLog() {
+    internal fun printSplashInfo() {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
         yLoggerI(
-            msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using ${Status.executorName} API ${Status.executorVersion}",
+            msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}",
             isImplicit = true
         )
     }
 
-    /** 输出找不到 [XposedBridge] 的错误日志 */
-    private fun printNoXposedEnvLog() = yLoggerE(msg = "Could not found XposedBridge in current space! Aborted", isImplicit = true)
+    /** 输出找不到 Hook API 的错误日志 */
+    private fun printNotFoundHookApiError() =
+        yLoggerE(msg = "Could not found any available Hook APIs in current environment! Aborted", isImplicit = true)
 
     /**
      * 通过 baseContext 创建 Hook 入口类
      * @return [PackageParam]
      */
-    private val Context.packageParam
-        get() = PackageParam(PackageParamWrapper(HookEntryType.PACKAGE, packageName, processName, classLoader, applicationInfo))
+    private fun Context.createPackageParam() =
+        PackageParam(PackageParamWrapper(HookEntryType.PACKAGE, packageName, processName, classLoader, applicationInfo))
 }

@@ -24,33 +24,26 @@
  * SOFTWARE.
  *
  * This file is Created by fankes on 2022/4/26.
+ * This file is Modified by fankes on 2023/1/9.
  */
-package com.highcapable.yukihookapi.hook.param.type
+package com.highcapable.yukihookapi.hook.xposed.bridge.type
 
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType.*
-import de.robv.android.xposed.IXposedHookInitPackageResources
-import de.robv.android.xposed.IXposedHookLoadPackage
-import de.robv.android.xposed.IXposedHookZygoteInit
+import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 
 /**
  * 当前正在进行的 Hook 类型
  *
- * [ZYGOTE] 为 [IXposedHookZygoteInit.initZygote]
- *
- * [PACKAGE] 为 [IXposedHookLoadPackage.handleLoadPackage]
- *
- * [RESOURCES] 为 [IXposedHookInitPackageResources.handleInitPackageResources]
+ * - ❗装载代码将自动生成 - 请勿手动调用
  */
-@YukiPrivateApi
+@YukiGenerateApi
 enum class HookEntryType {
 
-    /** initZygote */
+    /** 装载 Zygote */
     ZYGOTE,
 
-    /** handleLoadPackage */
+    /** 装载 APP */
     PACKAGE,
 
-    /** handleInitPackageResources */
+    /** 装载 Resources Hook */
     RESOURCES
 }

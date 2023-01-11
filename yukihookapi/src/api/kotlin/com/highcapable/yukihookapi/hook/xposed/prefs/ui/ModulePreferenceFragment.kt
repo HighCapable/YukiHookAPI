@@ -25,8 +25,6 @@
  *
  * This file is Created by fankes on 2022/4/17.
  */
-@file:Suppress("WorldReadableFiles", "DEPRECATION")
-
 package com.highcapable.yukihookapi.hook.xposed.prefs.ui
 
 import android.app.Activity
@@ -105,6 +103,7 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
 
     /** 设置自动适配模块 Sp 存储全局可读可写 */
     private fun makeNewXShareReadableIfPossible() = runCatching {
+        @Suppress("DEPRECATION", "WorldReadableFiles")
         currentActivity.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
     }.onFailure { YukiHookModulePrefs.makeWorldReadable(currentActivity, prefsFileName = "$prefsName.xml") }.unit()
 }

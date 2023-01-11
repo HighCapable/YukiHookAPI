@@ -30,11 +30,9 @@
 
 package com.highcapable.yukihookapi.hook.xposed.parasitic
 
-import android.app.Activity
-import android.app.ActivityManager
-import android.app.Application
-import android.app.Instrumentation
+import android.app.*
 import android.content.*
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -42,21 +40,20 @@ import android.os.Build
 import android.os.Handler
 import androidx.annotation.RequiresApi
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.core.api.compat.HookApiProperty
+import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
+import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
+import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
+import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberReplacement
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.type.android.*
 import com.highcapable.yukihookapi.hook.type.java.*
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookCallback
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
-import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
-import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.HandlerDelegate
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.IActivityManagerProxy
@@ -68,6 +65,9 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.Instr
  * 通过这些功能即可轻松实现对 (Xposed) 宿主环境的 [Resources] 注入以及 [Activity] 代理
  */
 internal object AppParasitics {
+
+    /** Android 系统框架名称 */
+    internal const val SYSTEM_FRAMEWORK_NAME = "android"
 
     /** [YukiHookDataChannel] 是否已经注册 */
     private var isDataChannelRegistered = false
@@ -88,12 +88,6 @@ internal object AppParasitics {
      */
     internal var hostApplication: Application? = null
 
-    /** 当前 Xposed 模块自身 APK 路径 */
-    internal var moduleAppFilePath = ""
-
-    /** 当前 Xposed 模块自身 [Resources] */
-    internal var moduleAppResources: YukiModuleResources? = null
-
     /**
      * 当前环境中使用的 [ClassLoader]
      *
@@ -104,12 +98,6 @@ internal object AppParasitics {
     internal val baseClassLoader get() = classOf<YukiHookAPI>().classLoader ?: error("Operating system not supported")
 
     /**
-     * 获取当前 Xposed 模块自身动态 [Resources]
-     * @return [YukiModuleResources] or null
-     */
-    internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.wrapper(moduleAppFilePath) }.getOrNull()
-
-    /**
      * 获取当前系统框架的 [Context]
      * @return [Context] ContextImpl 实例对象
      * @throws IllegalStateException 如果获取不到系统框架的 [Context]
@@ -118,6 +106,43 @@ internal object AppParasitics {
         get() = ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()?.let {
             ActivityThreadClass.method { name = "getSystemContext" }.ignored().get(it).invoke<Context?>()
         } ?: error("Failed to got SystemContext")
+
+    /**
+     * 获取当前宿主的 [Application]
+     * @return [Application] or null
+     */
+    internal val currentApplication
+        get() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull() ?: runCatching {
+            ActivityThreadClass.method { name = "currentApplication" }.ignored().get().invoke<Application>()
+        }.getOrNull()
+
+    /**
+     * 获取当前宿主的 [ApplicationInfo]
+     * @return [ApplicationInfo] or null
+     */
+    internal val currentApplicationInfo
+        get() = runCatching { AndroidAppHelper.currentApplicationInfo() }.getOrNull() ?: runCatching {
+            ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()
+                ?.current(ignored = true)?.field { name = "mBoundApplication" }
+                ?.current(ignored = true)?.field { name = "appInfo" }
+                ?.cast<ApplicationInfo>()
+        }.getOrNull()
+
+    /**
+     * 获取当前宿主的包名
+     * @return [String]
+     */
+    internal val currentPackageName get() = currentApplicationInfo?.packageName ?: SYSTEM_FRAMEWORK_NAME
+
+    /**
+     * 获取当前宿主的进程名
+     * @return [String]
+     */
+    internal val currentProcessName
+        get() = runCatching { AndroidAppHelper.currentProcessName() }.getOrNull() ?: runCatching {
+            ActivityThreadClass.method { name = "currentPackageName" }.ignored().get().string()
+                .takeIf { it.isNotBlank() } ?: SYSTEM_FRAMEWORK_NAME
+        }.getOrNull() ?: SYSTEM_FRAMEWORK_NAME
 
     /**
      * 获取指定 [packageName] 的用户 ID
@@ -134,9 +159,29 @@ internal object AppParasitics {
     }.getOrNull() ?: 0
 
     /**
+     * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
+     * @param loader 当前 [ClassLoader]
+     * @param result 回调 - ([Class] 实例对象)
+     */
+    internal fun hookClassLoader(loader: ClassLoader?, result: (Class<*>) -> Unit) {
+        if (loader == null) return
+        if (YukiXposedModule.isXposedEnvironment.not()) return yLoggerW(msg = "You can only use hook ClassLoader method in Xposed Environment")
+        classLoaderCallbacks[loader.hashCode()] = result
+        if (isClassLoaderHooked) return
+        runCatching {
+            YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringClass, BooleanType) }, object : YukiMemberHook() {
+                override fun afterHookedMember(param: Param) {
+                    param.instance?.also { loader ->
+                        (param.result as? Class<*>?)?.also { classLoaderCallbacks[loader.hashCode()]?.invoke(it) }
+                    }
+                }
+            })
+            isClassLoaderHooked = true
+        }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
+    }
+
+    /**
      * Hook 模块 APP 相关功能 - 包括自身激活状态、Resources Hook 支持状态以及 [SharedPreferences]
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param loader 模块的 [ClassLoader]
      * @param type 当前正在进行的 Hook 类型
      */
@@ -147,18 +192,33 @@ internal object AppParasitics {
                     if ((param.args?.get(0) as? String?)?.endsWith("preferences.xml") == true) param.args?.set(1, 1)
                 }
             })
-        if (YukiHookAPI.Configs.isEnableHookModuleStatus) YukiHookModuleStatus.IMPL_CLASS_NAME.toClassOrNull(loader)?.apply {
+        if (YukiHookAPI.Configs.isEnableHookModuleStatus.not()) return
+        YukiXposedModuleStatus.IMPL_CLASS_NAME.toClassOrNull(loader)?.apply {
             if (type != HookEntryType.RESOURCES) {
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_ACTIVE_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(param: Param) = true
-                })
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_TAG_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(param: Param) = YukiHookBridge.executorName
-                })
-                YukiHookHelper.hook(method { name = YukiHookModuleStatus.GET_XPOSED_VERSION_METHOD_NAME }, object : YukiMemberReplacement() {
-                    override fun replaceHookedMember(param: Param) = YukiHookBridge.executorVersion
-                })
-            } else YukiHookHelper.hook(method { name = YukiHookModuleStatus.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME },
+                YukiHookHelper.hook(method { name = YukiXposedModuleStatus.IS_ACTIVE_METHOD_NAME },
+                    object : YukiMemberReplacement() {
+                        override fun replaceHookedMember(param: Param) = true
+                    })
+                YukiHookHelper.hook(method { name = YukiXposedModuleStatus.GET_EXECUTOR_NAME_METHOD_NAME },
+                    object : YukiMemberReplacement() {
+                        override fun replaceHookedMember(param: Param) = HookApiProperty.name
+                    })
+                YukiHookHelper.hook(
+                    method { name = YukiXposedModuleStatus.GET_EXECUTOR_API_LEVEL_METHOD_NAME },
+                    object : YukiMemberReplacement() {
+                        override fun replaceHookedMember(param: Param) = HookApiProperty.apiLevel
+                    })
+                YukiHookHelper.hook(
+                    method { name = YukiXposedModuleStatus.GET_EXECUTOR_VERSION_NAME_METHOD_NAME },
+                    object : YukiMemberReplacement() {
+                        override fun replaceHookedMember(param: Param) = HookApiProperty.versionName
+                    })
+                YukiHookHelper.hook(
+                    method { name = YukiXposedModuleStatus.GET_EXECUTOR_VERSION_CODE_METHOD_NAME },
+                    object : YukiMemberReplacement() {
+                        override fun replaceHookedMember(param: Param) = HookApiProperty.versionCode
+                    })
+            } else YukiHookHelper.hook(method { name = YukiXposedModuleStatus.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME },
                 object : YukiMemberReplacement() {
                     override fun replaceHookedMember(param: Param) = true
                 })
@@ -245,8 +305,7 @@ internal object AppParasitics {
                                 runCatching {
                                     /** 过滤系统框架与一系列服务组件包名不唯一的情况 */
                                     if (isDataChannelRegistered ||
-                                        (YukiHookAppHelper.currentPackageName() == YukiHookBridge.SYSTEM_FRAMEWORK_NAME &&
-                                                packageName != YukiHookBridge.SYSTEM_FRAMEWORK_NAME)
+                                        (currentPackageName == SYSTEM_FRAMEWORK_NAME && packageName != SYSTEM_FRAMEWORK_NAME)
                                     ) return
                                     YukiHookDataChannel.instance().register(it, packageName)
                                     isDataChannelRegistered = true
@@ -259,44 +318,20 @@ internal object AppParasitics {
     }
 
     /**
-     * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
-     * @param loader 当前 [ClassLoader]
-     * @param result 回调 - ([Class] 实例对象)
-     */
-    internal fun hookClassLoader(loader: ClassLoader?, result: (Class<*>) -> Unit) {
-        if (loader == null) return
-        if (YukiHookBridge.hasXposedBridge.not()) return yLoggerW(msg = "You can only use hook ClassLoader method in Xposed Environment")
-        classLoaderCallbacks[loader.hashCode()] = result
-        if (isClassLoaderHooked) return
-        runCatching {
-            YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringClass, BooleanType) }, object : YukiMemberHook() {
-                override fun afterHookedMember(param: Param) {
-                    param.instance?.also { loader ->
-                        (param.result as? Class<*>?)?.also { classLoaderCallbacks[loader.hashCode()]?.invoke(it) }
-                    }
-                }
-            })
-            isClassLoaderHooked = true
-        }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
-    }
-
-    /**
      * 向 Hook APP (宿主) 注入当前 Xposed 模块的资源
      * @param hostResources 需要注入的宿主 [Resources]
      */
     internal fun injectModuleAppResources(hostResources: Resources) {
-        if (YukiHookBridge.hasXposedBridge) runCatching {
-            if (YukiHookAppHelper.currentPackageName() == YukiHookBridge.modulePackageName)
+        if (YukiXposedModule.isXposedEnvironment) runCatching {
+            if (currentPackageName == YukiXposedModule.modulePackageName)
                 return yLoggerE(msg = "You cannot inject module resources into yourself")
-            hostResources.assets.current(ignored = true).method { name = "addAssetPath"; param(StringClass) }.call(moduleAppFilePath)
+            hostResources.assets.current(ignored = true).method {
+                name = "addAssetPath"
+                param(StringClass)
+            }.call(YukiXposedModule.moduleAppFilePath)
         }.onFailure {
             yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
         } else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
-    }
-
-    /** 刷新当前 Xposed 模块自身 [Resources] */
-    internal fun refreshModuleAppResources() {
-        dynamicModuleAppResources?.let { moduleAppResources = it }
     }
 
     /**
@@ -307,12 +342,12 @@ internal object AppParasitics {
     @RequiresApi(Build.VERSION_CODES.N)
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
         if (isActivityProxyRegistered) return
-        if (YukiHookBridge.hasXposedBridge.not()) return yLoggerW(msg = "You can only register Activity Proxy in Xposed Environment")
-        if (context.packageName == YukiHookBridge.modulePackageName) return yLoggerE(msg = "You cannot register Activity Proxy into yourself")
+        if (YukiXposedModule.isXposedEnvironment.not()) return yLoggerW(msg = "You can only register Activity Proxy in Xposed Environment")
+        if (context.packageName == YukiXposedModule.modulePackageName) return yLoggerE(msg = "You cannot register Activity Proxy into yourself")
         if (Build.VERSION.SDK_INT < 24) return yLoggerE(msg = "Activity Proxy only support for Android 7.0 (API 24) or higher")
         runCatching {
             ActivityProxyConfig.apply {
-                proxyIntentName = "${YukiHookBridge.modulePackageName}.ACTIVITY_PROXY_INTENT"
+                proxyIntentName = "${YukiXposedModule.modulePackageName}.ACTIVITY_PROXY_INTENT"
                 proxyClassName = proxy?.let {
                     when (it) {
                         is String, is CharSequence -> it.toString()

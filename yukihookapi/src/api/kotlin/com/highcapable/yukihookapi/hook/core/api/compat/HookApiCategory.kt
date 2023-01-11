@@ -23,42 +23,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/4/9.
+ * This file is Created by fankes on 2023/1/9.
  */
-package com.highcapable.yukihookapi.hook.xposed.helper
-
-import android.app.AndroidAppHelper
-import android.app.Application
-import android.content.pm.ApplicationInfo
+package com.highcapable.yukihookapi.hook.core.api.compat
 
 /**
- * 这是一个宿主 Hook 功能接口
- *
- * 对接 [AndroidAppHelper]
+ * Hook API 类型定义类
  */
-internal object YukiHookAppHelper {
+internal enum class HookApiCategory {
+    /** 原版 Xposed API */
+    ROVO89_XPOSED,
 
-    /**
-     * 获取当前宿主的 [Application]
-     * @return [Application] or null
-     */
-    internal fun currentApplication() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull()
-
-    /**
-     * 获取当前宿主的 [ApplicationInfo]
-     * @return [ApplicationInfo] or null
-     */
-    internal fun currentApplicationInfo() = runCatching { AndroidAppHelper.currentApplicationInfo() }.getOrNull()
-
-    /**
-     * 获取当前宿主的包名
-     * @return [String] or null
-     */
-    internal fun currentPackageName() = runCatching { AndroidAppHelper.currentPackageName() }.getOrNull()
-
-    /**
-     * 获取当前宿主的进程名
-     * @return [String] or null
-     */
-    internal fun currentProcessName() = runCatching { AndroidAppHelper.currentProcessName() }.getOrNull()
+    /** 未知类型的 API */
+    UNKNOWN
 }

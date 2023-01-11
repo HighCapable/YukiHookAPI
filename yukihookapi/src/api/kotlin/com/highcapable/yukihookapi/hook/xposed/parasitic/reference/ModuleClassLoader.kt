@@ -30,8 +30,7 @@
 
 package com.highcapable.yukihookapi.hook.xposed.parasitic.reference
 
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 
 /**
@@ -89,8 +88,8 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
     private val baseLoader get() = AppParasitics.baseClassLoader
 
     override fun loadClass(name: String, resolve: Boolean): Class<*> {
-        if (YukiHookBridge.hasXposedBridge.not()) return baseLoader.loadClass(name)
-        return YukiHookAppHelper.currentApplication()?.classLoader?.let { hostLoader ->
+        if (YukiXposedModule.isXposedEnvironment.not()) return baseLoader.loadClass(name)
+        return AppParasitics.currentApplication?.classLoader?.let { hostLoader ->
             excludeHostClasses.takeIf { it.isNotEmpty() }?.forEach { runCatching { if (name == it) return@let hostLoader.loadClass(name) } }
             excludeModuleClasses.takeIf { it.isNotEmpty() }?.forEach { runCatching { if (name == it) return@let baseLoader.loadClass(name) } }
             runCatching { return@let baseLoader.loadClass(name) }

@@ -42,7 +42,7 @@ import com.highcapable.yukihookapi.hook.type.android.ActivityThreadClass
 import com.highcapable.yukihookapi.hook.type.android.ClientTransactionClass
 import com.highcapable.yukihookapi.hook.type.android.IBinderClass
 import com.highcapable.yukihookapi.hook.type.android.IntentClass
-import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 
 /**
@@ -73,7 +73,7 @@ internal class HandlerDelegate private constructor(private val baseInstance: Han
                 msg.obj.current(ignored = true).field { name = "intent" }.apply {
                     cast<Intent?>()?.also { intent ->
                         IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
-                            ?.classLoader = YukiHookAppHelper.currentApplication()?.classLoader
+                            ?.classLoader = AppParasitics.currentApplication?.classLoader
                         if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
                             set(intent.getParcelableExtra(ActivityProxyConfig.proxyIntentName))
                     }
@@ -86,7 +86,7 @@ internal class HandlerDelegate private constructor(private val baseInstance: Han
                             ?.apply {
                                 cast<Intent?>()?.also { intent ->
                                     IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
-                                        ?.classLoader = YukiHookAppHelper.currentApplication()?.classLoader
+                                        ?.classLoader = AppParasitics.currentApplication?.classLoader
                                     if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
                                         intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName).also { subIntent ->
                                             if (Build.VERSION.SDK_INT >= 31)

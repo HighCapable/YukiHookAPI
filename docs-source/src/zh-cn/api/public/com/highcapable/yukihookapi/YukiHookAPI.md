@@ -52,7 +52,7 @@ const val API_VERSION_CODE: Int
 
 `v1.0.91` `移除`
 
-请转移到 `Status.executorName`
+请转移到 `Status.Executor.name`
 
 <h2 class="deprecated">executorVersion - field</h2>
 
@@ -62,7 +62,7 @@ const val API_VERSION_CODE: Int
 
 `v1.0.91` `移除`
 
-请转移到 `Status.executorVersion`
+请转移到 `Status.Executor.apiLevel`、`Status.Executor.versionName`、`Status.Executor.versionCode`
 
 ## Status <span class="symbol">- object</span>
 
@@ -106,49 +106,25 @@ val isXposedEnvironment: Boolean
 
 > 获取当前是否为 (Xposed) 宿主环境。
 
-### executorName <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-val executorName: String
-```
+<h3 class="deprecated">executorName - field</h3>
 
 **变更记录**
 
 `v1.0.91` `新增`
 
-**功能描述**
+`v1.1.5` `作废`
 
-> 获取当前 Hook 框架的名称。
+请转移到 `Executor.name`
 
-无法获取会返回 `unknown`，`XposedBridge` 不存在会返回 `invalid`。
-
-::: warning
-
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
-
-:::
-
-### executorVersion <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-val executorVersion: Int
-```
+<h3 class="deprecated">executorVersion - field</h3>
 
 **变更记录**
 
 `v1.0.91` `新增`
 
-**功能描述**
+`v1.1.5` `作废`
 
-> 获取当前 Hook 框架的版本。
-
-无法获取会返回 `-1`。
-
-::: warning
-
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
-
-:::
+请转移到 `Executor.apiLevel`、`Executor.versionName`、`Executor.versionCode`
 
 ### isModuleActive <span class="symbol">- field</span>
 
@@ -239,6 +215,100 @@ val isSupportResourcesHook: Boolean
 在 (Xposed) 宿主环境中可能会延迟等待事件回调后才会返回 true。
 
 请注意你需要确保 **InjectYukiHookWithXposed.isUsingResourcesHook** 已启用，否则始终返回 false。
+
+:::
+
+### Executor <span class="symbol">- object</span>
+
+```kotlin:no-line-numbers
+object Executor
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 当前 `YukiHookAPI` 使用的 Hook 框架相关信息。
+
+#### name <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val name: String
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 获取当前 Hook 框架的名称。
+
+::: warning
+
+在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+
+:::
+
+#### apiLevel <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val apiLevel: Int
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 获取当前 Hook 框架的 API 版本。
+
+::: warning
+
+在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+
+:::
+
+#### versionName <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val versionName: String
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 获取当前 Hook 框架的版本名称。
+
+::: warning
+
+在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+
+:::
+
+#### versionCode <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val versionCode: Int
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 获取当前 Hook 框架的版本号。
+
+::: warning
+
+在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
 
 :::
 

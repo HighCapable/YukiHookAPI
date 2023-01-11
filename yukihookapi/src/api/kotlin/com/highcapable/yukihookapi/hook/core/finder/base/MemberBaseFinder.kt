@@ -30,11 +30,11 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
+import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.utils.await
 import com.highcapable.yukihookapi.hook.utils.unit
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -145,11 +145,11 @@ abstract class MemberBaseFinder internal constructor(
     }
 
     /**
-     * 在开启 [YukiHookAPI.Configs.isDebug] 且在 [YukiHookBridge.hasXposedBridge] 且在 Hook 过程中情况下输出调试信息
+     * 在开启 [YukiHookAPI.Configs.isDebug] 且在 [HookApiCategoryHelper.hasAvailableHookApi] 且在 Hook 过程中情况下输出调试信息
      * @param msg 调试日志内容
      */
     internal fun onDebuggingMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && YukiHookBridge.hasXposedBridge && hookInstance != null) yLoggerI(msg = msg)
+        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi && hookInstance != null) yLoggerI(msg = msg)
     }
 
     /**

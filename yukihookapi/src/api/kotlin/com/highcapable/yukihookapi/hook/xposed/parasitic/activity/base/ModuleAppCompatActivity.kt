@@ -36,7 +36,7 @@ import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
@@ -60,7 +60,7 @@ open class ModuleAppCompatActivity : AppCompatActivity() {
 
     @CallSuper
     override fun onConfigurationChanged(newConfig: Configuration) {
-        if (YukiHookBridge.hasXposedBridge) injectModuleAppResources()
+        if (YukiXposedModule.isXposedEnvironment) injectModuleAppResources()
         super.onConfigurationChanged(newConfig)
     }
 
@@ -72,7 +72,7 @@ open class ModuleAppCompatActivity : AppCompatActivity() {
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (YukiHookBridge.hasXposedBridge && moduleTheme != -1) setTheme(moduleTheme)
+        if (YukiXposedModule.isXposedEnvironment && moduleTheme != -1) setTheme(moduleTheme)
         super.onCreate(savedInstanceState)
     }
 }

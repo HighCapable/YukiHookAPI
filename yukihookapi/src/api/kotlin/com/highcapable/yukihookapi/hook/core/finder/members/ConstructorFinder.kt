@@ -289,7 +289,6 @@ class ConstructorFinder @PublishedApi internal constructor(
     @YukiPrivateApi
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
-
     @YukiPrivateApi
     override fun denied(throwable: Throwable?) = Process(isNoSuch = true, throwable)
 

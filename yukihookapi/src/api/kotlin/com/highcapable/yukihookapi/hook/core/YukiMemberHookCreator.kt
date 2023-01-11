@@ -32,6 +32,12 @@ package com.highcapable.yukihookapi.hook.core
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
+import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
+import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
+import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
+import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
+import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberReplacement
+import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
@@ -45,14 +51,9 @@ import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.utils.await
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookPriority
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberHook
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiMemberReplacement
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -71,13 +72,13 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
 ) {
 
     /** 默认 Hook 回调优先级 */
-    val PRIORITY_DEFAULT = YukiHookPriority.PRIORITY_DEFAULT
+    val PRIORITY_DEFAULT = 0x0
 
     /** 延迟回调 Hook 方法结果 */
-    val PRIORITY_LOWEST = YukiHookPriority.PRIORITY_LOWEST
+    val PRIORITY_LOWEST = 0x1
 
     /** 更快回调 Hook 方法结果 */
-    val PRIORITY_HIGHEST = YukiHookPriority.PRIORITY_HIGHEST
+    val PRIORITY_HIGHEST = 0x2
 
     /** Hook 操作选项内容 */
     private var hookOption = ""
@@ -134,7 +135,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
      */
     @PublishedApi
     internal fun hook() = when {
-        YukiHookBridge.hasXposedBridge.not() -> Result()
+        HookApiCategoryHelper.hasAvailableHookApi.not() -> Result()
         /** 过滤 [HookEntryType.ZYGOTE] and [HookEntryType.PACKAGE] or [HookParam.isCallbackCalled] 已被执行 */
         packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
         preHookMembers.isEmpty() -> Result().also { yLoggerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
@@ -190,6 +191,18 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                 content = "Those Class should not be hooked, it may cause StackOverflow errors"
             )
         }
+    }
+
+    /**
+     * 转换到 [YukiHookPriority] 优先级
+     * @return [YukiHookPriority]
+     * @throws IllegalStateException 如果优先级不为 [PRIORITY_DEFAULT]、[PRIORITY_LOWEST]、[PRIORITY_HIGHEST]
+     */
+    private fun Int.toPriority() = when (this) {
+        PRIORITY_DEFAULT -> YukiHookPriority.DEFAULT
+        PRIORITY_LOWEST -> YukiHookPriority.LOWEST
+        PRIORITY_HIGHEST -> YukiHookPriority.HIGHEST
+        else -> error("Invalid Hook Priority $this")
     }
 
     /**
@@ -257,7 +270,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
         internal var finder: MemberBaseFinder? = null
 
         /** 当前被 Hook 的 [Method]、[Constructor] 实例数组 */
-        private val memberUnhooks = HashSet<YukiMemberHook.Unhook>()
+        private val hookedMembers = HashSet<YukiMemberHook.HookedMember>()
 
         /** 当前需要 Hook 的 [Method]、[Constructor] */
         internal val members = HashSet<Member>()
@@ -509,7 +522,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
         /** Hook 执行入口 */
         @PublishedApi
         internal fun hook() {
-            if (YukiHookBridge.hasXposedBridge.not() || isHooked || isDisableMemberRunHook) return
+            if (HookApiCategoryHelper.hasAvailableHookApi.not() || isHooked || isDisableMemberRunHook) return
             isHooked = true
             finder?.printLogIfExist()
             if (hookClass.instance == null) {
@@ -524,11 +537,11 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                 runCatching {
                     member.hook().also {
                         when {
-                            it.first?.member == null -> error("Hook Member [$member] failed")
-                            it.second -> onAlreadyHookedCallback?.invoke(it.first?.member!!)
-                            else -> it.first?.also { e ->
-                                memberUnhooks.add(e)
-                                onHookedCallback?.invoke(e.member!!)
+                            it.hookedMember?.member == null -> error("Hook Member [$member] failed")
+                            it.isAlreadyHooked -> onAlreadyHookedCallback?.invoke(it.hookedMember.member!!)
+                            else -> {
+                                hookedMembers.add(it.hookedMember)
+                                onHookedCallback?.invoke(it.hookedMember.member!!)
                             }
                         }
                     }
@@ -552,14 +565,14 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
 
         /**
          * Hook [Method]、[Constructor]
-         * @return [Pair] - ([YukiMemberHook.Unhook] or null,[Boolean] 是否已经 Hook)
+         * @return [YukiHookResult]
          */
-        private fun Member.hook(): Pair<YukiMemberHook.Unhook?, Boolean> {
+        private fun Member.hook(): YukiHookResult {
             /** 定义替换 Hook 的 [HookParam] */
             val replaceHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
 
             /** 定义替换 Hook 回调方法体 */
-            val replaceMent = object : YukiMemberReplacement(priority) {
+            val replaceMent = object : YukiMemberReplacement(priority.toPriority()) {
                 override fun replaceHookedMember(param: Param) =
                     replaceHookParam.assign(param).let { assign ->
                         runCatching {
@@ -585,7 +598,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
             val afterHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
 
             /** 定义前后 Hook 回调方法体 */
-            val beforeAfterHook = object : YukiMemberHook(priority) {
+            val beforeAfterHook = object : YukiMemberHook(priority.toPriority()) {
                 override fun beforeHookedMember(param: Param) {
                     beforeHookParam.assign(param).also { assign ->
                         runCatching {
@@ -803,7 +816,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
              * @param result 回调是否成功
              */
             fun remove(result: (Boolean) -> Unit = {}) {
-                memberUnhooks.takeIf { it.isNotEmpty() }?.apply {
+                hookedMembers.takeIf { it.isNotEmpty() }?.apply {
                     forEach {
                         it.remove()
                         onHookLogMsg(msg = "Remove Hooked Member [${it.member}] done [$tag]")

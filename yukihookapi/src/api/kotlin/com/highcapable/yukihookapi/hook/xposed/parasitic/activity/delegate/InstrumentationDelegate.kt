@@ -41,7 +41,7 @@ import android.os.*
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.highcapable.yukihookapi.hook.factory.*
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 
 /**
@@ -65,15 +65,15 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
      * @param icicle [Bundle]
      */
     private fun Activity.injectLifecycle(icicle: Bundle?) {
-        if (icicle != null && current().name.startsWith(YukiHookBridge.modulePackageName))
+        if (icicle != null && current().name.startsWith(YukiXposedModule.modulePackageName))
             icicle.classLoader = AppParasitics.baseClassLoader
-        if (current().name.startsWith(YukiHookBridge.modulePackageName)) injectModuleAppResources()
+        if (current().name.startsWith(YukiXposedModule.modulePackageName)) injectModuleAppResources()
     }
 
     override fun newActivity(cl: ClassLoader?, className: String?, intent: Intent?): Activity? = try {
         baseInstance.newActivity(cl, className, intent)
     } catch (e: Throwable) {
-        if (className?.startsWith(YukiHookBridge.modulePackageName) == true)
+        if (className?.startsWith(YukiXposedModule.modulePackageName) == true)
             className.toClass().buildOf<Activity>() ?: throw e
         else throw e
     }

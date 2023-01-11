@@ -32,11 +32,11 @@ package com.highcapable.yukihookapi.hook.log
 import android.system.ErrnoException
 import android.util.Log
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.utils.toStackTrace
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
-import de.robv.android.xposed.XposedBridge
 import java.io.File
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -52,16 +52,26 @@ enum class LoggerType {
     LOGD,
 
     /**
-     * 仅使用 [XposedBridge.log]
+     * 仅在 (Xposed) 宿主环境使用
+     *
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在转移到 [XPOSED_ENVIRONMENT]
+     */
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith("XPOSED_ENVIRONMENT"))
+    XPOSEDBRIDGE,
+
+    /**
+     * 仅在 (Xposed) 宿主环境使用
      *
      * - ❗只能在 (Xposed) 宿主环境中使用 - 模块环境将不生效
      */
-    XPOSEDBRIDGE,
+    XPOSED_ENVIRONMENT,
 
     /**
      * 分区使用
      *
-     * (Xposed) 宿主环境仅使用 [XPOSEDBRIDGE]
+     * (Xposed) 宿主环境仅使用 [XPOSED_ENVIRONMENT]
      *
      * 模块环境仅使用 [LOGD]
      */
@@ -70,7 +80,7 @@ enum class LoggerType {
     /**
      * 同时使用
      *
-     * (Xposed) 宿主环境使用 [LOGD] 与 [XPOSEDBRIDGE]
+     * (Xposed) 宿主环境使用 [LOGD] 与 [XPOSED_ENVIRONMENT]
      *
      * 模块环境仅使用 [LOGD]
      */
@@ -105,8 +115,8 @@ data class YukiLoggerData internal constructor(
     init {
         timestamp = System.currentTimeMillis()
         time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT).format(Date(timestamp))
-        packageName = YukiHookBridge.hostProcessName.takeIf { it != "unknown" } ?: YukiHookBridge.modulePackageName
-        userId = AppParasitics.findUserId(packageName)
+        packageName = if (YukiXposedModule.isXposedEnvironment) YukiXposedModule.hostProcessName else AppParasitics.currentPackageName
+        userId = AppParasitics.findUserId(AppParasitics.currentPackageName)
     }
 
     /**
@@ -285,7 +295,7 @@ object YukiHookLogger {
         /**
          * 自定义调试日志对外显示的元素
          *
-         * 只对日志记录和 [XposedBridge.log] 生效
+         * 只对日志记录和 (Xposed) 宿主环境的日志生效
          *
          * 日志元素的排列将按照你在 [item] 中设置的顺序进行显示
          *
@@ -311,14 +321,14 @@ object YukiHookLogger {
 }
 
 /**
- * 向控制台和 [XposedBridge] 打印日志 - 最终实现方法
+ * 向控制台和 (Xposed) 宿主环境打印日志 - 最终实现方法
  * @param type 日志打印的类型
  * @param data 日志数据
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
  */
 private fun baseLogger(type: LoggerType, data: YukiLoggerData, isImplicit: Boolean = false) {
     /** 打印到 [Log] */
-    fun loggerInLogd() = when (data.priority) {
+    fun logByLogd() = when (data.priority) {
         "D" -> Log.d(data.tag, data.msg)
         "I" -> Log.i(data.tag, data.msg)
         "W" -> Log.w(data.tag, data.msg)
@@ -326,25 +336,23 @@ private fun baseLogger(type: LoggerType, data: YukiLoggerData, isImplicit: Boole
         else -> Log.wtf(data.tag, data.msg, data.throwable)
     }
 
-    /** 打印到 [XposedBridge.log] */
-    fun loggerInXposed() {
-        XposedBridge.log(data.also { it.isImplicit = isImplicit }.toString())
-        data.throwable?.also { e -> XposedBridge.log(e) }
-    }
+    /** 打印到 (Xposed) 宿主环境 */
+    fun logByHooker() = YukiHookHelper.logByHooker(data.also { it.isImplicit = isImplicit }.toString(), data.throwable)
+    @Suppress("DEPRECATION")
     when (type) {
-        LoggerType.LOGD -> loggerInLogd()
-        LoggerType.XPOSEDBRIDGE -> loggerInXposed()
-        LoggerType.SCOPE -> if (YukiHookBridge.hasXposedBridge) loggerInXposed() else loggerInLogd()
+        LoggerType.LOGD -> logByLogd()
+        LoggerType.XPOSEDBRIDGE, LoggerType.XPOSED_ENVIRONMENT -> logByHooker()
+        LoggerType.SCOPE -> if (YukiXposedModule.isXposedEnvironment) logByHooker() else logByLogd()
         LoggerType.BOTH -> {
-            loggerInLogd()
-            if (YukiHookBridge.hasXposedBridge) loggerInXposed()
+            logByLogd()
+            if (YukiXposedModule.isXposedEnvironment) logByHooker()
         }
     }
     if (isImplicit.not() && YukiHookLogger.Configs.isRecord) YukiHookLogger.inMemoryData.add(data)
 }
 
 /**
- * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - D
+ * [YukiHookAPI] 向控制台和 (Xposed) 宿主环境打印日志 - D
  * @param msg 日志打印的内容
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
@@ -355,7 +363,7 @@ internal fun yLoggerD(msg: String, isImplicit: Boolean = false, isDisableLog: Bo
 }
 
 /**
- * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - I
+ * [YukiHookAPI] 向控制台和 (Xposed) 宿主环境打印日志 - I
  * @param msg 日志打印的内容
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
@@ -366,7 +374,7 @@ internal fun yLoggerI(msg: String, isImplicit: Boolean = false, isDisableLog: Bo
 }
 
 /**
- * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - W
+ * [YukiHookAPI] 向控制台和 (Xposed) 宿主环境打印日志 - W
  * @param msg 日志打印的内容
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
@@ -377,7 +385,7 @@ internal fun yLoggerW(msg: String, isImplicit: Boolean = false, isDisableLog: Bo
 }
 
 /**
- * [YukiHookAPI] 向控制台和 [XposedBridge] 打印日志 - E
+ * [YukiHookAPI] 向控制台和 (Xposed) 宿主环境打印日志 - E
  * @param msg 日志打印的内容
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
@@ -389,9 +397,9 @@ internal fun yLoggerE(msg: String, e: Throwable? = null, isImplicit: Boolean = f
 }
 
 /**
- * 向控制台和 [XposedBridge] 打印日志 - D
+ * 向控制台和 (Xposed) 宿主环境打印日志 - D
  *
- * [XposedBridge] 中的日志打印风格为 [[tag]]「类型」--> [msg]
+ * (Xposed) 宿主环境中的日志打印风格为 [[tag]]「类型」--> [msg]
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookLogger.Configs.tag]
  * @param msg 日志打印的内容
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
@@ -400,9 +408,9 @@ fun loggerD(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerT
     baseLogger(type, YukiLoggerData(priority = "D", tag = tag, msg = msg))
 
 /**
- * 向控制台和 [XposedBridge] 打印日志 - I
+ * 向控制台和 (Xposed) 宿主环境打印日志 - I
  *
- * [XposedBridge] 中的日志打印风格为 [[tag]]「类型」--> [msg]
+ * (Xposed) 宿主环境中的日志打印风格为 [[tag]]「类型」--> [msg]
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookLogger.Configs.tag]
  * @param msg 日志打印的内容
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
@@ -411,9 +419,9 @@ fun loggerI(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerT
     baseLogger(type, YukiLoggerData(priority = "I", tag = tag, msg = msg))
 
 /**
- * 向控制台和 [XposedBridge] 打印日志 - W
+ * 向控制台和 (Xposed) 宿主环境打印日志 - W
  *
- * [XposedBridge] 中的日志打印风格为 [[tag]]「类型」--> [msg]
+ * (Xposed) 宿主环境中的日志打印风格为 [[tag]]「类型」--> [msg]
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookLogger.Configs.tag]
  * @param msg 日志打印的内容
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
@@ -422,9 +430,9 @@ fun loggerW(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerT
     baseLogger(type, YukiLoggerData(priority = "W", tag = tag, msg = msg))
 
 /**
- * 向控制台和 [XposedBridge] 打印日志 - E
+ * 向控制台和 (Xposed) 宿主环境打印日志 - E
  *
- * [XposedBridge] 中的日志打印风格为 [[tag]]「类型」--> [msg]
+ * (Xposed) 宿主环境中的日志打印风格为 [[tag]]「类型」--> [msg]
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookLogger.Configs.tag]
  * @param msg 日志打印的内容
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台

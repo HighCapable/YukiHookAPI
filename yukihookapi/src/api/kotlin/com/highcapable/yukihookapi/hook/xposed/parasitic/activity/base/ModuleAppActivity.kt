@@ -35,7 +35,7 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
@@ -51,7 +51,7 @@ open class ModuleAppActivity : Activity() {
 
     @CallSuper
     override fun onConfigurationChanged(newConfig: Configuration) {
-        if (YukiHookBridge.hasXposedBridge) injectModuleAppResources()
+        if (YukiXposedModule.isXposedEnvironment) injectModuleAppResources()
         super.onConfigurationChanged(newConfig)
     }
 

@@ -46,14 +46,13 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.value
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiModuleResources
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
-import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
 
@@ -62,6 +61,18 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
  * @param wrapper [PackageParam] 的参数包装类实例 - 默认是空的
  */
 open class PackageParam internal constructor(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
+
+    @PublishedApi
+    internal companion object {
+
+        /** 获取当前 Xposed 模块包名 */
+        @PublishedApi
+        internal val modulePackageName get() = YukiXposedModule.modulePackageName
+
+        /** Android 系统框架名称 */
+        @PublishedApi
+        internal const val SYSTEM_FRAMEWORK_NAME = AppParasitics.SYSTEM_FRAMEWORK_NAME
+    }
 
     /** 当前设置的 [ClassLoader] */
     private var currentClassLoader: ClassLoader? = null
@@ -77,7 +88,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      */
     var appClassLoader
         get() = currentClassLoader ?: wrapper?.appClassLoader
-        ?: YukiHookAppHelper.currentApplication()?.classLoader
+        ?: AppParasitics.currentApplication?.classLoader
         ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
         set(value) {
             currentClassLoader = value
@@ -87,7 +98,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 获取当前 Hook APP 的 [ApplicationInfo]
      * @return [ApplicationInfo]
      */
-    val appInfo get() = wrapper?.appInfo ?: YukiHookAppHelper.currentApplicationInfo() ?: ApplicationInfo()
+    val appInfo get() = wrapper?.appInfo ?: AppParasitics.currentApplicationInfo ?: ApplicationInfo()
 
     /**
      * 获取当前 Hook APP 的用户 ID
@@ -103,7 +114,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗首次装载可能是空的 - 请延迟一段时间再获取或通过设置 [onAppLifecycle] 监听来完成
      * @return [Application] or null
      */
-    val appContext get() = AppParasitics.hostApplication ?: YukiHookAppHelper.currentApplication()
+    val appContext get() = AppParasitics.hostApplication ?: AppParasitics.currentApplication
 
     /**
      * 获取当前 Hook APP 的 Resources
@@ -126,13 +137,13 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 默认的进程名称是 [packageName]
      * @return [String]
      */
-    val processName get() = wrapper?.processName ?: YukiHookAppHelper.currentProcessName() ?: packageName
+    val processName get() = wrapper?.processName ?: AppParasitics.currentProcessName
 
     /**
      * 获取当前 Hook APP 的包名
      * @return [String]
      */
-    val packageName get() = wrapper?.packageName ?: YukiHookAppHelper.currentPackageName() ?: ""
+    val packageName get() = wrapper?.packageName ?: AppParasitics.currentPackageName
 
     /**
      * 获取当前 Hook APP 是否为第一个 [Application]
@@ -154,7 +165,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗作为 Hook API 装载时无法使用 - 会获取到空字符串
      * @return [String]
      */
-    val moduleAppFilePath get() = AppParasitics.moduleAppFilePath
+    val moduleAppFilePath get() = YukiXposedModule.moduleAppFilePath
 
     /**
      * 获取当前 Xposed 模块自身 [Resources]
@@ -164,8 +175,8 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @throws IllegalStateException 如果当前 Hook Framework 不支持此功能
      */
     val moduleAppResources
-        get() = (if (YukiHookAPI.Configs.isEnableModuleAppResourcesCache) AppParasitics.moduleAppResources
-        else AppParasitics.dynamicModuleAppResources) ?: error("Current Hook Framework not support moduleAppResources")
+        get() = (if (YukiHookAPI.Configs.isEnableModuleAppResourcesCache) YukiXposedModule.moduleAppResources
+        else YukiXposedModule.dynamicModuleAppResources) ?: error("Current Hook Framework not support moduleAppResources")
 
     /**
      * 获得当前使用的存取数据对象缓存实例
@@ -197,11 +208,13 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         else error("YukiHookDataChannel cannot used in zygote")
 
     /**
-     * 赋值并克隆另一个 [PackageParam]
-     * @param anotherParam 另一个 [PackageParam]
+     * 设置 [PackageParam] 使用的 [PackageParamWrapper]
+     * @param wrapper [PackageParam] 的参数包装类实例
+     * @return [PackageParam]
      */
-    internal fun baseAssignInstance(anotherParam: PackageParam) {
-        this.wrapper = anotherParam.wrapper
+    internal fun assign(wrapper: PackageParamWrapper?): PackageParam {
+        this.wrapper = wrapper
+        return this
     }
 
     /**
@@ -213,7 +226,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun resources() = HookResources(wrapper?.appResources)
 
     /** 刷新当前 Xposed 模块自身 [Resources] */
-    fun refreshModuleAppResources() = AppParasitics.refreshModuleAppResources()
+    fun refreshModuleAppResources() = YukiXposedModule.refreshModuleAppResources()
 
     /**
      * 监听当前 Hook APP 生命周期装载事件
@@ -292,7 +305,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      */
     inline fun loadApp(isExcludeSelf: Boolean = false, initiate: PackageParam.() -> Unit) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiHookBridge.modulePackageName)
+            (isExcludeSelf.not() || isExcludeSelf && packageName != modulePackageName)
         ) initiate(this)
     }
 
@@ -307,7 +320,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      */
     fun loadApp(isExcludeSelf: Boolean = false, hooker: YukiBaseHooker) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiHookBridge.modulePackageName)
+            (isExcludeSelf.not() || isExcludeSelf && packageName != modulePackageName)
         ) loadHooker(hooker)
     }
 
@@ -323,7 +336,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun loadApp(isExcludeSelf: Boolean = false, vararg hooker: YukiBaseHooker) {
         if (hooker.isEmpty()) error("loadApp method need a \"hooker\" param")
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiHookBridge.modulePackageName)
+            (isExcludeSelf.not() || isExcludeSelf && packageName != modulePackageName)
         ) hooker.forEach { loadHooker(it) }
     }
 
@@ -331,13 +344,13 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 装载并 Hook 系统框架
      * @param initiate 方法体
      */
-    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, initiate)
+    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(SYSTEM_FRAMEWORK_NAME, initiate)
 
     /**
      * 装载并 Hook 系统框架
      * @param hooker Hook 子类
      */
-    fun loadSystem(hooker: YukiBaseHooker) = loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, hooker)
+    fun loadSystem(hooker: YukiBaseHooker) = loadApp(SYSTEM_FRAMEWORK_NAME, hooker)
 
     /**
      * 装载并 Hook 系统框架
@@ -345,7 +358,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      */
     fun loadSystem(vararg hooker: YukiBaseHooker) {
         if (hooker.isEmpty()) error("loadSystem method need a \"hooker\" param")
-        loadApp(YukiHookBridge.SYSTEM_FRAMEWORK_NAME, *hooker)
+        loadApp(SYSTEM_FRAMEWORK_NAME, *hooker)
     }
 
     /**

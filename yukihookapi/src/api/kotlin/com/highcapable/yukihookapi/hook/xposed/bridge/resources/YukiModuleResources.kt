@@ -27,7 +27,7 @@
  */
 @file:Suppress("DEPRECATION")
 
-package com.highcapable.yukihookapi.hook.xposed.bridge.dummy
+package com.highcapable.yukihookapi.hook.xposed.bridge.resources
 
 import android.content.res.Resources
 import android.content.res.XModuleResources

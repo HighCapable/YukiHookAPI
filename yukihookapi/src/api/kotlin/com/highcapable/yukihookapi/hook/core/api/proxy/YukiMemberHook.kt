@@ -23,22 +23,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/9/26.
+ * This file is Created by fankes on 2022/4/9.
+ * This file is Modified by fankes on 2023/1/9.
  */
-@file:Suppress("ClassName")
+package com.highcapable.yukihookapi.hook.core.api.proxy
 
-package com.highcapable.yukihookapi.hook.xposed.bridge
+import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
+import java.lang.reflect.Member
 
 /**
- * YukiHookBridge 注入 Stub
+ * Hook 方法回调接口抽象类
+ * @param priority Hook 优先级 - 默认 [YukiHookPriority.DEFAULT]
  */
-object YukiHookBridge_Impl {
+internal abstract class YukiMemberHook(override val priority: YukiHookPriority = YukiHookPriority.DEFAULT) : YukiHookCallback(priority) {
 
     /**
-     * 获取项目编译完成的时间戳 (当前本地时间)
-     *
-     * 返回值将在每次编译时自动生成
-     * @return [Long]
+     * 在方法执行之前注入
+     * @param param Hook 结果回调接口
      */
-    val compiledTimestamp: Long get() = error("Stub!")
+    internal open fun beforeHookedMember(param: Param) {}
+
+    /**
+     * 在方法执行之后注入
+     * @param param Hook 结果回调接口
+     */
+    internal open fun afterHookedMember(param: Param) {}
+
+    /**
+     * 已经 Hook 且可被解除 Hook 的 [Member] 实现接口抽象类
+     */
+    internal abstract class HookedMember internal constructor() {
+
+        /**
+         * 当前被 Hook 的 [Member]
+         * @return [Member] or null
+         */
+        internal abstract val member: Member?
+
+        /** 解除 Hook */
+        internal abstract fun remove()
+    }
 }

@@ -31,10 +31,10 @@ package com.highcapable.yukihookapi.hook.param
 
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator.MemberHookCreator
+import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
+import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookCallback
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method

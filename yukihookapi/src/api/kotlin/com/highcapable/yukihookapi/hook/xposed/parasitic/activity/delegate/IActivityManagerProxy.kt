@@ -30,8 +30,7 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate
 
 import android.app.ActivityManager
 import android.content.Intent
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
+import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 import java.lang.reflect.InvocationHandler
@@ -61,8 +60,8 @@ internal class IActivityManagerProxy private constructor(private val baseInstanc
             val argsInstance = (args[index] as? Intent) ?: return@also
             val component = argsInstance.component
             if (component != null &&
-                component.packageName == YukiHookAppHelper.currentPackageName() &&
-                component.className.startsWith(YukiHookBridge.modulePackageName)
+                component.packageName == AppParasitics.currentPackageName &&
+                component.className.startsWith(YukiXposedModule.modulePackageName)
             ) args[index] = Intent().apply {
                 setClassName(component.packageName, ActivityProxyConfig.proxyClassName)
                 putExtra(ActivityProxyConfig.proxyIntentName, argsInstance)

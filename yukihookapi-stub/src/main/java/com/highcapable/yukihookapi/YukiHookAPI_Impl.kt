@@ -23,49 +23,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/4/29.
+ * This file is Created by fankes on 2022/9/26.
+ * This file is Modified by fankes on 2023/1/9.
  */
-@file:Suppress("unused")
+@file:Suppress("ClassName")
 
-package com.highcapable.yukihookapi.hook.xposed.bridge.dummy
-
-import android.content.res.Resources
-import android.content.res.XResForwarder
+package com.highcapable.yukihookapi
 
 /**
- * 对接 [XResForwarder] 的中间层实例
- * @param baseInstance 原始实例
+ * YukiHookAPI 注入 Stub
  */
-class YukiResForwarder private constructor(private val baseInstance: XResForwarder) {
-
-    internal companion object {
-
-        /**
-         * 从 [XResForwarder] 创建 [YukiResForwarder] 实例
-         * @param baseInstance [XResForwarder] 实例
-         * @return [YukiResForwarder]
-         */
-        internal fun wrapper(baseInstance: XResForwarder) = YukiResForwarder(baseInstance)
-    }
+object YukiHookAPI_Impl {
 
     /**
-     * 获得 [XResForwarder] 实例
-     * @return [XResForwarder]
+     * 获取项目编译完成的时间戳 (当前本地时间)
+     *
+     * 返回值将在每次编译时自动生成
+     * @return [Long]
      */
-    internal val instance get() = baseInstance
-
-    /**
-     * 获得当前 Resources Id
-     * @return [Int]
-     */
-    val id get() = baseInstance.id
-
-    /**
-     * 获得当前 Resources
-     * @return [Resources]
-     * @throws IllegalStateException 如果 [XResForwarder] 出现问题
-     */
-    val resources get() = baseInstance.resources ?: error("XResForwarder is invalid")
-
-    override fun toString() = "YukiResForwarder by $baseInstance"
+    val compiledTimestamp: Long get() = error("Stub!")
 }

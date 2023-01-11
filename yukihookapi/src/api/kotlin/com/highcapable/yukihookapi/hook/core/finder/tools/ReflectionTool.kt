@@ -46,8 +46,6 @@ import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
 import com.highcapable.yukihookapi.hook.utils.*
 import com.highcapable.yukihookapi.hook.utils.value
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.Constructor
@@ -119,12 +117,7 @@ internal object ReflectionTool {
          */
         fun loadWithDefaultClassLoader() = if (initialize.not()) loader?.loadClass(name) else classForName(name, initialize, loader)
         return ReflectsCacheStore.findClass(hashCode) ?: runCatching {
-            when {
-                YukiHookBridge.hasXposedBridge -> runCatching { if (initialize.not()) YukiHookHelper.findClass(name, loader) else null }
-                    .getOrNull() ?: loadWithDefaultClassLoader() ?: classForName(name, initialize)
-                loader == null -> classForName(name, initialize)
-                else -> loadWithDefaultClassLoader()
-            }.also { ReflectsCacheStore.putClass(hashCode, it) }
+            (loadWithDefaultClassLoader() ?: classForName(name, initialize)).also { ReflectsCacheStore.putClass(hashCode, it) }
         }.getOrNull() ?: throw createException(loader ?: AppParasitics.baseClassLoader, name = "Class", "name:[$name]")
     }
 

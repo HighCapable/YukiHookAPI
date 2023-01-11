@@ -32,13 +32,13 @@ package com.highcapable.yukihookapi.hook.core
 import android.content.res.Resources
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookResources
+import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
  * [YukiHookAPI] 的 [Resources] 核心 Hook 实现类
@@ -67,7 +67,7 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
     /** Hook 执行入口 */
     @PublishedApi
     internal fun hook() {
-        if (YukiHookBridge.hasXposedBridge.not()) return
+        if (HookApiCategoryHelper.hasAvailableHookApi.not()) return
         /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.RESOURCES] */
         if (packageParam.wrapper?.type == HookEntryType.PACKAGE) return
         if (preHookResources.isEmpty()) return yLoggerW(msg = "Hook Resources is empty, hook aborted")

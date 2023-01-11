@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.core.finder.members
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
+import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
@@ -44,7 +45,6 @@ import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import com.highcapable.yukihookapi.hook.utils.unit
-import com.highcapable.yukihookapi.hook.xposed.bridge.factory.YukiHookHelper
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 
@@ -376,7 +376,6 @@ class MethodFinder @PublishedApi internal constructor(
 
     @YukiPrivateApi
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
-
 
     @YukiPrivateApi
     override fun denied(throwable: Throwable?) = Process(isNoSuch = true, throwable)

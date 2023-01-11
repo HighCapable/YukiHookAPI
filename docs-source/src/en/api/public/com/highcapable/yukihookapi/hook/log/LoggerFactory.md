@@ -18,7 +18,7 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 
 **Function Illustrate**
 
-> 这是 `YukiHookAPI` 的日志封装类，可实现同时向 `Logcat` 和 `XposedBridge.log` 打印日志的功能。
+> 这是 `YukiHookAPI` 的日志封装类，可实现同时向 `Logcat` 和 (Xposed) 宿主环境打印日志的功能。
 
 ## LoggerType <span class="symbol">- class</span>
 
@@ -50,19 +50,29 @@ LOGD
 
 > 仅使用 `android.util.Log`。
 
-### XPOSEDBRIDGE <span class="symbol">- enum</span>
-
-```kotlin:no-line-numbers
-XPOSEDBRIDGE
-```
+<h3 class="deprecated">XPOSEDBRIDGE - enum</h3>
 
 **Change Records**
 
 `v1.1.0` `added`
 
+`v1.1.5` `deprecated`
+
+请转移到 `XPOSED_ENVIRONMENT`
+
+### XPOSED_ENVIRONMENT <span class="symbol">- enum</span>
+
+```kotlin:no-line-numbers
+XPOSED_ENVIRONMENT
+```
+
+**Change Records**
+
+`v1.1.5` `added`
+
 **Function Illustrate**
 
-> 仅使用 `XposedBridge.log`。
+> 仅在 (Xposed) 宿主环境使用。
 
 ::: danger
 
@@ -84,7 +94,7 @@ SCOPE
 
 > 分区使用。
 
-(Xposed) 宿主环境仅使用 `XPOSEDBRIDGE`。
+(Xposed) 宿主环境仅使用 `XPOSED_ENVIRONMENT`。
 
 模块环境仅使用 `LOGD`。
 
@@ -102,7 +112,7 @@ BOTH
 
 > 同时使用。
 
-(Xposed) 宿主环境使用 `LOGD` 与 `XPOSEDBRIDGE`。
+(Xposed) 宿主环境使用 `LOGD` 与 `XPOSED_ENVIRONMENT`。
 
 模块环境仅使用 `LOGD`。
 
@@ -415,7 +425,7 @@ fun elements(vararg item: Int)
 
 > 自定义调试日志对外显示的元素。
 
-只对日志记录和 `XposedBridge.log` 生效。
+只对日志记录和 (Xposed) 宿主环境的日志生效。
 
 日志元素的排列将按照你在 `item` 中设置的顺序进行显示。
 
@@ -473,7 +483,7 @@ fun loggerD(tag: String, msg: String, type: LoggerType)
 
 **Function Illustrate**
 
-> 向 `Logcat` 和 `XposedBridge` 打印日志，级别 `D`。
+> 向 `Logcat` 和 (Xposed) 宿主环境打印日志，级别 `D`。
 
 `tag` 的默认参数为 `YukiHookAPI.Configs.debugTag`，你可以进行自定义。
 
@@ -493,7 +503,7 @@ fun loggerI(tag: String, msg: String, type: LoggerType)
 
 **Function Illustrate**
 
-> 向 `Logcat` 和 `XposedBridge` 打印日志，级别 `I`。
+> 向 `Logcat` 和 (Xposed) 宿主环境打印日志，级别 `I`。
 
 `tag` 的默认参数为 `YukiHookAPI.Configs.debugTag`，你可以进行自定义。
 
@@ -513,7 +523,7 @@ fun loggerW(tag: String, msg: String, type: LoggerType)
 
 **Function Illustrate**
 
-> 向 `Logcat` 和 `XposedBridge` 打印日志，级别 `W`。
+> 向 `Logcat` 和 (Xposed) 宿主环境打印日志，级别 `W`。
 
 `tag` 的默认参数为 `YukiHookAPI.Configs.debugTag`，你可以进行自定义。
 
@@ -533,6 +543,6 @@ fun loggerE(tag: String, msg: String, e: Throwable?, type: LoggerType)
 
 **Function Illustrate**
 
-> 向 `Logcat` 和 `XposedBridge` 打印日志，级别 `E`，可携带 `e` 异常信息，将打印异常堆栈。
+> 向 `Logcat` 和 (Xposed) 宿主环境打印日志，级别 `E`，可携带 `e` 异常信息，将打印异常堆栈。
 
 `tag` 的默认参数为 `YukiHookAPI.Configs.debugTag`，你可以进行自定义。

@@ -24,29 +24,23 @@
  * SOFTWARE.
  *
  * This file is Created by fankes on 2023/1/1.
+ * This file is Modified by fankes on 2023/1/9.
  */
 @file:Suppress("ClassName")
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.status
 
-import de.robv.android.xposed.XposedBridge
-
 /**
- * YukiHookModuleStatus 注入 Stub
+ * YukiXposedModuleStatus 注入 Stub
  */
-object YukiHookModuleStatus_Impl {
+object YukiXposedModuleStatus_Impl {
 
-    /** 定义 Jvm 方法名 */
     private const val IS_ACTIVE_METHOD_NAME = "__--"
-
-    /** 定义 Jvm 方法名 */
     private const val IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME = "_--_"
-
-    /** 定义 Jvm 方法名 */
-    private const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
-
-    /** 定义 Jvm 方法名 */
-    private const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
+    private const val GET_EXECUTOR_NAME_METHOD_NAME = "_-_-"
+    private const val GET_EXECUTOR_API_LEVEL_METHOD_NAME = "-__-"
+    private const val GET_EXECUTOR_VERSION_NAME_METHOD_NAME = "-_-_"
+    private const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
 
     /**
      * 此方法经过 Hook 后返回 true 即模块已激活
@@ -67,20 +61,38 @@ object YukiHookModuleStatus_Impl {
     fun isSupportResourcesHook(): Boolean = error("Stub!")
 
     /**
-     * 此方法经过 Hook 后返回 [XposedBridge.getXposedVersion]
-     *
-     * 返回值将在每次编译时自动生成
-     * @return [Int]
-     */
-    @JvmName(GET_XPOSED_VERSION_METHOD_NAME)
-    fun getXposedVersion(): Int = error("Stub!")
-
-    /**
-     * 此方法经过 Hook 后返回 [XposedBridge] 的 TAG
+     * 此方法经过 Hook 后返回当前 Hook 框架的名称
      *
      * 返回值将在每次编译时自动生成
      * @return [String]
      */
-    @JvmName(GET_XPOSED_TAG_METHOD_NAME)
-    fun getXposedBridgeTag(): String = error("Stub!")
+    @JvmName(GET_EXECUTOR_NAME_METHOD_NAME)
+    fun getExecutorName(): String = error("Stub!")
+
+    /**
+     * 此方法经过 Hook 后返回当前 Hook 框架的 API 版本
+     *
+     * 返回值将在每次编译时自动生成
+     * @return [Int]
+     */
+    @JvmName(GET_EXECUTOR_API_LEVEL_METHOD_NAME)
+    fun getExecutorApiLevel(): Int = error("Stub!")
+
+    /**
+     * 此方法经过 Hook 后返回当前 Hook 框架的版本名称
+     *
+     * 返回值将在每次编译时自动生成
+     * @return [String]
+     */
+    @JvmName(GET_EXECUTOR_VERSION_NAME_METHOD_NAME)
+    fun getExecutorVersionName(): String = error("Stub!")
+
+    /**
+     * 此方法经过 Hook 后返回当前 Hook 框架的版本号
+     *
+     * 返回值将在每次编译时自动生成
+     * @return [Int]
+     */
+    @JvmName(GET_EXECUTOR_VERSION_CODE_METHOD_NAME)
+    fun getExecutorVersionCode(): Int = error("Stub!")
 }

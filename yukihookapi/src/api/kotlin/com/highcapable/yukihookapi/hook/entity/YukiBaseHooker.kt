@@ -30,28 +30,11 @@ package com.highcapable.yukihookapi.hook.entity
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 /**
  * [YukiHookAPI] 的子类 Hooker 实现
  *
- * 也许你的 Module 中存在多个 Hooker - 继承此类可以方便帮你管理每个 Hooker
- *
- * 你可以继续继承此类进行自定义 Hooker 相关参数
- *
- * 你可以在 [IYukiHookXposedInit] 的 [IYukiHookXposedInit.onHook] 中实现如下用法：
- *
- * 1.调用 [YukiHookAPI.encase]
- *
- * ```kotlin
- * encase(MainHooker(), SecondHooker(), ThirdHooker() ...)
- * ```
- *
- * 2.调用 [PackageParam.loadHooker]
- *
- * ```kotlin
- * loadHooker(hooker = CustomHooker())
- * ```
+ * 也许你的模块中存在多个功能模块 (Hooker) - 继承并使用此类可以方便帮你管理每个功能模块 (Hooker)
  *
  * 更多请参考 [InjectYukiHookWithXposed] 中的注解内容
  *
@@ -66,7 +49,7 @@ abstract class YukiBaseHooker : PackageParam() {
      * @param packageParam 需要使用的 [PackageParam]
      */
     internal fun assignInstance(packageParam: PackageParam) {
-        baseAssignInstance(packageParam)
+        assign(packageParam.wrapper)
         onHook()
     }
 

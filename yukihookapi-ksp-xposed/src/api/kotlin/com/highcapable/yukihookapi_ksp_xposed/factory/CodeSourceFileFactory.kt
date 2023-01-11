@@ -35,9 +35,9 @@ import java.util.*
  * 包名常量定义类
  */
 object PackageName {
+    const val YukiHookAPI_Impl = "com.highcapable.yukihookapi"
     const val ModuleApplication_Impl = "com.highcapable.yukihookapi.hook.xposed.application"
-    const val YukiHookBridge_Impl = "com.highcapable.yukihookapi.hook.xposed.bridge"
-    const val YukiHookModuleStatus_Impl = "com.highcapable.yukihookapi.hook.xposed.bridge.status"
+    const val YukiXposedModuleStatus_Impl = "com.highcapable.yukihookapi.hook.xposed.bridge.status"
     const val BootstrapReflectionClass = "com.highcapable.yukihookapi.thirdparty.me.weishu.reflection"
 }
 
@@ -45,9 +45,9 @@ object PackageName {
  * 类名常量定义类
  */
 object ClassName {
+    const val YukiHookAPI_Impl = "YukiHookAPI_Impl"
     const val ModuleApplication_Impl = "ModuleApplication_Impl"
-    const val YukiHookBridge_Impl = "YukiHookBridge_Impl"
-    const val YukiHookModuleStatus_Impl = "YukiHookModuleStatus_Impl"
+    const val YukiXposedModuleStatus_Impl = "YukiXposedModuleStatus_Impl"
     const val XposedInit = "xposed_init"
     const val XposedInit_Impl = "xposed_init_Impl"
     const val BootstrapClass = "BootstrapClass"
@@ -55,13 +55,15 @@ object ClassName {
 }
 
 /**
- * YukiHookModuleStatus 方法名称定义类
+ * YukiXposedModuleStatus 方法名称定义类
  */
-object YukiHookModuleStatusJvmName {
+object YukiXposedModuleStatusJvmName {
     const val IS_ACTIVE_METHOD_NAME = "__--"
     const val IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME = "_--_"
-    const val GET_XPOSED_VERSION_METHOD_NAME = "--__"
-    const val GET_XPOSED_TAG_METHOD_NAME = "_-_-"
+    const val GET_EXECUTOR_NAME_METHOD_NAME = "_-_-"
+    const val GET_EXECUTOR_API_LEVEL_METHOD_NAME = "-__-"
+    const val GET_EXECUTOR_VERSION_NAME_METHOD_NAME = "-_-_"
+    const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
 }
 
 /**
@@ -89,6 +91,15 @@ private fun createCommentContent(entryClassName: String = "", currrentClassTag: 
  * @return [Map]<[String],[String]>
  */
 fun GenerateData.sources() = mapOf(
+    ClassName.YukiHookAPI_Impl to ("@file:Suppress(\"ClassName\")\n" +
+            "\n" +
+            "package ${PackageName.YukiHookAPI_Impl}\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.YukiHookAPI_Impl) +
+            "object ${ClassName.YukiHookAPI_Impl} {\n" +
+            "\n" +
+            "    val compiledTimestamp get() = ${System.currentTimeMillis()}\n" +
+            "}"),
     ClassName.ModuleApplication_Impl to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
             "package ${PackageName.ModuleApplication_Impl}\n" +
@@ -103,52 +114,56 @@ fun GenerateData.sources() = mapOf(
             "    } catch (_: Throwable) {\n" +
             "    }\n" +
             "}"),
-    ClassName.YukiHookBridge_Impl to ("@file:Suppress(\"ClassName\")\n" +
+    ClassName.YukiXposedModuleStatus_Impl to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
-            "package ${PackageName.YukiHookBridge_Impl}\n" +
-            "\n" +
-            createCommentContent(currrentClassTag = ClassName.YukiHookBridge_Impl) +
-            "object ${ClassName.YukiHookBridge_Impl} {\n" +
-            "\n" +
-            "    val compiledTimestamp get() = ${System.currentTimeMillis()}\n" +
-            "}"),
-    ClassName.YukiHookModuleStatus_Impl to ("@file:Suppress(\"ClassName\")\n" +
-            "\n" +
-            "package com.highcapable.yukihookapi.hook.xposed.bridge.status\n" +
+            "package ${PackageName.YukiXposedModuleStatus_Impl}\n" +
             "\n" +
             "import android.util.Log\n" +
             "import androidx.annotation.Keep\n" +
             "\n" +
-            createCommentContent(currrentClassTag = ClassName.YukiHookModuleStatus_Impl) +
+            createCommentContent(currrentClassTag = ClassName.YukiXposedModuleStatus_Impl) +
             "@Keep\n" +
-            "object YukiHookModuleStatus_Impl {\n" +
+            "object ${ClassName.YukiXposedModuleStatus_Impl} {\n" +
             "\n" +
-            "    @JvmName(\"${YukiHookModuleStatusJvmName.IS_ACTIVE_METHOD_NAME}\")\n" +
+            "    @JvmName(\"${YukiXposedModuleStatusJvmName.IS_ACTIVE_METHOD_NAME}\")\n" +
             "    fun isActive(): Boolean {\n" +
             "        placeholderExecution()\n" +
             "        return false\n" +
             "    }\n" +
             "\n" +
-            "    @JvmName(\"${YukiHookModuleStatusJvmName.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME}\")\n" +
+            "    @JvmName(\"${YukiXposedModuleStatusJvmName.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME}\")\n" +
             "    fun isSupportResourcesHook(): Boolean {\n" +
             "        placeholderExecution()\n" +
             "        return false\n" +
             "    }\n" +
             "\n" +
-            "    @JvmName(\"${YukiHookModuleStatusJvmName.GET_XPOSED_VERSION_METHOD_NAME}\")\n" +
-            "    fun getXposedVersion(): Int {\n" +
-            "        placeholderExecution()\n" +
-            "        return -1\n" +
-            "    }\n" +
-            "\n" +
-            "    @JvmName(\"${YukiHookModuleStatusJvmName.GET_XPOSED_TAG_METHOD_NAME}\")\n" +
-            "    fun getXposedBridgeTag(): String {\n" +
+            "    @JvmName(\"${YukiXposedModuleStatusJvmName.GET_EXECUTOR_NAME_METHOD_NAME}\")\n" +
+            "    fun getExecutorName(): String {\n" +
             "        placeholderExecution()\n" +
             "        return \"unknown\"\n" +
             "    }\n" +
             "\n" +
+            "    @JvmName(\"${YukiXposedModuleStatusJvmName.GET_EXECUTOR_API_LEVEL_METHOD_NAME}\")\n" +
+            "    fun getExecutorApiLevel(): Int {\n" +
+            "        placeholderExecution()\n" +
+            "        return -1\n" +
+            "    }\n" +
+            "\n" +
+            "    @JvmName(\"${YukiXposedModuleStatusJvmName.GET_EXECUTOR_VERSION_NAME_METHOD_NAME}\")\n" +
+            "    fun getExecutorVersionName(): String {\n" +
+            "        placeholderExecution()\n" +
+            "        return \"unknown\"\n" +
+            "    }\n" +
+            "\n" +
+            "    @JvmName(\"${YukiXposedModuleStatusJvmName.GET_EXECUTOR_VERSION_CODE_METHOD_NAME}\")\n" +
+            "    fun getExecutorVersionCode(): Int {\n" +
+            "        placeholderExecution()\n" +
+            "        return -1\n" +
+            "    }\n" +
+            "\n" +
             "    private fun placeholderExecution() {\n" +
-            "        Log.d(\"YukiHookAPI-Placeholder\", \"No trace of hook in this time\")\n" +
+            "        /** Consume a long method body */\n" +
+            "        if (System.currentTimeMillis() == 0L) Log.d(\"${(1000..9999).random()}\", \"${(100000..999999).random()}\")\n" +
             "    }\n" +
             "}"),
     ClassName.XposedInit to ("@file:Suppress(\"ClassName\")\n" +
@@ -156,7 +171,7 @@ fun GenerateData.sources() = mapOf(
             "package $entryPackageName\n" +
             "\n" +
             "import androidx.annotation.Keep\n" +
-            "import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent\n" +
+            "import com.highcapable.yukihookapi.hook.xposed.bridge.event.caller.YukiXposedEventCaller\n" +
             "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
             (if (isUsingResourcesHook) "import de.robv.android.xposed.IXposedHookInitPackageResources\n" else "") +
             "import de.robv.android.xposed.IXposedHookLoadPackage\n" +
@@ -172,17 +187,17 @@ fun GenerateData.sources() = mapOf(
             "\n" +
             "    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +
             "        ${entryClassName}_Impl.callInitZygote(sparam)\n" +
-            "        YukiXposedEvent.EventHandler.callInitZygote(sparam)\n" +
+            "        YukiXposedEventCaller.callInitZygote(sparam)\n" +
             "    }\n" +
             "\n" +
             "    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
             "        ${entryClassName}_Impl.callHandleLoadPackage(lpparam)\n" +
-            "        YukiXposedEvent.EventHandler.callHandleLoadPackage(lpparam)\n" +
+            "        YukiXposedEventCaller.callHandleLoadPackage(lpparam)\n" +
             "    }\n" +
             (if (isUsingResourcesHook)
                 ("\n    override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
                         "        ${entryClassName}_Impl.callHandleInitPackageResources(resparam)\n" +
-                        "        YukiXposedEvent.EventHandler.callHandleInitPackageResources(resparam)\n" +
+                        "        YukiXposedEventCaller.callHandleInitPackageResources(resparam)\n" +
                         "    }\n") else "") +
             "}"),
     ClassName.XposedInit_Impl to ("@file:Suppress(\"ClassName\")\n" +
@@ -190,9 +205,11 @@ fun GenerateData.sources() = mapOf(
             "package $entryPackageName\n" +
             "\n" +
             "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
-            "import com.highcapable.yukihookapi.hook.log.loggerE\n" +
-            "import com.highcapable.yukihookapi.hook.xposed.bridge.YukiHookBridge\n" +
+            "import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiXposedModuleCaller\n" +
+            "import com.highcapable.yukihookapi.hook.xposed.bridge.resources.caller.YukiXposedResourcesCaller\n" +
+            "import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType\n" +
             "import de.robv.android.xposed.IXposedHookZygoteInit\n" +
+            "import de.robv.android.xposed.XposedBridge\n" +
             "import de.robv.android.xposed.callbacks.XC_InitPackageResources\n" +
             "import de.robv.android.xposed.callbacks.XC_LoadPackage\n" +
             (if (customMPackageName.isBlank()) "import $modulePackageName.BuildConfig\n" else "") +
@@ -203,48 +220,54 @@ fun GenerateData.sources() = mapOf(
             "\n" +
             "    private const val modulePackageName = " +
             (if (customMPackageName.isNotBlank()) "\"$customMPackageName\"" else "BuildConfig.APPLICATION_ID") + "\n" +
-            "\n" +
-            "    private var isZygoteBinded = false\n" +
-            "\n" +
+            "    private var isZygoteCalled = false\n" +
             "    private val hookEntry = " + (if (isEntryClassKindOfObject) "$entryClassName\n" else "$entryClassName()\n") +
             "\n" +
-            "    private fun callXposedLoaded(\n" +
+            "    private fun callOnXposedModuleLoaded(\n" +
             "        isZygoteLoaded: Boolean = false,\n" +
             "        lpparam: XC_LoadPackage.LoadPackageParam? = null,\n" +
             "        resparam: XC_InitPackageResources.InitPackageResourcesParam? = null\n" +
             "    ) {\n" +
-            "        if (isZygoteBinded.not()) runCatching {\n" +
+            "        if (isZygoteCalled.not()) runCatching {\n" +
             "            hookEntry.onXposedEvent()\n" +
             "            hookEntry.onInit()\n" +
-            "            if (YukiHookBridge.isXposedCallbackSetUp) {\n" +
-            "                loggerE(msg = \"You cannot load a hooker in \\\"onInit\\\" or \\\"onXposedEvent\\\" method! Aborted\")\n" +
+            "            if (YukiXposedModuleCaller.isXposedCallbackSetUp) {\n" +
+            "                YukiXposedModuleCaller.internalLoggerE(\"You cannot load a hooker in \\\"onInit\\\" or \\\"onXposedEvent\\\" method! Aborted\")\n" +
             "                return\n" +
             "            }\n" +
             "            hookEntry.onHook()\n" +
-            "            YukiHookBridge.callXposedInitialized()\n" +
-            "            YukiHookBridge.modulePackageName = modulePackageName\n" +
-            "        }.onFailure { loggerE(msg = \"YukiHookAPI try to load HookEntryClass failed\", e = it) }\n" +
-            "        YukiHookBridge.callXposedLoaded(isZygoteLoaded, lpparam, resparam)\n" +
+            "            YukiXposedModuleCaller.callOnFinishLoadModule()\n" +
+            "        }.onFailure { YukiXposedModuleCaller.internalLoggerE(\"YukiHookAPI try to load HookEntryClass failed\", it) }\n" +
+            "        YukiXposedModuleCaller.callOnPackageLoaded(\n" +
+            "            type = when {\n" +
+            "                isZygoteLoaded -> HookEntryType.ZYGOTE\n" +
+            "                lpparam != null -> HookEntryType.PACKAGE\n" +
+            "                resparam != null -> HookEntryType.RESOURCES\n" +
+            "                else -> HookEntryType.ZYGOTE\n" +
+            "            },\n" +
+            "            packageName = lpparam?.packageName ?: resparam?.packageName,\n" +
+            "            processName = lpparam?.processName,\n" +
+            "            appClassLoader = lpparam?.classLoader ?: runCatching { XposedBridge.BOOTCLASSLOADER }.getOrNull(),\n" +
+            "            appInfo = lpparam?.appInfo,\n" +
+            "            appResources = YukiXposedResourcesCaller.createYukiResourcesFromXResources(resparam?.res)\n" +
+            "        )\n" +
             "    }\n" +
             "\n" +
-            "    @YukiGenerateApi\n" +
             "    fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {\n" +
             "        if (sparam == null) return\n" +
             "        runCatching {\n" +
-            "            YukiHookBridge.callXposedZygoteLoaded(sparam)\n" +
-            "        }.onFailure { loggerE(msg = \"YukiHookAPI bind initZygote failed\", e = it) }\n" +
-            "        callXposedLoaded(isZygoteLoaded = true)\n" +
-            "        isZygoteBinded = true\n" +
+            "            YukiXposedModuleCaller.callOnStartLoadModule(modulePackageName, sparam.modulePath)\n" +
+            "            callOnXposedModuleLoaded(isZygoteLoaded = true)\n" +
+            "            isZygoteCalled = true\n" +
+            "        }.onFailure { YukiXposedModuleCaller.internalLoggerE(\"An exception occurred when YukiHookAPI loading Xposed Module\", it) }\n" +
             "    }\n" +
             "\n" +
-            "    @YukiGenerateApi\n" +
             "    fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {\n" +
-            "        if (lpparam != null) callXposedLoaded(lpparam = lpparam)\n" +
+            "        if (lpparam != null && isZygoteCalled) callOnXposedModuleLoaded(lpparam = lpparam)\n" +
             "    }\n" +
             "\n" +
-            "    @YukiGenerateApi\n" +
             "    fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {\n" +
-            "        if (resparam != null) callXposedLoaded(resparam = resparam)\n" +
+            "        if (resparam != null && isZygoteCalled) callOnXposedModuleLoaded(resparam = resparam)\n" +
             "    }\n" +
             "}"),
     ClassName.BootstrapClass to ("package ${PackageName.BootstrapReflectionClass};\n" +
@@ -263,7 +286,6 @@ fun GenerateData.sources() = mapOf(
             "public final class BootstrapClass {\n" +
             "\n" +
             "    private static final String TAG = \"BootstrapClass\";\n" +
-            "\n" +
             "    private static Object sVmRuntime;\n" +
             "    private static Method setHiddenApiExemptions;\n" +
             "\n" +
@@ -290,7 +312,6 @@ fun GenerateData.sources() = mapOf(
             "        if (sVmRuntime == null || setHiddenApiExemptions == null) {\n" +
             "            return false;\n" +
             "        }\n" +
-            "\n" +
             "        try {\n" +
             "            setHiddenApiExemptions.invoke(sVmRuntime, new Object[]{methods});\n" +
             "            return true;\n" +
@@ -323,8 +344,8 @@ fun GenerateData.sources() = mapOf(
             createCommentContent(currrentClassTag = ClassName.Reflection) +
             "@Keep\n" +
             "public class Reflection {\n" +
-            "    private static final String TAG = \"Reflection\";\n" +
             "\n" +
+            "    private static final String TAG = \"Reflection\";\n" +
             "    private static final String DEX = \"ZGV4CjAzNQCXDT0vQ44GJqsrjm32y0qlQmxUevbk56r0CwAAcAAAAHhWNBIAAAAAAAAAADwLAABDAAAAcAAAABMAAAB8AQAACwAAAMgBAAAMAAAATAIAAA8AAACsAgAAAwAAACQDAABwCAAAhAMAAIQDAACGAwAAiwMAAJUDAACdAwAArQMAALkDAADJAwAA3gMAAPADAAD3AwAA/wMAAAIEAAAGBAAACgQAABAEAAATBAAAGAQAADMEAABZBAAAdQQAAIkEAADYBAAAJgUAAHAFAACDBQAAmQUAAK0FAADBBQAA1QUAAOwFAAAIBgAAFAYAACUGAAAuBgAAMwYAADYGAABEBgAAUgYAAFYGAABZBgAAXQYAAHEGAACGBgAAmwYAAKQGAAC9BgAAwAYAAMgGAADTBgAA3AYAAO0GAAABBwAAFAcAACAHAAAoBwAANQcAAE8HAABXBwAAYAcAAHsHAACEBwAAkAcAAKgHAAC6BwAAwgcAANAHAAALAAAAEQAAABIAAAATAAAAFAAAABUAAAAWAAAAFwAAABgAAAAaAAAAGwAAABwAAAAdAAAAHgAAACMAAAAnAAAAKQAAACoAAAArAAAADAAAAAAAAAD4BwAADQAAAAAAAAAMCAAADgAAAAAAAAAACAAADwAAAAIAAAAAAAAAEAAAAAkAAAAUCAAAEAAAAA0AAADoBwAAIwAAAA4AAAAAAAAAJgAAAA4AAADgBwAAJwAAAA8AAAAAAAAAKAAAAA8AAADgBwAAKAAAAA8AAADwBwAAAgAAAD8AAAADAAAAIQAAAAUACgAEAAAABQAKAAUAAAAFAA8ACQAAAAUACgAKAAAABQAAACQAAAAFAAoAJQAAAAYACgAiAAAABgAJAD0AAAAGAA0APgAAAAcACgAiAAAAAQADADMAAAAEAAIALgAAAAUABgADAAAABgAGAAIAAAAGAAYAAwAAAAYACQAvAAAABgAKAC8AAAAGAAgAMAAAAAcABgADAAAABwABAEAAAAAHAAAAQQAAAAgABQA0AAAACQAGAAMAAAALAAcANwAAAA0ABAA2AAAABQAAABEAAAAJAAAAAAAAAAgAAAAAAAAA7AoAAB8IAAAGAAAAEQAAAAkAAAAAAAAABwAAAAAAAAACCwAAHAgAAAcAAAABAAAACQAAAAAAAAAgAAAAAAAAACULAAArCAAAAAADMS4wAAg8Y2xpbml0PgAGPGluaXQ+AA5BUFBMSUNBVElPTl9JRAAKQlVJTERfVFlQRQAOQm9vdHN0cmFwQ2xhc3MAE0Jvb3RzdHJhcENsYXNzLmphdmEAEEJ1aWxkQ29uZmlnLmphdmEABURFQlVHAAZGTEFWT1IAAUkAAklJAAJJTAAESUxMTAABTAADTExMABlMYW5kcm9pZC9jb250ZW50L0NvbnRleHQ7ACRMYW5kcm9pZC9jb250ZW50L3BtL0FwcGxpY2F0aW9uSW5mbzsAGkxhbmRyb2lkL29zL0J1aWxkJFZFUlNJT047ABJMYW5kcm9pZC91dGlsL0xvZzsATUxjb20vaGlnaGNhcGFibGUveXVraWhvb2thcGkvdGhpcmRwYXJ0eS9tZS93ZWlzaHUvZnJlZXJlZmxlY3Rpb24vQnVpbGRDb25maWc7AExMY29tL2hpZ2hjYXBhYmxlL3l1a2lob29rYXBpL3RoaXJkcGFydHkvbWUvd2Vpc2h1L3JlZmxlY3Rpb24vQm9vdHN0cmFwQ2xhc3M7AEhMY29tL2hpZ2hjYXBhYmxlL3l1a2lob29rYXBpL3RoaXJkcGFydHkvbWUvd2Vpc2h1L3JlZmxlY3Rpb24vUmVmbGVjdGlvbjsAEUxqYXZhL2xhbmcvQ2xhc3M7ABRMamF2YS9sYW5nL0NsYXNzPCo+OwASTGphdmEvbGFuZy9PYmplY3Q7ABJMamF2YS9sYW5nL1N0cmluZzsAEkxqYXZhL2xhbmcvU3lzdGVtOwAVTGphdmEvbGFuZy9UaHJvd2FibGU7ABpMamF2YS9sYW5nL3JlZmxlY3QvTWV0aG9kOwAKUmVmbGVjdGlvbgAPUmVmbGVjdGlvbi5qYXZhAAdTREtfSU5UAANUQUcAAVYADFZFUlNJT05fQ09ERQAMVkVSU0lPTl9OQU1FAAJWTAABWgACWkwAEltMamF2YS9sYW5nL0NsYXNzOwATW0xqYXZhL2xhbmcvT2JqZWN0OwATW0xqYXZhL2xhbmcvU3RyaW5nOwAHY29udGV4dAAXZGFsdmlrLnN5c3RlbS5WTVJ1bnRpbWUAAWUABmV4ZW1wdAAJZXhlbXB0QWxsAAdmb3JOYW1lAA9mcmVlLXJlZmxlY3Rpb24AEmdldEFwcGxpY2F0aW9uSW5mbwARZ2V0RGVjbGFyZWRNZXRob2QACmdldFJ1bnRpbWUABmludm9rZQALbG9hZExpYnJhcnkAGG1lLndlaXNodS5mcmVlcmVmbGVjdGlvbgAGbWV0aG9kAAdtZXRob2RzABlyZWZsZWN0IGJvb3RzdHJhcCBmYWlsZWQ6AAdyZWxlYXNlAApzVm1SdW50aW1lABZzZXRIaWRkZW5BcGlFeGVtcHRpb25zABB0YXJnZXRTZGtWZXJzaW9uAAZ1bnNlYWwADHVuc2VhbE5hdGl2ZQAOdm1SdW50aW1lQ2xhc3MAAQAAAAoAAAACAAAACgAQAAEAAAASAAAAAQAAAAAAAAADAAAACgAKAAwAAAABAAAAAQAAAAIAAAAJABEAARcGBhc4FzwfFwAEARcBARcfAAAAAAAABgAHDgAWAAcOav8DATIOARUQAwI1DvAEBEMJGgESDwMDNg4BGw+pBQIFAwUEGR4DAC8NAA4ABw4ALAE6Bw4ANgE7ByydGuIBAQMALw0eAEgABw4ADQAHDgATAS0HHXIZa1oAAAEAAQABAAAANAgAAAQAAABwEAwAAAAOAAoAAAADAAEAOQgAAHsAAABgBQEAEwYcADRlbQAcBQgAGgYxABIXI3cQABIIHAkKAE0JBwhuMAsAZQcMARwFCAAaBjQAEicjdxAAEggcCQoATQkHCBIYHAkQAE0JBwhuMAsAZQcMAhIFEhYjZhEAEgcaCC0ATQgGB24wDgBRBgwEHwQIABIlI1URABIGGgc1AE0HBQYSFhIHTQcFBm4wDgBCBQwDHwMNABIlI1URABIGGgc+AE0HBQYSFhIXI3cQABIIHAkSAE0JBwhNBwUGbjAOAEIFDAUfBQ0AaQUKABIFEgYjZhEAbjAOAFMGDAVpBQkADgANABoFBgAaBjsAcTABAGUAKPcAAAYAAABrAAEAAQEMcgEAAQABAAAAaAgAAAQAAABwEAwAAAAOAAMAAQABAAAAbQgAAAsAAAASECMAEgASAU0CAAFxEAYAAAAKAA8AAAAIAAEAAwABAHMIAAAdAAAAEhESAmIDCQA4AwYAYgMKADkDBAABIQ8BYgMKAGIECQASFSNVEQASBk0HBQZuMA4AQwUo8g0AASEo7wAADAAAAA0AAQABAQwaAwAAAAEAAACDCAAADQAAABIQIwASABIBGgIPAE0CAAFxEAYAAAAKAA8AAAABAAEAAQAAAIgIAAAEAAAAcBAMAAAADgAEAAEAAQAAAI0IAAAeAAAAEgBgAQEAEwIcADUhAwAPAHEABwAAAAoBOQH7/xoAMgBxEA0AAABuEAAAAwAMAFIAAABxEAoAAAAKACjqBgABAAIZARkBGQEZARkBGQKBgASYEQMABQAIGgEKAQoDiIAEsBEBgYAExBMBCdwTAYkBhBQBCdwUAQADAAsaCIGABIgVAQmgFQGKAgAAAAAPAAAAAAAAAAEAAAAAAAAAAQAAAEMAAABwAAAAAgAAABMAAAB8AQAAAwAAAAsAAADIAQAABAAAAAwAAABMAgAABQAAAA8AAACsAgAABgAAAAMAAAAkAwAAAiAAAEMAAACEAwAAARAAAAcAAADgBwAABSAAAAMAAAAcCAAAAxAAAAEAAAAwCAAAAyAAAAgAAAA0CAAAASAAAAgAAACYCAAAACAAAAMAAADsCgAAABAAAAEAAAA8CwAA\";\n" +
             "\n" +
             "    private static native int unsealNative(int targetSdkVersion);\n" +
@@ -334,7 +355,6 @@ fun GenerateData.sources() = mapOf(
             "            // Below Android P, ignore\n" +
             "            return 0;\n" +
             "        }\n" +
-            "\n" +
             "        // try exempt API first.\n" +
             "        if (exemptAll()) {\n" +
             "            return 0;\n" +
@@ -342,7 +362,6 @@ fun GenerateData.sources() = mapOf(
             "        if (unsealByDexFile(context)) {\n" +
             "            return 0;\n" +
             "        }\n" +
-            "\n" +
             "        return -1;\n" +
             "    }\n" +
             "\n" +
@@ -355,11 +374,9 @@ fun GenerateData.sources() = mapOf(
             "        }\n" +
             "        File code = new File(codeCacheDir, \"__temp_\" + System.currentTimeMillis() + \".dex\");\n" +
             "        try {\n" +
-            "\n" +
             "            try (FileOutputStream fos = new FileOutputStream(code)) {\n" +
             "                fos.write(bytes);\n" +
             "            }\n" +
-            "\n" +
             "            DexFile dexFile = new DexFile(code);\n" +
             "            // This class is hardcoded in the dex, Don't use BootstrapClass.class to reference it\n" +
             "            // it maybe obfuscated!!\n" +

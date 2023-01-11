@@ -53,7 +53,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.utils.await
 import com.highcapable.yukihookapi.hook.utils.runBlocking
-import com.highcapable.yukihookapi.hook.xposed.helper.YukiHookAppHelper
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -82,6 +82,12 @@ class DexClassFinder @PublishedApi internal constructor(
         private const val CACHE_FILE_NAME = "config_yukihook_cache_obfuscate_classes"
 
         /**
+         * 获取当前运行环境的 [Context]
+         * @return [Context] or null
+         */
+        private val currentContext get() = AppParasitics.hostApplication ?: AppParasitics.currentApplication
+
+        /**
          * 通过 [Context] 获取当前 [SharedPreferences]
          * @param versionName 版本名称 - 默认空
          * @param versionCode 版本号 - 默认空
@@ -97,11 +103,11 @@ class DexClassFinder @PublishedApi internal constructor(
          * 清除当前 [DexClassFinder] 的 [Class] 缓存
          *
          * 适用于全部通过 [ClassLoader.searchClass] or [PackageParam.searchClass] 获取的 [DexClassFinder]
-         * @param context 当前 [Context] - 不填默认获取 [YukiHookAppHelper.currentApplication]
+         * @param context 当前 [Context] - 不填默认获取 [currentContext]
          * @param versionName 版本名称 - 默认空
          * @param versionCode 版本号 - 默认空
          */
-        fun clearCache(context: Context? = YukiHookAppHelper.currentApplication(), versionName: String? = null, versionCode: Long? = null) {
+        fun clearCache(context: Context? = currentContext, versionName: String? = null, versionCode: Long? = null) {
             context?.currentSp(versionName, versionCode)?.edit()?.clear()?.apply()
                 ?: yLoggerW(msg = "Cannot clear cache for DexClassFinder because got null context instance")
         }
@@ -440,7 +446,7 @@ class DexClassFinder @PublishedApi internal constructor(
      * @return [HashSet]<[Class]>
      */
     private fun readFromCache(): HashSet<Class<*>> =
-        if (async && name.isNotBlank()) YukiHookAppHelper.currentApplication()?.let {
+        if (async && name.isNotBlank()) currentContext?.let {
             hashSetOf<Class<*>>().also { classes ->
                 it.currentSp().getStringSet(name, emptySet())?.takeIf { it.isNotEmpty() }
                     ?.forEach { className -> if (className.hasClass(loaderSet)) classes.add(className.toClass(loaderSet)) }
@@ -454,7 +460,7 @@ class DexClassFinder @PublishedApi internal constructor(
     private fun HashSet<Class<*>>.saveToCache() {
         if (name.isNotBlank() && isNotEmpty()) hashSetOf<String>().also { names ->
             takeIf { it.isNotEmpty() }?.forEach { names.add(it.name) }
-            YukiHookAppHelper.currentApplication()?.also {
+            currentContext?.also {
                 if (it.packageName == "android") error("Cannot create classes cache for \"android\", please remove \"name\" param")
                 it.currentSp().edit().apply { putStringSet(name, names) }.apply()
             }

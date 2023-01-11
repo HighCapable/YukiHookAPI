@@ -30,16 +30,13 @@
 package com.highcapable.yukihookapi.hook.param.wrapper
 
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.type.HookEntryType
-import com.highcapable.yukihookapi.hook.xposed.bridge.dummy.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import dalvik.system.PathClassLoader
 
 /**
  * 用于包装 [PackageParam]
- *
- * - ❗这是一个私有 API - 请不要在外部使用
  * @param type 当前正在进行的 Hook 类型
  * @param packageName 包名
  * @param processName 当前进程名
@@ -47,8 +44,8 @@ import dalvik.system.PathClassLoader
  * @param appInfo APP [ApplicationInfo]
  * @param appResources APP [YukiResources]
  */
-@YukiPrivateApi
-class PackageParamWrapper internal constructor(
+@PublishedApi
+internal class PackageParamWrapper internal constructor(
     var type: HookEntryType,
     var packageName: String,
     var processName: String,
@@ -68,5 +65,5 @@ class PackageParamWrapper internal constructor(
     internal val isCorrectProcess get() = type == HookEntryType.ZYGOTE || (type != HookEntryType.ZYGOTE && appClassLoader is PathClassLoader)
 
     override fun toString() =
-        "PackageParamWrapper [type] $type [packageName] $packageName [processName] $processName [appInfo] $appInfo [appResources] $appResources"
+        "[type] $type [packageName] $packageName [processName] $processName [appClassLoader] $appClassLoader [appInfo] $appInfo [appResources] $appResources"
 }
