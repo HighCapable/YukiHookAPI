@@ -61,7 +61,7 @@ object YukiXposedModuleStatus_Impl {
     fun isSupportResourcesHook(): Boolean = error("Stub!")
 
     /**
-     * 此方法经过 Hook 后返回当前 Hook 框架的名称
+     * 此方法经过 Hook 后返回当前 Hook Framework 名称
      *
      * 返回值将在每次编译时自动生成
      * @return [String]
@@ -70,7 +70,7 @@ object YukiXposedModuleStatus_Impl {
     fun getExecutorName(): String = error("Stub!")
 
     /**
-     * 此方法经过 Hook 后返回当前 Hook 框架的 API 版本
+     * 此方法经过 Hook 后返回当前 Hook Framework 的 API 版本
      *
      * 返回值将在每次编译时自动生成
      * @return [Int]
@@ -79,7 +79,7 @@ object YukiXposedModuleStatus_Impl {
     fun getExecutorApiLevel(): Int = error("Stub!")
 
     /**
-     * 此方法经过 Hook 后返回当前 Hook 框架的版本名称
+     * 此方法经过 Hook 后返回当前 Hook Framework 版本名称
      *
      * 返回值将在每次编译时自动生成
      * @return [String]
@@ -88,7 +88,7 @@ object YukiXposedModuleStatus_Impl {
     fun getExecutorVersionName(): String = error("Stub!")
 
     /**
-     * 此方法经过 Hook 后返回当前 Hook 框架的版本号
+     * 此方法经过 Hook 后返回当前 Hook Framework 版本号
      *
      * 返回值将在每次编译时自动生成
      * @return [Int]

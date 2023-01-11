@@ -53,7 +53,7 @@ internal object HookApiProperty {
     internal const val BUG_LOAD_CLASS_NAME = "com.bug.load.BugLoad"
 
     /**
-     * 获取当前 Hook 框架的名称
+     * 获取当前 Hook Framework 名称
      * @return [String] 无法获取会返回 unknown - 获取失败会返回 invalid
      */
     internal val name
@@ -70,7 +70,7 @@ internal object HookApiProperty {
         }
 
     /**
-     * 获取当前 Hook 框架的 API 版本
+     * 获取当前 Hook Framework 的 API 版本
      * @return [Int] 无法获取会返回 -1
      */
     internal val apiLevel
@@ -80,7 +80,7 @@ internal object HookApiProperty {
         }
 
     /**
-     * 获取当前 Hook 框架的版本名称
+     * 获取当前 Hook Framework 版本名称
      * @return [String] 无法获取会返回 unknown - 不支持会返回 unsupported
      */
     internal val versionName
@@ -90,7 +90,7 @@ internal object HookApiProperty {
         }
 
     /**
-     * 获取当前 Hook 框架的版本号
+     * 获取当前 Hook Framework 版本号
      * @return [Int] 无法获取会返回 -1 - 不支持会返回 0
      */
     internal val versionCode

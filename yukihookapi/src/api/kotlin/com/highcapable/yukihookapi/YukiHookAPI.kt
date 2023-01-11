@@ -103,7 +103,7 @@ object YukiHookAPI {
         val isXposedEnvironment get() = YukiXposedModule.isXposedEnvironment
 
         /**
-         * 获取当前 Hook 框架的名称
+         * 获取当前 Hook Framework 名称
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
@@ -117,7 +117,7 @@ object YukiHookAPI {
         val executorName get() = Executor.name
 
         /**
-         * 获取当前 Hook 框架的版本
+         * 获取当前 Hook Framework 版本
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
@@ -176,12 +176,12 @@ object YukiHookAPI {
             get() = YukiXposedModule.isSupportResourcesHook.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.isSupportResourcesHook
 
         /**
-         * 当前 [YukiHookAPI] 使用的 Hook 框架相关信息
+         * 当前 [YukiHookAPI] 使用的 Hook Framework 相关信息
          */
         object Executor {
 
             /**
-             * 获取当前 Hook 框架的名称
+             * 获取当前 Hook Framework 名称
              *
              * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [String] 无法获取会返回 unknown - 获取失败会返回 invalid
@@ -194,7 +194,7 @@ object YukiHookAPI {
                 }
 
             /**
-             * 获取当前 Hook 框架的 API 版本
+             * 获取当前 Hook Framework 的 API 版本
              *
              * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [Int] 无法获取会返回 -1
@@ -202,7 +202,7 @@ object YukiHookAPI {
             val apiLevel get() = HookApiProperty.apiLevel.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorApiLevel
 
             /**
-             * 获取当前 Hook 框架的版本名称
+             * 获取当前 Hook Framework 版本名称
              *
              * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [String] 无法获取会返回 unknown - 不支持会返回 unsupported
@@ -210,7 +210,7 @@ object YukiHookAPI {
             val versionName get() = HookApiProperty.versionName.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionName
 
             /**
-             * 获取当前 Hook 框架的版本号
+             * 获取当前 Hook Framework 版本号
              *
              * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [Int] 无法获取会返回 -1 - 不支持会返回 0

@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
  *
  * 调用 [YukiHookAPI.Status.isXposedModuleActive]
  *
- * 你还可以通过调用 [YukiHookAPI.Status.Executor] 获取当前 Hook 框架的详细信息
+ * 你还可以通过调用 [YukiHookAPI.Status.Executor] 获取当前 Hook Framework 的详细信息
  *
  * 详情请参考 [Xposed 模块判断自身激活状态](https://fankes.github.io/YukiHookAPI/zh-cn/guide/example#xposed-%E6%A8%A1%E5%9D%97%E5%88%A4%E6%96%AD%E8%87%AA%E8%BA%AB%E6%BF%80%E6%B4%BB%E7%8A%B6%E6%80%81)
  *
@@ -74,7 +74,7 @@ internal object YukiXposedModuleStatus {
     internal val isSupportResourcesHook get() = runCatching { YukiXposedModuleStatus_Impl.isSupportResourcesHook() }.getOrNull() ?: false
 
     /**
-     * 获取当前 Hook 框架的名称
+     * 获取当前 Hook Framework 名称
      *
      * 请使用 [YukiHookAPI.Status.Executor.name] 获取
      * @return [String] 模块未激活会返回 unknown
@@ -82,7 +82,7 @@ internal object YukiXposedModuleStatus {
     internal val executorName get() = runCatching { YukiXposedModuleStatus_Impl.getExecutorName() }.getOrNull() ?: "unknown"
 
     /**
-     * 获取当前 Hook 框架的 API 版本
+     * 获取当前 Hook Framework 的 API 版本
      *
      * 请使用 [YukiHookAPI.Status.Executor.apiLevel] 获取
      * @return [Int] 模块未激活会返回 -1
@@ -90,7 +90,7 @@ internal object YukiXposedModuleStatus {
     internal val executorApiLevel get() = runCatching { YukiXposedModuleStatus_Impl.getExecutorApiLevel() }.getOrNull() ?: -1
 
     /**
-     * 获取当前 Hook 框架的版本名称
+     * 获取当前 Hook Framework 版本名称
      *
      * 请使用 [YukiHookAPI.Status.Executor.versionName] 获取
      * @return [Int] 模块未激活会返回 unknown
@@ -98,7 +98,7 @@ internal object YukiXposedModuleStatus {
     internal val executorVersionName get() = runCatching { YukiXposedModuleStatus_Impl.getExecutorVersionName() }.getOrNull() ?: "unknown"
 
     /**
-     * 获取当前 Hook 框架的版本号
+     * 获取当前 Hook Framework 版本号
      *
      * 请使用 [YukiHookAPI.Status.Executor.versionCode] 获取
      * @return [Int] 模块未激活会返回 -1

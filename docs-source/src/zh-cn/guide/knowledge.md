@@ -54,7 +54,7 @@ App's Environment
 
 通过 Xposed 的运行原理，从而衍生了很多同类型框架，随着当今时代的移动设备获取 Root 权限甚至刷机越来越困难且不是刚需的时候，一些免 Root 框架也随之产生，例如**太极**。
 
-这些在 ART 层面上的 Hook 框架同样也可不借助 Xposed API 完成其和 Xposed 原理一样的 Hook 流程，免 Root 的运行原理为修改 APK 并将 Hook 进程注入宿主，通过外部模块对其进行控制。
+这些在 ART 层面上的 Hook Framework 同样也可不借助 Xposed API 完成其和 Xposed 原理一样的 Hook 流程，免 Root 的运行原理为修改 APK 并将 Hook 进程注入宿主，通过外部模块对其进行控制。
 
 另外一种产品就是利用 Android 运行环境现有的功能虚拟出一个完全与当前设备系统一样的环境，并在其中运行 APP，这个就是虚拟 APP 技术 **VirtualApp**，后来衍生为 **VirtualXposed**。
 
@@ -66,7 +66,7 @@ App's Environment
 
 本 API 框架的诞生就是希望在 Xposed 的如今时代，能让更多有动手能力的 Xposed 模块开发者少走弯路，更容易、更简单地完成整个开发流程。
 
-未来，`YukiHookAPI` 将在使用 Xposed API 的目标基础上适配更多第三方 Hook 框架，使得整个生态得到完善，并帮助更多开发者让 Xposed 模块开发变得更加简单和易懂。
+未来，`YukiHookAPI` 将在使用 Xposed API 的目标基础上适配更多第三方 Hook Framework，使得整个生态得到完善，并帮助更多开发者让 Xposed 模块开发变得更加简单和易懂。
 
 ## 让我们开始吧
 

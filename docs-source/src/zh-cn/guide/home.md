@@ -167,7 +167,7 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
 
 现在，借助高效强大的 `YukiHookAPI`，你就可以实现一个非常简单的 Xposed 模块。
 
-## 支持的 Hook 框架
+## 支持的 Hook Framework
 
 以下是 `YukiHookAPI` 支持的 `Hook Framework` 以及 Xposed 框架。
 

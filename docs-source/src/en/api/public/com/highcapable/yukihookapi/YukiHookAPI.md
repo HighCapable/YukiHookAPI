@@ -238,7 +238,7 @@ object Executor
 
 **Function Illustrate**
 
-> 当前 `YukiHookAPI` 使用的 Hook 框架相关信息。
+> 当前 `YukiHookAPI` 使用的 Hook Framework 相关信息。
 
 #### name <span class="symbol">- field</span>
 
@@ -252,7 +252,7 @@ val name: String
 
 **Function Illustrate**
 
-> 获取当前 Hook 框架的名称。
+> 获取当前 Hook Framework 名称。
 
 ::: warning
 
@@ -272,7 +272,7 @@ val apiLevel: Int
 
 **Function Illustrate**
 
-> 获取当前 Hook 框架的 API 版本。
+> 获取当前 Hook Framework 的 API 版本。
 
 ::: warning
 
@@ -292,7 +292,7 @@ val versionName: String
 
 **Function Illustrate**
 
-> 获取当前 Hook 框架的版本名称。
+> 获取当前 Hook Framework 版本名称。
 
 ::: warning
 
@@ -312,7 +312,7 @@ val versionCode: Int
 
 **Function Illustrate**
 
-> 获取当前 Hook 框架的版本号。
+> 获取当前 Hook Framework 版本号。
 
 ::: warning
 

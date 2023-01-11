@@ -215,6 +215,6 @@ override fun attachBaseContext(base: Context?) {
 
 ::: warning
 
-使用自定义的 Hook 框架而并非完整的 Xposed 模块时，**YukiHookModuleStatus**、**YukiHookModulePrefs**、**YukiHookDataChannel** 以及 Resources Hook 功能将失效。
+使用自定义的 Hook Framework 而并非完整的 Xposed 模块时，**YukiHookModuleStatus**、**YukiHookModulePrefs**、**YukiHookDataChannel** 以及 Resources Hook 功能将失效。
 
 :::

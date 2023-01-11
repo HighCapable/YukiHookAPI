@@ -335,7 +335,7 @@
 
 - 修复旧版本 LSPosed 框架情况下欢迎信息多次打印的问题
 - 添加 `onInit` 方法来配置 `YukiHookAPI`
-- 新增 `executorName` 和 `executorVersion` 来获取当前 Hook 框架的名称和版本号
+- 新增 `executorName` 和 `executorVersion` 来获取当前 Hook Framework 的名称和版本号
 - 新增 `by` 方法来设置 Hook 的时机和条件
 - `YukiHookModulePrefs` 新增可控制的键值缓存，可在宿主运行时模块动态更新数据
 - 修复了一些可能存在的 BUG
