@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
  *
  * - ❗请现在转移到 [IYukiHookXposedInit] 否则此接口的声明将在自动处理程序中被拦截
  */
-@Deprecated(message = "此接口的命名和功能已被弃用", ReplaceWith(expression = "IYukiHookXposedInit"), level = DeprecationLevel.ERROR)
+@Deprecated(message = "此接口的命名和功能已被弃用", ReplaceWith("IYukiHookXposedInit"), level = DeprecationLevel.ERROR)
 interface YukiHookXposedInitProxy {
 
     /**

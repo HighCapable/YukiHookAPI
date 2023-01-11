@@ -458,7 +458,7 @@ class FieldFinder @PublishedApi internal constructor(
          * - ❗请现在转移到 [ignored]
          * @return [Result] 可继续向下监听
          */
-        @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "ignored()"))
+        @Deprecated(message = "请使用新的命名方法", ReplaceWith("ignored()"))
         fun ignoredError() = ignored()
 
         /**

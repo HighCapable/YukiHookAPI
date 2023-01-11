@@ -201,7 +201,7 @@ fun Class<*>.toJavaPrimitiveType() = when (this) {
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "name.toClass(loader)"))
+@Deprecated(message = "请使用新的命名方法", ReplaceWith("name.toClass(loader)"))
 fun classOf(name: String, loader: ClassLoader? = null) = name.toClass(loader)
 
 /**
@@ -369,7 +369,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: Curre
  * - ❗请现在转移到 [buildOf]
  * @return [Any] or null
  */
-@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "buildOf(*param, initiate)"))
+@Deprecated(message = "请使用新的命名方法", ReplaceWith("buildOf(*param, initiate)"))
 fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorConditions = { emptyParam() }) = buildOf(*param, initiate)
 
 /**

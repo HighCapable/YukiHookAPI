@@ -193,7 +193,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * - ❗请现在转移到 [isPreferencesAvailable]
      * @return [Boolean]
      */
-    @Deprecated(message = "请使用新方式来实现此功能", replaceWith = ReplaceWith(expression = "isPreferencesAvailable"))
+    @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
     val isXSharePrefsReadable get() = isPreferencesAvailable
 
     /**
@@ -204,7 +204,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * - ❗请现在转移到 [isPreferencesAvailable]
      * @return [Boolean]
      */
-    @Deprecated(message = "请使用新方式来实现此功能", replaceWith = ReplaceWith(expression = "isPreferencesAvailable"))
+    @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
     val isRunInNewXShareMode get() = isPreferencesAvailable
 
     /**

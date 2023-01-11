@@ -301,7 +301,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * @param name 方法名称
          * @return [ArrayList]<[MethodFinder.Result.Instance]>
          */
-        @Deprecated(message = "请使用新方式来实现 Hook 所有方法", ReplaceWith(expression = "method { this.name = name }.all()"))
+        @Deprecated(message = "请使用新方式来实现 Hook 所有方法", ReplaceWith("method { this.name = name }.all()"))
         fun allMethods(name: String) = method { this.name = name }.all()
 
         /**
@@ -314,7 +314,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          */
         @Deprecated(
             message = "请使用新方式来实现 Hook 所有构造方法",
-            ReplaceWith(expression = "allMembers(MembersType.CONSTRUCTOR)", "com.highcapable.yukihookapi.hook.factory.MembersType")
+            ReplaceWith("allMembers(MembersType.CONSTRUCTOR)", "com.highcapable.yukihookapi.hook.factory.MembersType")
         )
         fun allConstructors() = allMembers(MembersType.CONSTRUCTOR)
 

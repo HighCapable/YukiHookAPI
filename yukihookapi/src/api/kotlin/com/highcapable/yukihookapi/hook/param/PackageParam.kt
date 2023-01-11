@@ -457,7 +457,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
-    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toClass()"))
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith("toClass()"))
     val String.clazz
         get() = toClass()
 
@@ -470,7 +470,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "toClass()"))
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith("toClass()"))
     val VariousClass.clazz
         get() = toClass()
 
@@ -482,7 +482,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗请现在转移到 [hasClass]
      * @return [Boolean] 是否存在
      */
-    @Deprecated(message = "请使用新的命名方法", ReplaceWith(expression = "hasClass()"))
+    @Deprecated(message = "请使用新的命名方法", ReplaceWith("hasClass()"))
     val String.hasClass
         get() = hasClass()
 

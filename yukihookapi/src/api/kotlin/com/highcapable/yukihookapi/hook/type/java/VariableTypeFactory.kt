@@ -76,7 +76,7 @@ fun ArrayClass(type: Class<*>) = JavaArray.newInstance(type, 0).javaClass as Cla
  * - ❗请现在转移到 [AnyClass]
  * @return [Class]<[Any]>
  */
-@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "AnyClass"))
+@Deprecated(message = "请使用新的命名方法", ReplaceWith("AnyClass"))
 val AnyType get() = AnyClass
 
 /**
@@ -247,7 +247,7 @@ val UnitClass get() = classOf<Void>()
  * - ❗请现在转移到 [StringClass]
  * @return [Class]<[String]>
  */
-@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "StringClass"))
+@Deprecated(message = "请使用新的命名方法", ReplaceWith("StringClass"))
 val StringType get() = StringClass
 
 /**
@@ -258,7 +258,7 @@ val StringType get() = StringClass
  * - ❗请现在转移到 [CharSequenceClass]
  * @return [Class]<[CharSequence]>
  */
-@Deprecated(message = "请使用新的命名方法", replaceWith = ReplaceWith(expression = "CharSequenceClass"))
+@Deprecated(message = "请使用新的命名方法", ReplaceWith("CharSequenceClass"))
 val CharSequenceType get() = CharSequenceClass
 
 /**
