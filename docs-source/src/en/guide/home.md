@@ -1,6 +1,6 @@
 # Introduce
 
-> This is a Hook API Framework, it does not provide any Hook function itself, it needs the support of basic Xposed API.
+> `YukiHookAPI` is an integrated Hook API Framework, which does not provide any Hook functions, and needs the support of Xposed related basic APIs.
 
 ## Background
 

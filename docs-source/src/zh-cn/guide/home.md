@@ -1,6 +1,6 @@
 # 介绍
 
-> 这是一个 Hook API 框架，本身不提供任何 Hook 功能，需要 Xposed 基础 API 的支持。
+> `YukiHookAPI` 是一个集成化的 Hook API 框架，本身不提供任何 Hook 功能，需要 Xposed 相关基础 API 的支持。
 
 ## 背景
 
