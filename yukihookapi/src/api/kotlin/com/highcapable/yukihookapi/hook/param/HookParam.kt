@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.param
 
+import android.os.Bundle
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator.MemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
@@ -42,11 +43,19 @@ import java.lang.reflect.Method
 /**
  * Hook 方法、构造方法的目标对象实现类
  * @param creatorInstance [YukiMemberHookCreator] 的实例对象
+ * @param paramId 当前回调方法体 ID
  * @param param Hook 结果回调接口
  */
-class HookParam internal constructor(private val creatorInstance: YukiMemberHookCreator, private var param: YukiHookCallback.Param? = null) {
+class HookParam internal constructor(
+    private val creatorInstance: YukiMemberHookCreator,
+    private var paramId: String = "",
+    private var param: YukiHookCallback.Param? = null
+) {
 
     internal companion object {
+
+        /** 每个回调方法体的数据存储实例数据 */
+        private val dataExtras = HashMap<String, Bundle>()
 
         /** [HookParam] 是否已经执行首次回调事件 */
         internal var isCallbackCalled = false
@@ -59,10 +68,12 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
 
     /**
      * 在回调中设置 [HookParam] 使用的 [YukiHookCallback.Param]
+     * @param paramId 当前回调方法体 ID
      * @param param Hook 结果回调接口
      * @return [HookParam]
      */
-    internal fun assign(param: YukiHookCallback.Param): HookParam {
+    internal fun assign(paramId: String, param: YukiHookCallback.Param): HookParam {
+        this.paramId = paramId
         this.param = param
         return this
     }
@@ -123,6 +134,12 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
         set(value) {
             param?.result = value
         }
+
+    /**
+     * 获取当前回调方法体范围内的数据存储实例
+     * @return [Bundle]
+     */
+    val dataExtra get() = dataExtras[paramId] ?: Bundle().apply { dataExtras[paramId] = this }
 
     /**
      * 判断是否存在设置过的方法调用抛出异常

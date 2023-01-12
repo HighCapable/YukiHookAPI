@@ -13,7 +13,11 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # HookParam <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class HookParam internal constructor(private val creatorInstance: YukiMemberHookCreator, private var param: YukiHookCallback.Param?)
+class HookParam internal constructor(
+    private val creatorInstance: YukiMemberHookCreator,
+    private var paramId: String,
+    private var param: YukiHookCallback.Param?
+)
 ```
 
 **Change Records**
@@ -25,6 +29,10 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
 移动 `HookParamWrapper` 到 `YukiHookCallback.Param`
 
 修正拼写错误的 **creater** 命名到 **creator**
+
+`v1.1.5` `modified`
+
+新增 `paramId` 参数
 
 **Function Illustrate**
 
@@ -157,6 +165,20 @@ var result: Any?
 **Function Illustrate**
 
 > 获取、设置当前 Hook 对象的 `method` 或 `constructor` 的返回值。
+
+## dataExtra <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val dataExtra: Bundle
+```
+
+**Change Records**
+
+`v1.1.5` `added`
+
+**Function Illustrate**
+
+> 获取当前回调方法体范围内的数据存储实例。
 
 ## hasThrowable <span class="symbol">- field</span>
 

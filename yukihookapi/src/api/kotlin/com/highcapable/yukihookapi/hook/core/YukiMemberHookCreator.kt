@@ -52,6 +52,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.*
+import com.highcapable.yukihookapi.hook.utils.RandomSeed
 import com.highcapable.yukihookapi.hook.utils.await
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import java.lang.reflect.Constructor
@@ -219,6 +220,15 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
 
         /** 是否已经执行 Hook */
         private var isHooked = false
+
+        /** [beforeHook] 回调方法体 ID */
+        private val beforeHookId = RandomSeed.createString()
+
+        /** [afterHook] 回调方法体 ID */
+        private val afterHookId = RandomSeed.createString()
+
+        /** [replaceAny]、[replaceUnit] 回调方法体 ID */
+        private val replaceHookId = RandomSeed.createString()
 
         /** [beforeHook] 回调 */
         private var beforeHookCallback: (HookParam.() -> Unit)? = null
@@ -574,7 +584,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
             /** 定义替换 Hook 回调方法体 */
             val replaceMent = object : YukiMemberReplacement(priority.toPriority()) {
                 override fun replaceHookedMember(param: Param) =
-                    replaceHookParam.assign(param).let { assign ->
+                    replaceHookParam.assign(replaceHookId, param).let { assign ->
                         runCatching {
                             replaceHookCallback?.invoke(assign).also {
                                 checkingReturnType((param.member as? Method?)?.returnType, it?.javaClass)
@@ -600,7 +610,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
             /** 定义前后 Hook 回调方法体 */
             val beforeAfterHook = object : YukiMemberHook(priority.toPriority()) {
                 override fun beforeHookedMember(param: Param) {
-                    beforeHookParam.assign(param).also { assign ->
+                    beforeHookParam.assign(beforeHookId, param).also { assign ->
                         runCatching {
                             beforeHookCallback?.invoke(assign)
                             checkingReturnType((param.member as? Method?)?.returnType, param.result?.javaClass)
@@ -616,7 +626,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                 }
 
                 override fun afterHookedMember(param: Param) {
-                    afterHookParam.assign(param).also { assign ->
+                    afterHookParam.assign(afterHookId, param).also { assign ->
                         runCatching {
                             afterHookCallback?.invoke(assign)
                             if (afterHookCallback != null) onHookLogMsg(msg = "After Hook Member [${this@hook}] done [$tag]")

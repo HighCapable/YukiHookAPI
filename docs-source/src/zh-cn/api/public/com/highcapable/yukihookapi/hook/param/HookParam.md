@@ -5,7 +5,11 @@ pageClass: code-page
 # HookParam <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class HookParam internal constructor(private val creatorInstance: YukiMemberHookCreator, private var param: YukiHookCallback.Param?)
+class HookParam internal constructor(
+    private val creatorInstance: YukiMemberHookCreator,
+    private var paramId: String,
+    private var param: YukiHookCallback.Param?
+)
 ```
 
 **变更记录**
@@ -17,6 +21,10 @@ class HookParam internal constructor(private val creatorInstance: YukiMemberHook
 移动 `HookParamWrapper` 到 `YukiHookCallback.Param`
 
 修正拼写错误的 **creater** 命名到 **creator**
+
+`v1.1.5` `修改`
+
+新增 `paramId` 参数
 
 **功能描述**
 
@@ -149,6 +157,20 @@ var result: Any?
 **功能描述**
 
 > 获取、设置当前 Hook 对象的 `method` 或 `constructor` 的返回值。
+
+## dataExtra <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val dataExtra: Bundle
+```
+
+**变更记录**
+
+`v1.1.5` `新增`
+
+**功能描述**
+
+> 获取当前回调方法体范围内的数据存储实例。
 
 ## hasThrowable <span class="symbol">- field</span>
 
