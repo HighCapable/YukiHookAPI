@@ -29,7 +29,6 @@ package com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper
 
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import java.io.Serializable
-import java.util.*
 
 /**
  * 数据通讯桥键值数据包装类
@@ -45,18 +44,4 @@ internal data class ChannelDataWrapper<T>(
     val segmentsSize: Int,
     val segmentsIndex: Int,
     val instance: ChannelData<T>
-) : Serializable {
-
-    internal companion object {
-
-        /**
-         * 创建新的包装实例 ID
-         * @return [String]
-         */
-        internal fun createWrapperId() = Random().let { random ->
-            var randomId = ""
-            for (i in 0..5) randomId += ((if (random.nextInt(2) % 2 == 0) 65 else 97) + random.nextInt(26)).toChar()
-            "$randomId${System.currentTimeMillis()}"
-        }
-    }
-}
+) : Serializable

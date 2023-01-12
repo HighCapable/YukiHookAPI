@@ -47,6 +47,7 @@ import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.log.YukiLoggerData
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.utils.RandomSeed
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
@@ -402,12 +403,12 @@ class YukiHookDataChannel private constructor() {
 
         /**
          * [ChannelData]<[T]> 转换为 [ChannelDataWrapper]<[T]> 实例
-         * @param id 包装实例 ID - 默认为 [ChannelDataWrapper.createWrapperId]
+         * @param id 包装实例 ID - 默认为 [RandomSeed.createString]
          * @param size 分段数据总大小 (长度) - 默认为 -1
          * @param index 分段数据当前接收到的下标 - 默认为 -1
          * @return [ChannelDataWrapper]<[T]>
          */
-        private fun <T> ChannelData<T>.toWrapper(id: String = ChannelDataWrapper.createWrapperId(), size: Int = -1, index: Int = -1) =
+        private fun <T> ChannelData<T>.toWrapper(id: String = RandomSeed.createString(), size: Int = -1, index: Int = -1) =
             ChannelDataWrapper(id, size > 0, size, index, this)
 
         /**
@@ -513,7 +514,7 @@ class YukiHookDataChannel private constructor() {
         private fun parseSendingData(wrapper: ChannelDataWrapper<*>) {
             if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
             /** 当前包装实例 ID */
-            val wrapperId = ChannelDataWrapper.createWrapperId()
+            val wrapperId = RandomSeed.createString()
 
             /** 当前需要发送的数据字节大小 */
             val dataByteSize = wrapper.instance.calDataByteSize()

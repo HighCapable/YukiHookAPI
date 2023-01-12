@@ -219,3 +219,21 @@ internal fun <T> T.value() = ModifyValue(value = this)
  * @param value 变量自身实例
  */
 internal data class ModifyValue<T>(var value: T)
+
+/**
+ * 随机种子工具类
+ */
+internal object RandomSeed {
+
+    /** 随机字母和数字定义 */
+    private const val RANDOM_LETTERS_NUMBERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+    /**
+     * 生成随机字符串
+     * @param length 生成长度 - 默认 15
+     * @return [String]
+     */
+    internal fun createString(length: Int = 15) = StringBuilder().apply {
+        for (i in 1..length) append(RANDOM_LETTERS_NUMBERS[(0..RANDOM_LETTERS_NUMBERS.lastIndex).random()])
+    }.toString()
+}
