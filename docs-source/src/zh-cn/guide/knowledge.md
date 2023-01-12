@@ -10,7 +10,7 @@
 
 ### Xposed 是什么
 
-> Xposed 框架(Xposed Framework)是一套开源的、在 Android 高权限模式下运行的框架服务，可以在不修改 APK 文件的情况下影响程序运行（修改系统）的框架服务，基于它可以制作出许多功能强大的模块，且在功能不冲突的情况下同时运作。
+> Xposed 框架 (Xposed Framework) 是一套开源的、在 Android 高权限模式下运行的框架服务，可以在不修改 APK 文件的情况下影响程序运行（修改系统）的框架服务，基于它可以制作出许多功能强大的模块，且在功能不冲突的情况下同时运作。
 
 上述内容复制自百度百科。
 
@@ -52,13 +52,13 @@ App's Environment
         ...
 ```
 
-通过 Xposed 的运行原理，从而衍生了很多同类型框架，随着当今时代的移动设备获取 Root 权限甚至刷机越来越困难且不是刚需的时候，一些免 Root 框架也随之产生，例如**太极**。
+通过 Xposed 的运行原理，从而衍生了很多同类型框架，随着当今时代的移动设备获取 Root 权限甚至刷机越来越困难且不是刚需的时候，一些免 Root 框架也随之产生，例如 **LSPatch**、**太极**。
 
 这些在 ART 层面上的 Hook Framework 同样也可不借助 Xposed API 完成其和 Xposed 原理一样的 Hook 流程，免 Root 的运行原理为修改 APK 并将 Hook 进程注入宿主，通过外部模块对其进行控制。
 
 另外一种产品就是利用 Android 运行环境现有的功能虚拟出一个完全与当前设备系统一样的环境，并在其中运行 APP，这个就是虚拟 APP 技术 **VirtualApp**，后来衍生为 **VirtualXposed**。
 
-上述提到的免 Root 框架分别为**太极/无极**、**VirtualXposed/SandVXposed**。
+上述提到的免 Root 框架分别为 [LSPatch](https://github.com/LSPosed/LSPatch)、[太极](https://taichi.cool/zh/)、[VirtualApp](https://github.com/asLody/VirtualApp)、[SandVXposed](https://github.com/asLody/SandVXposed)。
 
 ### YukiHookAPI 做了什么
 

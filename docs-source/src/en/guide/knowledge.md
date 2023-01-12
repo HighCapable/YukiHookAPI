@@ -14,7 +14,7 @@ If you find **any errors in this page, please correct it and help us improve**.
 
 ### What is Xposed
 
-> Xposed Framework (Xposed Framework) is a set of open source framework services that run in Android high-privilege mode. It can affect program operation (modify the system) without modifying the APK file. Based on it, many Powerful modules that operate simultaneously without conflicting functions.
+> Xposed Framework is a set of open source framework services that run in Android high-privilege mode. It can affect program operation (modify the system) without modifying the APK file. Based on it, many Powerful modules that operate simultaneously without conflicting functions.
 
 The above content is copied from Baidu Encyclopedia.
 
@@ -56,13 +56,13 @@ App's Environment
         ...
 ```
 
-Through the operation principle of Xposed, many frameworks of the same type have been derived. As mobile devices in today's era are more and more difficult to obtain Root permissions or even flash, and when they are not just needed, some Root-free frameworks are also produced, such as **Tai Chi**.
+Through the operation principle of Xposed, many frameworks of the same type have been derived. As mobile devices in today's era are more and more difficult to obtain Root permissions or even flash, and when they are not just needed, some Root-free frameworks are also produced, such as **LSPatch**、**TaiChi**.
 
 These Hook Frameworks at the ART level can also complete the Hook process with the same principle as Xposed without using the Xposed API. The operating principle of Root-free is to modify the APK and inject the Hook process into the **Host**, and control it through external modules.
 
 Another product is to use the existing functions of the Android operating environment to virtualize an environment that is completely the same as the current device system, and run App in it. This is the virtual App technology **VirtualApp**, which was later derived as **VirtualXposed** .
 
-The Root-free frameworks mentioned above are **Tai Chi/Wuji**, **VirtualXposed/SandVXposed**.
+The Root-free frameworks mentioned above are [LSPatch](https://github.com/LSPosed/LSPatch)、[TaiChi](https://taichi.cool/)、[VirtualApp](https://github.com/asLody/VirtualApp)、[SandVXposed](https://github.com/asLody/SandVXposed).
 
 ### What YukiHookAPI does
 
