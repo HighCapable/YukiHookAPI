@@ -1811,33 +1811,6 @@ Please confirm the target method of your Hook, the number of method parameters o
 
 ::: danger IllegalStateException
 
-PackageParam got null ClassLoader
-
-:::
-
-**Abnormal**
-
-The `appClassLoader` variable was called in `PackageParam` but the instance object could not be obtained.
-
-> The following example
-
-```kotlin
-encase {
-    // This variable is called
-    appClassLoader...
-}
-```
-
-**Solution**
-
-This situation hardly exists, unless there is a problem with the Host App where the Module App is loaded or the target Hook Framework itself.
-
-If this problem does occur, please provide feedback with detailed logs.
-
-###### exception
-
-::: danger IllegalStateException
-
 Current Hook Framework not support moduleAppResources
 
 :::

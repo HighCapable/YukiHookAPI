@@ -1735,31 +1735,6 @@ injectMember {
 
 ::: danger IllegalStateException 
 
-PackageParam got null ClassLoader
-
-:::
-
-**异常原因**
-
-在 `PackageParam` 中调用了 `appClassLoader` 变量但是无法获取到实例对象。
-
-> 示例如下
-
-```kotlin
-encase {
-    // 调用了此变量
-    appClassLoader...
-}
-```
-
-**解决方案**
-
-这种情况几乎不存在，除非模块被装载的宿主或目标 Hook Framework 自身存在问题，若真的发生了此问题，请携带详细日志进行反馈。
-
-###### exception
-
-::: danger IllegalStateException 
-
 Current Hook Framework not support moduleAppResources
 
 :::
