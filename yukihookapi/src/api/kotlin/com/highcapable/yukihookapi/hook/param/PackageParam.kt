@@ -84,12 +84,9 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * - ❗如果设置了错误或无效的 [ClassLoader] 会造成功能异常 - 请谨慎操作
      * @return [ClassLoader]
-     * @throws IllegalStateException 如果 [ClassLoader] 是空的
      */
     var appClassLoader
-        get() = currentClassLoader ?: wrapper?.appClassLoader
-        ?: AppParasitics.currentApplication?.classLoader
-        ?: javaClass.classLoader ?: error("PackageParam got null ClassLoader")
+        get() = currentClassLoader ?: wrapper?.appClassLoader ?: AppParasitics.currentApplication?.classLoader ?: AppParasitics.baseClassLoader
         set(value) {
             currentClassLoader = value
         }
