@@ -7,22 +7,21 @@
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100"/>
 <br/>
 <br/>
-⛱️ 一个使用 Kotlin 重新构建的高效 Xposed Hook API。
+⛱️ 一个使用 Kotlin 构建的高效 Hook API 与 Xposed 模块解决方案。
 <br/>
 
 [English](https://github.com/fankes/YukiHookAPI/blob/master/README.md) | 简体中文
 
 ## 这是什么
 
-- 这是一个使用 Kotlin 重新构建的高效 Xposed Hook API
+- 这是一个使用 Kotlin 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展
 - 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)
 - 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
 
 ## 支持的功能
 
-- 标准 Hook
-- Zygote Hook
-- 资源钩子(Resources Hook)
+- Hook Framework 支持的基本 ART 动态方法 Hook 功能
+- Xposed 资源钩子 (Resources Hook)
 
 ## 扩展功能
 

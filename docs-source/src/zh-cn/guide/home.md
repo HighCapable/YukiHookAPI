@@ -4,7 +4,7 @@
 
 ## 背景
 
-这是一个使用 `Kotlin` 重新构建的高效 Xposed Hook API。
+这是一个使用 `Kotlin` 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展。
 
 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)。
 

@@ -7,29 +7,29 @@
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100"/>
 <br/>
 <br/>
-⛱️ An efficient Kotlin version of the Xposed Hook API.
+⛱️ An efficient Hook API and Xposed Module solution built in Kotlin.
 <br/>
 
 English | [简体中文](https://github.com/fankes/YukiHookAPI/blob/master/README-zh-CN.md)
 
 ## What's this
 
-- This is an efficient Xposed Hook API rebuilt in Kotlin
+- This is an efficient Hook API rebuilt based on the Xposed API using Kotlin, and creates rich function extensions for the development of
+  Xposed Modules
 - The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016)
 - Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced
 
 ## Supports
 
-- Standard Hook
-- Zygote Hook
-- Resources Hook
+- Basic ART dynamic method hook functions supported by Hook Framework
+- Xposed Resources Hook
 
 ## Extensions
 
 - Automatic Xposed Module Build (No need to create `assets/xposed_init` by yourself)
 - [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module) Supports
 - DataChannel (Host ←→ Module)
-- Simple and quick Obfuscated Member Reflection
+- Simple and quick implementation of obfuscated bytecode reflection and finding functions
 
 ## Get Started
 

@@ -1,5 +1,5 @@
 /*
- * YukiHookAPI - An efficient Kotlin version of the Xposed Hook API.
+ * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2022 HighCapable
  * https://github.com/fankes/YukiHookAPI
  *

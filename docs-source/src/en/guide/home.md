@@ -4,7 +4,7 @@
 
 ## Background
 
-This is an efficient Xposed Hook API rebuilt in `Kotlin`.
+This is an efficient Hook API rebuilt based on the Xposed API using `Kotlin`, and creates rich function extensions for the development of Xposed Modules.
 
 The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016).
 

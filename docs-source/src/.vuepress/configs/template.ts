@@ -104,11 +104,11 @@ export const configs = {
         locales: {
             '/en/': {
                 lang: 'en-US',
-                description: 'An efficient Kotlin version of the Xposed Hook API'
+                description: 'An efficient Hook API and Xposed Module solution built in Kotlin'
             },
             '/zh-cn/': {
                 lang: 'zh-CN',
-                description: '一个使用 Kotlin 重构的轻量、高效、稳定的 Xposed Hook API'
+                description: '一个使用 Kotlin 构建的高效 Hook API 与 Xposed 模块解决方案'
             }
         }
     },
