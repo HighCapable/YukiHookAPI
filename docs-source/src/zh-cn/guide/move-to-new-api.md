@@ -136,6 +136,8 @@ afterHook {
     result = ...
     // 删除返回值内容
     resultNull()
+    // 获取当前回调方法体范围内的数据存储实例
+    dataExtra
     // 向 Hook APP 抛出异常
     Throwable("Fatal").throwToApp()
     // 执行未经 Hook 的原始方法并使用原始方法参数调用，泛型可略
@@ -174,6 +176,8 @@ override fun afterHookedMethod(param: MethodHookParam) {
     param.result = ...
     // 删除返回值内容
     param.result = null
+    // 获取当前回调方法体范围内的数据存储实例
+    param.extra
     // 向 Hook APP 抛出异常
     param.throwable = Throwable("Fatal")
     // 执行未经 Hook 的原始方法

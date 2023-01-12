@@ -136,6 +136,8 @@ afterHook {
     result = ...
     // Remove the content of the return value
     resultNull()
+    // Get the data storage instance within the scope of the current callback method body
+    dataExtra
     // Throw an exception to the Hook app
     Throwable("Fatal").throwToApp()
     // Execute the original method without hook and call with the original method parameters, generics can be omitted
@@ -174,6 +176,8 @@ override fun afterHookedMethod(param: MethodHookParam) {
     param.result = ...
     // Remove the content of the return value
     param.result = null
+    // Get the data storage instance within the scope of the current callback method body
+    param.extra
     // Throw an exception to the Hook app
     param.throwable = Throwable("Fatal")
     // Execute the original method without hooking
