@@ -16,7 +16,49 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.4 | 2022.10.04 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.5 | 2023.01.13 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Standardize and optimize the overall code style
+- Privatized some APIs called internally
+- The underlying API interface is decoupled as a whole to prepare for compatibility with more Hook Frameworks
+- Move some of the functions integrated in the API to `ksp-xposed` dependencies (decoupling), and the separate introduction of `api` dependencies will no longer contain references to functions such as third-party libraries
+- Documentation [Quick Start](../guide/quick-start) page added instructions on when `YukiHookAPI.Configs.isDebug` needs to be closed
+- Standardize Java Primitive Types in type definitions and sync update to docs
+- Java `type` adds `NumberClass` type
+- Improved (Xposed) Host environment recognition
+- Take over all exceptions after loading the Xposed Module, if an exception occurs, it will automatically intercept and print the error log
+- Modify the `Class` that does not exist in the lower Android system version (Android 5.0) in the type definition to be an empty safe type
+- Adapt and support native Xposed, the minimum recommended version is Android 7.0
+- Added support for Hook entry class declared as `object` type (singleton)
+- Fixed the problem that the system below Android 8 does not support the `Executable` type, causing the Hook to fail
+- Fixed the problem of reporting an error when using the `Activity` proxy function for systems below Android 9 and limit the minimum supported version of this function to Android 7.0
+- Added the prohibition of resource injection and `Activity` proxy function injection into the current module's own instance process to prevent problems
+- Fixed a serious error that the return value of a method in the Hook process is not consistent with the target's inherited class and interface.
+- Fixed the problem that the object is empty when calling `HookParam.callOriginal` and `HookParam.invokeOriginal` when the current Hook instance object is static
+- Optimize the function of judging the Tai Chi activation method and update the relevant instructions of the document synchronously
+- Obsolete ~~`YukiHookAPI.Status.executorName`~~, ~~`YukiHookAPI.Status.executorVersion`~~, please move to `YukiHookAPI.Status.Executor`
+- Adapted the `YukiHookAPI.Status.Executor.name` name display function of some third-party Hook Frameworks
+- Added `Class.extends`, `Class.implements` and other methods, which can more conveniently judge the inheritance and interface relationship of the current `Class`
+- Added generic methods of the same name as `Class.toClass`, `Class.toClassOrNull` and other related methods, you can use generics to constrain the instance object type of known `Class`
+- Modify the return value of the `classOf<T>` method to the generic type `T` to constrain the instance object type of the known `Class`
+- Added `initialize` parameter of `Class` related extension method, which can control whether to initialize its static method block at the same time when getting `Class` object
+- Added `param { ... }`, `type { ... }` and other usages in the variable, method, and construction method search functions, which can add more specific conditional judgments to the searched objects
+- The `loadApp` method of `PackageParam` adds the `isExcludeSelf` parameter, which can be used to exclude Hook-related functions from injecting into the module's own instance process
+- The `onAppLifecycle` method of `PackageParam` adds the `isOnFailureThrowToApp` parameter, which can directly throw the exception that occurs in the lifecycle method body to the host
+- Modify `appClassLoader` in `PackageParam` to be a modifiable variable, which can dynamically set the `ClassLoader` used by the host in the Hook process
+- Added `dataExtra` function in `HookParam`, which can be used to temporarily store the data in the Hook method body
+- Obsolete ~~`isRunInNewXShareMode`~~, ~~`isXSharePrefsReadable`~~ in `YukiHookModulePrefs`, merged into `isPreferencesAvailable`
+- `Class.allFields`, `Class.allMethods` and other related methods add the `isAccessible` parameter, which can control when the member object can be set as an accessible type
+- Fixed the problem that only the last method body will be called back when receiving the same key-value data in an Activity when there are multiple hosts in `YukiHookDataChannel`
+- Added `priority` parameter in `wait` and other related methods of `YukiHookDataChannel`, you can pass in `ChannelPriority` to customize the conditions for callback data results
+- `YukiHookDataChannel` adds the function of automatically using `ChannelDataWrapper` type wrapper when sending data, which improves the user experience and enhances data protection
+- `YukiHookDataChannel` has added the function of limiting the maximum byte size of data sent at one time to prevent the app from crashing due to excessive data
+- `YukiHookDataChannel` has added the function of automatically segmenting when the sent data is too large, only supports `List`, `Map`, `Set`, `String` types
+- `YukiHookLogger` adds the `contents` method and the `data` parameter of `saveToFile`, which can be passed in custom debug log data for formatting or saving to a file
+- Fixed the problem that the debug log data package name processed by `YukiHookLogger` may be incorrect in the (Xposed) Host environment
+- Fixed the problem that the package name may be incorrect on some systems (in some system apps) when the Xposed Module loads the Resource Hook event
+
+### 1.1.4 | 2022.10.04 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Fixed the issue that `YukiHookDataChannel` may not respond to broadcast events in the system framework, reproduced in A13
 - Fixed the issue that `YukiHookDataChannel` could not communicate with Module App in Host App for multiple versions
@@ -31,7 +73,7 @@ Time zone of version release date: **UTC+8**
 - Fixed a fatal bug where the Hook entry class name could not be customized
 - Added some code notes in `LoggerFactory` and updated special features documentation
 
-### 1.1.2 | 2022.09.30 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+### 1.1.2 | 2022.09.30 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Documentation [Basic Knowledge](../guide/knowledge) page add a friend link to the English version
 - Fixed `YukiBaseHooker` comments in English code note link errors
@@ -41,13 +83,13 @@ Time zone of version release date: **UTC+8**
 - Added `YukiLoggerData` real-time log data class, you can get the log array in real time through `YukiHookLogger.inMemoryData`
 - Added `ClassLoader.listOfClasses` method, which can directly get all `Class` in the current `Dex`
 
-### 1.1.1 | 2022.09.28 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+### 1.1.1 | 2022.09.28 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - Fixed the problem of wrong document friend links in [Basic Knowledge](../guide/knowledge) page
 - Fixed document `favicon` not showing up
 - Fixed bug in `DexClassFinder` search conditions
 
-### 1.1.0 | 2022.09.28 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+### 1.1.0 | 2022.09.28 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
 - This is a major version update, please refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) for the changes and usage mentioned in the changelog
 - Change the help documentation framework to [VuePress](https://v2.vuepress.vuejs.org)

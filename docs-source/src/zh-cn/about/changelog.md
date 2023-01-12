@@ -8,7 +8,49 @@
 
 :::
 
-### 1.1.4 | 2022.10.04 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.5 | 2023.01.13 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 规范并优化整体代码风格
+- 对部分内部调用的 API 进行了私有化处理
+- 底层 API 接口整体解耦合，为兼容更多 Hook Framework 做准备
+- 将部分集成于 API 中的功能移动到 `ksp-xposed` 依赖 (解耦合)，单独引入 `api` 依赖将不再包含第三方库等功能的引用
+- 文档 [快速开始](../guide/quick-start) 页面加入 `YukiHookAPI.Configs.isDebug` 何时需要关闭的说明
+- 规范类型定义中的 Java 原始类型 (Primitive Type) 并同步更新到文档
+- Java `type` 新增 `NumberClass` 类型
+- 改进了 (Xposed) 宿主环境的识别能力
+- 接管了 Xposed 模块装载后的全部异常，若发生异常将会自动拦截并打印错误日志
+- 修改类型定义中较低 Android 系统版本 (Android 5.0) 中不存在的 `Class` 为空安全类型
+- 适配并支持原生 Xposed，最低推荐版本为 Android 7.0
+- Hook 入口类新增支持声明为 `object` 类型 (单例)
+- 修复 Android 8 以下系统不支持 `Executable` 类型导致 Hook 失效的问题
+- 修复 Android 9 以下系统在使用 `Activity` 代理功能时报错问题并限制此功能最低支持版本为 Android 7.0
+- 新增禁止资源注入与 `Activity` 代理功能注入当前模块自身实例进程，防止发生问题
+- 修复一个 Hook 过程中方法返回值的对象是目标的继承类和接口时被识别为返回值不符的严重错误
+- 修复在当前 Hook 的实例对象是静态的情况下调用 `HookParam.callOriginal`、`HookParam.invokeOriginal` 出现对象为空问题
+- 优化对太极激活方法相关判断功能以及同步更新文档相关说明
+- 作废了 ~~`YukiHookAPI.Status.executorName`~~、~~`YukiHookAPI.Status.executorVersion`~~，请转移到 `YukiHookAPI.Status.Executor`
+- 适配了一些第三方 Hook Framework 的 `YukiHookAPI.Status.Executor.name` 名称显示功能
+- 新增 `Class.extends`、`Class.implements` 等方法，可更加方便地判断当前 `Class` 的继承与接口关系
+- 新增 `Class.toClass`、`Class.toClassOrNull` 等相关方法的同名泛型方法，可使用泛型来约束已知 `Class` 的实例对象类型
+- 修改 `classOf<T>` 方法的返回值为泛型 `T`，以约束已知 `Class` 的实例对象类型
+- 新增 `Class` 相关扩展方法的 `initialize` 参数，可控制在得到 `Class` 对象时是否同时初始化其静态方法块
+- 变量、方法、构造方法查找功能中新增 `param { ... }`、`type { ... }` 等用法，可对查找的对象增加更加具体的条件判断
+- `PackageParam` 的 `loadApp` 方法新增 `isExcludeSelf` 参数，可用于排除 Hook 相关功能注入模块自身实例进程
+- `PackageParam` 的 `onAppLifecycle` 方法新增 `isOnFailureThrowToApp` 参数，可将生命周期方法体内发生的异常直接抛给宿主
+- 修改 `PackageParam` 中的 `appClassLoader` 为可修改变量，可在 Hook 过程中动态设置宿主使用的 `ClassLoader`
+- `HookParam` 中新增 `dataExtra` 功能，可用于临时存储 Hook 方法体中的数据
+- 作废 `YukiHookModulePrefs` 中的 ~~`isRunInNewXShareMode`~~、~~`isXSharePrefsReadable`~~，统一合并到 `isPreferencesAvailable`
+- `Class.allFields`、`Class.allMethods` 等相关方法新增 `isAccessible` 参数，可控制成员对象何时可被设置为可访问类型
+- 修复 `YukiHookDataChannel` 存在多个宿主时在一个 `Activity` 中接收相同键值数据时仅会回调最后一个方法体的问题
+- `YukiHookDataChannel` 的 `wait` 等相关方法中新增 `priority` 参数，可传入 `ChannelPriority` 来自定义回调数据结果的条件
+- `YukiHookDataChannel` 新增发送数据时自动使用 `ChannelDataWrapper` 类型包装功能，提升使用体验并增强数据保护
+- `YukiHookDataChannel` 新增限制一次性发送数据的最大字节大小功能，防止数据过大造成 APP 崩溃
+- `YukiHookDataChannel` 新增发送数据过大时自动分段发送功能，仅支持 `List`、`Map`、`Set`、`String` 类型
+- `YukiHookLogger` 新增 `contents` 方法与 `saveToFile` 的 `data` 参数，可传入自定义的调试日志数据进行格式化或保存到文件
+- 修复 `YukiHookLogger` 处理后的调试日志数据包名可能在 (Xposed) 宿主环境不正确的问题
+- 修复 Xposed 模块装载资源钩子 (Resources Hook) 事件时在部分系统上 (部分系统 APP 中) 包名可能不正确的问题
+
+### 1.1.4 | 2022.10.04 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 修复 `YukiHookDataChannel` 可能不能响应系统框架中响应广播事件的问题，在 Android 13 中复现
 - 修复 `YukiHookDataChannel` 长达多个版本在 (Xposed) 宿主环境无法与模块通讯的问题
@@ -23,7 +65,7 @@
 - 修复一个无法自定义 Hook 入口类名的致命错误
 - 添加 `LoggerFactory` 中的部分代码注释文案并更新特色功能文档
 
-### 1.1.2 | 2022.09.30 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.2 | 2022.09.30 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 文档 [基础知识](../guide/knowledge) 页面新增 English 版本友情链接
 - 修复 `YukiBaseHooker` 注释中的 English 文档链接错误问题
@@ -33,13 +75,13 @@
 - 新增 `YukiLoggerData` 实时日志数据类，可实时通过 `YukiHookLogger.inMemoryData` 获取日志数组
 - 新增 `ClassLoader.listOfClasses` 方法，可直接获取当前 `Dex` 中的全部 `Class`
 
-### 1.1.1 | 2022.09.28 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.1 | 2022.09.28 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复了文档 [基础知识](../guide/knowledge) 页面友情链接错误的问题
 - 修复了文档 `favicon` 不显示的问题
 - 修复 `DexClassFinder` 查找条件中的 BUG
 
-### 1.1.0 | 2022.09.28 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.0 | 2022.09.28 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 这是一次大版本更新，有关更新日志中提到的变化及用法请参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection)
 - 更换帮助文档框架到 [VuePress](https://v2.vuepress.vuejs.org)
