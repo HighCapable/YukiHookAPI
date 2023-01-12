@@ -27,7 +27,6 @@
  */
 package com.highcapable.yukihookapi.hook.core.api.factory
 
-import android.os.Bundle
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberReplacement
@@ -56,7 +55,6 @@ internal object YukiHookCallbackDelegate {
 
     /**
      * 创建 [YukiHookCallback.Param] 实例
-     * @param dataExtra 当前回调范围内的数据存储实例
      * @param member [Member] 实例
      * @param instance 当前实例对象
      * @param args 方法、构造方法数组
@@ -68,7 +66,6 @@ internal object YukiHookCallbackDelegate {
      * @return [YukiHookCallback.Param]
      */
     internal fun createParamCallback(
-        dataExtra: Bundle,
         member: Member?,
         instance: Any?,
         args: Array<Any?>?,
@@ -78,7 +75,6 @@ internal object YukiHookCallbackDelegate {
         result: Any?,
         throwable: Throwable?
     ) = object : YukiHookCallback.Param {
-        override val dataExtra get() = dataExtra
         override val member get() = member
         override val instance get() = instance
         override val args get() = args

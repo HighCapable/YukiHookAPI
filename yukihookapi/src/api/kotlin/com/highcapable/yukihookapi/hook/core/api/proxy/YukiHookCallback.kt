@@ -28,7 +28,6 @@
  */
 package com.highcapable.yukihookapi.hook.core.api.proxy
 
-import android.os.Bundle
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import java.lang.reflect.Member
 
@@ -42,12 +41,6 @@ internal abstract class YukiHookCallback(internal open val priority: YukiHookPri
      * Hook 结果回调接口
      */
     internal interface Param {
-
-        /**
-         * 当前回调范围内的数据存储实例
-         * @return [Bundle]
-         */
-        val dataExtra: Bundle
 
         /**
          * [Member] 实例

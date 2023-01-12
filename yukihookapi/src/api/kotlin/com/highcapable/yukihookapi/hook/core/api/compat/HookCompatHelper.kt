@@ -58,7 +58,6 @@ internal object HookCompatHelper {
      */
     private fun XC_MethodHook.MethodHookParam.compat() =
         YukiHookCallbackDelegate.createParamCallback(
-            dataExtra = extra,
             member = method,
             instance = thisObject,
             args = args,
