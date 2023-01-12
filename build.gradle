@@ -12,7 +12,7 @@ ext {
     groupId = "com.highcapable.yukihookapi"
     apiVersion = "1.1.4"
     repoName = "YukiHookAPI"
-    repoDescription = "An efficient Kotlin version of the Xposed Hook API."
+    repoDescription = "An efficient Hook API and Xposed Module solution built in Kotlin."
     licenceName = "MIT License"
     licenceUrl = "https://github.com/fankes/YukiHookAPI/blob/master/LICENSE"
     website = "https://github.com/fankes/YukiHookAPI"
