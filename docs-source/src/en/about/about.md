@@ -9,7 +9,7 @@
 ```:no-line-numbers
 MIT License
 
-Copyright (C) 2019-2022 HighCapable
+Copyright (C) 2019-2023 HighCapable
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,4 +30,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-Copyright © 2019-2022 HighCapable
+Copyright © 2019-2023 HighCapable
