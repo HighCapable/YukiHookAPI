@@ -47,7 +47,7 @@ With `Kotlin`'s elegant `lambda` writing and `YukiHookAPI`, you can make your Ho
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadZygote {

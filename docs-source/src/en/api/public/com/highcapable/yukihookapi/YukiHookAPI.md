@@ -372,7 +372,7 @@ var isDebug: Boolean
 
 > 是否启用 DEBUG 模式。
 
-默认为开启状态，开启后模块将会向 `Logcat` 和 `XposedBridge.log` 打印详细的 Hook 日志，关闭后仅会打印 `E` 级别的日志。
+默认为开启状态，开启后模块将会向 `Logcat` 和 (Xposed) 宿主环境中的日志功能打印详细的 Hook 日志，关闭后仅会打印 `E` 级别的日志。
 
 <h3 class="deprecated">isAllowPrintingLogs - field</h3>
 
@@ -536,12 +536,12 @@ inline fun configs(initiate: Configs.() -> Unit)
 
 **Function Example**
 
-你可以在 `HookEntryClass` 的 `onInit` 方法中调用 `configs` 方法和 `debugLog` 方法完成对 API 的功能配置，实时生效。
+你可以在 Hook 入口类的 `onInit` 方法中调用 `configs` 方法和 `debugLog` 方法完成对 API 的功能配置，实时生效。
 
 > The following example
 
 ```kotlin
-class HookEntryClass : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         YukiHookAPI.configs {
@@ -572,7 +572,7 @@ class HookEntryClass : IYukiHookXposedInit {
 > The following example
 
 ```kotlin
-class HookEntryClass : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() = configs {
         debugLog {
@@ -601,7 +601,7 @@ class HookEntryClass : IYukiHookXposedInit {
 > The following example
 
 ```kotlin
-class HookEntryClass : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         YukiHookLogger.Configs.tag = "YukiHookAPI"

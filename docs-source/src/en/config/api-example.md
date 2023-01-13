@@ -138,7 +138,7 @@ As a child hooker, you can also call the `loadApp` method externally, and then d
 > The following example
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadApp(name = "com.example.demo", ChildCustomHooker)
@@ -172,12 +172,12 @@ object FirstHooker : YukiBaseHooker() {
 }
 ```
 
-Once all Hookers are set up, you can load your Hooker in the `onHook` method of your `HookEntryClass`.
+Once all Hookers are set up, you can load your Hooker in the `onHook` method of your Hook entry class.
 
 > The following example
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() =
         YukiHookAPI.encase(FirstHooker, SecondHooker, ThirdHooker ...)
@@ -189,7 +189,7 @@ Of course, we can also abbreviate it.
 > The following example
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase(FirstHooker, SecondHooker, ThirdHooker ...)
 }
@@ -285,7 +285,7 @@ encase {
 > Sample Code 2
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() {
         // <Scenario 1>
@@ -344,7 +344,7 @@ encase {
 > Sample Code 2
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() {
         encase(CustomHooker)

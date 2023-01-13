@@ -232,7 +232,7 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
 ### IYukiHookXposedInit 接口
 
-`IYukiHookXposedInit` 接口为你的 `HookEntryClass` 必须实现的接口，这是你的模块开始 Hook 的起点。
+`IYukiHookXposedInit` 接口为你的 Hook 入口类必须实现的接口，这是你的模块开始 Hook 的起点。
 
 ::: tip
 

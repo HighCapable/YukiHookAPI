@@ -16,7 +16,7 @@ features:
     details: A powerful, elegant, beautiful API built with Kotlin lambda can help you quickly implement members search and methods hooks.
   - title: Debugging Efficient
     details: A rich debug log function, detailing the name of each hooked method, time-consuming to find the class can quickly debug and find errors.
-  - title: Easy to transplant
+  - title: Easy to Transplant
     details: Native support for Xposed API usage, in any case, the supported Hook Framework with Xposed API can be quickly spliced with it.
   - title: Obfuscate Support
     details: The built Xposed Module simply supports R8, obfuscate will not destroy the hook entry point, and no other configuration is required under R8.

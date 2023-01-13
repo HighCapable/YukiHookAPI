@@ -218,6 +218,6 @@ For configuration details related to use as a Hook API, you can [click here](../
 
 ::: warning
 
-**YukiHookModuleStatus**, **YukiHookModulePrefs**, **YukiHookDataChannel** and Resources Hook functionality will not work when using a custom Hook Framework instead of the full Xposed Module.
+**YukiHookModulePrefs**, **YukiHookDataChannel** and Resources Hook functionality will not work when using a custom Hook Framework instead of the full Xposed Module.
 
 :::

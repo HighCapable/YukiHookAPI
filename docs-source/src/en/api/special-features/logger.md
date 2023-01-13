@@ -48,7 +48,7 @@ For example we only use `android.util.Log` to print logs.
 loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.LOGD)
 ```
 
-Or just use `XposedBridge.log` to print the log, this method can only be used in the (Xposed) Host environment.
+Or just use the log function that in the (Xposed) Host environment to print the log, this method can only be used in the (Xposed) Host environment.
 
 > The following example
 

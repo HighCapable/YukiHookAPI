@@ -238,7 +238,7 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
 ### IYukiHookXposedInit Interface
 
-The `IYukiHookXposedInit` interface that your `HookEntryClass` must implements it, which is the entry point for your Module App to start hooking.
+The `IYukiHookXposedInit` interface that your Hook entry class must implements it, which is the entry point for your Module App to start hooking.
 
 ::: tip
 

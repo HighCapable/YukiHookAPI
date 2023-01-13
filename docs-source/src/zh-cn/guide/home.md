@@ -47,7 +47,7 @@
 
 ```kotlin
 @InjectYukiHookWithXposed
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadZygote {

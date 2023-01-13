@@ -43,7 +43,7 @@ You cannot load a hooker in "onInit" or "onXposedEvent" method! Aborted
 > 示例如下
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         // ❗错误的使用方法
@@ -72,7 +72,7 @@ class HookEntry : IYukiHookXposedInit {
 > 示例如下
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         // 这里只能装载 configs 方法

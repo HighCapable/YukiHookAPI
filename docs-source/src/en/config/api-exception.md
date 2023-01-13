@@ -43,7 +43,7 @@ You try to load the `encase` method in the `onInit` or `onXposedEvent` method of
 > The following example
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         // ❗ Wrong usage
@@ -72,7 +72,7 @@ Please load the `encase` method in the `onHook` method.
 > The following example
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         // Only the configs method can be loaded here

@@ -46,7 +46,7 @@ loggerD(tag = "YukiHookAPI", msg = "This is a log")
 loggerD(tag = "YukiHookAPI", msg = "This is a log", type = LoggerType.LOGD)
 ```
 
-或又仅使用 `XposedBridge.log` 来打印日志，此方法仅可在 (Xposed) 宿主环境使用。
+或仅使用 (Xposed) 宿主环境中的日志功能来打印日志，此方法仅可在 (Xposed) 宿主环境使用。
 
 > 示例如下
 

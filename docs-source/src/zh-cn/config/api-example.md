@@ -138,7 +138,7 @@ object CustomHooker : YukiBaseHooker() {
 > 示例如下
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadApp(name = "com.example.demo", ChildCustomHooker)
@@ -172,12 +172,12 @@ object FirstHooker : YukiBaseHooker() {
 }
 ```
 
-搭建完全部 Hooker 后，你就可以在你的 `HookEntryClass` 入口类中的 `onHook` 方法中装载你的 Hooker 了。
+搭建完全部 Hooker 后，你就可以在你的 Hook 入口类中的 `onHook` 方法中装载你的 Hooker 了。
 
 > 示例如下
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = 
         YukiHookAPI.encase(FirstHooker, SecondHooker, ThirdHooker ...)
@@ -189,7 +189,7 @@ class HookEntry : IYukiHookXposedInit {
 > 示例如下
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase(FirstHooker, SecondHooker, ThirdHooker ...)
 }
@@ -284,7 +284,7 @@ encase {
 > 示例代码 2
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() {
         // <情景1>
@@ -342,7 +342,7 @@ encase {
 > 示例代码 2
 
 ```kotlin
-class HookEntry : IYukiHookXposedInit {
+object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() {
         encase(CustomHooker)
