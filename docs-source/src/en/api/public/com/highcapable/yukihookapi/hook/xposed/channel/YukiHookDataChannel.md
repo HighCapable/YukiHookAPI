@@ -220,6 +220,6 @@ fun obtainLoggerInMemoryData(priority: ChannelPriority?, result: (ArrayList<Yuki
 
 模块与宿主必须启用 [YukiHookLogger.Configs.isRecord](../../log/LoggerFactory#isrecord-field) 才能获取到调试日志数据。
 
-由于 Android 限制了数据传输大小的最大值，如果调试日志过多可能会造成 **TransactionTooLargeException** 异常。
+由于 Android 限制了数据传输大小的最大值，如果调试日志过多将会自动进行分段发送，数据越大速度越慢。
 
 :::

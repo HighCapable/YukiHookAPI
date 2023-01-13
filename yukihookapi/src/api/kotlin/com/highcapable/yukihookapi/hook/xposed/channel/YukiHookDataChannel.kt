@@ -40,7 +40,6 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.os.TransactionTooLargeException
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
@@ -384,7 +383,7 @@ class YukiHookDataChannel private constructor() {
          *
          * - ❗模块与宿主必须启用 [YukiHookLogger.Configs.isRecord] 才能获取到调试日志数据
          *
-         * - ❗由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多可能会造成 [TransactionTooLargeException] 异常
+         * - ❗由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多将会自动进行分段发送 - 数据越大速度越慢
          * @param priority 响应优先级 - 默认不设置
          * @param result 回调 [ArrayList]<[YukiLoggerData]>
          */
