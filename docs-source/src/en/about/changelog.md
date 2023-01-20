@@ -16,7 +16,15 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.5 | 2023.01.13 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.6 | 2023.01.21 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Fixed the serious problem that `ClassLoader` does not match after `PackageParam` keeps a single instance when there may be multiple package names in the same process when Xposed Module is loaded
+- When the package name is not distinguished when there are multiple package names in the same process, stop loading the singleton child Hooker and print a warning message
+- Fixed the problem that the number of parameters is incorrect when methods such as `HookParam.callOriginal`, `HookParam.invokeOriginal` call the original method
+- Modify the method parameter name `param` of reflection calls in `MethodFinder`, `ConstructorFinder`, `ReflectionFactory` to `args`
+- Added the function of judging the parameters of the entry class constructor in the automatic processing program of the Xposed Module, the entry class needs to ensure that it does not have any constructor parameters
+
+### 1.1.5 | 2023.01.13 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Standardize and optimize the overall code style
 - Privatized some APIs called internally

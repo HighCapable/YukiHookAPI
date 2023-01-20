@@ -8,7 +8,15 @@
 
 :::
 
-### 1.1.5 | 2023.01.13 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.6 | 2023.01.21 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 修复 Xposed 模块装载时可能存在同一个进程多个包名的情况导致 `PackageParam` 保持单例后 `ClassLoader` 不符的严重问题
+- 新增同一个进程多个包名的情况下未区分包名时，停止装载单例化的子 Hooker 并打印警告信息
+- 修复 `HookParam.callOriginal`、`HookParam.invokeOriginal` 等方法调用原始方法时参数个数不正确的问题
+- 修改 `MethodFinder`、`ConstructorFinder`、`ReflectionFactory` 中反射调用的方法参数名 `param` 为 `args`
+- 新增 Xposed 模块自动处理程序中判断入口类构造方法参数功能，入口类需要保证其不存在任何构造方法参数
+
+### 1.1.5 | 2023.01.13 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 规范并优化整体代码风格
 - 对部分内部调用的 API 进行了私有化处理
