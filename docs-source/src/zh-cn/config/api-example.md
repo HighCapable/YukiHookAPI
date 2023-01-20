@@ -105,7 +105,7 @@ object CustomHooker : YukiBaseHooker() {
 }
 ```
 
-子 Hooker **建议使用**单例 `object` 创建，你也可以使用 `class` 但不推荐。
+子 Hooker **建议使用**单例 `object` 创建，你也可以使用 `class` 但一般情况下不推荐。
 
 ::: warning
 
@@ -192,6 +192,31 @@ object HookEntry : IYukiHookXposedInit {
 object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase(FirstHooker, SecondHooker, ThirdHooker ...)
+}
+```
+
+#### 特殊情况
+
+上面我们说到，在一般情况下不推荐使用 `class` 创建子 Hooker，但是有一种特殊情况，它可能依然需要保持你的 Hooker 支持多例。
+
+有极少的可能性会出现在一个进程中存在多个包名的情况，这种情况下，`YukiHookAPI` 发现子 Hooker 为单例时，将会忽略并打印一条警告信息。
+
+```:no-line-numbers
+This Hooker "HOOKER" is singleton or reused, but the current process has multiple package name "NAME", the original is "NAME"
+Make sure your Hooker supports multiple instances for this situation
+The process with package name "NAME" will be ignored
+```
+
+遇到这种情况时，我们只需要修改 `object` 为 `class` 或者在装载时判断包名后再装载子 Hooker。
+
+例如以上情况中可使用以下形式来装载。
+
+> 示例如下
+
+```kotlin
+encase {
+    // 假设这个就是你需要装载的 APP 包名和子 Hooker
+    loadApp("com.example.demo", YourCustomHooker)
 }
 ```
 

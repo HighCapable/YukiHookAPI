@@ -105,7 +105,7 @@ object CustomHooker : YukiBaseHooker() {
 }
 ```
 
-Child Hooker **recommended** singleton `object` creation, you can also use `class` but not recommended.
+Child Hooker **recommended** to use singleton `object` to create, you can also use `class` but it is generally not recommended.
 
 ::: warning
 
@@ -192,6 +192,33 @@ Of course, we can also abbreviate it.
 object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase(FirstHooker, SecondHooker, ThirdHooker ...)
+}
+```
+
+#### Special Case
+
+As we mentioned above, it is generally not recommended to use `class` to create child Hookers, but there is a special case where it may still be necessary to keep your Hooker supporting multiple instantiations.
+
+There is a rare possibility that there are multiple package names in a process.
+
+In this case, when `YukiHookAPI` finds that the child Hooker is a singleton, it will ignore it and print a warning message.
+
+```: no-line-numbers
+This Hooker "HOOKER" is singleton or reused, but the current process has multiple package name "NAME", the original is "NAME"
+Make sure your Hooker supports multiple instances for this situation
+The process with package name "NAME" will be ignored
+```
+
+In this case, we only need to modify `object` to `class` or determine the package name during loading and then load the child Hooker.
+
+For example, in the above cases, the following forms can be used to load.
+
+> The following example
+
+```kotlin
+encase {
+    // Assume this is the app package name and child Hooker you need to load
+    loadApp("com.example.demo", YourCustomHooker)
 }
 ```
 
