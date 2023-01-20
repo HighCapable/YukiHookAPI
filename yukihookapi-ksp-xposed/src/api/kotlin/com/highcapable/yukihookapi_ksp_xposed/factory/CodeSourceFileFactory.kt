@@ -78,7 +78,7 @@ private fun createCommentContent(entryClassName: String = "", currrentClassTag: 
             " *\n" +
             " * Compiled from YukiHookXposedProcessor\n" +
             " *\n" +
-            (if (entryClassName.isNotBlank()) " * HookEntryClass: [$entryClassName]\n *\n" else "") +
+            (if (entryClassName.isNotBlank()) " * Hook entry class: [$entryClassName]\n *\n" else "") +
             " * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}\n" +
             " *\n" +
             " * Powered by YukiHookAPI (C) HighCapable 2019-2023\n" +
@@ -237,7 +237,7 @@ fun GenerateData.sources() = mapOf(
             "            }\n" +
             "            hookEntry.onHook()\n" +
             "            YukiXposedModuleCaller.callOnFinishLoadModule()\n" +
-            "        }.onFailure { YukiXposedModuleCaller.internalLoggerE(\"YukiHookAPI try to load HookEntryClass failed\", it) }\n" +
+            "        }.onFailure { YukiXposedModuleCaller.internalLoggerE(\"YukiHookAPI try to load hook entry class failed\", it) }\n" +
             "        YukiXposedModuleCaller.callOnPackageLoaded(\n" +
             "            type = when {\n" +
             "                isZygoteLoaded -> HookEntryType.ZYGOTE\n" +

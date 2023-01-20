@@ -155,13 +155,13 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 data.isEntryClassKindOfObject = when (it.classKind) {
                                     ClassKind.CLASS -> false
                                     ClassKind.OBJECT -> true
-                                    else -> problem(msg = "Invalid HookEntryClass \"${it.simpleName.asString()}\" kind \"${it.classKind}\"")
+                                    else -> problem(msg = "Invalid hook entry class \"${it.simpleName.asString()}\" kind \"${it.classKind}\"")
                                 }
                                 generateAssetsFile(codePath = (it.location as? FileLocation?)?.filePath ?: "", sourcePath = sourcePath, data)
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
                                 problem(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
-                            else -> problem(msg = "HookEntryClass \"${it.simpleName.asString()}\" must be implements \"IYukiHookXposedInit\"")
+                            else -> problem(msg = "The hook entry class \"${it.simpleName.asString()}\" must be implements \"IYukiHookXposedInit\"")
                         } else problem(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
                         /** 仅处理第一个标记的类 - 再次处理将拦截并报错 */
                         isInjectOnce = false
