@@ -77,21 +77,31 @@ internal object YukiHookHelper {
     }
 
     /**
+     * 获取当前 [Member] 是否被 Hook
+     * @param member 实例
+     * @return [Boolean]
+     */
+    internal fun isMemberHooked(member: Member?): Boolean {
+        if (member == null) return false
+        return HookApiCategoryHelper.hasAvailableHookApi && YukiHookCacheStore.hookedMembers.any { it.member.toString() == member.toString() }
+    }
+
+    /**
      * 执行原始 [Member]
      *
      * 未进行 Hook 的 [Member]
      * @param member 实例
      * @param args 参数实例
      * @return [Any] or null
+     * @throws IllegalStateException 如果 [Member] 参数个数不正确
      */
-    internal fun invokeOriginalMember(member: Member?, instance: Any?, vararg args: Any?) =
-        if (HookApiCategoryHelper.hasAvailableHookApi && YukiHookCacheStore.hookedMembers.any { it.member.toString() == member.toString() })
-            member?.let {
-                runCatching { HookCompatHelper.invokeOriginalMember(member, instance, args) }
-                    .onFailure { yLoggerE(msg = "Invoke original Member [$member] failed", e = it) }
-                    .getOrNull()
-            }
-        else null
+    internal fun invokeOriginalMember(member: Member?, instance: Any?, args: Array<out Any?>?) =
+        if (isMemberHooked(member)) member?.let {
+            runCatching { HookCompatHelper.invokeOriginalMember(member, instance, args) }.onFailure {
+                if (it.message?.lowercase()?.contains("wrong number of arguments") == true) error(it.message ?: it.toString())
+                yLoggerE(msg = "Invoke original Member [$member] failed", e = it)
+            }.getOrNull()
+        } else null
 
     /**
      * 使用当前 Hook API 自带的日志功能打印日志

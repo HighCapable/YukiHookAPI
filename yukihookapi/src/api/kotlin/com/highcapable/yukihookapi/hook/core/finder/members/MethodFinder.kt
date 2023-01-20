@@ -702,8 +702,8 @@ class MethodFinder @PublishedApi internal constructor(
              * @return [Any] or null
              */
             private fun baseCall(vararg param: Any?) =
-                if (isCallOriginal)
-                    method?.let { YukiHookHelper.invokeOriginalMember(it, instance, *param) ?: it.invoke(instance, *param) }
+                if (isCallOriginal && YukiHookHelper.isMemberHooked(method))
+                    YukiHookHelper.invokeOriginalMember(method, instance, param)
                 else method?.invoke(instance, *param)
 
             /**

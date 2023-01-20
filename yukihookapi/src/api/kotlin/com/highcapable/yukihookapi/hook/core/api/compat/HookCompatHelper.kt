@@ -113,7 +113,7 @@ internal object HookCompatHelper {
      * @param args 参数实例
      * @return [Any] or null
      */
-    internal fun invokeOriginalMember(member: Member?, instance: Any?, vararg args: Any?): Any? {
+    internal fun invokeOriginalMember(member: Member?, instance: Any?, args: Array<out Any?>?): Any? {
         if (member == null) return null
         return when (HookApiCategoryHelper.currentCategory) {
             HookApiCategory.ROVO89_XPOSED -> XposedBridge.invokeOriginalMethod(member, instance, args)

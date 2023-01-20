@@ -87,6 +87,8 @@ class HookParam internal constructor(
      */
     val args get() = param?.args ?: error("Current hooked Member args is null")
 
+    //val instanceOrNull?
+
     /**
      * 获取当前 Hook 实例的对象
      *
@@ -231,7 +233,7 @@ class HookParam internal constructor(
      * @return [T] or null
      */
     @JvmName(name = "invokeOriginal_Generics")
-    fun <T> invokeOriginal(vararg args: Any?) = YukiHookHelper.invokeOriginalMember(member, param?.instance, *args) as T?
+    fun <T> invokeOriginal(vararg args: Any?) = YukiHookHelper.invokeOriginalMember(member, param?.instance, args) as T?
 
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 true
