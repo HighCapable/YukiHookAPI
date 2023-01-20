@@ -46,6 +46,7 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
@@ -427,7 +428,21 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 你可以在 Hooker 中继续装载 Hooker
      * @param hooker Hook 子类
      */
-    fun loadHooker(hooker: YukiBaseHooker) = hooker.assignInstance(packageParam = this)
+    fun loadHooker(hooker: YukiBaseHooker) {
+        hooker.wrapper?.also {
+            if (it.packageName.isNotBlank() && it.type != HookEntryType.ZYGOTE)
+                if (it.packageName == wrapper?.packageName)
+                    hooker.assignInstance(packageParam = this)
+                else yLoggerW(
+                    msg = "This Hooker \"${hooker::class.java.name}\" is singleton or reused, " +
+                            "but the current process has multiple package name \"${wrapper?.packageName}\", " +
+                            "the original is \"${it.packageName}\"\n" +
+                            "Make sure your Hooker supports multiple instances for this situation\n" +
+                            "The process with package name \"${wrapper?.packageName}\" will be ignored"
+                )
+            else hooker.assignInstance(packageParam = this)
+        } ?: hooker.assignInstance(packageParam = this)
+    }
 
     /**
      * 通过 [appClassLoader] 按指定条件查找并得到当前 Hook APP Dex 中的 [Class]

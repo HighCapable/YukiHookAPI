@@ -55,6 +55,12 @@ internal class PackageParamWrapper internal constructor(
 ) {
 
     /**
+     * 获取当前包装实例的名称 ID
+     * @return [String]
+     */
+    internal val wrapperNameId get() = if (type == HookEntryType.ZYGOTE) "android-zygote" else packageName
+
+    /**
      * 获取当前正在进行的 Hook 进程是否正确
      *
      * 此功能为修复在 Hook 系统框架、系统 APP 等情况时会出现 [ClassLoader] 不匹配的问题

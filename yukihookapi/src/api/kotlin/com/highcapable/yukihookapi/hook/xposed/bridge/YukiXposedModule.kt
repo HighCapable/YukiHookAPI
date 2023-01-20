@@ -57,8 +57,8 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
     /** 当前 Hook 进程是否正处于 Zygote */
     private var isInitializingZygote = false
 
-    /** 当前 [PackageParam] 实例 */
-    private val packageParam = PackageParam()
+    /** 当前 [PackageParam] 实例数组 */
+    private val packageParams = HashMap<String, PackageParam>()
 
     /** 已在 [PackageParam] 中被装载的 APP 包名 */
     private val loadedPackageNames = HashSet<String>()
@@ -125,6 +125,14 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
         loadedPackageNames.add("$packageName:$type")
         return false
     }
+
+    /**
+     * 实例化当前 [PackageParamWrapper] 到 [PackageParam]
+     *
+     * 如果实例不存在将会自动创建一个新实例
+     * @return [PackageParam]
+     */
+    private fun PackageParamWrapper.instantiate() = packageParams[wrapperNameId] ?: PackageParam().apply { packageParams[wrapperNameId] = this }
 
     /**
      * 创建、修改 [PackageParamWrapper]
@@ -206,7 +214,7 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
                 else null
         }?.also {
             runCatching {
-                if (it.isCorrectProcess) packageParamCallback?.invoke(packageParam.assign(it).apply { YukiHookAPI.printSplashInfo() })
+                if (it.isCorrectProcess) packageParamCallback?.invoke(it.instantiate().assign(it).apply { YukiHookAPI.printSplashInfo() })
                 if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
                     AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
                 if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
