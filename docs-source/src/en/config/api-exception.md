@@ -130,7 +130,7 @@ Usually, this kind of error does not happen easily. If this error occurs, you ca
 
 ::: danger loggerE
 
-YukiHookAPI try to load HookEntryClass failed
+YukiHookAPI try to load hook entry class failed
 
 :::
 

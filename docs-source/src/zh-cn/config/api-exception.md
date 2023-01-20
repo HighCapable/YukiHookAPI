@@ -126,7 +126,7 @@ An exception occurred when hooking internal function
 
 ::: danger loggerE
 
-YukiHookAPI try to load HookEntryClass failed
+YukiHookAPI try to load hook entry class failed
 
 :::
 
