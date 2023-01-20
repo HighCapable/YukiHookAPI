@@ -500,10 +500,6 @@ var isEnableMemberCache: Boolean
 
 `v1.0.68` `added`
 
-`v1.0.80` `modified`
-
-将方法体进行 inline
-
 **Function Illustrate**
 
 > 是否启用 `Member` 缓存功能。
@@ -527,6 +523,10 @@ inline fun configs(initiate: Configs.() -> Unit)
 **Change Records**
 
 `v1.0` `first`
+
+`v1.0.80` `modified`
+
+将方法体进行 inline
 
 **Function Illustrate**
 
