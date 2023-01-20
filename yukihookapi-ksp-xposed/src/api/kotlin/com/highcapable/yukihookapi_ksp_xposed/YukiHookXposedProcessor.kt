@@ -146,6 +146,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
                         if (isInjectOnce) when {
                             it.superTypes.any { type -> type.element.toString() == "IYukiHookXposedInit" } -> {
+                                if ((it.primaryConstructor?.parameters?.size ?: 0) > 0)
+                                    problem(msg = "The hook entry class \"${it.simpleName.asString()}\" doesn't allowed any constructor parameters")
                                 val xInitPatchName = data.xInitClassName.ifBlank { "${it.simpleName.asString()}$XPOSED_CLASS_SHORT_NAME" }
                                 if (data.xInitClassName == it.simpleName.asString())
                                     problem(msg = "Duplicate entryClassName \"${data.xInitClassName}\"")
