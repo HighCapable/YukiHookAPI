@@ -909,11 +909,11 @@ inline fun <reified T : Any> T.current(ignored: Boolean, initiate: CurrentClass.
 ## Class.buildOf <span class="symbol">- ext-method</span>
 
 ```kotlin:no-line-numbers
-inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions): Any?
+inline fun Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions): Any?
 ```
 
 ```kotlin:no-line-numbers
-inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions): T?
+inline fun <T> Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions): T?
 ```
 
 **Change Records**
@@ -927,6 +927,10 @@ inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditi
 `v1.1.0` `modified`
 
 加入无泛型方法 `buildOf`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 

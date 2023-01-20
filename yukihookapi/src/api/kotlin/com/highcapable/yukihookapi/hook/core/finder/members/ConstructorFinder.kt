@@ -587,24 +587,24 @@ class ConstructorFinder @PublishedApi internal constructor(
 
             /**
              * 执行 [Constructor] 创建目标实例
-             * @param param [Constructor] 参数
+             * @param args [Constructor] 参数
              * @return [Any] or null
              */
-            private fun baseCall(vararg param: Any?) = constructor?.newInstance(*param)
+            private fun baseCall(vararg args: Any?) = constructor?.newInstance(*args)
 
             /**
              * 执行 [Constructor] 创建目标实例 - 不指定目标实例类型
-             * @param param [Constructor] 参数
+             * @param args [Constructor] 参数
              * @return [Any] or null
              */
-            fun call(vararg param: Any?) = baseCall(*param)
+            fun call(vararg args: Any?) = baseCall(*args)
 
             /**
              * 执行 [Constructor] 创建目标实例 - 指定 [T] 目标实例类型
-             * @param param [Constructor] 参数
+             * @param args [Constructor] 参数
              * @return [T] or null
              */
-            fun <T> newInstance(vararg param: Any?) = baseCall(*param) as? T?
+            fun <T> newInstance(vararg args: Any?) = baseCall(*args) as? T?
 
             override fun toString() = "[${constructor?.name ?: "<empty>"}]"
         }

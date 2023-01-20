@@ -914,12 +914,16 @@ fun original(): Instance
 #### call <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun call(vararg param: Any?): Any?
+fun call(vararg args: Any?): Any?
 ```
 
 **Change Records**
 
 `v1.0.2` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 
@@ -928,12 +932,16 @@ fun call(vararg param: Any?): Any?
 #### invoke <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun <T> invoke(vararg param: Any?): T?
+fun <T> invoke(vararg args: Any?): T?
 ```
 
 **Change Records**
 
 `v1.0.2` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 
@@ -942,12 +950,16 @@ fun <T> invoke(vararg param: Any?): T?
 #### byte <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun byte(vararg param: Any?): Byte?
+fun byte(vararg args: Any?): Byte?
 ```
 
 **Change Records**
 
 `v1.0.68` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 
@@ -956,7 +968,7 @@ fun byte(vararg param: Any?): Byte?
 #### int <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun int(vararg param: Any?): Int
+fun int(vararg args: Any?): Int
 ```
 
 **Change Records**
@@ -967,6 +979,10 @@ fun int(vararg param: Any?): Int
 
 修改 ~~`callInt`~~ 为 `int`
 
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
+
 **Function Illustrate**
 
 > 执行 `Method`，指定 Int 返回值类型。
@@ -974,7 +990,7 @@ fun int(vararg param: Any?): Int
 #### long <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun long(vararg param: Any?): Long
+fun long(vararg args: Any?): Long
 ```
 
 **Change Records**
@@ -985,6 +1001,10 @@ fun long(vararg param: Any?): Long
 
 修改 ~~`callLong`~~ 为 `long`
 
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
+
 **Function Illustrate**
 
 > 执行 `Method`，指定 Long 返回值类型。
@@ -992,7 +1012,7 @@ fun long(vararg param: Any?): Long
 #### short <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun short(vararg param: Any?): Short
+fun short(vararg args: Any?): Short
 ```
 
 **Change Records**
@@ -1003,6 +1023,10 @@ fun short(vararg param: Any?): Short
 
 修改 ~~`callShort`~~ 为 `short`
 
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
+
 **Function Illustrate**
 
 > 执行 `Method`，指定 Short 返回值类型。
@@ -1010,7 +1034,7 @@ fun short(vararg param: Any?): Short
 #### double <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun double(vararg param: Any?): Double
+fun double(vararg args: Any?): Double
 ```
 
 **Change Records**
@@ -1021,6 +1045,10 @@ fun double(vararg param: Any?): Double
 
 修改 ~~`callDouble`~~ 为 `double`
 
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
+
 **Function Illustrate**
 
 > 执行 `Method`，指定 Double 返回值类型。
@@ -1028,7 +1056,7 @@ fun double(vararg param: Any?): Double
 #### float <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun float(vararg param: Any?): Float
+fun float(vararg args: Any?): Float
 ```
 
 **Change Records**
@@ -1039,6 +1067,10 @@ fun float(vararg param: Any?): Float
 
 修改 ~~`callFloat`~~ 为 `float`
 
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
+
 **Function Illustrate**
 
 > 执行 `Method`，指定 Float 返回值类型。
@@ -1046,7 +1078,7 @@ fun float(vararg param: Any?): Float
 #### string <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun string(vararg param: Any?): String
+fun string(vararg args: Any?): String
 ```
 
 **Change Records**
@@ -1057,6 +1089,10 @@ fun string(vararg param: Any?): String
 
 修改 ~~`callString`~~ 为 `string`
 
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
+
 **Function Illustrate**
 
 > 执行 `Method`，指定 String 返回值类型。
@@ -1064,12 +1100,16 @@ fun string(vararg param: Any?): String
 #### char <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun char(vararg param: Any?): Char
+fun char(vararg args: Any?): Char
 ```
 
 **Change Records**
 
 `v1.0.68` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 
@@ -1078,7 +1118,7 @@ fun char(vararg param: Any?): Char
 #### boolean <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun boolean(vararg param: Any?): Boolean
+fun boolean(vararg args: Any?): Boolean
 ```
 
 **Change Records**
@@ -1089,6 +1129,10 @@ fun boolean(vararg param: Any?): Boolean
 
 修改 ~~`callBoolean`~~ 为 `boolean`
 
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
+
 **Function Illustrate**
 
 > 执行 `Method`，指定 Boolean 返回值类型。
@@ -1096,12 +1140,16 @@ fun boolean(vararg param: Any?): Boolean
 ### array <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun <reified T> array(vararg param: Any?): Array<T>
+inline fun <reified T> array(vararg args: Any?): Array<T>
 ```
 
 **Change Records**
 
 `v1.0.68` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 
@@ -1110,12 +1158,16 @@ inline fun <reified T> array(vararg param: Any?): Array<T>
 ### list <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun <reified T> list(vararg param: Any?): List<T>
+inline fun <reified T> list(vararg args: Any?): List<T>
 ```
 
 **Change Records**
 
 `v1.0.68` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 

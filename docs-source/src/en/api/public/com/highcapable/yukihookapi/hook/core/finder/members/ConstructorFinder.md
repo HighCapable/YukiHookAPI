@@ -762,12 +762,16 @@ inner class Instance internal constructor(private val constructor: Constructor<*
 #### call <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun call(vararg param: Any?): Any?
+fun call(vararg args: Any?): Any?
 ```
 
 **Change Records**
 
 `v1.0.2` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 
@@ -776,12 +780,16 @@ fun call(vararg param: Any?): Any?
 #### newInstance <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun <T> newInstance(vararg param: Any?): T?
+fun <T> newInstance(vararg args: Any?): T?
 ```
 
 **Change Records**
 
 `v1.0.2` `added`
+
+`v1.1.6` `modified`
+
+修改参数命名 `param` 为 `args`
 
 **Function Illustrate**
 

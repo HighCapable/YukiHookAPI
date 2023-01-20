@@ -370,26 +370,26 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: Curre
  * @return [Any] or null
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("buildOf(*param, initiate)"))
-fun Class<*>.buildOfAny(vararg param: Any?, initiate: ConstructorConditions = { emptyParam() }) = buildOf(*param, initiate)
+fun Class<*>.buildOfAny(vararg args: Any?, initiate: ConstructorConditions = { emptyParam() }) = buildOf(*args, initiate)
 
 /**
  * 通过构造方法创建新实例 - 任意类型 [Any]
- * @param param 方法参数
+ * @param args 方法参数
  * @param initiate 查找方法体
  * @return [Any] or null
  */
-inline fun Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions = { emptyParam() }) =
-    constructor(initiate).get().call(*param)
+inline fun Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions = { emptyParam() }) =
+    constructor(initiate).get().call(*args)
 
 /**
  * 通过构造方法创建新实例 - 指定类型 [T]
- * @param param 方法参数
+ * @param args 方法参数
  * @param initiate 查找方法体
  * @return [T] or null
  */
 @JvmName(name = "buildOf_Generics")
-inline fun <T> Class<*>.buildOf(vararg param: Any?, initiate: ConstructorConditions = { emptyParam() }) =
-    constructor(initiate).get().newInstance<T>(*param)
+inline fun <T> Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions = { emptyParam() }) =
+    constructor(initiate).get().newInstance<T>(*args)
 
 /**
  * 遍历当前类中的所有方法
