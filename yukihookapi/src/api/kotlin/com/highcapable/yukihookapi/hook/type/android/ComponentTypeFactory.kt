@@ -56,7 +56,6 @@ import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.factory.toClassOrNull
 import org.w3c.dom.UserDataHandler
-import java.awt.Component
 
 /**
  * 获得 [android.R] 类型
@@ -507,12 +506,6 @@ val ToastClass get() = classOf<Toast>()
  * @return [Class]<[Intent]>
  */
 val IntentClass get() = classOf<Intent>()
-
-/**
- * 获得 [Component] 类型
- * @return [Class]<[Component]>
- */
-val ComponentClass get() = classOf<Component>()
 
 /**
  * 获得 [ComponentInfo] 类型
