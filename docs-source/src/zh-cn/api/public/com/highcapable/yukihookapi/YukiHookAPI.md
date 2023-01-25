@@ -362,7 +362,7 @@ var isDebug: Boolean
 
 **功能描述**
 
-> 是否启用 DEBUG 模式。
+> 是否启用 Debug 模式。
 
 默认为开启状态，开启后模块将会向 `Logcat` 和 (Xposed) 宿主环境中的日志功能打印详细的 Hook 日志，关闭后仅会打印 `E` 级别的日志。
 
@@ -500,7 +500,7 @@ var isEnableMemberCache: Boolean
 
 启用后会缓存已经找到的 `Method`、`Constructor`、`Field`。
 
-缓存的 `Member` 都将处于 `MemberCacheStore` 的全局静态实例中。
+缓存的 `Member` 都将处于 `ReflectsCacheStore` 的全局静态实例中。
 
 推荐使用 `MethodFinder`、`ConstructorFinder`、`FieldFinder` 来获取 `Member`。
 
@@ -524,7 +524,7 @@ inline fun configs(initiate: Configs.() -> Unit)
 
 > 对 `Configs` 类实现了一个 `lambda` 方法体。
 
-你可以轻松的调用它进行配置。
+你可以轻松地调用它进行配置。
 
 **功能示例**
 

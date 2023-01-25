@@ -68,7 +68,7 @@ Add dependencies to your app `build.gradle`.
 
 ```groovy
 dependencies {
-    // base dependencies
+    // Base dependencies
     implementation 'com.highcapable.yukihookapi:api:<yuki-version>'
     // ❗Be sure to add it as an Xposed Module, optional in other cases
     compileOnly 'de.robv.android.xposed:api:82'
@@ -121,7 +121,7 @@ Add the base code to your `AndroidManifest.xml`.
     android:name="xposedmodule"
     android:value="true" />
 
-<!-- Set your module description -->
+<!-- Set your Xposed Module description -->
 <meta-data
     android:name="xposeddescription"
     android:value="Fill in your Xposed Module description" />

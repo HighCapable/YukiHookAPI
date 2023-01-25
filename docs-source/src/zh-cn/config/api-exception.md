@@ -10,7 +10,7 @@ pageClass: hidden-anchor-page
 
 ## 非阻断异常
 
-> 这些异常不会导致 APP 停止运行(FC)，但是会在控制台打印 `E` 级别的日志，也可能会停止继续执行相关功能。
+> 这些异常不会导致 APP 停止运行 (FC)，但是会在控制台打印 `E` 级别的日志，也可能会停止继续执行相关功能。
 
 ###### exception
 
@@ -996,7 +996,7 @@ An exception occurred during AppLifecycle event
 
 ## 阻断异常
 
-> 这些异常会直接导致 APP 停止运行(FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
+> 这些异常会直接导致 APP 停止运行 (FC)，同时会在控制台打印 `E` 级别的日志，还会造成 Hook 进程“死掉”。
 
 ###### exception
 

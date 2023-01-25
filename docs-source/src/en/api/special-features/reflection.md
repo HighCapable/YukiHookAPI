@@ -892,7 +892,7 @@ By observing that there are two methods named `b` in `Class`, you can use the fo
 ```kotlin
 // Assume this is an instance of this Class
 val instance = Test()
-// Call and execute using YukiHook API
+// Call and execute using YukiHookAPI
 Test::class.java.method {
     name = "b"
 }.all(instance).forEach { instance ->
