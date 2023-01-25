@@ -2,6 +2,12 @@
 
 > `YukiHookAPI` 为开发者封装了一套接近零反射写法的反射 API，它几乎可以完全取代原生 Java 的反射 API 相关用法。
 
+此功能的核心部分已被解耦合为 [YukiReflection](https://github.com/fankes/YukiReflection) 项目，它可以独立使用于任何 Android 项目中。
+
+现在 `YukiReflection` 作为核心依赖集成于 `YukiHookAPI`。
+
+`YukiHookAPI` 在 `YukiReflection` 的基础上加入了针对 Hook 功能的相关扩展，使用 `YukiHookAPI` 无需引入此依赖。
+
 ## Class 扩展
 
 > 这里是 **Class** 对象自身相关的扩展功能。

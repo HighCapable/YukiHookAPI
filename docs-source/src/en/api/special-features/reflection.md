@@ -2,6 +2,12 @@
 
 > `YukiHookAPI` encapsulates a set of reflection API with near-zero reflection writing for developers, which can almost completely replace the usage of reflection API in Java.
 
+The core part of this functionality has been decoupled into the [YukiReflection](https://github.com/fankes/YukiReflection) project, which can be used independently in any Android project.
+
+Now `YukiReflection` is integrated into `YukiHookAPI` as a core dependency.
+
+`YukiHookAPI` adds related extensions for Hook functions on the basis of `YukiReflection`, and there is no need to introduce this dependency to use `YukiHookAPI`.
+
 ## Class Extensions
 
 > Here are the extension functions related to the **Class** object itself.

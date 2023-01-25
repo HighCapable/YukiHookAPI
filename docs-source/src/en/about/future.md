@@ -22,11 +22,17 @@ In the later period, the permissions of the Android system will become more and 
 
 ### Lite Version Supported for Standalone Use
 
+If you like the Reflection API of `YukiHookAPI`, but your project may not need related Hook functions.
+
+Well here is some good news for you:
+
+The core Reflection API of `YukiHookAPI` has been decoupled into [YukiReflection](https://github.com/fankes/YukiReflection) project, which can now be used in any Android project.
+
 ::: tip To be Discussed
 
-At present, the API only supports binding to **xposed_init** through the automatic handler.
+At present, the API only supports binding to **xposed_init** through the automatic builder.
 
-If you don't like the automatic handler, you must implement the module loading entry yourself.
+If you don't like the automatic builder, you must implement the module loading entry yourself.
 
 In the future, the Lite version with only API functions will be launched according to the number of people required.
 

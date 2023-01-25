@@ -22,6 +22,12 @@
 
 ### 支持独立使用的 Lite 版本
 
+如果你喜欢 `YukiHookAPI` 的反射 API，但你的项目可能并不需要相关 Hook 功能。
+
+那么这里有一个好消息要告诉你：
+
+`YukiHookAPI` 的核心反射 API 已被解耦合为 [YukiReflection](https://github.com/fankes/YukiReflection) 项目，它现在能在任何 Android 项目中使用。
+
 ::: tip 待讨论
 
 目前 API 只支持通过自动处理程序绑定到 **xposed_init**，若您不喜欢自动处理程序，一定要自己实现模块装载入口，未来会按照需求人数推出仅有 API 功能的 Lite 版本，你可向我们提出 **issues**。
