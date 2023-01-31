@@ -73,9 +73,9 @@ public class HookEntry implements IYukiHookXposedInit {
     @Override
     public void onHook() {
         // Here is the Java writing method that is more similar to the Kotlin writing method, just for reference
-        // Calling Kotlin's lambda in Java also needs to return null in the Unit case
+        // Calling Kotlin's lambda in Java also needs to return Unit.INSTANCE in the Unit case
         // 这里介绍了比较近似于 Kotlin 写法的 Java 写法 - 仅供参考
-        // 在 Java 中调用 Kotlin 的 lambda 在 Unit 情况下也需要 return null
+        // 在 Java 中调用 Kotlin 的 lambda 在 Unit 情况下也需要 return Unit.INSTANCE
         YukiHookAPI.INSTANCE.encase(e -> {
             e.loadZygote(l -> {
                 l.hook(Activity.class, false, h -> {
