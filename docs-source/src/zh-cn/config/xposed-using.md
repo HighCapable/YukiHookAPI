@@ -230,6 +230,18 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
 }
 ```
 
+::: tip
+
+由于 Xposed 入口类是被 **YukiHookAPI** 动态生成的，它会同时生成如下两个文件。
+
+- **assets/xposed_init**
+
+- **resources/META-INF/yukihookapi_init**
+  
+如果你正在使用 **Git** 代码控制系统，你可以将这两个文件添加到 **.gitignore** 文件中。
+
+:::
+
 ### IYukiHookXposedInit 接口
 
 `IYukiHookXposedInit` 接口为你的 Hook 入口类必须实现的接口，这是你的模块开始 Hook 的起点。
