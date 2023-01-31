@@ -32,6 +32,7 @@ package com.highcapable.yukihookapi.hook.param
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -671,11 +672,19 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     inner class AppLifecycle @PublishedApi internal constructor(private val isOnFailureThrowToApp: Boolean) {
 
         /**
+         * 是否为当前操作 [HookEntryType.PACKAGE] 的调用域
+         *
+         * 为避免多次设置回调事件 - 回调事件仅在 Hook 开始后生效
+         * @return [Boolean]
+         */
+        private val isCurrentScope get() = wrapper?.type == HookEntryType.PACKAGE
+
+        /**
          * 监听当前 Hook APP 装载 [Application.attachBaseContext]
          * @param result 回调 - ([Context] baseContext,[Boolean] 是否已执行 super)
          */
         fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
-            AppParasitics.AppLifecycleCallback.attachBaseContextCallback = result
+            if (isCurrentScope) AppParasitics.AppLifecycleCallback.attachBaseContextCallback = result
         }
 
         /**
@@ -683,7 +692,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param initiate 方法体
          */
         fun onCreate(initiate: Application.() -> Unit) {
-            AppParasitics.AppLifecycleCallback.onCreateCallback = initiate
+            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onCreateCallback = initiate
         }
 
         /**
@@ -691,7 +700,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param initiate 方法体
          */
         fun onTerminate(initiate: Application.() -> Unit) {
-            AppParasitics.AppLifecycleCallback.onTerminateCallback = initiate
+            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onTerminateCallback = initiate
         }
 
         /**
@@ -699,7 +708,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param initiate 方法体
          */
         fun onLowMemory(initiate: Application.() -> Unit) {
-            AppParasitics.AppLifecycleCallback.onLowMemoryCallback = initiate
+            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onLowMemoryCallback = initiate
         }
 
         /**
@@ -707,7 +716,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param result 回调 - ([Application] 当前实例,[Int] 类型)
          */
         fun onTrimMemory(result: (self: Application, level: Int) -> Unit) {
-            AppParasitics.AppLifecycleCallback.onTrimMemoryCallback = result
+            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onTrimMemoryCallback = result
         }
 
         /**
@@ -715,7 +724,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param result 回调 - ([Application] 当前实例,[Configuration] 配置实例)
          */
         fun onConfigurationChanged(result: (self: Application, config: Configuration) -> Unit) {
-            AppParasitics.AppLifecycleCallback.onConfigurationChangedCallback = result
+            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onConfigurationChangedCallback = result
         }
 
         /**
@@ -724,7 +733,17 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
          * @param result 回调 - ([Context] 当前上下文,[Intent] 当前 Intent)
          */
         fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit) {
-            if (action.isNotEmpty()) AppParasitics.AppLifecycleCallback.onReceiversCallback[action.value()] = Pair(action, result)
+            if (isCurrentScope && action.isNotEmpty())
+                AppParasitics.AppLifecycleCallback.onReceiverActionsCallbacks[action.value()] = Pair(action, result)
+        }
+
+        /**
+         * 注册系统广播监听
+         * @param filter 广播意图过滤器
+         * @param result 回调 - ([Context] 当前上下文,[Intent] 当前 Intent)
+         */
+        fun registerReceiver(filter: IntentFilter, result: (context: Context, intent: Intent) -> Unit) {
+            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onReceiverFiltersCallbacks[filter.toString()] = Pair(filter, result)
         }
 
         /** 设置创建生命周期监听回调 */

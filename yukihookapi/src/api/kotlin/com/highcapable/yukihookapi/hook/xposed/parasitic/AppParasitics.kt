@@ -292,16 +292,27 @@ internal object AppParasitics {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             (param.args?.get(0) as? Application?)?.also {
-                                hostApplication = it
-                                AppLifecycleCallback.onCreateCallback?.invoke(it)
-                                AppLifecycleCallback.onReceiversCallback.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
-                                    if (e.first.isNotEmpty()) it.registerReceiver(object : BroadcastReceiver() {
+                                /**
+                                 * 注册广播
+                                 * @param result 回调 - ([Context] 当前实例, [Intent] 当前对象)
+                                 */
+                                fun IntentFilter.registerReceiver(result: (Context, Intent) -> Unit) {
+                                    it.registerReceiver(object : BroadcastReceiver() {
                                         override fun onReceive(context: Context?, intent: Intent?) {
                                             if (context == null || intent == null) return
-                                            if (e.first.any { e -> e == intent.action }) e.second(context, intent)
+                                            result(context, intent)
                                         }
-                                    }, IntentFilter().apply { e.first.forEach { e -> addAction(e) } })
+                                    }, this)
                                 }
+                                hostApplication = it
+                                AppLifecycleCallback.onCreateCallback?.invoke(it)
+                                AppLifecycleCallback.onReceiverActionsCallbacks.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
+                                    if (e.first.isNotEmpty()) IntentFilter().apply {
+                                        e.first.forEach { action -> addAction(action) }
+                                    }.registerReceiver(e.second)
+                                }
+                                AppLifecycleCallback.onReceiverFiltersCallbacks.takeIf { e -> e.isNotEmpty() }
+                                    ?.forEach { (_, e) -> e.first.registerReceiver(e.second) }
                                 runCatching {
                                     /** 过滤系统框架与一系列服务组件包名不唯一的情况 */
                                     if (isDataChannelRegistered ||
@@ -422,6 +433,9 @@ internal object AppParasitics {
         internal var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
 
         /** 系统广播监听回调 */
-        internal val onReceiversCallback = HashMap<String, Pair<Array<out String>, (Context, Intent) -> Unit>>()
+        internal val onReceiverActionsCallbacks = HashMap<String, Pair<Array<out String>, (Context, Intent) -> Unit>>()
+
+        /** 系统广播监听回调 */
+        internal val onReceiverFiltersCallbacks = HashMap<String, Pair<IntentFilter, (Context, Intent) -> Unit>>()
     }
 }

@@ -1143,9 +1143,17 @@ fun onConfigurationChanged(result: (self: Application, config: Configuration) ->
 fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit)
 ```
 
+```kotlin:no-line-numbers
+fun registerReceiver(filter: IntentFilter, result: (context: Context, intent: Intent) -> Unit)
+```
+
 **变更记录**
 
 `v1.0.88` `新增`
+
+`v1.1.7` `修改`
+
+新增直接使用 `IntentFilter` 注册系统广播监听
 
 **功能描述**
 
