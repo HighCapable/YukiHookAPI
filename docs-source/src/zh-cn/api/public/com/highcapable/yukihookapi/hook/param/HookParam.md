@@ -96,7 +96,7 @@ val instanceOrNull: Any?
 
 **变更记录**
 
-`v1.1.7` `新增`
+`v1.1.8` `新增`
 
 **功能描述**
 
@@ -335,7 +335,7 @@ inline fun <reified T> instanceOrNull(): T?
 
 **变更记录**
 
-`v1.1.7` `新增`
+`v1.1.8` `新增`
 
 **功能描述**
 

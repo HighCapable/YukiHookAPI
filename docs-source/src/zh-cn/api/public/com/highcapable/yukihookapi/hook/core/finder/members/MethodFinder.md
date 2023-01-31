@@ -20,7 +20,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>) : Membe
 
 合并到 `MemberBaseFinder`
 
-`v1.1.7` `修改`
+`v1.1.8` `修改`
 
 移动 `hookInstance` 参数到 `MemberBaseFinder.MemberHookerManager`
 

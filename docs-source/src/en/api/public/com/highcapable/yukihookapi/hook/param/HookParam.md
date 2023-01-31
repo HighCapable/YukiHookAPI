@@ -104,7 +104,7 @@ val instanceOrNull: Any?
 
 **Change Records**
 
-`v1.1.7` `added`
+`v1.1.8` `added`
 
 **Function Illustrate**
 
@@ -343,7 +343,7 @@ inline fun <reified T> instanceOrNull(): T?
 
 **Function Illustrate**
 
-`v1.1.7` `added`
+`v1.1.8` `added`
 
 **Function Illustrate**
 

@@ -1159,7 +1159,7 @@ fun registerReceiver(filter: IntentFilter, result: (context: Context, intent: In
 
 `v1.0.88` `added`
 
-`v1.1.7` `modified`
+`v1.1.8` `modified`
 
 新增直接使用 `IntentFilter` 注册系统广播监听
 
