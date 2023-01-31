@@ -327,6 +327,9 @@ object YukiHookLogger {
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
  */
 private fun baseLogger(type: LoggerType, data: YukiLoggerData, isImplicit: Boolean = false) {
+    /** 是否为有效日志 */
+    val isNotBlankLog = data.msg.isNotBlank() || (data.msg.isBlank() && data.throwable != null)
+
     /** 打印到 [Log] */
     fun logByLogd() = when (data.priority) {
         "D" -> Log.d(data.tag, data.msg)
@@ -337,7 +340,9 @@ private fun baseLogger(type: LoggerType, data: YukiLoggerData, isImplicit: Boole
     }
 
     /** 打印到 (Xposed) 宿主环境 */
-    fun logByHooker() = YukiHookHelper.logByHooker(data.also { it.isImplicit = isImplicit }.toString(), data.throwable)
+    fun logByHooker() {
+        if (isNotBlankLog) YukiHookHelper.logByHooker(data.also { it.isImplicit = isImplicit }.toString(), data.throwable)
+    }
     @Suppress("DEPRECATION")
     when (type) {
         LoggerType.LOGD -> logByLogd()
@@ -348,7 +353,7 @@ private fun baseLogger(type: LoggerType, data: YukiLoggerData, isImplicit: Boole
             if (YukiXposedModule.isXposedEnvironment) logByHooker()
         }
     }
-    if (isImplicit.not() && YukiHookLogger.Configs.isRecord) YukiHookLogger.inMemoryData.add(data)
+    if (isImplicit.not() && YukiHookLogger.Configs.isRecord && isNotBlankLog) YukiHookLogger.inMemoryData.add(data)
 }
 
 /**
@@ -386,12 +391,12 @@ internal fun yLoggerW(msg: String, isImplicit: Boolean = false, isDisableLog: Bo
 
 /**
  * [YukiHookAPI] 向控制台和 (Xposed) 宿主环境打印日志 - E
- * @param msg 日志打印的内容
+ * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
  * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
  * @param isDisableLog 禁止打印日志 - 标识后将什么也不做 - 默认为 false
  */
-internal fun yLoggerE(msg: String, e: Throwable? = null, isImplicit: Boolean = false, isDisableLog: Boolean = false) {
+internal fun yLoggerE(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false, isDisableLog: Boolean = false) {
     if (YukiHookLogger.Configs.isEnable.not() || isDisableLog) return
     baseLogger(LoggerType.BOTH, YukiLoggerData(priority = "E", msg = msg, throwable = e), isImplicit)
 }
@@ -434,9 +439,9 @@ fun loggerW(tag: String = YukiHookLogger.Configs.tag, msg: String, type: LoggerT
  *
  * (Xposed) 宿主环境中的日志打印风格为 [[tag]]「类型」--> [msg]
  * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [YukiHookLogger.Configs.tag]
- * @param msg 日志打印的内容
+ * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
  * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
  * @param type 日志打印的类型 - 默认为 [LoggerType.BOTH]
  */
-fun loggerE(tag: String = YukiHookLogger.Configs.tag, msg: String, e: Throwable? = null, type: LoggerType = LoggerType.BOTH) =
+fun loggerE(tag: String = YukiHookLogger.Configs.tag, msg: String = "", e: Throwable? = null, type: LoggerType = LoggerType.BOTH) =
     baseLogger(type, YukiLoggerData(priority = "E", tag = tag, msg = msg, throwable = e))
