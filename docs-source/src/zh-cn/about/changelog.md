@@ -8,19 +8,19 @@
 
 :::
 
-### 1.1.7 | 2023.02.01 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.8 | 2023.02.01 &ensp;<Badge type="tip" text="最新" vertical="middle" />
 
 - 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/fankes/YukiHookAPI/issues/23)
 - 移动 `YukiHookAPI` 自动生成的入口类名称文件 `assets/yukihookapi_init` 到 `resources/META-INF/yukihookapi_init`
 - 允许在仅打印异常堆栈时 `msg` 参数为空并可以不设置 `msg` 参数，留空 `msg` 参数的日志除非异常堆栈不为空否则将不会被记录
 - 修复 Hook 回调方法体内发生的异常打印的日志无具体方法信息的 BUG
 - `HookParam` 新增 `instanceOrNull` 变量与方法，可以在不确定 Hook 实例是否为空的前提下使用以防止 Hook 实例为空抛出异常
-- 修复 Xposed 模块装载时可能出现的一些进程冲突问题
 - 解耦合所有 `Member` 查找功能中的 Hooker 到 `MemberBaseFinder.MemberHookerManager`
 - 修改了 `YukiMemberHookCreator` 中的 `by` 条件用法，现在可以重复使用 `by` 方法设置多个条件
 - 移除了 Android `type` 中的错误 `Class` 对象声明
 - `PackageParam.AppLifecycle` 中的 `registerReceiver` 方法新增直接使用 `IntentFilter` 创建系统广播监听的功能
 - 修复在 `PackageParam.AppLifecycle` 中可能存在多次注册生命周期的问题
+- Revert: 1.1.7 版本由于有一个严重问题已经撤回，请直接更新到此版本即可 (更新日志同 1.1.7 版本)
 
 ### 1.1.6 | 2023.01.21 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
