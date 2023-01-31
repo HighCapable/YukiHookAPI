@@ -5,7 +5,7 @@ pageClass: code-page
 # FieldFinder <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class FieldFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>?) : MemberBaseFinder
+class FieldFinder internal constructor(override val classSet: Class<*>?) : MemberBaseFinder
 ```
 
 **变更记录**
@@ -19,6 +19,10 @@ class FieldFinder internal constructor(override val hookInstance: YukiMemberHook
 `v1.1.0` `修改`
 
 合并到 `MemberBaseFinder`
+
+`v1.1.7` `修改`
+
+移动 `hookInstance` 参数到 `MemberBaseFinder.MemberHookerManager`
 
 **功能描述**
 
@@ -574,7 +578,7 @@ fun ignored(): Result
 
 > 忽略异常并停止打印任何错误日志。
 
-若 `isNotIgnoredHookingFailure` 为 `false` 则自动忽略。
+若 `MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure` 为 `false` 则自动忽略。
 
 ::: warning
 

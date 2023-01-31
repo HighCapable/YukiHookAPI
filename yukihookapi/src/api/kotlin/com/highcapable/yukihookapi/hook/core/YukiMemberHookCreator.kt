@@ -371,10 +371,10 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          */
         inline fun method(initiate: MethodConditions) = runCatching {
             isHookMemberSetup = true
-            MethodFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
+            MethodFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
         }.getOrElse {
             findingThrowable = it
-            MethodFinder(hookInstance = this).denied(it)
+            MethodFinder.fromHooker(hookInstance = this).denied(it)
         }
 
         /**
@@ -386,10 +386,10 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          */
         inline fun constructor(initiate: ConstructorConditions = { emptyParam() }) = runCatching {
             isHookMemberSetup = true
-            ConstructorFinder(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
+            ConstructorFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
         }.getOrElse {
             findingThrowable = it
-            ConstructorFinder(hookInstance = this).denied(it)
+            ConstructorFinder.fromHooker(hookInstance = this).denied(it)
         }
 
         /**
@@ -398,8 +398,8 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * @return [FieldFinder.Result]
          */
         inline fun HookParam.field(initiate: FieldConditions) =
-            if (hookClass.instance == null) FieldFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
-            else FieldFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
+            if (hookClass.instance == null) FieldFinder.fromHooker(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
+            else FieldFinder.fromHooker(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
         /**
          * 使用当前 [hookClass] 查找并得到 [Method]
@@ -407,8 +407,8 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * @return [MethodFinder.Result]
          */
         inline fun HookParam.method(initiate: MethodConditions) =
-            if (hookClass.instance == null) MethodFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
-            else MethodFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
+            if (hookClass.instance == null) MethodFinder.fromHooker(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
+            else MethodFinder.fromHooker(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
         /**
          * 使用当前 [hookClass] 查找并得到 [Constructor]
@@ -416,8 +416,8 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * @return [ConstructorFinder.Result]
          */
         inline fun HookParam.constructor(initiate: ConstructorConditions = { emptyParam() }) =
-            if (hookClass.instance == null) ConstructorFinder(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
-            else ConstructorFinder(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
+            if (hookClass.instance == null) ConstructorFinder.fromHooker(hookInstance = this@MemberHookCreator).failure(hookClass.throwable)
+            else ConstructorFinder.fromHooker(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).build()
 
         /**
          * 注入要 Hook 的 [Method]、[Constructor] (嵌套 Hook)

@@ -13,7 +13,7 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # FieldFinder <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class FieldFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>?) : MemberBaseFinder
+class FieldFinder internal constructor(override val classSet: Class<*>?) : MemberBaseFinder
 ```
 
 **Change Records**
@@ -27,6 +27,10 @@ class FieldFinder internal constructor(override val hookInstance: YukiMemberHook
 `v1.1.0` `modified`
 
 合并到 `MemberBaseFinder`
+
+`v1.1.7` `modified`
+
+移动 `hookInstance` 参数到 `MemberBaseFinder.MemberHookerManager`
 
 **Function Illustrate**
 
@@ -582,7 +586,7 @@ fun ignored(): Result
 
 > 忽略异常并停止打印任何错误日志。
 
-若 `isNotIgnoredHookingFailure` 为 `false` 则自动忽略。
+若 `MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure` 为 `false` 则自动忽略。
 
 ::: warning
 

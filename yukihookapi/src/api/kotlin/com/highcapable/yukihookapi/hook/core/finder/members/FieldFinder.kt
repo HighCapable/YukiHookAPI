@@ -41,11 +41,9 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
-import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.utils.await
 import com.highcapable.yukihookapi.hook.utils.runBlocking
 import java.lang.reflect.Field
 
@@ -53,13 +51,24 @@ import java.lang.reflect.Field
  * [Field] 查找类
  *
  * 可通过指定类型查找指定 [Field] 或一组 [Field]
- * @param hookInstance 当前 Hook 实例
  * @param classSet 当前需要查找的 [Class] 实例
  */
-class FieldFinder @PublishedApi internal constructor(
-    @PublishedApi override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
-    @PublishedApi override val classSet: Class<*>? = null
-) : MemberBaseFinder(tag = "Field", hookInstance, classSet) {
+class FieldFinder @PublishedApi internal constructor(@PublishedApi override val classSet: Class<*>? = null) :
+    MemberBaseFinder(tag = "Field", classSet) {
+
+    @PublishedApi
+    internal companion object {
+
+        /**
+         * 通过 [YukiMemberHookCreator.MemberHookCreator] 创建 [Field] 查找类
+         * @param hookInstance 当前 Hooker
+         * @param classSet 当前需要查找的 [Class] 实例
+         * @return [FieldFinder]
+         */
+        @PublishedApi
+        internal fun fromHooker(hookInstance: YukiMemberHookCreator.MemberHookCreator, classSet: Class<*>? = null) =
+            FieldFinder(classSet).apply { hookerManager.instance = hookInstance }
+    }
 
     @PublishedApi
     override var rulesData = FieldRulesData()
@@ -205,18 +214,24 @@ class FieldFinder @PublishedApi internal constructor(
         fields.takeIf { it.isNotEmpty() }?.forEach { memberInstances.add(it) }
     }
 
+    /** 得到 [Field] 结果 */
+    private fun internalBuild() {
+        if (classSet == null) error(CLASSSET_IS_NULL)
+        runBlocking {
+            setInstance(result)
+        }.result { ms ->
+            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms") }
+        }
+    }
+
     @YukiPrivateApi
     override fun build() = runCatching {
-        if (classSet != null) {
-            classSet.checkingInternal()
-            runBlocking {
-                setInstance(result)
-            }.result { ms ->
-                memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
-            }
-            Result()
-        } else Result(isNoSuch = true, Throwable(CLASSSET_IS_NULL))
-    }.getOrElse { e -> Result(isNoSuch = true, e).await { onFailureMsg(throwable = e) } }
+        internalBuild()
+        Result()
+    }.getOrElse {
+        onFailureMsg(throwable = it)
+        Result(isNoSuch = true, it)
+    }
 
     @YukiPrivateApi
     override fun process() = error("FieldFinder does not contain this usage")
@@ -247,8 +262,11 @@ class FieldFinder @PublishedApi internal constructor(
          * @param initiate 方法体
          * @return [Result] 结果
          */
-        inline fun field(initiate: FieldConditions) =
-            Result().apply { remedyPlans.add(Pair(FieldFinder(hookInstance, classSet).apply(initiate), this)) }
+        inline fun field(initiate: FieldConditions) = Result().apply {
+            remedyPlans.add(Pair(FieldFinder(classSet).apply {
+                hookerManager = this@FieldFinder.hookerManager
+            }.apply(initiate), this))
+        }
 
         /** 开始重查找 */
         @PublishedApi
@@ -263,13 +281,13 @@ class FieldFinder @PublishedApi internal constructor(
                             setInstance(it.first.result)
                         }.result { ms ->
                             memberInstances.takeIf { it.isNotEmpty() }
-                                ?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms [${hookTag}]") }
+                                ?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms") }
                         }
                         isFindSuccess = true
                         it.second.onFindCallback?.invoke(memberInstances.fields())
                         remedyPlansCallback?.invoke()
                         memberInstances.takeIf { it.isNotEmpty() }
-                            ?.forEach { onDebuggingMsg(msg = "Field [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
+                            ?.forEach { onDebuggingMsg(msg = "Field [$it] trying ${p + 1} times success by RemedyPlan") }
                         return@run
                     }.onFailure {
                         lastError = it
@@ -284,7 +302,7 @@ class FieldFinder @PublishedApi internal constructor(
                     )
                     remedyPlans.clear()
                 }
-            } else yLoggerW(msg = "RemedyPlan is empty, forgot it? [${hookTag}]")
+            } else yLoggerW(msg = "RemedyPlan is empty, forgot it?${hookerManager.tailTag}")
         }
 
         /**
@@ -440,7 +458,7 @@ class FieldFinder @PublishedApi internal constructor(
         /**
          * 忽略异常并停止打印任何错误日志
          *
-         * - 若 [isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
+         * - 若 [MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
          *
          * - ❗此时若要监听异常结果 - 你需要手动实现 [onNoSuchField] 方法
          * @return [Result] 可继续向下监听

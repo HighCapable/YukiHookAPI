@@ -5,7 +5,7 @@ pageClass: code-page
 # MethodFinder <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class MethodFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>) : MemberBaseFinder
+class MethodFinder internal constructor(override val classSet: Class<*>) : MemberBaseFinder
 ```
 
 **变更记录**
@@ -19,6 +19,10 @@ class MethodFinder internal constructor(override val hookInstance: YukiMemberHoo
 `v1.1.0` `修改`
 
 合并到 `MemberBaseFinder`
+
+`v1.1.7` `修改`
+
+移动 `hookInstance` 参数到 `MemberBaseFinder.MemberHookerManager`
 
 **功能描述**
 
@@ -464,7 +468,7 @@ inner class Process internal constructor(internal val isNoSuch: Boolean, interna
 
 **功能描述**
 
-> `Method` 查找结果处理类，为 `hookInstance` 提供。
+> `Method` 查找结果处理类，为 `hookManager` 提供。
 
 ### result <span class="symbol">- method</span>
 
@@ -508,7 +512,7 @@ fun all(): Process
 
 **功能描述**
 
-> 设置全部查找条件匹配的多个 `Method` 实例结果到 `hookInstance`。
+> 设置全部查找条件匹配的多个 `Method` 实例结果到 `hookManager`。
 
 ### remedys <span class="symbol">- method</span>
 
@@ -845,7 +849,7 @@ fun ignored(): Result
 
 > 忽略异常并停止打印任何错误日志。
 
-若 `isNotIgnoredHookingFailure` 为 `false` 则自动忽略。
+若 `MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure` 为 `false` 则自动忽略。
 
 ::: warning
 

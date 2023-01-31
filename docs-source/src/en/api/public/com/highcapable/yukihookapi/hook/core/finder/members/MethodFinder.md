@@ -13,7 +13,7 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # MethodFinder <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class MethodFinder internal constructor(override val hookInstance: YukiMemberHookCreator.MemberHookCreator?, override val classSet: Class<*>) : MemberBaseFinder
+class MethodFinder internal constructor(override val classSet: Class<*>) : MemberBaseFinder
 ```
 
 **Change Records**
@@ -27,6 +27,10 @@ class MethodFinder internal constructor(override val hookInstance: YukiMemberHoo
 `v1.1.0` `modified`
 
 合并到 `MemberBaseFinder`
+
+`v1.1.7` `modified`
+
+移动 `hookInstance` 参数到 `MemberBaseFinder.MemberHookerManager`
 
 **Function Illustrate**
 
@@ -472,7 +476,7 @@ inner class Process internal constructor(internal val isNoSuch: Boolean, interna
 
 **Function Illustrate**
 
-> `Method` 查找结果处理类，为 `hookInstance` 提供。
+> `Method` 查找结果处理类，为 `hookManager` 提供。
 
 ### result <span class="symbol">- method</span>
 
@@ -516,7 +520,7 @@ fun all(): Process
 
 **Function Illustrate**
 
-> 设置全部查找条件匹配的多个 `Method` 实例结果到 `hookInstance`。
+> 设置全部查找条件匹配的多个 `Method` 实例结果到 `hookManager`。
 
 ### remedys <span class="symbol">- method</span>
 
@@ -853,7 +857,7 @@ fun ignored(): Result
 
 > 忽略异常并停止打印任何错误日志。
 
-若 `isNotIgnoredHookingFailure` 为 `false` 则自动忽略。
+若 `MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure` 为 `false` 则自动忽略。
 
 ::: warning
 

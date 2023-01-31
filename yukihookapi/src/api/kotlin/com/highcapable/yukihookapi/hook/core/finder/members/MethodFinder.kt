@@ -38,7 +38,6 @@ import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
-import com.highcapable.yukihookapi.hook.factory.checkingInternal
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -52,13 +51,24 @@ import java.lang.reflect.Method
  * [Method] 查找类
  *
  * 可通过指定类型查找指定 [Method] 或一组 [Method]
- * @param hookInstance 当前 Hook 实例 - 填写后将自动设置 [YukiMemberHookCreator.MemberHookCreator.members]
  * @param classSet 当前需要查找的 [Class] 实例
  */
-class MethodFinder @PublishedApi internal constructor(
-    @PublishedApi override val hookInstance: YukiMemberHookCreator.MemberHookCreator? = null,
-    @PublishedApi override val classSet: Class<*>? = null
-) : MemberBaseFinder(tag = "Method", hookInstance, classSet) {
+class MethodFinder @PublishedApi internal constructor(@PublishedApi override val classSet: Class<*>? = null) :
+    MemberBaseFinder(tag = "Method", classSet) {
+
+    @PublishedApi
+    internal companion object {
+
+        /**
+         * 通过 [YukiMemberHookCreator.MemberHookCreator] 创建 [Method] 查找类
+         * @param hookInstance 当前 Hooker
+         * @param classSet 当前需要查找的 [Class] 实例
+         * @return [MethodFinder]
+         */
+        @PublishedApi
+        internal fun fromHooker(hookInstance: YukiMemberHookCreator.MemberHookCreator, classSet: Class<*>? = null) =
+            MethodFinder(classSet).apply { hookerManager.instance = hookInstance }
+    }
 
     @PublishedApi
     override var rulesData = MethodRulesData()
@@ -329,36 +339,27 @@ class MethodFinder @PublishedApi internal constructor(
 
     /**
      * 设置实例
-     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreator.MemberHookCreator]
      * @param methods 当前找到的 [Method] 数组
      */
-    private fun setInstance(isBind: Boolean, methods: HashSet<Method>) {
+    private fun setInstance(methods: HashSet<Method>) {
         memberInstances.clear()
-        val result = methods.takeIf { it.isNotEmpty() }?.onEach { memberInstances.add(it) }?.first()
-        if (isBind) hookInstance?.members?.apply {
-            clear()
-            result?.also { add(it) }
-        }
+        methods.takeIf { it.isNotEmpty() }?.onEach { memberInstances.add(it) }
+            ?.first()?.apply { if (hookerManager.isMemberBinded) hookerManager.bindMember(member = this) }
     }
 
-    /**
-     * 得到 [Method] 结果
-     * @param isBind 是否将结果设置到目标 [YukiMemberHookCreator.MemberHookCreator]
-     */
-    private fun build(isBind: Boolean) {
+    /** 得到 [Method] 结果 */
+    private fun internalBuild() {
         if (classSet == null) error(CLASSSET_IS_NULL)
-        classSet.checkingInternal()
         runBlocking {
-            isBindToHooker = isBind
-            setInstance(isBind, result)
+            setInstance(result)
         }.result { ms ->
-            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
+            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Method [$it] takes ${ms}ms") }
         }
     }
 
     @YukiPrivateApi
     override fun build() = runCatching {
-        build(isBind = false)
+        internalBuild()
         Result()
     }.getOrElse {
         onFailureMsg(throwable = it)
@@ -367,7 +368,8 @@ class MethodFinder @PublishedApi internal constructor(
 
     @YukiPrivateApi
     override fun process() = runCatching {
-        build(isBind = true)
+        hookerManager.isMemberBinded = true
+        internalBuild()
         Process()
     }.getOrElse {
         onFailureMsg(throwable = it)
@@ -400,8 +402,11 @@ class MethodFinder @PublishedApi internal constructor(
          * @param initiate 方法体
          * @return [Result] 结果
          */
-        inline fun method(initiate: MethodConditions) =
-            Result().apply { remedyPlans.add(Pair(MethodFinder(hookInstance, classSet).apply(initiate), this)) }
+        inline fun method(initiate: MethodConditions) = Result().apply {
+            remedyPlans.add(Pair(MethodFinder(classSet).apply {
+                hookerManager = this@MethodFinder.hookerManager
+            }.apply(initiate), this))
+        }
 
         /** 开始重查找 */
         @PublishedApi
@@ -413,16 +418,15 @@ class MethodFinder @PublishedApi internal constructor(
                 remedyPlans.forEachIndexed { p, it ->
                     runCatching {
                         runBlocking {
-                            setInstance(isBindToHooker, it.first.result)
+                            setInstance(it.first.result)
                         }.result { ms ->
-                            memberInstances.takeIf { it.isNotEmpty() }
-                                ?.forEach { onDebuggingMsg(msg = "Find Method [$it] takes ${ms}ms [${hookTag}]") }
+                            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Method [$it] takes ${ms}ms") }
                         }
                         isFindSuccess = true
                         it.second.onFindCallback?.invoke(memberInstances.methods())
                         remedyPlansCallback?.invoke()
                         memberInstances.takeIf { it.isNotEmpty() }
-                            ?.forEach { onDebuggingMsg(msg = "Method [$it] trying ${p + 1} times success by RemedyPlan [${hookTag}]") }
+                            ?.forEach { onDebuggingMsg(msg = "Method [$it] trying ${p + 1} times success by RemedyPlan") }
                         return@run
                     }.onFailure {
                         lastError = it
@@ -437,7 +441,7 @@ class MethodFinder @PublishedApi internal constructor(
                     )
                     remedyPlans.clear()
                 }
-            } else yLoggerW(msg = "RemedyPlan is empty, forgot it? [${hookTag}]")
+            } else yLoggerW(msg = "RemedyPlan is empty, forgot it?${hookerManager.tailTag}")
         }
 
         /**
@@ -461,7 +465,7 @@ class MethodFinder @PublishedApi internal constructor(
     }
 
     /**
-     * [Method] 查找结果处理类 - 为 [hookInstance] 提供
+     * [Method] 查找结果处理类 - 为 [hookerManager] 提供
      * @param isNoSuch 是否没有找 [Method]  - 默认否
      * @param throwable 错误信息
      */
@@ -478,14 +482,11 @@ class MethodFinder @PublishedApi internal constructor(
         inline fun result(initiate: Process.() -> Unit) = apply(initiate)
 
         /**
-         * 设置全部查找条件匹配的多个 [Method] 实例结果到 [hookInstance]
+         * 设置全部查找条件匹配的多个 [Method] 实例结果到 [hookerManager]
          * @return [Process] 可继续向下监听
          */
         fun all(): Process {
-            fun HashSet<Member>.bind() = takeIf { it.isNotEmpty() }?.apply {
-                hookInstance?.members?.clear()
-                forEach { hookInstance?.members?.add(it) }
-            }.unit()
+            fun HashSet<Member>.bind() = takeIf { it.isNotEmpty() }?.apply { hookerManager.bindMembers(members = this) }.unit()
             if (isUsingRemedyPlan)
                 remedyPlansCallback = { memberInstances.bind() }
             else memberInstances.bind()
@@ -650,7 +651,7 @@ class MethodFinder @PublishedApi internal constructor(
         /**
          * 忽略异常并停止打印任何错误日志
          *
-         * - 若 [isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
+         * - 若 [MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
          *
          * - ❗此时若要监听异常结果 - 你需要手动实现 [onNoSuchMethod] 方法
          * @return [Result] 可继续向下监听
