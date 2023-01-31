@@ -212,13 +212,13 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
                 if (isPackageLoaded(packageName, HookEntryType.RESOURCES).not() && packageName == AppParasitics.currentPackageName)
                     assignWrapper(HookEntryType.RESOURCES, packageName, appResources = appResources)
                 else null
-        }?.also {
-            runCatching {
-                if (it.isCorrectProcess) packageParamCallback?.invoke(it.instantiate().assign(it).apply { YukiHookAPI.printSplashInfo() })
-                if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
-                    AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
-                if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
-                if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
+        }?.also { wrapper ->
+            if (wrapper.isCorrectProcess) runCatching {
+                if (wrapper.type != HookEntryType.ZYGOTE && wrapper.packageName == modulePackageName)
+                    AppParasitics.hookModuleAppRelated(wrapper.appClassLoader, wrapper.type)
+                if (wrapper.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(wrapper.packageName)
+                if (wrapper.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
+                packageParamCallback?.invoke(wrapper.instantiate().assign(wrapper).apply { YukiHookAPI.printSplashInfo() })
             }.onFailure { yLoggerE(msg = "An exception occurred in the Hooking Process of YukiHookAPI", e = it) }
         }
     }
