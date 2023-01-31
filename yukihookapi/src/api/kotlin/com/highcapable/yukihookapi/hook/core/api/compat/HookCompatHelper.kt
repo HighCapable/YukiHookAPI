@@ -48,7 +48,11 @@ internal object HookCompatHelper {
      * 兼容对接已 Hook 的 [Member] 接口
      * @return [YukiMemberHook.HookedMember]
      */
-    private fun XC_MethodHook.Unhook.compat() = YukiHookCallbackDelegate.createHookedMemberCallback(hookedMethod) { unhook() }
+    private fun XC_MethodHook.Unhook.compat() =
+        YukiHookCallbackDelegate.createHookedMemberCallback(
+            member = { hookedMethod },
+            onRemove = { unhook() }
+        )
 
     /**
      * [HookApiCategory.ROVO89_XPOSED]
@@ -58,14 +62,12 @@ internal object HookCompatHelper {
      */
     private fun XC_MethodHook.MethodHookParam.compat() =
         YukiHookCallbackDelegate.createParamCallback(
-            member = method,
-            instance = thisObject,
-            args = args,
-            hasThrowable = hasThrowable(),
-            resultCallback = { result = it },
-            throwableCallback = { throwable = it },
-            result = result,
-            throwable = throwable
+            member = { method },
+            instance = { thisObject },
+            args = { args },
+            hasThrowable = { hasThrowable() },
+            result = { it, assign -> if (assign) result = it; result },
+            throwable = { it, assign -> if (assign) throwable = it; throwable }
         )
 
     /**

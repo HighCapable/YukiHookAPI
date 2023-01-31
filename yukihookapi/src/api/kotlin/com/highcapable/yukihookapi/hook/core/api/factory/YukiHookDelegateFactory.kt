@@ -40,54 +40,50 @@ internal object YukiHookCallbackDelegate {
 
     /**
      * 创建 [YukiMemberHook.HookedMember] 实例
-     * @param member 当前 [Member]
-     * @param removeCallback 回调解除 Hook 事件
+     * @param member [Member] 实例 (代理回调)
+     * @param onRemove 回调解除 Hook 事件 (代理回调)
      * @return [YukiMemberHook.HookedMember]
      */
-    internal fun createHookedMemberCallback(member: Member, removeCallback: () -> Unit) =
+    internal fun createHookedMemberCallback(member: () -> Member?, onRemove: () -> Unit) =
         object : YukiMemberHook.HookedMember() {
-            override val member get() = member
+            override val member get() = member()
             override fun remove() {
-                removeCallback()
+                onRemove()
                 runCatching { YukiHookCacheStore.hookedMembers.remove(this) }
             }
         }
 
     /**
      * 创建 [YukiHookCallback.Param] 实例
-     * @param member [Member] 实例
-     * @param instance 当前实例对象
-     * @param args 方法、构造方法数组
-     * @param hasThrowable 是否存在设置过的方法调用抛出异常
-     * @param resultCallback 回调设置当前 Hook 方法的返回值 (结果)
-     * @param throwableCallback 回调设置当前 Hook 方法调用抛出的异常
-     * @param result 当前 Hook 方法返回值 (结果)
-     * @param throwable 当前 Hook 方法调用抛出的异常
+     * @param member [Member] 实例 (代理回调)
+     * @param instance 当前实例对象 (代理回调)
+     * @param args 方法、构造方法数组 (代理回调)
+     * @param hasThrowable 是否存在设置过的方法调用抛出异常 (代理回调)
+     * @param result 当前 Hook 方法返回值 (结果) (代理回调)
+     * @param throwable 当前 Hook 方法调用抛出的异常 (代理回调)
      * @return [YukiHookCallback.Param]
      */
     internal fun createParamCallback(
-        member: Member?,
-        instance: Any?,
-        args: Array<Any?>?,
-        hasThrowable: Boolean,
-        resultCallback: (Any?) -> Unit,
-        throwableCallback: (Throwable?) -> Unit,
-        result: Any?,
-        throwable: Throwable?
+        member: () -> Member?,
+        instance: () -> Any?,
+        args: () -> Array<Any?>?,
+        hasThrowable: () -> Boolean,
+        result: (Any?, Boolean) -> Any?,
+        throwable: (Throwable?, Boolean) -> Throwable?
     ) = object : YukiHookCallback.Param {
-        override val member get() = member
-        override val instance get() = instance
-        override val args get() = args
-        override val hasThrowable get() = hasThrowable
+        override val member get() = member()
+        override val instance get() = instance()
+        override val args get() = args()
+        override val hasThrowable get() = hasThrowable()
         override var result
-            get() = result
+            get() = result(null, false)
             set(value) {
-                resultCallback(value)
+                result(value, true)
             }
         override var throwable
-            get() = throwable
+            get() = throwable(null, false)
             set(value) {
-                throwableCallback(value)
+                throwable(value, true)
             }
     }
 }
