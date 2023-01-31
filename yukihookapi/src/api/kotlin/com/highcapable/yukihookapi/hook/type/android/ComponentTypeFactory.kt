@@ -55,7 +55,6 @@ import android.widget.Toast
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.factory.toClassOrNull
-import org.w3c.dom.UserDataHandler
 
 /**
  * 获得 [android.R] 类型
@@ -684,12 +683,6 @@ val PowerManager_WakeLockClass get() = classOf<PowerManager.WakeLock>()
  * @return [Class]<[UserHandle]>
  */
 val UserHandleClass get() = classOf<UserHandle>()
-
-/**
- * 获得 [UserDataHandler] 类型
- * @return [Class]<[UserDataHandler]>
- */
-val UserDataHandlerClass get() = classOf<UserDataHandler>()
 
 /**
  * 获得 [ShortcutInfo] 类型
