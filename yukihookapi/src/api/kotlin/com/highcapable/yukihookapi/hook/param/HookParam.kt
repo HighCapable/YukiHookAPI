@@ -87,16 +87,24 @@ class HookParam internal constructor(
      */
     val args get() = param?.args ?: error("Current hooked Member args is null")
 
-    //val instanceOrNull?
+    /**
+     * 获取当前 Hook 实例的对象
+     *
+     * - ❗如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
+     *
+     * - 如果你不确定当前实例的对象是否为 null - 你可以使用 [instanceOrNull]
+     * @return [Any]
+     * @throws IllegalStateException 如果对象为空
+     */
+    val instance get() = param?.instance ?: error("HookParam instance got null! Is this a static member?")
 
     /**
      * 获取当前 Hook 实例的对象
      *
      * - ❗如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
-     * @return [Any]
-     * @throws IllegalStateException 如果对象为空
+     * @return [Any] or null
      */
-    val instance get() = param?.instance ?: error("HookParam instance got null! Is this a static member?")
+    val instanceOrNull get() = param?.instance
 
     /**
      * 获取当前 Hook 实例的类对象
@@ -185,6 +193,12 @@ class HookParam internal constructor(
      * @throws IllegalStateException 如果对象为空或对象类型不是 [T]
      */
     inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${classOf<T>().name}")
+
+    /**
+     * 获取当前 Hook 实例的对象 [T]
+     * @return [T] or null
+     */
+    inline fun <reified T> instanceOrNull() = instanceOrNull as? T?
 
     /**
      * 获取当前 Hook 对象的 [method] or [constructor] 的参数数组下标实例化类

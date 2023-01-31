@@ -94,6 +94,28 @@ val instance: Any
 
 :::
 
+如果你不确定当前实例的对象是否为 `null`，你可以使用 `instanceOrNull`。
+
+## instanceOrNull <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val instanceOrNull: Any?
+```
+
+**Change Records**
+
+`v1.1.7` `added`
+
+**Function Illustrate**
+
+> 获取当前 Hook 实例的对象。
+
+::: danger
+
+如果你当前 Hook 的对象是一个静态，那么它将不存在实例的对象。
+
+:::
+
 ## instanceClass <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
@@ -312,6 +334,24 @@ inline fun <reified T> instance(): T
 ```kotlin
 instance<Activity>().finish()
 ```
+
+## instanceOrNull <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+inline fun <reified T> instanceOrNull(): T?
+```
+
+**Function Illustrate**
+
+`v1.1.7` `added`
+
+**Function Illustrate**
+
+> 获取当前 Hook 实例的对象 `T`。
+
+**Function Example**
+
+用法请参考 [instance](#instance-method) 方法。
 
 ## args <span class="symbol">- method</span>
 
