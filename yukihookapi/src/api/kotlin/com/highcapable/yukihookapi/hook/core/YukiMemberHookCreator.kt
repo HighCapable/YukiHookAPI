@@ -54,6 +54,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.*
 import com.highcapable.yukihookapi.hook.utils.RandomSeed
 import com.highcapable.yukihookapi.hook.utils.await
+import com.highcapable.yukihookapi.hook.utils.conditions
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -87,13 +88,27 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
 
+    /** 当前 [YukiMemberHookCreator] 禁止执行 Hook 操作的条件数组 */
+    private val disableCreatorRunHookReasons = HashSet<Boolean>()
+
     /** 是否对当前 [YukiMemberHookCreator] 禁止执行 Hook 操作 */
-    @PublishedApi
-    internal var isDisableCreatorRunHook = false
+    private var isDisableCreatorRunHook = false
 
     /** 设置要 Hook 的 [Method]、[Constructor] */
     @PublishedApi
     internal var preHookMembers = HashMap<String, MemberHookCreator>()
+
+    /**
+     * 更新当前 [YukiMemberHookCreator] 禁止执行 Hook 操作的条件
+     * @param reason 当前条件
+     */
+    @PublishedApi
+    internal fun updateDisableCreatorRunHookReasons(reason: Boolean) {
+        disableCreatorRunHookReasons.add(reason)
+        conditions {
+            disableCreatorRunHookReasons.forEach { and(it) }
+        }.finally { isDisableCreatorRunHook = true }.without { isDisableCreatorRunHook = false }
+    }
 
     /**
      * 得到当前被 Hook 的 [Class]
@@ -864,7 +879,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * @return [Result] 可继续向下监听
          */
         inline fun by(condition: () -> Boolean): Result {
-            isDisableCreatorRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
+            updateDisableCreatorRunHookReasons((runCatching { condition() }.getOrNull() ?: false).not())
             return this
         }
 
