@@ -594,7 +594,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                         }.getOrElse {
                             onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it, member = this@hook)
                             /** 若发生异常则会自动调用未经 Hook 的原始 [Member] 保证 Hook APP 正常运行 */
                             assign.callOriginal()
                         }
@@ -619,7 +619,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                         }.onFailure {
                             onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it, member = this@hook)
                             if (isOnFailureThrowToApp) param.throwable = it
                         }
                     }
@@ -634,7 +634,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                         }.onFailure {
                             onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it, member = this@hook)
                             if (isOnFailureThrowToApp) param.throwable = it
                         }
                     }
