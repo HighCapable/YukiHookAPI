@@ -170,7 +170,7 @@ class HookParam internal constructor(
      */
     fun Throwable.throwToApp() {
         param?.throwable = this
-        yLoggerE(msg = message ?: "$this", e = this)
+        yLoggerE(msg = message ?: "", e = this)
     }
 
     /**
