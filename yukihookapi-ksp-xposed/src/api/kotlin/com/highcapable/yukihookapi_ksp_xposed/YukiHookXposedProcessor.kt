@@ -229,17 +229,21 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             }
             val gradleFile = File("$rootPath${separator}build.gradle")
             val gradleKtsFile = File("$rootPath${separator}build.gradle.kts")
-            val assetsFile = File("$projectPath${separator}assets")
             val manifestFile = File("$projectPath${separator}AndroidManifest.xml")
+            val assetsFolder = File("$projectPath${separator}assets")
+            val metaInfFolder = File("$projectPath${separator}resources${separator}META-INF")
             if (manifestFile.exists()) {
-                if (assetsFile.exists().not() || assetsFile.isDirectory.not()) assetsFile.apply { delete(); mkdirs() }
+                if (assetsFolder.exists().not() || assetsFolder.isDirectory.not()) assetsFolder.apply { delete(); mkdirs() }
+                if (metaInfFolder.exists().not() || metaInfFolder.isDirectory.not()) metaInfFolder.apply { delete(); mkdirs() }
                 data.modulePackageName = parseModulePackageName(manifestFile, gradleFile, gradleKtsFile)
                 if (data.modulePackageName.isBlank() && data.customMPackageName.isBlank())
                     problem(msg = "Cannot identify your Module App's package name, tried AndroidManifest.xml, build.gradle and build.gradle.kts")
-                File("${assetsFile.absolutePath}${separator}xposed_init")
+                File("${assetsFolder.absolutePath}${separator}xposed_init")
                     .writeText(text = "${data.entryPackageName}.${data.xInitClassName}")
-                File("${assetsFile.absolutePath}${separator}yukihookapi_init")
+                File("${metaInfFolder.absolutePath}${separator}yukihookapi_init")
                     .writeText(text = "${data.entryPackageName}.${data.entryClassName}")
+                /** 移除旧版本 API 创建的入口类名称文件 */
+                File("${assetsFolder.absolutePath}${separator}yukihookapi_init").apply { if (exists()) delete() }
                 generateClassFile(data)
             } else problem(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
         }
