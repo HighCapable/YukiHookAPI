@@ -71,6 +71,10 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private repositories do not need to indicate web
 links).
 
+## Star History
+
+![Star History Chart](https://api.star-history.com/svg?repos=fankes/YukiHookAPI&type=Date)
+
 ## Third-Party Open Source Usage Statement
 
 - [Kotlin Symbol Processing API](https://github.com/google/ksp)
