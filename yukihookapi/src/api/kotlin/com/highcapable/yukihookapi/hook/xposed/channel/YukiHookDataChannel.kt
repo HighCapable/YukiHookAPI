@@ -205,14 +205,14 @@ class YukiHookDataChannel private constructor() {
         )
         /** 排除模块环境下模块注册自身广播 */
         if (isXposedEnvironment.not()) return
-        nameSpace(context, packageName, isSecure = false).with {
+        nameSpace(context, packageName).with {
             /** 注册监听模块与宿主的版本是否匹配 */
             wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
-                nameSpace(context, fromPackageName, isSecure = false).put(RESULT_MODULE_GENERATED_VERSION, moduleGeneratedVersion)
+                nameSpace(context, fromPackageName).put(RESULT_MODULE_GENERATED_VERSION, moduleGeneratedVersion)
             }
             /** 注册监听模块与宿主之间的调试日志数据 */
             wait<String>(GET_YUKI_LOGGER_INMEMORY_DATA) { fromPackageName ->
-                nameSpace(context, fromPackageName, isSecure = false).put(RESULT_YUKI_LOGGER_INMEMORY_DATA, YukiHookLogger.inMemoryData)
+                nameSpace(context, fromPackageName).put(RESULT_YUKI_LOGGER_INMEMORY_DATA, YukiHookLogger.inMemoryData)
             }
         }
     }
@@ -221,12 +221,11 @@ class YukiHookDataChannel private constructor() {
      * 获取命名空间
      * @param context 上下文实例
      * @param packageName 目标 Hook APP (宿主) 的包名
-     * @param isSecure 是否启用安全检查 - 默认是
      * @return [NameSpace]
      */
-    internal fun nameSpace(context: Context? = null, packageName: String, isSecure: Boolean = true): NameSpace {
+    internal fun nameSpace(context: Context? = null, packageName: String): NameSpace {
         checkApi()
-        return NameSpace(context = context ?: receiverContext, packageName, isSecure)
+        return NameSpace(context = context ?: receiverContext, packageName)
     }
 
     /**
@@ -249,9 +248,8 @@ class YukiHookDataChannel private constructor() {
      * - ❗请使用 [nameSpace] 方法来获取 [NameSpace]
      * @param context 上下文实例
      * @param packageName 目标 Hook APP (宿主) 的包名
-     * @param isSecure 是否启用安全检查
      */
-    inner class NameSpace internal constructor(private val context: Context?, private val packageName: String, private val isSecure: Boolean) {
+    inner class NameSpace internal constructor(private val context: Context?, private val packageName: String) {
 
         /** 当前分段数据临时集合数据 */
         private val segmentsTempData = ConcurrentHashMap<String, SegmentsTempData>()
@@ -651,9 +649,6 @@ class YukiHookDataChannel private constructor() {
          * @param wrapper 键值数据包装类
          */
         private fun pushReceiver(wrapper: ChannelDataWrapper<*>) {
-            /** 在 [isSecure] 启用的情况下 - 在模块环境中只能使用 [Activity] 发送广播 */
-            if (isSecure && context != null) if (isXposedEnvironment.not() && context !is Activity)
-                error("YukiHookDataChannel only support used on an Activity, but this current context is \"${context.javaClass.name}\"")
             /** 发送广播 */
             (context ?: AppParasitics.currentApplication)?.sendBroadcast(Intent().apply {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)

@@ -29,7 +29,7 @@ class YukiHookDataChannel private constructor()
 ## NameSpace <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class NameSpace internal constructor(private val context: Context?, private val packageName: String, private val isSecure: Boolean)
+inner class NameSpace internal constructor(private val context: Context?, private val packageName: String)
 ```
 
 **变更记录**
@@ -39,6 +39,10 @@ inner class NameSpace internal constructor(private val context: Context?, privat
 `v1.0.90` `修改`
 
 新增 `isSecure` 参数
+
+`v1.1.9` `修改`
+
+移除 `isSecure` 参数
 
 **功能描述**
 
