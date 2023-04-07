@@ -1075,55 +1075,6 @@ Please make sure you have loaded the `encase` method of `YukiHookAPI` in the cor
 
 ###### exception
 
-::: danger RuntimeException
-
-!!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself, The called class is \[**CLASS**\]
-
-:::
-
-**Abnormal**
-
-You have invoked the `Class` object of the API itself using `YukiHookAPI` related reflection or Hook function.
-
-> The following example
-
-```kotlin
-// <Scenario 1>
-YukiHookAPI.current()
-// <Scenario 2>
-PackageParam::class.java.hook {
-    // ...
-}
-// <Scenario 3>
-MethodFinder::class.java.method {
-    name = "name"
-    param(StringClass)
-}.get().call("name")
-// ...
-```
-
-**Solution**
-
-Please check the code section for errors, such as the case below.
-
-> The following example
-
-```kotlin
-YourClass.method {
-    // ...
-    // ❗ The method execution is not called
-    // The actual method is called here is the MethodFinder.Result object
-}.get(instance).current()
-YourClass.method {
-    // ...
-    // ✅ The correct way to use it, assuming this method has no parameters
-}.get(instance).call().current()
-```
-
-Inlining, reflection, Hook `YukiHookAPI`'s own `Class` and internal functions are not allowed to prevent errors.
-
-###### exception
-
 ::: danger UnsupportedOperationException
 
 !!!DANGEROUS!!! Hook \[**CLASS**\] Class is a dangerous behavior! \[**CONTENT**\] \[**SOLVE**\]
