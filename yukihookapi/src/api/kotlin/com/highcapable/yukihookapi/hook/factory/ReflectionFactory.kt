@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.factory
 
-import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.GenericClass
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
@@ -40,7 +39,6 @@ import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
 import com.highcapable.yukihookapi.hook.type.java.*
-import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.*
@@ -326,10 +324,7 @@ inline fun Class<*>.constructor(initiate: ConstructorConditions = { emptyParam()
  * 如果当前实例不存在泛型将返回 null
  * @return [GenericClass] or null
  */
-fun Class<*>.generic(): GenericClass? {
-    checkingInternal()
-    return genericSuperclass?.let { (it as? ParameterizedType?)?.let { e -> GenericClass(e) } }
-}
+fun Class<*>.generic() = genericSuperclass?.let { (it as? ParameterizedType?)?.let { e -> GenericClass(e) } }
 
 /**
  * 获得当前 [Class] 的泛型父类
@@ -345,10 +340,8 @@ inline fun Class<*>.generic(initiate: GenericClass.() -> Unit) = generic()?.appl
  * @param ignored 是否开启忽略错误警告功能 - 默认否
  * @return [CurrentClass]
  */
-inline fun <reified T : Any> T.current(ignored: Boolean = false): CurrentClass {
-    javaClass.checkingInternal()
-    return CurrentClass(javaClass, instance = this).apply { isShutErrorPrinting = ignored }
-}
+inline fun <reified T : Any> T.current(ignored: Boolean = false) =
+    CurrentClass(javaClass, instance = this).apply { isShutErrorPrinting = ignored }
 
 /**
  * 获得当前实例的类操作对象
@@ -414,16 +407,3 @@ inline fun Class<*>.allConstructors(isAccessible: Boolean = true, result: (index
  */
 inline fun Class<*>.allFields(isAccessible: Boolean = true, result: (index: Int, field: Field) -> Unit) =
     declaredFields.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
-
-/**
- * 检查内部类调用
- * @throws RuntimeException 如果遇到非法调用
- */
-@PublishedApi
-internal fun Class<*>.checkingInternal() {
-    if (name == YukiXposedModuleStatus.IMPL_CLASS_NAME) return
-    if (name == classOf<YukiHookAPI>().name || name.startsWith("com.highcapable.yukihookapi.hook")) throw RuntimeException(
-        "!!!DO NOT ALLOWED!!! You cannot hook or reflection to call the internal class of the YukiHookAPI itself, " +
-                "The called class is [$this]"
-    )
-}

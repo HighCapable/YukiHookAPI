@@ -158,7 +158,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
         else -> Result().await {
             when {
                 isDisableCreatorRunHook.not() && hookClass.instance != null -> runCatching {
-                    hookClass.instance?.apply { checkingInternal(); checkingDangerous() }
+                    hookClass.instance?.checkingDangerous()
                     it.onPrepareHook?.invoke()
                     preHookMembers.forEach { (_, m) -> m.hook() }
                 }.onFailure {
