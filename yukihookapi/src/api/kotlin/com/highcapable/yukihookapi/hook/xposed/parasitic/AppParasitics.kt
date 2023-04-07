@@ -55,9 +55,9 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleSta
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.HandlerDelegate
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.IActivityManagerProxy
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.InstrumentationDelegate
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl.HandlerDelegateImpl
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl.IActivityManagerProxyImpl
 
 /**
  * 这是一个管理 APP 寄生功能的控制类
@@ -381,8 +381,8 @@ internal object AppParasitics {
                     ?.also { field { name = "mInstrumentation" }.set(InstrumentationDelegate.wrapper(it)) }
                 HandlerClass.field { name = "mCallback" }.get(field { name = "mH" }.any()).apply {
                     cast<Handler.Callback?>()?.apply {
-                        if (current().name != classOf<HandlerDelegate>().name) set(HandlerDelegate.wrapper(baseInstance = this))
-                    } ?: set(HandlerDelegate.wrapper())
+                        if (current().name != HandlerDelegateImpl.wrapperClassName) set(HandlerDelegateImpl.createWrapper(baseInstance = this))
+                    } ?: set(HandlerDelegateImpl.createWrapper())
                 }
             }
             /** Patched [ActivityManager] */
@@ -392,10 +392,10 @@ internal object AppParasitics {
                 }.getOrNull() ?: ActivityManagerClass.field { name = "IActivityManagerSingleton" }.ignored().get().any()
             }.getOrNull()?.also { default ->
                 SingletonClass.field { name = "mInstance" }.ignored().result {
-                    get(default).apply { any()?.also { set(IActivityManagerProxy.wrapper(IActivityManagerClass, it)) } }
+                    get(default).apply { any()?.also { set(IActivityManagerProxyImpl.createWrapper(IActivityManagerClass, it)) } }
                     ActivityTaskManagerClass?.field { name = "IActivityTaskManagerSingleton" }?.ignored()?.get()?.any()?.also { singleton ->
                         SingletonClass.method { name = "get" }.ignored().get(singleton).call()
-                        get(singleton).apply { any()?.also { set(IActivityManagerProxy.wrapper(IActivityTaskManagerClass, it)) } }
+                        get(singleton).apply { any()?.also { set(IActivityManagerProxyImpl.createWrapper(IActivityTaskManagerClass, it)) } }
                     }
                 }
             }

@@ -23,10 +23,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/8/8.
+ * This file is Created by fankes on 2023/4/8.
  * Thanks for providing https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/lifecycle/Parasitics.java
  */
-package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate
+@file:Suppress("unused")
+
+package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.caller
 
 import android.app.Activity
 import android.content.Intent
@@ -34,6 +36,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
@@ -46,28 +49,29 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 
 /**
- * 代理当前 [Handler.Callback]
- * @param baseInstance 原始实例
+ * 代理当前 [Handler.Callback] 调用类
+ *
+ * - ❗装载代码将自动生成 - 请勿手动调用
  */
-internal class HandlerDelegate private constructor(private val baseInstance: Handler.Callback?) : Handler.Callback {
+@YukiGenerateApi
+object HandlerDelegateCaller {
 
-    internal companion object {
+    /** 启动 [Activity] */
+    private const val LAUNCH_ACTIVITY = 100
 
-        /** 启动 [Activity] */
-        private const val LAUNCH_ACTIVITY = 100
+    /** 执行事务处理 */
+    private const val EXECUTE_TRANSACTION = 159
 
-        /** 执行事务处理 */
-        private const val EXECUTE_TRANSACTION = 159
-
-        /**
-         * 从 [Handler.Callback] 创建 [HandlerDelegate] 实例
-         * @param baseInstance [Handler.Callback] 实例 - 可空
-         * @return [HandlerDelegate]
-         */
-        internal fun wrapper(baseInstance: Handler.Callback? = null) = HandlerDelegate(baseInstance)
-    }
-
-    override fun handleMessage(msg: Message): Boolean {
+    /**
+     * 调用代理的 [Handler.Callback.handleMessage] 方法
+     *
+     * - ❗装载代码将自动生成 - 请勿手动调用
+     * @param baseInstance 原始实例
+     * @param msg 当前消息实例
+     * @return [Boolean]
+     */
+    @YukiGenerateApi
+    fun callHandleMessage(baseInstance: Handler.Callback?, msg: Message): Boolean {
         when (msg.what) {
             LAUNCH_ACTIVITY -> runCatching {
                 msg.obj.current(ignored = true).field { name = "intent" }.apply {

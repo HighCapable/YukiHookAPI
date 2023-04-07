@@ -275,6 +275,30 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 packageName = PackageName.YukiXposedModuleStatus_Impl,
                 content = data.sources()[ClassName.YukiXposedModuleStatus_Impl]
             )
+            /** 插入 HandlerDelegateImpl_Impl 代码 */
+            createCodeFile(
+                fileName = ClassName.HandlerDelegateImpl_Impl,
+                packageName = PackageName.HandlerDelegateImpl_Impl,
+                content = data.sources()[ClassName.HandlerDelegateImpl_Impl]
+            )
+            /** 插入 HandlerDelegateClass 代码 */
+            createCodeFile(
+                fileName = ClassName.HandlerDelegateClass,
+                packageName = PackageName.HandlerDelegateClass,
+                content = data.sources()[ClassName.HandlerDelegateClass]
+            )
+            /** 插入 IActivityManagerProxyImpl_Impl 代码 */
+            createCodeFile(
+                fileName = ClassName.IActivityManagerProxyImpl_Impl,
+                packageName = PackageName.IActivityManagerProxyImpl_Impl,
+                content = data.sources()[ClassName.IActivityManagerProxyImpl_Impl]
+            )
+            /** 插入 IActivityManagerProxyClass 代码 */
+            createCodeFile(
+                fileName = ClassName.IActivityManagerProxyClass,
+                packageName = PackageName.IActivityManagerProxyClass,
+                content = data.sources()[ClassName.IActivityManagerProxyClass]
+            )
             /** 插入 xposed_init 代码 */
             createCodeFile(
                 fileName = data.xInitClassName,

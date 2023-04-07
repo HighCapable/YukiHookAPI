@@ -38,6 +38,10 @@ object PackageName {
     const val YukiHookAPI_Impl = "com.highcapable.yukihookapi"
     const val ModuleApplication_Impl = "com.highcapable.yukihookapi.hook.xposed.application"
     const val YukiXposedModuleStatus_Impl = "com.highcapable.yukihookapi.hook.xposed.bridge.status"
+    const val HandlerDelegateImpl_Impl = "com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl"
+    const val HandlerDelegateClass = "com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate"
+    const val IActivityManagerProxyImpl_Impl = "com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl"
+    const val IActivityManagerProxyClass = "com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate"
     const val BootstrapReflectionClass = "com.highcapable.yukihookapi.thirdparty.me.weishu.reflection"
 }
 
@@ -48,6 +52,10 @@ object ClassName {
     const val YukiHookAPI_Impl = "YukiHookAPI_Impl"
     const val ModuleApplication_Impl = "ModuleApplication_Impl"
     const val YukiXposedModuleStatus_Impl = "YukiXposedModuleStatus_Impl"
+    const val HandlerDelegateImpl_Impl = "HandlerDelegateImpl_Impl"
+    const val HandlerDelegateClass = "HandlerDelegate"
+    const val IActivityManagerProxyImpl_Impl = "IActivityManagerProxyImpl_Impl"
+    const val IActivityManagerProxyClass = "IActivityManagerProxy"
     const val XposedInit = "xposed_init"
     const val XposedInit_Impl = "xposed_init_Impl"
     const val BootstrapClass = "BootstrapClass"
@@ -65,6 +73,13 @@ object YukiXposedModuleStatusJvmName {
     const val GET_EXECUTOR_VERSION_NAME_METHOD_NAME = "-_-_"
     const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
 }
+
+/**
+ * 创建尾部包名名称
+ * @param name 前置名称
+ * @return [String]
+ */
+private fun GenerateData.tailPackageName(name: String) = "${name}_${modulePackageName.replace(".", "_")}"
 
 /**
  * 创建文件注释
@@ -165,6 +180,74 @@ fun GenerateData.sources() = mapOf(
             "        /** Consume a long method body */\n" +
             "        if (System.currentTimeMillis() == 0L) Log.d(\"${(1000..9999).random()}\", \"${(100000..999999).random()}\")\n" +
             "    }\n" +
+            "}"),
+    ClassName.HandlerDelegateImpl_Impl to ("@file:Suppress(\"ClassName\")\n" +
+            "\n" +
+            "package ${PackageName.HandlerDelegateImpl_Impl}\n" +
+            "\n" +
+            "import android.os.Handler\n" +
+            "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
+            "import ${PackageName.HandlerDelegateClass}.${tailPackageName(ClassName.HandlerDelegateClass)}\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.HandlerDelegateImpl_Impl) +
+            "@YukiGenerateApi\n" +
+            "object ${ClassName.HandlerDelegateImpl_Impl} {\n" +
+            "\n" +
+            "    val wrapperClassName get() = \"${PackageName.HandlerDelegateClass}.${tailPackageName(ClassName.HandlerDelegateClass)}\"\n" +
+            "\n" +
+            "    fun createWrapper(baseInstance: Handler.Callback? = null): Handler.Callback = ${tailPackageName(ClassName.HandlerDelegateClass)}(baseInstance)\n" +
+            "}"),
+    ClassName.HandlerDelegateClass to ("@file:Suppress(\"ClassName\")\n" +
+            "\n" +
+            "package ${PackageName.HandlerDelegateClass}\n" +
+            "\n" +
+            "import android.os.Handler\n" +
+            "import android.os.Message\n" +
+            "import androidx.annotation.Keep\n" +
+            "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
+            "import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.caller.HandlerDelegateCaller\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.HandlerDelegateClass) +
+            "@Keep\n" +
+            "@YukiGenerateApi\n" +
+            "class ${tailPackageName(ClassName.HandlerDelegateClass)}(private val baseInstance: Handler.Callback?) : Handler.Callback {\n" +
+            "\n" +
+            "    override fun handleMessage(msg: Message) = HandlerDelegateCaller.callHandleMessage(baseInstance, msg)\n" +
+            "}"),
+    ClassName.IActivityManagerProxyImpl_Impl to ("@file:Suppress(\"ClassName\")\n" +
+            "\n" +
+            "package ${PackageName.IActivityManagerProxyImpl_Impl}\n" +
+            "\n" +
+            "import android.os.Handler\n" +
+            "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
+            "import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.caller.IActivityManagerProxyCaller\n" +
+            "import ${PackageName.IActivityManagerProxyClass}.${tailPackageName(ClassName.IActivityManagerProxyClass)}\n" +
+            "import java.lang.reflect.Proxy\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.IActivityManagerProxyImpl_Impl) +
+            "@YukiGenerateApi\n" +
+            "object ${ClassName.IActivityManagerProxyImpl_Impl} {\n" +
+            "\n" +
+            "    fun createWrapper(clazz: Class<*>?, instance: Any) = \n" +
+            "        Proxy.newProxyInstance(IActivityManagerProxyCaller.currentClassLoader, arrayOf(clazz), ${tailPackageName(ClassName.IActivityManagerProxyClass)}(instance))\n" +
+            "}"),
+    ClassName.IActivityManagerProxyClass to ("@file:Suppress(\"ClassName\")\n" +
+            "\n" +
+            "package ${PackageName.IActivityManagerProxyClass}\n" +
+            "\n" +
+            "import androidx.annotation.Keep\n" +
+            "import com.highcapable.yukihookapi.annotation.YukiGenerateApi\n" +
+            "import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.caller.IActivityManagerProxyCaller\n" +
+            "import java.lang.reflect.InvocationHandler\n" +
+            "import java.lang.reflect.Method\n" +
+            "import java.lang.reflect.Proxy\n" +
+            "\n" +
+            createCommentContent(currrentClassTag = ClassName.IActivityManagerProxyClass) +
+            "@Keep\n" +
+            "@YukiGenerateApi\n" +
+            "class ${tailPackageName(ClassName.IActivityManagerProxyClass)}(private val baseInstance: Any) : InvocationHandler {\n" +
+            "\n" +
+            "    override fun invoke(proxy: Any?, method: Method?, args: Array<Any>?) = IActivityManagerProxyCaller.callInvoke(baseInstance, method, args)\n" +
             "}"),
     ClassName.XposedInit to ("@file:Suppress(\"ClassName\")\n" +
             "\n" +
