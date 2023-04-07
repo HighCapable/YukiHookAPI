@@ -1317,22 +1317,6 @@ You can only use `YukiHookDataChannel` when [Use as Xposed Module Configs](../co
 
 ::: danger IllegalStateException
 
-YukiHookDataChannel only support used on an Activity, but this current context is "**CLASSNAME**"
-
-:::
-
-**Abnormal**
-
-`YukiHookDataChannel` is used in a non-`Activity` context of a Module App.
-
-**Solution**
-
-You can only use `YukiHookDataChannel` in `Activity` or `Fragment`.
-
-###### exception
-
-::: danger IllegalStateException
-
 Xposed modulePackageName load failed, please reset and rebuild it
 
 :::

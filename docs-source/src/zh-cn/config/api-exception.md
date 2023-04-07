@@ -1256,22 +1256,6 @@ class MyApplication : Application() {
 
 ::: danger IllegalStateException 
 
-YukiHookDataChannel only support used on an Activity, but this current context is "**CLASSNAME**"
-
-:::
-
-**异常原因**
-
-在模块的非 `Activity` 环境中使用了 `YukiHookDataChannel`。
-
-**解决方案**
-
-你只能在 `Activity` 或 `Fragment` 中使用 `YukiHookDataChannel`。
-
-###### exception
-
-::: danger IllegalStateException 
-
 Xposed modulePackageName load failed, please reset and rebuild it
 
 :::
