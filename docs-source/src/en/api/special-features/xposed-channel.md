@@ -192,7 +192,7 @@ A callback event with the same **key** will only call back the callback event re
 
 The same **key** registers **dataChannel** in the same **Activity** but different **Fragment**, they will still be called back in the current **Activity** at the same time.
 
-In a Module App, you can only use **Context** of **Activity** to register **dataChannel**, you cannot use **dataChannel** in **Application** and **Service**.
+In a Module App, you can use **dataChannel** in **Activity**, **Application** and **Service**, when used in places other than **Activity**, each callback event will instant callback, at which point you can use **ChannelPriority** to manage.
 
 If you want to use **dataChannel** in **Fragment**, use **activity?.dataChannel(...)**.
 
@@ -259,7 +259,7 @@ class FragmentB : BaseFragment() {
 
 ## Security Instructions
 
-In the Module environment, you can only receive the communication data sent by <u>**the Host App of the specified package name**</u> and can only send to <u>**the Host App of the specified package name**</u>, except for System Framework.
+In the module environment, you can only receive the communication data sent by <u>**the Host App of the specified package name**</u> and can only send to <u>**the Host App of the specified package name**</u>, except for System Framework.
 
 ::: danger
 
