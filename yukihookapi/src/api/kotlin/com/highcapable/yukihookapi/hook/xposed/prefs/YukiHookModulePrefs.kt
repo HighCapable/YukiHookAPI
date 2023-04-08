@@ -399,7 +399,18 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         }
 
     /**
-     *  获取全部存储的键值数据
+     * 判断当前是否包含 [key] 键值的数据
+     *
+     * - 智能识别对应环境读取键值数据
+     * @return [Boolean] 是否包含
+     */
+    fun contains(key: String) =
+        if (isXposedEnvironment)
+            xPrefs.contains(key)
+        else sPrefs.contains(key)
+
+    /**
+     * 获取全部存储的键值数据
      *
      * - 智能识别对应环境读取键值数据
      *

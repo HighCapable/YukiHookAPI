@@ -228,6 +228,22 @@ fun getFloat(key: String, value: Float): Float
 
 > 获取 `Float` 键值。
 
+## contains <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun contains(key: String): Boolean
+```
+
+**变更记录**
+
+`v1.1.9` `新增`
+
+**功能描述**
+
+> 判断当前是否包含 `key` 键值的数据。
+
+智能识别对应环境读取键值数据。
+
 ## all <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
