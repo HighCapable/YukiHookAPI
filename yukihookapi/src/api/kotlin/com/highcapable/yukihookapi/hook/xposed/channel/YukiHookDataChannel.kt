@@ -37,10 +37,7 @@ import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
-import android.os.TransactionTooLargeException
+import android.os.*
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.log.*
@@ -193,16 +190,15 @@ class YukiHookDataChannel private constructor() {
      * @param packageName 包名
      * @return [String]
      */
-    private fun hostActionName(packageName: String) = "yukihookapi.intent.action.HOST_DATA_CHANNEL_${packageName.trim().hashCode()}"
+    private fun hostActionName(packageName: String) = "yuki_hook_host_data_channel_${packageName.trim().hashCode()}"
 
     /**
      * 获取模块广播 Action 名称
      * @param context 实例 - 默认空
      * @return [String]
      */
-    private fun moduleActionName(context: Context? = null) = "yukihookapi.intent.action.MODULE_DATA_CHANNEL_${
-        YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" }.trim().hashCode()
-    }"
+    private fun moduleActionName(context: Context? = null) =
+        "yuki_hook_module_data_channel_${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" }.trim().hashCode()}"
 
     /**
      * 注册广播
@@ -381,7 +377,7 @@ class YukiHookDataChannel private constructor() {
             receiverCallbacks[key + keyShortName(CallbackKeyType.SINGLE)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
                     if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                        parseReceivedData(intent.extras?.get(key + keyNonRepeatName)?.toChannelWrapper(), result)
+                        parseReceivedData(intent.getDataWrapper(key), result)
             }
         }
 
@@ -395,7 +391,7 @@ class YukiHookDataChannel private constructor() {
             receiverCallbacks[data.key + keyShortName(CallbackKeyType.CDATA)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
                     if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                        parseReceivedData(intent.extras?.get(data.key + keyNonRepeatName)?.toChannelWrapper(), result)
+                        parseReceivedData(intent.getDataWrapper(data.key), result)
             }
         }
 
@@ -411,8 +407,7 @@ class YukiHookDataChannel private constructor() {
             receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
                     if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-                        intent.extras?.get(key + keyNonRepeatName)?.toChannelWrapper<String>()
-                            ?.let { if (it.instance.value == VALUE_WAIT_FOR_LISTENER) callback() }
+                        intent.getDataWrapper<String>(key)?.let { if (it.instance.value == VALUE_WAIT_FOR_LISTENER) callback() }
             }
         }
 
@@ -445,12 +440,12 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 接收到的任意类型数据转换为 [ChannelDataWrapper]<[T]> 实例
-         * @return [ChannelDataWrapper]<[T]>
-         * @throws IllegalStateException 如果数据类型不正确
+         * 从 [Intent] 获取接收到的任意类型数据转换为 [ChannelDataWrapper]<[T]> 实例
+         * @param key 键值名称
+         * @return [ChannelDataWrapper]<[T]> or null
          */
-        private fun <T> Any.toChannelWrapper() =
-            this as? ChannelDataWrapper<T> ?: error("Received data type ${javaClass.name} is not a vailed YukiHookDataChannel's data")
+        private fun <T> Intent.getDataWrapper(key: String) =
+            runCatching { extras?.getSerializable(key + keyNonRepeatName) as? ChannelDataWrapper<T> }.getOrNull()
 
         /**
          * [ChannelData]<[T]> 转换为 [ChannelDataWrapper]<[T]> 实例
