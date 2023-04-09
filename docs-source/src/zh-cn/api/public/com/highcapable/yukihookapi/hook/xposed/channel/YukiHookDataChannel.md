@@ -62,6 +62,62 @@ inline fun with(initiate: NameSpace.() -> Unit): NameSpace
 
 > 创建一个调用空间。
 
+### dataMaxByteSize <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+var dataMaxByteSize: Int
+```
+
+**变更记录**
+
+`v1.1.9` `新增`
+
+**功能描述**
+
+> `YukiHookDataChannel` 允许发送的最大数据字节大小。
+
+默认为 `500 KB (500 * 1024)`，详情请参考 `receiverDataMaxByteSize` 的注释。
+
+最小不能低于 `100 KB (100 * 1024)`，否则会被重新设置为 `100 KB (100 * 1024)`。
+
+设置后将在全局生效，直到当前进程结束。
+
+超出最大数据字节大小后的数据将被自动分段发送。
+
+::: danger
+
+请谨慎调整此参数，如果超出了系统能够允许的大小会引发 **TransactionTooLargeException** 异常。
+
+:::
+
+### dataMaxByteCompressionFactor <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+var dataMaxByteCompressionFactor: Int
+```
+
+**变更记录**
+
+`v1.1.9` `新增`
+
+**功能描述**
+
+> `YukiHookDataChannel` 允许发送的最大数据字节大小倍数 (分段数据)。
+
+默认为 `3`，详情请参考 `receiverDataMaxByteCompressionFactor` 的注释。
+
+最小不能低于 `2`，否则会被重新设置为 `2`。
+
+设置后将在全局生效，直到当前进程结束。
+
+超出最大数据字节大小后的数据将按照此倍数自动划分 `receiverDataMaxByteSize` 的大小。
+
+::: danger
+
+请谨慎调整此参数，如果超出了系统能够允许的大小会引发 **TransactionTooLargeException** 异常。
+
+:::
+
 ### allowSendTooLargeData <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers

@@ -40,12 +40,10 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.os.TransactionTooLargeException
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
-import com.highcapable.yukihookapi.hook.log.YukiHookLogger
-import com.highcapable.yukihookapi.hook.log.YukiLoggerData
-import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.*
 import com.highcapable.yukihookapi.hook.utils.RandomSeed
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
@@ -55,7 +53,6 @@ import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.round
 
 /**
  * 实现 Xposed 模块的数据通讯桥
@@ -80,17 +77,6 @@ class YukiHookDataChannel private constructor() {
         /** 自动生成的 Xposed 模块构建版本号 */
         private val moduleGeneratedVersion = YukiHookAPI.Status.compiledTimestamp.toString()
 
-        /**
-         * 系统广播允许发送的最大数据字节大小
-         *
-         * 标准为 1 MB - 实测不同系统目前已知能得到的数据分别有 1、2、3 MB
-         *
-         * 经过测试分段发送 900 KB 数据在 1 台 Android 13 系统的设备上依然会发生异常
-         *
-         * 综上所述 - 为了防止系统不同限制不同 - 最终决定设置为 500 KB - 超出后以此大小分段发送数据
-         */
-        private const val RECEIVER_DATA_MAX_BYTE_SIZE = 500 * 1024
-
         /** 模块构建版本号获取标签 */
         private const val GET_MODULE_GENERATED_VERSION = "module_generated_version_get"
 
@@ -105,6 +91,34 @@ class YukiHookDataChannel private constructor() {
 
         /** 仅监听结果键值 */
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
+
+        /**
+         * 系统广播允许发送的最大数据字节大小
+         *
+         * 标准为 1 MB - 实测不同系统目前已知能得到的数据分别有 1、2、3 MB
+         *
+         * 经过测试分段发送 900 KB 数据在 1 台 Android 13 系统的设备上依然会发生异常
+         *
+         * 综上所述 - 为了防止系统不同限制不同 - 最终决定默认设置为 500 KB - 超出后以此大小分段发送数据
+         */
+        private var receiverDataMaxByteSize = 500 * 1024
+
+        /**
+         * 系统广播允许发送的最大数据字节大小倍数 (分段数据)
+         *
+         * 分段后的数据每次也不能超出 [receiverDataMaxByteSize] 的大小
+         *
+         * 此倍数被作用于分配 [receiverDataMaxByteSize] 的大小
+         *
+         * 倍数计算公式为 [receiverDataMaxByteSize] / [receiverDataMaxByteCompressionFactor] = [receiverDataSegmentMaxByteSize]
+         */
+        private var receiverDataMaxByteCompressionFactor = 3
+
+        /**
+         * 获取当前系统广播允许的最大单个分段数据字节大小
+         * @return [Int]
+         */
+        private val receiverDataSegmentMaxByteSize get() = receiverDataMaxByteSize / receiverDataMaxByteCompressionFactor
 
         /** 当前 [YukiHookDataChannel] 单例 */
         private var instance: YukiHookDataChannel? = null
@@ -127,7 +141,7 @@ class YukiHookDataChannel private constructor() {
     /** 当前注册广播的 [Context] */
     private var receiverContext: Context? = null
 
-    /** 是否允许发送超出 [RECEIVER_DATA_MAX_BYTE_SIZE] 大小的数据 */
+    /** 是否允许发送超出 [receiverDataMaxByteSize] 大小的数据 */
     private var isAllowSendTooLargeData = false
 
     /** 广播接收器 */
@@ -269,6 +283,53 @@ class YukiHookDataChannel private constructor() {
         private val keyNonRepeatName get() = "_${packageName.hashCode()}"
 
         /**
+         * 创建一个调用空间
+         * @param initiate 方法体
+         * @return [NameSpace] 可继续向下监听
+         */
+        inline fun with(initiate: NameSpace.() -> Unit) = apply(initiate)
+
+        /**
+         * [YukiHookDataChannel] 允许发送的最大数据字节大小
+         *
+         * 默认为 500 KB (500 * 1024) - 详情请参考 [receiverDataMaxByteSize] 的注释
+         *
+         * 最小不能低于 100 KB (100 * 1024) - 否则会被重新设置为 100 KB (100 * 1024)
+         *
+         * 设置后将在全局生效 - 直到当前进程结束
+         *
+         * - 超出最大数据字节大小后的数据将被自动分段发送
+         *
+         * - ❗警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
+         * @return [Int]
+         */
+        var dataMaxByteSize
+            get() = receiverDataMaxByteSize
+            set(value) {
+                receiverDataMaxByteSize = if (value < 100 * 1024) 100 * 1024 else value
+            }
+
+        /**
+         * [YukiHookDataChannel] 允许发送的最大数据字节大小倍数 (分段数据)
+         *
+         * 默认为 3 - 详情请参考 [receiverDataMaxByteCompressionFactor] 的注释
+         *
+         * 最小不能低于 2 - 否则会被重新设置为 2
+         *
+         * 设置后将在全局生效 - 直到当前进程结束
+         *
+         * - 超出最大数据字节大小后的数据将按照此倍数自动划分 [receiverDataMaxByteSize] 的大小
+         *
+         * - ❗警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
+         * @return [Int]
+         */
+        var dataMaxByteCompressionFactor
+            get() = receiverDataMaxByteCompressionFactor
+            set(value) {
+                receiverDataMaxByteCompressionFactor = if (value < 2) 2 else value
+            }
+
+        /**
          * 解除发送数据的大小限制并禁止开启分段发送功能
          *
          * 仅会在每次调用时生效 - 下一次没有调用此方法则此功能将被自动关闭
@@ -283,13 +344,6 @@ class YukiHookDataChannel private constructor() {
             isAllowSendTooLargeData = true
             return this
         }
-
-        /**
-         * 创建一个调用空间
-         * @param initiate 方法体
-         * @return [NameSpace] 可继续向下监听
-         */
-        inline fun with(initiate: NameSpace.() -> Unit) = apply(initiate)
 
         /**
          * 发送键值数据
@@ -409,35 +463,37 @@ class YukiHookDataChannel private constructor() {
             ChannelDataWrapper(id, size > 0, size, index, this)
 
         /**
-         * 计算 [ChannelData] 所占空间的字节大小
+         * 计算任意类型所占空间的字节大小
          * @return [Int] 字节大小
          */
-        private fun ChannelData<*>.calDataByteSize(): Int {
+        private fun Any.calDataByteSize(): Int {
+            val key = if (this is ChannelData<*>) key else "placeholder"
+            val value = if (this is ChannelData<*>) value else this
             val bundle = Bundle().apply {
                 when (value) {
                     null -> Unit
-                    is Boolean -> putBoolean(key, value as Boolean)
-                    is BooleanArray -> putBooleanArray(key, value as BooleanArray)
-                    is Byte -> putByte(key, value as Byte)
-                    is ByteArray -> putByteArray(key, value as ByteArray)
-                    is Char -> putChar(key, value as Char)
-                    is CharArray -> putCharArray(key, value as CharArray)
-                    is Double -> putDouble(key, value as Double)
-                    is DoubleArray -> putDoubleArray(key, value as DoubleArray)
-                    is Float -> putFloat(key, value as Float)
-                    is FloatArray -> putFloatArray(key, value as FloatArray)
-                    is Int -> putInt(key, value as Int)
-                    is IntArray -> putIntArray(key, value as IntArray)
-                    is Long -> putLong(key, value as Long)
-                    is LongArray -> putLongArray(key, value as LongArray)
-                    is Short -> putShort(key, value as Short)
-                    is ShortArray -> putShortArray(key, value as ShortArray)
-                    is String -> putString(key, value as String)
-                    is Array<*> -> putSerializable(key, value as Array<*>)
-                    is CharSequence -> putCharSequence(key, value as CharSequence)
-                    is Parcelable -> putParcelable(key, value as Parcelable)
-                    is Serializable -> putSerializable(key, value as Serializable)
-                    else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
+                    is Boolean -> putBoolean(key, value)
+                    is BooleanArray -> putBooleanArray(key, value)
+                    is Byte -> putByte(key, value)
+                    is ByteArray -> putByteArray(key, value)
+                    is Char -> putChar(key, value)
+                    is CharArray -> putCharArray(key, value)
+                    is Double -> putDouble(key, value)
+                    is DoubleArray -> putDoubleArray(key, value)
+                    is Float -> putFloat(key, value)
+                    is FloatArray -> putFloatArray(key, value)
+                    is Int -> putInt(key, value)
+                    is IntArray -> putIntArray(key, value)
+                    is Long -> putLong(key, value)
+                    is LongArray -> putLongArray(key, value)
+                    is Short -> putShort(key, value)
+                    is ShortArray -> putShortArray(key, value)
+                    is String -> putString(key, value)
+                    is Array<*> -> putSerializable(key, value)
+                    is CharSequence -> putCharSequence(key, value)
+                    is Parcelable -> putParcelable(key, value)
+                    is Serializable -> putSerializable(key, value)
+                    else -> error("Key-Value type ${value.javaClass.name} is not allowed")
                 }
             }
             return runCatching {
@@ -529,7 +585,7 @@ class YukiHookDataChannel private constructor() {
             fun loggerForTooLargeData(name: String, size: Int) {
                 if (YukiHookAPI.Configs.isDebug) yLoggerW(
                     msg = "This data key of \"${wrapper.instance.key}\" type $name is too large (total ${dataByteSize / 1024f} KB, " +
-                            "limit ${RECEIVER_DATA_MAX_BYTE_SIZE / 1024f} KB), will be segmented to $size piece to send"
+                            "limit ${receiverDataMaxByteSize / 1024f} KB), will be segmented to $size piece to send"
                 )
             }
 
@@ -540,40 +596,20 @@ class YukiHookDataChannel private constructor() {
             fun loggerForUnprocessableData(suggestionMessage: String = "") = yLoggerE(
                 msg = "YukiHookDataChannel cannot send this data key of \"${wrapper.instance.key}\" type ${wrapper.instance.value?.javaClass}, " +
                         "because it is too large (total ${dataByteSize / 1024f} KB, " +
-                        "limit ${RECEIVER_DATA_MAX_BYTE_SIZE / 1024f} KB) and cannot be segmented\n" +
+                        "limit ${receiverDataMaxByteSize / 1024f} KB) and cannot be segmented\n" +
                         (if (suggestionMessage.isNotBlank()) "$suggestionMessage\n" else "") +
                         "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
                         "but this may cause the app crash"
             )
-
-            /**
-             * 计算需要的大小 (预估大小)
-             * @param size 集合大小 (长度)
-             * @return [Int]
-             */
-            fun calIntendCountBySize(size: Int) = round(size / round(dataByteSize.toFloat() / RECEIVER_DATA_MAX_BYTE_SIZE)).toInt()
-
-            /**
-             * 计算需要的大小 (预估大小)
-             * @return [Int]
-             */
-            fun Collection<*>.calIntendCount() = calIntendCountBySize(size)
-
-            /**
-             * 计算需要的大小 (预估大小)
-             * @return [Int]
-             */
-            fun Map<*, *>.calIntendCount() = calIntendCountBySize(size)
             when {
                 wrapper.isSegmentsType || isAllowSendTooLargeData -> pushReceiver(wrapper)
-                dataByteSize >= RECEIVER_DATA_MAX_BYTE_SIZE -> when (wrapper.instance.value) {
+                dataByteSize >= receiverDataMaxByteSize -> when (wrapper.instance.value) {
                     is List<*> -> (wrapper.instance.value as List<*>).also { value ->
                         val segments = arrayListOf<List<*>>()
                         var segment = arrayListOf<Any?>()
-                        val intendCount = value.calIntendCount()
                         value.forEach {
                             segment.add(it)
-                            if (segment.size >= intendCount) {
+                            if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
                                 segments.add(segment)
                                 segment = arrayListOf()
                             }
@@ -587,10 +623,9 @@ class YukiHookDataChannel private constructor() {
                     is Map<*, *> -> (wrapper.instance.value as Map<*, *>).also { value ->
                         val segments = arrayListOf<Map<*, *>>()
                         var segment = hashMapOf<Any?, Any?>()
-                        val intendCount = value.calIntendCount()
                         value.forEach { (k, v) ->
                             segment[k] = v
-                            if (segment.size >= intendCount) {
+                            if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
                                 segments.add(segment)
                                 segment = hashMapOf()
                             }
@@ -604,10 +639,9 @@ class YukiHookDataChannel private constructor() {
                     is Set<*> -> (wrapper.instance.value as Set<*>).also { value ->
                         val segments = arrayListOf<Set<*>>()
                         var segment = hashSetOf<Any?>()
-                        val intendCount = value.calIntendCount()
                         value.forEach {
                             segment.add(it)
-                            if (segment.size >= intendCount) {
+                            if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
                                 segments.add(segment)
                                 segment = hashSetOf()
                             }
@@ -620,7 +654,7 @@ class YukiHookDataChannel private constructor() {
                     }
                     is String -> (wrapper.instance.value as String).also { value ->
                         /** 由于字符会被按照双字节计算 - 所以这里将限制字节大小除以 2 */
-                        val twoByteMaxSize = RECEIVER_DATA_MAX_BYTE_SIZE / 2
+                        val twoByteMaxSize = receiverDataMaxByteSize / 2
                         val segments = arrayListOf<String>()
                         for (i in 0..value.length step twoByteMaxSize)
                             if (i + twoByteMaxSize <= value.length)
