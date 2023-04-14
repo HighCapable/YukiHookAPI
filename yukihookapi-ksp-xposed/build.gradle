@@ -70,8 +70,9 @@ publishing {
             name = rootProject.ext.ossName
             url = rootProject.ext.ossUrl
             credentials {
-                username = getFileContent("OSSRH_USERNAME")
-                password = getFileContent("OSSRH_PASSWORD")
+                def configs = getMavenCredentials(projectDir)
+                username = configs.username
+                password = configs.password
             }
         }
     }

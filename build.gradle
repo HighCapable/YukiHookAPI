@@ -1,4 +1,5 @@
-//file:noinspection unused
+import groovy.json.JsonSlurper
+
 plugins {
     id 'com.android.application' version '7.4.1' apply false
     id 'com.android.library' version '7.4.1' apply false
@@ -24,23 +25,18 @@ ext {
 }
 
 /**
- * 获取授权文件内容 - 用于 Maven 的提交
- *
- * 若编译失败请将路径替换为自己的或置空
- * @param name
- * @return [String]
+ * 获取 Maven 授权信息 - 用于 Maven 的提交
+ * @param childProjectDir 子项目的目录
+ * @return [Object]
  */
-static String getFileContent(String name) {
-    String result = ""
+@SuppressWarnings('unused')
+static Object getMavenCredentials(File childProjectDir) {
+    def slurper = new JsonSlurper()
     try {
-        FileReader reader = new FileReader("/Users/fankes/Project/Android/Xposed/YukiHookAPI/.gradle/" + name)
-        BufferedReader buff = new BufferedReader(reader)
-        result = buff.readLine()
-        buff.close()
-        reader.close()
+        return slurper.parse(new File("${childProjectDir.getParent()}/.maven/credentials.json"))
     } catch (Throwable ignored) {
+        return slurper.parseText('{"username":"-NEEDED-","password":"-NEEDED-"}')
     }
-    return result
 }
 
 task clean(type: Delete) {
