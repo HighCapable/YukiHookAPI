@@ -596,6 +596,14 @@ class YukiHookDataChannel private constructor() {
                         "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
                         "but this may cause the app crash"
             )
+
+            /**
+             * 如果数据过大且无法分段打印错误信息 (首元素超出 - 分段数组内容为空)
+             * @param name 数据类型名称
+             */
+            fun loggerForUnprocessableDataByFirstElement(name: String) = loggerForUnprocessableData(
+                suggestionMessage = "Failed to segment $name type because the size of its first element has exceeded the maximum limit"
+            )
             when {
                 wrapper.isSegmentsType || isAllowSendTooLargeData -> pushReceiver(wrapper)
                 dataByteSize >= receiverDataMaxByteSize -> when (wrapper.instance.value) {
@@ -613,7 +621,7 @@ class YukiHookDataChannel private constructor() {
                         loggerForTooLargeData(name = "List", segments.size)
                         segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
                             pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        }
+                        } ?: loggerForUnprocessableDataByFirstElement(name = "List")
                     }
                     is Map<*, *> -> (wrapper.instance.value as Map<*, *>).also { value ->
                         val segments = arrayListOf<Map<*, *>>()
@@ -629,7 +637,7 @@ class YukiHookDataChannel private constructor() {
                         loggerForTooLargeData(name = "Map", segments.size)
                         segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
                             pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        }
+                        } ?: loggerForUnprocessableDataByFirstElement(name = "Map")
                     }
                     is Set<*> -> (wrapper.instance.value as Set<*>).also { value ->
                         val segments = arrayListOf<Set<*>>()
@@ -645,7 +653,7 @@ class YukiHookDataChannel private constructor() {
                         loggerForTooLargeData(name = "Set", segments.size)
                         segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
                             pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        }
+                        } ?: loggerForUnprocessableDataByFirstElement(name = "Set")
                     }
                     is String -> (wrapper.instance.value as String).also { value ->
                         /** 由于字符会被按照双字节计算 - 所以这里将限制字节大小除以 2 */
@@ -659,7 +667,7 @@ class YukiHookDataChannel private constructor() {
                         loggerForTooLargeData(name = "String", segments.size)
                         segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
                             pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        }
+                        } ?: loggerForUnprocessableDataByFirstElement(name = "String")
                     }
                     is ByteArray, is CharArray, is ShortArray,
                     is IntArray, is LongArray, is FloatArray,
