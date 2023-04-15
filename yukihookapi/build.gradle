@@ -1,25 +1,56 @@
 plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
     id 'signing'
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-    sourceSets.main { java.srcDir("src/api/kotlin") }
-    withJavadocJar()
-    withSourcesJar()
-}
+android {
+    namespace 'com.highcapable.yukihookapi'
+    compileSdk rootProject.ext.android.compileSdk
 
-javadoc {
-    options.addStringOption("charset", "UTF-8")
-    if (JavaVersion.current().isJava9Compatible()) options.addBooleanOption('html5', true)
+    defaultConfig {
+        minSdk rootProject.ext.android.minSdk
+        targetSdk rootProject.ext.android.targetSdk
+
+        buildConfigField('String', 'API_VERSION_NAME', "\"${rootProject.ext.maven.repository.apiVersion.name}\"")
+        buildConfigField('int', 'API_VERSION_CODE', "${rootProject.ext.maven.repository.apiVersion.code}")
+
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+        freeCompilerArgs = [
+                '-opt-in=com.highcapable.yukihookapi.annotation.YukiPrivateApi',
+                '-opt-in=com.highcapable.yukihookapi.annotation.YukiGenerateApi',
+                '-Xno-param-assertions',
+                '-Xno-call-assertions',
+                '-Xno-receiver-assertions'
+        ]
+    }
+    lintOptions {
+        checkReleaseBuilds false
+    }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 kotlin {
-    sourceSets.main { kotlin.srcDir("src/api/kotlin") }
     sourceSets {
         all {
             languageSettings {
@@ -30,25 +61,18 @@ kotlin {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-    kotlinOptions {
-        jvmTarget = 11
-        freeCompilerArgs = [
-                '-opt-in=com.highcapable.yukihookapi.annotation.YukiPrivateApi',
-                '-opt-in=com.highcapable.yukihookapi.annotation.YukiGenerateApi',
-                '-Xno-param-assertions',
-                '-Xno-call-assertions',
-                '-Xno-receiver-assertions'
-        ]
-    }
-}
-
 dependencies {
     // Used 82 API Version
     compileOnly 'de.robv.android.xposed:api:82'
     compileOnly project(':yukihookapi-stub')
-    compileOnly fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.annotation:annotation:1.6.0'
+    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+}
+
+tasks.register('androidSourcesJar', Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
 }
 
 group = rootProject.ext.maven.repository.groupId
@@ -56,9 +80,10 @@ version = rootProject.ext.maven.repository.apiVersion.name
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        release(MavenPublication) {
             artifactId = 'api'
-            from components.java
+            artifact "$buildDir/outputs/aar/${project.name}-release.aar"
+            artifact androidSourcesJar
             pom {
                 name = rootProject.ext.maven.repository.name
                 description = rootProject.ext.maven.repository.description
@@ -97,4 +122,4 @@ publishing {
     }
 }
 
-signing { sign(publishing.publications.mavenJava) }
+signing { sign publishing.publications }
