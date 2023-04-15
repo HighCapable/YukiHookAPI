@@ -32,8 +32,8 @@ dependencies {
     ksp 'dev.zacsweers.autoservice:auto-service-ksp:1.0.0'
 }
 
-group = rootProject.ext.groupId
-version = rootProject.ext.apiVersion
+group = rootProject.ext.maven.repository.groupId
+version = rootProject.ext.maven.repository.apiVersion.name
 
 publishing {
     publications {
@@ -41,34 +41,34 @@ publishing {
             artifactId = 'ksp-xposed'
             from components.java
             pom {
-                name = rootProject.ext.repoName
-                description = rootProject.ext.repoDescription
-                url = rootProject.ext.website
+                name = rootProject.ext.maven.repository.name
+                description = rootProject.ext.maven.repository.description
+                url = rootProject.ext.maven.repository.website
                 licenses {
                     license {
-                        name = rootProject.ext.licenceName
-                        url = rootProject.ext.licenceUrl
+                        name = rootProject.ext.maven.repository.licence.name
+                        url = rootProject.ext.maven.repository.licence.url
                     }
                 }
                 developers {
                     developer {
-                        id = rootProject.ext.devId
-                        name = rootProject.ext.devUser
-                        email = rootProject.ext.userEmail
+                        id = rootProject.ext.maven.developer.id
+                        name = rootProject.ext.maven.developer.user
+                        email = rootProject.ext.maven.developer.email
                     }
                 }
                 scm {
-                    connection = rootProject.ext.githubConnection
-                    developerConnection = rootProject.ext.githubDeveloperConnection
-                    url = rootProject.ext.githubUrl
+                    connection = rootProject.ext.maven.configurations.githubConnection
+                    developerConnection = rootProject.ext.maven.configurations.githubDeveloperConnection
+                    url = rootProject.ext.maven.configurations.githubUrl
                 }
             }
         }
     }
     repositories {
         maven {
-            name = rootProject.ext.ossName
-            url = rootProject.ext.ossUrl
+            name = rootProject.ext.maven.configurations.ossName
+            url = rootProject.ext.maven.configurations.ossUrl
             credentials {
                 def configs = getMavenCredentials(projectDir)
                 username = configs.username
@@ -78,6 +78,4 @@ publishing {
     }
 }
 
-signing {
-    sign(publishing.publications.mavenJava)
-}
+signing { sign(publishing.publications.mavenJava) }

@@ -8,21 +8,43 @@ plugins {
 }
 
 ext {
-    devId = "0"
-    devUser = "fankesyooni"
-    userEmail = "qzmmcn@163.com"
-    groupId = "com.highcapable.yukihookapi"
-    apiVersion = "1.1.8"
-    repoName = "YukiHookAPI"
-    repoDescription = "An efficient Hook API and Xposed Module solution built in Kotlin."
-    licenceName = "MIT License"
-    licenceUrl = "https://github.com/fankes/YukiHookAPI/blob/master/LICENSE"
-    website = "https://github.com/fankes/YukiHookAPI"
-    githubConnection = "scm:git:git://github.com/path/to/repo.git"
-    githubDeveloperConnection = "scm:git:ssh://github.com/path/to/repo.git"
-    githubUrl = "https://github.com/path/to/repo"
-    ossName = "OSSRH"
-    ossUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+    android = [
+            compileSdk: 33,
+            minSdk    : 21,
+            targetSdk : 33
+    ]
+    app = [
+            versionName: 'universal',
+            versionCode: 1
+    ]
+    maven = [
+            developer     : [
+                    id   : '0',
+                    user : 'fankesyooni',
+                    email: 'qzmmcn@163.com'
+            ],
+            repository    : [
+                    groupId    : 'com.highcapable.yukihookapi',
+                    apiVersion : [
+                            name: '1.1.8',
+                            code: 41
+                    ],
+                    name       : 'YukiHookAPI',
+                    description: 'An efficient Hook API and Xposed Module solution built in Kotlin.',
+                    website    : 'https://github.com/fankes/YukiHookAPI',
+                    licence    : [
+                            name: 'MIT License',
+                            url : 'https://github.com/fankes/YukiHookAPI/blob/master/LICENSE'
+                    ]
+            ],
+            configurations: [
+                    githubConnection         : 'scm:git:git://github.com/path/to/repo.git',
+                    githubDeveloperConnection: 'scm:git:ssh://github.com/path/to/repo.git',
+                    githubUrl                : 'https://github.com/path/to/repo',
+                    ossName                  : 'OSSRH',
+                    ossUrl                   : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2'
+            ]
+    ]
 }
 
 /**

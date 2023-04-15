@@ -1,37 +1,28 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.8.20-1.0.10'
+    id 'com.google.devtools.ksp'
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('../keystore/public')
-            storePassword '123456'
-            keyAlias 'public'
-            keyPassword '123456'
-            v1SigningEnabled true
-            v2SigningEnabled true
-        }
-    }
-
-    compileSdk 33
+    namespace 'com.highcapable.yukihookapi.demo_module'
+    compileSdk rootProject.ext.android.compileSdk
 
     defaultConfig {
-        applicationId "com.highcapable.yukihookapi.demo_module"
-        minSdk 21
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        applicationId 'com.highcapable.yukihookapi.demo_module'
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdk rootProject.ext.android.minSdk
+        targetSdk rootProject.ext.android.targetSdk
+
+        versionCode rootProject.ext.app.versionCode
+        versionName rootProject.ext.app.versionName
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -46,6 +37,9 @@ android {
                 '-Xno-call-assertions',
                 '-Xno-receiver-assertions'
         ]
+    }
+    lintOptions {
+        checkReleaseBuilds false
     }
     buildFeatures {
         viewBinding true
