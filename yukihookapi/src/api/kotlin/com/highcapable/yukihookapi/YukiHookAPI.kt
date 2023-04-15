@@ -338,10 +338,6 @@ object YukiHookAPI {
          * 除非缓存的 [Member] 发生了混淆的问题 - 例如使用 R8 混淆后的 APP 的目标 [Member] - 否则建议启用
          */
         var isEnableMemberCache = true
-
-        /** 结束方法体 */
-        @PublishedApi
-        internal fun build() = Unit
     }
 
     /**
@@ -352,7 +348,9 @@ object YukiHookAPI {
      * For English version, see [configs Method](https://fankes.github.io/YukiHookAPI/en/config/api-example#configs-method)
      * @param initiate 方法体
      */
-    inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
+    inline fun configs(initiate: Configs.() -> Unit) {
+        Configs.apply(initiate)
+    }
 
     /**
      * 作为 Xposed 模块装载调用入口方法
