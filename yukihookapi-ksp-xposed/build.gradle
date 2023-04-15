@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.google.devtools.ksp' version '1.8.20-1.0.10'
+    id 'com.google.devtools.ksp'
     id 'maven-publish'
     id 'signing'
 }
