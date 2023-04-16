@@ -94,6 +94,7 @@ class DexClassFinder @PublishedApi internal constructor(
          * @return [SharedPreferences]
          */
         private fun Context.currentSp(versionName: String? = null, versionCode: Long? = null) =
+            @Suppress("DEPRECATION")
             getSharedPreferences(packageManager?.getPackageInfo(packageName, PackageManager.GET_META_DATA)
                 ?.let { "${CACHE_FILE_NAME}_${versionName ?: it.versionName}_${versionCode ?: PackageInfoCompat.getLongVersionCode(it)}" }
                 ?: "${CACHE_FILE_NAME}_unknown",

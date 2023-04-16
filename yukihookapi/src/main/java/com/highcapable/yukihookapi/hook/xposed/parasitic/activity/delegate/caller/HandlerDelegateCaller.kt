@@ -78,6 +78,7 @@ object HandlerDelegateCaller {
                     cast<Intent?>()?.also { intent ->
                         IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
                             ?.classLoader = AppParasitics.currentApplication?.classLoader
+                        @Suppress("DEPRECATION")
                         if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
                             set(intent.getParcelableExtra(ActivityProxyConfig.proxyIntentName))
                     }
@@ -91,6 +92,7 @@ object HandlerDelegateCaller {
                                 cast<Intent?>()?.also { intent ->
                                     IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
                                         ?.classLoader = AppParasitics.currentApplication?.classLoader
+                                    @Suppress("DEPRECATION")
                                     if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
                                         intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName).also { subIntent ->
                                             if (Build.VERSION.SDK_INT >= 31)

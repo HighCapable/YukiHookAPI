@@ -444,8 +444,10 @@ class YukiHookDataChannel private constructor() {
          * @param key 键值名称
          * @return [ChannelDataWrapper]<[T]> or null
          */
-        private fun <T> Intent.getDataWrapper(key: String) =
-            runCatching { extras?.getSerializable(key + keyNonRepeatName) as? ChannelDataWrapper<T> }.getOrNull()
+        private fun <T> Intent.getDataWrapper(key: String) = runCatching {
+            @Suppress("DEPRECATION")
+            extras?.getSerializable(key + keyNonRepeatName) as? ChannelDataWrapper<T>
+        }.getOrNull()
 
         /**
          * [ChannelData]<[T]> 转换为 [ChannelDataWrapper]<[T]> 实例
