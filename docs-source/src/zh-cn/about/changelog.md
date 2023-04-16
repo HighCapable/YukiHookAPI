@@ -8,7 +8,27 @@
 
 :::
 
-### 1.1.8 | 2023.02.01 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.9 | 2023.04.17 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 将依赖库的类型由 **Java Library** (jar) 修改为 **Android Library** (aar)
+- 移除通过 Hook 或反射 API 内部方法、参数的检查功能
+- 修复 `YukiHookDataChannel` 自动分段发送数据功能不能正常生效 (依然会抛出异常) 的问题
+- 新增可以手动根据目标设备的限制修改 `YukiHookDataChannel` 允许一次发送的最大数据字节大小
+- 移除 `YukiHookDataChannel` 只能在模块 `Activity` 中使用的限制，现在你可以在任何地方使用它
+- 修改并规范 `YukiHookDataChannel` 使用的广播 Action 名称
+- 修复 `YukiHookDataChannel` 在不同模块同一宿主的情况下出现 `BadParcelableException` 异常的问题
+- 新增 `ExecutorType`，可以通过 `YukiHookAPI.Status.Executor.type` 来获取已知 Hook Framework 的类型
+- ~~`YukiHookModulePrefs`~~ 更名为 `YukiHookPrefsBridge`
+- 修改 `YukiHookPrefsBridge` 为非单例实现，作为单例可能发生数据混淆的问题
+- 作废了 ~~`Context.modulePrefs(...)`~~ 方法，请转移到 `Context.prefs(...)`
+- `YukiHookPrefsBridge` 新增 `native` 方法，支持直接作为原生存储在模块和宿主中存储私有数据
+- 整合 `YukiHookPrefsBridge` 中的存储方法到 `YukiHookPrefsBridge.Editor`，请使用 `edit` 方法来存储数据
+- `YukiHookPrefsBridge` 新增 `contains` 方法
+- 缓存 `YukiHookPrefsBridge` 中动态创建的代理对象，尝试修复可能会导致宿主、模块出现 OOM 的问题
+- 修改 `Activity` 代理功能的代理类为动态生成，防止不同模块注入宿主后造成冲突
+- 修复一些其它可能出现的问题
+
+### 1.1.8 | 2023.02.01 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/fankes/YukiHookAPI/issues/23)
 - 移动 `YukiHookAPI` 自动生成的入口类名称文件 `assets/yukihookapi_init` 到 `resources/META-INF/yukihookapi_init`
