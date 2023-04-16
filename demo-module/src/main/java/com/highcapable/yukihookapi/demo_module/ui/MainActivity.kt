@@ -82,7 +82,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 moduleDemoButton.setOnClickListener { _ ->
                     moduleEnvironment {
                         if (it.text.toString().isNotEmpty()) {
-                            modulePrefs.put(DataConst.TEST_KV_DATA, it.text.toString())
+                            modulePrefs.edit { put(DataConst.TEST_KV_DATA, it.text.toString()) }
                             Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
                         } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
                     }
