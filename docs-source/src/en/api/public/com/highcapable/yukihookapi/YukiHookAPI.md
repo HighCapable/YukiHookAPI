@@ -260,6 +260,26 @@ val name: String
 
 :::
 
+#### type <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+val type: ExecutorType
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 获取当前 Hook Framework 类型。
+
+::: warning
+
+在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+
+:::
+
 #### apiLevel <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers

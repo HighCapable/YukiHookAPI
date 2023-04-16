@@ -53,6 +53,7 @@ const navigationLinks = {
         baseApiPath + 'hook/factory/ReflectionFactory',
         baseApiPath + 'hook/factory/YukiHookFactory',
         baseApiPath + 'hook/entity/YukiBaseHooker',
+        baseApiPath + 'hook/core/api/compat/type/ExecutorType',
         baseApiPath + 'hook/core/YukiMemberHookCreator',
         baseApiPath + 'hook/core/YukiResourcesHookCreator',
         baseApiPath + 'hook/core/finder/members/MethodFinder',

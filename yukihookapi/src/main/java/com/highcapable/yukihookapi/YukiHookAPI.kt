@@ -39,6 +39,7 @@ import com.highcapable.yukihookapi.YukiHookAPI.encase
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiProperty
+import com.highcapable.yukihookapi.hook.core.api.compat.type.ExecutorType
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
@@ -192,6 +193,14 @@ object YukiHookAPI {
                     isTaiChiModuleActive -> HookApiProperty.TAICHI_XPOSED_NAME
                     else -> YukiXposedModuleStatus.executorName
                 }
+
+            /**
+             * 获取当前 Hook Framework 类型
+             *
+             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * @return [ExecutorType]
+             */
+            val type get() = HookApiProperty.type.takeIf { isXposedEnvironment } ?: HookApiProperty.type(YukiXposedModuleStatus.executorName)
 
             /**
              * 获取当前 Hook Framework 的 API 版本

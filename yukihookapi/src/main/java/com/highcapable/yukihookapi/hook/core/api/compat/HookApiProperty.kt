@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core.api.compat
 
+import com.highcapable.yukihookapi.hook.core.api.compat.type.ExecutorType
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.hasClass
@@ -39,6 +40,15 @@ import de.robv.android.xposed.XposedBridge
  * Hook API 相关属性
  */
 internal object HookApiProperty {
+
+    /** Xposed 框架名称 */
+    internal const val XPOSED_NAME = "Xposed"
+
+    /** LSPosed 框架名称 */
+    internal const val LSPOSED_NAME = "LSPosed"
+
+    /** EdXposed 框架名称 */
+    internal const val ED_XPOSED_NAME = "EdXposed"
 
     /** TaiChi (太极) Xposed 框架名称 */
     internal const val TAICHI_XPOSED_NAME = "TaiChi"
@@ -68,6 +78,26 @@ internal object HookApiProperty {
             }
             HookApiCategory.UNKNOWN -> "unknown"
         }
+
+    /**
+     * 获取当前 Hook Framework 类型
+     * @return [ExecutorType]
+     */
+    internal val type get() = type()
+
+    /**
+     * 获取当前 Hook Framework 类型
+     * @param executorName Hook Framework 名称 - 默认为 [name]
+     * @return [ExecutorType]
+     */
+    internal fun type(executorName: String = name) = when (executorName) {
+        BUG_XPOSED_NAME -> ExecutorType.BUG_XPOSED
+        TAICHI_XPOSED_NAME -> ExecutorType.TAICHI_XPOSED
+        ED_XPOSED_NAME -> ExecutorType.ED_XPOSED
+        LSPOSED_NAME -> ExecutorType.LSPOSED_LSPATCH
+        XPOSED_NAME -> ExecutorType.XPOSED
+        else -> ExecutorType.UNKNOWN
+    }
 
     /**
      * 获取当前 Hook Framework 的 API 版本
