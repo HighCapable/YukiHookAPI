@@ -274,185 +274,85 @@ fun all(): HashMap<String, Any?>
 
 :::
 
-## remove <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun remove(key: String)
-```
+<h2 class="deprecated">remove - method</h2>
 
 **Change Records**
 
 `v1.0` `first`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 移除全部包含 `key` 的存储数据。
+请转移到 `edit` 方法
 
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## remove <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-inline fun <reified T> remove(prefs: PrefsData<T>)
-```
-
-**Change Records**
-
-`v1.0.67` `added`
-
-**Function Illustrate**
-
-> 移除 `PrefsData.key` 的存储数据。
-
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## clear <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun clear()
-```
+<h2 class="deprecated">clear - method</h2>
 
 **Change Records**
 
 `v1.0.77` `added`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 移除全部存储数据。
+请转移到 `edit` 方法
 
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## putString <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun putString(key: String, value: String)
-```
+<h2 class="deprecated">putString - method</h2>
 
 **Change Records**
 
 `v1.0` `first`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 存储 `String` 键值。
+请转移到 `edit` 方法
 
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## putStringSet <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun putStringSet(key: String, value: Set<String>)
-```
+<h2 class="deprecated">putStringSet - method</h2>
 
 **Change Records**
 
 `v1.0.77` `added`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 存储 `Set<String>` 键值。
+请转移到 `edit` 方法
 
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## putBoolean <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun putBoolean(key: String, value: Boolean)
-```
+<h2 class="deprecated">putBoolean - method</h2>
 
 **Change Records**
 
 `v1.0` `first`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 存储 `Boolean` 键值。
+请转移到 `edit` 方法
 
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## putInt <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun putInt(key: String, value: Int)
-```
+<h2 class="deprecated">putInt - method</h2>
 
 **Change Records**
 
 `v1.0` `first`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 存储 `Int` 键值。
+请转移到 `edit` 方法
 
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## putLong <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun putLong(key: String, value: Long)
-```
+<h2 class="deprecated">putLong - method</h2>
 
 **Change Records**
 
 `v1.0` `first`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 存储 `Long` 键值。
+请转移到 `edit` 方法
 
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
-
-## putFloat <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun putFloat(key: String, value: Float)
-```
+<h2 class="deprecated">putFloat - method</h2>
 
 **Change Records**
 
 `v1.0` `first`
 
-**Function Illustrate**
+`v1.1.9` `deprecated`
 
-> 存储 `Float` 键值。
-
-::: warning
-
-在 (Xposed) 宿主环境下只读，无法使用。
-
-:::
+请转移到 `edit` 方法
 
 ## get <span class="symbol">- method</span>
 
@@ -468,19 +368,51 @@ inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
 
 > 智能获取指定类型的键值。
 
-## put <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-inline fun <reified T> put(prefs: PrefsData<T>, value: T)
-```
+<h2 class="deprecated">put - method</h2>
 
 **Change Records**
 
 `v1.0.67` `added`
 
+`v1.1.9` `deprecated`
+
+请转移到 `edit` 方法
+
+## edit <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun edit(): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
 **Function Illustrate**
 
-> 智能存储指定类型的键值。
+> 创建新的 `Editor`。
+
+::: warning
+
+在 (Xposed) 宿主环境下只读，无法使用。
+
+:::
+
+## edit <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun edit(initiate: Editor.() -> Unit)
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 创建新的 `Editor`。
+
+自动调用 `Editor.apply` 方法。
 
 ::: warning
 
@@ -509,3 +441,193 @@ fun clearCache()
 下次将从 `XSharedPreferences` 重新读取。
 
 在 (Xposed) 宿主环境中使用。
+
+## Editor <span class="symbol">- class</span>
+
+```kotlin:no-line-numbers
+inner class Editor internal constructor()
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> `YukiHookModulePrefs` 的存储代理类。
+
+请使用 `edit` 方法来获取 `Editor`。
+
+::: warning
+
+在 (Xposed) 宿主环境下只读，无法使用。
+
+:::
+
+### remove <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun remove(key: String): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 移除全部包含 `key` 的存储数据。
+
+### remove <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+inline fun <reified T> remove(prefs: PrefsData<T>): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 移除 `PrefsData.key` 的存储数据。
+
+### clear <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun clear(): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 移除全部存储数据。
+
+### putString <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun putString(key: String, value: String): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 存储 `String` 键值。
+
+### putStringSet <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun putStringSet(key: String, value: Set<String>): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 存储 `Set<String>` 键值。
+
+### putBoolean <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun putBoolean(key: String, value: Boolean): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 存储 `Boolean` 键值。
+
+### putInt <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun putInt(key: String, value: Int): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 存储 `Int` 键值。
+
+### putLong <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun putLong(key: String, value: Long): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 存储 `Long` 键值。
+
+### putFloat <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun putFloat(key: String, value: Float): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 存储 `Float` 键值。
+
+### put <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+inline fun <reified T> put(prefs: PrefsData<T>, value: T): Editor
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 智能存储指定类型的键值。
+
+### commit <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun commit(): Boolean
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 提交更改 (同步)。
+
+### apply <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun apply()
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 提交更改 (异步)。

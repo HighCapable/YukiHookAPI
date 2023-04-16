@@ -399,6 +399,33 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         }
 
     /**
+     * 智能获取指定类型的键值
+     * @param prefs 键值实例
+     * @param value 默认值 - 未指定默认为 [prefs] 中的 [PrefsData.value]
+     * @return [T] 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+     */
+    inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = getPrefsData(prefs.key, value) as T
+
+    /**
+     * 智能获取指定类型的键值
+     *
+     * 封装方法以调用内联方法
+     * @param key 键值
+     * @param value 默认值
+     * @return [Any]
+     */
+    @PublishedApi
+    internal fun getPrefsData(key: String, value: Any?): Any = when (value) {
+        is String -> getString(key, value)
+        is Set<*> -> getStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
+        is Int -> getInt(key, value)
+        is Float -> getFloat(key, value)
+        is Long -> getLong(key, value)
+        is Boolean -> getBoolean(key, value)
+        else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
+    }
+
+    /**
      * 判断当前是否包含 [key] 键值的数据
      *
      * - 智能识别对应环境读取键值数据
@@ -426,193 +453,138 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 移除全部包含 [key] 的存储数据
      *
-     * - 在模块环境中使用
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param key 键值名称
      */
-    fun remove(key: String) = moduleEnvironment {
-        sPrefs.edit().remove(key).apply()
-        makeWorldReadable()
-    }
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { remove(key) }"))
+    fun remove(key: String) = edit { remove(key) }
 
     /**
      * 移除 [PrefsData.key] 的存储数据
      *
-     * - 在模块环境中使用
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param prefs 键值实例
      */
-    inline fun <reified T> remove(prefs: PrefsData<T>) = remove(prefs.key)
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { remove(prefs) }"))
+    inline fun <reified T> remove(prefs: PrefsData<T>) = edit { remove(prefs) }
 
     /**
      * 移除全部存储数据
      *
-     * - 在模块环境中使用
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      */
-    fun clear() = moduleEnvironment {
-        sPrefs.edit().clear().apply()
-        makeWorldReadable()
-    }
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { clear() }"))
+    fun clear() = edit { clear() }
 
     /**
      * 存储 [String] 键值
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 在模块环境中使用
-     *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putString(key: String, value: String) = moduleEnvironment {
-        sPrefs.edit().putString(key, value).apply()
-        makeWorldReadable()
-    }
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putString(key, value) }"))
+    fun putString(key: String, value: String) = edit { putString(key, value) }
 
     /**
      * 存储 [Set]<[String]> 键值
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 在模块环境中使用
-     *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putStringSet(key: String, value: Set<String>) = moduleEnvironment {
-        sPrefs.edit().putStringSet(key, value).apply()
-        makeWorldReadable()
-    }
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putStringSet(key, value) }"))
+    fun putStringSet(key: String, value: Set<String>) = edit { putStringSet(key, value) }
 
     /**
      * 存储 [Boolean] 键值
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 在模块环境中使用
-     *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putBoolean(key: String, value: Boolean) = moduleEnvironment {
-        sPrefs.edit().putBoolean(key, value).apply()
-        makeWorldReadable()
-    }
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putBoolean(key, value) }"))
+    fun putBoolean(key: String, value: Boolean) = edit { putBoolean(key, value) }
 
     /**
      * 存储 [Int] 键值
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 在模块环境中使用
-     *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putInt(key: String, value: Int) = moduleEnvironment {
-        sPrefs.edit().putInt(key, value).apply()
-        makeWorldReadable()
-    }
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putInt(key, value) }"))
+    fun putInt(key: String, value: Int) = edit { putInt(key, value) }
 
     /**
      * 存储 [Float] 键值
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 在模块环境中使用
-     *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putFloat(key: String, value: Float) = moduleEnvironment {
-        sPrefs.edit().putFloat(key, value).apply()
-        makeWorldReadable()
-    }
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putFloat(key, value) }"))
+    fun putFloat(key: String, value: Float) = edit { putFloat(key, value) }
 
     /**
      * 存储 [Long] 键值
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 在模块环境中使用
-     *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - ❗请现在转移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    fun putLong(key: String, value: Long) = moduleEnvironment {
-        sPrefs.edit().putLong(key, value).apply()
-        makeWorldReadable()
-    }
-
-    /**
-     * 智能获取指定类型的键值
-     * @param prefs 键值实例
-     * @param value 默认值 - 未指定默认为 [prefs] 中的 [PrefsData.value]
-     * @return [T] 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
-     */
-    inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = getPrefsData(prefs.key, value) as T
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putLong(key, value) }"))
+    fun putLong(key: String, value: Long) = edit { putLong(key, value) }
 
     /**
      * 智能存储指定类型的键值
      *
-     * - 在模块环境中使用
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
-     * @param prefs 键值实例
-     * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+     * - ❗请现在转移到 [edit] 方法
      */
-    inline fun <reified T> put(prefs: PrefsData<T>, value: T) = putPrefsData(prefs.key, value)
+    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { put(prefs, value) }"))
+    inline fun <reified T> put(prefs: PrefsData<T>, value: T) = edit { put(prefs, value) }
 
     /**
-     * 智能获取指定类型的键值
-     *
-     * 封装方法以调用内联方法
-     * @param key 键值
-     * @param value 默认值
-     * @return [Any]
-     */
-    @PublishedApi
-    internal fun getPrefsData(key: String, value: Any?): Any = when (value) {
-        is String -> getString(key, value)
-        is Set<*> -> getStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
-        is Int -> getInt(key, value)
-        is Float -> getFloat(key, value)
-        is Long -> getLong(key, value)
-        is Boolean -> getBoolean(key, value)
-        else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
-    }
-
-    /**
-     * 智能存储指定类型的键值
-     *
-     * 封装方法以调用内联方法
+     * 创建新的 [Editor]
      *
      * - 在模块环境中使用
      *
      * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
-     * @param key 键值
-     * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+     * @return [Editor]
      */
-    @PublishedApi
-    internal fun putPrefsData(key: String, value: Any?) = when (value) {
-        is String -> putString(key, value)
-        is Set<*> -> putStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
-        is Int -> putInt(key, value)
-        is Float -> putFloat(key, value)
-        is Long -> putLong(key, value)
-        is Boolean -> putBoolean(key, value)
-        else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
-    }
+    fun edit() = Editor()
+
+    /**
+     * 创建新的 [Editor]
+     *
+     * 自动调用 [Editor.apply] 方法
+     *
+     * - 在模块环境中使用
+     *
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * @param initiate 方法体
+     */
+    fun edit(initiate: Editor.() -> Unit = {}) = edit().apply(initiate).apply()
 
     /**
      * 清除 [XSharedPreferences] 中缓存的键值数据
@@ -638,13 +610,170 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     }
 
     /**
-     * 仅在模块环境执行
+     * [YukiHookModulePrefs] 的存储代理类
      *
-     * 非模块环境使用会打印警告信息
-     * @param callback 在模块环境执行
+     * - ❗请使用 [edit] 方法来获取 [Editor]
+     *
+     * - 在模块环境中使用
+     *
+     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      */
-    private inline fun moduleEnvironment(callback: () -> Unit) {
-        if (isXposedEnvironment.not()) callback()
-        else yLoggerW(msg = "YukiHookModulePrefs write operation not allowed in Xposed Environment")
+    inner class Editor internal constructor() {
+
+        /** 创建新的存储代理类 */
+        private var editor = runCatching { sPrefs.edit() }.getOrNull()
+
+        /**
+         * 移除全部包含 [key] 的存储数据
+         * @param key 键值名称
+         * @return [Editor]
+         */
+        fun remove(key: String) = moduleEnvironment {
+            editor?.remove(key)
+            makeWorldReadable()
+        }
+
+        /**
+         * 移除 [PrefsData.key] 的存储数据
+         * @param prefs 键值实例
+         * @return [Editor]
+         */
+        inline fun <reified T> remove(prefs: PrefsData<T>) = remove(prefs.key)
+
+        /**
+         * 移除全部存储数据
+         * @return [Editor]
+         */
+        fun clear() = moduleEnvironment {
+            editor?.clear()
+            makeWorldReadable()
+        }
+
+        /**
+         * 存储 [String] 键值
+         *
+         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+         * @param key 键值名称
+         * @param value 键值数据
+         * @return [Editor]
+         */
+        fun putString(key: String, value: String) = moduleEnvironment {
+            editor?.putString(key, value)
+            makeWorldReadable()
+        }
+
+        /**
+         * 存储 [Set]<[String]> 键值
+         *
+         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+         * @param key 键值名称
+         * @param value 键值数据
+         * @return [Editor]
+         */
+        fun putStringSet(key: String, value: Set<String>) = moduleEnvironment {
+            editor?.putStringSet(key, value)
+            makeWorldReadable()
+        }
+
+        /**
+         * 存储 [Boolean] 键值
+         *
+         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+         * @param key 键值名称
+         * @param value 键值数据
+         * @return [Editor]
+         */
+        fun putBoolean(key: String, value: Boolean) = moduleEnvironment {
+            editor?.putBoolean(key, value)
+            makeWorldReadable()
+        }
+
+        /**
+         * 存储 [Int] 键值
+         *
+         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+         * @param key 键值名称
+         * @param value 键值数据
+         * @return [Editor]
+         */
+        fun putInt(key: String, value: Int) = moduleEnvironment {
+            editor?.putInt(key, value)
+            makeWorldReadable()
+        }
+
+        /**
+         * 存储 [Float] 键值
+         *
+         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+         * @param key 键值名称
+         * @param value 键值数据
+         * @return [Editor]
+         */
+        fun putFloat(key: String, value: Float) = moduleEnvironment {
+            editor?.putFloat(key, value)
+            makeWorldReadable()
+        }
+
+        /**
+         * 存储 [Long] 键值
+         *
+         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
+         * @param key 键值名称
+         * @param value 键值数据
+         * @return [Editor]
+         */
+        fun putLong(key: String, value: Long) = moduleEnvironment {
+            editor?.putLong(key, value)
+            makeWorldReadable()
+        }
+
+        /**
+         * 智能存储指定类型的键值
+         * @param prefs 键值实例
+         * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+         * @return [Editor]
+         */
+        inline fun <reified T> put(prefs: PrefsData<T>, value: T) = putPrefsData(prefs.key, value)
+
+        /**
+         * 智能存储指定类型的键值
+         *
+         * 封装方法以调用内联方法
+         * @param key 键值
+         * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+         * @return [Editor]
+         */
+        @PublishedApi
+        internal fun putPrefsData(key: String, value: Any?) = when (value) {
+            is String -> putString(key, value)
+            is Set<*> -> putStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
+            is Int -> putInt(key, value)
+            is Float -> putFloat(key, value)
+            is Long -> putLong(key, value)
+            is Boolean -> putBoolean(key, value)
+            else -> error("Key-Value type ${value?.javaClass?.name} is not allowed")
+        }
+
+        /**
+         * 提交更改 (同步)
+         * @return [Boolean] 是否成功
+         */
+        fun commit() = editor?.commit()?.also { makeWorldReadable() } ?: false
+
+        /** 提交更改 (异步) */
+        fun apply() = editor?.apply().also { makeWorldReadable() } ?: Unit
+
+        /**
+         * 仅在模块环境执行
+         *
+         * 非模块环境使用会打印警告信息
+         * @param callback 在模块环境执行
+         * @return [Editor]
+         */
+        private inline fun moduleEnvironment(callback: () -> Unit): Editor {
+            if (isXposedEnvironment.not()) callback()
+            else yLoggerW(msg = "YukiHookModulePrefs.Editor not allowed in Xposed Environment")
+            return this
+        }
     }
 }
