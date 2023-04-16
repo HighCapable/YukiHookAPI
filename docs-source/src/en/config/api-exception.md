@@ -1226,13 +1226,13 @@ This situation basically does not exist, because `appContext` is assigned in `on
 
 ::: danger IllegalStateException
 
-YukiHookModulePrefs not allowed in Custom Hook API
+YukiHookPrefsBridge not allowed in Custom Hook API
 
 :::
 
 **Abnormal**
 
-`YukiHookModulePrefs` is used in Hook's own app (not Xposed Module).
+`YukiHookPrefsBridge` is used in Hook's own app (not Xposed Module).
 
 > The following example
 
@@ -1251,7 +1251,7 @@ class MyApplication : Application() {
 
 **Solution**
 
-You can only use `YukiHookModulePrefs` when [Use as Xposed Module Configs](../config/xposed-using), please use the native `Sp` storage in the Hook's own app.
+You can only use `YukiHookPrefsBridge` when [Use as Xposed Module Configs](../config/xposed-using), please use the native `Sp` storage in the Hook's own app.
 
 ###### exception
 
@@ -1263,7 +1263,7 @@ Cannot load the XSharedPreferences, maybe is your Hook Framework not support it
 
 **Abnormal**
 
-Using `YukiHookModulePrefs` in (Xposed) Host environment but unable to get `XSharedPreferences` object.
+Using `YukiHookPrefsBridge` in (Xposed) Host environment but unable to get `XSharedPreferences` object.
 
 > The following example
 
@@ -1323,7 +1323,7 @@ Xposed modulePackageName load failed, please reset and rebuild it
 
 **Abnormal**
 
-When using `YukiHookModulePrefs` or `YukiHookDataChannel` in the Hook process, the `modulePackageName` at load time cannot be read, resulting in the package name of the own Module App cannot be determined.
+When using `YYukiHookPrefsBridge` or `YukiHookDataChannel` in the Hook process, the `modulePackageName` at load time cannot be read, resulting in the package name of the own Module App cannot be determined.
 
 **Solution**
 
@@ -1333,13 +1333,13 @@ Please read the help document [here](../config/xposed-using#modulepackagename-pa
 
 ::: danger IllegalStateException
 
-YukiHookModulePrefs missing Context instance
+YukiHookPrefsBridge missing Context instance
 
 :::
 
 **Abnormal**
 
-`YukiHookModulePrefs` is used in the Module App to store data but no `Context` instance is passed in.
+`YukiHookPrefsBridge` is used in the Module App to store data but no `Context` instance is passed in.
 
 > The following example
 
@@ -1350,14 +1350,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // ❗ Wrong usage
         // Constructor has been set to private in API 1.0.88 and later
-        YukiHookModulePrefs().getBoolean("test_data")
+        YukiHookPrefsBridge().getBoolean("test_data")
     }
 }
 ```
 
 **Solution**
 
-It is recommended to use the `modulePrefs` method to load `YukiHookModulePrefs` in `Activity`.
+It is recommended to use the `prefs(...)` method to load `YukiHookPrefsBridge` in `Activity`.
 
 > The following example
 
@@ -1367,10 +1367,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // ✅ Correct usage
-        modulePrefs.getBoolean("test_data")
+        prefs().getBoolean("test_data")
     }
 }
 ```
+
+###### exception
+
+::: danger IllegalStateException
+
+The Host App's Context has not yet initialized successfully, the native function cannot be used at this time
+
+:::
+
+**Abnormal**
+
+In the (Xposed) Host environment `PackageParam`, `YukiHookPrefsBridge` is used and the `native` method is called, but the lifecycle of the Host App is not initialized at this time.
+
+> The following example
+
+```kotlin
+encase {
+    // This method was called
+    prefs.native()
+}
+```
+
+**Solution**
+
+The `native` method requires an existing `Context` object to store data in, and you can use this method in listening to the Host App lifecycle state.
 
 ###### exception
 
@@ -1382,11 +1407,11 @@ Key-Value type **TYPE** is not allowed
 
 **Abnormal**
 
-An unsupported storage type was passed in when using the `get` or `put` methods of `YukiHookModulePrefs` or the `wait` or `put` methods of `YukiHookDataChannel`.
+An unsupported storage type was passed in when using the `get` or `put` methods of `YukiHookPrefsBridge` or the `wait` or `put` methods of `YukiHookDataChannel`.
 
 **Solution**
 
-The supported types of `YukiHookModulePrefs` are only `String`, `Set<String>`, `Int`, `Float`, `Long`, `Boolean`, please pass in the supported types.
+The supported types of `YukiHookPrefsBridge` are only `String`, `Set<String>`, `Int`, `Float`, `Long`, `Boolean`, please pass in the supported types.
 
 The supported types of `YukiHookDataChannel` are the types restricted by `Intent.putExtra`, please pass in the supported types.
 

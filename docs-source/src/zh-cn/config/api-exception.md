@@ -1167,13 +1167,13 @@ ModuleApplication.appContext...
 
 ::: danger IllegalStateException 
 
-YukiHookModulePrefs not allowed in Custom Hook API
+YukiHookPrefsBridge not allowed in Custom Hook API
 
 :::
 
 **异常原因**
 
-在 Hook 自身 APP(非 Xposed 模块) 中使用了 `YukiHookModulePrefs`。
+在 Hook 自身 APP(非 Xposed 模块) 中使用了 `YukiHookPrefsBridge`。
 
 > 示例如下
 
@@ -1192,7 +1192,7 @@ class MyApplication : Application() {
 
 **解决方案**
 
-你只能在 [作为 Xposed 模块使用](../config/xposed-using) 时使用 `YukiHookModulePrefs`，在 Hook 自身 APP 中请使用原生的 `Sp` 存储。
+你只能在 [作为 Xposed 模块使用](../config/xposed-using) 时使用 `YukiHookPrefsBridge`，在 Hook 自身 APP 中请使用原生的 `Sp` 存储。
 
 ###### exception
 
@@ -1204,7 +1204,7 @@ Cannot load the XSharedPreferences, maybe is your Hook Framework not support it
 
 **异常原因**
 
-在 (Xposed) 宿主环境使用了 `YukiHookModulePrefs` 但是无法得到 `XSharedPreferences` 对象。
+在 (Xposed) 宿主环境使用了 `YukiHookPrefsBridge` 但是无法得到 `XSharedPreferences` 对象。
 
 > 示例如下
 
@@ -1262,7 +1262,7 @@ Xposed modulePackageName load failed, please reset and rebuild it
 
 **异常原因**
 
-在 Hook 过程中使用 `YukiHookModulePrefs` 或 `YukiHookDataChannel` 时无法读取装载时的 `modulePackageName` 导致不能确定自身模块的包名。
+在 Hook 过程中使用 `YukiHookPrefsBridge` 或 `YukiHookDataChannel` 时无法读取装载时的 `modulePackageName` 导致不能确定自身模块的包名。
 
 **解决方案**
 
@@ -1272,13 +1272,13 @@ Xposed modulePackageName load failed, please reset and rebuild it
 
 ::: danger IllegalStateException 
 
-YukiHookModulePrefs missing Context instance
+YukiHookPrefsBridge missing Context instance
 
 :::
 
 **异常原因**
 
-在模块中使用了 `YukiHookModulePrefs` 存储数据但并未传入 `Context` 实例。
+在模块中使用了 `YukiHookPrefsBridge` 存储数据但并未传入 `Context` 实例。
 
 > 示例如下
 
@@ -1289,14 +1289,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // ❗错误的使用方法
         // 构造方法已在 API 1.0.88 及以后的版本中设置为 private
-        YukiHookModulePrefs().getBoolean("test_data")
+        YukiHookPrefsBridge().getBoolean("test_data")
     }
 }
 ```
 
 **解决方案**
 
-在 `Activity` 中推荐使用 `modulePrefs` 方法来装载 `YukiHookModulePrefs`。
+在 `Activity` 中推荐使用 `prefs(...)` 方法来装载 `YukiHookPrefsBridge`。
 
 > 示例如下
 
@@ -1306,10 +1306,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // ✅ 正确的使用方法
-        modulePrefs.getBoolean("test_data")
+        prefs().getBoolean("test_data")
     }
 }
 ```
+
+###### exception
+
+::: danger IllegalStateException 
+
+The Host App's Context has not yet initialized successfully, the native function cannot be used at this time
+
+:::
+
+**异常原因**
+
+在 (Xposed) 宿主环境 `PackageParam` 中使用了 `YukiHookPrefsBridge` 并调用了 `native` 方法但此时宿主的生命周期并未初始化。
+
+> 示例如下
+
+```kotlin
+encase {
+    // 调用了此方法
+    prefs.native()
+}
+```
+
+**解决方案**
+
+`native` 方法需要一个存在的 `Context` 对象用于存储数据，你可以在监听宿主生命周期状态中使用此方法。
 
 ###### exception
 
@@ -1321,11 +1346,11 @@ Key-Value type **TYPE** is not allowed
 
 **异常原因**
 
-在使用 `YukiHookModulePrefs` 的 `get` 或 `put` 方法或 `YukiHookDataChannel` 的 `wait` 或 `put` 方法时传入了不支持的存储类型。
+在使用 `YukiHookPrefsBridge` 的 `get` 或 `put` 方法或 `YukiHookDataChannel` 的 `wait` 或 `put` 方法时传入了不支持的存储类型。
 
 **解决方案**
 
-`YukiHookModulePrefs` 支持的类型只有 `String`、`Set<String>`、`Int`、`Float`、`Long`、`Boolean`，请传入支持的类型。
+`YukiHookPrefsBridge` 支持的类型只有 `String`、`Set<String>`、`Int`、`Float`、`Long`、`Boolean`，请传入支持的类型。
 
 `YukiHookDataChannel` 支持的类型为 `Intent.putExtra` 限制的类型，请传入支持的类型。
 
