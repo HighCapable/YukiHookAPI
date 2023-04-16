@@ -396,23 +396,33 @@ var isDebug: Boolean
 
 请转移到 `YukiHookLogger.Configs.isEnable`
 
-### isEnableModulePrefsCache <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-var isEnableModulePrefsCache: Boolean
-```
+<h3 class="deprecated">isEnableModulePrefsCache - field</h3>
 
 **变更记录**
 
 `v1.0.5` `新增`
 
+`v1.1.9` `作废`
+
+请转移到 `isEnablePrefsBridgeCache`
+
+### isEnablePrefsBridgeCache <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+var isEnablePrefsBridgeCache: Boolean
+```
+
+**变更记录**
+
+`v1.1.9` `新增`
+
 **功能描述**
 
-> 是否启用 `YukiHookModulePrefs` 的键值缓存功能。
+> 是否启用 `YukiHookPrefsBridge` 的键值缓存功能。
 
 为防止内存复用过高问题，此功能默认启用。
 
-你可以手动在 `YukiHookModulePrefs` 中自由开启和关闭缓存功能以及清除缓存。
+你可以手动在 `YukiHookPrefsBridge` 中自由开启和关闭缓存功能以及清除缓存。
 
 ### isEnableModuleAppResourcesCache <span class="symbol">- field</span>
 
@@ -480,7 +490,7 @@ var isEnableHookSharedPreferences: Boolean
 
 这是一个可选的实验性功能，此功能默认不启用。
 
-仅用于修复某些系统可能会出现在启用了 **New XSharedPreferences** 后依然出现文件权限错误问题，若你能正常使用 **YukiHookModulePrefs** 就不建议启用此功能。
+仅用于修复某些系统可能会出现在启用了 **New XSharedPreferences** 后依然出现文件权限错误问题，若你能正常使用 **YYukiHookPrefsBridge** 就不建议启用此功能。
 
 :::
 
@@ -564,7 +574,7 @@ object HookEntry : IYukiHookXposedInit {
                 elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
             }
             isDebug = BuildConfig.DEBUG
-            isEnableModulePrefsCache = true
+            isEnablePrefsBridgeCache = true
             isEnableModuleAppResourcesCache = true
             isEnableHookModuleStatus = true
             isEnableHookSharedPreferences = false
@@ -594,7 +604,7 @@ object HookEntry : IYukiHookXposedInit {
             elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
         }
         isDebug = BuildConfig.DEBUG
-        isEnableModulePrefsCache = true
+        isEnablePrefsBridgeCache = true
         isEnableModuleAppResourcesCache = true
         isEnableHookModuleStatus = true
         isEnableHookSharedPreferences = false
@@ -626,7 +636,7 @@ object HookEntry : IYukiHookXposedInit {
             YukiHookLogger.Configs.USER_ID
         )
         YukiHookAPI.Configs.isDebug = BuildConfig.DEBUG
-        YukiHookAPI.Configs.isEnableModulePrefsCache = true
+        YukiHookAPI.Configs.isEnablePrefsBridgeCache = true
         YukiHookAPI.Configs.isEnableModuleAppResourcesCache = true
         YukiHookAPI.Configs.isEnableHookModuleStatus = true
         YukiHookAPI.Configs.isEnableHookSharedPreferences = false

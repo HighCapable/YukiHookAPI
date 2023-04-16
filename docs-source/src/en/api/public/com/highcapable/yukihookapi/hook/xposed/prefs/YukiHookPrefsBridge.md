@@ -2,25 +2,37 @@
 pageClass: code-page
 ---
 
-# YukiHookModulePrefs <span class="symbol">- class</span>
+::: warning
+
+The English translation of this page has not been completed, you are welcome to contribute translations to us.
+
+You can use the **Chrome Translation Plugin** to translate entire pages for reference.
+
+:::
+
+# YukiHookPrefsBridge <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class YukiHookModulePrefs private constructor(private var context: Context?)
+class YukiHookPrefsBridge private constructor(private var context: Context?)
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-**功能描述**
+`v1.1.9` `modified`
 
-> 实现 Xposed 模块的数据存取，对接 `SharedPreferences` 和 `XSharedPreferences`。
+~~`YukiHookModulePrefs`~~ 更名为 `YukiHookPrefsBridge`
+
+**Function Illustrate**
+
+> `YukiHookAPI` 对 `SharedPreferences`、`XSharedPreferences` 的扩展存储桥实现。
 
 在不同环境智能选择存取使用的对象。
 
 ::: danger
 
-此功能为实验性功能，仅在 LSPosed 环境测试通过，EdXposed 理论也可以使用但不再推荐。
+模块与宿主之前共享数据存储为实验性功能，仅在 LSPosed 环境测试通过，EdXposed 理论也可以使用但不再推荐。
 
 :::
 
@@ -34,21 +46,15 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
 
 太极请参阅 [文件权限/配置/XSharedPreference](https://taichi.cool/zh/doc/for-xposed-dev.html#文件权限-配置-xsharedpreference)。
 
-::: danger
+对于在模块环境中使用 `PreferenceFragmentCompat`，`YukiHookAPI` 提供了 `ModulePreferenceFragment` 来实现同样的功能。
 
-当你在 Xposed 模块中存取数据的时候 **context** 必须不能是空的。
-
-:::
-
-若你正在使用 `PreferenceFragmentCompat`，请迁移到 `ModulePreferenceFragment` 以适配上述功能特性。
-
-**可选配置**
+**Optional Configuration**
 
 若你不想将你的模块的 `xposedminversion` 最低设置为 `93`，你可以在 `AndroidManifest.xml` 中添加 `xposedsharedprefs` 来实现支持。
 
 详见 [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)。
 
-> 示例如下
+> The following example
 
 ```xml
 <meta-data
@@ -58,21 +64,21 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
 
 <h2 class="deprecated">isXSharePrefsReadable - field</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0.90` `新增`
+`v1.0.90` `added`
 
-`v1.1.5` `作废`
+`v1.1.5` `deprecated`
 
 请转移到 `isPreferencesAvailable`
 
 <h2 class="deprecated">isRunInNewXShareMode - field</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0.78` `新增`
+`v1.0.78` `added`
 
-`v1.1.5` `作废`
+`v1.1.5` `deprecated`
 
 请转移到 `isPreferencesAvailable`
 
@@ -82,13 +88,13 @@ class YukiHookModulePrefs private constructor(private var context: Context?)
 val isPreferencesAvailable: Boolean
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.5` `新增`
+`v1.1.5` `added`
 
-**功能描述**
+**Function Illustrate**
 
-> 获取当前 `YukiHookModulePrefs` 的可用状态。
+> 获取当前 `YukiHookPrefsBridge` 的可用状态。
 
 在 (Xposed) 宿主环境中返回 `XSharedPreferences` 可用状态 (可读)。
 
@@ -97,30 +103,30 @@ val isPreferencesAvailable: Boolean
 ## name <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun name(name: String): YukiHookModulePrefs
+fun name(name: String): YukiHookPrefsBridge
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-**功能描述**
+**Function Illustrate**
 
 > 自定义 Sp 存储名称。
 
-**功能示例**
+**Function Example**
 
 在 `Activity` 中的使用方法。
 
-> 示例如下
+> The following example
 
 ```kotlin
-modulePrefs("custom_name").getString("custom_key")
+prefs("custom_name").getString("custom_key")
 ```
 
 在 (Xposed) 宿主环境 `PackageParam` 中的使用方法。
 
-> 示例如下
+> The following example
 
 ```kotlin
 prefs("custom_name").getString("custom_key")
@@ -129,20 +135,34 @@ prefs("custom_name").getString("custom_key")
 ## direct <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun direct(): YukiHookModulePrefs
+fun direct(): YukiHookPrefsBridge
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0.5` `新增`
+`v1.0.5` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 忽略缓存直接读取键值。
 
-无论是否开启 `YukiHookAPI.Configs.isEnableModulePrefsCache`。
+无论是否开启 `YukiHookAPI.Configs.isEnablePrefsBridgeCache`。
 
 仅在 `XSharedPreferences` 下生效。
+
+## native <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun native(): YukiHookPrefsBridge
+```
+
+**Change Records**
+
+`v1.1.9` `added`
+
+**Function Illustrate**
+
+> 忽略当前环境直接使用 `Context.getSharedPreferences` 存取数据。
 
 ## getString <span class="symbol">- method</span>
 
@@ -150,11 +170,11 @@ fun direct(): YukiHookModulePrefs
 fun getString(key: String, value: String): String
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-**功能描述**
+**Function Illustrate**
 
 > 获取 `String` 键值。
 
@@ -164,11 +184,11 @@ fun getString(key: String, value: String): String
 fun getStringSet(key: String, value: Set<String>): Set<String>
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0.77` `新增`
+`v1.0.77` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 获取 `Set<String>` 键值。
 
@@ -178,11 +198,11 @@ fun getStringSet(key: String, value: Set<String>): Set<String>
 fun getBoolean(key: String, value: Boolean): Boolean
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-**功能描述**
+**Function Illustrate**
 
 > 获取 `Boolean` 键值。
 
@@ -192,11 +212,11 @@ fun getBoolean(key: String, value: Boolean): Boolean
 fun getInt(key: String, value: Int): Int
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-**功能描述**
+**Function Illustrate**
 
 > 获取 `Int` 键值。
 
@@ -206,11 +226,11 @@ fun getInt(key: String, value: Int): Int
 fun getLong(key: String, value: Long): Long
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-**功能描述**
+**Function Illustrate**
 
 > 获取 `Long` 键值。
 
@@ -220,11 +240,11 @@ fun getLong(key: String, value: Long): Long
 fun getFloat(key: String, value: Float): Float
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-**功能描述**
+**Function Illustrate**
 
 > 获取 `Float` 键值。
 
@@ -234,11 +254,11 @@ fun getFloat(key: String, value: Float): Float
 fun contains(key: String): Boolean
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 判断当前是否包含 `key` 键值的数据。
 
@@ -250,11 +270,11 @@ fun contains(key: String): Boolean
 fun all(): HashMap<String, Any?>
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0.77` `新增`
+`v1.0.77` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 获取全部存储的键值数据。
 
@@ -268,81 +288,81 @@ fun all(): HashMap<String, Any?>
 
 <h2 class="deprecated">remove - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
 <h2 class="deprecated">clear - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0.77` `新增`
+`v1.0.77` `added`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
 <h2 class="deprecated">putString - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
 <h2 class="deprecated">putStringSet - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0.77` `新增`
+`v1.0.77` `added`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
 <h2 class="deprecated">putBoolean - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
 <h2 class="deprecated">putInt - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
 <h2 class="deprecated">putLong - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
 <h2 class="deprecated">putFloat - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0` `添加`
+`v1.0` `first`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
@@ -352,21 +372,21 @@ fun all(): HashMap<String, Any?>
 inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0.67` `新增`
+`v1.0.67` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 智能获取指定类型的键值。
 
 <h2 class="deprecated">put - method</h2>
 
-**变更记录**
+**Change Records**
 
-`v1.0.67` `新增`
+`v1.0.67` `added`
 
-`v1.1.9` `作废`
+`v1.1.9` `deprecated`
 
 请转移到 `edit` 方法
 
@@ -376,11 +396,11 @@ inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
 fun edit(): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 创建新的 `Editor`。
 
@@ -396,11 +416,11 @@ fun edit(): Editor
 fun edit(initiate: Editor.() -> Unit)
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 创建新的 `Editor`。
 
@@ -418,15 +438,15 @@ fun edit(initiate: Editor.() -> Unit)
 fun clearCache()
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.0.5` `新增`
+`v1.0.5` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 清除 `XSharedPreferences` 中缓存的键值数据。
 
-无论是否开启 `YukiHookAPI.Configs.isEnableModulePrefsCache`。
+无论是否开启 `YukiHookAPI.Configs.isEnablePrefsBridgeCache`。
 
 调用此方法将清除当前存储的全部键值缓存。
 
@@ -440,13 +460,13 @@ fun clearCache()
 inner class Editor internal constructor()
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
-> `YukiHookModulePrefs` 的存储代理类。
+> `YukiHookPrefsBridge` 的存储代理类。
 
 请使用 `edit` 方法来获取 `Editor`。
 
@@ -462,11 +482,11 @@ inner class Editor internal constructor()
 fun remove(key: String): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 移除全部包含 `key` 的存储数据。
 
@@ -476,11 +496,11 @@ fun remove(key: String): Editor
 inline fun <reified T> remove(prefs: PrefsData<T>): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 移除 `PrefsData.key` 的存储数据。
 
@@ -490,11 +510,11 @@ inline fun <reified T> remove(prefs: PrefsData<T>): Editor
 fun clear(): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 移除全部存储数据。
 
@@ -504,11 +524,11 @@ fun clear(): Editor
 fun putString(key: String, value: String): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 存储 `String` 键值。
 
@@ -518,11 +538,11 @@ fun putString(key: String, value: String): Editor
 fun putStringSet(key: String, value: Set<String>): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 存储 `Set<String>` 键值。
 
@@ -532,11 +552,11 @@ fun putStringSet(key: String, value: Set<String>): Editor
 fun putBoolean(key: String, value: Boolean): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 存储 `Boolean` 键值。
 
@@ -546,11 +566,11 @@ fun putBoolean(key: String, value: Boolean): Editor
 fun putInt(key: String, value: Int): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 存储 `Int` 键值。
 
@@ -560,11 +580,11 @@ fun putInt(key: String, value: Int): Editor
 fun putLong(key: String, value: Long): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 存储 `Long` 键值。
 
@@ -574,11 +594,11 @@ fun putLong(key: String, value: Long): Editor
 fun putFloat(key: String, value: Float): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 存储 `Float` 键值。
 
@@ -588,11 +608,11 @@ fun putFloat(key: String, value: Float): Editor
 inline fun <reified T> put(prefs: PrefsData<T>, value: T): Editor
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 智能存储指定类型的键值。
 
@@ -602,11 +622,11 @@ inline fun <reified T> put(prefs: PrefsData<T>, value: T): Editor
 fun commit(): Boolean
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 提交更改 (同步)。
 
@@ -616,10 +636,10 @@ fun commit(): Boolean
 fun apply()
 ```
 
-**变更记录**
+**Change Records**
 
-`v1.1.9` `新增`
+`v1.1.9` `added`
 
-**功能描述**
+**Function Illustrate**
 
 > 提交更改 (异步)。

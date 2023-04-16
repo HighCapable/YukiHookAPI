@@ -56,33 +56,45 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker)
 
 > 在 `IYukiHookXposedInit` 中调用 `YukiHookAPI`。
 
-## Context.modulePrefs <span class="symbol">- ext-field</span>
-
-```kotlin:no-line-numbers
-val Context.modulePrefs: YukiHookModulePrefs
-```
+<h2 class="deprecated">Context.modulePrefs - ext-field</h2>
 
 **变更记录**
 
 `v1.0` `添加`
 
-**功能描述**
+`v1.1.9` `作废`
 
-> 获取模块的存取对象。
+请转移到 `prefs` 方法
 
-## Context.modulePrefs <span class="symbol">- ext-method</span>
-
-```kotlin:no-line-numbers
-fun Context.modulePrefs(name: String): YukiHookModulePrefs
-```
+<h2 class="deprecated">Context.modulePrefs - ext-method</h2>
 
 **变更记录**
 
 `v1.0` `添加`
 
+`v1.1.9` `作废`
+
+请转移到 `prefs` 方法
+
+## Context.prefs <span class="symbol">- ext-method</span>
+
+```kotlin:no-line-numbers
+fun Context.prefs(name: String): YukiHookPrefsBridge
+```
+
+**变更记录**
+
+`v1.1.9` `新增`
+
 **功能描述**
 
-> 获取模块的存取对象，可设置 `name` 为自定义 Sp 存储名称。
+> 获取 `YukiHookPrefsBridge` 对象。
+
+可以同时在模块与 (Xposed) 宿主环境中使用。
+
+如果你想在 (Xposed) 宿主环境将数据存入当前宿主的私有空间，请使用 `YukiHookPrefsBridge.native` 方法。
+
+在未声明任何条件的情况下 (Xposed) 宿主环境默认读取模块中的数据。
 
 ## Context.dataChannel <span class="symbol">- ext-method</span>
 

@@ -37,42 +37,35 @@ import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.delegate.XSharedPreferencesDelegate
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 import de.robv.android.xposed.XSharedPreferences
 import java.io.File
 
 /**
- * 实现 Xposed 模块的数据存取
- *
- * 对接 [SharedPreferences] 和 [XSharedPreferences]
+ * [YukiHookAPI] 对 [SharedPreferences]、[XSharedPreferences] 的扩展存储桥实现
  *
  * 在不同环境智能选择存取使用的对象
  *
- * - ❗请注意此功能为实验性功能 - 仅在 LSPosed 环境测试通过 - EdXposed 理论也可以使用但不再推荐
+ * - ❗模块与宿主之前共享数据存储为实验性功能 - 仅在 LSPosed 环境测试通过 - EdXposed 理论也可以使用但不再推荐
  *
- * - 使用 LSPosed 环境请在 AndroidManifests.xml 中将 "xposedminversion" 最低设置为 93
+ * 对于在模块环境中使用 [PreferenceFragmentCompat] - [YukiHookAPI] 提供了 [ModulePreferenceFragment] 来实现同样的功能
  *
- * - 未使用 LSPosed 环境请将你的模块 API 降至 26 以下 - [YukiHookAPI] 将会尝试使用 [makeWorldReadable] 但仍有可能不成功
+ * 详情请参考 [API 文档 - YukiHookPrefsBridge](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookPrefsBridge)
  *
- * - ❗当你在模块中存取数据的时候 [context] 必须不能是空的
- *
- * - 若你正在使用 [PreferenceFragmentCompat] - 请迁移到 [ModulePreferenceFragment] 以适配上述功能特性
- *
- * 详情请参考 [API 文档 - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookModulePrefs)
- *
- * For English version, see [API Document - YukiHookModulePrefs](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookModulePrefs)
+ * For English version, see [API Document - YukiHookPrefsBridge](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookPrefsBridge)
  * @param context 上下文实例 - 默认空
  */
-class YukiHookModulePrefs private constructor(private var context: Context? = null) {
+class YukiHookPrefsBridge private constructor(private var context: Context? = null) {
 
     internal companion object {
 
         /** 当前是否为 (Xposed) 宿主环境 */
         private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
-        /** 当前 [YukiHookModulePrefs] 单例 */
-        private var instance: YukiHookModulePrefs? = null
+        /** 当前 [YukiHookPrefsBridge] 单例 */
+        private var instance: YukiHookPrefsBridge? = null
 
         /** 当前缓存的 [XSharedPreferencesDelegate] 实例数组 */
         private val xPrefs = HashMap<String, XSharedPreferencesDelegate>()
@@ -81,12 +74,12 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         private val sPrefs = HashMap<String, SharedPreferences>()
 
         /**
-         * 获取 [YukiHookModulePrefs] 单例
+         * 获取 [YukiHookPrefsBridge] 单例
          * @param context 实例 -  (Xposed) 宿主环境为空
-         * @return [YukiHookModulePrefs]
+         * @return [YukiHookPrefsBridge]
          */
         internal fun instance(context: Context? = null) =
-            instance?.apply { if (context != null) this.context = context } ?: YukiHookModulePrefs(context).apply { instance = this }
+            instance?.apply { if (context != null) this.context = context } ?: YukiHookPrefsBridge(context).apply { instance = this }
 
         /**
          * 设置全局可读可写
@@ -105,14 +98,27 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         }
     }
 
-    /** 存储名称 - 默认包名 + _preferences */
-    private var prefsName = "${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" }}_preferences"
+    /** 存储名称 */
+    private var prefsName = ""
+
+    /**
+     * 获取当前存储名称 - 默认包名 + _preferences
+     * @return [String]
+     */
+    private val currentPrefsName
+        get() = prefsName.ifBlank {
+            if (isUsingNativeStorage) "${context?.packageName ?: "unknown"}_preferences"
+            else "${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "unknown" }}_preferences"
+        }
 
     /** 是否使用键值缓存 */
-    private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
+    private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnablePrefsBridgeCache
 
-    /** 是否使用新版存储方式 EdXposed/LSPosed */
+    /** 是否使用新版存储方式 EdXposed、LSPosed */
     private var isUsingNewXSharedPreferences = false
+
+    /** 是否启用原生存储方式 */
+    private var isUsingNativeStorage = false
 
     /**
      * [XSharedPreferences] 缓存的键值数据
@@ -150,7 +156,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
 
     /** 检查 API 装载状态 */
     private fun checkApi() {
-        if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookModulePrefs not allowed in Custom Hook API")
+        if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookPrefsBridge not allowed in Custom Hook API")
         if (isXposedEnvironment && YukiXposedModule.modulePackageName.isBlank())
             error("Xposed modulePackageName load failed, please reset and rebuild it")
     }
@@ -162,9 +168,10 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     private val currentXsp
         get() = checkApi().let {
             runCatching {
-                (xPrefs[prefsName]?.instance ?: XSharedPreferencesDelegate.from(YukiXposedModule.modulePackageName, prefsName).also {
-                    xPrefs[prefsName] = it
-                }.instance).apply {
+                (xPrefs[currentPrefsName]?.instance ?: XSharedPreferencesDelegate.from(YukiXposedModule.modulePackageName, currentPrefsName)
+                    .also {
+                        xPrefs[currentPrefsName] = it
+                    }.instance).apply {
                     makeWorldReadable()
                     reload()
                 }
@@ -180,21 +187,22 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         get() = checkApi().let {
             runCatching {
                 @Suppress("DEPRECATION", "WorldReadableFiles")
-                sPrefs[context.toString() + prefsName] ?: context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)?.also {
-                    isUsingNewXSharedPreferences = true
-                    sPrefs[context.toString() + prefsName] = it
-                } ?: error("YukiHookModulePrefs missing Context instance")
+                sPrefs[context.toString() + currentPrefsName] ?: context?.getSharedPreferences(currentPrefsName, Context.MODE_WORLD_READABLE)
+                    ?.also {
+                        isUsingNewXSharedPreferences = true
+                        sPrefs[context.toString() + currentPrefsName] = it
+                    } ?: error("YukiHookPrefsBridge missing Context instance")
             }.getOrElse {
-                sPrefs[context.toString() + prefsName] ?: context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE)?.also {
+                sPrefs[context.toString() + currentPrefsName] ?: context?.getSharedPreferences(currentPrefsName, Context.MODE_PRIVATE)?.also {
                     isUsingNewXSharedPreferences = false
-                    sPrefs[context.toString() + prefsName] = it
-                } ?: error("YukiHookModulePrefs missing Context instance")
+                    sPrefs[context.toString() + currentPrefsName] = it
+                } ?: error("YukiHookPrefsBridge missing Context instance")
             }
         }
 
     /** 设置全局可读可写 */
     private fun makeWorldReadable() = runCatching {
-        if (isUsingNewXSharedPreferences.not()) makeWorldReadable(context, prefsFileName = "${prefsName}.xml")
+        if (isUsingNewXSharedPreferences.not()) makeWorldReadable(context, prefsFileName = "${currentPrefsName}.xml")
     }
 
     /**
@@ -209,7 +217,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     val isXSharePrefsReadable get() = isPreferencesAvailable
 
     /**
-     * 获取 [YukiHookModulePrefs] 是否正处于 EdXposed/LSPosed 的最高权限运行
+     * 获取 [YukiHookPrefsBridge] 是否正处于 EdXposed/LSPosed 的最高权限运行
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
@@ -220,7 +228,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     val isRunInNewXShareMode get() = isPreferencesAvailable
 
     /**
-     * 获取当前 [YukiHookModulePrefs] 的可用状态
+     * 获取当前 [YukiHookPrefsBridge] 的可用状态
      *
      * - 在 (Xposed) 宿主环境中返回 [XSharedPreferences] 可用状态 (可读)
      *
@@ -239,10 +247,10 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     /**
      * 自定义 Sp 存储名称
      * @param name 自定义的 Sp 存储名称
-     * @return [YukiHookModulePrefs]
+     * @return [YukiHookPrefsBridge]
      */
-    fun name(name: String): YukiHookModulePrefs {
-        isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
+    fun name(name: String): YukiHookPrefsBridge {
+        isUsingKeyValueCache = YukiHookAPI.Configs.isEnablePrefsBridgeCache
         prefsName = name
         return this
     }
@@ -253,10 +261,22 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * 无论是否开启 [YukiHookAPI.Configs.isEnableModulePrefsCache]
      *
      * - 仅在 [XSharedPreferences] 下生效
-     * @return [YukiHookModulePrefs]
+     * @return [YukiHookPrefsBridge]
      */
-    fun direct(): YukiHookModulePrefs {
+    fun direct(): YukiHookPrefsBridge {
         isUsingKeyValueCache = false
+        return this
+    }
+
+    /**
+     * 忽略当前环境直接使用 [Context.getSharedPreferences] 存取数据
+     * @return [YukiHookPrefsBridge]
+     * @throws IllegalStateException 如果 [context] 为空
+     */
+    fun native(): YukiHookPrefsBridge {
+        if (isXposedEnvironment && context == null) context = AppParasitics.currentApplication
+            ?: error("The Host App's Context has not yet initialized successfully, the native function cannot be used at this time")
+        isUsingNativeStorage = true
         return this
     }
 
@@ -271,7 +291,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [String]
      */
     fun getString(key: String, value: String = "") =
-        (if (isXposedEnvironment)
+        (if (isXposedEnvironment && isUsingNativeStorage.not())
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.stringData[key].let {
                     (it ?: currentXsp.getString(key, value) ?: value).let { value ->
@@ -282,7 +302,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getString(key, value) ?: value }
         else currentSp.getString(key, value) ?: value).let {
             makeWorldReadable()
-            it
+            resetNativeSet { it }
         }
 
     /**
@@ -296,7 +316,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [Set]<[String]>
      */
     fun getStringSet(key: String, value: Set<String>) =
-        (if (isXposedEnvironment)
+        (if (isXposedEnvironment && isUsingNativeStorage.not())
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.stringSetData[key].let {
                     (it ?: currentXsp.getStringSet(key, value) ?: value).let { value ->
@@ -307,7 +327,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getStringSet(key, value) ?: value }
         else currentSp.getStringSet(key, value) ?: value).let {
             makeWorldReadable()
-            it
+            resetNativeSet { it }
         }
 
     /**
@@ -321,7 +341,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [Boolean]
      */
     fun getBoolean(key: String, value: Boolean = false) =
-        (if (isXposedEnvironment)
+        (if (isXposedEnvironment && isUsingNativeStorage.not())
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.booleanData[key].let {
                     it ?: currentXsp.getBoolean(key, value).let { value ->
@@ -332,7 +352,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getBoolean(key, value) }
         else currentSp.getBoolean(key, value)).let {
             makeWorldReadable()
-            it
+            resetNativeSet { it }
         }
 
     /**
@@ -346,7 +366,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [Int]
      */
     fun getInt(key: String, value: Int = 0) =
-        (if (isXposedEnvironment)
+        (if (isXposedEnvironment && isUsingNativeStorage.not())
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.intData[key].let {
                     it ?: currentXsp.getInt(key, value).let { value ->
@@ -357,7 +377,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getInt(key, value) }
         else currentSp.getInt(key, value)).let {
             makeWorldReadable()
-            it
+            resetNativeSet { it }
         }
 
     /**
@@ -371,7 +391,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [Float]
      */
     fun getFloat(key: String, value: Float = 0f) =
-        (if (isXposedEnvironment)
+        (if (isXposedEnvironment && isUsingNativeStorage.not())
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.floatData[key].let {
                     it ?: currentXsp.getFloat(key, value).let { value ->
@@ -382,7 +402,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getFloat(key, value) }
         else currentSp.getFloat(key, value)).let {
             makeWorldReadable()
-            it
+            resetNativeSet { it }
         }
 
     /**
@@ -396,7 +416,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [Long]
      */
     fun getLong(key: String, value: Long = 0L) =
-        (if (isXposedEnvironment)
+        (if (isXposedEnvironment && isUsingNativeStorage.not())
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.longData[key].let {
                     it ?: currentXsp.getLong(key, value).let { value ->
@@ -407,7 +427,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getLong(key, value) }
         else currentSp.getLong(key, value)).let {
             makeWorldReadable()
-            it
+            resetNativeSet { it }
         }
 
     /**
@@ -617,12 +637,22 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      * @return [T]
      */
     private inline fun <T> resetCacheSet(result: () -> T): T {
-        isUsingKeyValueCache = YukiHookAPI.Configs.isEnableModulePrefsCache
+        isUsingKeyValueCache = YukiHookAPI.Configs.isEnablePrefsBridgeCache
         return result()
     }
 
     /**
-     * [YukiHookModulePrefs] 的存储代理类
+     * 恢复 [isUsingNativeStorage] 为默认状态
+     * @param result 回调方法体的结果
+     * @return [T]
+     */
+    private inline fun <T> resetNativeSet(result: () -> T): T {
+        isUsingNativeStorage = false
+        return result()
+    }
+
+    /**
+     * [YukiHookPrefsBridge] 的存储代理类
      *
      * - ❗请使用 [edit] 方法来获取 [Editor]
      *
@@ -770,10 +800,10 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
          * 提交更改 (同步)
          * @return [Boolean] 是否成功
          */
-        fun commit() = editor?.commit()?.also { makeWorldReadable() } ?: false
+        fun commit() = resetNativeSet { editor?.commit()?.also { makeWorldReadable() } ?: false }
 
         /** 提交更改 (异步) */
-        fun apply() = editor?.apply().also { makeWorldReadable() } ?: Unit
+        fun apply() = resetNativeSet { editor?.apply().also { makeWorldReadable() } ?: Unit }
 
         /**
          * 仅在模块环境执行
@@ -783,8 +813,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
          * @return [Editor]
          */
         private inline fun moduleEnvironment(callback: () -> Unit): Editor {
-            if (isXposedEnvironment.not()) callback()
-            else yLoggerW(msg = "YukiHookModulePrefs.Editor not allowed in Xposed Environment")
+            if (isXposedEnvironment.not() || isUsingNativeStorage) callback()
+            else yLoggerW(msg = "YukiHookPrefsBridge.Editor not allowed in Xposed Environment")
             return this
         }
     }

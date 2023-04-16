@@ -20,7 +20,7 @@ data class PrefsData<T>(var key: String, var value: T) : Serializable
 
 > 键值对存储构造类。
 
-这个类是对 `YukiHookModulePrefs` 的一个扩展用法。
+这个类是对 `YukiHookPrefsBridge` 的一个扩展用法。
 
 **功能示例**
 
@@ -43,9 +43,9 @@ object DataConst {
 
 ```kotlin
 // 读取
-val data = modulePrefs.get(DataConst.TEST_KV_DATA_1)
+val data = prefs().get(DataConst.TEST_KV_DATA_1)
 // 写入
-modulePrefs.put(DataConst.TEST_KV_DATA_1, "written value")
+prefs().edit { put(DataConst.TEST_KV_DATA_1, "written value") }
 ```
 
 > 宿主示例如下

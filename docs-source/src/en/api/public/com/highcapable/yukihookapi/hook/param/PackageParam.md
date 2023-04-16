@@ -243,7 +243,7 @@ val moduleAppResources: YukiModuleResources
 ## prefs <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
-val prefs: YukiHookModulePrefs
+val prefs: YukiHookPrefsBridge
 ```
 
 **Change Records**
@@ -263,7 +263,7 @@ val prefs: YukiHookModulePrefs
 ## prefs <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun prefs(name: String): YukiHookModulePrefs
+fun prefs(name: String): YukiHookPrefsBridge
 ```
 
 **Change Records**

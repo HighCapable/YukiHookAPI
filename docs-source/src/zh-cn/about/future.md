@@ -6,7 +6,7 @@
 
 > 这里收录了 `YukiHookAPI` 尚未解决的问题。
 
-### YukiHookModulePrefs
+### YukiHookPrefsBridge
 
 目前仅限完美支持 LSPosed，其它 Xposed 框架需要降级模块 API。
 

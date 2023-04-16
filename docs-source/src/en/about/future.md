@@ -6,7 +6,7 @@
 
 > Here are the unresolved issues with `YukiHookAPI`.
 
-### YukiHookModulePrefs
+### YukiHookPrefsBridge
 
 Currently only supports LSPosed perfectly, other Xposed Framework need to downgrade the module target api.
 

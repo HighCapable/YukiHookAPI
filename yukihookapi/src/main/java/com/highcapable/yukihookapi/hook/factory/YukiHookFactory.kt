@@ -49,7 +49,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper.ModuleContextThemeWrapper
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.BufferedReader
 import java.io.File
@@ -76,16 +76,38 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.enca
 
 /**
  * 获取模块的存取对象
- * @return [YukiHookModulePrefs]
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [Context.prefs] 方法
+ * @return [YukiHookPrefsBridge]
  */
-val Context.modulePrefs get() = YukiHookModulePrefs.instance(context = this)
+@Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs()"))
+val Context.modulePrefs get() = prefs()
 
 /**
  * 获取模块的存取对象
- * @param name 自定义 Sp 存储名称
- * @return [YukiHookModulePrefs]
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [Context.prefs] 方法
+ * @return [YukiHookPrefsBridge]
  */
-fun Context.modulePrefs(name: String) = modulePrefs.name(name)
+@Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs(name)"))
+fun Context.modulePrefs(name: String) = prefs(name)
+
+/**
+ * 获取 [YukiHookPrefsBridge] 对象
+ *
+ * 可以同时在模块与 (Xposed) 宿主环境中使用
+ *
+ * 如果你想在 (Xposed) 宿主环境将数据存入当前宿主的私有空间 - 请使用 [YukiHookPrefsBridge.native] 方法
+ *
+ * 在未声明任何条件的情况下 (Xposed) 宿主环境默认读取模块中的数据
+ * @param name 自定义 Sp 存储名称 - 默认空
+ * @return [YukiHookPrefsBridge]
+ */
+fun Context.prefs(name: String = "") = YukiHookPrefsBridge.instance(context = this).let { if (name.isNotBlank()) it.name(name) else it }
 
 /**
  * 获取模块的数据通讯桥命名空间对象

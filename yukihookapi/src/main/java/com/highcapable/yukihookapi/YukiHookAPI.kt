@@ -57,7 +57,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -281,13 +281,27 @@ object YukiHookAPI {
             }
 
         /**
-         * 是否启用 [YukiHookModulePrefs] 的键值缓存功能
+         * 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
+         *
+         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         *
+         * - ❗请现在转移到 [isEnablePrefsBridgeCache]
+         */
+        @Deprecated(message = "请使用新的命名方法来实现此功能", ReplaceWith("isEnablePrefsBridgeCache"))
+        var isEnableModulePrefsCache
+            get() = isEnablePrefsBridgeCache
+            set(value) {
+                isEnablePrefsBridgeCache = value
+            }
+
+        /**
+         * 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
          *
          * - 为防止内存复用过高问题 - 此功能默认启用
          *
-         * 你可以手动在 [YukiHookModulePrefs] 中自由开启和关闭缓存功能以及清除缓存
+         * 你可以手动在 [YukiHookPrefsBridge] 中自由开启和关闭缓存功能以及清除缓存
          */
-        var isEnableModulePrefsCache = true
+        var isEnablePrefsBridgeCache = true
 
         /**
          * 是否启用当前 Xposed 模块自身 [Resources] 缓存功能
@@ -316,7 +330,7 @@ object YukiHookAPI {
          *
          * - ❗这是一个可选的实验性功能 - 此功能默认不启用
          *
-         * - 仅用于修复某些系统可能会出现在启用了 New XSharedPreferences 后依然出现文件权限错误问题 - 若你能正常使用 [YukiHookModulePrefs] 就不建议启用此功能
+         * - 仅用于修复某些系统可能会出现在启用了 New XSharedPreferences 后依然出现文件权限错误问题 - 若你能正常使用 [YukiHookPrefsBridge] 就不建议启用此功能
          */
         var isEnableHookSharedPreferences = false
 

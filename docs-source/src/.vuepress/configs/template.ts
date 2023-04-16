@@ -29,7 +29,7 @@ const navigationLinks = {
         baseApiPath + 'hook/param/HookParam',
         baseApiPath + 'annotation/xposed/InjectYukiHookWithXposed',
         baseApiPath + 'hook/xposed/proxy/IYukiHookXposedInit',
-        baseApiPath + 'hook/xposed/prefs/YukiHookModulePrefs',
+        baseApiPath + 'hook/xposed/prefs/YukiHookPrefsBridge',
         baseApiPath + 'hook/xposed/prefs/ui/ModulePreferenceFragment',
         baseApiPath + 'hook/xposed/prefs/data/PrefsData',
         baseApiPath + 'hook/xposed/channel/YukiHookDataChannel',

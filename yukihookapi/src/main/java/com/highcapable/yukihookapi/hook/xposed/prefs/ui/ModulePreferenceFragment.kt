@@ -38,7 +38,7 @@ import androidx.preference.PreferenceManager
 import androidx.preference.PreferenceScreen
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.utils.unit
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 
 /**
  * 这是对使用 [YukiHookAPI] Xposed 模块实现中的一个扩展功能
@@ -105,5 +105,5 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
     private fun makeNewXShareReadableIfPossible() = runCatching {
         @Suppress("DEPRECATION", "WorldReadableFiles")
         currentActivity.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
-    }.onFailure { YukiHookModulePrefs.makeWorldReadable(currentActivity, prefsFileName = "$prefsName.xml") }.unit()
+    }.onFailure { YukiHookPrefsBridge.makeWorldReadable(currentActivity, prefsFileName = "$prefsName.xml") }.unit()
 }

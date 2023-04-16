@@ -27,13 +27,13 @@
  */
 package com.highcapable.yukihookapi.hook.xposed.prefs.data
 
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import java.io.Serializable
 
 /**
  * 键值对存储构造类
  *
- * 这个类是对 [YukiHookModulePrefs] 的一个扩展用法
+ * 这个类是对 [YukiHookPrefsBridge] 的一个扩展用法
  *
  * 详情请参考 [API 文档 - PrefsData](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/data/PrefsData)
  *

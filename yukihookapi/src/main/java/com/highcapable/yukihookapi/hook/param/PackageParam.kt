@@ -56,7 +56,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookModulePrefs
+import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
@@ -181,16 +181,16 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 获得当前使用的存取数据对象缓存实例
      *
      * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
-     * @return [YukiHookModulePrefs]
+     * @return [YukiHookPrefsBridge]
      */
-    val prefs get() = YukiHookModulePrefs.instance()
+    val prefs get() = YukiHookPrefsBridge.instance()
 
     /**
      * 获得当前使用的存取数据对象缓存实例
      *
      * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
      * @param name 自定义 Sp 存储名称
-     * @return [YukiHookModulePrefs]
+     * @return [YukiHookPrefsBridge]
      */
     fun prefs(name: String) = prefs.name(name)
 
