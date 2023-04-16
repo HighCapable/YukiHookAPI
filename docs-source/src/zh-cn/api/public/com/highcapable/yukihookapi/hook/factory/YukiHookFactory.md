@@ -88,7 +88,7 @@ fun Context.prefs(name: String): YukiHookPrefsBridge
 
 **功能描述**
 
-> 获取 `YukiHookPrefsBridge` 对象。
+> 创建 `YukiHookPrefsBridge` 对象。
 
 可以同时在模块与 (Xposed) 宿主环境中使用。
 
@@ -108,7 +108,7 @@ fun Context.dataChannel(packageName: String): YukiHookDataChannel.NameSpace
 
 **功能描述**
 
-> 获取模块的数据通讯桥命名空间对象。
+> 获取 `YukiHookDataChannel` 对象。
 
 ::: danger
 

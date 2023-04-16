@@ -178,15 +178,15 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         else YukiXposedModule.dynamicModuleAppResources) ?: error("Current Hook Framework not support moduleAppResources")
 
     /**
-     * 获得当前使用的存取数据对象缓存实例
+     * 创建 [YukiHookPrefsBridge] 对象
      *
      * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
      * @return [YukiHookPrefsBridge]
      */
-    val prefs get() = YukiHookPrefsBridge.instance()
+    val prefs get() = YukiHookPrefsBridge.from()
 
     /**
-     * 获得当前使用的存取数据对象缓存实例
+     * 创建 [YukiHookPrefsBridge] 对象
      *
      * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
      * @param name 自定义 Sp 存储名称
@@ -195,7 +195,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun prefs(name: String) = prefs.name(name)
 
     /**
-     * 获得当前使用的数据通讯桥命名空间对象
+     * 获取 [YukiHookDataChannel] 对象
      *
      * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
      * @return [YukiHookDataChannel.NameSpace]

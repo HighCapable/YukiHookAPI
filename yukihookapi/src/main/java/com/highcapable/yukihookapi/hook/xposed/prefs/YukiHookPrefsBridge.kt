@@ -64,9 +64,6 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         /** 当前是否为 (Xposed) 宿主环境 */
         private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
-        /** 当前 [YukiHookPrefsBridge] 单例 */
-        private var instance: YukiHookPrefsBridge? = null
-
         /** 当前缓存的 [XSharedPreferencesDelegate] 实例数组 */
         private val xPrefs = HashMap<String, XSharedPreferencesDelegate>()
 
@@ -74,12 +71,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         private val sPrefs = HashMap<String, SharedPreferences>()
 
         /**
-         * 获取 [YukiHookPrefsBridge] 单例
-         * @param context 实例 -  (Xposed) 宿主环境为空
+         * 创建 [YukiHookPrefsBridge] 对象
+         * @param context 实例 - (Xposed) 宿主环境为空
          * @return [YukiHookPrefsBridge]
          */
-        internal fun instance(context: Context? = null) =
-            instance?.apply { if (context != null) this.context = context } ?: YukiHookPrefsBridge(context).apply { instance = this }
+        internal fun from(context: Context? = null) = YukiHookPrefsBridge(context)
 
         /**
          * 设置全局可读可写
@@ -302,7 +298,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getString(key, value) ?: value }
         else currentSp.getString(key, value) ?: value).let {
             makeWorldReadable()
-            resetNativeSet { it }
+            it
         }
 
     /**
@@ -327,7 +323,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getStringSet(key, value) ?: value }
         else currentSp.getStringSet(key, value) ?: value).let {
             makeWorldReadable()
-            resetNativeSet { it }
+            it
         }
 
     /**
@@ -352,7 +348,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getBoolean(key, value) }
         else currentSp.getBoolean(key, value)).let {
             makeWorldReadable()
-            resetNativeSet { it }
+            it
         }
 
     /**
@@ -377,7 +373,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getInt(key, value) }
         else currentSp.getInt(key, value)).let {
             makeWorldReadable()
-            resetNativeSet { it }
+            it
         }
 
     /**
@@ -402,7 +398,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getFloat(key, value) }
         else currentSp.getFloat(key, value)).let {
             makeWorldReadable()
-            resetNativeSet { it }
+            it
         }
 
     /**
@@ -427,7 +423,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else resetCacheSet { currentXsp.getLong(key, value) }
         else currentSp.getLong(key, value)).let {
             makeWorldReadable()
-            resetNativeSet { it }
+            it
         }
 
     /**
@@ -642,16 +638,6 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 恢复 [isUsingNativeStorage] 为默认状态
-     * @param result 回调方法体的结果
-     * @return [T]
-     */
-    private inline fun <T> resetNativeSet(result: () -> T): T {
-        isUsingNativeStorage = false
-        return result()
-    }
-
-    /**
      * [YukiHookPrefsBridge] 的存储代理类
      *
      * - ❗请使用 [edit] 方法来获取 [Editor]
@@ -800,10 +786,10 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * 提交更改 (同步)
          * @return [Boolean] 是否成功
          */
-        fun commit() = resetNativeSet { editor?.commit()?.also { makeWorldReadable() } ?: false }
+        fun commit() = editor?.commit()?.also { makeWorldReadable() } ?: false
 
         /** 提交更改 (异步) */
-        fun apply() = resetNativeSet { editor?.apply().also { makeWorldReadable() } ?: Unit }
+        fun apply() = editor?.apply().also { makeWorldReadable() } ?: Unit
 
         /**
          * 仅在模块环境执行

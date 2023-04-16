@@ -97,7 +97,7 @@ val Context.modulePrefs get() = prefs()
 fun Context.modulePrefs(name: String) = prefs(name)
 
 /**
- * 获取 [YukiHookPrefsBridge] 对象
+ * 创建 [YukiHookPrefsBridge] 对象
  *
  * 可以同时在模块与 (Xposed) 宿主环境中使用
  *
@@ -107,10 +107,10 @@ fun Context.modulePrefs(name: String) = prefs(name)
  * @param name 自定义 Sp 存储名称 - 默认空
  * @return [YukiHookPrefsBridge]
  */
-fun Context.prefs(name: String = "") = YukiHookPrefsBridge.instance(context = this).let { if (name.isNotBlank()) it.name(name) else it }
+fun Context.prefs(name: String = "") = YukiHookPrefsBridge.from(context = this).let { if (name.isNotBlank()) it.name(name) else it }
 
 /**
- * 获取模块的数据通讯桥命名空间对象
+ * 获取 [YukiHookDataChannel] 对象
  *
  * - ❗只能在模块环境使用此功能 - 其它环境下使用将不起作用
  * @param packageName 目标 Hook APP (宿主) 包名

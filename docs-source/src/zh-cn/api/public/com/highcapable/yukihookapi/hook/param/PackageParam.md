@@ -244,7 +244,7 @@ val prefs: YukiHookPrefsBridge
 
 **功能描述**
 
-> 获得当前使用的存取数据对象缓存实例。
+> 创建 `YukiHookPrefsBridge` 对象。
 
 ::: danger
 
@@ -268,7 +268,7 @@ fun prefs(name: String): YukiHookPrefsBridge
 
 **功能描述**
 
-> 获得当前使用的存取数据对象缓存实例。
+> 创建 `YukiHookPrefsBridge` 对象。
 
 你可以通过 `name` 来自定义 Sp 存储的名称。
 
@@ -290,7 +290,7 @@ val dataChannel: YukiHookDataChannel.NameSpace
 
 **功能描述**
 
-> 获得当前使用的数据通讯桥命名空间对象。
+> 获取 `YukiHookDataChannel` 对象。
 
 ::: danger
 
