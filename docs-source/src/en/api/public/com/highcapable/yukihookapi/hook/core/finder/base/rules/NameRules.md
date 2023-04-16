@@ -22,7 +22,7 @@ class NameRules private constructor()
 
 `v1.1.0` `modified`
 
-`NameConditions` 更名为 `NameRules`
+~~`NameConditions`~~ 更名为 `NameRules`
 
 作为 lambda 整体判断条件使用
 
