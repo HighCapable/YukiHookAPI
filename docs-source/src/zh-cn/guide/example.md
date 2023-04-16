@@ -618,7 +618,13 @@ override fun onHook() = encase {
 }
 ```
 
-## Xposed 模块判断自身激活状态
+## Xposed 模块状态
+
+通常情况下，Xposed 模块的开发者都会去选择读取当前 Xposed 模块的激活信息以更好地向用户展示当前功能的生效状态。
+
+除了基本的 Hook 功能，`YukiHookAPI` 还为开发者设计了一套 Xposed 模块状态判断的功能，如激活状态、Hook Framework 信息。
+
+### 判断自身激活状态
 
 通常情况下，我们会选择写一个方法，使其返回 `false`，然后 Hook 掉这个方法使其返回 `true` 来证明 Hook 已经生效。
 
@@ -686,12 +692,42 @@ if(YukiHookAPI.Status.isModuleActive) {
 <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 ```
 
-若模块激活判断中包含太极、无极中的激活状态，就必须将模块的 **Application** 继承于 **ModuleApplication** 或直接使用 **ModuleApplication**；
+若模块激活判断中包含太极、无极中的激活状态，就必须将模块的 **Application** 继承于 **ModuleApplication** 或直接使用 **ModuleApplication**。
 
-**1.0.91** 版本后的 API 修改了激活逻辑判断方式，现在你可以在模块与 Hook APP (宿主) 中同时使用此 API；
+:::
+
+### 获取 Hook Framework 信息
+
+除了判断自身激活状态之外，你还可以通过 `YukiHookAPI.Status` 中的 `Executor` 来获取当前 Hook Framework 的相关信息。
+
+例如我们可以使用 `YukiHookAPI.Status.Executor.name` 来获取当前 Hook Framework 的名称。
+
+> 示例如下
+
+```kotlin
+val frameworkName = YukiHookAPI.Status.Executor.name
+```
+
+我们还可以使用 `YukiHookAPI.Status.Executor.apiLevel` 来获取当前 Hook Framework 的 API Level。
+
+> 示例如下
+
+```kotlin
+val frameworkApiLevel = YukiHookAPI.Status.Executor.apiLevel
+```
+
+::: tip
+
+更多功能请参考 [YukiHookAPI.Status.Executor](../api/public/com/highcapable/yukihookapi/YukiHookAPI#executor-object)。
+
+:::
+
+::: warning
+
+**1.0.91** 版本后的 **YukiHookAPI** 修改了获取 Xposed 模块状态的逻辑判断方式，现在你可以在模块与 Hook APP (宿主) 中同时使用此 API；
 
 需要确保 **YukiHookAPI.Configs.isEnableHookModuleStatus** 是启用状态；
 
-除了提供标准 API 的 Hook Framework 之外，其它情况下模块可能都将无法判断自己是否被激活。
+**YukiHookAPI** 仅对已知的获取方式进行了对接，除了提供标准 API 的 Hook Framework 之外，其它情况下模块可能都将无法判断自己是否被激活或是获取 Hook Framework 的相关信息。
 
 :::

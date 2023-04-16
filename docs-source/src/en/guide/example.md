@@ -618,13 +618,19 @@ override fun onHook() = encase {
 }
 ```
 
-## Xposed Module own Active State
+## Xposed Module Status
 
-Usually, we choose to write a method that return `false`, and then Hook this method to return `true` to prove that the Hook has taken effect.
+Usually, the developer of the Xposed Module will choose to read the activation information of the current Xposed Module to better show the user the effective status of the current function.
 
-In `YukiHookAPI`, you don't need to do this at all. `YukiHookAPI` has already encapsulated this operation for you, and you can use it directly.
+In addition to the basic Hook functions, `YukiHookAPI` also designed a set of Xposed Module status judgment functions for developers, such as activation status and Hook Framework information.
 
-Now, you can use `YukiHookAPI.Status.isXposedModuleActive` directly in the Module App to determine whether it is active.
+### Determine Self-activation Status
+
+Usually, we will choose to write a method to make it return `false`, and then hook this method to make it return `true` to prove that the Hook has taken effect.
+
+In `YukiHookAPI`, you don’t need to do this at all, `YukiHookAPI` has already encapsulated this operation for you, and you can use it directly.
+
+Now, you can directly use `YukiHookAPI.Status.isXposedModuleActive` to determine whether it is activated in the Module App.
 
 > The following example
 
@@ -634,9 +640,9 @@ if(YukiHookAPI.Status.isXposedModuleActive) {
 }
 ```
 
-Due to some special reasons, Module Apps in TaiChi and Wuji cannot use standard methods to detect the activation state.
+Due to some special reasons, the Xposed Modules in TaiChi and Wuji cannot use the standard method to detect the activation state.
 
-At this point, you can use `YukiHookAPI.Status.isTaiChiModuleActive` to determine whether it is activated.
+At this point you can use `YukiHookAPI.Status.isTaiChiModuleActive` to determine whether it is activated.
 
 > The following example
 
@@ -648,7 +654,7 @@ if(YukiHookAPI.Status.isTaiChiModuleActive) {
 
 If you want to use both judgment schemes, `YukiHookAPI` also encapsulates a convenient way for you.
 
-At this point, you can use `YukiHookAPI.Status.isModuleActive` to determine whether you are activated in Xposed or TaiChi and Promise.
+At this point, you can use `YukiHookAPI.Status.isModuleActive` to determine whether you are activated in Xposed or TaiChi and Wuji.
 
 > The following example
 
@@ -666,7 +672,7 @@ For more functions, please refer to [YukiHookAPI.Status](../api/public/com/highc
 
 ::: warning
 
-If your Module App's API version is higher than 29 and is running on a system whose target API is 29 or higher, you need to add the following permission statement in **AndroidManifest.xml** to judge the activation status of the Module App in TaiChi and Wuji.
+If your Module App's API version is higher than 29 and is running on a system whose target API is 29 or higher, you need to add the following permission statement in **AndroidManifest.xml** to judge the activation status of the module in TaiChi and Wuji.
 
 > The following example
 
@@ -686,12 +692,44 @@ There is another solution, you can directly declare the **android.permission.QUE
 <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 ```
 
-If the activation state of TaiChi and Wuji is included in the Module App activation judgment, the **Application** of the Module App must be extends **ModuleApplication** or **ModuleApplication** must be used directly;
+If the activation status of TaiChi and Wuji is included in the Module App activation judgment, the **Application** of the Module App must be extends from **ModuleApplication** or directly use **ModuleApplication**.
 
-The API after **1.0.91** has modified the activation logic judgment method, now you can use this API in the Module App and Host App at the same time;
+:::
+
+### Get Hook Framework Information
+
+In addition to judging your own activation status, you can also get information about the current Hook Framework through the `Executor` in `YukiHookAPI.Status`.
+
+For example, we can use `YukiHookAPI.Status.Executor.name` to get the name of the current Hook Framework.
+
+> The following example
+
+```kotlin
+val frameworkName = YukiHookAPI.Status.Executor.name
+```
+
+We can also use `YukiHookAPI.Status.Executor.apiLevel` to get the API Level of the current Hook Framework.
+
+> The following example
+
+```kotlin
+val frameworkApiLevel = YukiHookAPI.Status.Executor.apiLevel
+```
+
+::: tip
+
+For more functions, please refer to [YukiHookAPI.Status.Executor](../api/public/com/highcapable/yukihookapi/YukiHookAPI#executor-object).
+
+:::
+
+::: warning
+
+**YukiHookAPI** after **1.0.91** version modifies the logical judgment method of obtaining the status of the Xposed Module, and now you can use this API in the Module App and Host App at the same time;
 
 Need to make sure **YukiHookAPI.Configs.isEnableHookModuleStatus** is enabled;
 
-Except for Hook Frameworks that provide standard APIs, Module Apps may not be able to determine whether they are activated in other cases.
+**YukiHookAPI** only connects to the known acquisition methods.
+
+Except for the Hook Framework that provides standard APIs, in other cases, the Xposed Module may not be able to determine whether it is activated or obtain information about the Hook Framework.
 
 :::
