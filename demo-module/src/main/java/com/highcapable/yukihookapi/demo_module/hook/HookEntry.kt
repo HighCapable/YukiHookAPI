@@ -103,13 +103,13 @@ object HookEntry : IYukiHookXposedInit {
             // 是否开启调试模式
             // 请注意 - 若作为发布版本请务必关闭调试功能防止对用户设备造成大量日志填充
             isDebug = true
-            // Whether to enable the key-value cache function of [YukiHookModulePrefs]
+            // Whether to enable the key-value cache function of [YukiHookPrefsBridge]
             // If there is no frequent interaction data with the Module App, it is recommended to enable it before the Host App restarts
-            // If you need real-time interactive data, it is recommended to close or configure dynamically from [YukiHookModulePrefs]
-            // 是否启用 [YukiHookModulePrefs] 的键值缓存功能
+            // If you need real-time interactive data, it is recommended to close or configure dynamically from [YukiHookPrefsBridge]
+            // 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
             // 若无和模块频繁交互数据在宿主重新启动之前建议开启
-            // 若需要实时交互数据建议关闭或从 [YukiHookModulePrefs] 中进行动态配置
-            isEnableModulePrefsCache = true
+            // 若需要实时交互数据建议关闭或从 [YukiHookPrefsBridge] 中进行动态配置
+            isEnablePrefsBridgeCache = true
             // Whether to enable the current Xposed Module's own [Resources] cache function
             // Under normal circumstances, the resources of the Module App will not change
             // But in the case of locale changes, screen size changes. Etc. you need to refresh the cache
@@ -133,11 +133,11 @@ object HookEntry : IYukiHookXposedInit {
             // Enable will force [SharedPreferences] file permissions to be adjusted to [Context.MODE_WORLD_READABLE] (0664) at Module App startup
             // This is an optional experimental feature, this feature is not enabled by default
             // Only used to fix some systems that may still have file permission errors after enabling New XSharedPreferences
-            // If you can use [YukiHookModulePrefs] normally, it is not recommended to enable this feature
+            // If you can use [YukiHookPrefsBridge] normally, it is not recommended to enable this feature
             // 是否启用 Hook [SharedPreferences]
             // 启用后将在模块启动时强制将 [SharedPreferences] 文件权限调整为 [Context.MODE_WORLD_READABLE] (0664)
             // 这是一个可选的实验性功能 - 此功能默认不启用
-            // 仅用于修复某些系统可能会出现在启用了 New XSharedPreferences 后依然出现文件权限错误问题 - 若你能正常使用 [YukiHookModulePrefs] 就不建议启用此功能
+            // 仅用于修复某些系统可能会出现在启用了 New XSharedPreferences 后依然出现文件权限错误问题 - 若你能正常使用 [YukiHookPrefsBridge] 就不建议启用此功能
             isEnableHookSharedPreferences = false
             // Whether to enable the [YukiHookDataChannel] function of the current Xposed Module interacting with the Host App
             // Please make sure the Xposed Module's [Application] extends [ModuleApplication] to be valid

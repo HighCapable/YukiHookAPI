@@ -37,7 +37,7 @@ import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.hook.factory.dataChannel
-import com.highcapable.yukihookapi.hook.factory.modulePrefs
+import com.highcapable.yukihookapi.hook.factory.prefs
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
@@ -66,7 +66,7 @@ class MainActivity : ModuleAppCompatActivity() {
             moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.API_VERSION_NAME}(${YukiHookAPI.API_VERSION_CODE})"
             moduleDemoYukiHookApiVersionZhText.text = "YukiHookAPI 版本"
             moduleDemoNewXshareText.text =
-                "${if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences Readable" else "New XSharedPreferences"}：${modulePrefs.isPreferencesAvailable}"
+                "${if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences Readable" else "New XSharedPreferences"}：${prefs().isPreferencesAvailable}"
             moduleDemoNewXshareZhText.text =
                 if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences 是否可用" else "New XSharedPreferences 支持状态"
             moduleDemoResHookText.text = "Support Resources Hook：${YukiHookAPI.Status.isSupportResourcesHook}"
@@ -78,11 +78,11 @@ class MainActivity : ModuleAppCompatActivity() {
                     it.isEnabled = false
                     moduleDemoButton.isEnabled = false
                 }
-                it.setText(modulePrefs.get(DataConst.TEST_KV_DATA))
+                it.setText(prefs().get(DataConst.TEST_KV_DATA))
                 moduleDemoButton.setOnClickListener { _ ->
                     moduleEnvironment {
                         if (it.text.toString().isNotEmpty()) {
-                            modulePrefs.edit { put(DataConst.TEST_KV_DATA, it.text.toString()) }
+                            prefs().edit { put(DataConst.TEST_KV_DATA, it.text.toString()) }
                             Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
                         } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
                     }
