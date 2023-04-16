@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.delegate.XSharedPreferencesDelegate
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 import de.robv.android.xposed.XSharedPreferences
@@ -72,6 +73,12 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
 
         /** 当前 [YukiHookModulePrefs] 单例 */
         private var instance: YukiHookModulePrefs? = null
+
+        /** 当前缓存的 [XSharedPreferencesDelegate] 实例数组 */
+        private val xPrefs = HashMap<String, XSharedPreferencesDelegate>()
+
+        /** 当前缓存的 [SharedPreferences] 实例数组 */
+        private val sPrefs = HashMap<String, SharedPreferences>()
 
         /**
          * 获取 [YukiHookModulePrefs] 单例
@@ -149,14 +156,15 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获得 [XSharedPreferences] 对象
+     * 获取当前 [XSharedPreferences] 对象
      * @return [XSharedPreferences]
      */
-    private val xPrefs
+    private val currentXsp
         get() = checkApi().let {
             runCatching {
-                XSharedPreferences(YukiXposedModule.modulePackageName, prefsName).apply {
-                    checkApi()
+                (xPrefs[prefsName]?.instance ?: XSharedPreferencesDelegate.from(YukiXposedModule.modulePackageName, prefsName).also {
+                    xPrefs[prefsName] = it
+                }.instance).apply {
                     makeWorldReadable()
                     reload()
                 }
@@ -165,18 +173,22 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         }
 
     /**
-     * 获得 [SharedPreferences] 对象
+     * 获取当前 [SharedPreferences] 对象
      * @return [SharedPreferences]
      */
-    private val sPrefs
+    private val currentSp
         get() = checkApi().let {
             runCatching {
                 @Suppress("DEPRECATION", "WorldReadableFiles")
-                context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE).also { isUsingNewXSharedPreferences = true }
-                    ?: error("YukiHookModulePrefs missing Context instance")
+                sPrefs[context.toString() + prefsName] ?: context?.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)?.also {
+                    isUsingNewXSharedPreferences = true
+                    sPrefs[context.toString() + prefsName] = it
+                } ?: error("YukiHookModulePrefs missing Context instance")
             }.getOrElse {
-                context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { isUsingNewXSharedPreferences = false }
-                    ?: error("YukiHookModulePrefs missing Context instance")
+                sPrefs[context.toString() + prefsName] ?: context?.getSharedPreferences(prefsName, Context.MODE_PRIVATE)?.also {
+                    isUsingNewXSharedPreferences = false
+                    sPrefs[context.toString() + prefsName] = it
+                } ?: error("YukiHookModulePrefs missing Context instance")
             }
         }
 
@@ -217,10 +229,10 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      */
     val isPreferencesAvailable
         get() = if (isXposedEnvironment)
-            (runCatching { xPrefs.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false)
+            (runCatching { currentXsp.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false)
         else runCatching {
             /** 执行一次装载 */
-            sPrefs.edit()
+            currentSp.edit()
             isUsingNewXSharedPreferences
         }.getOrNull() ?: false
 
@@ -262,13 +274,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.stringData[key].let {
-                    (it ?: xPrefs.getString(key, value) ?: value).let { value ->
+                    (it ?: currentXsp.getString(key, value) ?: value).let { value ->
                         XSharedPreferencesCaches.stringData[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPrefs.getString(key, value) ?: value }
-        else sPrefs.getString(key, value) ?: value).let {
+            else resetCacheSet { currentXsp.getString(key, value) ?: value }
+        else currentSp.getString(key, value) ?: value).let {
             makeWorldReadable()
             it
         }
@@ -287,13 +299,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.stringSetData[key].let {
-                    (it ?: xPrefs.getStringSet(key, value) ?: value).let { value ->
+                    (it ?: currentXsp.getStringSet(key, value) ?: value).let { value ->
                         XSharedPreferencesCaches.stringSetData[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPrefs.getStringSet(key, value) ?: value }
-        else sPrefs.getStringSet(key, value) ?: value).let {
+            else resetCacheSet { currentXsp.getStringSet(key, value) ?: value }
+        else currentSp.getStringSet(key, value) ?: value).let {
             makeWorldReadable()
             it
         }
@@ -312,13 +324,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.booleanData[key].let {
-                    it ?: xPrefs.getBoolean(key, value).let { value ->
+                    it ?: currentXsp.getBoolean(key, value).let { value ->
                         XSharedPreferencesCaches.booleanData[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPrefs.getBoolean(key, value) }
-        else sPrefs.getBoolean(key, value)).let {
+            else resetCacheSet { currentXsp.getBoolean(key, value) }
+        else currentSp.getBoolean(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -337,13 +349,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.intData[key].let {
-                    it ?: xPrefs.getInt(key, value).let { value ->
+                    it ?: currentXsp.getInt(key, value).let { value ->
                         XSharedPreferencesCaches.intData[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPrefs.getInt(key, value) }
-        else sPrefs.getInt(key, value)).let {
+            else resetCacheSet { currentXsp.getInt(key, value) }
+        else currentSp.getInt(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -362,13 +374,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.floatData[key].let {
-                    it ?: xPrefs.getFloat(key, value).let { value ->
+                    it ?: currentXsp.getFloat(key, value).let { value ->
                         XSharedPreferencesCaches.floatData[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPrefs.getFloat(key, value) }
-        else sPrefs.getFloat(key, value)).let {
+            else resetCacheSet { currentXsp.getFloat(key, value) }
+        else currentSp.getFloat(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -387,13 +399,13 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
         (if (isXposedEnvironment)
             if (isUsingKeyValueCache)
                 XSharedPreferencesCaches.longData[key].let {
-                    it ?: xPrefs.getLong(key, value).let { value ->
+                    it ?: currentXsp.getLong(key, value).let { value ->
                         XSharedPreferencesCaches.longData[key] = value
                         value
                     }
                 }
-            else resetCacheSet { xPrefs.getLong(key, value) }
-        else sPrefs.getLong(key, value)).let {
+            else resetCacheSet { currentXsp.getLong(key, value) }
+        else currentSp.getLong(key, value)).let {
             makeWorldReadable()
             it
         }
@@ -433,8 +445,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      */
     fun contains(key: String) =
         if (isXposedEnvironment)
-            xPrefs.contains(key)
-        else sPrefs.contains(key)
+            currentXsp.contains(key)
+        else currentSp.contains(key)
 
     /**
      * 获取全部存储的键值数据
@@ -446,8 +458,8 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
      */
     fun all() = hashMapOf<String, Any?>().apply {
         if (isXposedEnvironment)
-            xPrefs.all.forEach { (k, v) -> this[k] = v }
-        else sPrefs.all.forEach { (k, v) -> this[k] = v }
+            currentXsp.all.forEach { (k, v) -> this[k] = v }
+        else currentSp.all.forEach { (k, v) -> this[k] = v }
     }
 
     /**
@@ -621,7 +633,7 @@ class YukiHookModulePrefs private constructor(private var context: Context? = nu
     inner class Editor internal constructor() {
 
         /** 创建新的存储代理类 */
-        private var editor = runCatching { sPrefs.edit() }.getOrNull()
+        private var editor = runCatching { currentSp.edit() }.getOrNull()
 
         /**
          * 移除全部包含 [key] 的存储数据
