@@ -460,7 +460,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [Boolean] 是否包含
      */
     fun contains(key: String) =
-        if (isXposedEnvironment)
+        if (isXposedEnvironment && isUsingNativeStorage.not())
             currentXsp.contains(key)
         else currentSp.contains(key)
 
@@ -473,7 +473,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [HashMap] 全部类型的键值数组
      */
     fun all() = hashMapOf<String, Any?>().apply {
-        if (isXposedEnvironment)
+        if (isXposedEnvironment && isUsingNativeStorage.not())
             currentXsp.all.forEach { (k, v) -> this[k] = v }
         else currentSp.all.forEach { (k, v) -> this[k] = v }
     }
