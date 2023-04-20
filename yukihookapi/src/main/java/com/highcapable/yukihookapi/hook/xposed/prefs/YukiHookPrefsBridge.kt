@@ -39,6 +39,7 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.delegate.XSharedPreferencesDelegate
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.prefs.cache.PreferencesCacheManager
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 import de.robv.android.xposed.XSharedPreferences
@@ -108,48 +109,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else "${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "unknown" }}_preferences"
         }
 
-    /** 是否使用键值缓存 */
-    private var isUsingKeyValueCache = YukiHookAPI.Configs.isEnablePrefsBridgeCache
-
     /** 是否使用新版存储方式 EdXposed、LSPosed */
     private var isUsingNewXSharedPreferences = false
 
     /** 是否启用原生存储方式 */
     private var isUsingNativeStorage = false
-
-    /**
-     * [XSharedPreferences] 缓存的键值数据
-     */
-    private object XSharedPreferencesCaches {
-
-        /** 缓存的 [String] 键值数据 */
-        var stringData = ArrayMap<String, String>()
-
-        /** 缓存的 [Set]<[String]> 键值数据 */
-        var stringSetData = ArrayMap<String, Set<String>>()
-
-        /** 缓存的 [Boolean] 键值数据 */
-        var booleanData = ArrayMap<String, Boolean>()
-
-        /** 缓存的 [Int] 键值数据 */
-        var intData = ArrayMap<String, Int>()
-
-        /** 缓存的 [Long] 键值数据 */
-        var longData = ArrayMap<String, Long>()
-
-        /** 缓存的 [Float] 键值数据 */
-        var floatData = ArrayMap<String, Float>()
-
-        /** 清除所有缓存的键值数据 */
-        fun clear() {
-            stringData.clear()
-            stringSetData.clear()
-            booleanData.clear()
-            intData.clear()
-            longData.clear()
-            floatData.clear()
-        }
-    }
 
     /** 检查 API 装载状态 */
     private fun checkApi() {
@@ -203,6 +167,12 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
+     * 获取当前 [PreferencesCacheManager] 对象
+     * @return [PreferencesCacheManager]
+     */
+    private val cacheManager get() = PreferencesCacheManager.instance()
+
+    /**
      * 获取 [XSharedPreferences] 是否可读
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
@@ -247,7 +217,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [YukiHookPrefsBridge]
      */
     fun name(name: String): YukiHookPrefsBridge {
-        isUsingKeyValueCache = YukiHookAPI.Configs.isEnablePrefsBridgeCache
+        cacheManager.enableByConfig()
         prefsName = name
         return this
     }
@@ -261,7 +231,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [YukiHookPrefsBridge]
      */
     fun direct(): YukiHookPrefsBridge {
-        isUsingKeyValueCache = false
+        cacheManager.disable()
         return this
     }
 
@@ -288,19 +258,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [String]
      */
     fun getString(key: String, value: String = "") =
-        (if (isXposedEnvironment && isUsingNativeStorage.not())
-            if (isUsingKeyValueCache)
-                XSharedPreferencesCaches.stringData[key].let {
-                    (it ?: currentXsp.getString(key, value) ?: value).let { value ->
-                        XSharedPreferencesCaches.stringData[key] = value
-                        value
-                    }
-                }
-            else resetCacheSet { currentXsp.getString(key, value) ?: value }
-        else currentSp.getString(key, value) ?: value).let {
-            makeWorldReadable()
-            it
-        }
+        cacheManager.getString(key) {
+            if (isXposedEnvironment && isUsingNativeStorage.not())
+                currentXsp.getString(key, value) ?: value
+            else currentSp.getString(key, value) ?: value
+        }.also { makeWorldReadable() }
 
     /**
      * 获取 [Set]<[String]> 键值
@@ -309,23 +271,15 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
      * @param key 键值名称
-     * @param value 默认数据
+     * @param value 默认数据 - [HashSet]<[String]>
      * @return [Set]<[String]>
      */
-    fun getStringSet(key: String, value: Set<String>) =
-        (if (isXposedEnvironment && isUsingNativeStorage.not())
-            if (isUsingKeyValueCache)
-                XSharedPreferencesCaches.stringSetData[key].let {
-                    (it ?: currentXsp.getStringSet(key, value) ?: value).let { value ->
-                        XSharedPreferencesCaches.stringSetData[key] = value
-                        value
-                    }
-                }
-            else resetCacheSet { currentXsp.getStringSet(key, value) ?: value }
-        else currentSp.getStringSet(key, value) ?: value).let {
-            makeWorldReadable()
-            it
-        }
+    fun getStringSet(key: String, value: Set<String> = hashSetOf()) =
+        cacheManager.getStringSet(key) {
+            if (isXposedEnvironment && isUsingNativeStorage.not())
+                currentXsp.getStringSet(key, value) ?: value
+            else currentSp.getStringSet(key, value) ?: value
+        }.also { makeWorldReadable() }
 
     /**
      * 获取 [Boolean] 键值
@@ -338,19 +292,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [Boolean]
      */
     fun getBoolean(key: String, value: Boolean = false) =
-        (if (isXposedEnvironment && isUsingNativeStorage.not())
-            if (isUsingKeyValueCache)
-                XSharedPreferencesCaches.booleanData[key].let {
-                    it ?: currentXsp.getBoolean(key, value).let { value ->
-                        XSharedPreferencesCaches.booleanData[key] = value
-                        value
-                    }
-                }
-            else resetCacheSet { currentXsp.getBoolean(key, value) }
-        else currentSp.getBoolean(key, value)).let {
-            makeWorldReadable()
-            it
-        }
+        cacheManager.getBoolean(key) {
+            if (isXposedEnvironment && isUsingNativeStorage.not())
+                currentXsp.getBoolean(key, value)
+            else currentSp.getBoolean(key, value)
+        }.also { makeWorldReadable() }
 
     /**
      * 获取 [Int] 键值
@@ -363,19 +309,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [Int]
      */
     fun getInt(key: String, value: Int = 0) =
-        (if (isXposedEnvironment && isUsingNativeStorage.not())
-            if (isUsingKeyValueCache)
-                XSharedPreferencesCaches.intData[key].let {
-                    it ?: currentXsp.getInt(key, value).let { value ->
-                        XSharedPreferencesCaches.intData[key] = value
-                        value
-                    }
-                }
-            else resetCacheSet { currentXsp.getInt(key, value) }
-        else currentSp.getInt(key, value)).let {
-            makeWorldReadable()
-            it
-        }
+        cacheManager.getInt(key) {
+            if (isXposedEnvironment && isUsingNativeStorage.not())
+                currentXsp.getInt(key, value)
+            else currentSp.getInt(key, value)
+        }.also { makeWorldReadable() }
 
     /**
      * 获取 [Float] 键值
@@ -388,19 +326,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [Float]
      */
     fun getFloat(key: String, value: Float = 0f) =
-        (if (isXposedEnvironment && isUsingNativeStorage.not())
-            if (isUsingKeyValueCache)
-                XSharedPreferencesCaches.floatData[key].let {
-                    it ?: currentXsp.getFloat(key, value).let { value ->
-                        XSharedPreferencesCaches.floatData[key] = value
-                        value
-                    }
-                }
-            else resetCacheSet { currentXsp.getFloat(key, value) }
-        else currentSp.getFloat(key, value)).let {
-            makeWorldReadable()
-            it
-        }
+        cacheManager.getFloat(key) {
+            if (isXposedEnvironment && isUsingNativeStorage.not())
+                currentXsp.getFloat(key, value)
+            else currentSp.getFloat(key, value)
+        }.also { makeWorldReadable() }
 
     /**
      * 获取 [Long] 键值
@@ -413,19 +343,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @return [Long]
      */
     fun getLong(key: String, value: Long = 0L) =
-        (if (isXposedEnvironment && isUsingNativeStorage.not())
-            if (isUsingKeyValueCache)
-                XSharedPreferencesCaches.longData[key].let {
-                    it ?: currentXsp.getLong(key, value).let { value ->
-                        XSharedPreferencesCaches.longData[key] = value
-                        value
-                    }
-                }
-            else resetCacheSet { currentXsp.getLong(key, value) }
-        else currentSp.getLong(key, value)).let {
-            makeWorldReadable()
-            it
-        }
+        cacheManager.getLong(key) {
+            if (isXposedEnvironment && isUsingNativeStorage.not())
+                currentXsp.getLong(key, value)
+            else currentSp.getLong(key, value)
+        }.also { makeWorldReadable() }
 
     /**
      * 智能获取指定类型的键值
@@ -596,7 +518,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 创建新的 [Editor]
      *
-     * - 在模块环境中使用
+     * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
      *
      * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @return [Editor]
@@ -608,42 +530,28 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * 自动调用 [Editor.apply] 方法
      *
-     * - 在模块环境中使用
+     * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
      *
      * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      * @param initiate 方法体
      */
-    fun edit(initiate: Editor.() -> Unit = {}) = edit().apply(initiate).apply()
+    fun edit(initiate: Editor.() -> Unit) = edit().apply(initiate).apply()
 
     /**
-     * 清除 [XSharedPreferences] 中缓存的键值数据
+     * 清除 [YukiHookPrefsBridge] 中缓存的键值数据
      *
      * 无论是否开启 [YukiHookAPI.Configs.isEnableModulePrefsCache]
      *
      * 调用此方法将清除当前存储的全部键值缓存
-     *
-     * 下次将从 [XSharedPreferences] 重新读取
-     *
-     * - 在 (Xposed) 宿主环境中使用
      */
-    fun clearCache() = XSharedPreferencesCaches.clear()
-
-    /**
-     * 恢复 [isUsingKeyValueCache] 为默认状态
-     * @param result 回调方法体的结果
-     * @return [T]
-     */
-    private inline fun <T> resetCacheSet(result: () -> T): T {
-        isUsingKeyValueCache = YukiHookAPI.Configs.isEnablePrefsBridgeCache
-        return result()
-    }
+    fun clearCache() = cacheManager.edit().clear().apply()
 
     /**
      * [YukiHookPrefsBridge] 的存储代理类
      *
      * - ❗请使用 [edit] 方法来获取 [Editor]
      *
-     * - 在模块环境中使用
+     * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
      *
      * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
      */
@@ -652,13 +560,17 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         /** 创建新的存储代理类 */
         private var editor = runCatching { currentSp.edit() }.getOrNull()
 
+        /** 创建 [PreferencesCacheManager] 存储代理类 */
+        private var cacheEditor = cacheManager.edit()
+
         /**
          * 移除全部包含 [key] 的存储数据
          * @param key 键值名称
          * @return [Editor]
          */
-        fun remove(key: String) = moduleEnvironment {
+        fun remove(key: String) = specifiedScope {
             editor?.remove(key)
+            cacheEditor.remove(key)
             makeWorldReadable()
         }
 
@@ -673,8 +585,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * 移除全部存储数据
          * @return [Editor]
          */
-        fun clear() = moduleEnvironment {
+        fun clear() = specifiedScope {
             editor?.clear()
+            cacheEditor.clear()
             makeWorldReadable()
         }
 
@@ -686,8 +599,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * @param value 键值数据
          * @return [Editor]
          */
-        fun putString(key: String, value: String) = moduleEnvironment {
+        fun putString(key: String, value: String) = specifiedScope {
             editor?.putString(key, value)
+            cacheEditor.updateString(key, value)
             makeWorldReadable()
         }
 
@@ -699,8 +613,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * @param value 键值数据
          * @return [Editor]
          */
-        fun putStringSet(key: String, value: Set<String>) = moduleEnvironment {
+        fun putStringSet(key: String, value: Set<String>) = specifiedScope {
             editor?.putStringSet(key, value)
+            cacheEditor.updateStringSet(key, value)
             makeWorldReadable()
         }
 
@@ -712,8 +627,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * @param value 键值数据
          * @return [Editor]
          */
-        fun putBoolean(key: String, value: Boolean) = moduleEnvironment {
+        fun putBoolean(key: String, value: Boolean) = specifiedScope {
             editor?.putBoolean(key, value)
+            cacheEditor.updateBoolean(key, value)
             makeWorldReadable()
         }
 
@@ -725,8 +641,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * @param value 键值数据
          * @return [Editor]
          */
-        fun putInt(key: String, value: Int) = moduleEnvironment {
+        fun putInt(key: String, value: Int) = specifiedScope {
             editor?.putInt(key, value)
+            cacheEditor.updateInt(key, value)
             makeWorldReadable()
         }
 
@@ -738,8 +655,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * @param value 键值数据
          * @return [Editor]
          */
-        fun putFloat(key: String, value: Float) = moduleEnvironment {
+        fun putFloat(key: String, value: Float) = specifiedScope {
             editor?.putFloat(key, value)
+            cacheEditor.updateFloat(key, value)
             makeWorldReadable()
         }
 
@@ -751,8 +669,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * @param value 键值数据
          * @return [Editor]
          */
-        fun putLong(key: String, value: Long) = moduleEnvironment {
+        fun putLong(key: String, value: Long) = specifiedScope {
             editor?.putLong(key, value)
+            cacheEditor.updateLong(key, value)
             makeWorldReadable()
         }
 
@@ -787,19 +706,19 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * 提交更改 (同步)
          * @return [Boolean] 是否成功
          */
-        fun commit() = editor?.commit()?.also { makeWorldReadable() } ?: false
+        fun commit() = editor?.commit()?.also { cacheEditor.apply(); makeWorldReadable() } ?: false
 
         /** 提交更改 (异步) */
-        fun apply() = editor?.apply().also { makeWorldReadable() } ?: Unit
+        fun apply() = editor?.apply().also { cacheEditor.apply(); makeWorldReadable() } ?: Unit
 
         /**
-         * 仅在模块环境执行
+         * 仅在模块环境或 [isUsingNativeStorage] 执行
          *
          * 非模块环境使用会打印警告信息
          * @param callback 在模块环境执行
          * @return [Editor]
          */
-        private inline fun moduleEnvironment(callback: () -> Unit): Editor {
+        private inline fun specifiedScope(callback: () -> Unit): Editor {
             if (isXposedEnvironment.not() || isUsingNativeStorage) callback()
             else yLoggerW(msg = "YukiHookPrefsBridge.Editor not allowed in Xposed Environment")
             return this

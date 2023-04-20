@@ -404,6 +404,8 @@ fun edit(): Editor
 
 > 创建新的 `Editor`。
 
+在模块环境中或启用了 `isUsingNativeStorage` 后使用。
+
 ::: warning
 
 在 (Xposed) 宿主环境下只读，无法使用。
@@ -426,6 +428,8 @@ fun edit(initiate: Editor.() -> Unit)
 
 自动调用 `Editor.apply` 方法。
 
+在模块环境中或启用了 `isUsingNativeStorage` 后使用。
+
 ::: warning
 
 在 (Xposed) 宿主环境下只读，无法使用。
@@ -444,15 +448,11 @@ fun clearCache()
 
 **Function Illustrate**
 
-> 清除 `XSharedPreferences` 中缓存的键值数据。
+> 清除 `YukiHookPrefsBridge` 中缓存的键值数据。
 
 无论是否开启 `YukiHookAPI.Configs.isEnablePrefsBridgeCache`。
 
 调用此方法将清除当前存储的全部键值缓存。
-
-下次将从 `XSharedPreferences` 重新读取。
-
-在 (Xposed) 宿主环境中使用。
 
 ## Editor <span class="symbol">- class</span>
 
@@ -469,6 +469,8 @@ inner class Editor internal constructor()
 > `YukiHookPrefsBridge` 的存储代理类。
 
 请使用 `edit` 方法来获取 `Editor`。
+
+在模块环境中或启用了 `isUsingNativeStorage` 后使用。
 
 ::: warning
 
