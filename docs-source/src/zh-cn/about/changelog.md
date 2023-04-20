@@ -8,7 +8,16 @@
 
 :::
 
-### 1.1.9 | 2023.04.17 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.1.10 | 2023.04.21 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- `Activity` 代理功能新增每个被代理的 `Activity` 指定单独的代理 `Activity` 功能
+- 修复 `YukiHookPrefsBridge` 中的 `contains`、`all` 方法未判断 `native` 功能的问题
+- 整合 `YukiHookPrefsBridge` 中的缓存功能到 `PreferencesCacheManager` 并使用 `LruCache` 作为键值对前置缓存
+- 修改 `YukiHookPrefsBridge` 键值对缓存功能在所有环境中生效 (模块、宿主)
+- 修改部分用于缓存的 `HashMap` 到 `ArrayMap` 以减少内存消耗
+- 修复一些其它可能出现的问题
+
+### 1.1.9 | 2023.04.17 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 将依赖库的类型由 **Java Library** (jar) 修改为 **Android Library** (aar)
 - 移除通过 Hook 或反射 API 内部方法、参数的检查功能

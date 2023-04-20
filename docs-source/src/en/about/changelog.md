@@ -16,7 +16,16 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.9 | 2023.04.17 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.10 | 2023.04.21 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- The `Activity` proxy function adds the function of specifying a separate proxy `Activity` for each proxied `Activity`
+- Fixed problem that the `contains` and `all` methods in `YukiHookPrefsBridge` did not judge the `native` function
+- Integrate the cache function in `YukiHookPrefsBridge` into `PreferencesCacheManager` and use `LruCache` as a key-value pair cache
+- Modify `YukiHookPrefsBridge` key-value pair caching function to take effect in all environments (Module Apps, Host Apps)
+- Modify part of `HashMap` used for caching to `ArrayMap` to reduce memory consumption
+- Fix some other possible problems
+
+### 1.1.9 | 2023.04.17 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Change the type of dependent library from **Java Library** (jar) to **Android Library** (aar)
 - Remove the inspection function of internal methods and parameters through Hook or reflection API
