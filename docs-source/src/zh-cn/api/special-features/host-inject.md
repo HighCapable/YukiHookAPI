@@ -186,6 +186,26 @@ val context: Context = ... // 假设这就是你的 Context
 context.startActivity(context, HostTestActivity::class.java)
 ```
 
+上面我们在 `registerModuleAppActivities` 方法中设置的 `proxy` 参数为默认的全局代理 `Activity`。
+
+如果你需要指定某个代理的 `Activity` 使用另外的宿主 `Activity` 进行代理，你可以参考如下方法。
+
+> 示例如下
+
+```kotlin
+class HostTestActivity : ModuleAppActivity() {
+
+    // 指定一个另外的代理 Activity 类名，其也必须存在于宿主的 AndroidManifest 中
+    override val proxyClassName get() = "com.demo.test.activity.OtherActivity"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 模块资源已被自动注入，可以直接使用 xml 装载布局
+        setContentView(R.layout.activity_main)
+    }
+}
+```
+
 ::: tip
 
 更多功能请参考 [Context.registerModuleAppActivities](../public/com/highcapable/yukihookapi/hook/factory/YukiHookFactory#context-registermoduleappactivities-ext-method) 方法。

@@ -193,6 +193,28 @@ val context: Context = ... // Assume this is your Context
 context.startActivity(context, HostTestActivity::class.java)
 ```
 
+The `proxy` parameter we set in the `registerModuleAppActivities` method above is the default global proxy `Activity`.
+
+If you need to specify a delegated `Activity` to use another Host App's `Activity` as a proxy, you can refer to the following method.
+
+> The following example
+
+```kotlin
+class HostTestActivity : ModuleAppActivity() {
+
+    // Specify an additional proxy Activity class name
+    // Which must also exist in the Host App's AndroidManifest
+    override val proxyClassName get() = "com.demo.test.activity.OtherActivity"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Module App's Resources have been injected automatically
+        // You can directly use xml to load the layout
+        setContentView(R. layout. activity_main)
+    }
+}
+```
+
 ::: tip
 
 For more functions, please refer to the [Context.registerModuleAppActivities](../public/com/highcapable/yukihookapi/hook/factory/YukiHookFactory#context-registermoduleappactivities-ext-method) method.
