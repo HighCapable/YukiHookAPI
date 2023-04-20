@@ -47,6 +47,16 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  */
 open class ModuleAppActivity : Activity() {
 
+    /**
+     * 设置当前代理的 [Activity] 类名
+     *
+     * 留空则使用 [Context.registerModuleAppActivities] 时设置的类名
+     *
+     * - ❗代理的 [Activity] 类名必须存在于宿主的 AndroidMainifest 清单中
+     * @return [String]
+     */
+    open val proxyClassName get() = ""
+
     override fun getClassLoader(): ClassLoader? = ModuleClassLoader.instance()
 
     @CallSuper

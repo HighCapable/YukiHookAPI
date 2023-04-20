@@ -43,3 +43,25 @@ open val moduleTheme: Int
 **Function Illustrate**
 
 > 设置当前代理的 `Activity` 主题。
+
+## proxyClassName <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+open val proxyClassName: String
+```
+
+**Change Records**
+
+`v1.1.10` `added`
+
+**Function Illustrate**
+
+> 设置当前代理的 `Activity` 类名。
+
+留空则使用 `Context.registerModuleAppActivities` 时设置的类名
+
+::: danger
+
+代理的 **Activity** 类名必须存在于宿主的 AndroidMainifest 清单中。
+
+:::

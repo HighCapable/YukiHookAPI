@@ -30,11 +30,14 @@
 
 package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.caller
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Intent
 import com.highcapable.yukihookapi.annotation.YukiGenerateApi
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppActivity
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
@@ -70,11 +73,26 @@ object IActivityManagerProxyCaller {
         if (method?.name == "startActivity") args?.indexOfFirst { it is Intent }?.also { index ->
             val argsInstance = (args[index] as? Intent) ?: return@also
             val component = argsInstance.component
+            /**
+             * 使用宿主包名判断当前启动的 [Activity] 位于当前宿主
+             * 使用默认的 [ClassLoader] 判断当前 [Class] 处于模块中
+             */
             if (component != null &&
                 component.packageName == AppParasitics.currentPackageName &&
-                component.className.startsWith(YukiXposedModule.modulePackageName)
+                component.className.hasClass()
             ) args[index] = Intent().apply {
-                setClassName(component.packageName, ActivityProxyConfig.proxyClassName)
+                /**
+                 * 验证类名是否存在
+                 * @return [String] or null
+                 */
+                fun String.verify() = if (hasClass(AppParasitics.hostApplication?.classLoader)) this else null
+                setClassName(component.packageName, component.className.toClassOrNull()?.runCatching {
+                    when {
+                        this extends classOf<ModuleAppActivity>() -> buildOf<ModuleAppActivity>()?.proxyClassName?.verify()
+                        this extends classOf<ModuleAppCompatActivity>() -> buildOf<ModuleAppCompatActivity>()?.proxyClassName?.verify()
+                        else -> null
+                    }
+                }?.getOrNull() ?: ActivityProxyConfig.proxyClassName)
                 putExtra(ActivityProxyConfig.proxyIntentName, argsInstance)
             }
         }
