@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.xposed.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.ArrayMap
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.yLoggerE
@@ -65,10 +66,10 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
         /** 当前缓存的 [XSharedPreferencesDelegate] 实例数组 */
-        private val xPrefs = HashMap<String, XSharedPreferencesDelegate>()
+        private val xPrefs = ArrayMap<String, XSharedPreferencesDelegate>()
 
         /** 当前缓存的 [SharedPreferences] 实例数组 */
-        private val sPrefs = HashMap<String, SharedPreferences>()
+        private val sPrefs = ArrayMap<String, SharedPreferences>()
 
         /**
          * 创建 [YukiHookPrefsBridge] 对象
@@ -122,22 +123,22 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     private object XSharedPreferencesCaches {
 
         /** 缓存的 [String] 键值数据 */
-        var stringData = HashMap<String, String>()
+        var stringData = ArrayMap<String, String>()
 
         /** 缓存的 [Set]<[String]> 键值数据 */
-        var stringSetData = HashMap<String, Set<String>>()
+        var stringSetData = ArrayMap<String, Set<String>>()
 
         /** 缓存的 [Boolean] 键值数据 */
-        var booleanData = HashMap<String, Boolean>()
+        var booleanData = ArrayMap<String, Boolean>()
 
         /** 缓存的 [Int] 键值数据 */
-        var intData = HashMap<String, Int>()
+        var intData = ArrayMap<String, Int>()
 
         /** 缓存的 [Long] 键值数据 */
-        var longData = HashMap<String, Long>()
+        var longData = ArrayMap<String, Long>()
 
         /** 缓存的 [Float] 键值数据 */
-        var floatData = HashMap<String, Float>()
+        var floatData = ArrayMap<String, Float>()
 
         /** 清除所有缓存的键值数据 */
         fun clear() {

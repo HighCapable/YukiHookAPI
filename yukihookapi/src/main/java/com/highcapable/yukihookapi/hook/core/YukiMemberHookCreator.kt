@@ -29,6 +29,7 @@
 
 package com.highcapable.yukihookapi.hook.core
 
+import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -96,7 +97,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
 
     /** 设置要 Hook 的 [Method]、[Constructor] */
     @PublishedApi
-    internal var preHookMembers = HashMap<String, MemberHookCreator>()
+    internal var preHookMembers = ArrayMap<String, MemberHookCreator>()
 
     /**
      * 更新当前 [YukiMemberHookCreator] 禁止执行 Hook 操作的条件

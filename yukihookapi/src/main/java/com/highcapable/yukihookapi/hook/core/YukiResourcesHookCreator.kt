@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.hook.core
 
 import android.content.res.Resources
+import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
@@ -53,7 +54,7 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
 
     /** 设置要 Hook 的 Resources */
     @PublishedApi
-    internal var preHookResources = HashMap<String, ResourcesHookCreator>()
+    internal var preHookResources = ArrayMap<String, ResourcesHookCreator>()
 
     /**
      * 注入要 Hook 的 Resources

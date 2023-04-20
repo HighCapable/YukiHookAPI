@@ -27,6 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.core.finder.store
 
+import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -45,22 +46,22 @@ import java.lang.reflect.Method
 internal object ReflectsCacheStore {
 
     /** 缓存的 [Class] 列表 */
-    private val dexClassListData = HashMap<Int, List<String>>()
+    private val dexClassListData = ArrayMap<Int, List<String>>()
 
     /** 缓存的 [Class] 对象 */
-    private val classData = HashMap<Int, Class<*>?>()
+    private val classData = ArrayMap<Int, Class<*>?>()
 
     /** 缓存的 [Class] 数组 */
-    private val classesData = HashMap<Int, HashSet<Class<*>>>()
+    private val classesData = ArrayMap<Int, HashSet<Class<*>>>()
 
     /** 缓存的 [Method] 数组 */
-    private val methodsData = HashMap<Int, HashSet<Method>>()
+    private val methodsData = ArrayMap<Int, HashSet<Method>>()
 
     /** 缓存的 [Constructor] 数组 */
-    private val constructorsData = HashMap<Int, HashSet<Constructor<*>>>()
+    private val constructorsData = ArrayMap<Int, HashSet<Constructor<*>>>()
 
     /** 缓存的 [Field] 数组 */
-    private val fieldsData = HashMap<Int, HashSet<Field>>()
+    private val fieldsData = ArrayMap<Int, HashSet<Field>>()
 
     /**
      * 查找缓存中的 [Class] 列表
