@@ -40,10 +40,6 @@ import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiProperty
 import com.highcapable.yukihookapi.hook.core.api.compat.type.ExecutorType
-import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.core.finder.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.processName
@@ -58,10 +54,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleSta
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
-import java.lang.reflect.Constructor
-import java.lang.reflect.Field
 import java.lang.reflect.Member
-import java.lang.reflect.Method
 
 /**
  * [YukiHookAPI] 的装载调用类
@@ -343,21 +336,12 @@ object YukiHookAPI {
         /**
          * 是否启用 [Member] 缓存功能
          *
-         * - 为防止 [Member] 复用过高造成的系统 GC 问题 - 此功能默认启用
+         * - ❗此方法及功能已被移除 - 在之后的版本中将直接被删除
          *
-         * 启用后会缓存已经找到的 [Method]、[Constructor]、[Field]
-         *
-         * 缓存的 [Member] 都将处于 [ReflectsCacheStore] 的全局静态实例中
-         *
-         * 推荐使用 [MethodFinder]、[ConstructorFinder]、[FieldFinder] 来获取 [Member]
-         *
-         * 详情请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
-         *
-         * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
-         *
-         * 除非缓存的 [Member] 发生了混淆的问题 - 例如使用 R8 混淆后的 APP 的目标 [Member] - 否则建议启用
+         * - ❗[Member] 的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
          */
-        var isEnableMemberCache = true
+        @Deprecated(message = "此方法及功能已被移除，请删除此方法")
+        var isEnableMemberCache = false
     }
 
     /**

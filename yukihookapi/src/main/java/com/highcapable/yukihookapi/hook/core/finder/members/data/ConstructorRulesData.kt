@@ -63,7 +63,5 @@ internal class ConstructorRulesData internal constructor(
         get() = super.isInitializeOfSuper || paramTypes != null || paramTypesConditions != null || paramCount >= 0 ||
                 paramCountRange.isEmpty().not() || paramCountConditions != null
 
-    override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
-
-    override fun toString() = "[$paramTypes][$paramTypesConditions][$paramCount][$paramCountRange]"
+    override fun toString() = "[$paramTypes][$paramTypesConditions][$paramCount][$paramCountRange]" + super.toString()
 }

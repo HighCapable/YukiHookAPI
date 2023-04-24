@@ -29,13 +29,13 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
+import android.util.ArrayMap
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.core.finder.store.ReflectsCacheStore
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -64,12 +64,30 @@ internal object ReflectionTool {
     private const val TAG = "YukiHookAPI#ReflectionTool"
 
     /**
+     * 当前工具类的 [ClassLoader]
+     * @return [ClassLoader]
+     */
+    private val currentClassLoader get() = AppParasitics.baseClassLoader
+
+    /**
+     * 内存缓存实例实现
+     */
+    private object MemoryCache {
+
+        /** 缓存的 [Class] 列表数组 */
+        val dexClassListData = ArrayMap<String, List<String>>()
+
+        /** 缓存的 [Class] 对象数组 */
+        val classData = ArrayMap<String, Class<*>?>()
+    }
+
+    /**
      * 写出当前 [ClassLoader] 下所有 [Class] 名称数组
      * @param loader 当前使用的 [ClassLoader]
      * @return [List]<[String]>
      * @throws IllegalStateException 如果 [loader] 不是 [BaseDexClassLoader]
      */
-    internal fun findDexClassList(loader: ClassLoader?) = ReflectsCacheStore.findDexClassList(loader.hashCode())
+    internal fun findDexClassList(loader: ClassLoader?) = MemoryCache.dexClassListData[loader.toString()]
         ?: DalvikBaseDexClassLoader.field { name = "pathList" }.ignored().get(loader.value().let {
             while (it.value !is BaseDexClassLoader) {
                 if (it.value?.parent != null) it.value = it.value?.parent
@@ -78,7 +96,7 @@ internal object ReflectionTool {
         }).current(ignored = true)?.field { name = "dexElements" }?.array<Any>()?.flatMap { element ->
             element.current(ignored = true).field { name = "dexFile" }.current(ignored = true)
                 ?.method { name = "entries" }?.invoke<Enumeration<String>>()?.toList().orEmpty()
-        }.orEmpty().also { if (it.isNotEmpty()) ReflectsCacheStore.putDexClassList(loader.hashCode(), it) }
+        }.orEmpty().also { if (it.isNotEmpty()) MemoryCache.dexClassListData[loader.toString()] = it }
 
     /**
      * 使用字符串类名查找 [Class] 是否存在
@@ -98,16 +116,16 @@ internal object ReflectionTool {
      */
     @PublishedApi
     internal fun findClassByName(name: String, loader: ClassLoader?, initialize: Boolean = false): Class<*> {
-        val hashCode = ("[$name][$loader]").hashCode()
+        val uniqueCode = "[$name][$loader]"
 
         /**
          * 获取 [Class.forName] 的 [Class] 对象
          * @param name [Class] 完整名称
          * @param initialize 是否初始化 [Class] 的静态方法块
-         * @param loader [Class] 所在的 [ClassLoader] - 默认为 [AppParasitics.baseClassLoader]
+         * @param loader [Class] 所在的 [ClassLoader] - 默认为 [currentClassLoader]
          * @return [Class]
          */
-        fun classForName(name: String, initialize: Boolean, loader: ClassLoader? = AppParasitics.baseClassLoader) =
+        fun classForName(name: String, initialize: Boolean, loader: ClassLoader? = currentClassLoader) =
             Class.forName(name, initialize, loader)
 
         /**
@@ -115,9 +133,9 @@ internal object ReflectionTool {
          * @return [Class] or null
          */
         fun loadWithDefaultClassLoader() = if (initialize.not()) loader?.loadClass(name) else classForName(name, initialize, loader)
-        return ReflectsCacheStore.findClass(hashCode) ?: runCatching {
-            (loadWithDefaultClassLoader() ?: classForName(name, initialize)).also { ReflectsCacheStore.putClass(hashCode, it) }
-        }.getOrNull() ?: throw createException(loader ?: AppParasitics.baseClassLoader, name = "Class", "name:[$name]")
+        return MemoryCache.classData[uniqueCode] ?: runCatching {
+            (loadWithDefaultClassLoader() ?: classForName(name, initialize)).also { MemoryCache.classData[uniqueCode] = it }
+        }.getOrNull() ?: throw createException(loader ?: currentClassLoader, name = "Class", "name:[$name]")
     }
 
     /**
@@ -129,7 +147,7 @@ internal object ReflectionTool {
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
     internal fun findClasses(loaderSet: ClassLoader?, rulesData: ClassRulesData) = rulesData.createResult {
-        ReflectsCacheStore.findClasses(hashCode(loaderSet)) ?: hashSetOf<Class<*>>().also { classes ->
+        hashSetOf<Class<*>>().also { classes ->
             /**
              * 开始查找作业
              * @param instance 当前 [Class] 实例
@@ -188,7 +206,7 @@ internal object ReflectionTool {
                                     value.modifiers?.also { runCatching { and(it(member.cast())) } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
-                            else rule.matchCount(size) { and(it) }
+                            else rule.matchCount(count()) { and(it) }
                         }
                     }
                     fieldRules.takeIf { it.isNotEmpty() }?.forEach { rule ->
@@ -203,7 +221,7 @@ internal object ReflectionTool {
                                     value.typeConditions?.also { field.also { t -> runCatching { and(it(t.type(), t.type)) } } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
-                            else rule.matchCount(size) { and(it) }
+                            else rule.matchCount(count()) { and(it) }
                         }
                     }
                     methodRules.takeIf { it.isNotEmpty() }?.forEach { rule ->
@@ -226,7 +244,7 @@ internal object ReflectionTool {
                                     value.nameConditions?.also { method.name.also { n -> runCatching { and(it(n.cast(), n)) } } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
-                            else rule.matchCount(size) { and(it) }
+                            else rule.matchCount(count()) { and(it) }
                         }
                     }
                     constroctorRules.takeIf { it.isNotEmpty() }?.forEach { rule ->
@@ -244,7 +262,7 @@ internal object ReflectionTool {
                                     value.modifiers?.also { runCatching { and(it(constructor.cast())) } }
                                 }.finally { numberOfFound++ }
                             }.run { rule.matchCount(numberOfFound) { and(it && numberOfFound > 0) } }
-                            else rule.matchCount(size) { and(it) }
+                            else rule.matchCount(count()) { and(it) }
                         }
                     }
                 }.finally { classes.add(instance) }
@@ -260,7 +278,7 @@ internal object ReflectionTool {
                     ) startProcess(className.toClass(loaderSet))
                 }
             }
-        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putClasses(hashCode(loaderSet), it) } ?: throwNotFoundError(loaderSet)
+        }.takeIf { it.isNotEmpty() } ?: throwNotFoundError(loaderSet)
     }
 
     /**
@@ -274,19 +292,19 @@ internal object ReflectionTool {
     internal fun findFields(classSet: Class<*>?, rulesData: FieldRulesData) = rulesData.createResult {
         if (type == UndefinedType) error("Field match type class is not found")
         if (classSet == null) return@createResult hashSetOf()
-        ReflectsCacheStore.findFields(hashCode(classSet)) ?: hashSetOf<Field>().also { fields ->
+        hashSetOf<Field>().also { fields ->
             classSet.existFields?.also { declares ->
                 var iType = -1
                 var iName = -1
                 var iModify = -1
                 var iNameCds = -1
                 var iTypeCds = -1
-                val iLType = type?.let(matchIndex) { e -> declares.filter { e == it.type }.lastIndex } ?: -1
-                val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.cast()) } }.lastIndex } ?: -1
+                val iLType = type?.let(matchIndex) { e -> declares.findLastIndex { e == it.type } } ?: -1
+                val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.findLastIndex { e == it.name } } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.findLastIndex { runOrFalse { e(it.cast()) } } } ?: -1
                 val iLNameCds = nameConditions
-                    ?.let(matchIndex) { e -> declares.filter { it.name.let { n -> runOrFalse { e(n.cast(), n) } } }.lastIndex } ?: -1
-                val iLTypeCds = typeConditions?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.type(), it.type) } }.lastIndex } ?: -1
+                    ?.let(matchIndex) { e -> declares.findLastIndex { it.name.let { n -> runOrFalse { e(n.cast(), n) } } } } ?: -1
+                val iLTypeCds = typeConditions?.let(matchIndex) { e -> declares.findLastIndex { runOrFalse { e(it.type(), it.type) } } } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         type?.also {
@@ -319,11 +337,11 @@ internal object ReflectionTool {
                                 hold && matchIndex.compare(iTypeCds, iLTypeCds)
                             })
                         }
-                        orderIndex.compare(index, declares.lastIndex) { and(it) }
+                        orderIndex.compare(index, declares.lastIndex()) { and(it) }
                     }.finally { fields.add(instance.apply { isAccessible = true }) }
                 }
             }
-        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putFields(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
+        }.takeIf { it.isNotEmpty() } ?: findSuperOrThrow(classSet)
     }
 
     /**
@@ -339,7 +357,7 @@ internal object ReflectionTool {
         if (classSet == null) return@createResult hashSetOf()
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Method match paramType[$p] class is not found") }
-        ReflectsCacheStore.findMethods(hashCode(classSet)) ?: hashSetOf<Method>().also { methods ->
+        hashSetOf<Method>().also { methods ->
             classSet.existMethods?.also { declares ->
                 var iReturnType = -1
                 var iReturnTypeCds = -1
@@ -351,23 +369,23 @@ internal object ReflectionTool {
                 var iName = -1
                 var iModify = -1
                 var iNameCds = -1
-                val iLReturnType = returnType?.let(matchIndex) { e -> declares.filter { e == it.returnType }.lastIndex } ?: -1
+                val iLReturnType = returnType?.let(matchIndex) { e -> declares.findLastIndex { e == it.returnType } } ?: -1
                 val iLReturnTypeCds = returnTypeConditions
-                    ?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.returnType(), it.returnType) } }.lastIndex } ?: -1
+                    ?.let(matchIndex) { e -> declares.findLastIndex { runOrFalse { e(it.returnType(), it.returnType) } } } ?: -1
                 val iLParamCount = paramCount.takeIf(matchIndex) { it >= 0 }
-                    ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
+                    ?.let { e -> declares.findLastIndex { e == it.parameterTypes.size } } ?: -1
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
-                    ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
+                    ?.let { e -> declares.findLastIndex { it.parameterTypes.size in e } } ?: -1
                 val iLParamCountCds = paramCountConditions?.let(matchIndex) { e ->
-                    declares.filter { it.parameterTypes.size.let { s -> runOrFalse { e(s.cast(), s) } } }.lastIndex
+                    declares.findLastIndex { it.parameterTypes.size.let { s -> runOrFalse { e(s.cast(), s) } } }
                 } ?: -1
-                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
+                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.findLastIndex { paramTypesEq(e, it.parameterTypes) } } ?: -1
                 val iLParamTypesCds = paramTypesConditions
-                    ?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.paramTypes(), it.parameterTypes) } }.lastIndex } ?: -1
-                val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.filter { e == it.name }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.cast()) } }.lastIndex } ?: -1
+                    ?.let(matchIndex) { e -> declares.findLastIndex { runOrFalse { e(it.paramTypes(), it.parameterTypes) } } } ?: -1
+                val iLName = name.takeIf(matchIndex) { it.isNotBlank() }?.let { e -> declares.findLastIndex { e == it.name } } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.findLastIndex { runOrFalse { e(it.cast()) } } } ?: -1
                 val iLNameCds = nameConditions
-                    ?.let(matchIndex) { e -> declares.filter { it.name.let { n -> runOrFalse { e(n.cast(), n) } } }.lastIndex } ?: -1
+                    ?.let(matchIndex) { e -> declares.findLastIndex { it.name.let { n -> runOrFalse { e(n.cast(), n) } } } } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         name.takeIf { it.isNotBlank() }?.also {
@@ -430,11 +448,11 @@ internal object ReflectionTool {
                                 hold && matchIndex.compare(iNameCds, iLNameCds)
                             })
                         }
-                        orderIndex.compare(index, declares.lastIndex) { and(it) }
+                        orderIndex.compare(index, declares.lastIndex()) { and(it) }
                     }.finally { methods.add(instance.apply { isAccessible = true }) }
                 }
             }
-        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putMethods(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
+        }.takeIf { it.isNotEmpty() } ?: findSuperOrThrow(classSet)
     }
 
     /**
@@ -449,7 +467,7 @@ internal object ReflectionTool {
         if (classSet == null) return@createResult hashSetOf()
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
-        ReflectsCacheStore.findConstructors(hashCode(classSet)) ?: hashSetOf<Constructor<*>>().also { constructors ->
+        hashSetOf<Constructor<*>>().also { constructors ->
             classSet.existConstructors?.also { declares ->
                 var iParamTypes = -1
                 var iParamTypesCds = -1
@@ -458,16 +476,16 @@ internal object ReflectionTool {
                 var iParamCountCds = -1
                 var iModify = -1
                 val iLParamCount = paramCount.takeIf(matchIndex) { it >= 0 }
-                    ?.let { e -> declares.filter { e == it.parameterTypes.size }.lastIndex } ?: -1
+                    ?.let { e -> declares.findLastIndex { e == it.parameterTypes.size } } ?: -1
                 val iLParamCountRange = paramCountRange.takeIf(matchIndex) { it.isEmpty().not() }
-                    ?.let { e -> declares.filter { it.parameterTypes.size in e }.lastIndex } ?: -1
+                    ?.let { e -> declares.findLastIndex { it.parameterTypes.size in e } } ?: -1
                 val iLParamCountCds = paramCountConditions?.let(matchIndex) { e ->
-                    declares.filter { it.parameterTypes.size.let { s -> runOrFalse { e(s.cast(), s) } } }.lastIndex
+                    declares.findLastIndex { it.parameterTypes.size.let { s -> runOrFalse { e(s.cast(), s) } } }
                 } ?: -1
-                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.filter { paramTypesEq(e, it.parameterTypes) }.lastIndex } ?: -1
+                val iLParamTypes = paramTypes?.let(matchIndex) { e -> declares.findLastIndex { paramTypesEq(e, it.parameterTypes) } } ?: -1
                 val iLParamTypesCds = paramTypesConditions
-                    ?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.paramTypes(), it.parameterTypes) } }.lastIndex } ?: -1
-                val iLModify = modifiers?.let(matchIndex) { e -> declares.filter { runOrFalse { e(it.cast()) } }.lastIndex } ?: -1
+                    ?.let(matchIndex) { e -> declares.findLastIndex { runOrFalse { e(it.paramTypes(), it.parameterTypes) } } } ?: -1
+                val iLModify = modifiers?.let(matchIndex) { e -> declares.findLastIndex { runOrFalse { e(it.cast()) } } } ?: -1
                 declares.forEachIndexed { index, instance ->
                     conditions {
                         paramCount.takeIf { it >= 0 }?.also {
@@ -506,11 +524,11 @@ internal object ReflectionTool {
                                 hold && matchIndex.compare(iModify, iLModify)
                             })
                         }
-                        orderIndex.compare(index, declares.lastIndex) { and(it) }
+                        orderIndex.compare(index, declares.lastIndex()) { and(it) }
                     }.finally { constructors.add(instance.apply { isAccessible = true }) }
                 }
             }
-        }.takeIf { it.isNotEmpty() }?.also { ReflectsCacheStore.putConstructors(hashCode(classSet), it) } ?: findSuperOrThrow(classSet)
+        }.takeIf { it.isNotEmpty() } ?: findSuperOrThrow(classSet)
     }
 
     /**
@@ -588,7 +606,7 @@ internal object ReflectionTool {
         is FieldRulesData -> throw createException(instanceSet, objectName, *templates)
         is MethodRulesData -> throw createException(instanceSet, objectName, *templates)
         is ConstructorRulesData -> throw createException(instanceSet, objectName, *templates)
-        is ClassRulesData -> throw createException(instanceSet ?: AppParasitics.baseClassLoader, objectName, *templates)
+        is ClassRulesData -> throw createException(instanceSet ?: currentClassLoader, objectName, *templates)
         else -> error("Type [$this] not allowed")
     }
 
@@ -629,7 +647,7 @@ internal object ReflectionTool {
 
     /**
      * 获取当前 [Class] 中存在的 [Member] 数组
-     * @return [Array]<[Member]>
+     * @return [Sequence]<[Member]> or null
      */
     private val Class<*>.existMembers
         get() = runCatching {
@@ -637,35 +655,35 @@ internal object ReflectionTool {
                 addAll(declaredFields.toList())
                 addAll(declaredMethods.toList())
                 addAll(declaredConstructors.toList())
-            }.toTypedArray()
+            }.asSequence()
         }.onFailure {
             yLoggerW(msg = "Failed to get the declared Members in [$this] because got an exception\n$it")
         }.getOrNull()
 
     /**
      * 获取当前 [Class] 中存在的 [Field] 数组
-     * @return [Array]<[Field]>
+     * @return [Sequence]<[Field]> or null
      */
     private val Class<*>.existFields
-        get() = runCatching { declaredFields }.onFailure {
+        get() = runCatching { declaredFields.asSequence() }.onFailure {
             yLoggerW(msg = "Failed to get the declared Fields in [$this] because got an exception\n$it")
         }.getOrNull()
 
     /**
      * 获取当前 [Class] 中存在的 [Method] 数组
-     * @return [Array]<[Method]>
+     * @return [Sequence]<[Method]> or null
      */
     private val Class<*>.existMethods
-        get() = runCatching { declaredMethods }.onFailure {
+        get() = runCatching { declaredMethods.asSequence() }.onFailure {
             yLoggerW(msg = "Failed to get the declared Methods in [$this] because got an exception\n$it")
         }.getOrNull()
 
     /**
      * 获取当前 [Class] 中存在的 [Constructor] 数组
-     * @return [Array]<[Constructor]>
+     * @return [Sequence]<[Constructor]> or null
      */
     private val Class<*>.existConstructors
-        get() = runCatching { declaredConstructors }.onFailure {
+        get() = runCatching { declaredConstructors.asSequence() }.onFailure {
             yLoggerW(msg = "Failed to get the declared Constructors in [$this] because got an exception\n$it")
         }.getOrNull()
 

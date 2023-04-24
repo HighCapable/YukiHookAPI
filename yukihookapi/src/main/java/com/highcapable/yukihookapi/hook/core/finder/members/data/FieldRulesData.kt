@@ -59,7 +59,5 @@ internal class FieldRulesData internal constructor(
     override val isInitialize
         get() = super.isInitializeOfSuper || name.isNotBlank() || nameConditions != null || type != null || typeConditions != null
 
-    override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
-
-    override fun toString() = "[$name][$nameConditions][$type][$typeConditions]"
+    override fun toString() = "[$name][$nameConditions][$type][$typeConditions]" + super.toString()
 }

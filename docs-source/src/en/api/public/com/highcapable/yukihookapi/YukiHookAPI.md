@@ -512,29 +512,15 @@ var isEnableDataChannel: Boolean
 
 此功能默认启用，关闭后将不会在功能初始化的时候装载 `YukiHookDataChannel`。
 
-### isEnableMemberCache <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-var isEnableMemberCache: Boolean
-```
+<h3 class="deprecated">isEnableMemberCache - field</h3>
 
 **Change Records**
 
 `v1.0.68` `added`
 
-**Function Illustrate**
+`v1.1.11` `deprecated`
 
-> 是否启用 `Member` 缓存功能。
-
-为防止 `Member` 复用过高造成的系统 GC 问题，此功能默认启用。
-
-启用后会缓存已经找到的 `Method`、`Constructor`、`Field`。
-
-缓存的 `Member` 都将处于 `ReflectsCacheStore` 的全局静态实例中。
-
-推荐使用 `MethodFinder`、`ConstructorFinder`、`FieldFinder` 来获取 `Member`。
-
-除非缓存的 `Member` 发生了混淆的问题，例如使用 R8 混淆后的 APP 的目标 `Member`，否则建议启用。
+`Member` 的直接缓存功能已被移除，因为其存在内存溢出 (OOM) 问题
 
 ## configs <span class="symbol">- method</span>
 
@@ -578,7 +564,6 @@ object HookEntry : IYukiHookXposedInit {
             isEnableHookModuleStatus = true
             isEnableHookSharedPreferences = false
             isEnableDataChannel = true
-            isEnableMemberCache = true
         }
     }
 
@@ -607,7 +592,6 @@ object HookEntry : IYukiHookXposedInit {
         isEnableHookModuleStatus = true
         isEnableHookSharedPreferences = false
         isEnableDataChannel = true
-        isEnableMemberCache = true
     }
 
     override fun onHook() {
@@ -638,7 +622,6 @@ object HookEntry : IYukiHookXposedInit {
         YukiHookAPI.Configs.isEnableHookModuleStatus = true
         YukiHookAPI.Configs.isEnableHookSharedPreferences = false
         YukiHookAPI.Configs.isEnableDataChannel = true
-        YukiHookAPI.Configs.isEnableMemberCache = true
     }
 
     override fun onHook() {

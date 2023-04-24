@@ -139,10 +139,5 @@ internal abstract class BaseRulesData internal constructor(
      */
     internal open val isInitialize get() = modifiers != null || orderIndex != null || matchIndex != null
 
-    /**
-     * 通过规则数据 [toString] 来得到一个 [Any.hashCode]
-     * @param other 额外的数据 - 可选
-     * @return [Int]
-     */
-    internal open fun hashCode(other: Any? = null) = "[$other][$modifiers][$orderIndex][$matchIndex]".hashCode()
+    override fun toString() = "[$modifiers][$orderIndex][$matchIndex]"
 }

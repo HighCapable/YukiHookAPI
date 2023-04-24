@@ -175,9 +175,7 @@ internal class ClassRulesData internal constructor(
                 isNoExtendsClass != null || isNoImplementsClass != null || extendsClass.isNotEmpty() || enclosingClass.isNotEmpty() ||
                 memberRules.isNotEmpty() || fieldRules.isNotEmpty() || methodRules.isNotEmpty() || constroctorRules.isNotEmpty()
 
-    override fun hashCode(other: Any?) = super.hashCode(other) + toString().hashCode()
-
     override fun toString() = "[$fromPackages][$fullName][$simpleName][$singleName][$fullNameConditions][$simpleNameConditions]" +
             "[$singleNameConditions][$modifiers][$isAnonymousClass][$isNoExtendsClass][$isNoImplementsClass][$extendsClass][$implementsClass]" +
-            "[$enclosingClass][$memberRules][$fieldRules][$methodRules][$constroctorRules]"
+            "[$enclosingClass][$memberRules][$fieldRules][$methodRules][$constroctorRules]" + super.toString()
 }
