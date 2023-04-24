@@ -74,6 +74,19 @@ internal inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
 } else "[]"
 
 /**
+ * 通过 [conditions] 查找符合条件的最后一个元素的下标
+ * @return [Int] 没有找到符合条件的下标将返回 -1
+ */
+internal inline fun <reified T> Sequence<T>.findLastIndex(conditions: (T) -> Boolean) =
+    withIndex().findLast { conditions(it.value) }?.index ?: -1
+
+/**
+ * 返回最后一个元素的下标
+ * @return [Int] 如果 [Sequence] 为空将返回 -1
+ */
+internal inline fun <reified T> Sequence<T>.lastIndex() = foldIndexed(-1) { index, _, _ -> index }.takeIf { it >= 0 } ?: -1
+
+/**
  * 满足条件判断方法体 - 对 [kotlin.takeIf] 进行封装
  * @param other 需要满足不为空的对象 - 仅用于判断是否为 null
  * @param predicate 原始方法体
