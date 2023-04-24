@@ -288,20 +288,17 @@ object YukiHookAPI {
          * - ❗请现在转移到 [isEnablePrefsBridgeCache]
          */
         @Deprecated(message = "请使用新的命名方法来实现此功能", ReplaceWith("isEnablePrefsBridgeCache"))
-        var isEnableModulePrefsCache
-            get() = isEnablePrefsBridgeCache
-            set(value) {
-                isEnablePrefsBridgeCache = value
-            }
+        var isEnableModulePrefsCache = false
 
         /**
          * 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
          *
-         * - 为防止内存复用过高问题 - 此功能默认启用
+         * - ❗此方法及功能已被移除 - 在之后的版本中将直接被删除
          *
-         * 你可以手动在 [YukiHookPrefsBridge] 中自由开启和关闭缓存功能以及清除缓存
+         * - ❗键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
          */
-        var isEnablePrefsBridgeCache = true
+        @Deprecated(message = "此方法及功能已被移除，请删除此方法")
+        var isEnablePrefsBridgeCache = false
 
         /**
          * 是否启用当前 Xposed 模块自身 [Resources] 缓存功能

@@ -124,23 +124,15 @@ prefs("custom_name").getString("custom_key")
 prefs("custom_name").getString("custom_key")
 ```
 
-## direct <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun direct(): YukiHookPrefsBridge
-```
+<h2 class="deprecated">direct - method</h2>
 
 **变更记录**
 
 `v1.0.5` `新增`
 
-**功能描述**
+`v1.1.11` `作废`
 
-> 忽略缓存直接读取键值。
-
-无论是否开启 `YukiHookAPI.Configs.isEnablePrefsBridgeCache`。
-
-仅在 `XSharedPreferences` 下生效。
+键值的直接缓存功能已被移除，因为其存在内存溢出 (OOM) 问题
 
 ## native <span class="symbol">- method</span>
 
@@ -428,23 +420,15 @@ fun edit(initiate: Editor.() -> Unit)
 
 :::
 
-## clearCache <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun clearCache()
-```
+<h2 class="deprecated">clearCache - method</h2>
 
 **变更记录**
 
 `v1.0.5` `新增`
 
-**功能描述**
+`v1.1.11` `作废`
 
-> 清除 `YukiHookPrefsBridge` 中缓存的键值数据。
-
-无论是否开启 `YukiHookAPI.Configs.isEnablePrefsBridgeCache`。
-
-调用此方法将清除当前存储的全部键值缓存。
+键值的直接缓存功能已被移除，因为其存在内存溢出 (OOM) 问题
 
 ## Editor <span class="symbol">- class</span>
 

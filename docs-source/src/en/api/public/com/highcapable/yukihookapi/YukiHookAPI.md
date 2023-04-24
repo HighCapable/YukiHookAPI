@@ -414,23 +414,15 @@ var isDebug: Boolean
 
 请转移到 `isEnablePrefsBridgeCache`
 
-### isEnablePrefsBridgeCache <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-var isEnablePrefsBridgeCache: Boolean
-```
+<h3 class="deprecated">isEnablePrefsBridgeCache - field</h3>
 
 **Change Records**
 
 `v1.1.9` `added`
 
-**Function Illustrate**
+`v1.1.11` `deprecated`
 
-> 是否启用 `YukiHookPrefsBridge` 的键值缓存功能。
-
-为防止内存复用过高问题，此功能默认启用。
-
-你可以手动在 `YukiHookPrefsBridge` 中自由开启和关闭缓存功能以及清除缓存。
+键值的直接缓存功能已被移除，因为其存在内存溢出 (OOM) 问题
 
 ### isEnableModuleAppResourcesCache <span class="symbol">- field</span>
 
@@ -582,7 +574,6 @@ object HookEntry : IYukiHookXposedInit {
                 elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
             }
             isDebug = BuildConfig.DEBUG
-            isEnablePrefsBridgeCache = true
             isEnableModuleAppResourcesCache = true
             isEnableHookModuleStatus = true
             isEnableHookSharedPreferences = false
@@ -612,7 +603,6 @@ object HookEntry : IYukiHookXposedInit {
             elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
         }
         isDebug = BuildConfig.DEBUG
-        isEnablePrefsBridgeCache = true
         isEnableModuleAppResourcesCache = true
         isEnableHookModuleStatus = true
         isEnableHookSharedPreferences = false
@@ -644,7 +634,6 @@ object HookEntry : IYukiHookXposedInit {
             YukiHookLogger.Configs.USER_ID
         )
         YukiHookAPI.Configs.isDebug = BuildConfig.DEBUG
-        YukiHookAPI.Configs.isEnablePrefsBridgeCache = true
         YukiHookAPI.Configs.isEnableModuleAppResourcesCache = true
         YukiHookAPI.Configs.isEnableHookModuleStatus = true
         YukiHookAPI.Configs.isEnableHookSharedPreferences = false
