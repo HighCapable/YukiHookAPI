@@ -103,13 +103,6 @@ object HookEntry : IYukiHookXposedInit {
             // 是否开启调试模式
             // 请注意 - 若作为发布版本请务必关闭调试功能防止对用户设备造成大量日志填充
             isDebug = true
-            // Whether to enable the key-value cache function of [YukiHookPrefsBridge]
-            // If there is no frequent interaction data with the Module App, it is recommended to enable it before the Host App restarts
-            // If you need real-time interactive data, it is recommended to close or configure dynamically from [YukiHookPrefsBridge]
-            // 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
-            // 若无和模块频繁交互数据在宿主重新启动之前建议开启
-            // 若需要实时交互数据建议关闭或从 [YukiHookPrefsBridge] 中进行动态配置
-            isEnablePrefsBridgeCache = true
             // Whether to enable the current Xposed Module's own [Resources] cache function
             // Under normal circumstances, the resources of the Module App will not change
             // But in the case of locale changes, screen size changes. Etc. you need to refresh the cache
