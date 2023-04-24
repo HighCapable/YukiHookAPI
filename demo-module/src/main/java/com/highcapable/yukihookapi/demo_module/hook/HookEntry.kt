@@ -141,13 +141,6 @@ object HookEntry : IYukiHookXposedInit {
             // 此功能默认启用 - 关闭后将不会在功能初始化的时候装载 [YukiHookDataChannel]
             // 功能启用后 - 将会在宿主启动时自动 Hook [Application] 的生命周期方法进行注册
             isEnableDataChannel = true
-            // Whether to enable the [Member] cache function
-            // To prevent system GC problems caused by high multiplexing of [Member], this feature is enabled by default
-            // Unless the cached [Member] is obfuscated, it is recommended to enable
-            // 是否启用 [Member] 缓存功能
-            // 为防止 [Member] 复用过高造成的系统 GC 问题 - 此功能默认启用
-            // 除非缓存的 [Member] 发生了混淆的问题 - 否则建议启用
-            isEnableMemberCache = true
         }
     }
 
