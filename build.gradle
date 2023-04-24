@@ -26,8 +26,8 @@ ext {
             repository    : [
                     groupId    : 'com.highcapable.yukihookapi',
                     apiVersion : [
-                            name: '1.1.10',
-                            code: 43
+                            name: '1.1.11',
+                            code: 44
                     ],
                     name       : 'YukiHookAPI',
                     description: 'An efficient Hook API and Xposed Module solution built in Kotlin.',

@@ -1,7 +1,7 @@
 # Yuki Hook API
 
 ![Blank](https://img.shields.io/badge/license-MIT-blue)
-![Blank](https://img.shields.io/badge/version-v1.1.10-green)
+![Blank](https://img.shields.io/badge/version-v1.1.11-green)
 [![Telegram](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
 <br/><br/>
 <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100"/>

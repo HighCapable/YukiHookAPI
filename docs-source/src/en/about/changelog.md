@@ -16,7 +16,16 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.10 | 2023.04.21 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.1.11 | 2023.04.25 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Fixed a critical issue since `1.1.5` version where the `Member` cache did not take effect and persistent storage eventually caused app out of memory (OOM), thanks to [Art-Chen](https://github.com/Art-Chen)
+- Remove the direct cache function of `Member` and deprecated ~~`YukiReflection.Configs.isEnableMemberCache`~~, keep the cache function of `Class`
+- Modified finder to `Sequence`, optimize the finding speed and performance of `Member`
+- Remove the `YukiHookPrefsBridge`'s direct key-value cache function and removed `LruCache` related functions
+- Deprecated ~~`YukiHookAPI.Configs.isEnablePrefsBridgeCache`~~
+- Deprecated ~~`direct`~~, ~~`clearCache`~~ functions in `YukiHookPrefsBridge`
+
+### 1.1.10 | 2023.04.21 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - The `Activity` proxy function adds the function of specifying a separate proxy `Activity` for each proxied `Activity`
 - Fixed problem that the `contains` and `all` methods in `YukiHookPrefsBridge` did not judge the `native` function
