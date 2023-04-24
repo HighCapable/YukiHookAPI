@@ -25,7 +25,7 @@
  *
  * This file is Created by fankes on 2022/3/27.
  */
-@file:Suppress("KotlinConstantConditions")
+@file:Suppress("KotlinConstantConditions", "KDocUnresolvedReference")
 
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
@@ -45,7 +45,6 @@ import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
 import com.highcapable.yukihookapi.hook.utils.*
-import com.highcapable.yukihookapi.hook.utils.value
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.Constructor
