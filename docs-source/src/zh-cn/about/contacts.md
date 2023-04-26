@@ -8,4 +8,4 @@
 
 ## 助力维护
 
-感谢您选择并使用 `YukiHookAPI`，如有代码相关的建议和请求，可在 Github 提交 Pull Request。
+感谢您选择并使用 `YukiHookAPI`，如有代码相关的建议和请求，可在 GitHub 提交 Pull Request。

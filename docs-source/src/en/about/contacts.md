@@ -10,4 +10,4 @@ Find me on **Twitter** [@fankesyooni](https://twitter.com/fankesyooni)
 
 Thank you for choosing and using `YukiHookAPI`.
 
-If you have code-related suggestions and requests, you can submit a Pull Request on Github.
+If you have code-related suggestions and requests, you can submit a Pull Request on GitHub.
