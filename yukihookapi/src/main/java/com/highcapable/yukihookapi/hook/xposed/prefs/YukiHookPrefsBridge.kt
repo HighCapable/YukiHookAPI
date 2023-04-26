@@ -126,7 +126,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @param callback 回调方法体
      * @return [T]
      */
-    private fun <T> makeWorldReadable(callback: () -> T): T {
+    private inline fun <T> makeWorldReadable(callback: () -> T): T {
         val result = callback()
         if (isXposedEnvironment.not() && isUsingNewXSharedPreferences.not())
             runCatching { makeWorldReadable(context, prefsFileName = "${currentPrefsName}.xml") }
