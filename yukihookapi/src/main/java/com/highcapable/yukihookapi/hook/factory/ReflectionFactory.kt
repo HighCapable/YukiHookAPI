@@ -146,7 +146,12 @@ infix fun Class<*>?.notExtends(other: Class<*>?) = extends(other).not()
  */
 infix fun Class<*>?.implements(other: Class<*>?): Boolean {
     if (this == null || other == null) return false
-    return interfaces.takeIf { it.isNotEmpty() }?.any { it.name == other.name } ?: false
+    /**
+     * 获取当前 [Class] 实现的所有接口类
+     * @return [Set]<[Class]>
+     */
+    fun Class<*>.findAllInterfaces(): Set<Class<*>> = mutableSetOf(*interfaces).apply { superclass?.also { addAll(it.findAllInterfaces()) } }
+    return findAllInterfaces().takeIf { it.isNotEmpty() }?.any { it.name == other.name } ?: false
 }
 
 /**
