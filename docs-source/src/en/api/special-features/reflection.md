@@ -1919,7 +1919,7 @@ At the same time, they all have their own corresponding package types in Java, s
 
 Similarly, arrays also have corresponding wrapper types, which also need to be distinguished from Java **primitive type keywords**.
 
-For example, the encapsulation type of **byte[]** is **ByteArrayType** or **ArrayClass(ByteType)**, and the encapsulation type of **Byte[]** is **ByteArrayClass** or **ArrayClass(ByteClass )**, these types are also <u>**unequal**</u>.
+For example, the encapsulation type of **byte[]** is **ByteArrayType** or **ArrayClass(ByteType)**, and the encapsulation type of **Byte[]** is **ByteArrayClass** or **ArrayClass(ByteClass)**, these types are also <u>**unequal**</u>.
 
 :::
 
