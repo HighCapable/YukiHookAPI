@@ -321,7 +321,18 @@ val ByteArrayType get() = ArrayClass(ByteType)
  * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "short[]"
  * @return [Class]<[JavaArray]>
  */
-val ShortArraytType get() = ArrayClass(ShortType)
+val ShortArrayType get() = ArrayClass(ShortType)
+
+/**
+ * 获得 [Short] - [Array] 类型
+ *
+ * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ *
+ * - ❗请现在转移到 [ShortArrayType]
+ * @return [Class]<[JavaArray]>
+ */
+@Deprecated(message = "请使用修复后的命名方法", ReplaceWith("ShortArrayType"))
+val ShortArraytType get() = ShortArrayType
 
 /**
  * 获得 [Int] - [Array] 类型
