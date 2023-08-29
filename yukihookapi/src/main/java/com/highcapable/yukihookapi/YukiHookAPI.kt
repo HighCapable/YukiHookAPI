@@ -73,13 +73,10 @@ object YukiHookAPI {
     /** 标识是否从自定义 Hook API 装载 */
     internal var isLoadedFromBaseContext = false
 
-    // TODO
-    const val TAG = ""
-
-    /** 版本名称 */
+    /** 获取当前 [YukiHookAPI] 的版本 */
     const val API_VERSION_NAME = BuildConfig.API_VERSION_NAME
 
-    /** 版本号 */
+    /** 获取当前 [YukiHookAPI] 的版本号 */
     const val API_VERSION_CODE = BuildConfig.API_VERSION_CODE
 
     /**
