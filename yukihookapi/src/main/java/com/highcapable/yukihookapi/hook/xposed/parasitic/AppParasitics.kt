@@ -299,12 +299,16 @@ internal object AppParasitics {
                                  * @param result 回调 - ([Context] 当前实例, [Intent] 当前对象)
                                  */
                                 fun IntentFilter.registerReceiver(result: (Context, Intent) -> Unit) {
-                                    it.registerReceiver(object : BroadcastReceiver() {
+                                    val receiver = object : BroadcastReceiver() {
                                         override fun onReceive(context: Context?, intent: Intent?) {
                                             if (context == null || intent == null) return
                                             result(context, intent)
                                         }
-                                    }, this)
+                                    }
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                        it.registerReceiver(receiver, this, Context.RECEIVER_EXPORTED)
+
+                                    } else it.registerReceiver(receiver, this)
                                 }
                                 hostApplication = it
                                 AppLifecycleCallback.onCreateCallback?.invoke(it)

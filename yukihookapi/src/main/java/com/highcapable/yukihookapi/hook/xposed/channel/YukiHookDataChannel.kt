@@ -208,11 +208,15 @@ class YukiHookDataChannel private constructor() {
     internal fun register(context: Context?, packageName: String = context?.packageName ?: "") {
         if (YukiHookAPI.Configs.isEnableDataChannel.not() || context == null) return
         receiverContext = context
-        context.registerReceiver(
-            handlerReceiver, IntentFilter().apply {
-                addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-            }
-        )
+
+        val filter = IntentFilter().apply {
+            addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(handlerReceiver, filter, Context.RECEIVER_EXPORTED)
+
+        } else context.registerReceiver(handlerReceiver, filter)
+
         /** 排除模块环境下模块注册自身广播 */
         if (isXposedEnvironment.not()) return
         nameSpace(context, packageName).with {
