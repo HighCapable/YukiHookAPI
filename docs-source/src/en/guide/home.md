@@ -22,7 +22,7 @@ Please use `Kotlin`, the framework part of the code composition is also compatib
 
 All demo code in this document will be described using `Kotlin`, if you don't know how to use `Kotlin` then you may not be able to use `YukiHookAPI`.
 
-Part of the Java Demo code can be found [here](https://github.com/fankes/YukiHookAPI/tree/master/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java), but not recommended.
+Part of the Java Demo code can be found [here](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java), but not recommended.
 
 ## Source of Inspiration
 

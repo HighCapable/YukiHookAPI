@@ -4,7 +4,7 @@
 
 ## 环境要求
 
-- Windows 7 及以上/macOS 10.14 及以上/Linux 发行版(Arch/Debian)
+- Windows 7 及以上/macOS 10.14 及以上/Linux 发行版 (Arch/Debian)
 
 - Android Studio 2021.1 及以上
 
@@ -16,7 +16,7 @@
 
 - Gradle 7.0 及以上
 
-- Jvm 11 及以上 (Since API `1.0.80`)
+- Java 11 及以上 (Since API `1.0.80`)
 
 ## 自动构建项目
 
@@ -34,26 +34,115 @@
 
 ### 集成依赖
 
-在你的项目 `build.gradle` 中添加依赖。
+我们推荐使用 Kotlin DSL 作为 Gradle 构建脚本语言并推荐使用 [SweetDependency](https://github.com/HighCapable/SweetDependency) 来管理依赖。
+
+#### SweetDependency 方式
+
+在你的项目 `SweetDependency` 配置文件中添加存储库和依赖。
 
 > 示例如下
+
+```yaml
+repositories:
+  #❗作为 Xposed 模块使用务必添加，其它情况可选
+  rovo89-xposed-api:
+    url: https://api.xposed.info/
+  # MavenCentral 有 2 小时缓存，若无法集成最新版本请添加
+  sonatype-oss-releases:
+
+plugins:
+  #❗作为 Xposed 模块使用务必添加，其它情况可选
+  com.google.devtools.ksp:
+    version: +
+  ...
+
+libraries:
+  #❗作为 Xposed 模块使用务必添加，其它情况可选
+  de.robv.android.xposed:
+    api:
+      version: 82
+      repositories:
+        rovo89-xposed-api
+  com.highcapable.yukihookapi:
+    api:
+      version: +
+    #❗作为 Xposed 模块使用务必添加，其它情况可选
+    ksp-xposed:
+      version-ref: <this>::api
+  ...
+```
+
+添加完成后运行一次 Gradle Sync，所有依赖版本将自动装配。
+
+接下来，在你的项目 `build.gradle.kts` 中部署插件。
+
+> 示例如下
+
+```kotlin
+plugins {
+    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    autowire(libs.plugins.com.google.devtools.ksp)
+    // ...
+}
+```
+
+然后，在你的项目 `build.gradle.kts` 中部署依赖。
+
+> 示例如下
+
+```kotlin
+dependencies {
+    // 基础依赖
+    implementation(com.highcapable.yukihookapi.api)
+    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    compileOnly(de.robv.android.xposed.api)
+    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    ksp(com.highcapable.yukihookapi.ksp.xposed)
+}
+```
+
+#### 传统方式 (不推荐)
+
+在你的项目 `build.gradle.kts` 或 `build.gradle` 中添加存储库。
+
+> Kotlin DSL
+
+```kotlin
+repositories {
+    google()
+    mavenCentral()
+    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    maven { url("https://api.xposed.info/") }
+    // MavenCentral 有 2 小时缓存，若无法集成最新版本请添加此地址
+    maven { url("https://s01.oss.sonatype.org/content/repositories/releases/") }
+}
+```
+
+> Groovy DSL
 
 ```groovy
 repositories {
     google()
     mavenCentral()
-    // ❗若你的 Plugin 版本过低，作为 Xposed 模块使用务必添加，其它情况可选
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
     // ❗作为 Xposed 模块使用务必添加，其它情况可选
-    maven { url "https://api.xposed.info/" }
+    maven { url 'https://api.xposed.info/' }
     // MavenCentral 有 2 小时缓存，若无法集成最新版本请添加此地址
-    maven { url "https://s01.oss.sonatype.org/content/repositories/releases" }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
 }
 ```
 
-在你的 app `build.gradle` 中添加 `plugin`。
+在你的项目 `build.gradle.kts` 或 `build.gradle` 中添加插件。
 
-> 示例如下
+> Kotlin DSL
+
+```kotlin
+plugins {
+    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    id("com.google.devtools.ksp") version "<ksp-version>"
+}
+```
+
+> Groovy DSL
 
 ```groovy
 plugins {
@@ -62,9 +151,22 @@ plugins {
 }
 ```
 
-在你的 app `build.gradle` 中添加依赖。
+在你的项目 `build.gradle.kts` 或 `build.gradle` 中添加依赖。
 
-> 示例如下
+> Kotlin DSL
+
+```kotlin
+dependencies {
+    // 基础依赖
+    implementation("com.highcapable.yukihookapi:api:<yuki-version>")
+    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    compileOnly("de.robv.android.xposed:api:82")
+    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    ksp("com.highcapable.yukihookapi:ksp-xposed:<yuki-version>")
+}
+```
+
+> Groovy DSL
 
 ```groovy
 dependencies {
@@ -85,11 +187,29 @@ dependencies {
 
 **YukiHookAPI** 的 **api** 与 **ksp-xposed** 依赖的版本必须一一对应，否则将会造成版本不匹配错误。
 
+我们推荐使用 [SweetDependency](https://github.com/HighCapable/SweetDependency) 来自动帮你装配依赖。
+
 :::
 
-在你的 app `build.gradle` 中修改 `Kotlin` 的 Jvm 版本为 11 及以上。
+#### 配置 Java 版本
 
-> 示例如下
+在你的项目 `build.gradle.kts` 或 `build.gradle` 中修改 Kotlin 的 Java 版本为 11 及以上。
+
+> Kotlin DSL
+
+```kt
+android {
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+```
+
+> Groovy DSL
 
 ```groovy
 android {
@@ -105,7 +225,7 @@ android {
 
 ::: warning
 
-自 API **1.0.80** 版本后 Jvm 版本默认为 11，不再支持 1.8 及以下版本。
+自 API **1.0.80** 版本后 Kotlin 使用的 Java 版本默认为 11，不再支持 1.8 及以下版本。
 
 :::
 

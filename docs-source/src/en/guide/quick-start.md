@@ -16,7 +16,7 @@
 
 - Gradle 7.0 and above
 
-- JVM 11 and above (Since API `1.0.80`)
+- Java 11 and above (Since API `1.0.80`)
 
 ## Automatically Build Project
 
@@ -34,62 +34,183 @@ Use `Android Studio` or `IntelliJ IDEA` to create a new Android project and sele
 
 ### Integration Dependencies
 
-Add dependencies to your project `build.gradle`.
+We recommend using Kotlin DSL as the Gradle build script language and [SweetDependency](https://github.com/HighCapable/SweetDependency) to manage dependencies.
+
+#### SweetDependency Method
+
+Add the repositories and dependencies in your project's `SweetDependency` configuration file.
 
 > The following example
+
+```yaml
+repositories:
+  # ❗Must be added when used as an Xposed Module, otherwise optional
+  rovo89-xposed-api:
+    url: https://api.xposed.info/
+  # MavenCentral has a 2-hour cache,
+  # if the latest version cannot be integrated, please add this
+  sonatype-oss-releases:
+
+plugins:
+  # ❗Must be added when used as an Xposed Module, otherwise optional
+  com.google.devtools.ksp:
+    version: +
+  ...
+
+libraries:
+  # ❗Must be added when used as an Xposed Module, otherwise optional
+  de.robv.android.xposed:
+    api:
+      version: 82
+      repositories:
+        rovo89-xposed-api
+  com.highcapable.yukihookapi:
+    api:
+      version: +
+    # ❗Must be added when used as an Xposed Module, otherwise optional
+    ksp-xposed:
+      version-ref: <this>::api
+  ...
+```
+
+After adding it, run Gradle Sync and all dependencies will be autowired.
+
+Next, deploy plugins in your project `build.gradle.kts`.
+
+> The following example
+
+```kotlin
+plugins {
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    autowire(libs.plugins.com.google.devtools.ksp)
+    // ...
+}
+```
+
+Then, deploy dependencies in your project `build.gradle.kts`.
+
+> The following example
+
+```kotlin
+dependencies {
+    // Basic dependencies
+    implementation(com.highcapable.yukihookapi.api)
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    compileOnly(de.robv.android.xposed.api)
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    ksp(com.highcapable.yukihookapi.ksp.xposed)
+}
+```
+
+#### Traditional Method (Not Recommended)
+
+Add repositories in your project `build.gradle.kts` or `build.gradle`.
+
+> Kotlin DSL
+
+```kotlin
+repositories {
+    google()
+    mavenCentral()
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    maven { url("https://api.xposed.info/") }
+    // MavenCentral has a 2-hour cache, if the latest version cannot be integrated, please add this URL
+    maven { url("https://s01.oss.sonatype.org/content/repositories/releases/") }
+}
+```
+
+> Groovy DSL
 
 ```groovy
 repositories {
     google()
     mavenCentral()
-    // ❗If your Plugin version is too low, be sure to add it as an Xposed Module, other cases are optional
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
-    // ❗Be sure to add it as an Xposed Module, optional in other cases
-    maven { url "https://api.xposed.info/" }
-    // MavenCentral has a 2-hour cache, if you cannot integrate the latest version, please add this address
-    maven { url "https://s01.oss.sonatype.org/content/repositories/releases" }
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    maven { url 'https://api.xposed.info/' }
+    // MavenCentral has a 2-hour cache, if the latest version cannot be integrated, please add this URL
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
 }
 ```
 
-Add `plugin` to your app `build.gradle`.
+Add plugins in your project `build.gradle.kts` or `build.gradle`.
 
-> The following example
+> Kotlin DSL
+
+```kotlin
+plugins {
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    id("com.google.devtools.ksp") version "<ksp-version>"
+}
+```
+
+> Groovy DSL
 
 ```groovy
 plugins {
-    // ❗Be sure to add it as an Xposed Module, optional in other cases
+    // ❗Must be added when used as an Xposed Module, otherwise optional
     id 'com.google.devtools.ksp' version '<ksp-version>'
 }
 ```
 
-Add dependencies to your app `build.gradle`.
+Add dependencies in your project `build.gradle.kts` or `build.gradle`.
 
-> The following example
+> Kotlin DSL
+
+```kotlin
+dependencies {
+    // Basic dependency
+    implementation("com.highcapable.yukihookapi:api:<yuki-version>")
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    compileOnly("de.robv.android.xposed:api:82")
+    // ❗Must be added when used as an Xposed Module, otherwise optional
+    ksp("com.highcapable.yukihookapi:ksp-xposed:<yuki-version>")
+}
+```
+
+> Groovy DSL
 
 ```groovy
 dependencies {
-    // Base dependencies
+    // Basic dependency
     implementation 'com.highcapable.yukihookapi:api:<yuki-version>'
-    // ❗Be sure to add it as an Xposed Module, optional in other cases
+    // ❗Must be added when used as an Xposed Module, otherwise optional
     compileOnly 'de.robv.android.xposed:api:82'
-    // ❗Be sure to add it as an Xposed Module, optional in other cases
+    // ❗Must be added when used as an Xposed Module, otherwise optional
     ksp 'com.highcapable.yukihookapi:ksp-xposed:<yuki-version>'
 }
 ```
 
-Please modify **&lt;ksp-version&gt;** to the latest version from [here](https://github.com/google/ksp/releases) **(Please choose your current corresponding Kotlin version)**.
+Please modify **&lt;ksp-version&gt;** to the latest version found [here](https://github.com/google/ksp/releases) **(please note to select your current corresponding Kotlin version)**.
 
-Please modify **&lt;yuki-version&gt;** to the latest version [here](../about/changelog).
+Please change **&lt;yuki-version&gt;** to the latest version [here](../about/changelog).
 
-::: danger
+:::danger
 
-The **api** of **YukiHookAPI** and the versions that **ksp-xposed** depend on must correspond one by one, otherwise a version mismatch error will occur.
+The **api** and **ksp-xposed** dependency versions of **YukiHookAPI** must correspond one-to-one, otherwise a version mismatch error will occur.
+
+We recommend using [SweetDependency](https://github.com/HighCapable/SweetDependency) to autowire dependencies for you.
 
 :::
 
-Modify the JVM version of `Kotlin` to 11 and above in your app `build.gradle`.
+#### Configure Java Version
 
-> The following example
+Modify the Java version of Kotlin in your project `build.gradle.kts` or `build.gradle` to 11 or above.
+
+> Kotlin DSL
+
+```kt
+android {
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+```
+
+> Groovy DSL
 
 ```groovy
 android {
@@ -105,7 +226,7 @@ android {
 
 ::: warning
 
-Since API **1.0.80** version, the default JVM version is 11, and 1.8 and below are no longer supported.
+Since API **1.0.80**, the Java version used by Kotlin defaults to 11, and versions 1.8 and below are no longer supported.
 
 :::
 

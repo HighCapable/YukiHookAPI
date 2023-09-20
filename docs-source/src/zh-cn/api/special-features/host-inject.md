@@ -4,23 +4,25 @@
 
 在使用以下功能之前，为防止资源 ID 互相冲突，你需要在当前 Xposed 模块项目的 `build.gradle` 中修改资源 ID。
 
-- Kotlin Gradle DSL
+> Kotlin DSL
 
 ```kotlin
 android {
-    androidResources.additionalParameters("--allow-reserved-package-id", "--package-id", "0x64")
+    androidResources.additionalParameters += listOf("--allow-reserved-package-id", "--package-id", "0x64")
 }
 ```
 
-- Groovy
+> Groovy DSL
 
 ```groovy
 android {
-    aaptOptions.additionalParameters '--allow-reserved-package-id', '--package-id', '0x64'
+    androidResources.additionalParameters += ['--allow-reserved-package-id', '--package-id', '0x64']
 }
 ```
 
 ::: warning
+
+过往版本中的 **aaptOptions.additionalParameters** 已被作废，请参考上述写法并保持你的 **Android Gradle Plugin** 为最新版本。
 
 提供的示例资源 ID 值仅供参考，不可使用 **0x7f**，默认为 **0x64**，为了防止当前宿主存在多个 Xposed 模块，建议自定义你自己的资源 ID。
 
@@ -282,7 +284,7 @@ injectMember {
 
 ::: warning 可能存在的问题
 
-由于一些 APP 自身使用的 **androidx** 依赖库或自定义主题可能会对当前 **MaterialAlertDialog** 实际样式造成干扰，例如对话框的按钮样式，这种情况你可以参考 **模块 Demo** 中 [这里的示例代码](https://github.com/fankes/YukiHookAPI/tree/master/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) 来修复这个问题。
+由于一些 APP 自身使用的 **androidx** 依赖库或自定义主题可能会对当前 **MaterialAlertDialog** 实际样式造成干扰，例如对话框的按钮样式，这种情况你可以参考 **模块 Demo** 中 [这里的示例代码](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) 来修复这个问题。
 
 某些 APP 在创建时可能会发生 **ClassCastException** 异常，请手动指定新的 **Configuration** 实例来进行修复。
 

@@ -4,23 +4,25 @@
 
 Before using the following functions, in order to prevent Resource Id from conflicting with each other, you need to modify the Resource Id in the `build.gradle` of the current Xposed Module project.
 
-- Kotlin Gradle DSL
+> Kotlin DSL
 
 ```kotlin
 android {
-    androidResources.additionalParameters("--allow-reserved-package-id", "--package-id", "0x64")
+    androidResources.additionalParameters += listOf("--allow-reserved-package-id", "--package-id", "0x64")
 }
 ```
 
-- Groovy
+> Groovy DSL
 
 ```groovy
 android {
-    aaptOptions.additionalParameters '--allow-reserved-package-id', '--package-id', '0x64'
+    androidResources.additionalParameters += ['--allow-reserved-package-id', '--package-id', '0x64']
 }
 ```
 
 ::: warning
+
+**aaptOptions.additionalParameters** in previous versions has been deprecated, please refer to the above writing method and keep your **Android Gradle Plugin** to the latest version.
 
 The sample Resource Id value provided is for reference only, **0x7f** cannot be used, the default is **0x64**.
 
@@ -296,7 +298,7 @@ This way, we can create dialogs in the Host App very simply using `MaterialAlert
 
 Because some **androidx** dependent libraries or custom themes used by some apps may interfere with the actual style of the current **MaterialAlertDialog**, such as the button style of the dialog.
 
-You can refer to the **Module App Demo** in this case and see [here is the sample code](https://github.com/fankes/YukiHookAPI/tree/master/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) to fix this problem.
+You can refer to the **Module App Demo** in this case and see [here is the sample code](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) to fix this problem.
 
 **ClassCastException** may occur when some apps are created, please manually specify a new **Configuration** instance to fix.
 

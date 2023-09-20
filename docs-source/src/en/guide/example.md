@@ -60,9 +60,9 @@ resources().hook {
 
 > You can find the demo provided by the API below to learn how to use `YukiHookAPI`.
 
-- Host App Demo [click here to view](https://github.com/fankes/YukiHookAPI/tree/master/demo-app)
+- Host App Demo [click here to view](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-app)
 
-- Module App Demo [click here to view](https://github.com/fankes/YukiHookAPI/tree/master/demo-module)
+- Module App Demo [click here to view](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module)
 
 Install the Host App and Module App Demo at the same time, and test the hooked function in the Host App by activating the Module App.
 
