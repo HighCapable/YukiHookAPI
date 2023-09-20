@@ -1,46 +1,46 @@
 # Yuki Hook API
 
-![Blank](https://img.shields.io/badge/license-MIT-blue)
-![Blank](https://img.shields.io/badge/version-v1.1.11-green)
-[![Telegram](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
-<br/><br/>
-<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100"/>
-<br/>
-<br/>
+[![GitHub license](https://img.shields.io/github/license/fankes/YukiHookAPI?color=blue)](https://github.com/fankes/YukiHookAPI/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/fankes/YukiHookAPI?display_name=release&logo=github&color=green)](https://github.com/fankes/YukiHookAPI/releases)
+[![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
+[![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram)](https://t.me/HighCapable_Dev)
+
+<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100" alt="LOGO"/>
+
 ⛱️ 一个使用 Kotlin 构建的高效 Hook API 与 Xposed 模块解决方案。
-<br/>
 
 [English](https://github.com/fankes/YukiHookAPI/blob/master/README.md) | 简体中文
 
 ## 这是什么
 
-- 这是一个使用 Kotlin 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展
-- 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)
-- 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源
+这是一个使用 Kotlin 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展。
+
+名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)。
+
+前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源。
 
 ## 支持的功能
 
-- Hook Framework 支持的基本 ART 动态方法 Hook 功能
-- Xposed 资源钩子 (Resources Hook)
+> 基本功能
+
+- [x] Hook Framework 支持的基本 ART 动态方法 Hook 功能
+- [x] Xposed 资源钩子 (Resources Hook) **(计划 2.x.x 版本作废)**
+
+> Hook Frameworks API
+
+- [x] [Rovo89 Xposed API](https://api.xposed.info)
+- [ ] [Modern Xposed API](https://github.com/libxposed) **(计划 2.x.x 版本支持)**
 
 ## 扩展功能
 
-- 自动化 Xposed 模块构建 (完全无需自行创建 `assets/xposed_init`)
-- [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module) 支持
-- DataChannel (宿主 ←→ 模块) 无序广播通讯通道功能
-- 简单快捷地实现混淆的字节码反射、查找功能
+- [x] 自动化 Xposed 模块构建 (完全无需自行创建 `assets/xposed_init`)
+- [x] [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)
+- [x] DataChannel (宿主 ←→ 模块)
+- [x] 混淆的字节码查找 & 反射 (由 [YukiReflection](https://github.com/fankes/YukiReflection) 提供支持)
 
 ## 开始使用
 
 - [点击这里](https://fankes.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
-
-## 联系我们
-
-- [点击加入 Telegram 群组](https://t.me/YukiHookAPI)
-
-## 展望未来
-
-如果你喜欢 `YukiHookAPI` 项目，欢迎为此项目贡献你的代码 **PR**，可以是任何改进的建议以及新增的功能。
 
 ## 合作项目
 
@@ -68,12 +68,21 @@
 | [Fuck AD](https://github.com/hujiayucc/Fuck-AD)                                 | [hujiayucc](https://github.com/hujiayucc)       |
 | [最右强力去广告](https://github.com/kazutoiris/zuiyou-adfree)                          | [kazutoiris](https://github.com/kazutoiris)     |
 
-你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表(私有仓库可以不需要注明网页链接)。
+你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
+
+## 项目推广
+
+如果你正在寻找一个可以自动管理 Gradle 项目依赖的 Gradle 插件，你可以了解一下 [SweetDependency](https://github.com/HighCapable/SweetDependency) 项目。
+
+如果你正在寻找一个可以自动生成属性键值的 Gradle 插件，你可以了解一下 [SweetProperty](https://github.com/HighCapable/SweetProperty) 项目。
+
+本项目同样使用了 **SweetDependency** 和 **SweetProperty**。
 
 ## 捐赠支持
 
-- 工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。<br/><br/>
-  <img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/wechat_code.jpg?raw=true" width = "200" height = "200"/>
+工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。
+
+<img src="https://github.com/fankes/fankes/blob/main/img-src/payment_code.jpg?raw=true" width = "500" alt="Payment Code"/>
 
 ## Star History
 

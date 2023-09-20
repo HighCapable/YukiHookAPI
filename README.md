@@ -1,47 +1,47 @@
 # Yuki Hook API
 
-![Blank](https://img.shields.io/badge/license-MIT-blue)
-![Blank](https://img.shields.io/badge/version-v1.1.11-green)
-[![Telegram](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
-<br/><br/>
-<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100"/>
-<br/>
-<br/>
+[![GitHub license](https://img.shields.io/github/license/fankes/YukiHookAPI?color=blue)](https://github.com/fankes/YukiHookAPI/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/fankes/YukiHookAPI?display_name=release&logo=github&color=green)](https://github.com/fankes/YukiHookAPI/releases)
+[![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
+[![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram)](https://t.me/HighCapable_Dev)
+
+<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100" alt="LOGO"/>
+
 ⛱️ An efficient Hook API and Xposed Module solution built in Kotlin.
-<br/>
 
 English | [简体中文](https://github.com/fankes/YukiHookAPI/blob/master/README-zh-CN.md)
 
 ## What's this
 
-- This is an efficient Hook API rebuilt based on the Xposed API using Kotlin, and creates rich function extensions for the development of
-  Xposed Modules
-- The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016)
-- Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced
+This is an efficient Hook API rebuilt based on the Xposed API using Kotlin,
+and creates rich function extensions for the development of Xposed Modules.
+
+The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016).
+
+Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced.
 
 ## Supports
 
-- Basic ART dynamic method hook functions supported by Hook Framework
-- Xposed Resources Hook
+> Basic Functions
+
+- [x] Basic ART dynamic method hook functions supported by Hook Framework
+- [x] Xposed Resources Hook **(Will be deprecated on 2.x.x)**
+
+> Hook Frameworks API
+
+- [x] [Rovo89 Xposed API](https://api.xposed.info)
+- [ ] [Modern Xposed API](https://github.com/libxposed) **(Will be supported on 2.x.x)**
 
 ## Extensions
 
-- Automatic Xposed Module Build (No need to create `assets/xposed_init` by yourself)
-- [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module) Supports
-- DataChannel (Host ←→ Module)
-- Simple and quick implementation of obfuscated bytecode reflection and finding functions
+- [x] Automatic Xposed Module Build (No need to create `assets/xposed_init` by yourself)
+- [x] [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)
+- [x] DataChannel (Host ←→ Module)
+- [x] Obfuscated Bytecode Finding & Reflection by [YukiReflection](https://github.com/fankes/YukiReflection)
 
 ## Get Started
 
-- [Click here](https://fankes.github.io/YukiHookAPI/en/) go to the documentation page for more detailed tutorials and content.
-
-## Contacts
-
-- [Follow us on Telegram](https://t.me/YukiHookAPI)
-
-## Features
-
-If you like the `YukiHookAPI` project, we welcome you to make a **PR** in this project, any suggestions for improvement and new features.
+[Click here](https://fankes.github.io/YukiHookAPI/en/) go to the documentation page for more detailed tutorials and content.
 
 ## Cooperations
 
@@ -71,6 +71,16 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 
 Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private repositories do not need to indicate web
 links).
+
+## Promotion
+
+If you are looking for a Gradle plugin that can automatically manage Gradle project dependencies,
+you can check out the [SweetDependency](https://github.com/HighCapable/SweetDependency) project.
+
+If you are looking for a Gradle plugin that can automatically generate properties key-values,
+you can check out the [SweetProperty](https://github.com/HighCapable/SweetProperty) project.
+
+This project also uses **SweetDependency** and **SweetProperty**.
 
 ## Star History
 
