@@ -2,9 +2,9 @@
 
 > If you have any questions in use, or have any constructive suggestions, you can contact us.
 
-Join us [Click to join Telegram group](https://t.me/YukiHookAPI)
+Join us [Click to join Telegram group](https://t.me/YukiHookAPI), [Click to join Telegram group (Developer)](https://t.me/HighCapable_Dev).
 
-Find me on **Twitter** [@fankesyooni](https://twitter.com/fankesyooni)
+Find me on **Twitter** [@fankesyooni](https://twitter.com/fankesyooni).
 
 ## Help with Maintenance
 
