@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/4/18.
+ * This file is created by fankes on 2022/4/18.
  */
 package com.highcapable.yukihookapi.demo_module.ui
 

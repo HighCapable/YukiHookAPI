@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2022/2/2.
+ * This file is created by fankes on 2022/2/2.
  */
 @file:Suppress("unused", "UnusedReceiverParameter", "DeprecatedCallableAddReplaceWith")
 

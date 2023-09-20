@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is Created by fankes on 2023/1/10.
+ * This file is created by fankes on 2023/1/10.
  */
 @file:Suppress("unused")
 
