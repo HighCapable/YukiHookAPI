@@ -1,0 +1,82 @@
+preferences:
+  autowire-on-sync-mode: UPDATE_OPTIONAL_DEPENDENCIES
+  repositories-mode: FAIL_ON_PROJECT_REPOS
+
+repositories:
+  gradle-plugin-portal:
+    scope: PLUGINS
+  google:
+  maven-central:
+  rovo89-xposed-api:
+    scope: LIBRARIES
+    url: https://api.xposed.info/
+    content:
+      include:
+        group:
+          de.robv.android.xposed
+
+plugins:
+  org.jetbrains.kotlin.jvm:
+    alias: kotlin-jvm
+    version: 1.9.10
+  org.jetbrains.kotlin.android:
+    alias: kotlin-android
+    version-ref: kotlin-jvm
+  com.google.devtools.ksp:
+    alias: kotlin-ksp
+    version: 1.9.10-1.0.13
+  com.android.application:
+    alias: android-application
+    version: 8.1.1
+  com.android.library:
+    alias: android-library
+    version-ref: android-application
+  com.vanniktech.maven.publish:
+    alias: maven-publish
+    version: 0.25.3
+
+libraries:
+  de.robv.android.xposed:
+    api:
+      version: 82
+      repositories:
+        rovo89-xposed-api
+  com.google.devtools.ksp:
+    symbol-processing-api:
+      version: 1.9.10-1.0.13
+  com.google.auto.service:
+    auto-service-annotations:
+      version: 1.0.1
+  dev.zacsweers.autoservice:
+    auto-service-ksp:
+      version: 1.0.0
+  androidx.annotation:
+    annotation:
+      version: 1.6.0
+  androidx.preference:
+    preference-ktx:
+      version: 1.2.0
+  androidx.core:
+    core-ktx:
+      version: 1.10.0
+  androidx.appcompat:
+    appcompat:
+      version: 1.6.1
+  androidx.lifecycle:
+    lifecycle-viewmodel-ktx:
+      version: 2.6.1
+  com.google.android.material:
+    material:
+      version: 1.8.0
+  androidx.constraintlayout:
+    constraintlayout:
+      version: 2.1.4
+  androidx.test.ext:
+    junit:
+      version: 1.1.5
+  androidx.test.espresso:
+    espresso-core:
+      version: 3.5.1
+  junit:
+    junit:
+      version: 4.13.2
