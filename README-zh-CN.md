@@ -19,28 +19,11 @@
 
 前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源。
 
-## 支持的功能
-
-> 基本功能
-
-- [x] Hook Framework 支持的基本 ART 动态方法 Hook 功能
-- [x] Xposed 资源钩子 (Resources Hook) **(计划 2.x.x 版本作废)**
-
-> Hook Frameworks API
-
-- [x] [Rovo89 Xposed API](https://api.xposed.info)
-- [ ] [Modern Xposed API](https://github.com/libxposed) **(计划 2.x.x 版本支持)**
-
-## 扩展功能
-
-- [x] 自动化 Xposed 模块构建 (完全无需自行创建 `assets/xposed_init`)
-- [x] [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)
-- [x] DataChannel (宿主 ←→ 模块)
-- [x] 混淆的字节码查找 & 反射 (由 [YukiReflection](https://github.com/fankes/YukiReflection) 提供支持)
-
 ## 开始使用
 
-- [点击这里](https://fankes.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
+[点击这里](https://fankes.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
+
+有关支持性的相关信息，你可以直接 [点击这里](https://fankes.github.io/YukiHookAPI/zh-cn/guide/supportive) 进行查看。
 
 ## 合作项目
 

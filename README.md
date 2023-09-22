@@ -20,28 +20,11 @@ The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibi
 
 Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced.
 
-## Supports
-
-> Basic Functions
-
-- [x] Basic ART dynamic method hook functions supported by Hook Framework
-- [x] Xposed Resources Hook **(Will be deprecated on 2.x.x)**
-
-> Hook Frameworks API
-
-- [x] [Rovo89 Xposed API](https://api.xposed.info)
-- [ ] [Modern Xposed API](https://github.com/libxposed) **(Will be supported on 2.x.x)**
-
-## Extensions
-
-- [x] Automatic Xposed Module Build (No need to create `assets/xposed_init` by yourself)
-- [x] [New XSharedPreferences](https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences#for-the-module)
-- [x] DataChannel (Host ←→ Module)
-- [x] Obfuscated Bytecode Finding & Reflection by [YukiReflection](https://github.com/fankes/YukiReflection)
-
 ## Get Started
 
 [Click here](https://fankes.github.io/YukiHookAPI/en/) go to the documentation page for more detailed tutorials and content.
+
+For supportive related information, you can check it directly [click here](https://fankes.github.io/YukiHookAPI/en/guide/supportive).
 
 ## Cooperations
 

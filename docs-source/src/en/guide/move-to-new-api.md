@@ -1,8 +1,12 @@
-# Migrate from Xposed API
+# Migrate from Other Hook APIs
 
-> If you are familiar with Xposed API, you can refer to the same point below to quickly migrate your API to `YukiHookAPI`.
+This document can help you quickly migrate from the Hook APIs you are familiar with to `YukiHookAPI` to become familiar with the related writing methods of `YukiHookAPI`.
 
-## Migrate Hook Entry Point
+## Rovo89 Xposed API
+
+> If you are familiar with [Rovo89 Xposed API](https://api.xposed.info/), you can refer to the same point below to quickly migrate your API to `YukiHookAPI`.
+
+### Migrate Hook Entry Point
 
 > Migrated from `XC_LoadPackage.LoadPackageParam` to `PackageParam`.
 
@@ -52,7 +56,7 @@ override fun onHook() = encase {
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 private lateinit var moduleResources: XModuleResources
@@ -67,7 +71,7 @@ override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
     // Get the ApplicationInfo of the current Hook
     lpparam.applicationInfo
     // Get the system context object
-    // There is no ready-made calling method in the native Xposed API, you need to reflect ActivityThread to achieve it
+    // There is no ready-made calling method in the Rovo89 Xposed API, you need to reflect ActivityThread to achieve it
     // Get the host Application lifecycle
     AndroidAppHelper.currentApplication()
     // Class Hook
@@ -97,11 +101,11 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 :::
 ::::
 
-## Migrate Hook Method Body
+### Migrate Hook Method Body
 
 > Migrated from `XC_MethodHook.MethodHookParam` to `HookParam`.
 
-### Before/After Hook
+#### Before/After Hook
 
 `YukiHookAPI` also implements the `lambda` method body `this` usage for `HookParam`, and the `HookParam` object can be obtained globally in the method bodies such as `beforeHook` and `afterHook`.
 
@@ -148,7 +152,7 @@ afterHook {
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 override fun afterHookedMethod(param: MethodHookParam) {
@@ -188,7 +192,7 @@ override fun afterHookedMethod(param: MethodHookParam) {
 :::
 ::::
 
-### Replace Hook
+#### Replace Hook
 
 The `replaceHook` method is special, and the `YukiHookAPI` makes a variety of forms for it to choose from.
 
@@ -226,7 +230,7 @@ intercept()
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 /// A method with no return value void
@@ -258,6 +262,6 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 :::
 ::::
 
-## Migrate Other Features
+## Migrate More Functions Related to Hook API
 
-`YukiHookAPI` is a complete rewrite of the Xposed API, you can refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) to determine some functional Migration and use.
+`YukiHookAPI` is a brand new Hook API, which is fundamentally different from other Hook APIs, you can refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) to determine some functional Migration and use.

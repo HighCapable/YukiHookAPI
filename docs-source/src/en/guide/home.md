@@ -105,7 +105,7 @@ object HookEntry : IYukiHookXposedInit {
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
@@ -163,24 +163,6 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
 :::
 ::::
 
-Yes, you read that right, just needing these codes can completely replace the Xposed API to achieve the same function.
+Yes, you read that right, just needing these codes can completely replace the traditional Xposed API to achieve the same function.
 
 Now, with the help of the efficient and powerful `YukiHookAPI`, you can implement a very simple Xposed Module.
-
-## Suppored Hook Framework
-
-The following are the `Hook Framework` and Xposed framework supported by `YukiHookAPI`.
-
-| Hook Framework                                            | ST  | Description                                                                               |
-| --------------------------------------------------------- | --- | ----------------------------------------------------------------------------------------- |
-| [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅   | Stable use in multiple scenarios                                                          |
-| [LSPatch](https://github.com/LSPosed/LSPatch)             | ⭕   | WIP after this project is improved                                                        |
-| [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ❎   | Maintenance has stopped, no longer recommended                                            |
-| [Pine](https://github.com/canyie/pine)                    | ⭕   | Only available                                                                            |
-| [SandHook](https://github.com/asLody/SandHook)            | ⭕   | Only available                                                                            |
-| [Whale](https://github.com/asLody/whale)                  | ⭕   | Need [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale) |
-| [YAHFA](https://github.com/PAGalaxyLab/YAHFA)             | ❗   | Need to implement the Xposed API yourself                                                 |
-| [FastHook](https://github.com/turing-technician/FastHook) | ❗   | Need to implement the Xposed API yourself                                                 |
-| [Epic](https://github.com/tiann/epic)                     | ❗   | Need [Dexposed](https://github.com/alibaba/dexposed) by yourself                          |
-| [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕   | Only available for Xposed Module                                                          |
-| [Xposed](https://github.com/rovo89/Xposed)                | ⭕   | Recommended minimum system version is Android 7.0                                         |

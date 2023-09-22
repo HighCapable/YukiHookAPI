@@ -105,7 +105,7 @@ object HookEntry : IYukiHookXposedInit {
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
@@ -163,24 +163,6 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
 :::
 ::::
 
-是的，你没有看错，仅仅就需要这些代码，就能完全取代 Xposed API 实现同样的功能。
+是的，你没有看错，仅仅就需要这些代码，就能完全取代传统的 Xposed API 实现同样的功能。
 
 现在，借助高效强大的 `YukiHookAPI`，你就可以实现一个非常简单的 Xposed 模块。
-
-## 支持的 Hook Framework
-
-以下是 `YukiHookAPI` 支持的 `Hook Framework` 以及 Xposed 框架。
-
-| Hook Framework                                            | ST  | Description                                                                               |
-| --------------------------------------------------------- | --- | ----------------------------------------------------------------------------------------- |
-| [LSPosed](https://github.com/LSPosed/LSPosed)             | ✅   | 多场景下稳定使用                                                                          |
-| [LSPatch](https://github.com/LSPosed/LSPatch)             | ⭕   | 将在此项目完善后逐渐加入 API 支持                                                         |
-| [EdXposed](https://github.com/ElderDrivers/EdXposed)      | ❎   | 已停止维护，不再推荐使用                                                                  |
-| [Pine](https://github.com/canyie/pine)                    | ⭕   | 可以使用                                                                                  |
-| [SandHook](https://github.com/asLody/SandHook)            | ⭕   | 可以使用                                                                                  |
-| [Whale](https://github.com/asLody/whale)                  | ⭕   | 需要 [xposed-hook-based-on-whale](https://github.com/WindySha/xposed-hook-based-on-whale) |
-| [YAHFA](https://github.com/PAGalaxyLab/YAHFA)             | ❗   | 需要自行实现 Xposed API                                                                   |
-| [FastHook](https://github.com/turing-technician/FastHook) | ❗   | 需要自行实现 Xposed API                                                                   |
-| [Epic](https://github.com/tiann/epic)                     | ❗   | 需要自行对接 [Dexposed](https://github.com/alibaba/dexposed)                              |
-| [TaiChi](https://github.com/taichi-framework/TaiChi)      | ⭕   | 可以作为模块使用                                                                          |
-| [Xposed](https://github.com/rovo89/Xposed)                | ⭕   | 建议最低系统版本为 Android 7.0                                                            |

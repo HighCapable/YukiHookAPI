@@ -2,7 +2,7 @@
 
 > `YukiHookAPI` 为开发者封装了一套接近零反射写法的反射 API，它几乎可以完全取代原生 Java 的反射 API 相关用法。
 
-此功能的核心部分已被解耦合为 [YukiReflection](https://github.com/fankes/YukiReflection) 项目，它可以独立使用于任何 Android 项目中。
+此功能的核心部分已被解耦合为 [YukiReflection](https://github.com/fankes/YukiReflection) 项目，它可以独立使用于任何 Java、Android 项目中。
 
 现在 `YukiReflection` 作为核心依赖集成于 `YukiHookAPI`。
 
@@ -132,6 +132,14 @@ var isExist = "com.demo.Test".hasClass(customClassLoader)
 由于是反射层面的 API，目前它只能通过**类与成员**的特征来定位指定的 **Class**，不能通过指定字节码中的字符串和方法内容特征来进行定位。
 
 查找 **Class** 的速度取决于当前设备的性能，目前主流的移动端处理器在 **10~15w** 数量的 **Class** 中条件不算复杂的情况下大概在 **3~10s** 区间，条件稍微复杂的情况下最快速度能达到 **25s** 以内，匹配到的同类型 **Class** 越多速度越慢。
+
+:::
+
+::: danger
+
+在 **YukiHookAPI** 发布 2.x.x 版本后，此功能将被标记为作废，且不再会迁移到 [YukiReflection](https://github.com/fankes/YukiReflection)。
+
+我们欢迎各位开发者开始使用 [DexKit](https://github.com/LuckyPray/DexKit)，它是一个使用 C++ 实现的 **Dex** 高性能运行时解析库，在性能方面比 Java 层更加高效与优秀，目前尚在开发阶段，欢迎提出宝贵建议。
 
 :::
 

@@ -2,7 +2,7 @@
 
 > `YukiHookAPI` encapsulates a set of reflection API with near-zero reflection writing for developers, which can almost completely replace the usage of reflection API in Java.
 
-The core part of this functionality has been decoupled into the [YukiReflection](https://github.com/fankes/YukiReflection) project, which can be used independently in any Android project.
+The core part of this functionality has been decoupled into the [YukiReflection](https://github.com/fankes/YukiReflection) project, which can be used independently in any Java or Android project.
 
 Now `YukiReflection` is integrated into `YukiHookAPI` as a core dependency.
 
@@ -148,6 +148,14 @@ The speed of searching **Class** depends on the performance of the current devic
 At present, the mainstream mobile processors are in the **3~10s** range when the conditions are not complicated in the **10~15w** number of **Class**, the fastest speed can reach within **25s** under slightly complex conditions.
 
 Please note that the more the same type **Class** is matched, the slower the speed.
+
+:::
+
+::: danger
+
+After **YukiHookAPI** 2.x.x released, this function will be deprecated and will no longer be migrated to [YukiReflection](https://github.com/fankes/YukiReflection).
+
+We welcome all developers to start using [DexKit](https://github.com/LuckyPray/DexKit), which is a igh-performance runtime parsing library for **Dex** implemented in C++, which is more efficient than the Java layer in terms of performance, efficient and excellent, it is still in the development stage, your valuable suggestions are welcome.
 
 :::
 

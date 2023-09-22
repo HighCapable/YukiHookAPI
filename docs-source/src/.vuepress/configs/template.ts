@@ -5,6 +5,7 @@ const baseApiPath = '/api/public/com/highcapable/yukihookapi/';
 const navigationLinks = {
     start: [
         '/guide/home',
+        '/guide/supportive',
         '/guide/knowledge',
         '/guide/quick-start',
         '/guide/example',
@@ -127,10 +128,11 @@ export const navBarItems = {
             text: 'Get Started',
             children: [
                 { text: 'Introduce', link: i18n.string(navigationLinks.start[0], 'en') },
-                { text: 'Basic Knowledge', link: i18n.string(navigationLinks.start[1], 'en') },
-                { text: 'Quick Start', link: i18n.string(navigationLinks.start[2], 'en') },
-                { text: 'Usage Example', link: i18n.string(navigationLinks.start[3], 'en') },
-                { text: 'Migrate from Xposed API', link: i18n.string(navigationLinks.start[4], 'en') }
+                { text: 'Supportive', link: i18n.string(navigationLinks.start[1], 'en') },
+                { text: 'Basic Knowledge', link: i18n.string(navigationLinks.start[2], 'en') },
+                { text: 'Quick Start', link: i18n.string(navigationLinks.start[3], 'en') },
+                { text: 'Usage Example', link: i18n.string(navigationLinks.start[4], 'en') },
+                { text: 'Migrate from Other Hook APIs', link: i18n.string(navigationLinks.start[5], 'en') }
             ]
         }, {
             text: 'Configs',
@@ -176,10 +178,11 @@ export const navBarItems = {
             text: '入门',
             children: [
                 { text: '介绍', link: i18n.string(navigationLinks.start[0], 'zh-cn') },
-                { text: '基础知识', link: i18n.string(navigationLinks.start[1], 'zh-cn') },
-                { text: '快速开始', link: i18n.string(navigationLinks.start[2], 'zh-cn') },
-                { text: '用法示例', link: i18n.string(navigationLinks.start[3], 'zh-cn') },
-                { text: '从 Xposed API 迁移', link: i18n.string(navigationLinks.start[4], 'zh-cn') }
+                { text: '支持性', link: i18n.string(navigationLinks.start[1], 'zh-cn') },
+                { text: '基础知识', link: i18n.string(navigationLinks.start[2], 'zh-cn') },
+                { text: '快速开始', link: i18n.string(navigationLinks.start[3], 'zh-cn') },
+                { text: '用法示例', link: i18n.string(navigationLinks.start[4], 'zh-cn') },
+                { text: '从其它 Hook API 迁移', link: i18n.string(navigationLinks.start[5], 'zh-cn') }
             ]
         }, {
             text: '配置',

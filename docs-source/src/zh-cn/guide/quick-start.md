@@ -295,7 +295,7 @@ override fun onInit() = configs {
 
 有关作为 Xposed 模块使用的相关配置详细内容，你可以 [点击这里](../config/xposed-using) 继续阅读。
 
-若你目前正在使用 Xposed API，你可以参考 [从 Xposed API 迁移](../guide/move-to-new-api)。
+若你目前正在使用 Rovo89 Xposed API 等 Hook API，你可以参考 [从其它 Hook API 迁移](../guide/move-to-new-api)。
 
 ### 作为 Hook API 使用
 
@@ -307,7 +307,7 @@ override fun onInit() = configs {
 
 无论使用任何 **Hook Framework**，你都需要加入其对接的 Xposed 依赖支持。
 
-若目标 **Hook Framework** 没有集成 Xposed API 你需要自行实现并对接 **XposedBridge**。
+若目标 **Hook Framework** 没有集成 Rovo89 Xposed API 你需要自行实现并对接 **XposedBridge**。
 
 :::
 

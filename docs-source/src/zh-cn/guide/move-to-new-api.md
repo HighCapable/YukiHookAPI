@@ -1,8 +1,12 @@
-# 从 Xposed API 迁移
+# 从其它 Hook API 迁移
 
-> 若你熟悉 Xposed API，你可以参考下方的相同点将自己的 API 快速迁移到 `YukiHookAPI`。
+此文档可以帮助你快速从你熟悉的 Hook API 迁移到 `YukiHookAPI` 来熟悉对 `YukiHookAPI` 的相关写法。
 
-## 迁移 Hook 入口点
+## Rovo89 Xposed API
+
+> 若你熟悉 [Rovo89 Xposed API](https://api.xposed.info/)，你可以参考下方的相同点将自己的 API 快速迁移到 `YukiHookAPI`。
+
+### 迁移 Hook 入口点
 
 > 从 `XC_LoadPackage.LoadPackageParam` 迁移至 `PackageParam`。
 
@@ -52,7 +56,7 @@ override fun onHook() = encase {
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 private lateinit var moduleResources: XModuleResources
@@ -67,7 +71,7 @@ override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
     // 得到当前 Hook 的 ApplicationInfo
     lpparam.applicationInfo
     // 得到系统上下文对象
-    // 在原生 Xposed API 中没有现成的调用方法，你需要自行反射 ActivityThread 来实现
+    // 在 Rovo89 Xposed API 中没有现成的调用方法，你需要自行反射 ActivityThread 来实现
     // 得到宿主 Application 生命周期
     AndroidAppHelper.currentApplication()
     // Class Hook
@@ -97,11 +101,11 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 :::
 ::::
 
-## 迁移 Hook 方法体
+### 迁移 Hook 方法体
 
 > 从 `XC_MethodHook.MethodHookParam` 迁移至 `HookParam`。
 
-### Before/After Hook
+#### Before/After Hook
 
 `YukiHookAPI` 同样对 `HookParam` 实现了 `lambda` 方法体 `this` 用法，在 `beforeHook`、`afterHook` 等方法体内即可全局得到 `HookParam` 对象。
 
@@ -148,7 +152,7 @@ afterHook {
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 override fun afterHookedMethod(param: MethodHookParam) {
@@ -188,7 +192,7 @@ override fun afterHookedMethod(param: MethodHookParam) {
 :::
 ::::
 
-### Replace Hook
+#### Replace Hook
 
 `replaceHook` 方法比较特殊，`YukiHookAPI` 为它做出了多种形式以供选择。
 
@@ -226,7 +230,7 @@ intercept()
 ```
 
 :::
-::: code-group-item Xposed API
+::: code-group-item Rovo89 Xposed API
 
 ```kotlin
 /// 无返回值的方法 void
@@ -258,6 +262,6 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 :::
 ::::
 
-## 迁移其它功能
+## 迁移更多有关 Hook API 的功能
 
-`YukiHookAPI` 对 Xposed API 进行了完全重写，你可以参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection) 来决定一些功能性的迁移和使用。
+`YukiHookAPI` 是一套全新的 Hook API，与其它 Hook API 存在着本质区别，你可以参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection) 来决定一些功能性的迁移和使用。
