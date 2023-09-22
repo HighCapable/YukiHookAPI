@@ -24,7 +24,7 @@
  * SOFTWARE.
  *
  * This file is created by fankes on 2022/4/26.
- * This file is Modified by fankes on 2023/1/9.
+ * This file is modified by fankes on 2023/1/9.
  */
 package com.highcapable.yukihookapi.hook.xposed.bridge.type
 
