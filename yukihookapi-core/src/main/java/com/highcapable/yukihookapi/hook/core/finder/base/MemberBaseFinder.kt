@@ -34,7 +34,6 @@ import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.log.yLoggerD
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.utils.factory.await
-import com.highcapable.yukihookapi.hook.utils.factory.unit
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -65,13 +64,10 @@ abstract class MemberBaseFinder internal constructor(
     internal var isUsingRemedyPlan = false
 
     /** 是否开启忽略错误警告功能 */
-    internal var isShutErrorPrinting = false
+    internal var isIgnoreErrorLogs = false
 
     /** 当前找到的 [Member] 数组 */
     internal var memberInstances = HashSet<Member>()
-
-    /** 需要输出的日志内容 */
-    private var loggingContent: Pair<String, Throwable?>? = null
 
     /**
      * 将 [HashSet]<[Member]> 转换为 [HashSet]<[Field]>
@@ -101,43 +97,30 @@ abstract class MemberBaseFinder internal constructor(
     internal fun Any?.compat() = compat(tag, classSet?.classLoader)
 
     /**
-     * 发生错误时输出日志
-     * @param msg 消息日志
-     * @param throwable 错误
-     * @param isAlwaysPrint 忽略条件每次都打印错误
+     * 在开启 [YukiHookAPI.Configs.isDebug] 且在 [HookApiCategoryHelper.hasAvailableHookApi] 且在 Hook 过程中情况下输出调试信息
+     * @param msg 消息内容
      */
-    internal fun onFailureMsg(msg: String = "", throwable: Throwable? = null, isAlwaysPrint: Boolean = false) {
-        /** 创建日志 */
-        fun build() {
-            if (hookerManager.isNotIgnoredNoSuchMemberFailure && isUsingRemedyPlan.not() && isShutErrorPrinting.not())
-                loggingContent = Pair(msg, throwable)
-        }
-        /** 判断是否为 [CLASSSET_IS_NULL] */
-        if (throwable?.message == CLASSSET_IS_NULL) return
-        /** 判断绑定到 Hooker 时仅创建日志 */
-        if (hookerManager.instance != null) return await { build() }.unit()
-        /** 判断始终输出日志或等待结果后输出日志 */
-        if (isAlwaysPrint) build().run { printLogIfExist() }
-        else await { build().run { printLogIfExist() } }
-    }
-
-    /** 存在日志时输出日志 */
-    internal fun printLogIfExist() {
-        if (loggingContent != null) yLoggerE(
-            msg = "NoSuch$tag happend in [$classSet] ${loggingContent?.first}${hookerManager.tailTag}",
-            e = loggingContent?.second
-        )
-        /** 仅输出一次 - 然后清掉日志 */
-        loggingContent = null
+    internal fun debugMsg(msg: String) {
+        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null)
+            yLoggerD(msg = "$msg${hookerManager.tailTag}")
     }
 
     /**
-     * 在开启 [YukiHookAPI.Configs.isDebug] 且在 [HookApiCategoryHelper.hasAvailableHookApi] 且在 Hook 过程中情况下输出调试信息
-     * @param msg 调试日志内容
+     * 发生错误时输出日志
+     * @param msg 消息内容
+     * @param e 异常堆栈 - 默认空
+     * @param e 异常堆栈数组 - 默认空
+     * @param isAlwaysMode 忽略条件每次都输出日志
      */
-    internal fun onDebuggingMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null)
-            yLoggerD(msg = "$msg${hookerManager.tailTag}")
+    internal fun errorMsg(msg: String = "", e: Throwable? = null, es: List<Throwable> = emptyList(), isAlwaysMode: Boolean = false) {
+        /** 判断是否为 [CLASSSET_IS_NULL] */
+        if (e?.message == CLASSSET_IS_NULL) return
+        await {
+            if (isIgnoreErrorLogs || hookerManager.isNotIgnoredNoSuchMemberFailure.not()) return@await
+            if (isAlwaysMode.not() && isUsingRemedyPlan) return@await
+            yLoggerE(msg = "NoSuch$tag happend in [$classSet] $msg${hookerManager.tailTag}".trim(), e = e)
+            es.forEachIndexed { index, e -> yLoggerE(msg = "Throwable [${index + 1}]", e = e) }
+        }
     }
 
     /**

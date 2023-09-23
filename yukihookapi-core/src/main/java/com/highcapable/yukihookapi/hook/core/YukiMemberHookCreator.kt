@@ -39,7 +39,6 @@ import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberReplacement
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
-import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
@@ -304,10 +303,6 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
         @PublishedApi
         internal var isHookMemberSetup = false
 
-        /** 当前的查找实例 */
-        @PublishedApi
-        internal var finder: MemberBaseFinder? = null
-
         /** 当前被 Hook 的 [Method]、[Constructor] 实例数组 */
         private val hookedMembers = HashSet<YukiMemberHook.HookedMember>()
 
@@ -385,7 +380,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          */
         inline fun method(initiate: MethodConditions) = runCatching {
             isHookMemberSetup = true
-            MethodFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
+            MethodFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).process()
         }.getOrElse {
             findingThrowable = it
             MethodFinder.fromHooker(hookInstance = this).denied(it)
@@ -400,7 +395,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          */
         inline fun constructor(initiate: ConstructorConditions = { emptyParam() }) = runCatching {
             isHookMemberSetup = true
-            ConstructorFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).apply { finder = this }.process()
+            ConstructorFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).process()
         }.getOrElse {
             findingThrowable = it
             ConstructorFinder.fromHooker(hookInstance = this).denied(it)
@@ -563,12 +558,11 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
         internal fun hook() {
             if (HookApiCategoryHelper.hasAvailableHookApi.not() || isHooked || isDisableMemberRunHook) return
             isHooked = true
-            finder?.printLogIfExist()
             if (hookClass.instance == null) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
-                    if (isNotIgnoredHookingFailure) onHookFailureMsg(it)
+                    if (isNotIgnoredHookingFailure) hookErrorMsg(it)
                 }
                 return
             }
@@ -587,7 +581,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                 }.onFailure {
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
-                    if (isNotIgnoredHookingFailure) onHookFailureMsg(it, member)
+                    if (isNotIgnoredHookingFailure) hookErrorMsg(it, member)
                 }
             } ?: Throwable("Finding Error isSetUpMember [$isHookMemberSetup] [$tag]").also {
                 onNoSuchMemberFailureCallback?.invoke(it)
@@ -617,13 +611,13 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                         runCatching {
                             replaceHookCallback?.invoke(assign).also {
                                 checkingReturnType((param.member as? Method?)?.returnType, it?.javaClass)
-                                if (replaceHookCallback != null) onHookLogMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
+                                if (replaceHookCallback != null) hookDebugMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
                                 HookParam.invoke()
                             }
                         }.getOrElse {
                             onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it, member = this@hook)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) hookErrorMsg(it, member = this@hook)
                             /** 若发生异常则会自动调用未经 Hook 的原始 [Member] 保证 Hook APP 正常运行 */
                             assign.callOriginal()
                         }
@@ -643,12 +637,12 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                         runCatching {
                             beforeHookCallback?.invoke(assign)
                             checkingReturnType((param.member as? Method?)?.returnType, param.result?.javaClass)
-                            if (beforeHookCallback != null) onHookLogMsg(msg = "Before Hook Member [${this@hook}] done [$tag]")
+                            if (beforeHookCallback != null) hookDebugMsg(msg = "Before Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it, member = this@hook)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) hookErrorMsg(it, member = this@hook)
                             if (isOnFailureThrowToApp) param.throwable = it
                         }
                     }
@@ -658,12 +652,12 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                     afterHookParam.assign(afterHookId, param).also { assign ->
                         runCatching {
                             afterHookCallback?.invoke(assign)
-                            if (afterHookCallback != null) onHookLogMsg(msg = "After Hook Member [${this@hook}] done [$tag]")
+                            if (afterHookCallback != null) hookDebugMsg(msg = "After Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(assign, it)
                             onAllFailureCallback?.invoke(it)
-                            if (onConductFailureCallback == null && onAllFailureCallback == null) onHookFailureMsg(it, member = this@hook)
+                            if (onConductFailureCallback == null && onAllFailureCallback == null) hookErrorMsg(it, member = this@hook)
                             if (isOnFailureThrowToApp) param.throwable = it
                         }
                     }
@@ -692,19 +686,17 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * Hook 过程中开启了 [YukiHookAPI.Configs.isDebug] 输出调试信息
          * @param msg 调试日志内容
          */
-        private fun onHookLogMsg(msg: String) {
+        private fun hookDebugMsg(msg: String) {
             if (YukiHookAPI.Configs.isDebug) yLoggerD(msg = msg)
         }
 
         /**
          * Hook 失败但未设置 [onAllFailureCallback] 将默认输出失败信息
-         * @param throwable 异常信息
+         * @param e 异常堆栈
          * @param member 异常 [Member] - 可空
          */
-        private fun onHookFailureMsg(throwable: Throwable, member: Member? = null) = yLoggerE(
-            msg = "Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]",
-            e = throwable
-        )
+        private fun hookErrorMsg(e: Throwable, member: Member? = null) =
+            yLoggerE(msg = "Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]", e = e)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截
@@ -858,7 +850,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
                 hookedMembers.takeIf { it.isNotEmpty() }?.apply {
                     forEach {
                         it.remove()
-                        onHookLogMsg(msg = "Remove Hooked Member [${it.member}] done [$tag]")
+                        hookDebugMsg(msg = "Remove Hooked Member [${it.member}] done [$tag]")
                     }
                     runCatching { preHookMembers.remove(this@MemberHookCreator.toString()) }
                     clear()

@@ -220,7 +220,7 @@ class FieldFinder @PublishedApi internal constructor(@PublishedApi override val 
         runBlocking {
             setInstance(result)
         }.result { ms ->
-            memberInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms") }
+            memberInstances.takeIf { it.isNotEmpty() }?.forEach { debugMsg(msg = "Find Field [$it] takes ${ms}ms") }
         }
     }
 
@@ -229,7 +229,7 @@ class FieldFinder @PublishedApi internal constructor(@PublishedApi override val 
         internalBuild()
         Result()
     }.getOrElse {
-        onFailureMsg(throwable = it)
+        errorMsg(e = it)
         Result(isNoSuch = true, it)
     }
 
@@ -263,45 +263,36 @@ class FieldFinder @PublishedApi internal constructor(@PublishedApi override val 
          * @return [Result] 结果
          */
         inline fun field(initiate: FieldConditions) = Result().apply {
-            remedyPlans.add(Pair(FieldFinder(classSet).apply {
+            remedyPlans.add(FieldFinder(classSet).apply {
                 hookerManager = this@FieldFinder.hookerManager
-            }.apply(initiate), this))
+            }.apply(initiate) to this)
         }
 
         /** 开始重查找 */
         @PublishedApi
         internal fun build() {
             if (classSet == null) return
-            if (remedyPlans.isNotEmpty()) run {
+            if (remedyPlans.isNotEmpty()) {
+                val errors = mutableListOf<Throwable>()
                 var isFindSuccess = false
-                var lastError: Throwable? = null
-                remedyPlans.forEachIndexed { p, it ->
+                remedyPlans.forEachIndexed { index, plan ->
                     runCatching {
                         runBlocking {
-                            setInstance(it.first.result)
+                            setInstance(plan.first.result)
                         }.result { ms ->
-                            memberInstances.takeIf { it.isNotEmpty() }
-                                ?.forEach { onDebuggingMsg(msg = "Find Field [$it] takes ${ms}ms") }
+                            memberInstances.takeIf { it.isNotEmpty() }?.forEach { debugMsg(msg = "Find Field [$it] takes ${ms}ms") }
                         }
                         isFindSuccess = true
-                        it.second.onFindCallback?.invoke(memberInstances.fields())
+                        plan.second.onFindCallback?.invoke(memberInstances.fields())
                         remedyPlansCallback?.invoke()
                         memberInstances.takeIf { it.isNotEmpty() }
-                            ?.forEach { onDebuggingMsg(msg = "Field [$it] trying ${p + 1} times success by RemedyPlan") }
-                        return@run
-                    }.onFailure {
-                        lastError = it
-                        onFailureMsg(msg = "Trying ${p + 1} times by RemedyPlan --> $it", isAlwaysPrint = true)
-                    }
+                            ?.forEach { debugMsg(msg = "RemedyPlan successed after ${index + 1} attempts of Field [$it]") }
+                        return
+                    }.onFailure { errors.add(it) }
                 }
-                if (isFindSuccess.not()) {
-                    onFailureMsg(
-                        msg = "Trying ${remedyPlans.size} times and all failure by RemedyPlan",
-                        throwable = lastError,
-                        isAlwaysPrint = true
-                    )
-                    remedyPlans.clear()
-                }
+                if (isFindSuccess) return
+                errorMsg(msg = "RemedyPlan failed after ${remedyPlans.size} attempts", es = errors, isAlwaysMode = true)
+                remedyPlans.clear()
             } else yLoggerW(msg = "RemedyPlan is empty, forgot it?${hookerManager.tailTag}")
         }
 
@@ -464,7 +455,7 @@ class FieldFinder @PublishedApi internal constructor(@PublishedApi override val 
          * @return [Result] 可继续向下监听
          */
         fun ignored(): Result {
-            isShutErrorPrinting = true
+            isIgnoreErrorLogs = true
             return this
         }
 

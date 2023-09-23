@@ -49,7 +49,7 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
     internal var classInstances = HashSet<Class<*>>()
 
     /** 是否开启忽略错误警告功能 */
-    internal var isShutErrorPrinting = false
+    internal var isIgnoreErrorLogs = false
 
     /**
      * 将目标类型转换为可识别的兼容类型
@@ -61,21 +61,21 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
 
     /**
      * 在开启 [YukiHookAPI.Configs.isDebug] 且在 [HookApiCategoryHelper.hasAvailableHookApi] 情况下输出调试信息
-     * @param msg 调试日志内容
+     * @param msg 消息内容
      */
-    internal fun onDebuggingMsg(msg: String) {
+    internal fun debugMsg(msg: String) {
         if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi) yLoggerD(msg = msg)
     }
 
     /**
      * 发生错误时输出日志
-     * @param throwable 错误
+     * @param e 异常堆栈 - 默认空
      */
-    internal fun onFailureMsg(throwable: Throwable? = null) {
-        if (isShutErrorPrinting) return
+    internal fun errorMsg(e: Throwable? = null) {
+        if (isIgnoreErrorLogs) return
         /** 判断是否为 [LOADERSET_IS_NULL] */
-        if (throwable?.message == LOADERSET_IS_NULL) return
-        yLoggerE(msg = "NoClassDefFound happend in [$loaderSet]", e = throwable)
+        if (e?.message == LOADERSET_IS_NULL) return
+        yLoggerE(msg = "NoClassDefFound happend in [$loaderSet]", e = e)
     }
 
     @YukiPrivateApi

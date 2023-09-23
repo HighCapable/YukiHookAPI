@@ -484,7 +484,7 @@ class DexClassFinder @PublishedApi internal constructor(
             fun startProcess() {
                 runBlocking {
                     setInstance(readFromCache().takeIf { it.isNotEmpty() } ?: result)
-                }.result { ms -> classInstances.takeIf { it.isNotEmpty() }?.forEach { onDebuggingMsg(msg = "Find Class [$it] takes ${ms}ms") } }
+                }.result { ms -> classInstances.takeIf { it.isNotEmpty() }?.forEach { debugMsg(msg = "Find Class [$it] takes ${ms}ms") } }
             }
             Result().also { e ->
                 if (async) e.await {
@@ -497,12 +497,12 @@ class DexClassFinder @PublishedApi internal constructor(
                         it.isNotFound = true
                         it.throwable = e
                         it.noClassDefFoundErrorCallback?.invoke()
-                        onFailureMsg(throwable = e)
+                        errorMsg(e = e)
                     }
                 } else startProcess()
             }
-        } else Result(isNotFound = true, Throwable(LOADERSET_IS_NULL)).await { onFailureMsg() }
-    }.getOrElse { e -> Result(isNotFound = true, e).await { onFailureMsg(throwable = e) } }
+        } else Result(isNotFound = true, Throwable(LOADERSET_IS_NULL)).await { errorMsg() }
+    }.getOrElse { e -> Result(isNotFound = true, e).await { errorMsg(e = e) } }
 
     /**
      * [Class] 查找结果实现类
@@ -620,7 +620,7 @@ class DexClassFinder @PublishedApi internal constructor(
          * @return [Result] 可继续向下监听
          */
         fun ignored(): Result {
-            isShutErrorPrinting = true
+            isIgnoreErrorLogs = true
             return this
         }
     }
