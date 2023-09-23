@@ -30,6 +30,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
 import android.util.ArrayMap
+import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
@@ -61,7 +62,7 @@ import kotlin.math.abs
 internal object ReflectionTool {
 
     /** 当前工具类的标签 */
-    private const val TAG = "YukiHookAPI#ReflectionTool"
+    private const val TAG = "${YukiHookAPI.TAG}#ReflectionTool"
 
     /**
      * 当前工具类的 [ClassLoader]
