@@ -74,11 +74,31 @@ object YukiHookAPI {
     /** 标识是否从自定义 Hook API 装载 */
     internal var isLoadedFromBaseContext = false
 
-    /** 获取当前 [YukiHookAPI] 的版本 */
-    const val API_VERSION_NAME = YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_CORE_VERSION
+    /** 标签名称 */
+    const val TAG = YukiHookAPIProperties.PROJECT_NAME
 
-    /** 获取当前 [YukiHookAPI] 的版本号 */
-    const val API_VERSION_CODE = 44
+    /** 当前版本 */
+    const val VERSION = YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_CORE_VERSION
+
+    /**
+     * 版本名称
+     *
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在迁移到 [VERSION]
+     */
+    @Deprecated(message = "不再区分版本名称和版本号", ReplaceWith("VERSION"))
+    const val API_VERSION_NAME = VERSION
+
+    /**
+     * 版本号
+     *
+     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - ❗请现在迁移到 [VERSION]
+     */
+    @Deprecated(message = "不再区分版本名称和版本号", ReplaceWith("VERSION"))
+    const val API_VERSION_CODE = -1
 
     /**
      * 当前 [YukiHookAPI] 的状态
@@ -464,7 +484,7 @@ object YukiHookAPI {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
         yLoggerI(
-            msg = "Welcome to YukiHookAPI $API_VERSION_NAME($API_VERSION_CODE)! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}",
+            msg = "Welcome to YukiHookAPI $VERSION! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}",
             isImplicit = true
         )
     }

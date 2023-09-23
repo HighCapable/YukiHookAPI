@@ -287,11 +287,11 @@ object YukiHookLogger {
         /**
          * 这是一个调试日志的全局标识
          *
-         * 默认文案为 YukiHookAPI
+         * 默认文案为 [YukiHookAPI.TAG]
          *
          * 你可以修改为你自己的文案
          */
-        var tag = "YukiHookAPI"
+        var tag = YukiHookAPI.TAG
 
         /**
          * 自定义调试日志对外显示的元素
