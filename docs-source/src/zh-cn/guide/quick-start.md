@@ -30,7 +30,7 @@
 
 ### 创建项目
 
-使用 `Android Studio` 或 `IntelliJ IDEA` 创建新的 Android 项目，并在 `Language` 一栏选择 `Kotlin` 以自动添加基础依赖。
+使用 `Android Studio` 或 `IntelliJ IDEA` 创建新的 Android 项目，并在 `Language` 一栏选择 Kotlin 以自动添加基础依赖。
 
 ### 集成依赖
 

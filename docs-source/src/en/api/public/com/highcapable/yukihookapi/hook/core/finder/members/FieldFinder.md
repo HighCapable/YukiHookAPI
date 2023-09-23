@@ -352,7 +352,7 @@ inline fun result(initiate: Result.() -> Unit): Result
 
 **Function Example**
 
-你可以使用 `lambda` 形式创建 `Result` 类。
+你可以使用 **lambda** 形式创建 `Result` 类。
 
 > The following example
 

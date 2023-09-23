@@ -4,7 +4,7 @@
 
 ## Background
 
-This is an efficient Hook API rebuilt based on the Xposed API using `Kotlin`, and creates rich function extensions for the development of Xposed Modules.
+This is an efficient Hook API rebuilt based on the Xposed API using Kotlin, and creates rich function extensions for the development of Xposed Modules.
 
 The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016).
 
@@ -12,15 +12,15 @@ Formerly the Innocent Xposed API used in [Development Learning Project](https://
 
 ## Usage
 
-`YukiHookAPI` is built entirely with `Kotlin` `lambda` syntax.
+`YukiHookAPI` is built entirely with Kotlin **lambda** syntax.
 
 Abandoning the original less friendly `XposedHelpers`, you can use it to easily create Xposed Modules and easily implement custom Hook API.
 
 ## Language Requirement
 
-Please use `Kotlin`, the framework part of the code composition is also compatible with `Java` but the implementation of the basic Hook scene **may not work at all**.
+Please use Kotlin, the framework part of the code composition is also compatible with Java but the implementation of the basic Hook scene **may not work at all**.
 
-All demo code in this document will be described using `Kotlin`, if you don't know how to use `Kotlin` then you may not be able to use `YukiHookAPI`.
+All demo code in this document will be described using Kotlin, if you don't know how to use Kotlin then you may not be able to use `YukiHookAPI`.
 
 Part of the Java Demo code can be found [here](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java), but not recommended.
 
@@ -30,7 +30,7 @@ Previously, when we built an Xposed Module, we first needed to create an `xposed
 
 Then, manually fill in your own entry class name into the file and use `XposedHelpers` to implement our Hook logic.
 
-Since `Kotlin` is the main Android development language, this API is really not very elegant to use.
+Since Kotlin is the main Android development language, this API is really not very elegant to use.
 
 Is there any **easy to use, light, elegant** solution?
 
@@ -38,7 +38,7 @@ With this idea, `YukiHookAPI` was born.
 
 Now, we only need to write a small amount of code, and all the time and expense are handed over to automation.
 
-With `Kotlin`'s elegant `lambda` writing and `YukiHookAPI`, you can make your Hook logic more beautiful and clear.
+With Kotlin's elegant **lambda** writing and `YukiHookAPI`, you can make your Hook logic more beautiful and clear.
 
 > The following example
 

@@ -412,7 +412,7 @@ fun loadApp(isExcludeSelf: Boolean, vararg hooker: YukiBaseHooker)
 
 > 装载并 Hook 指定、全部包名的 APP。
 
-`name` 为 APP 的包名，后方的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
+`name` 为 APP 的包名，后方的两个参数一个可作为 **lambda** 方法体使用，一个可以直接装载子 Hooker。
 
 装载并 Hook 指定、全部包名的 APP。
 
@@ -422,7 +422,7 @@ fun loadApp(isExcludeSelf: Boolean, vararg hooker: YukiBaseHooker)
 
 **Function Example**
 
-你可以使用 `loadApp` 的 `lambda` 方法体形式或直接装载一个 Hooker。
+你可以使用 `loadApp` 的 **lambda** 方法体形式或直接装载一个 Hooker。
 
 > The following example
 
@@ -507,7 +507,7 @@ fun loadZygote(vararg hooker: YukiBaseHooker)
 
 > 装载 APP Zygote 事件。
 
-方法中的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
+方法中的两个参数一个可作为 **lambda** 方法体使用，一个可以直接装载子 Hooker。
 
 ## loadSystem <span class="symbol">- method</span>
 
@@ -535,7 +535,7 @@ fun loadSystem(vararg hooker: YukiBaseHooker)
 
 > 装载并 Hook 系统框架。
 
-方法中的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
+方法中的两个参数一个可作为 **lambda** 方法体使用，一个可以直接装载子 Hooker。
 
 ## withProcess <span class="symbol">- method</span>
 
@@ -567,7 +567,7 @@ fun withProcess(name: String, vararg hooker: YukiBaseHooker)
 
 > 装载并 Hook APP 的指定进程。
 
-`name` 为 APP 的进程名称，后方的两个参数一个可作为 `lambda` 方法体使用，一个可以直接装载子 Hooker。
+`name` 为 APP 的进程名称，后方的两个参数一个可作为 **lambda** 方法体使用，一个可以直接装载子 Hooker。
 
 ## loadHooker <span class="symbol">- method</span>
 

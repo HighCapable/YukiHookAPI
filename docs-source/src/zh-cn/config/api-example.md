@@ -12,7 +12,7 @@
 fun configs(initiate: Configs.() -> Unit)
 ```
 
-`configs` 方法对 `Configs` 类实现了一个 `lambda` 方法体，你可以轻松地调用它进行配置。
+`configs` 方法对 `Configs` 类实现了一个 **lambda** 方法体，你可以轻松地调用它进行配置。
 
 ::: tip
 

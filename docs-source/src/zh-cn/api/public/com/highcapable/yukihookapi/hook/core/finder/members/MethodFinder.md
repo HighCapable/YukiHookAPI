@@ -486,7 +486,7 @@ inline fun result(initiate: Process.() -> Unit): Process
 
 **功能示例**
 
-你可以使用 `lambda` 形式创建 `Result` 类。
+你可以使用 **lambda** 形式创建 `Result` 类。
 
 > 示例如下
 
@@ -603,7 +603,7 @@ inline fun result(initiate: Result.() -> Unit): Result
 
 **功能示例**
 
-你可以使用 `lambda` 形式创建 `Result` 类。
+你可以使用 **lambda** 形式创建 `Result` 类。
 
 > 示例如下
 

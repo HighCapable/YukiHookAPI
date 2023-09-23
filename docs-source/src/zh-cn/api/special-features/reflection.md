@@ -1804,7 +1804,7 @@ field {
 }
 ```
 
-在 `Kotlin` 中表达出 `Boolean::class.javaPrimitiveType` 这个类型的写法很长，感觉并不方便。
+在 Kotlin 中表达出 `Boolean::class.javaPrimitiveType` 这个类型的写法很长，感觉并不方便。
 
 因此，`YukiHookAPI` 为开发者封装了常见的类型调用，其中包含了 Android 的相关类型和 Java 的常见类型与**原始类型关键字**。
 

@@ -4,7 +4,7 @@
 
 ## 背景
 
-这是一个使用 `Kotlin` 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展。
+这是一个使用 Kotlin 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展。
 
 名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)。
 
@@ -12,15 +12,15 @@
 
 ## 用途
 
-`YukiHookAPI` 完全采用 `Kotlin` `lambda` 语法构建。
+`YukiHookAPI` 完全采用 Kotlin **lambda** 语法构建。
 
 抛弃原始不太友好的 `XposedHelpers`，你可以使用它来轻松创建 Xposed 模块以及轻松实现自定义 Hook API。
 
 ## 语言要求
 
-请使用 `Kotlin`，框架部分代码构成同样兼容 `Java` 但基础 Hook 场景的实现**可能完全无法使用**。
+请使用 Kotlin，框架部分代码构成同样兼容 Java 但基础 Hook 场景的实现**可能完全无法使用**。
 
-文档全部的 Demo 示例代码都将使用 `Kotlin` 进行描述，如果你完全不会使用 `Kotlin` 那你将有可能无法使用 `YukiHookAPI`。
+文档全部的 Demo 示例代码都将使用 Kotlin 进行描述，如果你完全不会使用 Kotlin 那你将有可能无法使用 `YukiHookAPI`。
 
 部分 Java Demo 代码可在 [这里](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java) 找到，但不推荐使用。
 
@@ -30,7 +30,7 @@
 
 然后，将自己的入口类名手动填入文件中，使用 `XposedHelpers` 去实现我们的 Hook 逻辑。
 
-自 `Kotlin` 作为 Android 主要开发语言以来，这套 API 用起来确实已经不是很优雅了。
+自 Kotlin 作为 Android 主要开发语言以来，这套 API 用起来确实已经不是很优雅了。
 
 有没有什么 **好用、轻量、优雅** 的解决办法呢？
 
@@ -38,7 +38,7 @@
 
 现在，我们只需要编写少量的代码，一切时间开销和花费交给自动化处理。
 
-借助 `Kotlin` 优雅的 `lambda` 写法以及 `YukiHookAPI`，可以让你的 Hook 逻辑更加美观清晰。
+借助 Kotlin 优雅的 **lambda** 写法以及 `YukiHookAPI`，可以让你的 Hook 逻辑更加美观清晰。
 
 > 示例如下
 

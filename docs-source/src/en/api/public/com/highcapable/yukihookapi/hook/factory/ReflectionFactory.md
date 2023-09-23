@@ -536,7 +536,7 @@ inline fun <reified T> classOf(loader: ClassLoader?, initialize: Boolean): Class
 
 **Function Example**
 
-我们要获取一个 `Class` 在 `Kotlin` 下不通过反射时应该这样做。
+我们要获取一个 `Class` 在 Kotlin 下不通过反射时应该这样做。
 
 > The following example
 

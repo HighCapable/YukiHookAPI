@@ -10,7 +10,7 @@
 
 > 从 `XC_LoadPackage.LoadPackageParam` 迁移至 `PackageParam`。
 
-`YukiHookAPI` 对 `PackageParam` 实现了 `lambda` 方法体 `this` 用法，在 `encase` 方法体内即可全局得到 `PackageParam` 对象。
+`YukiHookAPI` 对 `PackageParam` 实现了 **lambda** 方法体 `this` 用法，在 `encase` 方法体内即可全局得到 `PackageParam` 对象。
 
 > API 功能差异对比如下
 
@@ -107,7 +107,7 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 
 #### Before/After Hook
 
-`YukiHookAPI` 同样对 `HookParam` 实现了 `lambda` 方法体 `this` 用法，在 `beforeHook`、`afterHook` 等方法体内即可全局得到 `HookParam` 对象。
+`YukiHookAPI` 同样对 `HookParam` 实现了 **lambda** 方法体 `this` 用法，在 `beforeHook`、`afterHook` 等方法体内即可全局得到 `HookParam` 对象。
 
 > API 功能差异对比如下
 

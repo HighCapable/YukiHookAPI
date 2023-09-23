@@ -538,7 +538,7 @@ inline fun configs(initiate: Configs.() -> Unit)
 
 **Function Illustrate**
 
-> 对 `Configs` 类实现了一个 `lambda` 方法体。
+> 对 `Configs` 类实现了一个 **lambda** 方法体。
 
 你可以轻松地调用它进行配置。
 

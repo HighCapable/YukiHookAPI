@@ -728,7 +728,7 @@ inline fun result(initiate: Result.() -> Unit): Result
 
 **功能示例**
 
-你可以使用此方法为 `Result` 类创建 `lambda` 方法体。
+你可以使用此方法为 `Result` 类创建 **lambda** 方法体。
 
 > 示例如下
 

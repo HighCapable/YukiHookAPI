@@ -173,7 +173,7 @@ Time zone of version release date: **UTC+8**
 - Added `generic` function to reflect and call generics, you can use it in `Class` or `CurrentClass`
 - obsolete the `buildOfAny` method, now use the `buildOf` method directly (without generics) to use the constructor to create a new object and get the result `Any`
 - Fixed the issue of null pointer exception when using `hasExtends`
-- `CurrentClass` added non-`lambda` method of calling
+- `CurrentClass` added non-**lambda** method of calling
 - `CurrentClass` adds `name` and `simpleName` functions
 - Completely rewrite the core method of `ReflectionTool`, sorting and classifying different search conditions
 - Fixed the problem that `Member` obtained by directly calling `declared` in `ReflectionTool` throws an exception
@@ -302,7 +302,7 @@ Time zone of version release date: **UTC+8**
 - ~~`YukiHookXposedInitProxy`~~ renamed to `IYukiHookXposedInit`, the original interface name has been invalidated and will be deleted directly in subsequent versions
 - Added `initZygote` and Resources Hook functions to support Hook Layout
 - Added `onXposedEvent` method to listen to all events of native Xposed API
-- Perform `inline` processing on the `lambda` of the Hook function to avoid generating excessively broken anonymous classes and improve the running performance after compilation
+- Perform `inline` processing on the **lambda** of the Hook function to avoid generating excessively broken anonymous classes and improve the running performance after compilation
 - Fixed `PrefsData` compiled method body copy is too large
 - Added `XSharePreference` readability test, which will automatically print a warning log if it fails
 - `PackageParam` adds `appResources`, `moduleAppResources`, `moduleAppFilePath` functions
@@ -330,7 +330,7 @@ Time zone of version release date: **UTC+8**
 - Fixed `YukiHookModulePrefs` working in `New XSharePreference` mode
 - Added `ModulePreferenceFragment`, now you can completely replace `PreferenceFragmentCompat` and start using the new functionality
 - Adapt the Sp data storage solution of `PreferenceFragmentCompat`, thanks to [mahoshojoHCG](https://github.com/mahoshojoHCG) for feedback
-- Update autohandlers and `Kotlin` dependencies to the latest version
+- Update autohandlers and Kotlin dependencies to the latest version
 - Fixed some bugs in documentation and code comments
 
 ### 1.0.77 | 2022.04.15 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
@@ -421,7 +421,7 @@ Time zone of version release date: **UTC+8**
 - Added `MethodFinder` and `FieldFinder` new return value calling methods
 - Fixed possible problems and fix possible problems during the use of Tai Chi
 - Fixed possible problems with auto-generated Xposed entry classes
-- Added `android` type and `java` type in `type`
+- Added `android` type and Java type in `type`
 
 ### 1.0.6 | 2022.03.20 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
 
@@ -438,7 +438,7 @@ Time zone of version release date: **UTC+8**
 
 - Fixed an annotation error
 - Temporarily fix a bug
-- Added a large number of `android` types in `type` and a small number of `java` types
+- Added a large number of `android` types in `type` and a small number of Java types
 - Fixed compatibility issues between new and old Kotlin APIs
 
 ### 1.0.5 | 2022.03.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
@@ -474,7 +474,7 @@ Time zone of version release date: **UTC+8**
 
 - `RemedyPlan` adds `onFind` function
 - Integrate and modify some reflection API code
-- Added `java` type in `type`
+- Added Java type in `type`
 - Fixed the issue that ignored errors still output in the console
 
 ### 1.0 | 2022.02.14 &ensp;<Badge type="danger" text="outdate" vertical="middle" />

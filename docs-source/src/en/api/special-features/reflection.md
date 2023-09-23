@@ -1865,7 +1865,7 @@ field {
 }
 ```
 
-Expressing the type of `Boolean::class.javaPrimitiveType` in `Kotlin` is very long and inconvenient.
+Expressing the type of `Boolean::class.javaPrimitiveType` in Kotlin is very long and inconvenient.
 
 Therefore, `YukiHookAPI` encapsulates common type calls for developers, including Android related types and Java common types and **primitive type keywords**.
 

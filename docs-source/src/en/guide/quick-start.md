@@ -30,7 +30,7 @@ If you don't want to use automated build tools, you can still manually configure
 
 ### Create Project
 
-Use `Android Studio` or `IntelliJ IDEA` to create a new Android project and select `Kotlin` in the `Language` column to automatically add basic dependencies.
+Use `Android Studio` or `IntelliJ IDEA` to create a new Android project and select Kotlin in the `Language` column to automatically add basic dependencies.
 
 ### Integration Dependencies
 

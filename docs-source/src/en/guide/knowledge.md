@@ -66,7 +66,7 @@ The Root-free frameworks mentioned above are [LSPatch](https://github.com/LSPose
 
 ### What YukiHookAPI does
 
-Since Xposed appeared until now, apart from `XposedHelpers`, which is well known to developers, there is still no set of syntactic sugar for `Kotlin` and API with complete usage encapsulation.
+Since Xposed appeared until now, apart from `XposedHelpers`, which is well known to developers, there is still no set of syntactic sugar for Kotlin and API with complete usage encapsulation.
 
 The birth of this API framework is to hope that in the current era of Xposed, more capable Xposed Module developers can avoid detours and complete the entire development process more easily and simply.
 

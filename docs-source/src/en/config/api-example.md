@@ -12,7 +12,7 @@
 fun configs(initiate: Configs.() -> Unit)
 ```
 
-The `configs` method implements a `lambda` method body on the `Configs` class, which you can easily call for configuration.
+The `configs` method implements a **lambda** method body on the `Configs` class, which you can easily call for configuration.
 
 ::: tip
 

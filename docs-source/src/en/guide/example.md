@@ -608,7 +608,7 @@ For more functions, please refer to [PackageParam.withProcess](../api/public/com
 
 ## Writing Optimization
 
-To make the code more concise, you can omit the name of `YukiHookAPI` and write your `onHook` entry as `lambda`.
+To make the code more concise, you can omit the name of `YukiHookAPI` and write your `onHook` entry as **lambda**.
 
 > The following example
 

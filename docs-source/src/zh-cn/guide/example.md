@@ -608,7 +608,7 @@ withProcess(name = "$packageName:tool") {
 
 ## 写法优化
 
-为了使代码更加简洁，你可以删去 `YukiHookAPI` 的名称，将你的 `onHook` 入口写作 `lambda` 形式。
+为了使代码更加简洁，你可以删去 `YukiHookAPI` 的名称，将你的 `onHook` 入口写作 **lambda** 形式。
 
 > 示例如下
 

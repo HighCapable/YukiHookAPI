@@ -165,7 +165,7 @@
 - 新增 `generic` 功能，可对泛型进行反射和调用，你可以在 `Class` 或 `CurrentClass` 中使用它
 - 作废 `buildOfAny` 方法，现在请直接使用 `buildOf` 方法 (不带泛型) 来使用构造方法创建新对象并得到结果 `Any`
 - 修复 `hasExtends` 使用过程发生空指针异常的问题
-- `CurrentClass` 新增非 `lambda` 方式的调用方法
+- `CurrentClass` 新增非 **lambda** 方式的调用方法
 - `CurrentClass` 新增 `name` 与 `simpleName` 功能
 - 完全重写 `ReflectionTool` 的核心方法，将不同的查找条件进行了整理分类
 - 修复 `ReflectionTool` 中可能的直接调用 `declared` 获取的 `Member` 抛出异常的问题
@@ -294,7 +294,7 @@
 - ~~`YukiHookXposedInitProxy`~~ 更名为 `IYukiHookXposedInit`，原接口名称已作废，将在后续版本中直接被删除
 - 新增 `initZygote` 与 Resources Hook 功能，支持 Hook Layout
 - 新增 `onXposedEvent` 方法，可监听原生 Xposed API 的全部事件
-- 对 Hook 功能的 `lambda` 进行 `inline` 处理，避免生成过碎的匿名类，提升编译后的运行性能
+- 对 Hook 功能的 **lambda** 进行 `inline` 处理，避免生成过碎的匿名类，提升编译后的运行性能
 - 修复 `PrefsData` 编译后的方法体复制过大的问题
 - 增加 `XSharePreference` 可读性测试，失败后会自动打印警告日志
 - `PackageParam` 新增 `appResources`、`moduleAppResources`、`moduleAppFilePath` 功能
@@ -322,7 +322,7 @@
 - 修复 `YukiHookModulePrefs` 在 `New XSharePreference` 模式下工作的部分问题
 - 新增 `ModulePreferenceFragment`，现在，你可以完全替换掉 `PreferenceFragmentCompat` 并开始使用新的功能
 - 适配 `PreferenceFragmentCompat` 的 Sp 数据存储解决方案，感谢 [mahoshojoHCG](https://github.com/mahoshojoHCG) 的反馈
-- 更新自动处理程序以及 `Kotlin` 依赖到最新版本
+- 更新自动处理程序以及 Kotlin 依赖到最新版本
 - 修正部分文档和代码注释中的错误
 
 ### 1.0.77 | 2022.04.15 &ensp;<Badge type="danger" text="过期" vertical="middle" />
@@ -413,7 +413,7 @@
 - 增加 `MethodFinder` 与 `FieldFinder` 新的返回值调用方法
 - 修复可能存在的问题，并修复太极使用过程中可能存在的问题
 - 修复自动生成 Xposed 入口类可能发生的问题
-- 增加了 `type` 中的 `android` 类型以及 `java` 类型
+- 增加了 `type` 中的 `android` 类型以及 Java 类型
 
 ### 1.0.6 | 2022.03.20 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
@@ -430,7 +430,7 @@
 
 - 修正一处注释错误
 - 临时修复一个 BUG
-- 增加了 `type` 中的大量 `android` 类型以及少量 `java` 类型
+- 增加了 `type` 中的大量 `android` 类型以及少量 Java 类型
 - 修复新版与旧版 Kotlin APIs 的兼容性问题
 
 ### 1.0.5 | 2022.03.18 &ensp;<Badge type="danger" text="过期" vertical="middle" />
@@ -466,7 +466,7 @@
 
 - `RemedyPlan` 增加 `onFind` 功能
 - 整合并修改了部分反射 API 代码
-- 增加了 `type` 中的 `java` 类型
+- 增加了 `type` 中的 Java 类型
 - 修复忽略错误在控制台仍然输出的问题
 
 ### 1.0 | 2022.02.14 &ensp;<Badge type="danger" text="过期" vertical="middle" />

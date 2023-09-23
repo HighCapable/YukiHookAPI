@@ -62,7 +62,7 @@ App's Environment
 
 ### YukiHookAPI 做了什么
 
-自从 Xposed 出现到现在为止，除了开发者人人皆知的 `XposedHelpers`，依然没有一套针对 `Kotlin` 打造的语法糖以及用法封装十分完善的 API。
+自从 Xposed 出现到现在为止，除了开发者人人皆知的 `XposedHelpers`，依然没有一套针对 Kotlin 打造的语法糖以及用法封装十分完善的 API。
 
 本 API 框架的诞生就是希望在 Xposed 的如今时代，能让更多有动手能力的 Xposed 模块开发者少走弯路，更容易、更简单地完成整个开发流程。
 

@@ -14,7 +14,7 @@ pageClass: code-page
 
 **功能描述**
 
-> 这是 `YukiHookAPI` 相关 `lambda` 方法的封装类以及部分 API 用法。
+> 这是 `YukiHookAPI` 相关 **lambda** 方法的封装类以及部分 API 用法。
 
 ## IYukiHookXposedInit.configs <span class="symbol">- ext-method</span>
 

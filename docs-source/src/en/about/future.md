@@ -46,4 +46,4 @@ We have provided the Xposed native API listening interface, you can find or view
 
 As an API, currently only docking `XposedBridge` as a compatibility layer still has certain limitations.
 
-Most `inline hook` do not have a `Java` compatibility layer, and the `Java` compatibility layer adaptation of `native hook` may be considered later.
+Most `inline hook` do not have a Java compatibility layer, and the Java compatibility layer adaptation of `native hook` may be considered later.

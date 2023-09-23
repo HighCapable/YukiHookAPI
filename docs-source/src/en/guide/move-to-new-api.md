@@ -10,7 +10,7 @@ This document can help you quickly migrate from the Hook APIs you are familiar w
 
 > Migrated from `XC_LoadPackage.LoadPackageParam` to `PackageParam`.
 
-`YukiHookAPI` implements the `lambda` method body `this` usage for `PackageParam`, and the `PackageParam` object can be obtained globally in the `encase` method body.
+`YukiHookAPI` implements the **lambda** method body `this` usage for `PackageParam`, and the `PackageParam` object can be obtained globally in the `encase` method body.
 
 > The API function differences are compared as follows
 
@@ -107,7 +107,7 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 
 #### Before/After Hook
 
-`YukiHookAPI` also implements the `lambda` method body `this` usage for `HookParam`, and the `HookParam` object can be obtained globally in the method bodies such as `beforeHook` and `afterHook`.
+`YukiHookAPI` also implements the **lambda** method body `this` usage for `HookParam`, and the `HookParam` object can be obtained globally in the method bodies such as `beforeHook` and `afterHook`.
 
 > The API function differences are compared as follows
 
