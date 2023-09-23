@@ -66,9 +66,9 @@ import com.highcapable.yukihookapi.hook.type.java.JavaConstructorClass
 import com.highcapable.yukihookapi.hook.type.java.JavaFieldClass
 import com.highcapable.yukihookapi.hook.type.java.JavaMemberClass
 import com.highcapable.yukihookapi.hook.type.java.JavaMethodClass
-import com.highcapable.yukihookapi.hook.utils.RandomSeed
-import com.highcapable.yukihookapi.hook.utils.await
-import com.highcapable.yukihookapi.hook.utils.conditions
+import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
+import com.highcapable.yukihookapi.hook.utils.factory.await
+import com.highcapable.yukihookapi.hook.utils.factory.conditions
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field

@@ -44,7 +44,7 @@ import com.highcapable.yukihookapi.hook.type.java.DalvikBaseDexClassLoader
 import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
-import com.highcapable.yukihookapi.hook.utils.*
+import com.highcapable.yukihookapi.hook.utils.factory.*
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.Constructor

@@ -44,7 +44,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectCondition
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.utils.runBlocking
+import com.highcapable.yukihookapi.hook.utils.factory.runBlocking
 import java.lang.reflect.Field
 
 /**

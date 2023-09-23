@@ -34,7 +34,7 @@ import android.util.Log
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.factory.current
-import com.highcapable.yukihookapi.hook.utils.toStackTrace
+import com.highcapable.yukihookapi.hook.utils.factory.toStackTrace
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.io.File

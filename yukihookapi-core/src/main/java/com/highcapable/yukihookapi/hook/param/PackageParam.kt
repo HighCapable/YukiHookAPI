@@ -49,7 +49,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.utils.value
+import com.highcapable.yukihookapi.hook.utils.factory.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources

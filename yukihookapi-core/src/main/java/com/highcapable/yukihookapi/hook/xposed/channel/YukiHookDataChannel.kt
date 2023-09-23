@@ -49,7 +49,7 @@ import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.log.YukiLoggerData
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerW
-import com.highcapable.yukihookapi.hook.utils.RandomSeed
+import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData

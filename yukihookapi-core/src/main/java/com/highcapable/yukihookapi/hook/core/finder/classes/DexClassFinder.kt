@@ -51,8 +51,8 @@ import com.highcapable.yukihookapi.hook.factory.searchClass
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.utils.await
-import com.highcapable.yukihookapi.hook.utils.runBlocking
+import com.highcapable.yukihookapi.hook.utils.factory.await
+import com.highcapable.yukihookapi.hook.utils.factory.runBlocking
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.Constructor

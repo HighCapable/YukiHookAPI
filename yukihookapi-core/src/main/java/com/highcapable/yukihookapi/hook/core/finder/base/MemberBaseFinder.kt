@@ -33,8 +33,8 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.log.yLoggerI
-import com.highcapable.yukihookapi.hook.utils.await
-import com.highcapable.yukihookapi.hook.utils.unit
+import com.highcapable.yukihookapi.hook.utils.factory.await
+import com.highcapable.yukihookapi.hook.utils.factory.unit
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member

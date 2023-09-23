@@ -37,7 +37,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.PreferenceScreen
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.utils.unit
+import com.highcapable.yukihookapi.hook.utils.factory.unit
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 
 /**

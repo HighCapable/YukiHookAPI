@@ -44,8 +44,8 @@ import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
-import com.highcapable.yukihookapi.hook.utils.runBlocking
-import com.highcapable.yukihookapi.hook.utils.unit
+import com.highcapable.yukihookapi.hook.utils.factory.runBlocking
+import com.highcapable.yukihookapi.hook.utils.factory.unit
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 
