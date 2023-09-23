@@ -177,7 +177,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [isPreferencesAvailable]
+     * - ❗请现在迁移到 [isPreferencesAvailable]
      * @return [Boolean]
      */
     @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
@@ -188,7 +188,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [isPreferencesAvailable]
+     * - ❗请现在迁移到 [isPreferencesAvailable]
      * @return [Boolean]
      */
     @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
@@ -397,10 +397,10 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param key 键值名称
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { remove(key) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { remove(key) }"))
     fun remove(key: String) = edit { remove(key) }
 
     /**
@@ -408,10 +408,10 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param prefs 键值实例
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { remove(prefs) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { remove(prefs) }"))
     inline fun <reified T> remove(prefs: PrefsData<T>) = edit { remove(prefs) }
 
     /**
@@ -419,9 +419,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { clear() }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { clear() }"))
     fun clear() = edit { clear() }
 
     /**
@@ -429,11 +429,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putString(key, value) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putString(key, value) }"))
     fun putString(key: String, value: String) = edit { putString(key, value) }
 
     /**
@@ -441,11 +441,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putStringSet(key, value) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putStringSet(key, value) }"))
     fun putStringSet(key: String, value: Set<String>) = edit { putStringSet(key, value) }
 
     /**
@@ -453,11 +453,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putBoolean(key, value) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putBoolean(key, value) }"))
     fun putBoolean(key: String, value: Boolean) = edit { putBoolean(key, value) }
 
     /**
@@ -465,11 +465,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putInt(key, value) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putInt(key, value) }"))
     fun putInt(key: String, value: Int) = edit { putInt(key, value) }
 
     /**
@@ -477,11 +477,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putFloat(key, value) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putFloat(key, value) }"))
     fun putFloat(key: String, value: Float) = edit { putFloat(key, value) }
 
     /**
@@ -489,11 +489,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { putLong(key, value) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putLong(key, value) }"))
     fun putLong(key: String, value: Long) = edit { putLong(key, value) }
 
     /**
@@ -501,9 +501,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [edit] 方法
+     * - ❗请现在迁移到 [edit] 方法
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请转移到新用法", ReplaceWith("edit { put(prefs, value) }"))
+    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { put(prefs, value) }"))
     inline fun <reified T> put(prefs: PrefsData<T>, value: T) = edit { put(prefs, value) }
 
     /**

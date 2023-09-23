@@ -58,7 +58,7 @@ LOGD
 
 `v1.1.5` `deprecated`
 
-请转移到 `XPOSED_ENVIRONMENT`
+请迁移到 `XPOSED_ENVIRONMENT`
 
 ### XPOSED_ENVIRONMENT <span class="symbol">- enum</span>
 

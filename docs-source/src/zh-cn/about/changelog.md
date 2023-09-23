@@ -38,7 +38,7 @@
 - 新增 `ExecutorType`，可以通过 `YukiHookAPI.Status.Executor.type` 来获取已知 Hook Framework 的类型
 - ~~`YukiHookModulePrefs`~~ 更名为 `YukiHookPrefsBridge`
 - 修改 `YukiHookPrefsBridge` 为非单例实现，作为单例可能发生数据混淆的问题
-- 作废了 ~~`Context.modulePrefs(...)`~~ 方法，请转移到 `Context.prefs(...)`
+- 作废了 ~~`Context.modulePrefs(...)`~~ 方法，请迁移到 `Context.prefs(...)`
 - `YukiHookPrefsBridge` 新增 `native` 方法，支持直接作为原生存储在模块和宿主中存储私有数据
 - 整合 `YukiHookPrefsBridge` 中的存储方法到 `YukiHookPrefsBridge.Editor`，请使用 `edit` 方法来存储数据
 - `YukiHookPrefsBridge` 新增 `contains` 方法
@@ -88,7 +88,7 @@
 - 修复一个 Hook 过程中方法返回值的对象是目标的继承类和接口时被识别为返回值不符的严重错误
 - 修复在当前 Hook 的实例对象是静态的情况下调用 `HookParam.callOriginal`、`HookParam.invokeOriginal` 出现对象为空问题
 - 优化对太极激活方法相关判断功能以及同步更新文档相关说明
-- 作废了 ~~`YukiHookAPI.Status.executorName`~~、~~`YukiHookAPI.Status.executorVersion`~~，请转移到 `YukiHookAPI.Status.Executor`
+- 作废了 ~~`YukiHookAPI.Status.executorName`~~、~~`YukiHookAPI.Status.executorVersion`~~，请迁移到 `YukiHookAPI.Status.Executor`
 - 适配了一些第三方 Hook Framework 的 `YukiHookAPI.Status.Executor.name` 名称显示功能
 - 新增 `Class.extends`、`Class.implements` 等方法，可更加方便地判断当前 `Class` 的继承与接口关系
 - 新增 `Class.toClass`、`Class.toClassOrNull` 等相关方法的同名泛型方法，可使用泛型来约束已知 `Class` 的实例对象类型
@@ -193,7 +193,7 @@
 - 新增模块资源注入与 `Activity` 代理功能，你可以调用 `injectModuleAppResources` 及 `registerModuleAppActivities` 来使用
 - 新增 `ModuleContextThemeWrapper` 功能，你可以调用 `applyModuleTheme` 在任意 `Activity` 中创建模块的 `Context`
 - 新增 `ClassLoader.onLoadClass` 功能，可用于监听 `ClassLoader` 的 `loadClass` 方法被调用的事件
-- 作废了 `classOf` 与 `clazz` 扩展方法，新增 `toClass` 以及 `toClassOrNull` 用法，请现在转移到新的方法
+- 作废了 `classOf` 与 `clazz` 扩展方法，新增 `toClass` 以及 `toClassOrNull` 用法，请现在迁移到新的方法
 - `VariousClass` 新增 `getOrNull` 方法，可在匹配不到 `Class` 的时候不抛出异常而是返回 `null`
 - `PackageParam.hook` 中移除了 `isUseAppClassLoader` 参数，修改为 `isForceUseAbsolute` 并自动匹配目标 `Class`
 - `PackageParam` 新增 `systemContext` 功能，你可以在任意时间调用此功能获取一个持久化的 `Context`

@@ -896,7 +896,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean, initiate: CurrentClass.
 
 `v1.1.0` `作废`
 
-请转移到 `buildOf` 方法
+请迁移到 `buildOf` 方法
 
 ## Class.buildOf <span class="symbol">- ext-method</span>
 

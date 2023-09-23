@@ -208,7 +208,7 @@ inner class MemberHookCreator internal constructor(private val priority: Int, in
 
 `v1.1.0` `移除`
 
-请转移到 `members`
+请迁移到 `members`
 
 ### members <span class="symbol">- method</span>
 

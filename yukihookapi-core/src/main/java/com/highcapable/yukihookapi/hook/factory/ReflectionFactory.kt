@@ -226,7 +226,7 @@ fun Class<*>.toJavaPrimitiveType() = when (this) {
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [toClass]
+ * - ❗请现在迁移到 [toClass]
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
@@ -390,7 +390,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: Curre
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [buildOf]
+ * - ❗请现在迁移到 [buildOf]
  * @return [Any] or null
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("buildOf(*param, initiate)"))

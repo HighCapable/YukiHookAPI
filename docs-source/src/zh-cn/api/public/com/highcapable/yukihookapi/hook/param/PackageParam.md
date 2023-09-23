@@ -609,7 +609,7 @@ inline fun searchClass(name: String, async: Boolean, initiate: ClassConditions):
 
 `v1.1.0` `作废`
 
-请转移到 `toClass(...)` 方法
+请迁移到 `toClass(...)` 方法
 
 <h2 class="deprecated">String.hasClass - i-ext-field</h2>
 
@@ -619,7 +619,7 @@ inline fun searchClass(name: String, async: Boolean, initiate: ClassConditions):
 
 `v1.1.0` `作废`
 
-请转移到 `hasClass(...)` 方法
+请迁移到 `hasClass(...)` 方法
 
 ## String+VariousClass.toClass <span class="symbol">- i-ext-method</span>
 

@@ -735,7 +735,7 @@ fun ignored(): Result
 
 `v1.1.0` `作废`
 
-请转移到新方法 `ignored()`
+请迁移到新方法 `ignored()`
 
 ### Instance <span class="symbol">- class</span>
 

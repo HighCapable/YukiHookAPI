@@ -570,7 +570,7 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [ignored]
+         * - ❗请现在迁移到 [ignored]
          * @return [Result] 可继续向下监听
          */
         @Deprecated(message = "请使用新的命名方法", ReplaceWith("ignored()"))

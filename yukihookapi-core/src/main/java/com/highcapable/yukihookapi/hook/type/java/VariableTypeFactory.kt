@@ -73,7 +73,7 @@ fun ArrayClass(type: Class<*>) = JavaArray.newInstance(type, 0).javaClass as Cla
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [AnyClass]
+ * - ❗请现在迁移到 [AnyClass]
  * @return [Class]<[Any]>
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("AnyClass"))
@@ -244,7 +244,7 @@ val UnitClass get() = classOf<Void>()
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [StringClass]
+ * - ❗请现在迁移到 [StringClass]
  * @return [Class]<[String]>
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("StringClass"))
@@ -255,7 +255,7 @@ val StringType get() = StringClass
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [CharSequenceClass]
+ * - ❗请现在迁移到 [CharSequenceClass]
  * @return [Class]<[CharSequence]>
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("CharSequenceClass"))
@@ -328,7 +328,7 @@ val ShortArrayType get() = ArrayClass(ShortType)
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [ShortArrayType]
+ * - ❗请现在迁移到 [ShortArrayType]
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(message = "请使用修复后的命名方法", ReplaceWith("ShortArrayType"))

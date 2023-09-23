@@ -466,7 +466,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [toClass]
+     * - ❗请现在迁移到 [toClass]
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
@@ -479,7 +479,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [toClass]
+     * - ❗请现在迁移到 [toClass]
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
@@ -492,7 +492,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [hasClass]
+     * - ❗请现在迁移到 [hasClass]
      * @return [Boolean] 是否存在
      */
     @Deprecated(message = "请使用新的命名方法", ReplaceWith("hasClass()"))

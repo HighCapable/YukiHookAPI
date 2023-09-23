@@ -60,7 +60,7 @@ const val API_VERSION_CODE: Int
 
 `v1.0.91` `removed`
 
-请转移到 `Status.Executor.name`
+请迁移到 `Status.Executor.name`
 
 <h2 class="deprecated">executorVersion - field</h2>
 
@@ -70,7 +70,7 @@ const val API_VERSION_CODE: Int
 
 `v1.0.91` `removed`
 
-请转移到 `Status.Executor.apiLevel`、`Status.Executor.versionName`、`Status.Executor.versionCode`
+请迁移到 `Status.Executor.apiLevel`、`Status.Executor.versionName`、`Status.Executor.versionCode`
 
 ## Status <span class="symbol">- object</span>
 
@@ -122,7 +122,7 @@ val isXposedEnvironment: Boolean
 
 `v1.1.5` `deprecated`
 
-请转移到 `Executor.name`
+请迁移到 `Executor.name`
 
 <h3 class="deprecated">executorVersion - field</h3>
 
@@ -132,7 +132,7 @@ val isXposedEnvironment: Boolean
 
 `v1.1.5` `deprecated`
 
-请转移到 `Executor.apiLevel`、`Executor.versionName`、`Executor.versionCode`
+请迁移到 `Executor.apiLevel`、`Executor.versionName`、`Executor.versionCode`
 
 ### isModuleActive <span class="symbol">- field</span>
 
@@ -376,7 +376,7 @@ inline fun debugLog(initiate: YukiHookLogger.Configs.() -> Unit)
 
 `v1.1.0` `deprecated`
 
-请转移到 `YukiHookLogger.Configs.tag`
+请迁移到 `YukiHookLogger.Configs.tag`
 
 ### isDebug <span class="symbol">- field</span>
 
@@ -402,7 +402,7 @@ var isDebug: Boolean
 
 `v1.1.0` `deprecated`
 
-请转移到 `YukiHookLogger.Configs.isEnable`
+请迁移到 `YukiHookLogger.Configs.isEnable`
 
 <h3 class="deprecated">isEnableModulePrefsCache - field</h3>
 
@@ -412,7 +412,7 @@ var isDebug: Boolean
 
 `v1.1.9` `deprecated`
 
-请转移到 `isEnablePrefsBridgeCache`
+请迁移到 `isEnablePrefsBridgeCache`
 
 <h3 class="deprecated">isEnablePrefsBridgeCache - field</h3>
 

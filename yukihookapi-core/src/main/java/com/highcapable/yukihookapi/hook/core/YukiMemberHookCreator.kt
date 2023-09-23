@@ -336,7 +336,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [MethodFinder] or [allMembers]
+         * - ❗请现在迁移到 [MethodFinder] or [allMembers]
          * @param name 方法名称
          * @return [ArrayList]<[MethodFinder.Result.Instance]>
          */
@@ -348,7 +348,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [ConstructorFinder] or [allMembers]
+         * - ❗请现在迁移到 [ConstructorFinder] or [allMembers]
          * @return [ArrayList]<[ConstructorFinder.Result.Instance]>
          */
         @Deprecated(

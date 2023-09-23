@@ -16,7 +16,7 @@ interface IYukiHookXposedInit
 
 作废了 ~~`YukiHookXposedInitProxy`~~ 名称但保留接口
 
-转移到 `IYukiHookXposedInit` 新名称
+迁移到 `IYukiHookXposedInit` 新名称
 
 **功能描述**
 
@@ -98,4 +98,4 @@ fun onXposedEvent()
 
 `v1.0.80` `作废`
 
-请转移到 `IYukiHookXposedInit`
+请迁移到 `IYukiHookXposedInit`

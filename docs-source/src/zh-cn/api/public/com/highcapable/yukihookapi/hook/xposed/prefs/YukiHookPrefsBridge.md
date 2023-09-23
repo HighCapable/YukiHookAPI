@@ -62,7 +62,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context?)
 
 `v1.1.5` `作废`
 
-请转移到 `isPreferencesAvailable`
+请迁移到 `isPreferencesAvailable`
 
 <h2 class="deprecated">isRunInNewXShareMode - field</h2>
 
@@ -72,7 +72,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context?)
 
 `v1.1.5` `作废`
 
-请转移到 `isPreferencesAvailable`
+请迁移到 `isPreferencesAvailable`
 
 ## isPreferencesAvailable <span class="symbol">- field</span>
 
@@ -278,7 +278,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 <h2 class="deprecated">clear - method</h2>
 
@@ -288,7 +288,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 <h2 class="deprecated">putString - method</h2>
 
@@ -298,7 +298,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 <h2 class="deprecated">putStringSet - method</h2>
 
@@ -308,7 +308,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 <h2 class="deprecated">putBoolean - method</h2>
 
@@ -318,7 +318,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 <h2 class="deprecated">putInt - method</h2>
 
@@ -328,7 +328,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 <h2 class="deprecated">putLong - method</h2>
 
@@ -338,7 +338,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 <h2 class="deprecated">putFloat - method</h2>
 
@@ -348,7 +348,7 @@ fun all(): HashMap<String, Any?>
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 ## get <span class="symbol">- method</span>
 
@@ -372,7 +372,7 @@ inline fun <reified T> get(prefs: PrefsData<T>, value: T): T
 
 `v1.1.9` `作废`
 
-请转移到 `edit` 方法
+请迁移到 `edit` 方法
 
 ## edit <span class="symbol">- method</span>
 

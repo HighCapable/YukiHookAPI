@@ -79,7 +79,7 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.enca
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [Context.prefs] 方法
+ * - ❗请现在迁移到 [Context.prefs] 方法
  * @return [YukiHookPrefsBridge]
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs()"))
@@ -90,7 +90,7 @@ val Context.modulePrefs get() = prefs()
  *
  * - ❗此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在转移到 [Context.prefs] 方法
+ * - ❗请现在迁移到 [Context.prefs] 方法
  * @return [YukiHookPrefsBridge]
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs(name)"))

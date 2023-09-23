@@ -57,7 +57,7 @@ enum class LoggerType {
      *
      * - ❗此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在转移到 [XPOSED_ENVIRONMENT]
+     * - ❗请现在迁移到 [XPOSED_ENVIRONMENT]
      */
     @Deprecated(message = "请使用新的命名方法", ReplaceWith("XPOSED_ENVIRONMENT"))
     XPOSEDBRIDGE,

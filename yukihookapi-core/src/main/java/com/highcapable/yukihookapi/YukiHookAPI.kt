@@ -102,7 +102,7 @@ object YukiHookAPI {
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [Executor.name]
+         * - ❗请现在迁移到 [Executor.name]
          * @return [String]
          */
         @Deprecated(
@@ -116,7 +116,7 @@ object YukiHookAPI {
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [Executor.apiLevel]、[Executor.versionName]、[Executor.versionCode]
+         * - ❗请现在迁移到 [Executor.apiLevel]、[Executor.versionName]、[Executor.versionCode]
          * @return [Int]
          */
         @Deprecated(
@@ -238,7 +238,7 @@ object YukiHookAPI {
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [debugLog] 并使用 [YukiHookLogger.Configs.tag]
+         * - ❗请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.tag]
          */
         @Deprecated(message = "请使用新方式来实现此功能")
         var debugTag
@@ -265,7 +265,7 @@ object YukiHookAPI {
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [debugLog] 并使用 [YukiHookLogger.Configs.isEnable]
+         * - ❗请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.isEnable]
          */
         @Deprecated(message = "请使用新方式来实现此功能")
         var isAllowPrintingLogs
@@ -279,7 +279,7 @@ object YukiHookAPI {
          *
          * - ❗此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在转移到 [isEnablePrefsBridgeCache]
+         * - ❗请现在迁移到 [isEnablePrefsBridgeCache]
          */
         @Deprecated(message = "请使用新的命名方法来实现此功能", ReplaceWith("isEnablePrefsBridgeCache"))
         var isEnableModulePrefsCache = false
