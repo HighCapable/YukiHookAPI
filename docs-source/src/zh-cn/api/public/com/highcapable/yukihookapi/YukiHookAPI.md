@@ -16,33 +16,53 @@ object YukiHookAPI
 
 > 这是 `YukiHookAPI` 的 API 调用总类，Hook 相关功能的开始、Hook 相关功能的配置都在这里。
 
-## API_VERSION_NAME <span class="symbol">- field</span>
+## TAG <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
-const val API_VERSION_NAME: String
+const val TAG: String
 ```
 
 **变更记录**
 
-`v1.0.4` `新增`
+`v1.2.0` `新增`
+
+**功能描述**
+
+> 获取当前 `YukiHookAPI` 的名称 (标签)。
+
+## VERSION <span class="symbol">- field</span>
+
+```kotlin:no-line-numbers
+const val VERSION: String
+```
+
+**变更记录**
+
+`v1.2.0` `新增`
 
 **功能描述**
 
 > 获取当前 `YukiHookAPI` 的版本。
 
-## API_VERSION_CODE <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-const val API_VERSION_CODE: Int
-```
+<h3 class="deprecated">API_VERSION_NAME - field</h3>
 
 **变更记录**
 
 `v1.0.4` `新增`
 
-**功能描述**
+`v1.2.0` `作废`
 
-> 获取当前 `YukiHookAPI` 的版本号。
+不再区分版本名称和版本号，请迁移到 `VERSION`
+
+<h3 class="deprecated">API_VERSION_CODE - field</h3>
+
+**变更记录**
+
+`v1.0.4` `新增`
+
+`v1.2.0` `作废`
+
+不再区分版本名称和版本号，请迁移到 `VERSION`
 
 <h2 class="deprecated">executorName - field</h2>
 
