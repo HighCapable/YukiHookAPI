@@ -63,7 +63,7 @@ class MainActivity : ModuleAppCompatActivity() {
             moduleDemoFrameworkZhText.text = "当前的 Hook 框架"
             moduleDemoApiVersionText.text = "Xposed API Version：${YukiHookAPI.Status.Executor.apiLevel}"
             moduleDemoApiVersionZhText.text = "Xposed API 版本"
-            moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.API_VERSION_NAME}(${YukiHookAPI.API_VERSION_CODE})"
+            moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.VERSION}"
             moduleDemoYukiHookApiVersionZhText.text = "YukiHookAPI 版本"
             moduleDemoNewXshareText.text =
                 "${if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences Readable" else "New XSharedPreferences"}：${prefs().isPreferencesAvailable}"
