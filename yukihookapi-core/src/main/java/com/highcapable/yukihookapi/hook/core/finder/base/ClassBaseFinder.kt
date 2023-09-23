@@ -30,8 +30,8 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
+import com.highcapable.yukihookapi.hook.log.yLoggerD
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerI
 
 /**
  * 这是 [Class] 查找类功能的基本类实现
@@ -64,7 +64,7 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
      * @param msg 调试日志内容
      */
     internal fun onDebuggingMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi) yLoggerI(msg = msg)
+        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi) yLoggerD(msg = msg)
     }
 
     /**

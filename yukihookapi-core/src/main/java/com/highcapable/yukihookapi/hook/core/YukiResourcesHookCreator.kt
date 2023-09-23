@@ -34,8 +34,8 @@ import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
+import com.highcapable.yukihookapi.hook.log.yLoggerD
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
@@ -237,7 +237,7 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = msg)
+            if (YukiHookAPI.Configs.isDebug) yLoggerD(msg = msg)
         }
 
         /**

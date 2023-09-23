@@ -31,8 +31,8 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
+import com.highcapable.yukihookapi.hook.log.yLoggerD
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.utils.factory.await
 import com.highcapable.yukihookapi.hook.utils.factory.unit
 import java.lang.reflect.Constructor
@@ -137,7 +137,7 @@ abstract class MemberBaseFinder internal constructor(
      */
     internal fun onDebuggingMsg(msg: String) {
         if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null)
-            yLoggerI(msg = "$msg${hookerManager.tailTag}")
+            yLoggerD(msg = "$msg${hookerManager.tailTag}")
     }
 
     /**

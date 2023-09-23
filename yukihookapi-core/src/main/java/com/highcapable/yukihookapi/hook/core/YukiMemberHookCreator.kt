@@ -54,8 +54,8 @@ import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.notExtends
 import com.highcapable.yukihookapi.hook.factory.notImplements
 import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
+import com.highcapable.yukihookapi.hook.log.yLoggerD
 import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerI
 import com.highcapable.yukihookapi.hook.log.yLoggerW
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -693,7 +693,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * @param msg 调试日志内容
          */
         private fun onHookLogMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerI(msg = msg)
+            if (YukiHookAPI.Configs.isDebug) yLoggerD(msg = msg)
         }
 
         /**
