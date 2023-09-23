@@ -57,19 +57,19 @@ class MainActivity : ModuleAppCompatActivity() {
                     }
                 }
             }
-            moduleDemoActiveText.text = "Module is Active：${YukiHookAPI.Status.isModuleActive}"
+            moduleDemoActiveText.text = "Module is Active: ${YukiHookAPI.Status.isModuleActive}"
             moduleDemoActiveZhText.text = "Xposed 模块激活状态"
-            moduleDemoFrameworkText.text = "Hook Framework：${YukiHookAPI.Status.Executor.name}"
+            moduleDemoFrameworkText.text = "Hook Framework: ${YukiHookAPI.Status.Executor.name}"
             moduleDemoFrameworkZhText.text = "当前的 Hook 框架"
-            moduleDemoApiVersionText.text = "Xposed API Version：${YukiHookAPI.Status.Executor.apiLevel}"
+            moduleDemoApiVersionText.text = "Xposed API Version: ${YukiHookAPI.Status.Executor.apiLevel}"
             moduleDemoApiVersionZhText.text = "Xposed API 版本"
-            moduleDemoYukiHookApiVersionText.text = "YukiHookAPI Version：${YukiHookAPI.VERSION}"
-            moduleDemoYukiHookApiVersionZhText.text = "YukiHookAPI 版本"
+            moduleDemoYukiHookApiVersionText.text = "${YukiHookAPI.TAG} Version: ${YukiHookAPI.VERSION}"
+            moduleDemoYukiHookApiVersionZhText.text = "${YukiHookAPI.TAG} 版本"
             moduleDemoNewXshareText.text =
-                "${if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences Readable" else "New XSharedPreferences"}：${prefs().isPreferencesAvailable}"
+                "${if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences Readable" else "New XSharedPreferences"}: ${prefs().isPreferencesAvailable}"
             moduleDemoNewXshareZhText.text =
                 if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences 是否可用" else "New XSharedPreferences 支持状态"
-            moduleDemoResHookText.text = "Support Resources Hook：${YukiHookAPI.Status.isSupportResourcesHook}"
+            moduleDemoResHookText.text = "Support Resources Hook: ${YukiHookAPI.Status.isSupportResourcesHook}"
             moduleDemoResHookZhText.text = "资源钩子支持状态"
             moduleDemoComTimeStampText.text =
                 "Compiled Time：${SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))}"
