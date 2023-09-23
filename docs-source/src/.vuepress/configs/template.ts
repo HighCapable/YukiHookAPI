@@ -95,7 +95,7 @@ const navigationLinks = {
 
 export const configs = {
     dev: {
-        dest: '../docs/',
+        dest: 'dist',
         port: 9000
     },
     website: {
