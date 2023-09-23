@@ -44,7 +44,7 @@ const val VERSION: String
 
 > 获取当前 `YukiHookAPI` 的版本。
 
-<h3 class="deprecated">API_VERSION_NAME - field</h3>
+<h2 class="deprecated">API_VERSION_NAME - field</h2>
 
 **变更记录**
 
@@ -54,7 +54,7 @@ const val VERSION: String
 
 不再区分版本名称和版本号，请迁移到 `VERSION`
 
-<h3 class="deprecated">API_VERSION_CODE - field</h3>
+<h2 class="deprecated">API_VERSION_CODE - field</h2>
 
 **变更记录**
 

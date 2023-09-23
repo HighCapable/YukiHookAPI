@@ -52,7 +52,7 @@ const val VERSION: String
 
 > 获取当前 `YukiHookAPI` 的版本。
 
-<h3 class="deprecated">API_VERSION_NAME - field</h3>
+<h2 class="deprecated">API_VERSION_NAME - field</h2>
 
 **Change Records**
 
@@ -62,7 +62,7 @@ const val VERSION: String
 
 不再区分版本名称和版本号，请迁移到 `VERSION`
 
-<h3 class="deprecated">API_VERSION_CODE - field</h3>
+<h2 class="deprecated">API_VERSION_CODE - field</h2>
 
 **Change Records**
 
@@ -134,7 +134,7 @@ val isXposedEnvironment: Boolean
 
 > 获取当前是否为 (Xposed) 宿主环境。
 
-<h3 class="deprecated">executorName - field</h3>
+<h2 class="deprecated">executorName - field</h2>
 
 **Change Records**
 
@@ -144,7 +144,7 @@ val isXposedEnvironment: Boolean
 
 请迁移到 `Executor.name`
 
-<h3 class="deprecated">executorVersion - field</h3>
+<h2 class="deprecated">executorVersion - field</h2>
 
 **Change Records**
 
