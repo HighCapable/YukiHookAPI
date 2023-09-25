@@ -34,7 +34,7 @@ import android.util.Log
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.factory.current
-import com.highcapable.yukihookapi.hook.utils.factory.toStackTrace
+import com.highcapable.yukihookapi.hook.utils.factory.dumpToString
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import java.io.File
@@ -175,7 +175,7 @@ object YukiHookLogger {
             content += "${it.head}$it\n"
             it.throwable?.also { e ->
                 content += "${it.head}Dump stack trace for \"${e.current().name}\":\n"
-                content += e.toStackTrace()
+                content += e.dumpToString()
             }
         }
         return content

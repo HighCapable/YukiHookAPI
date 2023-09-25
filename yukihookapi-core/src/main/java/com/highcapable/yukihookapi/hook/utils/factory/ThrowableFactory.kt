@@ -33,7 +33,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 /**
- * 获取完整的异常堆栈内容
+ * 写出异常堆栈到字符串
  * @return [String]
  */
-internal fun Throwable.toStackTrace() = ByteArrayOutputStream().also { printStackTrace(PrintStream(it)) }.toString()
+internal fun Throwable.dumpToString() = ByteArrayOutputStream().also { printStackTrace(PrintStream(it)) }.toString()
