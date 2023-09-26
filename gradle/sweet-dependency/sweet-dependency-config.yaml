@@ -43,7 +43,7 @@ libraries:
         rovo89-xposed-api
   com.google.devtools.ksp:
     symbol-processing-api:
-      version: 1.9.10-1.0.13
+      version-ref: <plugins>::kotlin-ksp
   com.google.auto.service:
     auto-service-annotations:
       version: 1.0.1
