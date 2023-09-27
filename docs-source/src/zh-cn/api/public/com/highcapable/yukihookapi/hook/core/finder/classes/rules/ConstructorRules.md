@@ -5,7 +5,7 @@ pageClass: code-page
 # ConstructorRules <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class ConstructorRules internal constructor(internal val rulesData: ConstructorRulesData) : BaseRules
+class ConstructorRules internal constructor(private val rulesData: ConstructorRulesData) : BaseRules
 ```
 
 **变更记录**

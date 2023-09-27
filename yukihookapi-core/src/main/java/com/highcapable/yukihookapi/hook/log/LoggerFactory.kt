@@ -316,7 +316,6 @@ object YukiHookLogger {
         }
 
         /** 结束方法体 */
-        @PublishedApi
         internal fun build() = Unit
     }
 }

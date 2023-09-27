@@ -69,10 +69,6 @@ object ClassName {
  * 外部调用者包名和类名定义类
  */
 object ExternalCallerName {
-    val YukiGenerateApiAnnotation = Pair(
-        "com.highcapable.yukihookapi.annotation.YukiGenerateApi",
-        "YukiGenerateApi"
-    )
     val HandlerDelegateCaller = Pair(
         "com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.caller.HandlerDelegateCaller",
         "HandlerDelegateCaller"
@@ -218,15 +214,13 @@ fun GenerateData.sources() = mapOf(
       }
     """.trimIndent(),
     ClassName.HandlerDelegateImpl_Impl to """
-      @file:Suppress("ClassName")
+      @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
       package ${PackageName.HandlerDelegateImpl_Impl}
       
       import android.os.Handler
-      import ${ExternalCallerName.YukiGenerateApiAnnotation.first}
       import ${PackageName.HandlerDelegateClass}.${tailPackageName(ClassName.HandlerDelegateClass)}
     """.trimIndent() + "\n\n" + createCommentContent(ClassName.HandlerDelegateImpl_Impl) + "\n" + """
-      @${ExternalCallerName.YukiGenerateApiAnnotation.second}
       object ${ClassName.HandlerDelegateImpl_Impl} {
       
           val wrapperClassName get() = "${PackageName.HandlerDelegateClass}.${tailPackageName(ClassName.HandlerDelegateClass)}"
@@ -235,70 +229,65 @@ fun GenerateData.sources() = mapOf(
       }
     """.trimIndent(),
     ClassName.HandlerDelegateClass to """
-      @file:Suppress("ClassName")
+      @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
       package ${PackageName.HandlerDelegateClass}
       
       import android.os.Handler
       import android.os.Message
       import androidx.annotation.Keep
-      import ${ExternalCallerName.YukiGenerateApiAnnotation.first}
       import ${ExternalCallerName.HandlerDelegateCaller.first}
     """.trimIndent() + "\n\n" + createCommentContent(ClassName.HandlerDelegateClass) + "\n" + """
       @Keep
-      @${ExternalCallerName.YukiGenerateApiAnnotation.second}
       class ${tailPackageName(ClassName.HandlerDelegateClass)}(private val baseInstance: Handler.Callback?) : Handler.Callback {
       
           override fun handleMessage(msg: Message) = ${ExternalCallerName.HandlerDelegateCaller.second}.callHandleMessage(baseInstance, msg)
       }
     """.trimIndent(),
     ClassName.IActivityManagerProxyImpl_Impl to """
-      @file:Suppress("ClassName")
+      @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
       package ${PackageName.IActivityManagerProxyImpl_Impl}
       
       import android.os.Handler
-      import ${ExternalCallerName.YukiGenerateApiAnnotation.first}
       import ${ExternalCallerName.IActivityManagerProxyCaller.first}
       import ${PackageName.IActivityManagerProxyClass}.${tailPackageName(ClassName.IActivityManagerProxyClass)}
       import java.lang.reflect.Proxy
     """.trimIndent() + "\n\n" + createCommentContent(ClassName.IActivityManagerProxyImpl_Impl) + "\n" + """
-      @${ExternalCallerName.YukiGenerateApiAnnotation.second}
       object ${ClassName.IActivityManagerProxyImpl_Impl} {
       
           fun createWrapper(clazz: Class<*>?, instance: Any) = 
-              Proxy.newProxyInstance(${ExternalCallerName.IActivityManagerProxyCaller.second}.currentClassLoader, arrayOf(clazz), ${tailPackageName(
-        ClassName.IActivityManagerProxyClass
-    )}(instance))
+              Proxy.newProxyInstance(${ExternalCallerName.IActivityManagerProxyCaller.second}.currentClassLoader, arrayOf(clazz), ${
+        tailPackageName(
+            ClassName.IActivityManagerProxyClass
+        )
+    }(instance))
       }
     """.trimIndent(),
     ClassName.IActivityManagerProxyClass to """
-      @file:Suppress("ClassName")
+      @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
       package ${PackageName.IActivityManagerProxyClass}
       
       import androidx.annotation.Keep
-      import ${ExternalCallerName.YukiGenerateApiAnnotation.first}
       import ${ExternalCallerName.IActivityManagerProxyCaller.first}
       import java.lang.reflect.InvocationHandler
       import java.lang.reflect.Method
       import java.lang.reflect.Proxy
     """.trimIndent() + "\n\n" + createCommentContent(ClassName.IActivityManagerProxyClass) + "\n" + """
       @Keep
-      @${ExternalCallerName.YukiGenerateApiAnnotation.second}
       class ${tailPackageName(ClassName.IActivityManagerProxyClass)}(private val baseInstance: Any) : InvocationHandler {
       
           override fun invoke(proxy: Any?, method: Method?, args: Array<Any>?) = ${ExternalCallerName.IActivityManagerProxyCaller.second}.callInvoke(baseInstance, method, args)
       }
     """.trimIndent(),
     ClassName.XposedInit to """
-      @file:Suppress("ClassName")
+      @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
       package $entryPackageName
       
       import androidx.annotation.Keep
       import ${ExternalCallerName.YukiXposedEventCaller.first}
-      import ${ExternalCallerName.YukiGenerateApiAnnotation.first}
       ${if (isUsingResourcesHook) "import de.robv.android.xposed.IXposedHookInitPackageResources" else ""}
       import de.robv.android.xposed.IXposedHookLoadPackage
       import de.robv.android.xposed.IXposedHookZygoteInit
@@ -306,7 +295,6 @@ fun GenerateData.sources() = mapOf(
       import de.robv.android.xposed.callbacks.XC_LoadPackage
     """.trimIndent() + "\n\n" + createCommentContent("Xposed Init") + "\n" + """
       @Keep
-      @${ExternalCallerName.YukiGenerateApiAnnotation.second}
       class $xInitClassName : IXposedHookZygoteInit, IXposedHookLoadPackage${if (isUsingResourcesHook) ", IXposedHookInitPackageResources" else ""} {
       
           override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
@@ -330,11 +318,10 @@ fun GenerateData.sources() = mapOf(
             """.trimIndent()
         else "\n}"),
     ClassName.XposedInit_Impl to """
-      @file:Suppress("ClassName")
+      @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
       package $entryPackageName
       
-      import ${ExternalCallerName.YukiGenerateApiAnnotation.first}
       import ${ExternalCallerName.YukiXposedModuleCaller.first}
       import ${ExternalCallerName.YukiXposedResourcesCaller.first}
       import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
@@ -344,7 +331,6 @@ fun GenerateData.sources() = mapOf(
       import de.robv.android.xposed.callbacks.XC_LoadPackage
       ${if (customMPackageName.isBlank()) "import $modulePackageName.BuildConfig" else ""}
     """.trimIndent() + "\n\n" + createCommentContent("Xposed Init Impl") + "\n" + """
-      @${ExternalCallerName.YukiGenerateApiAnnotation.second}
       object ${entryClassName}_Impl {
       
           private const val modulePackageName = ${if (customMPackageName.isNotBlank()) "\"$customMPackageName\"" else "BuildConfig.APPLICATION_ID"}

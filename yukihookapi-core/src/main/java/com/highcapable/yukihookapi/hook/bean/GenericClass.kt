@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/9/20.
  */
-@file:Suppress("unused", "UNCHECKED_CAST")
+@file:Suppress("unused", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.bean
 
@@ -35,7 +35,7 @@ import java.lang.reflect.ParameterizedType
  * 当前 [Class] 的泛型父类操作对象
  * @param type 类型声明实例
  */
-class GenericClass internal constructor(@PublishedApi internal val type: ParameterizedType) {
+class GenericClass internal constructor(private val type: ParameterizedType) {
 
     /**
      * 获得泛型参数数组下标的 [Class] 实例

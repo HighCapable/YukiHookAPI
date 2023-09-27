@@ -5,7 +5,7 @@ pageClass: code-page
 # CurrentClass <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class CurrentClass internal constructor(internal val classSet: Class<*>, internal val instance: Any)
+class CurrentClass internal constructor(private val classSet: Class<*>, internal val instance: Any)
 ```
 
 **变更记录**
@@ -125,7 +125,7 @@ inline fun method(initiate: MethodConditions): MethodFinder.Result.Instance
 ## SuperClass <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class SuperClass internal constructor(internal val superClassSet: Class<*>)
+inner class SuperClass internal constructor(private val superClassSet: Class<*>)
 ```
 
 **变更记录**

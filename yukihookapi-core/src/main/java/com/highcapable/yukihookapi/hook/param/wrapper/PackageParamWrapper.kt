@@ -44,7 +44,6 @@ import dalvik.system.PathClassLoader
  * @param appInfo APP [ApplicationInfo]
  * @param appResources APP [YukiResources]
  */
-@PublishedApi
 internal class PackageParamWrapper internal constructor(
     var type: HookEntryType,
     var packageName: String,

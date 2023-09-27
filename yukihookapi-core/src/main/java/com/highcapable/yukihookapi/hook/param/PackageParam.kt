@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -62,19 +62,7 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
  * 装载 Hook 的目标 APP 入口对象实现类
  * @param wrapper [PackageParam] 的参数包装类实例 - 默认是空的
  */
-open class PackageParam internal constructor(@PublishedApi internal var wrapper: PackageParamWrapper? = null) {
-
-    @PublishedApi
-    internal companion object {
-
-        /** 获取当前 Xposed 模块包名 */
-        @PublishedApi
-        internal val modulePackageName get() = YukiXposedModule.modulePackageName
-
-        /** Android 系统框架名称 */
-        @PublishedApi
-        internal const val SYSTEM_FRAMEWORK_NAME = AppParasitics.SYSTEM_FRAMEWORK_NAME
-    }
+open class PackageParam internal constructor(internal var wrapper: PackageParamWrapper? = null) {
 
     /** 当前设置的 [ClassLoader] */
     private var currentClassLoader: ClassLoader? = null
@@ -304,7 +292,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      */
     inline fun loadApp(isExcludeSelf: Boolean = false, initiate: PackageParam.() -> Unit) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != modulePackageName)
+            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiXposedModule.modulePackageName)
         ) initiate(this)
     }
 
@@ -319,7 +307,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      */
     fun loadApp(isExcludeSelf: Boolean = false, hooker: YukiBaseHooker) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != modulePackageName)
+            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiXposedModule.modulePackageName)
         ) loadHooker(hooker)
     }
 
@@ -335,7 +323,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
     fun loadApp(isExcludeSelf: Boolean = false, vararg hooker: YukiBaseHooker) {
         if (hooker.isEmpty()) error("loadApp method need a \"hooker\" param")
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != modulePackageName)
+            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiXposedModule.modulePackageName)
         ) hooker.forEach { loadHooker(it) }
     }
 
@@ -343,13 +331,13 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * 装载并 Hook 系统框架
      * @param initiate 方法体
      */
-    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(SYSTEM_FRAMEWORK_NAME, initiate)
+    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, initiate)
 
     /**
      * 装载并 Hook 系统框架
      * @param hooker Hook 子类
      */
-    fun loadSystem(hooker: YukiBaseHooker) = loadApp(SYSTEM_FRAMEWORK_NAME, hooker)
+    fun loadSystem(hooker: YukiBaseHooker) = loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, hooker)
 
     /**
      * 装载并 Hook 系统框架
@@ -357,7 +345,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      */
     fun loadSystem(vararg hooker: YukiBaseHooker) {
         if (hooker.isEmpty()) error("loadSystem method need a \"hooker\" param")
-        loadApp(SYSTEM_FRAMEWORK_NAME, *hooker)
+        loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, *hooker)
     }
 
     /**
@@ -652,7 +640,6 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
      * @return [HookClass]
      */
-    @PublishedApi
     internal fun VariousClass.toHookClass(loader: ClassLoader? = null) =
         runCatching { get(loader).toHookClass() }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
 
@@ -660,7 +647,6 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * [Class] 转换为 [HookClass]
      * @return [HookClass]
      */
-    @PublishedApi
     internal fun Class<*>.toHookClass() = HookClass(instance = this, name)
 
     /**
@@ -669,7 +655,7 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
      * - ❗请使用 [onAppLifecycle] 方法来获取 [AppLifecycle]
      * @param isOnFailureThrowToApp 是否在发生异常时将异常抛出给宿主
      */
-    inner class AppLifecycle @PublishedApi internal constructor(private val isOnFailureThrowToApp: Boolean) {
+    inner class AppLifecycle internal constructor(private val isOnFailureThrowToApp: Boolean) {
 
         /**
          * 是否为当前操作 [HookEntryType.PACKAGE] 的调用域
@@ -747,7 +733,6 @@ open class PackageParam internal constructor(@PublishedApi internal var wrapper:
         }
 
         /** 设置创建生命周期监听回调 */
-        @PublishedApi
         internal fun build() {
             AppParasitics.AppLifecycleCallback.isOnFailureThrowToApp = isOnFailureThrowToApp
             AppParasitics.AppLifecycleCallback.isCallbackSetUp = true

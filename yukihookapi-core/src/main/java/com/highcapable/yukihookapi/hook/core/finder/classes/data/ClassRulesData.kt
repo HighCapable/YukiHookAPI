@@ -61,7 +61,6 @@ import java.lang.reflect.Method
  * @param methodRules [Method] 查找条件数据数组
  * @param constroctorRules [Constructor] 查找条件数据数组
  */
-@PublishedApi
 internal class ClassRulesData internal constructor(
     var fromPackages: ArrayList<PackageRulesData> = arrayListOf(),
     var fullName: NameRulesData? = null,

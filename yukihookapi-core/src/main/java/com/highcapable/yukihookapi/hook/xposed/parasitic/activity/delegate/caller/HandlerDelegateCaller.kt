@@ -36,7 +36,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
@@ -53,8 +52,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.Activit
  *
  * - ❗装载代码将自动生成 - 请勿手动调用
  */
-@YukiGenerateApi
-object HandlerDelegateCaller {
+internal object HandlerDelegateCaller {
 
     /** 启动 [Activity] */
     private const val LAUNCH_ACTIVITY = 100
@@ -70,8 +68,7 @@ object HandlerDelegateCaller {
      * @param msg 当前消息实例
      * @return [Boolean]
      */
-    @YukiGenerateApi
-    fun callHandleMessage(baseInstance: Handler.Callback?, msg: Message): Boolean {
+    internal fun callHandleMessage(baseInstance: Handler.Callback?, msg: Message): Boolean {
         when (msg.what) {
             LAUNCH_ACTIVITY -> runCatching {
                 msg.obj.current(ignored = true).field { name = "intent" }.apply {

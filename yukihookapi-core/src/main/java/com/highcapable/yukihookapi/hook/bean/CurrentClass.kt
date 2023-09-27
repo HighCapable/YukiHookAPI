@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/4/4.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.bean
 
@@ -42,11 +42,10 @@ import com.highcapable.yukihookapi.hook.factory.method
  * @param classSet 当前实例的 [Class]
  * @param instance 当前实例本身
  */
-class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val classSet: Class<*>, @PublishedApi internal val instance: Any) {
+class CurrentClass internal constructor(private val classSet: Class<*>, internal val instance: Any) {
 
     /** 是否开启忽略错误警告功能 */
-    @PublishedApi
-    internal var isShutErrorPrinting = false
+    internal var isIgnoreErrorLogs = false
 
     /**
      * 获得当前 [classSet] 的 [Class.getName]
@@ -88,14 +87,14 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * @param initiate 查找方法体
      * @return [FieldFinder.Result.Instance]
      */
-    inline fun field(initiate: FieldConditions) = classSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+    inline fun field(initiate: FieldConditions) = classSet.field(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
     /**
      * 调用当前实例中的方法
      * @param initiate 查找方法体
      * @return [MethodFinder.Result.Instance]
      */
-    inline fun method(initiate: MethodConditions) = classSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+    inline fun method(initiate: MethodConditions) = classSet.method(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
     /**
      * 当前类的父类实例的类操作对象
@@ -103,7 +102,7 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
      * - ❗请使用 [superClass] 方法来获取 [SuperClass]
      * @param superClassSet 父类 [Class] 对象
      */
-    inner class SuperClass internal constructor(@PublishedApi internal val superClassSet: Class<*>) {
+    inner class SuperClass internal constructor(private val superClassSet: Class<*>) {
 
         /**
          * 获得当前 [classSet] 中父类的 [Class.getName]
@@ -139,7 +138,7 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @param initiate 查找方法体
          * @return [FieldFinder.Result.Instance]
          */
-        inline fun field(initiate: FieldConditions) = superClassSet.field(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+        inline fun field(initiate: FieldConditions) = superClassSet.field(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
         /**
          * 调用父类实例中的方法
@@ -147,7 +146,7 @@ class CurrentClass @PublishedApi internal constructor(@PublishedApi internal val
          * @return [MethodFinder.Result.Instance]
          */
         inline fun method(initiate: MethodConditions) =
-            superClassSet.method(initiate).result { if (isShutErrorPrinting) ignored() }.get(instance)
+            superClassSet.method(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
         override fun toString() = "CurrentClass super [$superClassSet]"
     }

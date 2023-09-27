@@ -37,7 +37,7 @@ import java.lang.reflect.Member
  * [Member] 查找条件实现类
  * @param rulesData 当前查找条件规则数据
  */
-class MemberRules internal constructor(@PublishedApi internal val rulesData: MemberRulesData) : BaseRules() {
+class MemberRules internal constructor(private val rulesData: MemberRulesData) : BaseRules() {
 
     /**
      * 设置 [Member] 标识符筛选条件
@@ -53,6 +53,5 @@ class MemberRules internal constructor(@PublishedApi internal val rulesData: Mem
      * 返回结果实现类
      * @return [MemberRulesResult]
      */
-    @PublishedApi
     internal fun build() = MemberRulesResult(rulesData)
 }

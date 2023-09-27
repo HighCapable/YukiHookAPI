@@ -13,7 +13,7 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # CurrentClass <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class CurrentClass internal constructor(internal val classSet: Class<*>, internal val instance: Any)
+class CurrentClass internal constructor(private val classSet: Class<*>, internal val instance: Any)
 ```
 
 **Change Records**
@@ -133,7 +133,7 @@ inline fun method(initiate: MethodConditions): MethodFinder.Result.Instance
 ## SuperClass <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class SuperClass internal constructor(internal val superClassSet: Class<*>)
+inner class SuperClass internal constructor(private val superClassSet: Class<*>)
 ```
 
 **Change Records**

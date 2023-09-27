@@ -39,7 +39,6 @@ import java.lang.reflect.Member
  */
 class CountRules private constructor(private val instance: Int) {
 
-    @PublishedApi
     internal companion object {
 
         /**
@@ -47,7 +46,6 @@ class CountRules private constructor(private val instance: Int) {
          * @param instance 实例对象
          * @return [CountRules]
          */
-        @PublishedApi
         internal fun with(instance: Int) = CountRules(instance)
     }
 

@@ -25,25 +25,12 @@ android {
     kotlinOptions {
         jvmTarget = "17"
         freeCompilerArgs = listOf(
-            "-opt-in=${property.project.yukihookapi.core.kotlin.optIn.yukiPrivateApi}",
-            "-opt-in=${property.project.yukihookapi.core.kotlin.optIn.yukiGenerateApi}",
             "-Xno-param-assertions",
             "-Xno-call-assertions",
             "-Xno-receiver-assertions"
         )
     }
     lint { checkReleaseBuilds = false }
-}
-
-kotlin {
-    sourceSets {
-        all {
-            languageSettings {
-                optIn(property.project.yukihookapi.core.kotlin.optIn.yukiPrivateApi)
-                optIn(property.project.yukihookapi.core.kotlin.optIn.yukiGenerateApi)
-            }
-        }
-    }
 }
 
 dependencies {

@@ -25,11 +25,10 @@
  *
  * This file is created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "KotlinConstantConditions")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "KotlinConstantConditions", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.core.finder.members
 
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
@@ -55,10 +54,8 @@ import java.lang.reflect.Member
  * 可通过指定类型查找指定 [Constructor] 或一组 [Constructor]
  * @param classSet 当前需要查找的 [Class] 实例
  */
-class ConstructorFinder @PublishedApi internal constructor(@PublishedApi override val classSet: Class<*>? = null) :
-    MemberBaseFinder(tag = "Constructor", classSet) {
+class ConstructorFinder internal constructor(override val classSet: Class<*>? = null) : MemberBaseFinder(tag = "Constructor", classSet) {
 
-    @PublishedApi
     internal companion object {
 
         /**
@@ -67,12 +64,10 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
          * @param classSet 当前需要查找的 [Class] 实例
          * @return [ConstructorFinder]
          */
-        @PublishedApi
         internal fun fromHooker(hookInstance: YukiMemberHookCreator.MemberHookCreator, classSet: Class<*>? = null) =
             ConstructorFinder(classSet).apply { hookerManager.instance = hookInstance }
     }
 
-    @PublishedApi
     override var rulesData = ConstructorRulesData()
 
     /** 当前使用的 [classSet] */
@@ -269,7 +264,6 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
         }
     }
 
-    @YukiPrivateApi
     override fun build() = runCatching {
         internalBuild()
         Result()
@@ -278,7 +272,6 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
         Result(isNoSuch = true, it)
     }
 
-    @YukiPrivateApi
     override fun process() = runCatching {
         hookerManager.isMemberBinded = true
         internalBuild()
@@ -288,10 +281,8 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
         Process(isNoSuch = true, it)
     }
 
-    @YukiPrivateApi
     override fun failure(throwable: Throwable?) = Result(isNoSuch = true, throwable)
 
-    @YukiPrivateApi
     override fun denied(throwable: Throwable?) = Process(isNoSuch = true, throwable)
 
     /**
@@ -299,11 +290,10 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
      *
      * 可累计失败次数直到查找成功
      */
-    inner class RemedyPlan @PublishedApi internal constructor() {
+    inner class RemedyPlan internal constructor() {
 
         /** 失败尝试次数数组 */
-        @PublishedApi
-        internal val remedyPlans = HashSet<Pair<ConstructorFinder, Result>>()
+        private val remedyPlans = HashSet<Pair<ConstructorFinder, Result>>()
 
         /**
          * 创建需要重新查找的 [Constructor]
@@ -320,7 +310,6 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
         }
 
         /** 开始重查找 */
-        @PublishedApi
         internal fun build() {
             if (classSet == null) return
             if (remedyPlans.isNotEmpty()) {
@@ -352,7 +341,7 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
          *
          * 可在这里处理是否成功的回调
          */
-        inner class Result @PublishedApi internal constructor() {
+        inner class Result internal constructor() {
 
             /** 找到结果时的回调 */
             internal var onFindCallback: (HashSet<Constructor<*>>.() -> Unit)? = null
@@ -373,8 +362,8 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
      * @param throwable 错误信息
      */
     inner class Process internal constructor(
-        @PublishedApi internal val isNoSuch: Boolean = false,
-        @PublishedApi internal val throwable: Throwable? = null
+        internal val isNoSuch: Boolean = false,
+        internal val throwable: Throwable? = null
     ) : BaseResult {
 
         /**
@@ -432,8 +421,8 @@ class ConstructorFinder @PublishedApi internal constructor(@PublishedApi overrid
      * @param throwable 错误信息
      */
     inner class Result internal constructor(
-        @PublishedApi internal val isNoSuch: Boolean = false,
-        @PublishedApi internal val throwable: Throwable? = null
+        internal val isNoSuch: Boolean = false,
+        internal val throwable: Throwable? = null
     ) : BaseResult {
 
         /**

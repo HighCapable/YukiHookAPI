@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/5/1.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.core
 
@@ -47,14 +47,10 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookResources 要 Hook 的 [HookResources] 实例
  */
-class YukiResourcesHookCreator @PublishedApi internal constructor(
-    @PublishedApi internal val packageParam: PackageParam,
-    @PublishedApi internal val hookResources: HookResources
-) {
+class YukiResourcesHookCreator internal constructor(internal val packageParam: PackageParam, internal val hookResources: HookResources) {
 
     /** 设置要 Hook 的 Resources */
-    @PublishedApi
-    internal var preHookResources = ArrayMap<String, ResourcesHookCreator>()
+    private var preHookResources = ArrayMap<String, ResourcesHookCreator>()
 
     /**
      * 注入要 Hook 的 Resources
@@ -66,7 +62,6 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
         ResourcesHookCreator(tag).apply(initiate).apply { preHookResources[toString()] = this }.build()
 
     /** Hook 执行入口 */
-    @PublishedApi
     internal fun hook() {
         if (HookApiCategoryHelper.hasAvailableHookApi.not()) return
         /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.RESOURCES] */
@@ -81,7 +76,7 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
      * 查找和处理需要 Hook 的 Resources
      * @param tag 当前设置的标签
      */
-    inner class ResourcesHookCreator @PublishedApi internal constructor(private val tag: String) {
+    inner class ResourcesHookCreator internal constructor(private val tag: String) {
 
         /** 是否已经执行 Hook */
         private var isHooked = false
@@ -93,12 +88,10 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
         private inner class ModuleResFwd(var resId: Int)
 
         /** 是否对当前 [ResourcesHookCreator] 禁止执行 Hook 操作 */
-        @PublishedApi
-        internal var isDisableCreatorRunHook = false
+        private var isDisableCreatorRunHook = false
 
         /** 当前的查找条件 */
-        @PublishedApi
-        internal var conditions: ConditionFinder? = null
+        private var conditions: ConditionFinder? = null
 
         /** Hook 出现错误回调 */
         private var onHookFailureCallback: ((Throwable) -> Unit)? = null
@@ -173,11 +166,9 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
          * Hook 创建入口
          * @return [Result]
          */
-        @PublishedApi
         internal fun build() = Result()
 
         /** Hook 执行入口 */
-        @PublishedApi
         internal fun hook() {
             if (isHooked) return
             isHooked = true
@@ -243,7 +234,7 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
         /**
          * Resources 查找条件实现类
          */
-        inner class ConditionFinder @PublishedApi internal constructor() {
+        inner class ConditionFinder internal constructor() {
 
             /** Resources 类型 */
             internal var type = ""
@@ -321,7 +312,6 @@ class YukiResourcesHookCreator @PublishedApi internal constructor(
              * @return [ConditionFinder]
              * @throws IllegalStateException 如果没有设置 [name] or [type]
              */
-            @PublishedApi
             internal fun build(): ConditionFinder {
                 when {
                     name.isBlank() -> error("Resources Hook condition name cannot be empty [$tag]")

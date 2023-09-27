@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/4/29.
  */
-@file:Suppress("unused", "DEPRECATION", "DiscouragedApi")
+@file:Suppress("unused", "DEPRECATION", "DiscouragedApi", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.resources
 
@@ -236,7 +236,7 @@ class YukiResources private constructor(private val baseInstance: XResources) :
      * 装载 Hook APP 的目标布局 Resources 实现类
      * @param baseParam 对接 [XC_LayoutInflated.LayoutInflatedParam]
      */
-    class LayoutInflatedParam(@PublishedApi internal val baseParam: XC_LayoutInflated.LayoutInflatedParam) {
+    class LayoutInflatedParam(private val baseParam: XC_LayoutInflated.LayoutInflatedParam) {
 
         /**
          * 获取当前被 Hook 的布局装载目录名称

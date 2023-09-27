@@ -40,7 +40,6 @@ import java.lang.reflect.Member
  */
 class NameRules private constructor(private val instance: String) {
 
-    @PublishedApi
     internal companion object {
 
         /**
@@ -48,7 +47,6 @@ class NameRules private constructor(private val instance: String) {
          * @param instance 实例对象
          * @return [NameRules]
          */
-        @PublishedApi
         internal fun with(instance: String) = NameRules(instance)
     }
 

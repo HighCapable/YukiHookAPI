@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.caller
 
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.log.yLoggerE
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
@@ -41,8 +40,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
  *
  * - ❗装载代码将自动生成 - 请勿手动调用
  */
-@YukiGenerateApi
-object YukiXposedModuleCaller {
+internal object YukiXposedModuleCaller {
 
     /**
      * 模块是否装载了 Xposed 回调方法
@@ -50,8 +48,7 @@ object YukiXposedModuleCaller {
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @return [Boolean]
      */
-    @YukiGenerateApi
-    val isXposedCallbackSetUp get() = YukiXposedModule.isXposedCallbackSetUp
+    internal val isXposedCallbackSetUp get() = YukiXposedModule.isXposedCallbackSetUp
 
     /**
      * 标识 Xposed 模块开始装载
@@ -60,16 +57,14 @@ object YukiXposedModuleCaller {
      * @param packageName 当前 Xposed 模块包名
      * @param appFilePath 当前 Xposed 模块自身 APK 路径
      */
-    @YukiGenerateApi
-    fun callOnStartLoadModule(packageName: String, appFilePath: String) = YukiXposedModule.onStartLoadModule(packageName, appFilePath)
+    internal fun callOnStartLoadModule(packageName: String, appFilePath: String) = YukiXposedModule.onStartLoadModule(packageName, appFilePath)
 
     /**
      * 标识 Xposed 模块装载完成
      *
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      */
-    @YukiGenerateApi
-    fun callOnFinishLoadModule() = YukiXposedModule.onFinishLoadModule()
+    internal fun callOnFinishLoadModule() = YukiXposedModule.onFinishLoadModule()
 
     /**
      * 标识可用的 Hook APP (宿主) 开始装载
@@ -82,8 +77,7 @@ object YukiXposedModuleCaller {
      * @param appInfo 宿主 [ApplicationInfo]
      * @param appResources 宿主 [YukiResources]
      */
-    @YukiGenerateApi
-    fun callOnPackageLoaded(
+    internal fun callOnPackageLoaded(
         type: HookEntryType,
         packageName: String?,
         processName: String? = "",
@@ -99,6 +93,5 @@ object YukiXposedModuleCaller {
      * @param msg 日志打印的内容
      * @param e 异常堆栈信息 - 默认空
      */
-    @YukiGenerateApi
-    fun internalLoggerE(msg: String, e: Throwable? = null) = yLoggerE(msg = msg, e = e)
+    internal fun internalLoggerE(msg: String, e: Throwable? = null) = yLoggerE(msg = msg, e = e)
 }

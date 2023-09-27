@@ -28,15 +28,12 @@
  */
 package com.highcapable.yukihookapi.hook.xposed.bridge.type
 
-import com.highcapable.yukihookapi.annotation.YukiGenerateApi
-
 /**
  * 当前正在进行的 Hook 类型
  *
  * - ❗装载代码将自动生成 - 请勿手动调用
  */
-@YukiGenerateApi
-enum class HookEntryType {
+internal enum class HookEntryType {
 
     /** 装载 Zygote */
     ZYGOTE,

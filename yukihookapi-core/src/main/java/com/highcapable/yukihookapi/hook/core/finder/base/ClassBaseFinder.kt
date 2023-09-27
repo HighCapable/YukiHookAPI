@@ -28,7 +28,6 @@
 package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.log.yLoggerD
 import com.highcapable.yukihookapi.hook.log.yLoggerE
@@ -78,6 +77,5 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
         yLoggerE(msg = "NoClassDefFound happend in [$loaderSet]", e = e)
     }
 
-    @YukiPrivateApi
     override fun failure(throwable: Throwable?) = error("DexClassFinder does not contain this usage")
 }

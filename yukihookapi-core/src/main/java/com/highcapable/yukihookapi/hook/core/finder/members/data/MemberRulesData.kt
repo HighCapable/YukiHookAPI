@@ -39,7 +39,6 @@ import java.lang.reflect.Member
  * @param matchCountRange 匹配的字节码个数范围
  * @param matchCountConditions 匹配的字节码个数条件
  */
-@PublishedApi
 internal open class MemberRulesData internal constructor(
     var isFindInSuper: Boolean = false,
     var matchCount: Int = -1,

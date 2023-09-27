@@ -13,7 +13,7 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # ConstructorRules <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class ConstructorRules internal constructor(internal val rulesData: ConstructorRulesData) : BaseRules
+class ConstructorRules internal constructor(private val rulesData: ConstructorRulesData) : BaseRules
 ```
 
 **Change Records**

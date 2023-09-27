@@ -33,7 +33,11 @@ import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.base.BaseRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberRulesResult
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.*
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Method
@@ -42,7 +46,7 @@ import java.lang.reflect.Method
  * [Method] 查找条件实现类
  * @param rulesData 当前查找条件规则数据
  */
-class MethodRules internal constructor(@PublishedApi internal val rulesData: MethodRulesData) : BaseRules() {
+class MethodRules internal constructor(private val rulesData: MethodRulesData) : BaseRules() {
 
     /**
      * 设置 [Method] 名称
@@ -205,6 +209,5 @@ class MethodRules internal constructor(@PublishedApi internal val rulesData: Met
      * 返回结果实现类
      * @return [MemberRulesResult]
      */
-    @PublishedApi
     internal fun build() = MemberRulesResult(rulesData)
 }

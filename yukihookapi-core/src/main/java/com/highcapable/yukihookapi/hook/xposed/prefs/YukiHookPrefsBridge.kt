@@ -25,7 +25,10 @@
  *
  * This file is created by fankes on 2022/2/8.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "StaticFieldLeak", "SetWorldReadable", "CommitPrefEdits", "UNCHECKED_CAST")
+@file:Suppress(
+    "unused", "MemberVisibilityCanBePrivate", "StaticFieldLeak", "SetWorldReadable",
+    "CommitPrefEdits", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE"
+)
 
 package com.highcapable.yukihookapi.hook.xposed.prefs
 
@@ -356,8 +359,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @param value 默认值
      * @return [Any]
      */
-    @PublishedApi
-    internal fun getPrefsData(key: String, value: Any?): Any = when (value) {
+    private fun getPrefsData(key: String, value: Any?): Any = when (value) {
         is String -> getString(key, value)
         is Set<*> -> getStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
         is Int -> getInt(key, value)
@@ -650,8 +652,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
          * @return [Editor]
          */
-        @PublishedApi
-        internal fun putPrefsData(key: String, value: Any?) = when (value) {
+        private fun putPrefsData(key: String, value: Any?) = when (value) {
             is String -> putString(key, value)
             is Set<*> -> putStringSet(key, value as? Set<String> ?: error("Key-Value type ${value.javaClass.name} is not allowed"))
             is Int -> putInt(key, value)

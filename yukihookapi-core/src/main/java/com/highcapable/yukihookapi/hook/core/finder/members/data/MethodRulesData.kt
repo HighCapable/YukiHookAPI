@@ -45,7 +45,6 @@ import java.lang.reflect.Method
  * @param returnType 返回值类型
  * @param returnTypeConditions 返回值类型条件
  */
-@PublishedApi
 internal class MethodRulesData internal constructor(
     var name: String = "",
     var nameConditions: NameConditions? = null,

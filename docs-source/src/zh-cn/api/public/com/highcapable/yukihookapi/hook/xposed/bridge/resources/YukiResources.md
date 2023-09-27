@@ -19,7 +19,7 @@ class YukiResources private constructor(private val baseInstance: XResources) : 
 ## LayoutInflatedParam <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class LayoutInflatedParam(internal val baseParam: XC_LayoutInflated.LayoutInflatedParam)
+class LayoutInflatedParam(private val baseParam: XC_LayoutInflated.LayoutInflatedParam)
 ```
 
 **变更记录**

@@ -44,7 +44,6 @@ import java.lang.reflect.Method
  * @param orderIndex 字节码、数组顺序下标
  * @param matchIndex 字节码、数组筛选下标
  */
-@PublishedApi
 internal abstract class BaseRulesData internal constructor(
     var modifiers: ModifierConditions? = null,
     var orderIndex: Pair<Int, Boolean>? = null,

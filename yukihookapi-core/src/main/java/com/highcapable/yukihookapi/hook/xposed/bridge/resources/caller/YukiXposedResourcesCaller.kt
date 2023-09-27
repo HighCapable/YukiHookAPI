@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.resources.caller
 
 import android.content.res.XResources
-import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 
 /**
@@ -38,8 +37,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
  *
  * - ❗装载代码将自动生成 - 请勿手动调用
  */
-@YukiGenerateApi
-object YukiXposedResourcesCaller {
+internal object YukiXposedResourcesCaller {
 
     /**
      * 从 [XResources] 创建 [YukiResources]
@@ -48,6 +46,5 @@ object YukiXposedResourcesCaller {
      * @param xResources [XResources] 实例
      * @return [YukiResources] or null
      */
-    @YukiGenerateApi
-    fun createYukiResourcesFromXResources(xResources: XResources?) = xResources?.let { YukiResources.wrapper(it) }
+    internal fun createYukiResourcesFromXResources(xResources: XResources?) = xResources?.let { YukiResources.wrapper(it) }
 }

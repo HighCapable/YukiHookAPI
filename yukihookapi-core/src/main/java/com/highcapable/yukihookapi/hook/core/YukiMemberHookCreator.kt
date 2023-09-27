@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "unused", "PropertyName")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.core
 
@@ -81,10 +81,7 @@ import java.lang.reflect.Method
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
-class YukiMemberHookCreator @PublishedApi internal constructor(
-    @PublishedApi internal val packageParam: PackageParam,
-    @PublishedApi internal val hookClass: HookClass
-) {
+class YukiMemberHookCreator internal constructor(private val packageParam: PackageParam, private val hookClass: HookClass) {
 
     /** 默认 Hook 回调优先级 */
     val PRIORITY_DEFAULT = 0x0
@@ -108,15 +105,13 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
     private var isDisableCreatorRunHook = false
 
     /** 设置要 Hook 的 [Method]、[Constructor] */
-    @PublishedApi
-    internal var preHookMembers = ArrayMap<String, MemberHookCreator>()
+    private var preHookMembers = ArrayMap<String, MemberHookCreator>()
 
     /**
      * 更新当前 [YukiMemberHookCreator] 禁止执行 Hook 操作的条件
      * @param reason 当前条件
      */
-    @PublishedApi
-    internal fun updateDisableCreatorRunHookReasons(reason: Boolean) {
+    private fun updateDisableCreatorRunHookReasons(reason: Boolean) {
         disableCreatorRunHookReasons.add(reason)
         conditions {
             disableCreatorRunHookReasons.forEach { and(it) }
@@ -162,7 +157,6 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
      * Hook 执行入口
      * @return [Result]
      */
-    @PublishedApi
     internal fun hook() = when {
         HookApiCategoryHelper.hasAvailableHookApi.not() -> Result()
         /** 过滤 [HookEntryType.ZYGOTE] and [HookEntryType.PACKAGE] or [HookParam.isCallbackCalled] 已被执行 */
@@ -241,7 +235,7 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
      * @param priority Hook 优先级
      * @param tag 当前设置的标签
      */
-    inner class MemberHookCreator @PublishedApi internal constructor(private val priority: Int, internal val tag: String) {
+    inner class MemberHookCreator internal constructor(private val priority: Int, internal val tag: String) {
 
         /** Hook 结果实例 */
         private var result: Result? = null
@@ -292,16 +286,13 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
         private var isReplaceHookMode = false
 
         /** 是否对当前 [MemberHookCreator] 禁止执行 Hook 操作 */
-        @PublishedApi
-        internal var isDisableMemberRunHook = false
+        private var isDisableMemberRunHook = false
 
         /** 查找过程中发生的异常 */
-        @PublishedApi
-        internal var findingThrowable: Throwable? = null
+        private var findingThrowable: Throwable? = null
 
         /** 标识是否已经设置了要 Hook 的 [members] */
-        @PublishedApi
-        internal var isHookMemberSetup = false
+        private var isHookMemberSetup = false
 
         /** 当前被 Hook 的 [Method]、[Constructor] 实例数组 */
         private val hookedMembers = HashSet<YukiMemberHook.HookedMember>()
@@ -550,11 +541,9 @@ class YukiMemberHookCreator @PublishedApi internal constructor(
          * Hook 创建入口
          * @return [Result]
          */
-        @PublishedApi
         internal fun build() = Result().apply { result = this }
 
         /** Hook 执行入口 */
-        @PublishedApi
         internal fun hook() {
             if (HookApiCategoryHelper.hasAvailableHookApi.not() || isHooked || isDisableMemberRunHook) return
             isHooked = true

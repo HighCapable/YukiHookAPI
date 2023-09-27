@@ -44,7 +44,6 @@ import java.lang.reflect.Modifier
  */
 class ModifierRules private constructor(private val instance: Any) {
 
-    @PublishedApi
     internal companion object {
 
         /** 当前实例数组 */
@@ -63,7 +62,6 @@ class ModifierRules private constructor(private val instance: Any) {
          * @param value 唯一标识值 - 默认 0
          * @return [ModifierRules]
          */
-        @PublishedApi
         internal fun with(instance: Any, value: Long = 0) = ModifierRules(instance).apply { instances[value] = this }
     }
 

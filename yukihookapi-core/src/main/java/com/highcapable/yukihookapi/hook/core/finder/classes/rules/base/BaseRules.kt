@@ -44,7 +44,6 @@ import java.lang.reflect.Member
  */
 open class BaseRules internal constructor(internal var instance: DexClassFinder? = null) {
 
-    @PublishedApi
     internal companion object {
 
         /**
@@ -52,7 +51,6 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
          * @param instance 当前查找类实例
          * @return [MemberRulesData]
          */
-        @PublishedApi
         internal fun createMemberRules(instance: DexClassFinder) =
             MemberRules(MemberRulesData().apply { instance.rulesData.memberRules.add(this) }).apply { this.instance = instance }
 
@@ -60,7 +58,6 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
          * 创建查找条件规则数据
          * @return [FieldRulesData]
          */
-        @PublishedApi
         internal fun createFieldRules(instance: DexClassFinder) =
             FieldRules(FieldRulesData().apply { instance.rulesData.fieldRules.add(this) }).apply { this.instance = instance }
 
@@ -68,7 +65,6 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
          * 创建查找条件规则数据
          * @return [MethodRulesData]
          */
-        @PublishedApi
         internal fun createMethodRules(instance: DexClassFinder) =
             MethodRules(MethodRulesData().apply { instance.rulesData.methodRules.add(this) }).apply { this.instance = instance }
 
@@ -76,7 +72,6 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
          * 创建查找条件规则数据
          * @return [ConstructorRulesData]
          */
-        @PublishedApi
         internal fun createConstructorRules(instance: DexClassFinder) =
             ConstructorRules(ConstructorRulesData().apply { instance.rulesData.constroctorRules.add(this) }).apply { this.instance = instance }
     }

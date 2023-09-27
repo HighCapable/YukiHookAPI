@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/9/4.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.core.finder.classes
 
@@ -34,7 +34,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import androidx.core.content.pm.PackageInfoCompat
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.finder.base.ClassBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.ConstructorRules
@@ -70,7 +69,7 @@ import java.lang.reflect.Method
  * @param async 是否启用异步
  * @param loaderSet 当前使用的 [ClassLoader] 实例
  */
-class DexClassFinder @PublishedApi internal constructor(
+class DexClassFinder internal constructor(
     internal var name: String,
     internal var async: Boolean,
     override val loaderSet: ClassLoader?
@@ -114,7 +113,6 @@ class DexClassFinder @PublishedApi internal constructor(
         }
     }
 
-    @PublishedApi
     override var rulesData = ClassRulesData()
 
     /**
@@ -477,7 +475,6 @@ class DexClassFinder @PublishedApi internal constructor(
         classes.takeIf { it.isNotEmpty() }?.forEach { classInstances.add(it) }
     }
 
-    @YukiPrivateApi
     override fun build() = runCatching {
         if (loaderSet != null) {
             /** 开始任务 */
@@ -510,8 +507,8 @@ class DexClassFinder @PublishedApi internal constructor(
      * @param throwable 错误信息
      */
     inner class Result internal constructor(
-        @PublishedApi internal var isNotFound: Boolean = false,
-        @PublishedApi internal var throwable: Throwable? = null
+        internal var isNotFound: Boolean = false,
+        internal var throwable: Throwable? = null
     ) : BaseResult {
 
         /** 异步方法体回调结果 */

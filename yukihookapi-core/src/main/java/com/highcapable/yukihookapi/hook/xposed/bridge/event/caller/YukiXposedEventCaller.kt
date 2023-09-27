@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event.caller
 
-import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import de.robv.android.xposed.IXposedHookZygoteInit
 import de.robv.android.xposed.callbacks.XC_InitPackageResources
@@ -40,8 +39,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  *
  * - ❗装载代码将自动生成 - 请勿手动调用
  */
-@YukiGenerateApi
-object YukiXposedEventCaller {
+internal object YukiXposedEventCaller {
 
     /**
      * 回调 initZygote 事件监听
@@ -49,8 +47,7 @@ object YukiXposedEventCaller {
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param sparam Xposed API 实例
      */
-    @YukiGenerateApi
-    fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
+    internal fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
         if (sparam == null) return
         YukiXposedEvent.initZygoteCallback?.invoke(sparam)
     }
@@ -61,8 +58,7 @@ object YukiXposedEventCaller {
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param lpparam Xposed API 实例
      */
-    @YukiGenerateApi
-    fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
+    internal fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
         if (lpparam == null) return
         YukiXposedEvent.handleLoadPackageCallback?.invoke(lpparam)
     }
@@ -73,8 +69,7 @@ object YukiXposedEventCaller {
      * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param resparam Xposed API 实例
      */
-    @YukiGenerateApi
-    fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {
+    internal fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {
         if (resparam == null) return
         YukiXposedEvent.handleInitPackageResourcesCallback?.invoke(resparam)
     }

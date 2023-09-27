@@ -28,7 +28,6 @@
 package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.YukiPrivateApi
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.log.yLoggerD
@@ -44,10 +43,7 @@ import java.lang.reflect.Method
  * @param tag 当前查找类的标识
  * @param classSet 当前需要查找的 [Class] 实例
  */
-abstract class MemberBaseFinder internal constructor(
-    private val tag: String,
-    @PublishedApi internal open val classSet: Class<*>? = null
-) : BaseFinder() {
+abstract class MemberBaseFinder internal constructor(private val tag: String, internal open val classSet: Class<*>? = null) : BaseFinder() {
 
     internal companion object {
 
@@ -56,11 +52,9 @@ abstract class MemberBaseFinder internal constructor(
     }
 
     /** 当前 [MemberHookerManager] */
-    @PublishedApi
     internal var hookerManager = MemberHookerManager()
 
     /** 是否使用了重查找功能 */
-    @PublishedApi
     internal var isUsingRemedyPlan = false
 
     /** 是否开启忽略错误警告功能 */
@@ -129,8 +123,7 @@ abstract class MemberBaseFinder internal constructor(
      * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [BaseFinder.BaseResult]
      */
-    @YukiPrivateApi
-    abstract fun process(): BaseResult
+    internal abstract fun process(): BaseResult
 
     /**
      * 返回只有异常的结果处理类并作用于目标 [YukiMemberHookCreator.MemberHookCreator]
@@ -139,8 +132,7 @@ abstract class MemberBaseFinder internal constructor(
      * @param throwable 异常
      * @return [BaseFinder.BaseResult]
      */
-    @YukiPrivateApi
-    abstract fun denied(throwable: Throwable?): BaseResult
+    internal abstract fun denied(throwable: Throwable?): BaseResult
 
     /**
      * 当前 Hooker 管理实现类

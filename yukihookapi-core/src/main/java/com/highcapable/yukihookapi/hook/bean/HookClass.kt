@@ -34,9 +34,9 @@ package com.highcapable.yukihookapi.hook.bean
  * @param throwable 异常
  */
 class HookClass internal constructor(
-    @PublishedApi internal var instance: Class<*>? = null,
-    @PublishedApi internal var name: String,
-    @PublishedApi internal var throwable: Throwable? = null
+    internal var instance: Class<*>? = null,
+    internal var name: String,
+    internal var throwable: Throwable? = null
 ) {
 
     override fun toString() = "[class] $name [throwable] $throwable [instance] $instance"

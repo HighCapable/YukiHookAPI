@@ -33,7 +33,6 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.call
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Intent
-import com.highcapable.yukihookapi.annotation.YukiGenerateApi
 import com.highcapable.yukihookapi.hook.factory.buildOf
 import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.factory.extends
@@ -51,8 +50,7 @@ import java.lang.reflect.Method
  *
  * - ❗装载代码将自动生成 - 请勿手动调用
  */
-@YukiGenerateApi
-object IActivityManagerProxyCaller {
+internal object IActivityManagerProxyCaller {
 
     /**
      * 获取当前使用的 [ClassLoader]
@@ -60,8 +58,7 @@ object IActivityManagerProxyCaller {
      * - ❗装载代码将自动生成 - 请勿手动调用
      * @return [ClassLoader]
      */
-    @YukiGenerateApi
-    val currentClassLoader get() = AppParasitics.baseClassLoader
+    internal val currentClassLoader get() = AppParasitics.baseClassLoader
 
     /**
      * 调用代理的 [InvocationHandler.invoke] 方法
@@ -72,8 +69,7 @@ object IActivityManagerProxyCaller {
      * @param args 被调用方法参数
      * @return [Any] or null
      */
-    @YukiGenerateApi
-    fun callInvoke(baseInstance: Any, method: Method?, args: Array<Any>?): Any? {
+    internal fun callInvoke(baseInstance: Any, method: Method?, args: Array<Any>?): Any? {
         if (method?.name == "startActivity") args?.indexOfFirst { it is Intent }?.also { index ->
             val argsInstance = (args[index] as? Intent) ?: return@also
             val component = argsInstance.component
