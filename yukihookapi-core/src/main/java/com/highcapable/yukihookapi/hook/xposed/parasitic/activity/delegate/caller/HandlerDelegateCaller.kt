@@ -39,7 +39,7 @@ import android.os.Message
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.type.android.ActivityThreadClass
 import com.highcapable.yukihookapi.hook.type.android.ClientTransactionClass
 import com.highcapable.yukihookapi.hook.type.android.IBinderClass
@@ -76,7 +76,7 @@ internal object HandlerDelegateCaller {
                             set(intent.getParcelableExtra(ActivityProxyConfig.proxyIntentName))
                     }
                 }
-            }.onFailure { yLoggerE(msg = "Activity Proxy got an Exception in msg.what [$LAUNCH_ACTIVITY]", e = it) }
+            }.onFailure { YLog.innerE("Activity Proxy got an Exception in msg.what [$LAUNCH_ACTIVITY]", it) }
             EXECUTE_TRANSACTION -> msg.obj?.runCatching client@{
                 ClientTransactionClass.method { name = "getCallbacks" }.ignored().get(this).list<Any?>().takeIf { it.isNotEmpty() }
                     ?.forEach { item ->
@@ -100,7 +100,7 @@ internal object HandlerDelegateCaller {
                                 }
                             }
                     }
-            }?.onFailure { yLoggerE(msg = "Activity Proxy got an Exception in msg.what [$EXECUTE_TRANSACTION]", e = it) }
+            }?.onFailure { YLog.innerE("Activity Proxy got an Exception in msg.what [$EXECUTE_TRANSACTION]", it) }
         }
         return baseInstance?.handleMessage(msg) ?: false
     }

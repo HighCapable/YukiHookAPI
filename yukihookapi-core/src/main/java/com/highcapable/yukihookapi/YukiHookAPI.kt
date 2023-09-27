@@ -44,9 +44,7 @@ import com.highcapable.yukihookapi.hook.core.api.compat.type.ExecutorType
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.factory.processName
-import com.highcapable.yukihookapi.hook.log.YukiHookLogger
-import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerI
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
@@ -248,23 +246,23 @@ object YukiHookAPI {
     object Configs {
 
         /**
-         * 配置 [YukiHookLogger.Configs] 相关参数
+         * 配置 [YLog.Configs] 相关参数
          * @param initiate 方法体
          */
-        inline fun debugLog(initiate: YukiHookLogger.Configs.() -> Unit) = YukiHookLogger.Configs.apply(initiate).build()
+        inline fun debugLog(initiate: YLog.Configs.() -> Unit) = YLog.Configs.apply(initiate).build()
 
         /**
          * 这是一个调试日志的全局标识
          *
          * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - 请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.tag]
+         * - 请现在迁移到 [debugLog] 并使用 [YLog.Configs.tag]
          */
         @Deprecated(message = "请使用新方式来实现此功能")
         var debugTag
-            get() = YukiHookLogger.Configs.tag
+            get() = YLog.Configs.tag
             set(value) {
-                YukiHookLogger.Configs.tag = value
+                YLog.Configs.tag = value
             }
 
         /**
@@ -272,7 +270,7 @@ object YukiHookAPI {
          *
          * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
          *
-         * 当 [YukiHookLogger.Configs.isEnable] 关闭后 [isDebug] 也将同时关闭
+         * 当 [YLog.Configs.isEnable] 关闭后 [isDebug] 也将同时关闭
          */
         var isDebug = true
 
@@ -281,13 +279,13 @@ object YukiHookAPI {
          *
          * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - 请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.isEnable]
+         * - 请现在迁移到 [debugLog] 并使用 [YLog.Configs.isEnable]
          */
         @Deprecated(message = "请使用新方式来实现此功能")
         var isAllowPrintingLogs
-            get() = YukiHookLogger.Configs.isEnable
+            get() = YLog.Configs.isEnable
             set(value) {
-                YukiHookLogger.Configs.isEnable = value
+                YLog.Configs.isEnable = value
             }
 
         /**
@@ -411,7 +409,7 @@ object YukiHookAPI {
             YukiXposedModule.packageParamCallback = {
                 if (hooker.isNotEmpty())
                     hooker.forEach { it.assignInstance(packageParam = this) }
-                else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true)
+                else YLog.innerE("Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true)
             }
         else printNotFoundHookApiError()
     }
@@ -471,7 +469,7 @@ object YukiHookAPI {
                 if (hooker.isNotEmpty()) {
                     printSplashInfo()
                     hooker.forEach { it.assignInstance(packageParam = baseContext.createPackageParam()) }
-                } else yLoggerE(msg = "Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true))
+                } else YLog.innerE("Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true))
         else printNotFoundHookApiError()
     }
 
@@ -479,15 +477,12 @@ object YukiHookAPI {
     internal fun printSplashInfo() {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
-        yLoggerI(
-            msg = "Welcome to YukiHookAPI $VERSION! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}",
-            isImplicit = true
-        )
+        YLog.innerI("Welcome to YukiHookAPI $VERSION! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}", isImplicit = true)
     }
 
     /** 输出找不到 Hook API 的错误日志 */
     private fun printNotFoundHookApiError() =
-        yLoggerE(msg = "Could not found any available Hook APIs in current environment! Aborted", isImplicit = true)
+        YLog.innerE("Could not found any available Hook APIs in current environment! Aborted", isImplicit = true)
 
     /**
      * 通过 baseContext 创建 Hook 入口类

@@ -42,7 +42,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.utils.factory.runBlocking
 import java.lang.reflect.Field
 
@@ -282,7 +282,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
                 if (isFindSuccess) return
                 errorMsg(msg = "RemedyPlan failed after ${remedyPlans.size} attempts", es = errors, isAlwaysMode = true)
                 remedyPlans.clear()
-            } else yLoggerW(msg = "RemedyPlan is empty, forgot it?${hookerManager.tailTag}")
+            } else YLog.innerW("RemedyPlan is empty, forgot it?${hookerManager.tailTag}")
         }
 
         /**

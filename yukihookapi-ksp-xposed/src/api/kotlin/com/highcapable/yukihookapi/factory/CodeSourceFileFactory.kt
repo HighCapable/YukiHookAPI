@@ -346,12 +346,12 @@ fun GenerateData.sources() = mapOf(
                   hookEntry.onXposedEvent()
                   hookEntry.onInit()
                   if (${ExternalCallerName.YukiXposedModuleCaller.second}.isXposedCallbackSetUp) {
-                      ${ExternalCallerName.YukiXposedModuleCaller.second}.internalLoggerE("You cannot load a hooker in \"onInit\" or \"onXposedEvent\" method! Aborted")
+                      ${ExternalCallerName.YukiXposedModuleCaller.second}.callLogError("You cannot load a hooker in \"onInit\" or \"onXposedEvent\" method! Aborted")
                       return
                   }
                   hookEntry.onHook()
                   ${ExternalCallerName.YukiXposedModuleCaller.second}.callOnFinishLoadModule()
-              }.onFailure { ${ExternalCallerName.YukiXposedModuleCaller.second}.internalLoggerE("YukiHookAPI try to load hook entry class failed", it) }
+              }.onFailure { ${ExternalCallerName.YukiXposedModuleCaller.second}.callLogError("YukiHookAPI try to load hook entry class failed", it) }
               ${ExternalCallerName.YukiXposedModuleCaller.second}.callOnPackageLoaded(
                   type = when {
                       isZygoteLoaded -> HookEntryType.ZYGOTE
@@ -373,7 +373,7 @@ fun GenerateData.sources() = mapOf(
                   ${ExternalCallerName.YukiXposedModuleCaller.second}.callOnStartLoadModule(modulePackageName, sparam.modulePath)
                   callOnXposedModuleLoaded(isZygoteLoaded = true)
                   isZygoteCalled = true
-              }.onFailure { ${ExternalCallerName.YukiXposedModuleCaller.second}.internalLoggerE("An exception occurred when YukiHookAPI loading Xposed Module", it) }
+              }.onFailure { ${ExternalCallerName.YukiXposedModuleCaller.second}.callLogError("An exception occurred when YukiHookAPI loading Xposed Module", it) }
           }
       
           fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {

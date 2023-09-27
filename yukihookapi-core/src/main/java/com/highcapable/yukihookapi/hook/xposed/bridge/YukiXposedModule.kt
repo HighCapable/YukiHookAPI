@@ -34,7 +34,7 @@ import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.factory.hasClass
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.bridge.proxy.IYukiXposedModuleLifecycle
@@ -220,7 +220,7 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
                     AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
                 if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
                 if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
-            }.onFailure { yLoggerE(msg = "An exception occurred in the Hooking Process of YukiHookAPI", e = it) }
+            }.onFailure { YLog.innerE("An exception occurred in the Hooking Process of YukiHookAPI", it) }
         }
     }
 }

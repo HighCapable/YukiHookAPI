@@ -48,7 +48,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.searchClass
 import com.highcapable.yukihookapi.hook.factory.toClass
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.utils.factory.await
 import com.highcapable.yukihookapi.hook.utils.factory.runBlocking
@@ -109,7 +109,7 @@ class DexClassFinder internal constructor(
          */
         fun clearCache(context: Context? = currentContext, versionName: String? = null, versionCode: Long? = null) {
             context?.currentSp(versionName, versionCode)?.edit()?.clear()?.apply()
-                ?: yLoggerW(msg = "Cannot clear cache for DexClassFinder because got null context instance")
+                ?: YLog.innerW("Cannot clear cache for DexClassFinder because got null context instance")
         }
     }
 

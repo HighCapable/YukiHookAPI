@@ -35,7 +35,7 @@ import com.highcapable.yukihookapi.hook.core.api.store.YukiHookCacheStore
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 import java.lang.reflect.Member
 
 /**
@@ -56,7 +56,7 @@ internal object YukiHookHelper {
             else -> error("Unexpected BaseFinder result interface type")
         }
         hookMember(member, callback)
-    }.onFailure { yLoggerE(msg = "An exception occurred when hooking internal function", e = it) }.getOrNull() ?: YukiHookResult()
+    }.onFailure { YLog.innerE("An exception occurred when hooking internal function", it) }.getOrNull() ?: YukiHookResult()
 
     /**
      * Hook [Member]
@@ -99,7 +99,7 @@ internal object YukiHookHelper {
         if (isMemberHooked(member)) member?.let {
             runCatching { HookCompatHelper.invokeOriginalMember(member, instance, args) }.onFailure {
                 if (it.message?.lowercase()?.contains("wrong number of arguments") == true) error(it.message ?: it.toString())
-                yLoggerE(msg = "Invoke original Member [$member] failed", e = it)
+                YLog.innerE("Invoke original Member [$member] failed", it)
             }.getOrNull()
         } else null
 

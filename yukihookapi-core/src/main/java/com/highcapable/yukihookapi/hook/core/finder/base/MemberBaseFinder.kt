@@ -30,8 +30,7 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
-import com.highcapable.yukihookapi.hook.log.yLoggerD
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.utils.factory.await
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -96,7 +95,7 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
      */
     internal fun debugMsg(msg: String) {
         if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null)
-            yLoggerD(msg = "$msg${hookerManager.tailTag}")
+            YLog.innerD("$msg${hookerManager.tailTag}")
     }
 
     /**
@@ -112,8 +111,8 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
         await {
             if (isIgnoreErrorLogs || hookerManager.isNotIgnoredNoSuchMemberFailure.not()) return@await
             if (isAlwaysMode.not() && isUsingRemedyPlan) return@await
-            yLoggerE(msg = "NoSuch$tag happend in [$classSet] $msg${hookerManager.tailTag}".trim(), e = e)
-            es.forEachIndexed { index, e -> yLoggerE(msg = "Throwable [${index + 1}]", e = e) }
+            YLog.innerE("NoSuch$tag happend in [$classSet] $msg${hookerManager.tailTag}".trim(), e)
+            es.forEachIndexed { index, e -> YLog.innerE("Throwable [${index + 1}]", e) }
         }
     }
 

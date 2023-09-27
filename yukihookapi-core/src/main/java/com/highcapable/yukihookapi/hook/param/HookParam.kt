@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator.MemberHookCre
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -179,7 +179,7 @@ class HookParam internal constructor(
      */
     fun Throwable.throwToApp() {
         param?.throwable = this
-        yLoggerE(msg = message ?: "", e = this)
+        YLog.innerE(message ?: "", this)
     }
 
     /**

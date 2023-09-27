@@ -53,9 +53,7 @@ import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.notExtends
 import com.highcapable.yukihookapi.hook.factory.notImplements
 import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
-import com.highcapable.yukihookapi.hook.log.yLoggerD
-import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.AnyClass
@@ -161,7 +159,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         HookApiCategoryHelper.hasAvailableHookApi.not() -> Result()
         /** 过滤 [HookEntryType.ZYGOTE] and [HookEntryType.PACKAGE] or [HookParam.isCallbackCalled] 已被执行 */
         packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
-        preHookMembers.isEmpty() -> Result().also { yLoggerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
+        preHookMembers.isEmpty() -> Result().also { YLog.innerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
         else -> Result().await {
             when {
                 isDisableCreatorRunHook.not() && hookClass.instance != null -> runCatching {
@@ -170,12 +168,12 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                     preHookMembers.forEach { (_, m) -> m.hook() }
                 }.onFailure {
                     if (onHookClassNotFoundFailureCallback == null)
-                        yLoggerE(msg = "Hook initialization failed because got an Exception", e = it)
+                        YLog.innerE(msg = "Hook initialization failed because got an Exception", e = it)
                     else onHookClassNotFoundFailureCallback?.invoke(it)
                 }
                 isDisableCreatorRunHook.not() && hookClass.instance == null ->
                     if (onHookClassNotFoundFailureCallback == null)
-                        yLoggerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                        YLog.innerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
                     else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
             }
         }
@@ -576,7 +574,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                 onNoSuchMemberFailureCallback?.invoke(it)
                 onHookingFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
-                if (isNotIgnoredNoSuchMemberFailure) yLoggerE(
+                if (isNotIgnoredNoSuchMemberFailure) YLog.innerE(
                     msg = (if (isHookMemberSetup)
                         "Hooked Member with a finding error by $hookClass [$tag]"
                     else "Hooked Member cannot be non-null by $hookClass [$tag]"),
@@ -676,7 +674,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param msg 调试日志内容
          */
         private fun hookDebugMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) yLoggerD(msg = msg)
+            if (YukiHookAPI.Configs.isDebug) YLog.innerD(msg)
         }
 
         /**
@@ -685,7 +683,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param member 异常 [Member] - 可空
          */
         private fun hookErrorMsg(e: Throwable, member: Member? = null) =
-            yLoggerE(msg = "Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]", e = e)
+            YLog.innerE(msg = "Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]", e = e)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截

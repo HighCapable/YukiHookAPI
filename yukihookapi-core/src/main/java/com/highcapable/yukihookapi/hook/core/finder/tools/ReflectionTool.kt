@@ -37,22 +37,32 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRule
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.factory.*
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.factory.current
+import com.highcapable.yukihookapi.hook.factory.field
+import com.highcapable.yukihookapi.hook.factory.hasClass
+import com.highcapable.yukihookapi.hook.factory.hasExtends
+import com.highcapable.yukihookapi.hook.factory.toClass
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import com.highcapable.yukihookapi.hook.type.java.DalvikBaseDexClassLoader
 import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchMethodErrorClass
-import com.highcapable.yukihookapi.hook.utils.factory.*
+import com.highcapable.yukihookapi.hook.utils.factory.conditions
+import com.highcapable.yukihookapi.hook.utils.factory.findLastIndex
+import com.highcapable.yukihookapi.hook.utils.factory.lastIndex
+import com.highcapable.yukihookapi.hook.utils.factory.let
+import com.highcapable.yukihookapi.hook.utils.factory.runOrFalse
+import com.highcapable.yukihookapi.hook.utils.factory.takeIf
+import com.highcapable.yukihookapi.hook.utils.factory.value
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.BaseDexClassLoader
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
-import java.util.*
+import java.util.Enumeration
 import kotlin.math.abs
 
 /**
@@ -192,7 +202,7 @@ internal object ReflectionTool {
                     fun MemberRulesData.exists(vararg type: Any?): Boolean {
                         if (type.isEmpty()) return true
                         for (i in type.indices) if (type[i] == UndefinedType) {
-                            yLoggerW(msg = "$objectName type[$i] mistake, it will be ignored in current conditions")
+                            YLog.innerW("$objectName type[$i] mistake, it will be ignored in current conditions")
                             return false
                         }
                         return true
@@ -656,7 +666,7 @@ internal object ReflectionTool {
                 addAll(declaredConstructors.toList())
             }.asSequence()
         }.onFailure {
-            yLoggerW(msg = "Failed to get the declared Members in [$this] because got an exception\n$it")
+            YLog.innerW("Failed to get the declared Members in [$this] because got an exception", it)
         }.getOrNull()
 
     /**
@@ -665,7 +675,7 @@ internal object ReflectionTool {
      */
     private val Class<*>.existFields
         get() = runCatching { declaredFields.asSequence() }.onFailure {
-            yLoggerW(msg = "Failed to get the declared Fields in [$this] because got an exception\n$it")
+            YLog.innerW("Failed to get the declared Fields in [$this] because got an exception", it)
         }.getOrNull()
 
     /**
@@ -674,7 +684,7 @@ internal object ReflectionTool {
      */
     private val Class<*>.existMethods
         get() = runCatching { declaredMethods.asSequence() }.onFailure {
-            yLoggerW(msg = "Failed to get the declared Methods in [$this] because got an exception\n$it")
+            YLog.innerW("Failed to get the declared Methods in [$this] because got an exception", it)
         }.getOrNull()
 
     /**
@@ -683,7 +693,7 @@ internal object ReflectionTool {
      */
     private val Class<*>.existConstructors
         get() = runCatching { declaredConstructors.asSequence() }.onFailure {
-            yLoggerW(msg = "Failed to get the declared Constructors in [$this] because got an exception\n$it")
+            YLog.innerW("Failed to get the declared Constructors in [$this] because got an exception", it)
         }.getOrNull()
 
     /**

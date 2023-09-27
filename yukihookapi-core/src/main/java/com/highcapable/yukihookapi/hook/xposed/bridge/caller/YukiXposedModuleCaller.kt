@@ -30,7 +30,7 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.caller
 
 import android.content.pm.ApplicationInfo
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
@@ -77,9 +77,9 @@ internal object YukiXposedModuleCaller {
     ) = YukiXposedModule.onPackageLoaded(type, packageName, processName, appClassLoader, appInfo, appResources)
 
     /**
-     * 打印内部 E 级别的日志
+     * 打印 Error 级别 Log
      * @param msg 日志打印的内容
      * @param e 异常堆栈信息 - 默认空
      */
-    internal fun internalLoggerE(msg: String, e: Throwable? = null) = yLoggerE(msg = msg, e = e)
+    internal fun callLogError(msg: String, e: Throwable? = null) = YLog.innerE(msg, e)
 }

@@ -47,7 +47,7 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.factory.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
@@ -422,7 +422,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             if (it.packageName.isNotBlank() && it.type != HookEntryType.ZYGOTE)
                 if (it.packageName == wrapper?.packageName)
                     hooker.assignInstance(packageParam = this)
-                else yLoggerW(
+                else YLog.innerW(
                     msg = "This Hooker \"${hooker::class.java.name}\" is singleton or reused, " +
                         "but the current process has multiple package name \"${wrapper?.packageName}\", " +
                         "the original is \"${it.packageName}\"\n" +

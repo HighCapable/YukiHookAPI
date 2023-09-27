@@ -45,10 +45,8 @@ import android.os.Parcelable
 import android.os.TransactionTooLargeException
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
-import com.highcapable.yukihookapi.hook.log.YukiHookLogger
-import com.highcapable.yukihookapi.hook.log.YukiLoggerData
-import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.yukihookapi.hook.log.data.YLogData
 import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
@@ -92,7 +90,7 @@ class YukiHookDataChannel private constructor() {
         private const val GET_YUKI_LOGGER_INMEMORY_DATA = "yuki_logger_inmemory_data_get"
 
         /** 调试日志数据结果标签 */
-        private val RESULT_YUKI_LOGGER_INMEMORY_DATA = ChannelData<ArrayList<YukiLoggerData>>("yuki_logger_inmemory_data_result")
+        private val RESULT_YUKI_LOGGER_INMEMORY_DATA = ChannelData<List<YLogData>>("yuki_logger_inmemory_data_result")
 
         /** 仅监听结果键值 */
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
@@ -167,7 +165,7 @@ class YukiHookDataChannel private constructor() {
                                 destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
                             }
                         }
-                    }.onFailure { yLoggerE(msg = "Received action \"$action\" failed", e = it) }
+                    }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
                 }
             }
         }
@@ -191,7 +189,7 @@ class YukiHookDataChannel private constructor() {
         context is Application || isXposedEnvironment || (((context ?: receiverContext)
             ?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager?)
             ?.getRunningTasks(9999)?.filter { context?.javaClass?.name == it?.topActivity?.className }?.size ?: 0) > 0
-    }.getOrNull() ?: yLoggerW(msg = "Couldn't got current Activity status because a SecurityException blocked it").let { false }
+    }.getOrNull() ?: YLog.innerW("Couldn't got current Activity status because a SecurityException blocked it").let { false }
 
     /**
      * 获取宿主广播 Action 名称
@@ -237,7 +235,7 @@ class YukiHookDataChannel private constructor() {
             }
             /** 注册监听模块与宿主之间的调试日志数据 */
             wait<String>(GET_YUKI_LOGGER_INMEMORY_DATA) { fromPackageName ->
-                nameSpace(context, fromPackageName).put(RESULT_YUKI_LOGGER_INMEMORY_DATA, YukiHookLogger.inMemoryData)
+                nameSpace(context, fromPackageName).put(RESULT_YUKI_LOGGER_INMEMORY_DATA, YLog.inMemoryData)
             }
         }
     }
@@ -439,17 +437,17 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 获取模块与宿主之间的 [ArrayList]<[YukiLoggerData]> 数据
+         * 获取模块与宿主之间的 [List]<[YLogData]> 数据
          *
          * 由于模块与宿主处于不同的进程 - 我们可以使用数据通讯桥访问各自的调试日志数据
          *
-         * - 模块与宿主必须启用 [YukiHookLogger.Configs.isRecord] 才能获取到调试日志数据
+         * - 模块与宿主必须启用 [YLog.Configs.isRecord] 才能获取到调试日志数据
          *
          * - 由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多将会自动进行分段发送 - 数据越大速度越慢
          * @param priority 响应优先级 - 默认不设置
-         * @param result 回调 [ArrayList]<[YukiLoggerData]>
+         * @param result 回调 [List]<[YLogData]>
          */
-        fun obtainLoggerInMemoryData(priority: ChannelPriority? = null, result: (ArrayList<YukiLoggerData>) -> Unit) {
+        fun obtainLoggerInMemoryData(priority: ChannelPriority? = null, result: (List<YLogData>) -> Unit) {
             wait(RESULT_YUKI_LOGGER_INMEMORY_DATA, priority) { result(it) }
             put(GET_YUKI_LOGGER_INMEMORY_DATA, packageName)
         }
@@ -565,10 +563,10 @@ class YukiHookDataChannel private constructor() {
                             segmentsTempData.remove(wrapper.wrapperId)
                         }
                     }
-                    else -> yLoggerE(msg = "Unsupported segments data key of \"${wrapper.instance.key}\"'s type")
+                    else -> YLog.innerE("Unsupported segments data key of \"${wrapper.instance.key}\"'s type")
                 }
             }.onFailure {
-                yLoggerE(msg = "YukiHookDataChannel cannot merge this segments data key of \"${wrapper.instance.key}\"", e = it)
+                YLog.innerE("YukiHookDataChannel cannot merge this segments data key of \"${wrapper.instance.key}\"", it)
             } else wrapper.instance.value?.let { e -> result(e) }
         }
 
@@ -583,7 +581,7 @@ class YukiHookDataChannel private constructor() {
 
             /** 当前需要发送的数据字节大小 */
             val dataByteSize = wrapper.instance.calDataByteSize()
-            if (dataByteSize < 0 && isAllowSendTooLargeData.not()) return yLoggerE(
+            if (dataByteSize < 0 && isAllowSendTooLargeData.not()) return YLog.innerE(
                 msg = "YukiHookDataChannel cannot calculate the byte size of the data key of \"${wrapper.instance.key}\" to be sent, " +
                     "so this data cannot be sent\n" +
                     "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
@@ -595,7 +593,7 @@ class YukiHookDataChannel private constructor() {
              * @param size 分段总大小 (长度)
              */
             fun loggerForTooLargeData(name: String, size: Int) {
-                if (YukiHookAPI.Configs.isDebug) yLoggerW(
+                if (YukiHookAPI.Configs.isDebug) YLog.innerW(
                     msg = "This data key of \"${wrapper.instance.key}\" type $name is too large (total ${dataByteSize / 1024f} KB, " +
                         "limit ${receiverDataMaxByteSize / 1024f} KB), will be segmented to $size piece to send"
                 )
@@ -605,7 +603,7 @@ class YukiHookDataChannel private constructor() {
              * 如果数据过大且无法分段打印错误信息
              * @param suggestionMessage 建议内容 - 默认空
              */
-            fun loggerForUnprocessableData(suggestionMessage: String = "") = yLoggerE(
+            fun loggerForUnprocessableData(suggestionMessage: String = "") = YLog.innerE(
                 msg = "YukiHookDataChannel cannot send this data key of \"${wrapper.instance.key}\" type ${wrapper.instance.value?.javaClass}, " +
                     "because it is too large (total ${dataByteSize / 1024f} KB, " +
                     "limit ${receiverDataMaxByteSize / 1024f} KB) and cannot be segmented\n" +
@@ -710,7 +708,7 @@ class YukiHookDataChannel private constructor() {
                 if (packageName != AppParasitics.SYSTEM_FRAMEWORK_NAME)
                     setPackage(if (isXposedEnvironment) YukiXposedModule.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
-            }) ?: yLoggerE(msg = "Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
+            }) ?: YLog.innerE("Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
         }
     }
 }

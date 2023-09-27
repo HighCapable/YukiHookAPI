@@ -63,8 +63,7 @@ import com.highcapable.yukihookapi.hook.factory.hasMethod
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.factory.toClassOrNull
-import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.type.android.ActivityManagerClass
 import com.highcapable.yukihookapi.hook.type.android.ActivityManagerNativeClass
 import com.highcapable.yukihookapi.hook.type.android.ActivityTaskManagerClass
@@ -199,7 +198,7 @@ internal object AppParasitics {
      */
     internal fun hookClassLoader(loader: ClassLoader?, result: (Class<*>) -> Unit) {
         if (loader == null) return
-        if (YukiXposedModule.isXposedEnvironment.not()) return yLoggerW(msg = "You can only use hook ClassLoader method in Xposed Environment")
+        if (YukiXposedModule.isXposedEnvironment.not()) return YLog.innerW("You can only use hook ClassLoader method in Xposed Environment")
         classLoaderCallbacks[loader.hashCode()] = result
         if (isClassLoaderHooked) return
         runCatching {
@@ -211,7 +210,7 @@ internal object AppParasitics {
                 }
             })
             isClassLoaderHooked = true
-        }.onFailure { yLoggerW(msg = "Try to hook ClassLoader failed: $it") }
+        }.onFailure { YLog.innerW("Try to hook ClassLoader failed: $it") }
     }
 
     /**
@@ -270,7 +269,7 @@ internal object AppParasitics {
          */
         fun YukiHookCallback.Param.throwToAppOrLogger(throwable: Throwable) {
             if (AppLifecycleCallback.isOnFailureThrowToApp) this.throwable = throwable
-            else yLoggerE(msg = "An exception occurred during AppLifecycle event", e = throwable)
+            else YLog.innerE("An exception occurred during AppLifecycle event", e = throwable)
         }
         /** Hook [Application] 装载方法 */
         runCatching {
@@ -378,14 +377,14 @@ internal object AppParasitics {
     internal fun injectModuleAppResources(hostResources: Resources) {
         if (YukiXposedModule.isXposedEnvironment) runCatching {
             if (currentPackageName == YukiXposedModule.modulePackageName)
-                return yLoggerE(msg = "You cannot inject module resources into yourself")
+                return YLog.innerE("You cannot inject module resources into yourself")
             hostResources.assets.current(ignored = true).method {
                 name = "addAssetPath"
                 param(StringClass)
             }.call(YukiXposedModule.moduleAppFilePath)
         }.onFailure {
-            yLoggerE(msg = "Failed to inject module resources into [$hostResources]", e = it)
-        } else yLoggerW(msg = "You can only inject module resources in Xposed Environment")
+            YLog.innerE("Failed to inject module resources into [$hostResources]", it)
+        } else YLog.innerW("You can only inject module resources in Xposed Environment")
     }
 
     /**
@@ -396,9 +395,9 @@ internal object AppParasitics {
     @RequiresApi(Build.VERSION_CODES.N)
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
         if (isActivityProxyRegistered) return
-        if (YukiXposedModule.isXposedEnvironment.not()) return yLoggerW(msg = "You can only register Activity Proxy in Xposed Environment")
-        if (context.packageName == YukiXposedModule.modulePackageName) return yLoggerE(msg = "You cannot register Activity Proxy into yourself")
-        if (Build.VERSION.SDK_INT < 24) return yLoggerE(msg = "Activity Proxy only support for Android 7.0 (API 24) or higher")
+        if (YukiXposedModule.isXposedEnvironment.not()) return YLog.innerW("You can only register Activity Proxy in Xposed Environment")
+        if (context.packageName == YukiXposedModule.modulePackageName) return YLog.innerE("You cannot register Activity Proxy into yourself")
+        if (Build.VERSION.SDK_INT < 24) return YLog.innerE("Activity Proxy only support for Android 7.0 (API 24) or higher")
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${YukiXposedModule.modulePackageName}.ACTIVITY_PROXY_INTENT"
@@ -444,7 +443,7 @@ internal object AppParasitics {
                 }
             }
             isActivityProxyRegistered = true
-        }.onFailure { yLoggerE(msg = "Activity Proxy initialization failed because got an Exception", e = it) }
+        }.onFailure { YLog.innerE("Activity Proxy initialization failed because got an Exception", it) }
     }
 
     /**

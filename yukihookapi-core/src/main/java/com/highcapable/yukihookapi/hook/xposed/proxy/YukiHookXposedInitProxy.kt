@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi.hook.xposed.proxy
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.log.yLoggerW
 
 /**
  * [YukiHookAPI] 的 Xposed 装载 API 调用接口
@@ -48,7 +47,7 @@ interface YukiHookXposedInitProxy {
      * - 请将接口迁移到 [IYukiHookXposedInit]
      */
     @Deprecated(message = "请将接口迁移到 IYukiHookXposedInit", level = DeprecationLevel.ERROR)
-    fun onInit() = yLoggerW(msg = "YukiHookXposedInitProxy was deprecated")
+    fun onInit() = Unit
 
     /**
      * - 此方法已过时
@@ -56,5 +55,5 @@ interface YukiHookXposedInitProxy {
      * - 请将接口迁移到 [IYukiHookXposedInit]
      */
     @Deprecated(message = "请将接口迁移到 IYukiHookXposedInit", level = DeprecationLevel.ERROR)
-    fun onHook() = yLoggerW(msg = "YukiHookXposedInitProxy was deprecated")
+    fun onHook() = Unit
 }

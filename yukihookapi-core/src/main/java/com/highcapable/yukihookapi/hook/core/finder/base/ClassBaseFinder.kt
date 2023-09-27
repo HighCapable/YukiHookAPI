@@ -29,8 +29,7 @@ package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
-import com.highcapable.yukihookapi.hook.log.yLoggerD
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 
 /**
  * 这是 [Class] 查找类功能的基本类实现
@@ -63,7 +62,7 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
      * @param msg 消息内容
      */
     internal fun debugMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi) yLoggerD(msg = msg)
+        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi) YLog.innerD(msg)
     }
 
     /**
@@ -74,7 +73,7 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
         if (isIgnoreErrorLogs) return
         /** 判断是否为 [LOADERSET_IS_NULL] */
         if (e?.message == LOADERSET_IS_NULL) return
-        yLoggerE(msg = "NoClassDefFound happend in [$loaderSet]", e = e)
+        YLog.innerE("NoClassDefFound happend in [$loaderSet]", e)
     }
 
     override fun failure(throwable: Throwable?) = error("DexClassFinder does not contain this usage")

@@ -33,7 +33,7 @@ import android.content.res.Resources
 import android.content.res.XResources
 import android.graphics.drawable.Drawable
 import android.view.View
-import com.highcapable.yukihookapi.hook.log.yLoggerE
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources.LayoutInflatedParam
 import de.robv.android.xposed.callbacks.XC_LayoutInflated
 
@@ -153,7 +153,7 @@ class YukiResources private constructor(private val baseInstance: XResources) :
         private inline fun runIfAnyErrors(name: String, initiate: () -> Unit) {
             runCatching {
                 initiate()
-            }.onFailure { yLoggerE(msg = "Failed to execute method \"$name\", maybe your Hook Framework not support Resources Hook", it) }
+            }.onFailure { YLog.innerE("Failed to execute method \"$name\", maybe your Hook Framework not support Resources Hook", it) }
         }
     }
 

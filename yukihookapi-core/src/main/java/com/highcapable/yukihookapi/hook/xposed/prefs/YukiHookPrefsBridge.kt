@@ -37,8 +37,7 @@ import android.content.SharedPreferences
 import android.util.ArrayMap
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.log.yLoggerE
-import com.highcapable.yukihookapi.hook.log.yLoggerW
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.delegate.XSharedPreferencesDelegate
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
@@ -150,7 +149,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
                     makeWorldReadable()
                     reload()
                 }
-            }.onFailure { yLoggerE(msg = it.message ?: "Operating system not supported", e = it) }.getOrNull()
+            }.onFailure { YLog.innerE(it.message ?: "Operating system not supported", it) }.getOrNull()
                 ?: error("Cannot load the XSharedPreferences, maybe is your Hook Framework not support it")
         }
 
@@ -680,7 +679,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
          */
         private inline fun specifiedScope(callback: () -> Unit): Editor {
             if (isXposedEnvironment.not() || isUsingNativeStorage) callback()
-            else yLoggerW(msg = "YukiHookPrefsBridge.Editor not allowed in Xposed Environment")
+            else YLog.innerW("YukiHookPrefsBridge.Editor not allowed in Xposed Environment")
             return this
         }
     }
