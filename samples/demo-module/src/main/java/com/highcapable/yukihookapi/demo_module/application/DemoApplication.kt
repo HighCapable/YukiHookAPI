@@ -27,13 +27,13 @@
  */
 package com.highcapable.yukihookapi.demo_module.application
 
-import com.highcapable.yukihookapi.hook.log.loggerD
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 
 class DemoApplication : ModuleApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        loggerD(msg = "I am running in module space")
+        YLog.debug("I am running in module space")
     }
 }
