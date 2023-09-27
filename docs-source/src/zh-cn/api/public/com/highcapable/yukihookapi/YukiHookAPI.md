@@ -369,7 +369,7 @@ object Configs
 ### debugLog <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun debugLog(initiate: YukiHookLogger.Configs.() -> Unit)
+inline fun debugLog(initiate: YLog.Configs.() -> Unit)
 ```
 
 **变更记录**
@@ -378,7 +378,7 @@ inline fun debugLog(initiate: YukiHookLogger.Configs.() -> Unit)
 
 **功能描述**
 
-> 配置 `YukiHookLogger.Configs` 相关参数。
+> 配置 `YLog.Configs` 相关参数。
 
 <h3 class="deprecated">debugTag - field</h3>
 
@@ -388,7 +388,7 @@ inline fun debugLog(initiate: YukiHookLogger.Configs.() -> Unit)
 
 `v1.1.0` `作废`
 
-请迁移到 `YukiHookLogger.Configs.tag`
+请迁移到 `YLog.Configs.tag`
 
 ### isDebug <span class="symbol">- field</span>
 
@@ -414,7 +414,7 @@ var isDebug: Boolean
 
 `v1.1.0` `作废`
 
-请迁移到 `YukiHookLogger.Configs.isEnable`
+请迁移到 `YLog.Configs.isEnable`
 
 <h3 class="deprecated">isEnableModulePrefsCache - field</h3>
 
@@ -620,14 +620,14 @@ object HookEntry : IYukiHookXposedInit {
 object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
-        YukiHookLogger.Configs.tag = "YukiHookAPI"
-        YukiHookLogger.Configs.isEnable = true
-        YukiHookLogger.Configs.isRecord = false
-        YukiHookLogger.Configs.elements(
-            YukiHookLogger.Configs.TAG,
-            YukiHookLogger.Configs.PRIORITY,
-            YukiHookLogger.Configs.PACKAGE_NAME,
-            YukiHookLogger.Configs.USER_ID
+        YLog.Configs.tag = "YukiHookAPI"
+        YLog.Configs.isEnable = true
+        YLog.Configs.isRecord = false
+        YLog.Configs.elements(
+            YLog.Configs.TAG,
+            YLog.Configs.PRIORITY,
+            YLog.Configs.PACKAGE_NAME,
+            YLog.Configs.USER_ID
         )
         YukiHookAPI.Configs.isDebug = BuildConfig.DEBUG
         YukiHookAPI.Configs.isEnableModuleAppResourcesCache = true
