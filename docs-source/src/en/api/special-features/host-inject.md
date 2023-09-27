@@ -327,7 +327,7 @@ The exclusion list determines whether these `Class` need to be loaded by the Mod
 ```kotlin
 // Exclude Class names belonging to the Host App
 // They will be loaded by the Host App's ClassLoader
-// ❗The following content is for demonstration only
+// The following content is for demonstration only
 // DO NOT USE IT DIRECTLY, please refer to your actual situation
 ModuleClassLoader.excludeHostClasses(
     "androidx.core.app.ActivityCompat",
@@ -335,7 +335,7 @@ ModuleClassLoader.excludeHostClasses(
 )
 // Exclude Class names belonging to the Module App
 // They will be loaded by the ClassLoader of the Module App (the current Hook process)
-// ❗The following content is for demonstration only
+// The following content is for demonstration only
 // DO NOT USE IT DIRECTLY, please refer to your actual situation
 ModuleClassLoader.excludeModuleClasses(
     "com.demo.entry.HookEntry",

@@ -49,8 +49,6 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.Activit
 
 /**
  * 代理当前 [Handler.Callback] 调用类
- *
- * - ❗装载代码将自动生成 - 请勿手动调用
  */
 internal object HandlerDelegateCaller {
 
@@ -62,8 +60,6 @@ internal object HandlerDelegateCaller {
 
     /**
      * 调用代理的 [Handler.Callback.handleMessage] 方法
-     *
-     * - ❗装载代码将自动生成 - 请勿手动调用
      * @param baseInstance 原始实例
      * @param msg 当前消息实例
      * @return [Boolean]

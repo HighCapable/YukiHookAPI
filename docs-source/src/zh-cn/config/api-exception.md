@@ -46,14 +46,14 @@ You cannot load a hooker in "onInit" or "onXposedEvent" method! Aborted
 object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
-        // ❗错误的使用方法
+        // 错误的使用方法
         YukiHookAPI.encase {
             // Your code here.
         }
     }
 
     override fun onXposedEvent() {
-        // ❗错误的使用方法
+        // 错误的使用方法
         YukiHookAPI.encase {
             // Your code here.
         }
@@ -363,15 +363,15 @@ Method/Constructor/Field match type "**TYPE**" not allowed
 ```kotlin
 // 查找一个方法
 method {
-    // ❗设置了无效的类型举例
+    // 设置了无效的类型举例
     param(false, 1, 0)
-    // ❗设置了无效的类型举例
+    // 设置了无效的类型举例
     returnType = false
 }
 
 // 查找一个变量
 field {
-    // ❗设置了无效的类型举例
+    // 设置了无效的类型举例
     type = false
 }
 ```
@@ -893,7 +893,7 @@ This proxy \[**TYPE**\] type is not allowed
 > 示例如下
 
 ```kotlin
-// ❗ 这里填入的内容仅为举例，其中 proxy 填入了不能理解的无效参数
+//  这里填入的内容仅为举例，其中 proxy 填入了不能理解的无效参数
 registerModuleAppActivities(proxy = false)
 ```
 
@@ -1182,7 +1182,7 @@ class MyApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         YukiHookAPI.encase(base) {
-            // ❗不能在这种情况下使用 prefs
+            // 不能在这种情况下使用 prefs
             prefs.getBoolean("test_data")
         }
         super.attachBaseContext(base)
@@ -1238,7 +1238,7 @@ class MyApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         YukiHookAPI.encase(base) {
-            // ❗不能在这种情况下使用 dataChannel
+            // 不能在这种情况下使用 dataChannel
             dataChannel.wait(key = "test_data") {
                 // ...
             }
@@ -1287,7 +1287,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // ❗错误的使用方法
+        // 错误的使用方法
         // 构造方法已在 API 1.0.88 及以后的版本中设置为 private
         YukiHookPrefsBridge().getBoolean("test_data")
     }

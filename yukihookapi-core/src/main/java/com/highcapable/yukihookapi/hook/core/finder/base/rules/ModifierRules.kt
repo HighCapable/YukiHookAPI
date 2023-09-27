@@ -115,7 +115,7 @@ class ModifierRules private constructor(private val instance: Any) {
      *
      * ^^^
      *
-     * - ❗注意 Kotlin → Jvm 后的 object 类中的方法并不是静态的
+     * - 注意 Kotlin → Jvm 后的 object 类中的方法并不是静态的
      * @return [Boolean]
      */
     val isStatic get() = Modifier.isStatic(modifiers).also { templates.add("<isStatic> ($it)") }
@@ -129,7 +129,7 @@ class ModifierRules private constructor(private val instance: Any) {
      *
      * ^^^
      *
-     * - ❗注意 Kotlin → Jvm 后没有 open 标识的 [Class]、[Member] 和没有任何关联的 [Class]、[Member] 都将为 final
+     * - 注意 Kotlin → Jvm 后没有 open 标识的 [Class]、[Member] 和没有任何关联的 [Class]、[Member] 都将为 final
      * @return [Boolean]
      */
     val isFinal get() = Modifier.isFinal(modifiers).also { templates.add("<isFinal> ($it)") }

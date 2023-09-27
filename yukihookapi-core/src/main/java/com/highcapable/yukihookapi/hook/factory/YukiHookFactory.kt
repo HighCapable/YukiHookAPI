@@ -77,9 +77,9 @@ fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.enca
 /**
  * 获取模块的存取对象
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [Context.prefs] 方法
+ * - 请现在迁移到 [Context.prefs] 方法
  * @return [YukiHookPrefsBridge]
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs()"))
@@ -88,9 +88,9 @@ val Context.modulePrefs get() = prefs()
 /**
  * 获取模块的存取对象
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [Context.prefs] 方法
+ * - 请现在迁移到 [Context.prefs] 方法
  * @return [YukiHookPrefsBridge]
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs(name)"))
@@ -112,7 +112,7 @@ fun Context.prefs(name: String = "") = YukiHookPrefsBridge.from(context = this).
 /**
  * 获取 [YukiHookDataChannel] 对象
  *
- * - ❗只能在模块环境使用此功能 - 其它环境下使用将不起作用
+ * - 只能在模块环境使用此功能 - 其它环境下使用将不起作用
  * @param packageName 目标 Hook APP (宿主) 包名
  * @return [YukiHookDataChannel.NameSpace]
  */
@@ -143,7 +143,7 @@ val Context.processName
  *
  * For English version, see [Inject Module App's Resources](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#inject-module-app-s-resources)
  *
- * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
 fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
 
@@ -158,7 +158,7 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
  *
  * For English version, see [Inject Module App's Resources](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#inject-module-app-s-resources)
  *
- * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  */
 fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResources(hostResources = this)
 
@@ -175,9 +175,9 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  *
  * For English version, see [Register Module App's Activity](https://fankes.github.io/YukiHookAPI/en/api/special-features/host-inject#register-module-app-s-activity)
  *
- * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  *
- * - ❗最低支持 Android 7.0 (API 24)
+ * - 最低支持 Android 7.0 (API 24)
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
  */
 @RequiresApi(Build.VERSION_CODES.N)

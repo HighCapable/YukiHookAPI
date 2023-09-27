@@ -126,14 +126,14 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
         /**
          * 替换指定 Resources 为 true
          *
-         * - ❗确保目标替换 Resources 的类型为 [Boolean]
+         * - 确保目标替换 Resources 的类型为 [Boolean]
          */
         fun replaceToTrue() = replaceTo(any = true)
 
         /**
          * 替换指定 Resources 为 false
          *
-         * - ❗确保目标替换 Resources 的类型为 [Boolean]
+         * - 确保目标替换 Resources 的类型为 [Boolean]
          */
         fun replaceToFalse() = replaceTo(any = false)
 

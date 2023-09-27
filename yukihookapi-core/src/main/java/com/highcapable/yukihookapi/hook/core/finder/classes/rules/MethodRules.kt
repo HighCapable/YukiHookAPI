@@ -75,7 +75,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     /**
      * 设置 [Method] 返回值
      *
-     * - ❗只能是 [Class]、[String]、[VariousClass]
+     * - 只能是 [Class]、[String]、[VariousClass]
      *
      * - 可不填写返回值
      * @return [Any] or null
@@ -120,10 +120,10 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * param(StringType, BooleanType, VagueType, IntType)
      * ```
      *
-     * - ❗无参 [Method] 请使用 [emptyParam] 设置查找条件
+     * - 无参 [Method] 请使用 [emptyParam] 设置查找条件
      *
-     * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
-     * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]
+     * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * @param paramType 参数类型数组 - 只能是 [Class]、[String]、[VariousClass]
      */
     fun param(vararg paramType: Any) {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
@@ -140,9 +140,9 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * param { it[1] == StringClass || it[2].name == "java.lang.String" }
      * ```
      *
-     * - ❗无参 [Method] 请使用 [emptyParam] 设置查找条件
+     * - 无参 [Method] 请使用 [emptyParam] 设置查找条件
      *
-     * - ❗有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param conditions 条件方法体
      */
     fun param(conditions: ObjectsConditions) {

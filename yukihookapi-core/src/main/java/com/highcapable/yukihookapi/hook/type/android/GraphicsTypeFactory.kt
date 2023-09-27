@@ -75,7 +75,7 @@ val BitmapClass get() = classOf<Bitmap>()
 /**
  * 获得 [Icon] 类型
  *
- * - ❗在 Android M (23) 及以上系统加入
+ * - 在 Android M (23) 及以上系统加入
  * @return [Class]<[Icon]> or null
  */
 val IconClass get() = if (Build.VERSION.SDK_INT >= 23) classOf<Icon>() else null

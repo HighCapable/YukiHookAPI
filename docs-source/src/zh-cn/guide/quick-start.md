@@ -44,20 +44,20 @@
 
 ```yaml
 repositories:
-  #❗作为 Xposed 模块使用务必添加，其它情况可选
+  # 作为 Xposed 模块使用务必添加，其它情况可选
   rovo89-xposed-api:
     url: https://api.xposed.info/
   # MavenCentral 有 2 小时缓存，若无法集成最新版本请添加
   sonatype-oss-releases:
 
 plugins:
-  #❗作为 Xposed 模块使用务必添加，其它情况可选
+  # 作为 Xposed 模块使用务必添加，其它情况可选
   com.google.devtools.ksp:
     version: +
   ...
 
 libraries:
-  #❗作为 Xposed 模块使用务必添加，其它情况可选
+  # 作为 Xposed 模块使用务必添加，其它情况可选
   de.robv.android.xposed:
     api:
       version: 82
@@ -66,7 +66,7 @@ libraries:
   com.highcapable.yukihookapi:
     api:
       version: +
-    #❗作为 Xposed 模块使用务必添加，其它情况可选
+    # 作为 Xposed 模块使用务必添加，其它情况可选
     ksp-xposed:
       version-ref: <this>::api
   ...
@@ -80,7 +80,7 @@ libraries:
 
 ```kotlin
 plugins {
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     autowire(libs.plugins.com.google.devtools.ksp)
     // ...
 }
@@ -94,9 +94,9 @@ plugins {
 dependencies {
     // 基础依赖
     implementation(com.highcapable.yukihookapi.api)
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     compileOnly(de.robv.android.xposed.api)
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     ksp(com.highcapable.yukihookapi.ksp.xposed)
 }
 ```
@@ -111,7 +111,7 @@ dependencies {
 repositories {
     google()
     mavenCentral()
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     maven { url("https://api.xposed.info/") }
     // MavenCentral 有 2 小时缓存，若无法集成最新版本请添加此地址
     maven { url("https://s01.oss.sonatype.org/content/repositories/releases/") }
@@ -124,7 +124,7 @@ repositories {
 repositories {
     google()
     mavenCentral()
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     maven { url 'https://api.xposed.info/' }
     // MavenCentral 有 2 小时缓存，若无法集成最新版本请添加此地址
     maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
@@ -137,7 +137,7 @@ repositories {
 
 ```kotlin
 plugins {
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     id("com.google.devtools.ksp") version "<ksp-version>"
 }
 ```
@@ -146,7 +146,7 @@ plugins {
 
 ```groovy
 plugins {
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     id 'com.google.devtools.ksp' version '<ksp-version>'
 }
 ```
@@ -159,9 +159,9 @@ plugins {
 dependencies {
     // 基础依赖
     implementation("com.highcapable.yukihookapi:api:<yuki-version>")
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     compileOnly("de.robv.android.xposed:api:82")
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     ksp("com.highcapable.yukihookapi:ksp-xposed:<yuki-version>")
 }
 ```
@@ -172,9 +172,9 @@ dependencies {
 dependencies {
     // 基础依赖
     implementation 'com.highcapable.yukihookapi:api:<yuki-version>'
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     compileOnly 'de.robv.android.xposed:api:82'
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
+    // 作为 Xposed 模块使用务必添加，其它情况可选
     ksp 'com.highcapable.yukihookapi:ksp-xposed:<yuki-version>'
 }
 ```

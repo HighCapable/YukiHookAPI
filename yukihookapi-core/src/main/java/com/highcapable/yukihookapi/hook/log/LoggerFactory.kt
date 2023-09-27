@@ -55,9 +55,9 @@ enum class LoggerType {
     /**
      * 仅在 (Xposed) 宿主环境使用
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [XPOSED_ENVIRONMENT]
+     * - 请现在迁移到 [XPOSED_ENVIRONMENT]
      */
     @Deprecated(message = "请使用新的命名方法", ReplaceWith("XPOSED_ENVIRONMENT"))
     XPOSEDBRIDGE,
@@ -65,7 +65,7 @@ enum class LoggerType {
     /**
      * 仅在 (Xposed) 宿主环境使用
      *
-     * - ❗只能在 (Xposed) 宿主环境中使用 - 模块环境将不生效
+     * - 只能在 (Xposed) 宿主环境中使用 - 模块环境将不生效
      */
     XPOSED_ENVIRONMENT,
 
@@ -146,7 +146,7 @@ object YukiHookLogger {
     /**
      * 当前全部已记录的日志数据
      *
-     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      */
     val inMemoryData = ArrayList<YukiLoggerData>()
 
@@ -155,7 +155,7 @@ object YukiHookLogger {
      *
      * 如果当前没有已记录的日志会返回空字符串
      *
-     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      * @return [String]
      */
     val contents get() = contents()
@@ -165,7 +165,7 @@ object YukiHookLogger {
      *
      * 如果当前没有已记录的日志 ([data] 为空) 会返回空字符串
      *
-     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      * @param data 日志数据 - 默认为 [inMemoryData]
      * @return [String]
      */
@@ -186,7 +186,7 @@ object YukiHookLogger {
      *
      * 你也可以直接获取 [inMemoryData] 来清除
      *
-     * - ❗获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
      */
     fun clear() = inMemoryData.clear()
 
@@ -197,7 +197,7 @@ object YukiHookLogger {
      *
      * 日志文件会追加到 [fileName] 的文件结尾 - 若文件不存在会自动创建
      *
-     * - ❗文件读写权限取决于当前宿主、模块已获取的权限
+     * - 文件读写权限取决于当前宿主、模块已获取的权限
      * @param fileName 完整文件名 - 例如 /data/data/.../files/xxx.log
      * @param data 日志数据 - 默认为 [inMemoryData]
      * @throws ErrnoException 如果目标路径不可写
@@ -261,7 +261,7 @@ object YukiHookLogger {
         /**
          * 是否启用调试日志的输出功能 - 默认启用
          *
-         * - ❗关闭后将会停用 [YukiHookAPI] 对全部日志的输出
+         * - 关闭后将会停用 [YukiHookAPI] 对全部日志的输出
          *
          * 但是不影响当你手动调用下面这些方法输出日志
          *
@@ -278,7 +278,7 @@ object YukiHookLogger {
          *
          * 需要同时启用 [isEnable] 才能有效
          *
-         * - ❗过量的日志可能会导致宿主运行缓慢或造成频繁 GC
+         * - 过量的日志可能会导致宿主运行缓慢或造成频繁 GC
          *
          * 开启后你可以调用 [YukiHookLogger.saveToFile] 实时保存日志到文件或使用 [YukiHookLogger.contents] 获取实时日志文件
          */

@@ -75,7 +75,7 @@ abstract class BaseFinder {
         /**
          * 字节码、数组下标排序实现类
          *
-         * - ❗请使用 [index] 方法来获取 [IndexTypeConditionSort]
+         * - 请使用 [index] 方法来获取 [IndexTypeConditionSort]
          */
         inner class IndexTypeConditionSort internal constructor() {
 
@@ -117,7 +117,7 @@ abstract class BaseFinder {
     /**
      * 返回结果实现类
      *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [BaseResult]
      */
     internal abstract fun build(): BaseResult
@@ -125,7 +125,7 @@ abstract class BaseFinder {
     /**
      * 返回只有异常的结果实现类
      *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param throwable 异常
      * @return [BaseResult]
      */
@@ -134,7 +134,7 @@ abstract class BaseFinder {
     /**
      * 查找结果实现、处理类接口
      *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动继承此接口
+     * - 此功能交由方法体自动完成 - 你不应该手动继承此接口
      */
     internal interface BaseResult
 }

@@ -60,7 +60,7 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
          *
          * 排除列表中的 [Class] 将会使用宿主的 [ClassLoader] 进行装载
          *
-         * - ❗排除列表仅会在 (Xposed) 宿主环境生效
+         * - 排除列表仅会在 (Xposed) 宿主环境生效
          * @param name 需要添加的 [Class] 完整类名
          */
         fun excludeHostClasses(vararg name: String) {
@@ -72,7 +72,7 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
          *
          * 排除列表中的 [Class] 将会使用模块 (当前宿主环境的模块注入进程) 的 [ClassLoader] 进行装载
          *
-         * - ❗排除列表仅会在 (Xposed) 宿主环境生效
+         * - 排除列表仅会在 (Xposed) 宿主环境生效
          * @param name 需要添加的 [Class] 完整类名
          */
         fun excludeModuleClasses(vararg name: String) {

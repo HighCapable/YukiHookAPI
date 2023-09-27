@@ -298,11 +298,11 @@ Below are two **error** examples.
 
 ```kotlin
 encase {
-    // ❗ Wrong usage, can't start Hook directly
+    //  Wrong usage, can't start Hook directly
     findClass(name = "com.example.demo.DemoClass").hook {
         // ...
     }
-    // ❗ Wrong usage, can't start Hook directly
+    //  Wrong usage, can't start Hook directly
     resources().hook {
         // ...
     }
@@ -327,7 +327,7 @@ object HookEntry : IYukiHookXposedInit {
 object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        // ❗ Wrong method of use
+        //  Wrong method of use
         // Because there is no judgment object in the outer layer, you cannot start Hook directly
         findClass(name = "com.example.demo.DemoClass").hook {
             // ...

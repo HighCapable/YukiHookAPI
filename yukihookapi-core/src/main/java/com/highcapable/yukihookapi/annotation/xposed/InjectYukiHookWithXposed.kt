@@ -44,11 +44,11 @@ import de.robv.android.xposed.IXposedHookInitPackageResources
  *
  * - 为了防止模块包名无法正常被识别 - 自定义 [modulePackageName] 会在编译时产生警告
  *
- * - ❗最后这一点很重要：请不要随意修改项目 ../[sourcePath]/assets/xposed_init 中的内容 - 否则可能会导致模块无法装载
+ * - 最后这一点很重要：请不要随意修改项目 ../[sourcePath]/assets/xposed_init 中的内容 - 否则可能会导致模块无法装载
  *
- * - ❗你必须将被注解的类继承于 [IYukiHookXposedInit] 接口实现 [IYukiHookXposedInit.onHook] 方法 - 否则编译会报错
+ * - 你必须将被注解的类继承于 [IYukiHookXposedInit] 接口实现 [IYukiHookXposedInit.onHook] 方法 - 否则编译会报错
  *
- * - ❗只能拥有一个 Hook 入口 - 若存在多个注解编译会报错
+ * - 只能拥有一个 Hook 入口 - 若存在多个注解编译会报错
  *
  * 详情请参考 [InjectYukiHookWithXposed 注解](https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using#injectyukihookwithxposed-%E6%B3%A8%E8%A7%A3)
  *

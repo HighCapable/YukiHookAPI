@@ -83,9 +83,9 @@ object YukiHookAPI {
     /**
      * 版本名称
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [VERSION]
+     * - 请现在迁移到 [VERSION]
      */
     @Deprecated(message = "不再区分版本名称和版本号", ReplaceWith("VERSION"))
     const val API_VERSION_NAME = VERSION
@@ -93,9 +93,9 @@ object YukiHookAPI {
     /**
      * 版本号
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [VERSION]
+     * - 请现在迁移到 [VERSION]
      */
     @Deprecated(message = "不再区分版本名称和版本号", ReplaceWith("VERSION"))
     const val API_VERSION_CODE = -1
@@ -120,9 +120,9 @@ object YukiHookAPI {
         /**
          * 获取当前 Hook Framework 名称
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [Executor.name]
+         * - 请现在迁移到 [Executor.name]
          * @return [String]
          */
         @Deprecated(
@@ -134,9 +134,9 @@ object YukiHookAPI {
         /**
          * 获取当前 Hook Framework 版本
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [Executor.apiLevel]、[Executor.versionName]、[Executor.versionCode]
+         * - 请现在迁移到 [Executor.apiLevel]、[Executor.versionName]、[Executor.versionCode]
          * @return [Int]
          */
         @Deprecated(
@@ -148,11 +148,11 @@ object YukiHookAPI {
         /**
          * 判断模块是否在 Xposed 或太极、无极中激活
          *
-         * - ❗在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
+         * - 在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
          *
-         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          *
-         * - ❗在 (Xposed) 宿主环境中仅返回非 [isTaiChiModuleActive] 的激活状态
+         * - 在 (Xposed) 宿主环境中仅返回非 [isTaiChiModuleActive] 的激活状态
          * @return [Boolean] 是否激活
          */
         val isModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive || isTaiChiModuleActive
@@ -160,9 +160,9 @@ object YukiHookAPI {
         /**
          * 仅判断模块是否在 Xposed 中激活
          *
-         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          *
-         * - ❗在 (Xposed) 宿主环境中始终返回 true
+         * - 在 (Xposed) 宿主环境中始终返回 true
          * @return [Boolean] 是否激活
          */
         val isXposedModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive
@@ -170,9 +170,9 @@ object YukiHookAPI {
         /**
          * 仅判断模块是否在太极、无极中激活
          *
-         * - ❗在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
+         * - 在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
          *
-         * - ❗在 (Xposed) 宿主环境中始终返回 false
+         * - 在 (Xposed) 宿主环境中始终返回 false
          * @return [Boolean] 是否激活
          */
         val isTaiChiModuleActive get() = isXposedEnvironment.not() && (ModuleApplication.currentContext?.isTaiChiModuleActive ?: false)
@@ -180,11 +180,11 @@ object YukiHookAPI {
         /**
          * 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)
          *
-         * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
          *
-         * - ❗在 (Xposed) 宿主环境中可能会延迟等待事件回调后才会返回 true
+         * - 在 (Xposed) 宿主环境中可能会延迟等待事件回调后才会返回 true
          *
-         * - ❗请注意你需要确保 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用 - 否则始终返回 false
+         * - 请注意你需要确保 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用 - 否则始终返回 false
          * @return [Boolean] 是否支持
          */
         val isSupportResourcesHook
@@ -198,7 +198,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 名称
              *
-             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [String] 无法获取会返回 unknown - 获取失败会返回 invalid
              */
             val name
@@ -211,7 +211,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 类型
              *
-             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [ExecutorType]
              */
             val type get() = HookApiProperty.type.takeIf { isXposedEnvironment } ?: HookApiProperty.type(YukiXposedModuleStatus.executorName)
@@ -219,7 +219,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 的 API 版本
              *
-             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [Int] 无法获取会返回 -1
              */
             val apiLevel get() = HookApiProperty.apiLevel.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorApiLevel
@@ -227,7 +227,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 版本名称
              *
-             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [String] 无法获取会返回 unknown - 不支持会返回 unsupported
              */
             val versionName get() = HookApiProperty.versionName.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionName
@@ -235,7 +235,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 版本号
              *
-             * - ❗在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
              * @return [Int] 无法获取会返回 -1 - 不支持会返回 0
              */
             val versionCode get() = HookApiProperty.versionCode.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionCode
@@ -256,9 +256,9 @@ object YukiHookAPI {
         /**
          * 这是一个调试日志的全局标识
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.tag]
+         * - 请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.tag]
          */
         @Deprecated(message = "请使用新方式来实现此功能")
         var debugTag
@@ -283,9 +283,9 @@ object YukiHookAPI {
         /**
          * 是否启用调试日志的输出功能
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.isEnable]
+         * - 请现在迁移到 [debugLog] 并使用 [YukiHookLogger.Configs.isEnable]
          */
         @Deprecated(message = "请使用新方式来实现此功能")
         var isAllowPrintingLogs
@@ -297,9 +297,9 @@ object YukiHookAPI {
         /**
          * 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [isEnablePrefsBridgeCache]
+         * - 请现在迁移到 [isEnablePrefsBridgeCache]
          */
         @Deprecated(message = "请使用新的命名方法来实现此功能", ReplaceWith("isEnablePrefsBridgeCache"))
         var isEnableModulePrefsCache = false
@@ -307,9 +307,9 @@ object YukiHookAPI {
         /**
          * 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
          *
-         * - ❗此方法及功能已被移除 - 在之后的版本中将直接被删除
+         * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
          *
-         * - ❗键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+         * - 键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
          */
         @Deprecated(message = "此方法及功能已被移除，请删除此方法")
         var isEnablePrefsBridgeCache = false
@@ -319,7 +319,7 @@ object YukiHookAPI {
          *
          * - 为防止内存复用过高问题 - 此功能默认启用
          *
-         * - ❗关闭后每次使用 [PackageParam.moduleAppResources] 都会重新创建 - 可能会造成运行缓慢
+         * - 关闭后每次使用 [PackageParam.moduleAppResources] 都会重新创建 - 可能会造成运行缓慢
          *
          * 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
          */
@@ -330,7 +330,7 @@ object YukiHookAPI {
          *
          * - 为原生支持 Xposed 模块激活状态检测 - 此功能默认启用
          *
-         * - ❗关闭后你将不能再在模块环境中使用 [YukiHookAPI.Status] 中的功能
+         * - 关闭后你将不能再在模块环境中使用 [YukiHookAPI.Status] 中的功能
          */
         var isEnableHookModuleStatus = true
 
@@ -339,7 +339,7 @@ object YukiHookAPI {
          *
          * 启用后将在模块启动时强制将 [SharedPreferences] 文件权限调整为 [Context.MODE_WORLD_READABLE] (0664)
          *
-         * - ❗这是一个可选的实验性功能 - 此功能默认不启用
+         * - 这是一个可选的实验性功能 - 此功能默认不启用
          *
          * - 仅用于修复某些系统可能会出现在启用了 New XSharedPreferences 后依然出现文件权限错误问题 - 若你能正常使用 [YukiHookPrefsBridge] 就不建议启用此功能
          */
@@ -357,9 +357,9 @@ object YukiHookAPI {
         /**
          * 是否启用 [Member] 缓存功能
          *
-         * - ❗此方法及功能已被移除 - 在之后的版本中将直接被删除
+         * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
          *
-         * - ❗[Member] 的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+         * - [Member] 的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
          */
         @Deprecated(message = "此方法及功能已被移除，请删除此方法")
         var isEnableMemberCache = false

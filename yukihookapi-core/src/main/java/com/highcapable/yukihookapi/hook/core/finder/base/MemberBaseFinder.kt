@@ -120,7 +120,7 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
     /**
      * 返回结果处理类并设置到目标 [YukiMemberHookCreator.MemberHookCreator]
      *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @return [BaseFinder.BaseResult]
      */
     internal abstract fun process(): BaseResult
@@ -128,7 +128,7 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
     /**
      * 返回只有异常的结果处理类并作用于目标 [YukiMemberHookCreator.MemberHookCreator]
      *
-     * - ❗此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
      * @param throwable 异常
      * @return [BaseFinder.BaseResult]
      */

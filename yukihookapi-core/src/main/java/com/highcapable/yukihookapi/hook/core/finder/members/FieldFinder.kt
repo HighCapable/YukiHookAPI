@@ -77,7 +77,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
     /**
      * 设置 [Field] 名称
      *
-     * - ❗若不填写名称则必须存在一个其它条件
+     * - 若不填写名称则必须存在一个其它条件
      * @return [String]
      */
     var name
@@ -89,7 +89,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
     /**
      * 设置 [Field] 类型
      *
-     * - ❗只能是 [Class]、[String]、[VariousClass]
+     * - 只能是 [Class]、[String]、[VariousClass]
      *
      * - 可不填写类型
      * @return [Any] or null
@@ -105,7 +105,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      *
      * - 可不设置筛选条件
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
@@ -123,9 +123,9 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
     /**
      * 设置 [Field] 名称
      *
-     * - ❗若不填写名称则必须存在一个其它条件
+     * - 若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param value 名称
      * @return [BaseFinder.IndexTypeCondition]
      */
@@ -137,9 +137,9 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
     /**
      * 设置 [Field] 名称条件
      *
-     * - ❗若不填写名称则必须存在一个其它条件
+     * - 若不填写名称则必须存在一个其它条件
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
@@ -153,8 +153,8 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      *
      * - 可不填写类型
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param value 类型 - ❗只能是 [Class]、[String]、[VariousClass]
+     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * @param value 类型 - 只能是 [Class]、[String]、[VariousClass]
      * @return [BaseFinder.IndexTypeCondition]
      */
     fun type(value: Any): IndexTypeCondition {
@@ -173,7 +173,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * type { it == StringClass || it.name == "java.lang.String" }
      * ```
      *
-     * - ❗存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
+     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
@@ -185,7 +185,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
     /**
      * 设置在 [classSet] 的所有父类中查找当前 [Field]
      *
-     * - ❗若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
+     * - 若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
      * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
      */
     fun superClass(isOnlySuperClass: Boolean = false) {
@@ -328,11 +328,11 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 若有多个 [Field] 结果只会返回第一个
          *
-         * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
+         * - 在 [memberInstances] 结果为空时使用此方法将无法获得对象
          *
-         * - ❗如果目标对象不是静态 - 你必须设置 [instance]
+         * - 如果目标对象不是静态 - 你必须设置 [instance]
          *
-         * - ❗若你设置了 [remedys] 请使用 [wait] 回调结果方法
+         * - 若你设置了 [remedys] 请使用 [wait] 回调结果方法
          * @param instance [Field] 所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [Instance]
          */
@@ -343,11 +343,11 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 返回全部查找条件匹配的多个 [Field] 实例结果
          *
-         * - ❗在 [memberInstances] 结果为空时使用此方法将无法获得对象
+         * - 在 [memberInstances] 结果为空时使用此方法将无法获得对象
          *
-         * - ❗如果目标对象不是静态 - 你必须设置 [instance]
+         * - 如果目标对象不是静态 - 你必须设置 [instance]
          *
-         * - ❗若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
+         * - 若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
          * @param instance [Field] 所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [ArrayList]<[Instance]>
          */
@@ -379,9 +379,9 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 若有多个 [Field] 结果只会返回第一个
          *
-         * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         * - 若你设置了 [remedys] 必须使用此方法才能获得结果
          *
-         * - ❗若你没有设置 [remedys] 此方法将不会被回调
+         * - 若你没有设置 [remedys] 此方法将不会被回调
          * @param instance 所在实例
          * @param initiate 回调 [Instance]
          */
@@ -395,9 +395,9 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 返回全部查找条件匹配的多个 [Field] 实例结果
          *
-         * - ❗若你设置了 [remedys] 必须使用此方法才能获得结果
+         * - 若你设置了 [remedys] 必须使用此方法才能获得结果
          *
-         * - ❗若你没有设置 [remedys] 此方法将不会被回调
+         * - 若你没有设置 [remedys] 此方法将不会被回调
          * @param instance 所在实例
          * @param initiate 回调 [ArrayList]<[Instance]>
          */
@@ -440,7 +440,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 若 [MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
          *
-         * - ❗此时若要监听异常结果 - 你需要手动实现 [onNoSuchField] 方法
+         * - 此时若要监听异常结果 - 你需要手动实现 [onNoSuchField] 方法
          * @return [Result] 可继续向下监听
          */
         fun ignored(): Result {
@@ -451,9 +451,9 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
         /**
          * 忽略异常并停止打印任何错误日志
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [ignored]
+         * - 请现在迁移到 [ignored]
          * @return [Result] 可继续向下监听
          */
         @Deprecated(message = "请使用新的命名方法", ReplaceWith("ignored()"))
@@ -462,7 +462,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
         /**
          * [Field] 实例处理类
          *
-         * - ❗请使用 [get]、[all] 方法来获取 [Instance]
+         * - 请使用 [get]、[all] 方法来获取 [Instance]
          * @param instance 当前 [Field] 所在类的实例对象
          * @param field 当前 [Field] 实例对象
          */
@@ -500,7 +500,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Byte] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回 null
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回 null
              * @return [Byte] or null
              */
             fun byte() = cast<Byte?>()
@@ -508,7 +508,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Int] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Int] 取不到返回 0
              */
             fun int() = cast() ?: 0
@@ -516,7 +516,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Long] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Long] 取不到返回 0L
              */
             fun long() = cast() ?: 0L
@@ -524,7 +524,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Short] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Short] 取不到返回 0
              */
             fun short() = cast<Short?>() ?: 0
@@ -532,7 +532,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Double] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Double] 取不到返回 0.0
              */
             fun double() = cast() ?: 0.0
@@ -540,7 +540,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Float] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Float] 取不到返回 0f
              */
             fun float() = cast() ?: 0f
@@ -548,7 +548,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [String] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [String] 取不到返回 ""
              */
             fun string() = cast() ?: ""
@@ -556,7 +556,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Char] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Char] 取不到返回 ' '
              */
             fun char() = cast() ?: ' '
@@ -564,7 +564,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Boolean] 实例
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回默认值
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Boolean] 取不到返回 false
              */
             fun boolean() = cast() ?: false
@@ -578,7 +578,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [Array] 实例 - 每项类型 [T]
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回空数组
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回空数组
              * @return [Array] 取不到返回空数组
              */
             inline fun <reified T> array() = cast() ?: arrayOf<T>()
@@ -586,7 +586,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 得到当前 [Field] 的 [List] 实例 - 每项类型 [T]
              *
-             * - ❗请确认目标 [Field] 的类型 - 发生错误会返回空数组
+             * - 请确认目标 [Field] 的类型 - 发生错误会返回空数组
              * @return [List] 取不到返回空数组
              */
             inline fun <reified T> list() = cast() ?: listOf<T>()
@@ -600,14 +600,14 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
             /**
              * 设置当前 [Field] 实例为 true
              *
-             * - ❗请确保示例对象类型为 [Boolean]
+             * - 请确保示例对象类型为 [Boolean]
              */
             fun setTrue() = set(true)
 
             /**
              * 设置当前 [Field] 实例为 true
              *
-             * - ❗请确保示例对象类型为 [Boolean]
+             * - 请确保示例对象类型为 [Boolean]
              */
             fun setFalse() = set(false)
 

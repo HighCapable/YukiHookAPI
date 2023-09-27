@@ -47,23 +47,17 @@ import java.lang.reflect.Method
 
 /**
  * 代理当前 [ActivityManager] 调用类
- *
- * - ❗装载代码将自动生成 - 请勿手动调用
  */
 internal object IActivityManagerProxyCaller {
 
     /**
      * 获取当前使用的 [ClassLoader]
-     *
-     * - ❗装载代码将自动生成 - 请勿手动调用
      * @return [ClassLoader]
      */
     internal val currentClassLoader get() = AppParasitics.baseClassLoader
 
     /**
      * 调用代理的 [InvocationHandler.invoke] 方法
-     *
-     * - ❗装载代码将自动生成 - 请勿手动调用
      * @param baseInstance 原始实例
      * @param method 被调用方法
      * @param args 被调用方法参数

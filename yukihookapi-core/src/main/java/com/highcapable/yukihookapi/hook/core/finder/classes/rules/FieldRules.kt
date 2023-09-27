@@ -55,7 +55,7 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
     /**
      * 设置 [Field] 类型
      *
-     * - ❗只能是 [Class]、[String]、[VariousClass]
+     * - 只能是 [Class]、[String]、[VariousClass]
      *
      * - 可不填写类型
      * @return [Any] or null

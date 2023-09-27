@@ -46,7 +46,7 @@ package com.highcapable.yukihookapi.annotation
 )
 @Retention(AnnotationRetention.BINARY)
 /**
- * - ❗标记为不规范使用可能会引发问题的 API
+ * - 标记为不规范使用可能会引发问题的 API
  *
  * 此功能用于规范代码调用域 - 非调用域内的 API 将会在 IDE 中显示警告
  *

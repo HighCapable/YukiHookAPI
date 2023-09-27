@@ -91,7 +91,7 @@ class HookParam internal constructor(
     /**
      * 获取当前 Hook 实例的对象
      *
-     * - ❗如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
+     * - 如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
      *
      * - 如果你不确定当前实例的对象是否为 null - 你可以使用 [instanceOrNull]
      * @return [Any]
@@ -102,7 +102,7 @@ class HookParam internal constructor(
     /**
      * 获取当前 Hook 实例的对象
      *
-     * - ❗如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
+     * - 如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
      * @return [Any] or null
      */
     val instanceOrNull get() = param?.instance
@@ -173,7 +173,7 @@ class HookParam internal constructor(
      *
      * - 仅会在回调方法的 [MemberHookCreator.beforeHook] or [MemberHookCreator.afterHook] 中生效
      *
-     * - ❗设置后会同时执行 [resultNull] 方法并将异常抛出给当前 Hook APP
+     * - 设置后会同时执行 [resultNull] 方法并将异常抛出给当前 Hook APP
      * @return [Throwable] or null
      * @throws Throwable
      */
@@ -253,7 +253,7 @@ class HookParam internal constructor(
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 true
      *
-     * - ❗请确保 [result] 类型为 [Boolean]
+     * - 请确保 [result] 类型为 [Boolean]
      */
     fun resultTrue() {
         result = true
@@ -262,7 +262,7 @@ class HookParam internal constructor(
     /**
      * 设置当前 Hook 对象方法的 [result] 返回值为 false
      *
-     * - ❗请确保 [result] 类型为 [Boolean]
+     * - 请确保 [result] 类型为 [Boolean]
      */
     fun resultFalse() {
         result = false
@@ -271,7 +271,7 @@ class HookParam internal constructor(
     /**
      * 设置当前 Hook 对象方法的 [result] 为 null
      *
-     * - ❗此方法将强制设置方法体的 [result] 为 null
+     * - 此方法将强制设置方法体的 [result] 为 null
      */
     fun resultNull() {
         result = null
@@ -280,7 +280,7 @@ class HookParam internal constructor(
     /**
      * 对方法参数的数组下标进行实例化类
      *
-     * - ❗请使用第一个 [args] 方法来获取 [ArgsIndexCondition]
+     * - 请使用第一个 [args] 方法来获取 [ArgsIndexCondition]
      */
     inner class ArgsIndexCondition internal constructor() {
 
@@ -300,7 +300,7 @@ class HookParam internal constructor(
     /**
      * 对方法参数的修改进行实例化类
      *
-     * - ❗请使用第二个 [args] 方法来获取 [ArgsModifyer]
+     * - 请使用第二个 [args] 方法来获取 [ArgsModifyer]
      * @param index 参数对象数组下标
      */
     inner class ArgsModifyer internal constructor(private val index: Int) {
@@ -314,7 +314,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Byte]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回 null
+         * - 请确认目标参数的类型 - 发生错误会返回 null
          * @return [Byte] or null
          */
         fun byte() = cast<Byte?>()
@@ -322,7 +322,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Int]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Int] 取不到返回 0
          */
         fun int() = cast() ?: 0
@@ -330,7 +330,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Long]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Long] 取不到返回 0L
          */
         fun long() = cast() ?: 0L
@@ -338,7 +338,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Short]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Short] 取不到返回 0
          */
         fun short() = cast<Short?>() ?: 0
@@ -346,7 +346,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Double]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Double] 取不到返回 0.0
          */
         fun double() = cast() ?: 0.0
@@ -354,7 +354,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Float]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Float] 取不到返回 0f
          */
         fun float() = cast() ?: 0f
@@ -362,7 +362,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [String]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [String] 取不到返回 ""
          */
         fun string() = cast() ?: ""
@@ -370,7 +370,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Char]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Char] 取不到返回 ' '
          */
         fun char() = cast() ?: ' '
@@ -378,7 +378,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Boolean]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回默认值
+         * - 请确认目标参数的类型 - 发生错误会返回默认值
          * @return [Boolean] 取不到返回 false
          */
         fun boolean() = cast() ?: false
@@ -392,7 +392,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [Array] - 每项类型 [T]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回空数组
+         * - 请确认目标参数的类型 - 发生错误会返回空数组
          * @return [Array] 取不到返回空数组
          */
         inline fun <reified T> array() = cast() ?: arrayOf<T>()
@@ -400,7 +400,7 @@ class HookParam internal constructor(
         /**
          * 得到方法参数的实例对象 [List] - 每项类型 [T]
          *
-         * - ❗请确认目标参数的类型 - 发生错误会返回空数组
+         * - 请确认目标参数的类型 - 发生错误会返回空数组
          * @return [List] 取不到返回空数组
          */
         inline fun <reified T> list() = cast() ?: listOf<T>()
@@ -427,14 +427,14 @@ class HookParam internal constructor(
         /**
          * 设置方法参数的实例对象为 true
          *
-         * - ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
+         * - 请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setTrue() = set(true)
 
         /**
          * 设置方法参数的实例对象为 false
          *
-         * - ❗请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
+         * - 请确保目标对象的类型是 [Boolean] 不然会发生意想不到的问题
          */
         fun setFalse() = set(false)
 

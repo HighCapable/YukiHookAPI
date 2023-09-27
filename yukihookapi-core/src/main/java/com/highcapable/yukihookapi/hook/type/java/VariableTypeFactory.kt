@@ -71,9 +71,9 @@ fun ArrayClass(type: Class<*>) = JavaArray.newInstance(type, 0).javaClass as Cla
 /**
  * 获得 [Any] 类型
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [AnyClass]
+ * - 请现在迁移到 [AnyClass]
  * @return [Class]<[Any]>
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("AnyClass"))
@@ -242,9 +242,9 @@ val UnitClass get() = classOf<Void>()
 /**
  * 获得 [String] 类型
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [StringClass]
+ * - 请现在迁移到 [StringClass]
  * @return [Class]<[String]>
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("StringClass"))
@@ -253,9 +253,9 @@ val StringType get() = StringClass
 /**
  * 获得 [CharSequence] 类型
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [CharSequenceClass]
+ * - 请现在迁移到 [CharSequenceClass]
  * @return [Class]<[CharSequence]>
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("CharSequenceClass"))
@@ -326,9 +326,9 @@ val ShortArrayType get() = ArrayClass(ShortType)
 /**
  * 获得 [Short] - [Array] 类型
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [ShortArrayType]
+ * - 请现在迁移到 [ShortArrayType]
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(message = "请使用修复后的命名方法", ReplaceWith("ShortArrayType"))
@@ -597,7 +597,7 @@ val ThreadClass get() = classOf<Thread>()
 /**
  * 获得 [Base64] 类型
  *
- * - ❗在 Android O (26) 及以上系统加入
+ * - 在 Android O (26) 及以上系统加入
  * @return [Class]<[Base64]> or null
  */
 val Base64Class_Java get() = if (Build.VERSION.SDK_INT >= 26) classOf<Base64>() else null

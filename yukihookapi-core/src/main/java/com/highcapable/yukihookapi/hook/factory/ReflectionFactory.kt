@@ -86,9 +86,9 @@ enum class MembersType {
 /**
  * 写出当前 [ClassLoader] 下所有 [Class] 名称数组
  *
- * - ❗此方法在 [Class] 数量过多时会非常耗时
+ * - 此方法在 [Class] 数量过多时会非常耗时
  *
- * - ❗若要按指定规则查找一个 [Class] - 请使用 [searchClass] 方法
+ * - 若要按指定规则查找一个 [Class] - 请使用 [searchClass] 方法
  * @return [List]<[String]>
  * @throws IllegalStateException 如果当前 [ClassLoader] 不是 [BaseDexClassLoader]
  */
@@ -97,11 +97,11 @@ fun ClassLoader.listOfClasses() = ReflectionTool.findDexClassList(loader = this)
 /**
  * 通过当前 [ClassLoader] 按指定条件查找并得到 Dex 中的 [Class]
  *
- * - ❗此方法在 [Class] 数量过多及查找条件复杂时会非常耗时
+ * - 此方法在 [Class] 数量过多及查找条件复杂时会非常耗时
  *
- * - ❗建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
+ * - 建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
  *
- * - ❗此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
+ * - 此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
  * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存自动启用 [async]
  * @param async 是否启用异步 - 默认否
  * @param initiate 方法体
@@ -113,11 +113,11 @@ inline fun ClassLoader.searchClass(name: String = "", async: Boolean = false, in
 /**
  * 监听当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法装载
  *
- * - ❗请注意只有当前 [ClassLoader] 有主动使用 [ClassLoader.loadClass] 事件时才能被捕获
+ * - 请注意只有当前 [ClassLoader] 有主动使用 [ClassLoader.loadClass] 事件时才能被捕获
  *
- * - ❗这是一个实验性功能 - 一般情况下不会用到此方法 - 不保证不会发生错误
+ * - 这是一个实验性功能 - 一般情况下不会用到此方法 - 不保证不会发生错误
  *
- * - ❗只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  * @param result 回调 - ([Class] 实例对象)
  */
 fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit) = AppParasitics.hookClassLoader(loader = this, result)
@@ -224,9 +224,9 @@ fun Class<*>.toJavaPrimitiveType() = when (this) {
 /**
  * 通过字符串类名转换为 [loader] 中的实体类
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [toClass]
+ * - 请现在迁移到 [toClass]
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
@@ -388,9 +388,9 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: Curre
 /**
  * 通过构造方法创建新实例 - 任意类型 [Any]
  *
- * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+ * - 此方法已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [buildOf]
+ * - 请现在迁移到 [buildOf]
  * @return [Any] or null
  */
 @Deprecated(message = "请使用新的命名方法", ReplaceWith("buildOf(*param, initiate)"))

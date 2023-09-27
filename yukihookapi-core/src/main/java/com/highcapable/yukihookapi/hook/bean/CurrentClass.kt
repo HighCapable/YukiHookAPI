@@ -99,7 +99,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
     /**
      * 当前类的父类实例的类操作对象
      *
-     * - ❗请使用 [superClass] 方法来获取 [SuperClass]
+     * - 请使用 [superClass] 方法来获取 [SuperClass]
      * @param superClassSet 父类 [Class] 对象
      */
     inner class SuperClass internal constructor(private val superClassSet: Class<*>) {

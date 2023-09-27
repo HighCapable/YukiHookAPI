@@ -137,7 +137,7 @@ val ActivityManagerNativeClass get() = "android.app.ActivityManagerNative".toCla
 /**
  * 获得 [IActivityTaskManager] 类型
  *
- * - ❗在 Android O (26) 及以上系统加入
+ * - 在 Android O (26) 及以上系统加入
  * @return [Class] or null
  */
 val IActivityTaskManagerClass get() = "android.app.IActivityTaskManager".toClassOrNull()
@@ -145,7 +145,7 @@ val IActivityTaskManagerClass get() = "android.app.IActivityTaskManager".toClass
 /**
  * 获得 [ActivityTaskManager] 类型
  *
- * - ❗在 Android O (26) 及以上系统加入
+ * - 在 Android O (26) 及以上系统加入
  * @return [Class] or null
  */
 val ActivityTaskManagerClass get() = "android.app.ActivityTaskManager".toClassOrNull()
@@ -351,7 +351,7 @@ val ArrayMapClass get() = classOf<ArrayMap<*, *>>()
 /**
  * 获得 [ArraySet] 类型
  *
- * - ❗在 Android M (23) 及以上系统加入
+ * - 在 Android M (23) 及以上系统加入
  * @return [Class]<[ArraySet]> or null
  */
 val ArraySetClass get() = if (Build.VERSION.SDK_INT >= 23) classOf<ArraySet<*>>() else null
@@ -395,7 +395,7 @@ val AsyncTaskClass get() = classOf<AsyncTask<*, *, *>>()
 /**
  * 获得 [SimpleDateFormat] 类型
  *
- * - ❗在 Android N (24) 及以上系统加入
+ * - 在 Android N (24) 及以上系统加入
  * @return [Class]<[SimpleDateFormat]> or null
  */
 val SimpleDateFormatClass_Android get() = if (Build.VERSION.SDK_INT >= 24) classOf<SimpleDateFormat>() else null
@@ -415,7 +415,7 @@ val WindowClass get() = classOf<Window>()
 /**
  * 获得 [WindowMetrics] 类型
  *
- * - ❗在 Android R (30) 及以上系统加入
+ * - 在 Android R (30) 及以上系统加入
  * @return [Class]<[WindowMetrics]> or null
  */
 val WindowMetricsClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<WindowMetrics>() else null
@@ -429,7 +429,7 @@ val WindowInsetsClass get() = classOf<WindowInsets>()
 /**
  * 获得 [WindowInsets.Type] 类型
  *
- * - ❗在 Android R (30) 及以上系统加入
+ * - 在 Android R (30) 及以上系统加入
  * @return [Class]<[WindowInsets.Type]> or null
  */
 val WindowInsets_TypeClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<WindowInsets.Type>() else null
@@ -647,7 +647,7 @@ val VibratorClass get() = classOf<Vibrator>()
 /**
  * 获得 [VibrationEffect] 类型
  *
- * - ❗在 Android O (26) 及以上系统加入
+ * - 在 Android O (26) 及以上系统加入
  * @return [Class]<[VibrationEffect]> or null
  */
 val VibrationEffectClass get() = if (Build.VERSION.SDK_INT >= 26) classOf<VibrationEffect>() else null
@@ -655,7 +655,7 @@ val VibrationEffectClass get() = if (Build.VERSION.SDK_INT >= 26) classOf<Vibrat
 /**
  * 获得 [VibrationAttributes] 类型
  *
- * - ❗在 Android R (30) 及以上系统加入
+ * - 在 Android R (30) 及以上系统加入
  * @return [Class]<[VibrationAttributes]> or null
  */
 val VibrationAttributesClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<VibrationAttributes>() else null
@@ -687,7 +687,7 @@ val UserHandleClass get() = classOf<UserHandle>()
 /**
  * 获得 [ShortcutInfo] 类型
  *
- * - ❗在 Android N_MR1 (25) 及以上系统加入
+ * - 在 Android N_MR1 (25) 及以上系统加入
  * @return [Class]<[ShortcutInfo]> or null
  */
 val ShortcutInfoClass get() = if (Build.VERSION.SDK_INT >= 25) classOf<ShortcutInfo>() else null
@@ -695,7 +695,7 @@ val ShortcutInfoClass get() = if (Build.VERSION.SDK_INT >= 25) classOf<ShortcutI
 /**
  * 获得 [ShortcutManager] 类型
  *
- * - ❗在 Android R (30) 及以上系统加入
+ * - 在 Android R (30) 及以上系统加入
  * @return [Class]<[ShortcutManager]> or null
  */
 val ShortcutManagerClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<ShortcutManager>() else null
@@ -703,7 +703,7 @@ val ShortcutManagerClass get() = if (Build.VERSION.SDK_INT >= 30) classOf<Shortc
 /**
  * 获得 [ShortcutQuery] 类型
  *
- * - ❗在 Android N_MR1 (25) 及以上系统加入
+ * - 在 Android N_MR1 (25) 及以上系统加入
  * @return [Class]<[ShortcutQuery]> or null
  */
 val ShortcutQueryClass get() = if (Build.VERSION.SDK_INT >= 25) classOf<ShortcutQuery>() else null

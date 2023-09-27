@@ -1170,7 +1170,7 @@ instance.current {
         name = "stop"
         emptyParam()
     }.call()
-// ❗ Note that because current() returns the CurrentClass object itself
+//  Note that because current() returns the CurrentClass object itself
 // It CANNOT BE CALLED like the following
 instance.current().current()
 ```
@@ -1697,7 +1697,7 @@ In find conditions you can only use **index** function once except **order**.
 method {
     name = "test"
     param(BooleanType).index(num = 2)
-    // ❗ Wrong usage, please keep only one index method
+    //  Wrong usage, please keep only one index method
     returnType(StringClass).index(num = 1)
 }
 ```
@@ -1838,7 +1838,7 @@ The following is the wrong way to use it.
 field {
     name = "test"
     type = BooleanType
-}.get().string() // ❗ Wrong usage, must be cast to the bytecode target type
+}.get().string() //  Wrong usage, must be cast to the bytecode target type
 ```
 
 The following is the correct way to use it.

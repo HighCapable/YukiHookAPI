@@ -35,25 +35,25 @@ import com.highcapable.yukihookapi.hook.log.yLoggerW
 /**
  * [YukiHookAPI] 的 Xposed 装载 API 调用接口
  *
- * - ❗此接口已弃用 - 在之后的版本中将直接被删除
+ * - 此接口已弃用 - 在之后的版本中将直接被删除
  *
- * - ❗请现在迁移到 [IYukiHookXposedInit] 否则此接口的声明将在自动处理程序中被拦截
+ * - 请现在迁移到 [IYukiHookXposedInit] 否则此接口的声明将在自动处理程序中被拦截
  */
 @Deprecated(message = "此接口的命名和功能已被弃用", ReplaceWith("IYukiHookXposedInit"), level = DeprecationLevel.ERROR)
 interface YukiHookXposedInitProxy {
 
     /**
-     * - ❗此方法已过时
+     * - 此方法已过时
      *
-     * - ❗请将接口迁移到 [IYukiHookXposedInit]
+     * - 请将接口迁移到 [IYukiHookXposedInit]
      */
     @Deprecated(message = "请将接口迁移到 IYukiHookXposedInit", level = DeprecationLevel.ERROR)
     fun onInit() = yLoggerW(msg = "YukiHookXposedInitProxy was deprecated")
 
     /**
-     * - ❗此方法已过时
+     * - 此方法已过时
      *
-     * - ❗请将接口迁移到 [IYukiHookXposedInit]
+     * - 请将接口迁移到 [IYukiHookXposedInit]
      */
     @Deprecated(message = "请将接口迁移到 IYukiHookXposedInit", level = DeprecationLevel.ERROR)
     fun onHook() = yLoggerW(msg = "YukiHookXposedInitProxy was deprecated")

@@ -44,7 +44,7 @@ Add the repositories and dependencies in your project's `SweetDependency` config
 
 ```yaml
 repositories:
-  # ❗Must be added when used as an Xposed Module, otherwise optional
+  # Must be added when used as an Xposed Module, otherwise optional
   rovo89-xposed-api:
     url: https://api.xposed.info/
   # MavenCentral has a 2-hour cache,
@@ -52,13 +52,13 @@ repositories:
   sonatype-oss-releases:
 
 plugins:
-  # ❗Must be added when used as an Xposed Module, otherwise optional
+  # Must be added when used as an Xposed Module, otherwise optional
   com.google.devtools.ksp:
     version: +
   ...
 
 libraries:
-  # ❗Must be added when used as an Xposed Module, otherwise optional
+  # Must be added when used as an Xposed Module, otherwise optional
   de.robv.android.xposed:
     api:
       version: 82
@@ -67,7 +67,7 @@ libraries:
   com.highcapable.yukihookapi:
     api:
       version: +
-    # ❗Must be added when used as an Xposed Module, otherwise optional
+    # Must be added when used as an Xposed Module, otherwise optional
     ksp-xposed:
       version-ref: <this>::api
   ...
@@ -81,7 +81,7 @@ Next, deploy plugins in your project `build.gradle.kts`.
 
 ```kotlin
 plugins {
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     autowire(libs.plugins.com.google.devtools.ksp)
     // ...
 }
@@ -95,9 +95,9 @@ Then, deploy dependencies in your project `build.gradle.kts`.
 dependencies {
     // Basic dependencies
     implementation(com.highcapable.yukihookapi.api)
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     compileOnly(de.robv.android.xposed.api)
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     ksp(com.highcapable.yukihookapi.ksp.xposed)
 }
 ```
@@ -112,7 +112,7 @@ Add repositories in your project `build.gradle.kts` or `build.gradle`.
 repositories {
     google()
     mavenCentral()
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     maven { url("https://api.xposed.info/") }
     // MavenCentral has a 2-hour cache, if the latest version cannot be integrated, please add this URL
     maven { url("https://s01.oss.sonatype.org/content/repositories/releases/") }
@@ -125,7 +125,7 @@ repositories {
 repositories {
     google()
     mavenCentral()
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     maven { url 'https://api.xposed.info/' }
     // MavenCentral has a 2-hour cache, if the latest version cannot be integrated, please add this URL
     maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
@@ -138,7 +138,7 @@ Add plugins in your project `build.gradle.kts` or `build.gradle`.
 
 ```kotlin
 plugins {
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     id("com.google.devtools.ksp") version "<ksp-version>"
 }
 ```
@@ -147,7 +147,7 @@ plugins {
 
 ```groovy
 plugins {
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     id 'com.google.devtools.ksp' version '<ksp-version>'
 }
 ```
@@ -160,9 +160,9 @@ Add dependencies in your project `build.gradle.kts` or `build.gradle`.
 dependencies {
     // Basic dependency
     implementation("com.highcapable.yukihookapi:api:<yuki-version>")
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     compileOnly("de.robv.android.xposed:api:82")
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     ksp("com.highcapable.yukihookapi:ksp-xposed:<yuki-version>")
 }
 ```
@@ -173,9 +173,9 @@ dependencies {
 dependencies {
     // Basic dependency
     implementation 'com.highcapable.yukihookapi:api:<yuki-version>'
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     compileOnly 'de.robv.android.xposed:api:82'
-    // ❗Must be added when used as an Xposed Module, otherwise optional
+    // Must be added when used as an Xposed Module, otherwise optional
     ksp 'com.highcapable.yukihookapi:ksp-xposed:<yuki-version>'
 }
 ```

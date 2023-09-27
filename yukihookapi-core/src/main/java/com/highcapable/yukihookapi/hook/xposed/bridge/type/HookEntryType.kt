@@ -30,8 +30,6 @@ package com.highcapable.yukihookapi.hook.xposed.bridge.type
 
 /**
  * 当前正在进行的 Hook 类型
- *
- * - ❗装载代码将自动生成 - 请勿手动调用
  */
 internal enum class HookEntryType {
 

@@ -64,7 +64,7 @@ import java.lang.reflect.Method
  *
  * 可使用 [BaseDexClassLoader] 通过指定条件查找指定 [Class] 或一组 [Class]
  *
- * - ❗此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
+ * - 此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
  * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存必须启用 [async]
  * @param async 是否启用异步
  * @param loaderSet 当前使用的 [ClassLoader] 实例
@@ -172,7 +172,7 @@ class DexClassFinder internal constructor(
      *
      * com.demo.test.demo
      *
-     * - ❗建议设置此参数指定查找范围 - 否则 [Class] 过多时将会非常慢
+     * - 建议设置此参数指定查找范围 - 否则 [Class] 过多时将会非常慢
      * @param name 指定包名
      * @return [FromPackageRules] 可设置 [FromPackageRules.absolute] 标识包名绝对匹配
      */
@@ -313,7 +313,7 @@ class DexClassFinder internal constructor(
      *
      * 此时 [Class] 只应该继承于 [Any]
      *
-     * - ❗设置此条件后 [extends] 将失效
+     * - 设置此条件后 [extends] 将失效
      */
     fun noExtends() {
         rulesData.isNoExtendsClass = true
@@ -322,7 +322,7 @@ class DexClassFinder internal constructor(
     /**
      * 设置 [Class] 没有任何接口
      *
-     * - ❗设置此条件后 [implements] 将失效
+     * - 设置此条件后 [implements] 将失效
      */
     fun noImplements() {
         rulesData.isNoImplementsClass = true
@@ -333,7 +333,7 @@ class DexClassFinder internal constructor(
      *
      * 此时 [Class] 只应该继承于 [Any]
      *
-     * - ❗设置此条件后 [extends] 与 [implements] 将失效
+     * - 设置此条件后 [extends] 与 [implements] 将失效
      */
     fun noSuper() {
         noExtends()
@@ -534,7 +534,7 @@ class DexClassFinder internal constructor(
          *
          * - 在查找条件找不到任何结果的时候将返回 null
          *
-         * - ❗若你设置了 [async] 请使用 [wait] 方法
+         * - 若你设置了 [async] 请使用 [wait] 方法
          * @return [Class] or null
          */
         fun get() = all().takeIf { it.isNotEmpty() }?.first()
@@ -546,7 +546,7 @@ class DexClassFinder internal constructor(
          *
          * - 在查找条件找不到任何结果的时候将返回空的 [HashSet]
          *
-         * - ❗若你设置了 [async] 请使用 [waitAll] 方法
+         * - 若你设置了 [async] 请使用 [waitAll] 方法
          * @return [HashSet]<[Class]>
          */
         fun all() = classInstances
@@ -558,7 +558,7 @@ class DexClassFinder internal constructor(
          *
          * - 在查找条件找不到任何结果的时候将不会执行
          *
-         * - ❗若你设置了 [async] 请使用 [waitAll] 方法
+         * - 若你设置了 [async] 请使用 [waitAll] 方法
          * @param result 回调每个结果
          * @return [Result] 可继续向下监听
          */
@@ -574,7 +574,7 @@ class DexClassFinder internal constructor(
          *
          * - 在查找条件找不到任何结果的时候将回调 null
          *
-         * - ❗你需要设置 [async] 后此方法才会被回调 - 否则请使用 [get] 方法
+         * - 你需要设置 [async] 后此方法才会被回调 - 否则请使用 [get] 方法
          * @param result 回调 - ([Class] or null)
          * @return [Result] 可继续向下监听
          */
@@ -590,7 +590,7 @@ class DexClassFinder internal constructor(
          *
          * - 在查找条件找不到任何结果的时候将回调空的 [HashSet]
          *
-         * - ❗你需要设置 [async] 后此方法才会被回调 - 否则请使用 [all] 方法
+         * - 你需要设置 [async] 后此方法才会被回调 - 否则请使用 [all] 方法
          * @param result 回调 - ([HashSet]<[Class]>)
          * @return [Result] 可继续向下监听
          */
@@ -613,7 +613,7 @@ class DexClassFinder internal constructor(
         /**
          * 忽略异常并停止打印任何错误日志
          *
-         * - ❗此时若要监听异常结果 - 你需要手动实现 [onNoClassDefFoundError] 方法
+         * - 此时若要监听异常结果 - 你需要手动实现 [onNoClassDefFoundError] 方法
          * @return [Result] 可继续向下监听
          */
         fun ignored(): Result {

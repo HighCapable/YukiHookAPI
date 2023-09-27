@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 /**
  * [YukiHookAPI] 的 Xposed 装载 API 调用接口
  *
- * - ❗请在此类上添加注解 [InjectYukiHookWithXposed] 标记模块 Hook 入口
+ * - 请在此类上添加注解 [InjectYukiHookWithXposed] 标记模块 Hook 入口
  *
  * [YukiHookAPI] 初始化时将自动调用 [onInit] 方法
  *
@@ -60,7 +60,7 @@ interface IYukiHookXposedInit {
     /**
      * 配置 [YukiHookAPI.Configs] 的初始化方法
      *
-     * - ❗在这里只能进行初始化配置 - 不能进行 Hook 操作
+     * - 在这里只能进行初始化配置 - 不能进行 Hook 操作
      *
      * 此方法可选 - 你也可以选择不对 [YukiHookAPI.Configs] 进行配置
      */
@@ -90,7 +90,7 @@ interface IYukiHookXposedInit {
      *
      * [YukiXposedEvent.onHandleInitPackageResources]
      *
-     * - ❗此接口仅供监听和实现原生 Xposed API 的功能 - 请不要在这里操作 [YukiHookAPI]
+     * - 此接口仅供监听和实现原生 Xposed API 的功能 - 请不要在这里操作 [YukiHookAPI]
      */
     fun onXposedEvent() {}
 }

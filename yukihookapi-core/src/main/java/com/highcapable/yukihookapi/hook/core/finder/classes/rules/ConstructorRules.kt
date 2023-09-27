@@ -94,10 +94,10 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * param(StringType, BooleanType, VagueType, IntType)
      * ```
      *
-     * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查找条件
+     * - 无参 [Constructor] 请使用 [emptyParam] 设置查找条件
      *
-     * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
-     * @param paramType 参数类型数组 - ❗只能是 [Class]、[String]、[VariousClass]
+     * - 有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * @param paramType 参数类型数组 - 只能是 [Class]、[String]、[VariousClass]
      */
     fun param(vararg paramType: Any) {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
@@ -114,9 +114,9 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * param { it[1] == StringClass || it[2].name == "java.lang.String" }
      * ```
      *
-     * - ❗无参 [Constructor] 请使用 [emptyParam] 设置查找条件
+     * - 无参 [Constructor] 请使用 [emptyParam] 设置查找条件
      *
-     * - ❗有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * - 有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param conditions 条件方法体
      */
     fun param(conditions: ObjectsConditions) {

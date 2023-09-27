@@ -36,15 +36,11 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
  * 实现对原生 Xposed API 装载事件监听的回调监听事件处理类
- *
- * - ❗装载代码将自动生成 - 请勿手动调用
  */
 internal object YukiXposedEventCaller {
 
     /**
      * 回调 initZygote 事件监听
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param sparam Xposed API 实例
      */
     internal fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
@@ -54,8 +50,6 @@ internal object YukiXposedEventCaller {
 
     /**
      * 回调 handleLoadPackage 事件监听
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param lpparam Xposed API 实例
      */
     internal fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
@@ -65,8 +59,6 @@ internal object YukiXposedEventCaller {
 
     /**
      * 回调 handleInitPackageResources 事件监听
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param resparam Xposed API 实例
      */
     internal fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {

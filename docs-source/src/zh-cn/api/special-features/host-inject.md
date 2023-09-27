@@ -311,14 +311,14 @@ injectMember {
 ```kotlin
 // 排除属于宿主的 Class 类名
 // 它们将会被宿主的 ClassLoader 装载
-// ❗以下内容仅供演示，不要直接使用，请以你的实际情况为准
+// 以下内容仅供演示，不要直接使用，请以你的实际情况为准
 ModuleClassLoader.excludeHostClasses(
     "androidx.core.app.ActivityCompat",
     "com.demo.Test"
 )
 // 排除属于模块的 Class 类名
 // 它们将会被模块 (当前 Hook 进程) 的 ClassLoader 装载
-// ❗以下内容仅供演示，不要直接使用，请以你的实际情况为准
+// 以下内容仅供演示，不要直接使用，请以你的实际情况为准
 ModuleClassLoader.excludeModuleClasses(
     "com.demo.entry.HookEntry",
     "com.demo.controller.ModuleController"

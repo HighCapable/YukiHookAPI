@@ -46,14 +46,14 @@ You try to load the `encase` method in the `onInit` or `onXposedEvent` method of
 object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
-        // ❗ Wrong usage
+        //  Wrong usage
         YukiHookAPI.encase {
             // Your code here.
         }
     }
 
     override fun onXposedEvent() {
-        // ❗ Wrong usage
+        //  Wrong usage
         YukiHookAPI.encase {
             // Your code here.
         }
@@ -379,15 +379,15 @@ A disallowed parameter type was set when looking up methods, constructors, and v
 ```kotlin
 // Find a method
 method {
-    // ❗ Invalid type example is set
+    //  Invalid type example is set
     param(false, 1, 0)
-    // ❗ Invalid type example is set
+    //  Invalid type example is set
     returnType = false
 }
 
 // Find a variable
 field {
-    // ❗ Invalid type example is set
+    //  Invalid type example is set
     type = false
 }
 ```
@@ -941,7 +941,7 @@ Invalid parameters were filled in when injecting Module App's `Activity` using `
 > The following example
 
 ```kotlin
-// ❗ The content filled in here is just an example
+//  The content filled in here is just an example
 // And the proxy is filled with invalid parameters that cannot be understood
 registerModuleAppActivities(proxy = false)
 ```
@@ -1241,7 +1241,7 @@ class MyApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         YukiHookAPI.encase(base) {
-            // ❗ Can't use prefs in this case
+            //  Can't use prefs in this case
             prefs.getBoolean("test_data")
         }
         super.attachBaseContext(base)
@@ -1299,7 +1299,7 @@ class MyApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         YukiHookAPI.encase(base) {
-            // ❗ dataChannel cannot be used in this case
+            //  dataChannel cannot be used in this case
             dataChannel.wait(key = "test_data") {
                 // ...
             }
@@ -1348,7 +1348,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // ❗ Wrong usage
+        //  Wrong usage
         // Constructor has been set to private in API 1.0.88 and later
         YukiHookPrefsBridge().getBoolean("test_data")
     }

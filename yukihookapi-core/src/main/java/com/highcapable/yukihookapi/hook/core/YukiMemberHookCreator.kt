@@ -121,7 +121,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     /**
      * 得到当前被 Hook 的 [Class]
      *
-     * - ❗不推荐直接使用 - 万一得不到 [Class] 对象则会无法处理异常导致崩溃
+     * - 不推荐直接使用 - 万一得不到 [Class] 对象则会无法处理异常导致崩溃
      * @return [Class]
      * @throws IllegalStateException 如果当前 [Class] 未被正确装载
      */
@@ -145,7 +145,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      *
      * 你还需要在整个调用域中声明注解 [CauseProblemsApi] 以消除警告
      *
-     * - ❗若你不知道允许此功能会带来何种后果 - 请勿使用
+     * - 若你不知道允许此功能会带来何种后果 - 请勿使用
      * @param option 操作选项内容
      */
     @CauseProblemsApi
@@ -305,9 +305,9 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          *
          * 你可以调用 [instanceClass] 来手动查找要 Hook 的 [Method]、[Constructor]
          *
-         * - ❗不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] or [constructor] 方法
+         * - 不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] or [constructor] 方法
          *
-         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param member 要指定的 [Member] or [Member] 数组
          * @throws IllegalStateException 如果 [member] 参数为空
          */
@@ -320,9 +320,9 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 查找并 Hook [hookClass] 中指定 [name] 的全部 [Method]
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [MethodFinder] or [allMembers]
+         * - 请现在迁移到 [MethodFinder] or [allMembers]
          * @param name 方法名称
          * @return [ArrayList]<[MethodFinder.Result.Instance]>
          */
@@ -332,9 +332,9 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 查找并 Hook [hookClass] 中的全部 [Constructor]
          *
-         * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - ❗请现在迁移到 [ConstructorFinder] or [allMembers]
+         * - 请现在迁移到 [ConstructorFinder] or [allMembers]
          * @return [ArrayList]<[ConstructorFinder.Result.Instance]>
          */
         @Deprecated(
@@ -346,11 +346,11 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 查找并 Hook [hookClass] 中的全部 [Method]、[Constructor]
          *
-         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          *
-         * - ❗警告：无法准确处理每个 [Member] 的返回值和 param - 建议使用 [method] or [constructor] 对每个 [Member] 单独 Hook
+         * - 警告：无法准确处理每个 [Member] 的返回值和 param - 建议使用 [method] or [constructor] 对每个 [Member] 单独 Hook
          *
-         * - ❗如果 [hookClass] 中没有 [Member] 可能会发生错误
+         * - 如果 [hookClass] 中没有 [Member] 可能会发生错误
          * @param type 过滤 [Member] 类型 - 默认为 [MembersType.ALL]
          */
         fun allMembers(type: MembersType = MembersType.ALL) {
@@ -365,7 +365,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 查找 [hookClass] 需要 Hook 的 [Method]
          *
-         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          * @return [MethodFinder.Process]
          */
@@ -380,7 +380,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 查找 [hookClass] 需要 Hook 的 [Constructor]
          *
-         * - ❗在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
          * @param initiate 方法体
          * @return [ConstructorFinder.Process]
          */
@@ -494,7 +494,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 拦截并替换 [Member] 返回值为 true
          *
-         * - ❗确保替换 [Member] 的返回对象为 [Boolean]
+         * - 确保替换 [Member] 的返回对象为 [Boolean]
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -506,7 +506,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 拦截并替换 [Member] 返回值为 false
          *
-         * - ❗确保替换 [Member] 的返回对象为 [Boolean]
+         * - 确保替换 [Member] 的返回对象为 [Boolean]
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -518,9 +518,9 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 拦截此 [Member]
          *
-         * - ❗这将会禁止此 [Member] 执行并返回 null
+         * - 这将会禁止此 [Member] 执行并返回 null
          *
-         * - ❗注意：例如 [Int]、[Long]、[Boolean] 常量返回值的 [Member] 一旦被设置为 null 可能会造成 Hook APP 抛出异常
+         * - 注意：例如 [Int]、[Long]、[Boolean] 常量返回值的 [Member] 一旦被设置为 null 可能会造成 Hook APP 抛出异常
          *
          * - 不可与 [beforeHook]、[afterHook] 同时使用
          */
@@ -532,7 +532,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 移除当前注入的 Hook [Method]、[Constructor] (解除 Hook)
          *
-         * - ❗你只能在 Hook 回调方法中使用此功能
+         * - 你只能在 Hook 回调方法中使用此功能
          * @param result 回调是否成功
          */
         fun removeSelf(result: (Boolean) -> Unit = {}) = this.result?.remove(result) ?: result(false)
@@ -756,7 +756,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             /**
              * 监听 [members] 重复 Hook 的回调方法
              *
-             * - ❗同一个 [hookClass] 中的同一个 [members] 不会被 API 重复 Hook - 若由于各种原因重复 Hook 会回调此方法
+             * - 同一个 [hookClass] 中的同一个 [members] 不会被 API 重复 Hook - 若由于各种原因重复 Hook 会回调此方法
              * @param result 回调被重复 Hook 的 [Member]
              * @return [Result] 可继续向下监听
              */
@@ -832,7 +832,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             /**
              * 移除当前注入的 Hook [Method]、[Constructor] (解除 Hook)
              *
-             * - ❗你只能在 Hook 成功后才能解除 Hook - 可监听 [onHooked] 事件
+             * - 你只能在 Hook 成功后才能解除 Hook - 可监听 [onHooked] 事件
              * @param result 回调是否成功
              */
             fun remove(result: (Boolean) -> Unit = {}) {

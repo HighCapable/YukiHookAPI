@@ -37,23 +37,17 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
  * Xposed 模块核心功能调用类
- *
- * - ❗装载代码将自动生成 - 请勿手动调用
  */
 internal object YukiXposedModuleCaller {
 
     /**
      * 模块是否装载了 Xposed 回调方法
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @return [Boolean]
      */
     internal val isXposedCallbackSetUp get() = YukiXposedModule.isXposedCallbackSetUp
 
     /**
      * 标识 Xposed 模块开始装载
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param packageName 当前 Xposed 模块包名
      * @param appFilePath 当前 Xposed 模块自身 APK 路径
      */
@@ -61,15 +55,11 @@ internal object YukiXposedModuleCaller {
 
     /**
      * 标识 Xposed 模块装载完成
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      */
     internal fun callOnFinishLoadModule() = YukiXposedModule.onFinishLoadModule()
 
     /**
      * 标识可用的 Hook APP (宿主) 开始装载
-     *
-     * - ❗装载代码将自动生成 - 你不应该手动使用此方法装载 Xposed 模块事件
      * @param type 当前正在进行的 Hook 类型
      * @param packageName 宿主包名
      * @param processName 宿主进程名
@@ -88,8 +78,6 @@ internal object YukiXposedModuleCaller {
 
     /**
      * 打印内部 E 级别的日志
-     *
-     * - ❗装载代码将自动生成 - 请勿手动调用
      * @param msg 日志打印的内容
      * @param e 异常堆栈信息 - 默认空
      */

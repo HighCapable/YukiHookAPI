@@ -34,15 +34,11 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 
 /**
  * Xposed 模块资源钩子 (Resources Hook) 调用类
- *
- * - ❗装载代码将自动生成 - 请勿手动调用
  */
 internal object YukiXposedResourcesCaller {
 
     /**
      * 从 [XResources] 创建 [YukiResources]
-     *
-     * - ❗装载代码将自动生成 - 请勿手动调用
      * @param xResources [XResources] 实例
      * @return [YukiResources] or null
      */

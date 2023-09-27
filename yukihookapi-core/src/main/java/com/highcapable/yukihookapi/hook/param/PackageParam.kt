@@ -72,7 +72,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * 你可以在这里手动设置当前 Hook APP 的 [ClassLoader] - 默认情况下会自动获取
      *
-     * - ❗如果设置了错误或无效的 [ClassLoader] 会造成功能异常 - 请谨慎操作
+     * - 如果设置了错误或无效的 [ClassLoader] 会造成功能异常 - 请谨慎操作
      * @return [ClassLoader]
      */
     var appClassLoader
@@ -98,7 +98,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 获取当前 Hook APP 的 [Application] 实例
      *
-     * - ❗首次装载可能是空的 - 请延迟一段时间再获取或通过设置 [onAppLifecycle] 监听来完成
+     * - 首次装载可能是空的 - 请延迟一段时间再获取或通过设置 [onAppLifecycle] 监听来完成
      * @return [Application] or null
      */
     val appContext get() = AppParasitics.hostApplication ?: AppParasitics.currentApplication
@@ -106,7 +106,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 获取当前 Hook APP 的 Resources
      *
-     * - ❗你只能在 [HookResources.hook] 方法体内或 [appContext] 装载完毕时进行调用
+     * - 你只能在 [HookResources.hook] 方法体内或 [appContext] 装载完毕时进行调用
      * @return [Resources] or null
      */
     val appResources get() = wrapper?.appResources ?: appContext?.resources
@@ -149,7 +149,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 获取当前 Xposed 模块自身 APK 文件路径
      *
-     * - ❗作为 Hook API 装载时无法使用 - 会获取到空字符串
+     * - 作为 Hook API 装载时无法使用 - 会获取到空字符串
      * @return [String]
      */
     val moduleAppFilePath get() = YukiXposedModule.moduleAppFilePath
@@ -157,7 +157,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 获取当前 Xposed 模块自身 [Resources]
      *
-     * - ❗作为 Hook API 或不支持的 Hook Framework 装载时无法使用 - 会抛出异常
+     * - 作为 Hook API 或不支持的 Hook Framework 装载时无法使用 - 会抛出异常
      * @return [YukiModuleResources]
      * @throws IllegalStateException 如果当前 Hook Framework 不支持此功能
      */
@@ -168,7 +168,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 创建 [YukiHookPrefsBridge] 对象
      *
-     * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
+     * - 作为 Hook API 装载时无法使用 - 会抛出异常
      * @return [YukiHookPrefsBridge]
      */
     val prefs get() = YukiHookPrefsBridge.from()
@@ -176,7 +176,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 创建 [YukiHookPrefsBridge] 对象
      *
-     * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
+     * - 作为 Hook API 装载时无法使用 - 会抛出异常
      * @param name 自定义 Sp 存储名称
      * @return [YukiHookPrefsBridge]
      */
@@ -185,7 +185,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 获取 [YukiHookDataChannel] 对象
      *
-     * - ❗作为 Hook API 装载时无法使用 - 会抛出异常
+     * - 作为 Hook API 装载时无法使用 - 会抛出异常
      * @return [YukiHookDataChannel.NameSpace]
      * @throws IllegalStateException 如果在 [HookEntryType.ZYGOTE] 装载
      */
@@ -218,9 +218,9 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 监听当前 Hook APP 生命周期装载事件
      *
-     * - ❗在 [loadZygote] 中不会被装载 - 仅会在 [loadSystem]、[loadApp] 中装载
+     * - 在 [loadZygote] 中不会被装载 - 仅会在 [loadSystem]、[loadApp] 中装载
      *
-     * - ❗作为 Hook API 装载时请使用原生的 [Application] 实现生命周期监听
+     * - 作为 Hook API 装载时请使用原生的 [Application] 实现生命周期监听
      * @param isOnFailureThrowToApp 是否在发生异常时将异常抛出给宿主 - 默认是
      * @param initiate 方法体
      */
@@ -436,11 +436,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过 [appClassLoader] 按指定条件查找并得到当前 Hook APP Dex 中的 [Class]
      *
-     * - ❗此方法在 [Class] 数量过多及查找条件复杂时会非常耗时
+     * - 此方法在 [Class] 数量过多及查找条件复杂时会非常耗时
      *
-     * - ❗建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
+     * - 建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
      *
-     * - ❗此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
+     * - 此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
      * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存自动启用 [async]
      * @param async 是否启用异步 - 默认否
      * @param initiate 方法体
@@ -452,9 +452,9 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过字符串类名转换为当前 Hook APP 的实体类
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [toClass]
+     * - 请现在迁移到 [toClass]
      * @return [Class]
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
@@ -465,9 +465,9 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * [VariousClass] 转换为当前 Hook APP 的实体类
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [toClass]
+     * - 请现在迁移到 [toClass]
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
@@ -478,9 +478,9 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过字符串类名查找是否存在
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [hasClass]
+     * - 请现在迁移到 [hasClass]
      * @return [Boolean] 是否存在
      */
     @Deprecated(message = "请使用新的命名方法", ReplaceWith("hasClass()"))
@@ -562,7 +562,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 查找并装载 [HookClass]
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
+     * - 使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
      * @param name 类名
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]
@@ -575,7 +575,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * 使用此方法查找将会取 [name] 其中命中存在的第一个 [Class] 作为结果
      *
-     * - ❗使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
+     * - 使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
      * @param name 可填入多个类名 - 自动匹配
      * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
      * @return [HookClass]
@@ -587,7 +587,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - 使用当前 [appClassLoader] 装载目标 [Class]
      *
-     * - ❗为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
+     * - 为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
@@ -598,7 +598,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - 自动选择与当前 [Class] 相匹配的 [ClassLoader] - 优先使用 [appClassLoader]
      *
-     * - ❗若当前 [Class] 不在 [appClassLoader] 且自动匹配无法找到该 [Class] - 请启用 [isForceUseAbsolute]
+     * - 若当前 [Class] 不在 [appClassLoader] 且自动匹配无法找到该 [Class] - 请启用 [isForceUseAbsolute]
      * @param isForceUseAbsolute 是否强制使用绝对实例对象 - 默认否
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
@@ -629,7 +629,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Hook APP 的 Resources
      *
-     * - ❗请注意你需要确保当前 Hook Framework 支持且 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用
+     * - 请注意你需要确保当前 Hook Framework 支持且 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用
      * @param initiate 方法体
      */
     inline fun HookResources.hook(initiate: YukiResourcesHookCreator.() -> Unit) =
@@ -652,7 +652,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 当前 Hook APP 的生命周期实例处理类
      *
-     * - ❗请使用 [onAppLifecycle] 方法来获取 [AppLifecycle]
+     * - 请使用 [onAppLifecycle] 方法来获取 [AppLifecycle]
      * @param isOnFailureThrowToApp 是否在发生异常时将异常抛出给宿主
      */
     inner class AppLifecycle internal constructor(private val isOnFailureThrowToApp: Boolean) {

@@ -52,7 +52,7 @@ import java.io.File
  *
  * 在不同环境智能选择存取使用的对象
  *
- * - ❗模块与宿主之前共享数据存储为实验性功能 - 仅在 LSPosed 环境测试通过 - EdXposed 理论也可以使用但不再推荐
+ * - 模块与宿主之前共享数据存储为实验性功能 - 仅在 LSPosed 环境测试通过 - EdXposed 理论也可以使用但不再推荐
  *
  * 对于在模块环境中使用 [PreferenceFragmentCompat] - [YukiHookAPI] 提供了 [ModulePreferenceFragment] 来实现同样的功能
  *
@@ -178,9 +178,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 获取 [XSharedPreferences] 是否可读
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [isPreferencesAvailable]
+     * - 请现在迁移到 [isPreferencesAvailable]
      * @return [Boolean]
      */
     @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
@@ -189,9 +189,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 获取 [YukiHookPrefsBridge] 是否正处于 EdXposed/LSPosed 的最高权限运行
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [isPreferencesAvailable]
+     * - 请现在迁移到 [isPreferencesAvailable]
      * @return [Boolean]
      */
     @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
@@ -227,9 +227,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 忽略缓存直接读取键值
      *
-     * - ❗此方法及功能已被移除 - 在之后的版本中将直接被删除
+     * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
      *
-     * - ❗键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+     * - 键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
      * @return [YukiHookPrefsBridge]
      */
     @Deprecated(message = "此方法及功能已被移除，请删除此方法", ReplaceWith("this"))
@@ -385,7 +385,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - 智能识别对应环境读取键值数据
      *
-     * - ❗每次调用都会获取实时的数据 - 不受缓存控制 - 请勿在高并发场景中使用
+     * - 每次调用都会获取实时的数据 - 不受缓存控制 - 请勿在高并发场景中使用
      * @return [HashMap] 全部类型的键值数组
      */
     fun all() = hashMapOf<String, Any?>().apply {
@@ -397,9 +397,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 移除全部包含 [key] 的存储数据
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param key 键值名称
      */
     @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { remove(key) }"))
@@ -408,9 +408,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 移除 [PrefsData.key] 的存储数据
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param prefs 键值实例
      */
     @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { remove(prefs) }"))
@@ -419,9 +419,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 移除全部存储数据
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      */
     @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { clear() }"))
     fun clear() = edit { clear() }
@@ -429,9 +429,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 存储 [String] 键值
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -441,9 +441,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 存储 [Set]<[String]> 键值
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -453,9 +453,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 存储 [Boolean] 键值
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -465,9 +465,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 存储 [Int] 键值
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -477,9 +477,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 存储 [Float] 键值
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -489,9 +489,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 存储 [Long] 键值
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      * @param key 键值名称
      * @param value 键值数据
      */
@@ -501,9 +501,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 智能存储指定类型的键值
      *
-     * - ❗此方法已弃用 - 在之后的版本中将直接被删除
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - ❗请现在迁移到 [edit] 方法
+     * - 请现在迁移到 [edit] 方法
      */
     @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { put(prefs, value) }"))
     inline fun <reified T> put(prefs: PrefsData<T>, value: T) = edit { put(prefs, value) }
@@ -513,7 +513,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
      *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - 在 (Xposed) 宿主环境下只读 - 无法使用
      * @return [Editor]
      */
     fun edit() = Editor()
@@ -525,7 +525,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
      *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - 在 (Xposed) 宿主环境下只读 - 无法使用
      * @param initiate 方法体
      */
     fun edit(initiate: Editor.() -> Unit) = edit().apply(initiate).apply()
@@ -533,9 +533,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * 清除 [YukiHookPrefsBridge] 中缓存的键值数据
      *
-     * - ❗此方法及功能已被移除 - 在之后的版本中将直接被删除
+     * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
      *
-     * - ❗键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+     * - 键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
      * @return [YukiHookPrefsBridge]
      */
     @Deprecated(message = "此方法及功能已被移除，请删除此方法")
@@ -545,11 +545,11 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * [YukiHookPrefsBridge] 的存储代理类
      *
-     * - ❗请使用 [edit] 方法来获取 [Editor]
+     * - 请使用 [edit] 方法来获取 [Editor]
      *
      * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
      *
-     * - ❗在 (Xposed) 宿主环境下只读 - 无法使用
+     * - 在 (Xposed) 宿主环境下只读 - 无法使用
      */
     inner class Editor internal constructor() {
 

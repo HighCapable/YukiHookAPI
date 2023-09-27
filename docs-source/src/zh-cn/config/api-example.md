@@ -295,11 +295,11 @@ encase {
 
 ```kotlin
 encase {
-    // ❗错误的使用方法，不能直接开始 Hook
+    // 错误的使用方法，不能直接开始 Hook
     findClass(name = "com.example.demo.DemoClass").hook {
         // ...
     }
-    // ❗错误的使用方法，不能直接开始 Hook
+    // 错误的使用方法，不能直接开始 Hook
     resources().hook {
         // ...
     }
@@ -324,7 +324,7 @@ object HookEntry : IYukiHookXposedInit {
 object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        // ❗错误的使用方法，由于外层没有任何判断对象，不能直接开始 Hook
+        // 错误的使用方法，由于外层没有任何判断对象，不能直接开始 Hook
         findClass(name = "com.example.demo.DemoClass").hook {
             // ...
         }

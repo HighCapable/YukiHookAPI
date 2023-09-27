@@ -66,7 +66,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * 模块需要将 [Application] 继承于 [ModuleApplication] 来实现此功能
  *
- * - ❗模块与宿主需要保持存活状态 - 否则无法建立通讯
+ * - 模块与宿主需要保持存活状态 - 否则无法建立通讯
  *
  * 详情请参考 [API 文档 - YukiHookDataChannel](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel)
  *
@@ -270,7 +270,7 @@ class YukiHookDataChannel private constructor() {
     /**
      * [YukiHookDataChannel] 命名空间
      *
-     * - ❗请使用 [nameSpace] 方法来获取 [NameSpace]
+     * - 请使用 [nameSpace] 方法来获取 [NameSpace]
      * @param context 上下文实例
      * @param packageName 目标 Hook APP (宿主) 的包名
      */
@@ -311,7 +311,7 @@ class YukiHookDataChannel private constructor() {
          *
          * - 超出最大数据字节大小后的数据将被自动分段发送
          *
-         * - ❗警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
+         * - 警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
          * @return [Int]
          */
         var dataMaxByteSize
@@ -331,7 +331,7 @@ class YukiHookDataChannel private constructor() {
          *
          * - 超出最大数据字节大小后的数据将按照此倍数自动划分 [receiverDataMaxByteSize] 的大小
          *
-         * - ❗警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
+         * - 警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
          * @return [Int]
          */
         var dataMaxByteCompressionFactor
@@ -347,7 +347,7 @@ class YukiHookDataChannel private constructor() {
          *
          * 你还需要在整个调用域中声明注解 [CauseProblemsApi] 以消除警告
          *
-         * - ❗若你不知道允许此功能会带来何种后果 - 请勿使用
+         * - 若你不知道允许此功能会带来何种后果 - 请勿使用
          * @return [NameSpace]
          */
         @CauseProblemsApi
@@ -413,7 +413,7 @@ class YukiHookDataChannel private constructor() {
         /**
          * 仅获取监听结果 - 不获取键值数据
          *
-         * - ❗仅限使用 [VALUE_WAIT_FOR_LISTENER] 发送的监听才能被接收
+         * - 仅限使用 [VALUE_WAIT_FOR_LISTENER] 发送的监听才能被接收
          * @param key 键值名称
          * @param priority 响应优先级 - 默认不设置
          * @param callback 回调结果
@@ -443,9 +443,9 @@ class YukiHookDataChannel private constructor() {
          *
          * 由于模块与宿主处于不同的进程 - 我们可以使用数据通讯桥访问各自的调试日志数据
          *
-         * - ❗模块与宿主必须启用 [YukiHookLogger.Configs.isRecord] 才能获取到调试日志数据
+         * - 模块与宿主必须启用 [YukiHookLogger.Configs.isRecord] 才能获取到调试日志数据
          *
-         * - ❗由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多将会自动进行分段发送 - 数据越大速度越慢
+         * - 由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多将会自动进行分段发送 - 数据越大速度越慢
          * @param priority 响应优先级 - 默认不设置
          * @param result 回调 [ArrayList]<[YukiLoggerData]>
          */
