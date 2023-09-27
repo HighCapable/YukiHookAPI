@@ -416,7 +416,7 @@ object HookEntry : IYukiHookXposedInit {
                         }
                         // Replace with the specified Resources
                         // 替换为指定的 Resources
-                        replaceTo(any = "I am hook to make your Happy")
+                        replaceTo(any = "I am hook to make you happy")
                     }
                     // Inject the Resources to be hooked
                     // 注入要 Hook 的 Resources
