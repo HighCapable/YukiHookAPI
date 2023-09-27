@@ -272,10 +272,6 @@ object YukiHookAPI {
          *
          * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
          *
-         * 关闭后将只输出 Error 级别的日志
-         *
-         * 请过滤 [debugTag] 即可找到每条日志
-         *
          * 当 [YukiHookLogger.Configs.isEnable] 关闭后 [isDebug] 也将同时关闭
          */
         var isDebug = true
