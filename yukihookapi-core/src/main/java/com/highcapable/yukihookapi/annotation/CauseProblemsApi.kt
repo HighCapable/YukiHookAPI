@@ -52,4 +52,4 @@ package com.highcapable.yukihookapi.annotation
  *
  * 此功能除继承和接口外不应该在这里被调用
  */
-internal annotation class CauseProblemsApi
+annotation class CauseProblemsApi
