@@ -404,7 +404,7 @@ var isDebug: Boolean
 
 > 是否启用 Debug 模式。
 
-默认为开启状态，开启后模块将会向 `Logcat` 和 (Xposed) 宿主环境中的日志功能打印详细的 Hook 日志，关闭后仅会打印 `E` 级别的日志。
+默认不启用，启用后模块将会向 `Logcat` 和 (Xposed) 宿主环境中的日志功能打印详细的 Hook 日志，关闭后仅会打印 `E` 级别的日志。
 
 <h3 class="deprecated">isAllowPrintingLogs - field</h3>
 

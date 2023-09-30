@@ -266,13 +266,13 @@ object YukiHookAPI {
             }
 
         /**
-         * 是否启用调试模式 - 默认启用
+         * 是否启用调试模式 - 默认不启用
          *
          * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
          *
          * 当 [YLog.Configs.isEnable] 关闭后 [isDebug] 也将同时关闭
          */
-        var isDebug = true
+        var isDebug = false
 
         /**
          * 是否启用调试日志的输出功能
