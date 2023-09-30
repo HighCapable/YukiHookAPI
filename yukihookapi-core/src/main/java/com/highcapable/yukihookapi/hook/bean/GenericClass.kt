@@ -39,18 +39,25 @@ class GenericClass internal constructor(private val type: ParameterizedType) {
 
     /**
      * 获得泛型参数数组下标的 [Class] 实例
+     *
+     * - 在运行时局部变量的泛型会被擦除 - 获取不到时将会返回 null
      * @param index 数组下标 - 默认 0
-     * @return [Class]
+     * @return [Class] or null
      */
-    fun argument(index: Int = 0) = type.actualTypeArguments[index] as Class<*>
+    fun argument(index: Int = 0) = type.actualTypeArguments[index] as? Class<*>?
 
     /**
      * 获得泛型参数数组下标的 [Class] 实例
+     *
+     * - 在运行时局部变量的泛型会被擦除 - 获取不到时将会返回 null
      * @param index 数组下标 - 默认 0
-     * @return [Class]<[T]>
+     * @return [Class]<[T]> or null
      * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
      */
     @JvmName("argument_Generics")
     inline fun <reified T> argument(index: Int = 0) =
-        type.actualTypeArguments[index] as? Class<T> ?: error("Target Class type cannot cast to ${T::class.java}")
+        type.actualTypeArguments[index].let { args ->
+            if (args is Class<*>) args as? Class<T>? ?: error("Target Class type cannot cast to ${T::class.java}")
+            else null
+        }
 }
