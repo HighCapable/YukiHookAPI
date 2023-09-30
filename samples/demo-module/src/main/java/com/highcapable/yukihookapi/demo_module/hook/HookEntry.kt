@@ -100,10 +100,14 @@ object HookEntry : IYukiHookXposedInit {
                 // 可用的元素有：[TAG]、[PRIORITY]、[PACKAGE_NAME]、[USER_ID]
                 elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
             }
-            // Whether to enable debug mode
-            // Please note, for a release build, be sure to turn off debugging to prevent a lot of log stuffing on the user's device
-            // 是否开启调试模式
-            // 请注意 - 若作为发布版本请务必关闭调试功能防止对用户设备造成大量日志填充
+            // Whether to enable debug mode, not enabled by default
+            // Note: Please selectively enable this feature, this can cause I/O performance issues caused by continuous output logs
+            // Please note, for a release build, be sure to turn off this function to prevent a lot of log stuffing on the user's device
+            // To facilitate testing whether the module is activated, the demo enables this function by default
+            // 是否启用调试模式 - 默认不启用
+            // 注意：请选择性启用此功能 - 这会导致持续输出日志造成的 I/O 性能问题
+            // 若作为发布版本请务必关闭此功能防止对用户设备造成大量日志填充
+            // 为方便测试模块是否激活 - Demo 默认启用此功能
             isDebug = true
             // Whether to enable the current Xposed Module's own [Resources] cache function
             // Under normal circumstances, the resources of the Module App will not change

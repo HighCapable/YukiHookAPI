@@ -52,20 +52,21 @@ public class HookEntry implements IYukiHookXposedInit {
 
     @Override
     public void onInit() {
-        YukiHookAPI.Configs config = YukiHookAPI.Configs.INSTANCE;
-        YLog.Configs.INSTANCE.setTag("YukiHookAPI-Demo");
-        YLog.Configs.INSTANCE.setEnable(true);
-        YLog.Configs.INSTANCE.setRecord(false);
-        YLog.Configs.INSTANCE.elements(
+        YukiHookAPI.Configs configs = YukiHookAPI.Configs.INSTANCE;
+        YLog.Configs logConfigs = YLog.Configs.INSTANCE;
+        logConfigs.setTag("YukiHookAPI-Demo");
+        logConfigs.setEnable(true);
+        logConfigs.setRecord(false);
+        logConfigs.elements(
                 YLog.Configs.TAG,
                 YLog.Configs.PRIORITY,
                 YLog.Configs.PACKAGE_NAME,
                 YLog.Configs.USER_ID
         );
-        config.setDebug(true);
-        config.setEnableModuleAppResourcesCache(true);
-        config.setEnableHookModuleStatus(true);
-        config.setEnableDataChannel(true);
+        configs.setDebug(true);
+        configs.setEnableModuleAppResourcesCache(true);
+        configs.setEnableHookModuleStatus(true);
+        configs.setEnableDataChannel(true);
     }
 
     @Override
