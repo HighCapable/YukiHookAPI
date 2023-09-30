@@ -94,7 +94,7 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
      * @param msg 消息内容
      */
     internal fun debugMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null)
+        if (HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null)
             YLog.innerD("$msg${hookerManager.tailTag}")
     }
 

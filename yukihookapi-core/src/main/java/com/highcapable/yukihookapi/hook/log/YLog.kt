@@ -25,6 +25,8 @@
  *
  * This file is created by fankes on 2023/9/27.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.hook.log
 
 import android.system.ErrnoException
@@ -189,8 +191,7 @@ object YLog {
                 content += "${it.head}Dump stack trace for \"${e.current().name}\":\n"
                 content += e.dumpToString()
             }
-        }
-        return content
+        }; return content
     }
 
     /**
@@ -271,10 +272,9 @@ object YLog {
      * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
-     * @param isDisable 禁止打印日志 - 标识后将什么也不做 - 默认否
      */
-    internal fun innerD(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false, isDisable: Boolean = false) {
-        if (Configs.isEnable.not() || isDisable) return
+    internal fun innerD(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+        if (Configs.isEnable.not() || YukiHookAPI.Configs.isDebug.not()) return
         log(EnvType.BOTH, YLogData(priority = "D", msg = msg, throwable = e), isImplicit)
     }
 
@@ -283,10 +283,9 @@ object YLog {
      * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
-     * @param isDisable 禁止打印日志 - 标识后将什么也不做 - 默认否
      */
-    internal fun innerI(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false, isDisable: Boolean = false) {
-        if (Configs.isEnable.not() || isDisable) return
+    internal fun innerI(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+        if (Configs.isEnable.not()) return
         log(EnvType.BOTH, YLogData(priority = "I", msg = msg, throwable = e), isImplicit)
     }
 
@@ -295,10 +294,9 @@ object YLog {
      * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
-     * @param isDisable 禁止打印日志 - 标识后将什么也不做 - 默认否
      */
-    internal fun innerW(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false, isDisable: Boolean = false) {
-        if (Configs.isEnable.not() || isDisable) return
+    internal fun innerW(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+        if (Configs.isEnable.not()) return
         log(EnvType.BOTH, YLogData(priority = "W", msg = msg, throwable = e), isImplicit)
     }
 
@@ -307,10 +305,9 @@ object YLog {
      * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
-     * @param isDisable 禁止打印日志 - 标识后将什么也不做 - 默认否
      */
-    internal fun innerE(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false, isDisable: Boolean = false) {
-        if (Configs.isEnable.not() || isDisable) return
+    internal fun innerE(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+        if (Configs.isEnable.not()) return
         log(EnvType.BOTH, YLogData(priority = "E", msg = msg, throwable = e), isImplicit)
     }
 

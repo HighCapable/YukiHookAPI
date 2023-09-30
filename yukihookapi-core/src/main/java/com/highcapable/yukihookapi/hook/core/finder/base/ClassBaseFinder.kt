@@ -62,7 +62,7 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
      * @param msg 消息内容
      */
     internal fun debugMsg(msg: String) {
-        if (YukiHookAPI.Configs.isDebug && HookApiCategoryHelper.hasAvailableHookApi) YLog.innerD(msg)
+        if (HookApiCategoryHelper.hasAvailableHookApi) YLog.innerD(msg)
     }
 
     /**

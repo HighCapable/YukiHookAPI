@@ -266,7 +266,7 @@ object YukiHookAPI {
             }
 
         /**
-         * 是否开启调试模式 - 默认启用
+         * 是否启用调试模式 - 默认启用
          *
          * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
          *
@@ -357,6 +357,9 @@ object YukiHookAPI {
          */
         @Deprecated(message = "此方法及功能已被移除，请删除此方法")
         var isEnableMemberCache = false
+
+        /** 结束方法体 */
+        internal fun build() = Unit
     }
 
     /**
@@ -367,9 +370,7 @@ object YukiHookAPI {
      * For English version, see [configs Method](https://fankes.github.io/YukiHookAPI/en/config/api-example#configs-method)
      * @param initiate 方法体
      */
-    inline fun configs(initiate: Configs.() -> Unit) {
-        Configs.apply(initiate)
-    }
+    inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
 
     /**
      * 作为 Xposed 模块装载调用入口方法
@@ -477,7 +478,7 @@ object YukiHookAPI {
     internal fun printSplashInfo() {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
-        YLog.innerI("Welcome to YukiHookAPI $VERSION! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}", isImplicit = true)
+        YLog.innerD("Welcome to YukiHookAPI $VERSION! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}", isImplicit = true)
     }
 
     /** 输出找不到 Hook API 的错误日志 */

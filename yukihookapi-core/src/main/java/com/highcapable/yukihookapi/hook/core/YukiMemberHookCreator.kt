@@ -598,7 +598,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                         runCatching {
                             replaceHookCallback?.invoke(assign).also {
                                 checkingReturnType((param.member as? Method?)?.returnType, it?.javaClass)
-                                if (replaceHookCallback != null) hookDebugMsg(msg = "Replace Hook Member [${this@hook}] done [$tag]")
+                                if (replaceHookCallback != null) YLog.innerD("Replace Hook Member [${this@hook}] done [$tag]")
                                 HookParam.invoke()
                             }
                         }.getOrElse {
@@ -624,7 +624,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                         runCatching {
                             beforeHookCallback?.invoke(assign)
                             checkingReturnType((param.member as? Method?)?.returnType, param.result?.javaClass)
-                            if (beforeHookCallback != null) hookDebugMsg(msg = "Before Hook Member [${this@hook}] done [$tag]")
+                            if (beforeHookCallback != null) YLog.innerD("Before Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(assign, it)
@@ -639,7 +639,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                     afterHookParam.assign(afterHookId, param).also { assign ->
                         runCatching {
                             afterHookCallback?.invoke(assign)
-                            if (afterHookCallback != null) hookDebugMsg(msg = "After Hook Member [${this@hook}] done [$tag]")
+                            if (afterHookCallback != null) YLog.innerD("After Hook Member [${this@hook}] done [$tag]")
                             HookParam.invoke()
                         }.onFailure {
                             onConductFailureCallback?.invoke(assign, it)
@@ -670,20 +670,12 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         }
 
         /**
-         * Hook 过程中开启了 [YukiHookAPI.Configs.isDebug] 输出调试信息
-         * @param msg 调试日志内容
-         */
-        private fun hookDebugMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) YLog.innerD(msg)
-        }
-
-        /**
          * Hook 失败但未设置 [onAllFailureCallback] 将默认输出失败信息
          * @param e 异常堆栈
          * @param member 异常 [Member] - 可空
          */
         private fun hookErrorMsg(e: Throwable, member: Member? = null) =
-            YLog.innerE(msg = "Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]", e = e)
+            YLog.innerE("Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]", e)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截
@@ -837,7 +829,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                 hookedMembers.takeIf { it.isNotEmpty() }?.apply {
                     forEach {
                         it.remove()
-                        hookDebugMsg(msg = "Remove Hooked Member [${it.member}] done [$tag]")
+                        YLog.innerD("Remove Hooked Member [${it.member}] done [$tag]")
                     }
                     runCatching { preHookMembers.remove(this@MemberHookCreator.toString()) }
                     clear()

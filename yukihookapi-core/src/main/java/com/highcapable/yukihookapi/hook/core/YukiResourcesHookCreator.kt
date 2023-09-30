@@ -180,17 +180,17 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
                                 hookResources.instance?.hookLayout(
                                     packageParam.packageName, conditions!!.type,
                                     conditions!!.name, layoutInstance!!
-                                ) { hookDebugMsg(msg = "Hook Resources Layout $conditions done [$tag]") }
+                                ) { YLog.innerD("Hook Resources Layout $conditions done [$tag]") }
                             else -> hookResources.instance?.setReplacement(
                                 packageParam.packageName, conditions!!.type,
                                 conditions!!.name, compat(replaceInstance)
-                            ) { hookDebugMsg(msg = "Hook Resources Value $conditions done [$tag]") }
+                            ) { YLog.innerD("Hook Resources Value $conditions done [$tag]") }
                         } else when {
                             layoutInstance != null -> hookResources.instance?.hookLayout(resourceId, layoutInstance!!) {
-                                hookDebugMsg(msg = "Hook Resources Layout Id $resourceId done [$tag]")
+                                YLog.innerD("Hook Resources Layout Id $resourceId done [$tag]")
                             }
                             else -> hookResources.instance?.setReplacement(resourceId, compat(replaceInstance)) {
-                                hookDebugMsg(msg = "Hook Resources Value Id $resourceId done [$tag]")
+                                YLog.innerD("Hook Resources Value Id $resourceId done [$tag]")
                             }
                         }
                     packageParam.wrapper?.type == HookEntryType.ZYGOTE ->
@@ -199,17 +199,17 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
                                 YukiResources.hookSystemWideLayout(
                                     packageParam.packageName, conditions!!.type,
                                     conditions!!.name, layoutInstance!!
-                                ) { hookDebugMsg(msg = "Hook Wide Resources Layout $conditions done [$tag]") }
+                                ) { YLog.innerD("Hook Wide Resources Layout $conditions done [$tag]") }
                             else -> YukiResources.setSystemWideReplacement(
                                 packageParam.packageName, conditions!!.type,
                                 conditions!!.name, compat(replaceInstance)
-                            ) { hookDebugMsg(msg = "Hook Wide Resources Value $conditions done [$tag]") }
+                            ) { YLog.innerD("Hook Wide Resources Value $conditions done [$tag]") }
                         } else when {
                             layoutInstance != null -> YukiResources.hookSystemWideLayout(resourceId, layoutInstance!!) {
-                                hookDebugMsg(msg = "Hook Wide Resources Layout Id $resourceId done [$tag]")
+                                YLog.innerD("Hook Wide Resources Layout Id $resourceId done [$tag]")
                             }
                             else -> YukiResources.setSystemWideReplacement(resourceId, compat(replaceInstance)) {
-                                hookDebugMsg(msg = "Hook Wide Resources Value Id $resourceId done [$tag]")
+                                YLog.innerD("Hook Wide Resources Value Id $resourceId done [$tag]")
                             }
                         }
                     else -> YLog.innerE("Resources Hook type is invalid [$tag]")
@@ -219,14 +219,6 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
                     YLog.innerE("Resources Hook got an Exception [$tag]", it)
                 else onHookFailureCallback?.invoke(it)
             }
-        }
-
-        /**
-         * Hook 过程中开启了 [YukiHookAPI.Configs.isDebug] 输出调试信息
-         * @param msg 调试日志内容
-         */
-        private fun hookDebugMsg(msg: String) {
-            if (YukiHookAPI.Configs.isDebug) YLog.innerD(msg)
         }
 
         /**
