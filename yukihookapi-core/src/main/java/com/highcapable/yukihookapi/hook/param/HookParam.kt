@@ -46,7 +46,7 @@ import java.lang.reflect.Method
  * @param paramId 当前回调方法体 ID
  * @param param Hook 结果回调接口
  */
-class HookParam internal constructor(
+class HookParam private constructor(
     private val creatorInstance: YukiMemberHookCreator,
     private var paramId: String = "",
     private var param: YukiHookCallback.Param? = null
@@ -60,22 +60,20 @@ class HookParam internal constructor(
         /** [HookParam] 是否已经执行首次回调事件 */
         internal var isCallbackCalled = false
 
+        /**
+         * 创建新的 [HookParam]
+         * @param creatorInstance [YukiMemberHookCreator] 的实例对象
+         * @param paramId 当前回调方法体 ID
+         * @param param Hook 结果回调接口
+         * @return [HookParam]
+         */
+        internal fun create(creatorInstance: YukiMemberHookCreator, paramId: String, param: YukiHookCallback.Param) =
+            HookParam(creatorInstance, paramId, param)
+
         /** 设置 [HookParam] 执行首次回调事件 */
         internal fun invoke() {
             isCallbackCalled = true
         }
-    }
-
-    /**
-     * 在回调中设置 [HookParam] 使用的 [YukiHookCallback.Param]
-     * @param paramId 当前回调方法体 ID
-     * @param param Hook 结果回调接口
-     * @return [HookParam]
-     */
-    internal fun assign(paramId: String, param: YukiHookCallback.Param): HookParam {
-        this.paramId = paramId
-        this.param = param
-        return this
     }
 
     /**

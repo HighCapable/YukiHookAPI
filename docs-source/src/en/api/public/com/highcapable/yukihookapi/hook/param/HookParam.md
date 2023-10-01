@@ -13,7 +13,7 @@ You can use the **Chrome Translation Plugin** to translate entire pages for refe
 # HookParam <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class HookParam internal constructor(
+class HookParam private constructor(
     private val creatorInstance: YukiMemberHookCreator,
     private var paramId: String,
     private var param: YukiHookCallback.Param?
@@ -33,6 +33,10 @@ class HookParam internal constructor(
 `v1.1.5` `modified`
 
 新增 `paramId` 参数
+
+`v1.2.0` `modified`
+
+不再开放构造方法
 
 **Function Illustrate**
 

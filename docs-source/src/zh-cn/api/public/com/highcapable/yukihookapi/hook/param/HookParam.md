@@ -5,7 +5,7 @@ pageClass: code-page
 # HookParam <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-class HookParam internal constructor(
+class HookParam private constructor(
     private val creatorInstance: YukiMemberHookCreator,
     private var paramId: String,
     private var param: YukiHookCallback.Param?
@@ -25,6 +25,10 @@ class HookParam internal constructor(
 `v1.1.5` `修改`
 
 新增 `paramId` 参数
+
+`v1.2.0` `修改`
+
+不再开放构造方法
 
 **功能描述**
 

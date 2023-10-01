@@ -585,13 +585,10 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @return [YukiHookResult]
          */
         private fun Member.hook(): YukiHookResult {
-            /** 定义替换 Hook 的 [HookParam] */
-            val replaceHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
-
             /** 定义替换 Hook 回调方法体 */
             val replaceMent = object : YukiMemberReplacement(priority.toPriority()) {
                 override fun replaceHookedMember(param: Param) =
-                    replaceHookParam.assign(replaceHookId, param).let { assign ->
+                    HookParam.create(this@YukiMemberHookCreator, replaceHookId, param).let { assign ->
                         runCatching {
                             replaceHookCallback?.invoke(assign).also {
                                 checkingReturnType((param.member as? Method?)?.returnType, it?.javaClass)
@@ -608,16 +605,10 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                     }
             }
 
-            /** 定义前 Hook 的 [HookParam] */
-            val beforeHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
-
-            /** 定义后 Hook 的 [HookParam] */
-            val afterHookParam = HookParam(creatorInstance = this@YukiMemberHookCreator)
-
             /** 定义前后 Hook 回调方法体 */
             val beforeAfterHook = object : YukiMemberHook(priority.toPriority()) {
                 override fun beforeHookedMember(param: Param) {
-                    beforeHookParam.assign(beforeHookId, param).also { assign ->
+                    HookParam.create(this@YukiMemberHookCreator, beforeHookId, param).also { assign ->
                         runCatching {
                             beforeHookCallback?.invoke(assign)
                             checkingReturnType((param.member as? Method?)?.returnType, param.result?.javaClass)
@@ -633,7 +624,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                 }
 
                 override fun afterHookedMember(param: Param) {
-                    afterHookParam.assign(afterHookId, param).also { assign ->
+                    HookParam.create(this@YukiMemberHookCreator, afterHookId, param).also { assign ->
                         runCatching {
                             afterHookCallback?.invoke(assign)
                             if (afterHookCallback != null) YLog.innerD("After Hook Member [${this@hook}] done [$tag]")
