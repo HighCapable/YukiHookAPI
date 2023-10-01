@@ -60,28 +60,28 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
     internal var isIgnoreErrorLogs = false
 
     /** 当前找到的 [Member] 数组 */
-    internal var memberInstances = HashSet<Member>()
+    internal var memberInstances = mutableListOf<Member>()
 
     /**
-     * 将 [HashSet]<[Member]> 转换为 [HashSet]<[Field]>
-     * @return [HashSet]<[Field]>
+     * 将 [MutableList]<[Member]> 转换为 [MutableList]<[Field]>
+     * @return [MutableList]<[Field]>
      */
-    internal fun HashSet<Member>.fields() =
-        hashSetOf<Field>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Field?)?.also { f -> it.add(f) } } }
+    internal fun MutableList<Member>.fields() =
+        mutableListOf<Field>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Field?)?.also { f -> it.add(f) } } }
 
     /**
-     * 将 [HashSet]<[Member]> 转换为 [HashSet]<[Method]>
-     * @return [HashSet]<[Method]>
+     * 将 [MutableList]<[Member]> 转换为 [MutableList]<[Method]>
+     * @return [MutableList]<[Method]>
      */
-    internal fun HashSet<Member>.methods() =
-        hashSetOf<Method>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Method?)?.also { m -> it.add(m) } } }
+    internal fun MutableList<Member>.methods() =
+        mutableListOf<Method>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Method?)?.also { m -> it.add(m) } } }
 
     /**
-     * 将 [HashSet]<[Member]> 转换为 [HashSet]<[Constructor]>
-     * @return [HashSet]<[Constructor]>
+     * 将 [MutableList]<[Member]> 转换为 [MutableList]<[Constructor]>
+     * @return [MutableList]<[Constructor]>
      */
-    internal fun HashSet<Member>.constructors() =
-        hashSetOf<Constructor<*>>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Constructor<*>?)?.also { c -> it.add(c) } } }
+    internal fun MutableList<Member>.constructors() =
+        mutableListOf<Constructor<*>>().also { takeIf { e -> e.isNotEmpty() }?.forEach { e -> (e as? Constructor<*>?)?.also { c -> it.add(c) } } }
 
     /**
      * 将目标类型转换为可识别的兼容类型
@@ -169,7 +169,7 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
          * 绑定 [Member] 数组到当前 Hooker
          * @param members 当前 [Member] 数组
          */
-        internal fun bindMembers(members: HashSet<Member>) {
+        internal fun bindMembers(members: MutableList<Member>) {
             instance?.members?.clear()
             members.forEach { instance?.members?.add(it) }
         }

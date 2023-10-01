@@ -151,12 +151,12 @@ internal object ReflectionTool {
      * 查找任意 [Class] 或一组 [Class]
      * @param loaderSet 类所在 [ClassLoader]
      * @param rulesData 规则查找数据
-     * @return [HashSet]<[Class]>
+     * @return [MutableList]<[Class]>
      * @throws IllegalStateException 如果 [loaderSet] 为 null 或未设置任何条件
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
     internal fun findClasses(loaderSet: ClassLoader?, rulesData: ClassRulesData) = rulesData.createResult {
-        hashSetOf<Class<*>>().also { classes ->
+        mutableListOf<Class<*>>().also { classes ->
             /**
              * 开始查找作业
              * @param instance 当前 [Class] 实例
@@ -294,14 +294,14 @@ internal object ReflectionTool {
      * 查找任意 [Field] 或一组 [Field]
      * @param classSet [Field] 所在类
      * @param rulesData 规则查找数据
-     * @return [HashSet]<[Field]>
+     * @return [MutableList]<[Field]>
      * @throws IllegalStateException 如果未设置任何条件或 [FieldRulesData.type] 目标类不存在
      * @throws NoSuchFieldError 如果找不到 [Field]
      */
     internal fun findFields(classSet: Class<*>?, rulesData: FieldRulesData) = rulesData.createResult {
         if (type == UndefinedType) error("Field match type class is not found")
-        if (classSet == null) return@createResult hashSetOf()
-        hashSetOf<Field>().also { fields ->
+        if (classSet == null) return@createResult mutableListOf()
+        mutableListOf<Field>().also { fields ->
             classSet.existFields?.also { declares ->
                 var iType = -1
                 var iName = -1
@@ -357,16 +357,16 @@ internal object ReflectionTool {
      * 查找任意 [Method] 或一组 [Method]
      * @param classSet [Method] 所在类
      * @param rulesData 规则查找数据
-     * @return [HashSet]<[Method]>
+     * @return [MutableList]<[Method]>
      * @throws IllegalStateException 如果未设置任何条件或 [MethodRulesData.paramTypes] 以及 [MethodRulesData.returnType] 目标类不存在
      * @throws NoSuchMethodError 如果找不到 [Method]
      */
     internal fun findMethods(classSet: Class<*>?, rulesData: MethodRulesData) = rulesData.createResult {
         if (returnType == UndefinedType) error("Method match returnType class is not found")
-        if (classSet == null) return@createResult hashSetOf()
+        if (classSet == null) return@createResult mutableListOf()
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Method match paramType[$p] class is not found") }
-        hashSetOf<Method>().also { methods ->
+        mutableListOf<Method>().also { methods ->
             classSet.existMethods?.also { declares ->
                 var iReturnType = -1
                 var iReturnTypeCds = -1
@@ -468,15 +468,15 @@ internal object ReflectionTool {
      * 查找任意 [Constructor] 或一组 [Constructor]
      * @param classSet [Constructor] 所在类
      * @param rulesData 规则查找数据
-     * @return [HashSet]<[Constructor]>
+     * @return [MutableList]<[Constructor]>
      * @throws IllegalStateException 如果未设置任何条件或 [ConstructorRulesData.paramTypes] 目标类不存在
      * @throws NoSuchMethodError 如果找不到 [Constructor]
      */
     internal fun findConstructors(classSet: Class<*>?, rulesData: ConstructorRulesData) = rulesData.createResult {
-        if (classSet == null) return@createResult hashSetOf()
+        if (classSet == null) return@createResult mutableListOf()
         paramTypes?.takeIf { it.isNotEmpty() }
             ?.forEachIndexed { p, it -> if (it == UndefinedType) error("Constructor match paramType[$p] class is not found") }
-        hashSetOf<Constructor<*>>().also { constructors ->
+        mutableListOf<Constructor<*>>().also { constructors ->
             classSet.existConstructors?.also { declares ->
                 var iParamTypes = -1
                 var iParamTypesCds = -1

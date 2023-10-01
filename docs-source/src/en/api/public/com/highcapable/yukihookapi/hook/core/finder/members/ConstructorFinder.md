@@ -291,7 +291,7 @@ inner class Result internal constructor()
 #### onFind <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun onFind(initiate: HashSet<Constructor<*>>.() -> Unit)
+fun onFind(initiate: MutableList<Constructor<*>>.() -> Unit)
 ```
 
 **Change Records**
@@ -301,6 +301,10 @@ fun onFind(initiate: HashSet<Constructor<*>>.() -> Unit)
 `v1.1.0` `modified`
 
 `initiate` 参数 `Constructor` 变为 `HashSet<Constructor>`
+
+`v1.2.0` `modified`
+
+`initiate` 类型由 `HashSet` 修改为 `MutableList`
 
 **Function Illustrate**
 
@@ -543,12 +547,16 @@ constructor {
 ### all <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun all(): ArrayList<Instance>
+fun all(): MutableList<Instance>
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.2.0` `modified`
+
+返回值类型由 `ArrayList` 修改为 `MutableList`
 
 **Function Illustrate**
 
@@ -591,12 +599,16 @@ fun give(): Constructor<*>?
 ### giveAll <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun giveAll(): HashSet<Constructor<*>>
+fun giveAll(): MutableList<Constructor<*>>
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.2.0` `modified`
+
+返回值类型由 `HashSet` 修改为 `MutableList`
 
 **Function Illustrate**
 
@@ -604,7 +616,7 @@ fun giveAll(): HashSet<Constructor<*>>
 
 返回全部查找条件匹配的多个 `Constructor` 实例。
 
-在查找条件找不到任何结果的时候将返回空的 `HashSet`。
+在查找条件找不到任何结果的时候将返回空的 `MutableList`。
 
 ### wait <span class="symbol">- method</span>
 
@@ -633,12 +645,16 @@ fun wait(initiate: Instance.() -> Unit)
 ### waitAll <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun waitAll(initiate: ArrayList<Instance>.() -> Unit)
+fun waitAll(initiate: MutableList<Instance>.() -> Unit)
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.2.0` `modified`
+
+`initiate` 类型由 `ArrayList` 修改为 `MutableList`
 
 **Function Illustrate**
 

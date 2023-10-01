@@ -44,7 +44,7 @@ abstract class ClassBaseFinder internal constructor(internal open val loaderSet:
     }
 
     /** 当前找到的 [Class] 数组 */
-    internal var classInstances = HashSet<Class<*>>()
+    internal var classInstances = mutableListOf<Class<*>>()
 
     /** 是否开启忽略错误警告功能 */
     internal var isIgnoreErrorLogs = false

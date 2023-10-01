@@ -195,7 +195,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
 
     /**
      * 得到 [Field] 或一组 [Field]
-     * @return [HashSet]<[Field]>
+     * @return [MutableList]<[Field]>
      * @throws NoSuchFieldError 如果找不到 [Field]
      */
     private val result get() = ReflectionTool.findFields(usedClassSet, rulesData)
@@ -204,7 +204,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * 设置实例
      * @param fields 当前找到的 [Field] 数组
      */
-    private fun setInstance(fields: HashSet<Field>) {
+    private fun setInstance(fields: MutableList<Field>) {
         memberInstances.clear()
         fields.takeIf { it.isNotEmpty() }?.forEach { memberInstances.add(it) }
     }
@@ -241,7 +241,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
     inner class RemedyPlan internal constructor() {
 
         /** 失败尝试次数数组 */
-        private val remedyPlans = HashSet<Pair<FieldFinder, Result>>()
+        private val remedyPlans = mutableSetOf<Pair<FieldFinder, Result>>()
 
         /**
          * 创建需要重新查找的 [Field]
@@ -293,13 +293,13 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
         inner class Result internal constructor() {
 
             /** 找到结果时的回调 */
-            internal var onFindCallback: (HashSet<Field>.() -> Unit)? = null
+            internal var onFindCallback: (MutableList<Field>.() -> Unit)? = null
 
             /**
              * 当找到结果时
              * @param initiate 回调
              */
-            fun onFind(initiate: HashSet<Field>.() -> Unit) {
+            fun onFind(initiate: MutableList<Field>.() -> Unit) {
                 onFindCallback = initiate
             }
         }
@@ -349,10 +349,10 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
          * @param instance [Field] 所在的实例对象 - 如果是静态可不填 - 默认 null
-         * @return [ArrayList]<[Instance]>
+         * @return [MutableList]<[Instance]>
          */
         fun all(instance: Any? = null) =
-            arrayListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
+            mutableListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
 
         /**
          * 得到 [Field] 本身
@@ -369,10 +369,10 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 返回全部查找条件匹配的多个 [Field] 实例
          *
-         * - 在查找条件找不到任何结果的时候将返回空的 [HashSet]
-         * @return [HashSet]<[Field]>
+         * - 在查找条件找不到任何结果的时候将返回空的 [MutableList]
+         * @return [MutableList]<[Field]>
          */
-        fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.fields() ?: HashSet()
+        fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.fields() ?: mutableListOf()
 
         /**
          * 获得 [Field] 实例处理类
@@ -399,9 +399,9 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * - 若你没有设置 [remedys] 此方法将不会被回调
          * @param instance 所在实例
-         * @param initiate 回调 [ArrayList]<[Instance]>
+         * @param initiate 回调 [MutableList]<[Instance]>
          */
-        fun waitAll(instance: Any? = null, initiate: ArrayList<Instance>.() -> Unit) {
+        fun waitAll(instance: Any? = null, initiate: MutableList<Instance>.() -> Unit) {
             if (memberInstances.isNotEmpty()) initiate(all(instance))
             else remedyPlansCallback = { initiate(all(instance)) }
         }

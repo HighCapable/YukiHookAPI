@@ -239,7 +239,7 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
 
     /**
      * 得到 [Constructor] 或一组 [Constructor]
-     * @return [HashSet]<[Constructor]>
+     * @return [MutableList]<[Constructor]>
      * @throws NoSuchMethodError 如果找不到 [Constructor]
      */
     private val result by lazy { ReflectionTool.findConstructors(usedClassSet, rulesData) }
@@ -248,7 +248,7 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
      * 设置实例
      * @param constructors 当前找到的 [Constructor] 数组
      */
-    private fun setInstance(constructors: HashSet<Constructor<*>>) {
+    private fun setInstance(constructors: MutableList<Constructor<*>>) {
         memberInstances.clear()
         constructors.takeIf { it.isNotEmpty() }?.onEach { memberInstances.add(it) }
             ?.first()?.apply { if (hookerManager.isMemberBinded) hookerManager.bindMember(member = this) }
@@ -293,7 +293,7 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
     inner class RemedyPlan internal constructor() {
 
         /** 失败尝试次数数组 */
-        private val remedyPlans = HashSet<Pair<ConstructorFinder, Result>>()
+        private val remedyPlans = mutableSetOf<Pair<ConstructorFinder, Result>>()
 
         /**
          * 创建需要重新查找的 [Constructor]
@@ -344,13 +344,13 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
         inner class Result internal constructor() {
 
             /** 找到结果时的回调 */
-            internal var onFindCallback: (HashSet<Constructor<*>>.() -> Unit)? = null
+            internal var onFindCallback: (MutableList<Constructor<*>>.() -> Unit)? = null
 
             /**
              * 当找到结果时
              * @param initiate 回调
              */
-            fun onFind(initiate: HashSet<Constructor<*>>.() -> Unit) {
+            fun onFind(initiate: MutableList<Constructor<*>>.() -> Unit) {
                 onFindCallback = initiate
             }
         }
@@ -378,7 +378,7 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
          * @return [Process] 可继续向下监听
          */
         fun all(): Process {
-            fun HashSet<Member>.bind() = takeIf { it.isNotEmpty() }?.apply { hookerManager.bindMembers(members = this) }.unit()
+            fun MutableList<Member>.bind() = takeIf { it.isNotEmpty() }?.apply { hookerManager.bindMembers(members = this) }.unit()
             if (isUsingRemedyPlan)
                 remedyPlansCallback = { memberInstances.bind() }
             else memberInstances.bind()
@@ -452,9 +452,9 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
          * - 在 [memberInstances] 结果为空时使用此方法将无法获得对象
          *
          * - 若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
-         * @return [ArrayList]<[Instance]>
+         * @return [MutableList]<[Instance]>
          */
-        fun all() = arrayListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(it)) } }
+        fun all() = mutableListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(it)) } }
 
         /**
          * 得到 [Constructor] 本身
@@ -471,10 +471,10 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
          *
          * - 返回全部查找条件匹配的多个 [Constructor] 实例
          *
-         * - 在查找条件找不到任何结果的时候将返回空的 [HashSet]
-         * @return [HashSet]<[Constructor]>
+         * - 在查找条件找不到任何结果的时候将返回空的 [MutableList]
+         * @return [MutableList]<[Constructor]>
          */
-        fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.constructors() ?: HashSet()
+        fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.constructors() ?: mutableListOf()
 
         /**
          * 获得 [Constructor] 实例处理类
@@ -499,9 +499,9 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
          * - 若你设置了 [remedys] 必须使用此方法才能获得结果
          *
          * - 若你没有设置 [remedys] 此方法将不会被回调
-         * @param initiate 回调 [ArrayList]<[Instance]>
+         * @param initiate 回调 [MutableList]<[Instance]>
          */
-        fun waitAll(initiate: ArrayList<Instance>.() -> Unit) {
+        fun waitAll(initiate: MutableList<Instance>.() -> Unit) {
             if (memberInstances.isNotEmpty()) initiate(all())
             else remedyPlansCallback = { initiate(all()) }
         }

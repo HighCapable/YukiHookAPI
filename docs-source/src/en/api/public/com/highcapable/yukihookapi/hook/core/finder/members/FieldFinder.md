@@ -44,7 +44,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>?) : Membe
 
 `v1.0` `first`
 
-`v1.0.2` `removed`
+`v1.0.2` `移除`
 
 ## name <span class="symbol">- field</span>
 
@@ -289,22 +289,26 @@ inner class Result internal constructor()
 #### onFind <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun onFind(initiate: HashSet<Field>.() -> Unit)
+fun onFind(initiate: MutableList<Field>.() -> Unit)
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
 
+`v1.2.0` `modified`
+
+`initiate` 类型由 `HashSet` 修改为 `MutableList`
+
 **Function Illustrate**
 
 > 当在 `RemedyPlan` 中找到结果时。
 
-**Function Example**
+**功能示例**
 
 你可以方便地对重查找的 `Field` 实现 `onFind` 方法。
 
-> The following example
+> 示例如下
 
 ```kotlin
 field {
@@ -350,11 +354,11 @@ inline fun result(initiate: Result.() -> Unit): Result
 
 > 创建监听结果事件方法体。
 
-**Function Example**
+**功能示例**
 
 你可以使用 **lambda** 形式创建 `Result` 类。
 
-> The following example
+> 示例如下
 
 ```kotlin
 field {
@@ -387,11 +391,11 @@ fun get(instance: Any?): Instance
 
 若有多个 `Field` 结果只会返回第一个。
 
-**Function Example**
+**功能示例**
 
 你可以轻松地得到 `Field` 的实例以及使用它进行设置实例。
 
-> The following example
+> 示例如下
 
 ```kotlin
 field {
@@ -401,7 +405,7 @@ field {
 
 如果你取到的是静态 `Field`，可以不需要设置实例。
 
-> The following example
+> 示例如下
 
 ```kotlin
 field {
@@ -412,12 +416,16 @@ field {
 ### all <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun all(instance: Any?): ArrayList<Instance>
+fun all(instance: Any?): MutableList<Instance>
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.2.0` `modified`
+
+返回值类型由 `ArrayList` 修改为 `MutableList`
 
 **Function Illustrate**
 
@@ -425,11 +433,11 @@ fun all(instance: Any?): ArrayList<Instance>
 
 返回全部查找条件匹配的多个 `Field` 实例结果。
 
-**Function Example**
+**功能示例**
 
 你可以通过此方法来获得当前条件结果中匹配的全部 `Field`，其 `Field` 所在实例用法与 `get` 相同。
 
-> The following example
+> 示例如下
 
 ```kotlin
 field {
@@ -460,12 +468,16 @@ fun give(): Field?
 ### giveAll <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun giveAll(): HashSet<Field>
+fun giveAll(): MutableList<Field>
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.2.0` `modified`
+
+返回值类型由 `HashSet` 修改为 `MutableList`
 
 **Function Illustrate**
 
@@ -473,7 +485,7 @@ fun giveAll(): HashSet<Field>
 
 返回全部查找条件匹配的多个 `Field` 实例。
 
-在查找条件找不到任何结果的时候将返回空的 `HashSet`。
+在查找条件找不到任何结果的时候将返回空的 `MutableList`。
 
 ### wait <span class="symbol">- method</span>
 
@@ -502,12 +514,16 @@ fun wait(instance: Any?, initiate: Instance.() -> Unit)
 ### waitAll <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun waitAll(instance: Any?, initiate: ArrayList<Instance>.() -> Unit)
+fun waitAll(instance: Any?, initiate: MutableList<Instance>.() -> Unit)
 ```
 
 **Change Records**
 
 `v1.1.0` `added`
+
+`v1.2.0` `modified`
+
+`initiate` 类型由 `ArrayList` 修改为 `MutableList`
 
 **Function Illustrate**
 
@@ -537,13 +553,13 @@ inline fun remedys(initiate: RemedyPlan.() -> Unit): Result
 
 > 创建 `Field` 重查找功能。
 
-**Function Example**
+**功能示例**
 
 当你遇到一种 `Field` 可能存在不同形式的存在时，可以使用 `RemedyPlan` 重新查找它，而没有必要使用 `onNoSuchField` 捕获异常二次查找 `Field`。
 
 若第一次查找失败了，你还可以在这里继续添加此方法体直到成功为止。
 
-> The following example
+> 示例如下
 
 ```kotlin
 field {
@@ -630,7 +646,7 @@ inner class Instance internal constructor(private val instance: Any?, private va
 
 `v1.0` `first`
 
-`v1.1.0` `removed`
+`v1.1.0` `移除`
 
 请直接使用 `any` 方法得到 `Field` 自身的实例化对象
 
