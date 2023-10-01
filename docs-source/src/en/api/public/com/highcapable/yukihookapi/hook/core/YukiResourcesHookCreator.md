@@ -291,6 +291,52 @@ injectResource {
 }
 ```
 
+### replaceTo <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun replaceTo(result: (original: Any) -> Any?)
+```
+
+**Change Records**
+
+`v1.2.0` `added`
+
+**Function Illustrate**
+
+> 替换指定 Resources 为指定的值。
+
+::: warning
+
+此方法只支持部分类型，例如 **String**、**Boolean**。
+
+此方法不支持在 **HookEntryType.ZYGOTE** 时使用。
+
+:::
+
+### replaceToModuleResource <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun replaceToModuleResource(result: (original: Any) -> Int)
+```
+
+**Change Records**
+
+`v1.2.0` `added`
+
+**Function Illustrate**
+
+> 替换为当前 Xposed 模块的 Resources。
+
+你可以直接使用模块的 `R.string.xxx`、`R.mipmap.xxx`、`R.drawable.xxx` 替换 Hook APP 的 Resources。
+
+::: warning
+
+此方法只支持部分类型，例如 **String**、**Boolean**。
+
+此方法不支持在 **HookEntryType.ZYGOTE** 时使用。
+
+:::
+
 ### injectAsLayout <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
