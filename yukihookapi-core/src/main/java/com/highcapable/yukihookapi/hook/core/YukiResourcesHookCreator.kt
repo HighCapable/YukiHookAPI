@@ -25,7 +25,10 @@
  *
  * This file is created by fankes on 2022/5/1.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress(
+    "unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE",
+    "DiscouragedApi", "UseCompatLoadingForDrawables", "DEPRECATION"
+)
 
 package com.highcapable.yukihookapi.hook.core
 
@@ -96,6 +99,12 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
         /** 当前的替换值实例 */
         private var replaceInstance: Any? = null
 
+        /** 当前的替换值回调 */
+        private var replaceCallback: ((Any) -> Any?)? = null
+
+        /** 当前的替换值回调 */
+        private var replaceFwdCallback: ((Any) -> Int)? = null
+
         /** 当前的布局注入实例 */
         private var layoutInstance: (YukiResources.LayoutInflatedParam.() -> Unit)? = null
 
@@ -145,6 +154,32 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
         }
 
         /**
+         * 替换指定 Resources 为指定的值
+         *
+         * - 此方法只支持部分类型 - 例如 [String]、[Boolean]
+         *
+         * - 此方法不支持在 [HookEntryType.ZYGOTE] 时使用
+         * @param result 回调原始值、返回需要替换的类型
+         */
+        fun replaceTo(result: (original: Any) -> Any?) {
+            replaceCallback = result
+        }
+
+        /**
+         * 替换为当前 Xposed 模块的 Resources
+         *
+         * 你可以直接使用模块的 R.string.xxx、R.mipmap.xxx、R.drawable.xxx 替换 Hook APP 的 Resources
+         *
+         * - 此方法只支持部分类型 - 例如 [String]、[Boolean]
+         *
+         * - 此方法不支持在 [HookEntryType.ZYGOTE] 时使用
+         * @param result 回调原始值、返回需要替换的当前 Xposed 模块的 Resources Id
+         */
+        fun replaceToModuleResource(result: (original: Any) -> Int) {
+            replaceFwdCallback = result
+        }
+
+        /**
          * 作为装载的布局注入
          * @param initiate [YukiResources.LayoutInflatedParam] 方法体
          */
@@ -172,7 +207,8 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
             if (isDisableCreatorRunHook.not()) runCatching {
                 when {
                     conditions == null -> YLog.innerE("You must set the conditions before hook a Resources [$tag]")
-                    replaceInstance == null && layoutInstance == null -> YLog.innerE("Resources Hook got null replaceInstance [$tag]")
+                    replaceInstance == null && replaceCallback == null && replaceFwdCallback == null && layoutInstance == null ->
+                        YLog.innerE("Resources Hook got null replaceInstance [$tag]")
                     packageParam.wrapper?.type == HookEntryType.RESOURCES && hookResources.instance != null ->
                         if (resourceId == -1) when {
                             layoutInstance != null ->
@@ -180,6 +216,18 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
                                     packageParam.packageName, conditions!!.type,
                                     conditions!!.name, layoutInstance!!
                                 ) { YLog.innerD("Hook Resources Layout $conditions done [$tag]") }
+                            replaceCallback != null -> conditionsResValue?.let {
+                                hookResources.instance?.setReplacement(
+                                    packageParam.packageName, conditions!!.type,
+                                    conditions!!.name, compat(replaceCallback!!(it))
+                                ) { YLog.innerD("Hook Resources Value $conditions done [$tag]") }
+                            } ?: YLog.innerW("Resources type \"${conditions!!.type}\" not support replaceTo { ... } function")
+                            replaceFwdCallback != null -> conditionsResValue?.let {
+                                hookResources.instance?.setReplacement(
+                                    packageParam.packageName, conditions!!.type,
+                                    conditions!!.name, compat(ModuleResFwd(replaceFwdCallback!!(it)))
+                                ) { YLog.innerD("Hook Resources Value $conditions done [$tag]") }
+                            } ?: YLog.innerW("Resources type \"${conditions!!.type}\" not support replaceToModuleResource { ... } function")
                             else -> hookResources.instance?.setReplacement(
                                 packageParam.packageName, conditions!!.type,
                                 conditions!!.name, compat(replaceInstance)
@@ -199,6 +247,8 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
                                     packageParam.packageName, conditions!!.type,
                                     conditions!!.name, layoutInstance!!
                                 ) { YLog.innerD("Hook Wide Resources Layout $conditions done [$tag]") }
+                            replaceCallback != null -> YLog.innerW("Zygote not support replaceTo { ... } function")
+                            replaceFwdCallback != null -> YLog.innerW("Zygote not support replaceToModuleResource { ... } function")
                             else -> YukiResources.setSystemWideReplacement(
                                 packageParam.packageName, conditions!!.type,
                                 conditions!!.name, compat(replaceInstance)
@@ -217,6 +267,29 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
                 if (onHookFailureCallback == null)
                     YLog.innerE("Resources Hook got an Exception [$tag]", it)
                 else onHookFailureCallback?.invoke(it)
+            }
+        }
+
+        /**
+         * 获得查找条件中的宿主原始 [Resources]
+         * @return [Any] or null
+         */
+        private val conditionsResValue get(): Any? {
+            val appResources = packageParam.appResources ?: error("Failed to got Host Resources")
+            val original = runCatching {
+                appResources.getIdentifier(conditions!!.name, conditions!!.type, packageParam.packageName)
+            }.getOrNull() ?: -1
+            return when (conditions!!.type) {
+                "anim" -> appResources.getAnimation(original)
+                "bool" -> appResources.getBoolean(original)
+                "color" -> appResources.getColor(original)
+                "dimen" -> appResources.getDimension(original)
+                "drawable", "mipmap" -> appResources.getDrawable(original)
+                "integer" -> appResources.getInteger(original)
+                "layout" -> appResources.getLayout(original)
+                "string" -> appResources.getString(original)
+                "xml" -> appResources.getXml(original)
+                else -> null
             }
         }
 
