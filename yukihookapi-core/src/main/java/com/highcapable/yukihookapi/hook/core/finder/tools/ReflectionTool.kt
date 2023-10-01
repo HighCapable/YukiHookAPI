@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
-import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
@@ -85,10 +84,10 @@ internal object ReflectionTool {
     private object MemoryCache {
 
         /** 缓存的 [Class] 列表数组 */
-        val dexClassListData = ArrayMap<String, List<String>>()
+        val dexClassListData = mutableMapOf<String, List<String>>()
 
         /** 缓存的 [Class] 对象数组 */
-        val classData = ArrayMap<String, Class<*>?>()
+        val classData = mutableMapOf<String, Class<*>?>()
     }
 
     /**
@@ -660,7 +659,7 @@ internal object ReflectionTool {
      */
     private val Class<*>.existMembers
         get() = runCatching {
-            arrayListOf<Member>().apply {
+            mutableListOf<Member>().apply {
                 addAll(declaredFields.toList())
                 addAll(declaredMethods.toList())
                 addAll(declaredConstructors.toList())

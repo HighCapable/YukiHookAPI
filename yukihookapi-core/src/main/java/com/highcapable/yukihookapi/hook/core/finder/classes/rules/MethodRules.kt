@@ -128,7 +128,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     fun param(vararg paramType: Any) {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         rulesData.paramTypes =
-            arrayListOf<Class<*>>().apply { paramType.forEach { add(it.compat(tag = "Method") ?: UndefinedType) } }.toTypedArray()
+            mutableListOf<Class<*>>().apply { paramType.forEach { add(it.compat(tag = "Method") ?: UndefinedType) } }.toTypedArray()
     }
 
     /**

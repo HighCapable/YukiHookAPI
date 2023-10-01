@@ -169,7 +169,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      */
     fun param(vararg paramType: Any): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
-        rulesData.paramTypes = arrayListOf<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
+        rulesData.paramTypes = mutableListOf<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
         return IndexTypeCondition(IndexConfigType.MATCH)
     }
 

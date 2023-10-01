@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi.hook.param
 
 import android.os.Bundle
-import android.util.ArrayMap
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator.MemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
@@ -56,7 +55,7 @@ class HookParam internal constructor(
     internal companion object {
 
         /** 每个回调方法体的数据存储实例数据 */
-        private val dataExtras = ArrayMap<String, Bundle>()
+        private val dataExtras = mutableMapOf<String, Bundle>()
 
         /** [HookParam] 是否已经执行首次回调事件 */
         internal var isCallbackCalled = false

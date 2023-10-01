@@ -259,7 +259,7 @@ fun contains(key: String): Boolean
 ## all <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun all(): HashMap<String, Any?>
+fun all(): MutableMap<String, Any?>
 ```
 
 **Change Records**

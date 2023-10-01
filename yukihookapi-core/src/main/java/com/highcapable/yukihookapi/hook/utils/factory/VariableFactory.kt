@@ -102,10 +102,10 @@ internal inline fun <T> T.conditions(initiate: Conditions<T>.() -> Unit) = Condi
 internal class Conditions<T>(internal var value: T) {
 
     /** 全部判断条件数组 (与) */
-    private val andConditions = ArrayList<Boolean>()
+    private val andConditions = mutableListOf<Boolean>()
 
     /** 全部判断条件数组 (或) */
-    private val optConditions = ArrayList<Boolean>()
+    private val optConditions = mutableListOf<Boolean>()
 
     /**
      * 添加与 (and) 条件

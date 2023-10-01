@@ -37,5 +37,5 @@ import java.lang.reflect.Member
 internal object YukiHookCacheStore {
 
     /** 已经 Hook 的 [Member] 数组 */
-    internal val hookedMembers = HashSet<YukiMemberHook.HookedMember>()
+    internal val hookedMembers = mutableSetOf<YukiMemberHook.HookedMember>()
 }

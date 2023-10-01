@@ -155,7 +155,7 @@ class YukiHookDataChannel private constructor() {
                 intent.action?.also { action ->
                     runCatching {
                         receiverCallbacks.takeIf { it.isNotEmpty() }?.apply {
-                            arrayListOf<String>().also { destroyedCallbacks ->
+                            mutableListOf<String>().also { destroyedCallbacks ->
                                 forEach { (key, it) ->
                                     when {
                                         (it.first as? Activity?)?.isDestroyed == true -> destroyedCallbacks.add(key)
@@ -259,10 +259,10 @@ class YukiHookDataChannel private constructor() {
      * @param stringData [String] 数据数组
      */
     internal inner class SegmentsTempData(
-        var listData: ArrayList<List<*>> = arrayListOf(),
-        var mapData: ArrayList<Map<*, *>> = arrayListOf(),
-        var setData: ArrayList<Set<*>> = arrayListOf(),
-        var stringData: ArrayList<String> = arrayListOf()
+        var listData: MutableList<List<*>> = mutableListOf(),
+        var mapData: MutableList<Map<*, *>> = mutableListOf(),
+        var setData: MutableList<Set<*>> = mutableListOf(),
+        var stringData: MutableList<String> = mutableListOf()
     )
 
     /**
@@ -531,7 +531,7 @@ class YukiHookDataChannel private constructor() {
                         if (tempData.listData.isEmpty() && wrapper.segmentsIndex > 0) return
                         tempData.listData.add(wrapper.segmentsIndex, value)
                         if (tempData.listData.size == wrapper.segmentsSize) {
-                            result(arrayListOf<Any?>().also { list -> tempData.listData.forEach { list.addAll(it) } } as T)
+                            result(mutableListOf<Any?>().also { list -> tempData.listData.forEach { list.addAll(it) } } as T)
                             tempData.listData.clear()
                             segmentsTempData.remove(wrapper.wrapperId)
                         }
@@ -540,7 +540,7 @@ class YukiHookDataChannel private constructor() {
                         if (tempData.mapData.isEmpty() && wrapper.segmentsIndex > 0) return
                         tempData.mapData.add(wrapper.segmentsIndex, value)
                         if (tempData.mapData.size == wrapper.segmentsSize) {
-                            result(hashMapOf<Any?, Any?>().also { map -> tempData.mapData.forEach { it.forEach { (k, v) -> map[k] = v } } } as T)
+                            result(mutableMapOf<Any?, Any?>().also { map -> tempData.mapData.forEach { it.forEach { (k, v) -> map[k] = v } } } as T)
                             tempData.mapData.clear()
                             segmentsTempData.remove(wrapper.wrapperId)
                         }
@@ -549,7 +549,7 @@ class YukiHookDataChannel private constructor() {
                         if (tempData.setData.isEmpty() && wrapper.segmentsIndex > 0) return
                         tempData.setData.add(wrapper.segmentsIndex, value)
                         if (tempData.setData.size == wrapper.segmentsSize) {
-                            result(hashSetOf<Any?>().also { set -> tempData.setData.forEach { set.addAll(it) } } as T)
+                            result(mutableSetOf<Any?>().also { set -> tempData.setData.forEach { set.addAll(it) } } as T)
                             tempData.setData.clear()
                             segmentsTempData.remove(wrapper.wrapperId)
                         }
@@ -623,13 +623,13 @@ class YukiHookDataChannel private constructor() {
                 wrapper.isSegmentsType || isAllowSendTooLargeData -> pushReceiver(wrapper)
                 dataByteSize >= receiverDataMaxByteSize -> when (wrapper.instance.value) {
                     is List<*> -> (wrapper.instance.value as List<*>).also { value ->
-                        val segments = arrayListOf<List<*>>()
-                        var segment = arrayListOf<Any?>()
+                        val segments = mutableListOf<List<*>>()
+                        var segment = mutableListOf<Any?>()
                         value.forEach {
                             segment.add(it)
                             if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
                                 segments.add(segment)
-                                segment = arrayListOf()
+                                segment = mutableListOf()
                             }
                         }
                         if (segment.isNotEmpty()) segments.add(segment)
@@ -639,13 +639,13 @@ class YukiHookDataChannel private constructor() {
                         } ?: loggerForUnprocessableDataByFirstElement(name = "List")
                     }
                     is Map<*, *> -> (wrapper.instance.value as Map<*, *>).also { value ->
-                        val segments = arrayListOf<Map<*, *>>()
-                        var segment = hashMapOf<Any?, Any?>()
+                        val segments = mutableListOf<Map<*, *>>()
+                        var segment = mutableMapOf<Any?, Any?>()
                         value.forEach { (k, v) ->
                             segment[k] = v
                             if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
                                 segments.add(segment)
-                                segment = hashMapOf()
+                                segment = mutableMapOf()
                             }
                         }
                         if (segment.isNotEmpty()) segments.add(segment)
@@ -655,13 +655,13 @@ class YukiHookDataChannel private constructor() {
                         } ?: loggerForUnprocessableDataByFirstElement(name = "Map")
                     }
                     is Set<*> -> (wrapper.instance.value as Set<*>).also { value ->
-                        val segments = arrayListOf<Set<*>>()
-                        var segment = hashSetOf<Any?>()
+                        val segments = mutableListOf<Set<*>>()
+                        var segment = mutableSetOf<Any?>()
                         value.forEach {
                             segment.add(it)
                             if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
                                 segments.add(segment)
-                                segment = hashSetOf()
+                                segment = mutableSetOf()
                             }
                         }
                         if (segment.isNotEmpty()) segments.add(segment)
@@ -673,7 +673,7 @@ class YukiHookDataChannel private constructor() {
                     is String -> (wrapper.instance.value as String).also { value ->
                         /** 由于字符会被按照双字节计算 - 所以这里将限制字节大小除以 2 */
                         val twoByteMaxSize = receiverDataMaxByteSize / 2
-                        val segments = arrayListOf<String>()
+                        val segments = mutableListOf<String>()
                         for (i in 0..value.length step twoByteMaxSize)
                             if (i + twoByteMaxSize <= value.length)
                                 segments.add(value.substring(i, i + twoByteMaxSize))

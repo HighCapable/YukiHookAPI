@@ -102,7 +102,7 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
     fun param(vararg paramType: Any) {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         rulesData.paramTypes =
-            arrayListOf<Class<*>>().apply { paramType.forEach { add(it.compat(tag = "Constructor") ?: UndefinedType) } }.toTypedArray()
+            mutableListOf<Class<*>>().apply { paramType.forEach { add(it.compat(tag = "Constructor") ?: UndefinedType) } }.toTypedArray()
     }
 
     /**

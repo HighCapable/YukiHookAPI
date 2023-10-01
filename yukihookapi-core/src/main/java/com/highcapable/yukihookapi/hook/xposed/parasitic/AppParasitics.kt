@@ -47,7 +47,6 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.Handler
-import android.util.ArrayMap
 import androidx.annotation.RequiresApi
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiProperty
@@ -111,7 +110,7 @@ internal object AppParasitics {
     private var isClassLoaderHooked = false
 
     /** [ClassLoader] 监听回调数组 */
-    private var classLoaderCallbacks = ArrayMap<Int, (Class<*>) -> Unit>()
+    private var classLoaderCallbacks = mutableMapOf<Int, (Class<*>) -> Unit>()
 
     /**
      * 当前 Hook APP (宿主) 的全局生命周期 [Application]
@@ -476,9 +475,9 @@ internal object AppParasitics {
         internal var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
 
         /** 系统广播监听回调 */
-        internal val onReceiverActionsCallbacks = ArrayMap<String, Pair<Array<out String>, (Context, Intent) -> Unit>>()
+        internal val onReceiverActionsCallbacks = mutableMapOf<String, Pair<Array<out String>, (Context, Intent) -> Unit>>()
 
         /** 系统广播监听回调 */
-        internal val onReceiverFiltersCallbacks = ArrayMap<String, Pair<IntentFilter, (Context, Intent) -> Unit>>()
+        internal val onReceiverFiltersCallbacks = mutableMapOf<String, Pair<IntentFilter, (Context, Intent) -> Unit>>()
     }
 }

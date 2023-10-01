@@ -176,7 +176,7 @@ class DexClassFinder internal constructor(
      * @param name 指定包名
      * @return [FromPackageRules] 可设置 [FromPackageRules.absolute] 标识包名绝对匹配
      */
-    fun from(vararg name: String) = FromPackageRules(arrayListOf<ClassRulesData.PackageRulesData>().also {
+    fun from(vararg name: String) = FromPackageRules(mutableListOf<ClassRulesData.PackageRulesData>().also {
         name.takeIf { e -> e.isNotEmpty() }?.forEach { e -> it.add(rulesData.createPackageRulesData(e)) }
         if (it.isNotEmpty()) rulesData.fromPackages.addAll(it)
     })
@@ -359,7 +359,7 @@ class DexClassFinder internal constructor(
      * 包名范围名称过滤匹配条件实现类
      * @param packages 包名数组
      */
-    inner class FromPackageRules internal constructor(private val packages: ArrayList<ClassRulesData.PackageRulesData>) {
+    inner class FromPackageRules internal constructor(private val packages: MutableList<ClassRulesData.PackageRulesData>) {
 
         /**
          * 设置包名绝对匹配

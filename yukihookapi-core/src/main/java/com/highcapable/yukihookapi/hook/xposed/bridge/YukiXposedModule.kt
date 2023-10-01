@@ -30,7 +30,6 @@ package com.highcapable.yukihookapi.hook.xposed.bridge
 
 import android.content.pm.ApplicationInfo
 import android.content.res.Resources
-import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.factory.hasClass
@@ -59,13 +58,13 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
     private var isInitializingZygote = false
 
     /** 当前 [PackageParam] 实例数组 */
-    private val packageParams = ArrayMap<String, PackageParam>()
+    private val packageParams = mutableMapOf<String, PackageParam>()
 
     /** 已在 [PackageParam] 中被装载的 APP 包名 */
-    private val loadedPackageNames = HashSet<String>()
+    private val loadedPackageNames = mutableSetOf<String>()
 
     /** 当前 [PackageParamWrapper] 实例数组 */
-    private val packageParamWrappers = ArrayMap<String, PackageParamWrapper>()
+    private val packageParamWrappers = mutableMapOf<String, PackageParamWrapper>()
 
     /** 当前 [PackageParam] 方法体回调 */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null

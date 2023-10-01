@@ -62,7 +62,7 @@ import java.lang.reflect.Method
  * @param constroctorRules [Constructor] 查找条件数据数组
  */
 internal class ClassRulesData internal constructor(
-    var fromPackages: ArrayList<PackageRulesData> = arrayListOf(),
+    var fromPackages: MutableList<PackageRulesData> = mutableListOf(),
     var fullName: NameRulesData? = null,
     var simpleName: NameRulesData? = null,
     var singleName: NameRulesData? = null,
@@ -72,13 +72,13 @@ internal class ClassRulesData internal constructor(
     var isAnonymousClass: Boolean? = null,
     var isNoExtendsClass: Boolean? = null,
     var isNoImplementsClass: Boolean? = null,
-    var extendsClass: ArrayList<String> = arrayListOf(),
-    var implementsClass: ArrayList<String> = arrayListOf(),
-    var enclosingClass: ArrayList<String> = arrayListOf(),
-    var memberRules: ArrayList<MemberRulesData> = arrayListOf(),
-    var fieldRules: ArrayList<FieldRulesData> = arrayListOf(),
-    var methodRules: ArrayList<MethodRulesData> = arrayListOf(),
-    var constroctorRules: ArrayList<ConstructorRulesData> = arrayListOf()
+    var extendsClass: MutableList<String> = mutableListOf(),
+    var implementsClass: MutableList<String> = mutableListOf(),
+    var enclosingClass: MutableList<String> = mutableListOf(),
+    var memberRules: MutableList<MemberRulesData> = mutableListOf(),
+    var fieldRules: MutableList<FieldRulesData> = mutableListOf(),
+    var methodRules: MutableList<MethodRulesData> = mutableListOf(),
+    var constroctorRules: MutableList<ConstructorRulesData> = mutableListOf()
 ) : BaseRulesData() {
 
     /**

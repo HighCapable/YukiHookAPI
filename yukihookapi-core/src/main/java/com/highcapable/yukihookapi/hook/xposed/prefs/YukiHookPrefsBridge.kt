@@ -34,7 +34,6 @@ package com.highcapable.yukihookapi.hook.xposed.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.ArrayMap
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.YLog
@@ -68,10 +67,10 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
         /** 当前缓存的 [XSharedPreferencesDelegate] 实例数组 */
-        private val xPrefs = ArrayMap<String, XSharedPreferencesDelegate>()
+        private val xPrefs = mutableMapOf<String, XSharedPreferencesDelegate>()
 
         /** 当前缓存的 [SharedPreferences] 实例数组 */
-        private val sPrefs = ArrayMap<String, SharedPreferences>()
+        private val sPrefs = mutableMapOf<String, SharedPreferences>()
 
         /**
          * 创建 [YukiHookPrefsBridge] 对象
@@ -269,10 +268,10 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      *
      * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
      * @param key 键值名称
-     * @param value 默认数据 - [HashSet]<[String]>
+     * @param value 默认数据 - [MutableSet]<[String]>
      * @return [Set]<[String]>
      */
-    fun getStringSet(key: String, value: Set<String> = hashSetOf()) = makeWorldReadable {
+    fun getStringSet(key: String, value: Set<String> = mutableSetOf()) = makeWorldReadable {
         if (isXposedEnvironment && isUsingNativeStorage.not())
             currentXsp.getStringSet(key, value) ?: value
         else currentSp.getStringSet(key, value) ?: value
@@ -385,9 +384,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * - 智能识别对应环境读取键值数据
      *
      * - 每次调用都会获取实时的数据 - 不受缓存控制 - 请勿在高并发场景中使用
-     * @return [HashMap] 全部类型的键值数组
+     * @return [MutableMap] 全部类型的键值数组
      */
-    fun all() = hashMapOf<String, Any?>().apply {
+    fun all() = mutableMapOf<String, Any?>().apply {
         if (isXposedEnvironment && isUsingNativeStorage.not())
             currentXsp.all.forEach { (k, v) -> this[k] = v }
         else currentSp.all.forEach { (k, v) -> this[k] = v }

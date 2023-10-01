@@ -30,7 +30,6 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.base.rules
 
-import android.util.ArrayMap
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -47,14 +46,14 @@ class ModifierRules private constructor(private val instance: Any) {
     internal companion object {
 
         /** 当前实例数组 */
-        private val instances = ArrayMap<Long, ModifierRules>()
+        private val instances = mutableMapOf<Long, ModifierRules>()
 
         /**
          * 获取模板字符串数组
          * @param value 唯一标识值
-         * @return [ArrayList]<[String]>
+         * @return [MutableList]<[String]>
          */
-        internal fun templates(value: Long) = instances[value]?.templates ?: arrayListOf()
+        internal fun templates(value: Long) = instances[value]?.templates ?: mutableListOf()
 
         /**
          * 创建实例
@@ -66,7 +65,7 @@ class ModifierRules private constructor(private val instance: Any) {
     }
 
     /** 当前模板字符串数组 */
-    private val templates = ArrayList<String>()
+    private val templates = mutableListOf<String>()
 
     /**
      * [Class]、[Member] 类型是否包含 public

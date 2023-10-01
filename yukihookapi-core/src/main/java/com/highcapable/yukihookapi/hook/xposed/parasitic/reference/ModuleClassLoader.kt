@@ -44,10 +44,10 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
         private var instance: ModuleClassLoader? = null
 
         /** 排除的 Hook APP (宿主) [Class] 类名数组 */
-        private val excludeHostClasses = HashSet<String>()
+        private val excludeHostClasses = mutableSetOf<String>()
 
         /** 排除的模块 [Class] 类名数组 */
-        private val excludeModuleClasses = HashSet<String>()
+        private val excludeModuleClasses = mutableSetOf<String>()
 
         /**
          * 获取 [ModuleClassLoader] 单例

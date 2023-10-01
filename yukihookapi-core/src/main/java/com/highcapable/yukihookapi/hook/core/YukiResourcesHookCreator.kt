@@ -30,7 +30,6 @@
 package com.highcapable.yukihookapi.hook.core
 
 import android.content.res.Resources
-import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
@@ -48,7 +47,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 class YukiResourcesHookCreator internal constructor(internal val packageParam: PackageParam, internal val hookResources: HookResources) {
 
     /** 设置要 Hook 的 Resources */
-    private var preHookResources = ArrayMap<String, ResourcesHookCreator>()
+    private var preHookResources = mutableMapOf<String, ResourcesHookCreator>()
 
     /**
      * 注入要 Hook 的 Resources

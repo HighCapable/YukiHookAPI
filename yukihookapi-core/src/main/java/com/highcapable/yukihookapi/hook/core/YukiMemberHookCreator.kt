@@ -29,7 +29,6 @@
 
 package com.highcapable.yukihookapi.hook.core
 
-import android.util.ArrayMap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -97,13 +96,13 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
 
     /** 当前 [YukiMemberHookCreator] 禁止执行 Hook 操作的条件数组 */
-    private val disableCreatorRunHookReasons = HashSet<Boolean>()
+    private val disableCreatorRunHookReasons = mutableSetOf<Boolean>()
 
     /** 是否对当前 [YukiMemberHookCreator] 禁止执行 Hook 操作 */
     private var isDisableCreatorRunHook = false
 
     /** 设置要 Hook 的 [Method]、[Constructor] */
-    private var preHookMembers = ArrayMap<String, MemberHookCreator>()
+    private var preHookMembers = mutableMapOf<String, MemberHookCreator>()
 
     /**
      * 更新当前 [YukiMemberHookCreator] 禁止执行 Hook 操作的条件
@@ -293,10 +292,10 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         private var isHookMemberSetup = false
 
         /** 当前被 Hook 的 [Method]、[Constructor] 实例数组 */
-        private val hookedMembers = HashSet<YukiMemberHook.HookedMember>()
+        private val hookedMembers = mutableSetOf<YukiMemberHook.HookedMember>()
 
         /** 当前需要 Hook 的 [Method]、[Constructor] */
-        internal val members = HashSet<Member>()
+        internal val members = mutableSetOf<Member>()
 
         /**
          * 手动指定要 Hook 的 [Method]、[Constructor]
@@ -322,7 +321,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          *
          * - 请现在迁移到 [MethodFinder] or [allMembers]
          * @param name 方法名称
-         * @return [ArrayList]<[MethodFinder.Result.Instance]>
          */
         @Deprecated(message = "请使用新方式来实现 Hook 所有方法", ReplaceWith("method { this.name = name }.all()"))
         fun allMethods(name: String) = method { this.name = name }.all()
@@ -333,7 +331,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
          * - 请现在迁移到 [ConstructorFinder] or [allMembers]
-         * @return [ArrayList]<[ConstructorFinder.Result.Instance]>
          */
         @Deprecated(
             message = "请使用新方式来实现 Hook 所有构造方法",

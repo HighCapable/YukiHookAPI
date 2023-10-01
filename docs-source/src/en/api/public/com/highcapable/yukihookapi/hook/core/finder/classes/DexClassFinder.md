@@ -441,7 +441,7 @@ fun enclosing(vararg name: String)
 ## FromPackageRules <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class FromPackageRules internal constructor(private val packages: ArrayList<ClassRulesData.PackageRulesData>)
+inner class FromPackageRules internal constructor(private val packages: MutableList<ClassRulesData.PackageRulesData>)
 ```
 
 **Change Records**
