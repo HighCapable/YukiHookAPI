@@ -630,6 +630,32 @@ Invoke original Member \[**MEMBER**\] failed
 
 ::: danger loggerE
 
+Failed to got Host Resources
+
+:::
+
+**异常原因**
+
+在查找 Resources 时使用 `replaceTo { ... }` 或 `replaceToModuleResource { ... }` 时未能获取到宿主的原始 Resources 实例对象。
+
+> 示例如下
+
+```kotlin
+conditions {
+    name = "test"
+    string()
+}
+replaceTo { "${it}_some_text" }
+```
+
+**解决方案**
+
+一般情况下，此错误基本上不会发生，若发生此错误，可能为当前使用的 Hook Framework 问题，排除自身代码的问题后，请携带详细日志进行反馈。
+
+###### exception
+
+::: danger loggerE
+
 Resources Hook condition name/type cannot be empty \[**TAG**\]
 
 :::

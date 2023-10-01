@@ -650,6 +650,36 @@ After troubleshooting your own code problems, please provide detailed logs for f
 
 ::: danger loggerE
 
+Failed to got Host Resources
+
+:::
+
+**Abnormal**
+
+Failed to obtain the Host App's original Resources instance object when using `replaceTo { ... }` or `replaceToModuleResource { ... }` when finding Resources.
+
+> The following example
+
+```kotlin
+conditions {
+    name = "test"
+    string()
+}
+replaceTo { "${it}_some_text" }
+```
+
+**Solution**
+
+Under normal circumstances, this error will basically not occur.
+
+If this error occurs, it may be a problem with the currently used Hook Framework.
+
+After troubleshooting your own code problems, please provide detailed logs for feedback.
+
+###### exception
+
+::: danger loggerE
+
 Resources Hook condition name/type cannot be empty \[**TAG**\]
 
 :::
