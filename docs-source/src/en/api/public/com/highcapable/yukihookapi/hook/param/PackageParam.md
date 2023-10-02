@@ -9,6 +9,9 @@ The English translation of this page has not been completed, you are welcome to 
 You can use the **Chrome Translation Plugin** to translate entire pages for reference.
 
 :::
+---
+pageClass: code-page
+---
 
 # PackageParam <span class="symbol">- class</span>
 
@@ -450,7 +453,7 @@ loadApp(hooker = CustomHooker)
 
 若要在全部可被 Hook 的 APP 中过滤掉模块自身，你只需加入 `isExcludeSelf = true`。
 
-> 示例如下
+> The following example
 
 ```kotlin
 // 使用 lambda
@@ -807,15 +810,7 @@ if("com.example.demo.DemoClass".hasClass(customClassLoader)) {
 }
 ```
 
-## findClass <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun findClass(name: String, loader: ClassLoader?): HookClass
-```
-
-```kotlin:no-line-numbers
-fun findClass(vararg name: String, loader: ClassLoader?): VariousClass
-```
+<h2 class="deprecated">findClass - method</h2>
 
 **Change Records**
 
@@ -829,67 +824,11 @@ fun findClass(vararg name: String, loader: ClassLoader?): VariousClass
 
 新增 `loader` 参数
 
-**Function Illustrate**
+`v1.2.0` `deprecated`
 
-> 通过完整包名+名称查找需要被 Hook 的 `Class`。
+请直接使用 `String.toClass(...)` 或 `VariousClass(...)`
 
-::: warning
-
-使用此方法会得到一个 **HookClass** 仅用于 Hook，若想查找 **Class** 请使用 [toClass](#string-variousclass-toclass-i-ext-method) 功能。
-
-:::
-
-**Function Example**
-
-你可以使用三种方式查找你需要 Hook 的目标 `Class`。
-
-你可以直接将被查找的 `Class` 完整包名+名称填入 `name` 中。
-
-> The following example
-
-```kotlin
-findClass(name = "com.example.demo.DemoClass")
-```
-
-若你不确定多个版本的 `Class` 以及不同名称，你可以将多个完整包名+名称填入 `name` 中。
-
-> The following example
-
-```kotlin
-findClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2", "com.example.demo.DemoClass3")
-```
-
-你还可以创建一个 `VariousClass`，将 `Class` 的完整包名+名称填入 `VariousClass` 的 `name` 中并填入 `various` 参数中。
-
-> The following example
-
-```kotlin
-val variousClass = VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2", "com.example.demo.DemoClass3")
-```
-
-若你当前需要查找的 `Class` 不属于 `appClassLoader`，你可以使用 `loader` 参数指定你要装载的 `ClassLoader`。
-
-> The following example
-
-```kotlin
-val outsideLoader: ClassLoader? = ... // 假设这就是你的 ClassLoader
-findClass(name = "com.example.demo.OutsideClass", loader = outsideLoader)
-```
-
-同样地，在不确定多个版本的 `Class` 以及不同名称时，也可以使用 `loader` 参数指定你要装载的 `ClassLoader`。
-
-> The following example
-
-```kotlin
-val outsideLoader: ClassLoader? = ... // 假设这就是你的 ClassLoader
-findClass("com.example.demo.OutsideClass1", "com.example.demo.OutsideClass2", "com.example.demo.OutsideClass3", loader = outsideLoader)
-```
-
-## String+Class+VariousClass+HookClass.hook <span class="symbol">- i-ext-method</span>
-
-```kotlin:no-line-numbers
-inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
-```
+## Class+VariousClass+HookClass.hook <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
 inline fun Class<*>.hook(isForceUseAbsolute: Boolean, initiate: YukiMemberHookCreator.() -> Unit): YukiMemberHookCreator.Result
@@ -933,30 +872,24 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMembe
 
 添加了 `isForceUseAbsolute` 参数到 `Class.hook` 方法
 
+`v1.2.0` `modified`
+
+作废了 ~~`String.hook`~~ 方法
+
 **Function Illustrate**
 
 > 这是一切 Hook 的入口创建方法，Hook 方法、构造方法。
 
 **Function Example**
 
-如你所见，Hook 方法体的创建可使用 4 种方式。
+如你所见，Hook 方法体的创建可使用 2 种方式。
 
-通过字符串类名得到 `HookClass` 实例进行创建。
-
-> The following example
-
-```kotlin
-"com.example.demo.DemoClass".hook {
-    // Your code here.
-}
-
-```
-通过 `findClass` 得到 `HookClass` 实例进行创建。
+使用 `String.toClass(...)` 得到 `Class` 实例进行创建。
 
 > The following example
 
 ```kotlin
-findClass(name = "com.example.demo.DemoClass").hook {
+"com.example.demo.DemoClass".toClass().hook {
     // Your code here.
 }
 ```
@@ -989,16 +922,6 @@ YourClass::class.java.hook(isForceUseAbsolute = true) {
 
 ```kotlin
 VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook {
-    // Your code here.
-}
-```
-
-或者直接使用可变字符串数组进行创建。
-
-> The following example
-
-```kotlin
-findClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook {
     // Your code here.
 }
 ```
@@ -1041,7 +964,7 @@ resources().hook {
 
 :::
 
-将 Resources 的 Hook 设置为这样是为了与 `findClass(...).hook` 做到统一，使得调用起来逻辑不会混乱。
+将 Resources 的 Hook 设置为这样是为了与 `String.toClass(...).hook` 做到统一，使得调用起来逻辑不会混乱。
 
 ## AppLifecycle <span class="symbol">- class</span>
 
