@@ -562,36 +562,36 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 查找并装载 [HookClass]
      *
-     * - 使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
-     * @param name 类名
-     * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
-     * @return [HookClass]
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - 请现在迁移到 [toClass]
+     * @return [Class]
      */
-    fun findClass(name: String, loader: ClassLoader? = appClassLoader) =
-        runCatching { name.toClass(loader).toHookClass() }.getOrElse { HookClass(name = name, throwable = it) }
+    @Deprecated(message = "不再推荐使用此方法", ReplaceWith("name.toClass(loader)"))
+    fun findClass(name: String, loader: ClassLoader? = appClassLoader) = name.toClass(loader)
 
     /**
      * 查找并装载 [HookClass]
      *
-     * 使用此方法查找将会取 [name] 其中命中存在的第一个 [Class] 作为结果
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 使用此方法会得到一个 [HookClass] 仅用于 Hook - 若想查找 [Class] 请使用 [toClass] 功能
-     * @param name 可填入多个类名 - 自动匹配
-     * @param loader 当前 [ClassLoader] - 默认使用 [appClassLoader] - 设为 null 使用默认 [ClassLoader]
-     * @return [HookClass]
+     * - 请现在迁移到 [VariousClass]
+     * @return [VariousClass]
      */
-    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name).toHookClass(loader)
+    @Deprecated(message = "不再推荐使用此方法", ReplaceWith("VariousClass(*name)"))
+    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name)
 
     /**
      * Hook 方法、构造方法
      *
-     * - 使用当前 [appClassLoader] 装载目标 [Class]
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 为防止任何字符串都被当做 [Class] 进行 Hook - 推荐优先使用 [findClass]
+     * - 请现在迁移到 [toClass]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
-    inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit) = findClass(name = this).hook(initiate)
+    @Deprecated(message = "不再推荐使用此方法", ReplaceWith("this.toClass().hook(initiate = initiate)"))
+    inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit) = toClass().hook(initiate = initiate)
 
     /**
      * Hook 方法、构造方法
@@ -605,7 +605,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      */
     inline fun Class<*>.hook(isForceUseAbsolute: Boolean = false, initiate: YukiMemberHookCreator.() -> Unit) = when {
         isForceUseAbsolute -> toHookClass()
-        name.hasClass() -> findClass(name)
+        name.hasClass() -> name.toClass().toHookClass()
         else -> toHookClass()
     }.hook(initiate)
 
