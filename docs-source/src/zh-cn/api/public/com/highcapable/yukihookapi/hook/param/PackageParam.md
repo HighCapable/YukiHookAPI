@@ -867,53 +867,59 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMembe
 
 **功能描述**
 
-> 这是一切 Hook 的入口创建方法，Hook 方法、构造方法。
+> Hook 方法、构造方法。
 
-**功能示例**
+## Member+BaseFinder.BaseResult.hook <span class="symbol">- i-ext-method</span>
 
-如你所见，Hook 方法体的创建可使用 2 种方式。
-
-使用 `String.toClass(...)` 得到 `Class` 实例进行创建。
-
-> 示例如下
-
-```kotlin
-"com.example.demo.DemoClass".toClass().hook {
-    // Your code here.
-}
+```kotlin:no-line-numbers
+inline fun Member.hook(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
-使用 `stub` 或直接拿到 `Class` 实例进行创建。
-
-默认情况下 API 会将 `Class` 实例转换为类名并绑定到 `appClassLoader`，若失败，则会使用原始 `Class` 实例直接进行 Hook。
-
-> 示例如下
-
-```kotlin
-Stub::class.java.hook {
-    // Your code here.
-}
+```kotlin:no-line-numbers
+inline fun BaseFinder.BaseResult.hook(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
-若当前 `Class` 不在 `appClassLoader` 且自动匹配无法找到该 `Class`，请启用 `isForceUseAbsolute`。
+**变更记录**
 
-> 示例如下
+`v1.2.0` `新增`
 
-```kotlin
-YourClass::class.java.hook(isForceUseAbsolute = true) {
-    // Your code here.
-}
+**功能描述**
+
+> 直接 Hook 方法、构造方法。
+
+::: warning
+
+此功能尚在试验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
+
+:::
+
+## Array&lt;Member&gt;+List&lt;Member&gt;+BaseFinder.BaseResult.hookAll <span class="symbol">- i-ext-method</span>
+
+```kotlin:no-line-numbers
+inline fun Array<Member>.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
-使用 `VariousClass` 实例进行创建。
-
-> 示例如下
-
-```kotlin
-VariousClass("com.example.demo.DemoClass1", "com.example.demo.DemoClass2").hook {
-    // Your code here.
-}
+```kotlin:no-line-numbers
+inline fun List<Member>.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
+
+```kotlin:no-line-numbers
+inline fun BaseFinder.BaseResult.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+```
+
+**变更记录**
+
+`v1.2.0` `新增`
+
+**功能描述**
+
+> 直接 Hook 方法、构造方法 (批量)。
+
+::: warning
+
+此功能尚在试验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
+
+:::
 
 ## HookResources.hook <span class="symbol">- i-ext-method</span>
 
@@ -931,7 +937,7 @@ inline fun HookResources.hook(initiate: YukiResourcesHookCreator.() -> Unit)
 
 ::: danger
 
-请注意你需要确保当前 Hook Framework 支持且 **InjectYukiHookWithXposed.isUsingResourcesHook** 已启用。
+此功能将不再默认启用，如需启用，请手动设置 **InjectYukiHookWithXposed.isUsingResourcesHook**。
 
 :::
 

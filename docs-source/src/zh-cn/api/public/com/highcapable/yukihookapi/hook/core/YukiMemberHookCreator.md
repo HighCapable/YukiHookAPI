@@ -230,36 +230,6 @@ fun members(vararg member: Member?)
 
 :::
 
-**功能示例**
-
-你可以调用 `instanceClass` 来手动查找要 Hook 的 `Method`、`Constructor`。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    members(instanceClass.getDeclaredMethod("test", StringClass))
-    beforeHook {}
-    afterHook {}
-}
-```
-
-同样地，你也可以传入一组 `Member` 同时进行 Hook。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    members(
-        instanceClass.getDeclaredMethod("test1", StringClass),
-        instanceClass.getDeclaredMethod("test2", StringClass),
-        instanceClass.getDeclaredMethod("test3", StringClass)
-    )
-    beforeHook {}
-    afterHook {}
-}
-```
-
 <h3 class="deprecated">allMethods - method</h3>
 
 **变更记录**
@@ -316,48 +286,7 @@ inline fun method(initiate: MethodConditions): MethodFinder.Result
 
 **功能描述**
 
-> 查找当前 `Class` 需要 Hook 的 `Method` 。
-
-**功能示例**
-
-你可参考 [MethodFinder](finder/members/MethodFinder) 查看详细用法。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    method {
-        name = "test"
-        param(StringClass)
-        returnType = UnitType
-    }
-    beforeHook {}
-    afterHook {}
-}
-```
-
-若想 Hook 当前查找 `method { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    method {
-        name = "test"
-        paramCount(1..5)
-    }.all()
-    beforeHook {}
-    afterHook {}
-}
-```
-
-此时 `beforeHook` 与 `afterHook` 会在每个查找到的结果中多次回调 Hook 方法体。
-
-::: warning
-
-若没有 **all**，默认只会 Hook 当前条件查找到的数组下标结果第一位。
-
-:::
+> 查找当前 `Class` 需要 Hook 的 `Method`。
 
 ### constructor <span class="symbol">- method</span>
 
@@ -377,40 +306,6 @@ inline fun constructor(initiate: ConstructorConditions): ConstructorFinder.Resul
 
 > 查找当前 `Class` 需要 Hook 的 `Constructor`。
 
-**功能示例**
-
-你可参考 [ConstructorFinder](finder/members/ConstructorFinder) 查看详细用法。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    constructor { param(StringClass) }
-    beforeHook {}
-    afterHook {}
-}
-```
-
-若想 Hook 当前查找 `constructor { ... }` 条件的全部结果，你只需要在最后加入 `all` 即可。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    constructor { paramCount(1..5) }.all()
-    beforeHook {}
-    afterHook {}
-}
-```
-
-此时 `beforeHook` 与 `afterHook` 会在每个查找到的结果中多次回调 Hook 方法体。
-
-::: warning
-
-若没有 **all**，默认只会 Hook 当前条件查找到的数组下标结果第一位。
-
-:::
-
 ### HookParam.field <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
@@ -428,29 +323,6 @@ inline fun HookParam.field(initiate: FieldConditions): FieldFinder.Result
 **功能描述**
 
 > 使用当前 `hookClass` 查找并得到 `Field`。
-
-**功能示例**
-
-你可参考 [FieldFinder](finder/members/FieldFinder) 查看详细用法。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    method {
-        name = "test"
-        param(StringClass)
-        returnType = UnitType
-    }
-    afterHook {
-        // 这里不需要再调用 instanceClass.field 进行查找
-        field {
-            name = "isSweet"
-            type = BooleanType
-        }.get(instance).setTrue()
-    }
-}
-```
 
 ### HookParam.method <span class="symbol">- i-ext-method</span>
 
@@ -502,29 +374,35 @@ inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHo
 
 > 注入要 Hook 的 `Method`、`Constructor` (嵌套 Hook)。
 
-### beforeHook <span class="symbol">- method</span>
+### before <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun beforeHook(initiate: HookParam.() -> Unit): HookCallback
+fun before(initiate: HookParam.() -> Unit): HookCallback
 ```
 
 **变更记录**
 
-`v1.0` `添加`
-
-`v1.1.0` `修改`
-
-新增 `HookCallback` 返回类型
+`v1.2.0` `新增`
 
 **功能描述**
 
 > 在 `Member` 执行完成前 Hook。
 
-### afterHook <span class="symbol">- method</span>
+### after <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-fun afterHook(initiate: HookParam.() -> Unit): HookCallback
+fun after(initiate: HookParam.() -> Unit): HookCallback
 ```
+
+**变更记录**
+
+`v1.2.0` `新增`
+
+**功能描述**
+
+> 在 `Member` 执行完成后 Hook。
+
+<h3 class="deprecated">beforeHook - method</h3>
 
 **变更记录**
 
@@ -534,9 +412,23 @@ fun afterHook(initiate: HookParam.() -> Unit): HookCallback
 
 新增 `HookCallback` 返回类型
 
-**功能描述**
+`v1.2.0` `作废`
 
-> 在 `Member` 执行完成后 Hook。
+请迁移到 `before`
+
+<h3 class="deprecated">afterHook - method</h3>
+
+**变更记录**
+
+`v1.0` `添加`
+
+`v1.1.0` `修改`
+
+新增 `HookCallback` 返回类型
+
+`v1.2.0` `作废`
+
+请迁移到 `after`
 
 ### replaceAny <span class="symbol">- method</span>
 
@@ -725,24 +617,6 @@ inline fun result(initiate: Result.() -> Unit): Result
 **功能描述**
 
 > 创建监听失败事件方法体。
-
-**功能示例**
-
-你可以使用此方法为 `Result` 类创建 **lambda** 方法体。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    // Your code here.
-}.result {
-    onHooked {}
-    onAlreadyHooked {}
-    ignoredConductFailure()
-    onHookingFailure {}
-    // ...
-}
-```
 
 #### by <span class="symbol">- method</span>
 
