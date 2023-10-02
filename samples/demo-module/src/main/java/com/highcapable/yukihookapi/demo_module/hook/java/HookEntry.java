@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.highcapable.yukihookapi.YukiHookAPI;
+import com.highcapable.yukihookapi.hook.factory.ReflectionFactoryKt;
 import com.highcapable.yukihookapi.hook.log.YLog;
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent;
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit;
@@ -47,7 +48,7 @@ import kotlin.Unit;
 // 建议还是使用 Kotlin 来完成 Hook 部分的编写
 // 请删除下方的注释 "//" 以使用此 Demo - 但要确保注释掉 Kotlin 一边的 HookEntry 的注解
 // ========
-// @InjectYukiHookWithXposed
+// @InjectYukiHookWithXposed(isUsingResourcesHook = true)
 public class HookEntry implements IYukiHookXposedInit {
 
     @Override
@@ -77,18 +78,15 @@ public class HookEntry implements IYukiHookXposedInit {
         // 在 Java 中调用 Kotlin 的 lambda 在 Unit 情况下也需要 return Unit.INSTANCE
         YukiHookAPI.INSTANCE.encase(e -> {
             e.loadZygote(l -> {
-                l.hook(Activity.class, false, h -> {
-                    h.injectMember(h.getPRIORITY_DEFAULT(), "Default", i -> {
-                        i.method(m -> {
-                            m.setName("onCreate");
-                            m.param(Bundle.class);
-                            return null;
-                        });
-                        i.afterHook(a -> {
-                            Activity instance = ((Activity) a.getInstance());
-                            instance.setTitle(instance.getTitle() + " [Active]");
-                            return Unit.INSTANCE;
-                        });
+                var result = ReflectionFactoryKt.method(Activity.class, m -> {
+                    m.setName("onCreate");
+                    m.param(Bundle.class);
+                    return Unit.INSTANCE;
+                });
+                l.hook(result, h -> {
+                    h.after(a -> {
+                        Activity instance = ((Activity) a.getInstance());
+                        instance.setTitle(instance.getTitle() + " [Active]");
                         return Unit.INSTANCE;
                     });
                     return Unit.INSTANCE;

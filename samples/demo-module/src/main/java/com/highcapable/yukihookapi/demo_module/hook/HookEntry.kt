@@ -41,7 +41,10 @@ import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.hook.factory.compatStyle
 import com.highcapable.yukihookapi.demo_module.ui.MainActivity
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
+import com.highcapable.yukihookapi.hook.factory.constructor
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
+import com.highcapable.yukihookapi.hook.param.annotation.LegacyResourcesHook
 import com.highcapable.yukihookapi.hook.type.android.ActivityClass
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.StringArrayClass
@@ -50,7 +53,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
-@InjectYukiHookWithXposed
+@InjectYukiHookWithXposed(isUsingResourcesHook = true)
 object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
@@ -150,6 +153,7 @@ object HookEntry : IYukiHookXposedInit {
         }
     }
 
+    @LegacyResourcesHook
     override fun onHook() {
         // Start your hook
         // Can be shortened to encase {}
@@ -161,17 +165,14 @@ object HookEntry : IYukiHookXposedInit {
             loadZygote {
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
-                ActivityClass.hook {
-                    injectMember {
-                        method {
-                            name = "onCreate"
-                            param(BundleClass)
-                        }
-                        afterHook {
-                            // Add text after the [Activity] title
-                            // 在 [Activity] 标题后方加入文字
-                            instance<Activity>().apply { title = "$title [Active]" }
-                        }
+                ActivityClass.method {
+                    name = "onCreate"
+                    param(BundleClass)
+                }.hook {
+                    after {
+                        // Add text after the [Activity] title
+                        // 在 [Activity] 标题后方加入文字
+                        instance<Activity>().apply { title = "$title [Active]" }
                     }
                 }
                 // Find Resources to hook
@@ -208,29 +209,27 @@ object HookEntry : IYukiHookXposedInit {
                 }
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
-                "$packageName.ui.MainActivity".toClass().hook {
+                "$packageName.ui.MainActivity".toClass().apply {
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method {
-                            name = "getFirstText"
-                            emptyParam()
-                            returnType = StringClass
-                        }
+                    method {
+                        name = "getFirstText"
+                        emptyParam()
+                        returnType = StringClass
+                    }.hook {
                         // Replaced hook
                         // 执行替换 Hook
                         replaceTo(any = "Hello YukiHookAPI!")
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method {
-                            name = "onCreate"
-                            param(BundleClass)
-                        }
+                    method {
+                        name = "onCreate"
+                        param(BundleClass)
+                    }.hook {
                         // Before hook the method
                         // 在方法执行之前拦截
-                        beforeHook {
+                        before {
                             field {
                                 name = "secondText"
                                 type = StringClass
@@ -238,7 +237,7 @@ object HookEntry : IYukiHookXposedInit {
                         }
                         // After hook the method
                         // 在执行方法之后拦截
-                        afterHook {
+                        after {
                             if (prefs.getBoolean("show_dialog_when_demo_app_opend"))
                                 MaterialAlertDialogBuilder(instance<Activity>().applyModuleTheme(R.style.Theme_Default))
                                     .setTitle("Hooked")
@@ -254,15 +253,14 @@ object HookEntry : IYukiHookXposedInit {
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method {
-                            name = "getRegularText"
-                            param(StringClass)
-                            returnType = StringClass
-                        }
+                    method {
+                        name = "getRegularText"
+                        param(StringClass)
+                        returnType = StringClass
+                    }.hook {
                         // Before hook the method
                         // 在方法执行之前拦截
-                        beforeHook {
+                        before {
                             // Set the 0th param (recomment)
                             // 设置 0 号 param (推荐)
                             args().first().set("I am hook method param")
@@ -273,15 +271,14 @@ object HookEntry : IYukiHookXposedInit {
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method {
-                            name = "getArray"
-                            param(StringArrayClass)
-                            returnType = StringArrayClass
-                        }
+                    method {
+                        name = "getArray"
+                        param(StringArrayClass)
+                        returnType = StringArrayClass
+                    }.hook {
                         // Before hook the method
                         // 在方法执行之前拦截
-                        beforeHook {
+                        before {
                             // Set the 0th param
                             // 设置 0 号 param
                             args().first().array<String>()[0] = "peach"
@@ -289,12 +286,11 @@ object HookEntry : IYukiHookXposedInit {
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method {
-                            name = "toast"
-                            emptyParam()
-                            returnType = UnitType
-                        }
+                    method {
+                        name = "toast"
+                        emptyParam()
+                        returnType = UnitType
+                    }.hook {
                         // Intercept the entire method
                         // 拦截整个方法
                         replaceUnit {
@@ -322,12 +318,11 @@ object HookEntry : IYukiHookXposedInit {
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method {
-                            name = "getDataText"
-                            emptyParam()
-                            returnType = StringClass
-                        }
+                    method {
+                        name = "getDataText"
+                        emptyParam()
+                        returnType = StringClass
+                    }.hook {
                         // Replaced hook
                         // 执行替换 Hook
                         replaceTo(prefs.get(DataConst.TEST_KV_DATA))
@@ -335,14 +330,13 @@ object HookEntry : IYukiHookXposedInit {
                 }
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
-                "$packageName.test.Main".toClass().hook {
+                "$packageName.test.Main".toClass().apply {
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        constructor { param(StringClass) }
+                    constructor { param(StringClass) }.hook {
                         // Before hook the method
                         // 在方法执行之前拦截
-                        beforeHook {
+                        before {
                             // Set the 0th param
                             // 设置 0 号 param
                             args().first().set("I am hook constructor param")
@@ -350,37 +344,38 @@ object HookEntry : IYukiHookXposedInit {
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method {
-                            name = "getSuperString"
-                            emptyParam()
-                            // This method is not in the current Class
-                            // Just set this find condition to automatically go to the super class of the current Class to find
-                            // Since the method shown will only exist in the super class
-                            // So you can set only the super class to find isOnlySuperClass = true to save time
-                            // If you want to keep trying to find the current Class, please remove isOnlySuperClass = true
-                            // 这个方法不在当前的 Class
-                            // 只需要设置此查找条件即可自动前往当前 Class 的父类查找
-                            // 由于演示的方法只会在父类存在 - 所以可以设置仅查找父类 isOnlySuperClass = true 节省时间
-                            // 如果想继续尝试查找当前 Class - 请删除 isOnlySuperClass = true
-                            superClass(isOnlySuperClass = true)
-                        }
+                    method {
+                        name = "getSuperString"
+                        emptyParam()
+                        // This method is not in the current Class
+                        // Just set this find condition to automatically go to the super class of the current Class to find
+                        // Since the method shown will only exist in the super class
+                        // So you can set only the super class to find isOnlySuperClass = true to save time
+                        // If you want to keep trying to find the current Class, please remove isOnlySuperClass = true
+                        // 这个方法不在当前的 Class
+                        // 只需要设置此查找条件即可自动前往当前 Class 的父类查找
+                        // 由于演示的方法只会在父类存在 - 所以可以设置仅查找父类 isOnlySuperClass = true 节省时间
+                        // 如果想继续尝试查找当前 Class - 请删除 isOnlySuperClass = true
+                        superClass(isOnlySuperClass = true)
+                    }.hook {
                         // Replaced hook
                         // 执行替换 Hook
                         replaceTo(any = "I am hook super class method")
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method { name = "getTestResultFirst" }.all()
+                    method {
+                        name = "getTestResultFirst"
+                    }.hookAll {
                         // Replaced hook
                         // 执行替换 Hook
                         replaceTo(any = "I am hook all methods first")
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
-                    injectMember {
-                        method { name = "getTestResultLast" }.all()
+                    method {
+                        name = "getTestResultLast"
+                    }.hookAll {
                         // Replaced hook
                         // 执行替换 Hook
                         replaceTo(any = "I am hook all methods last")
