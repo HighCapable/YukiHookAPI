@@ -51,7 +51,7 @@ fun encase(initiate: PackageParam.() -> Unit)
 ```kotlin
 YukiHookAPI.encase {
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook { 
+        "$packageName.DemoClass".toClass().hook { 
             // Your code here.
         }
     }
@@ -63,7 +63,7 @@ YukiHookAPI.encase {
 ```kotlin
 encase {
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook { 
+        "$packageName.DemoClass".toClass().hook { 
             // Your code here.
         }
     }
@@ -120,12 +120,12 @@ object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         loadApp(name = "com.example.demo1") {
-            findClass(name = "$packageName.DemoClass").hook { 
+            "$packageName.DemoClass".toClass().hook { 
                 // Your code here.
             }
         }
         loadApp(name = "com.example.demo2") {
-            findClass(name = "$packageName.CustomClass").hook { 
+            "$packageName.CustomClass".toClass().hook { 
                 // Your code here.
             }
         }
@@ -148,7 +148,7 @@ object HookEntry : IYukiHookXposedInit {
 object ChildCustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        findClass(name = "$packageName.DemoClass").hook { 
+        "$packageName.DemoClass".toClass().hook { 
             // Your code here.
         }
     }
@@ -163,7 +163,7 @@ object ChildCustomHooker : YukiBaseHooker() {
 object FirstHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        findClass(name = "$packageName.DemoClass").hook { 
+        "$packageName.DemoClass".toClass().hook { 
             // Your code here.
         }
         loadHooker(SecondHooker)
@@ -233,7 +233,7 @@ encase {
 ```kotlin
 encase {
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook { 
+        "$packageName.DemoClass".toClass().hook { 
             // Your code here.
         }
         // 创建一个 Resources Hook (固定用法)
@@ -260,7 +260,7 @@ encase {
         }
     }
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook { 
+        "$packageName.DemoClass".toClass().hook { 
             // Your code here.
         }
         // 在 APP 中创建 Resources Hook
@@ -296,7 +296,7 @@ encase {
 ```kotlin
 encase {
     // 错误的使用方法，不能直接开始 Hook
-    findClass(name = "com.example.demo.DemoClass").hook {
+    "com.example.demo.DemoClass".toClass().hook {
         // ...
     }
     // 错误的使用方法，不能直接开始 Hook
@@ -325,7 +325,7 @@ object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         // 错误的使用方法，由于外层没有任何判断对象，不能直接开始 Hook
-        findClass(name = "com.example.demo.DemoClass").hook {
+        "com.example.demo.DemoClass".toClass().hook {
             // ...
         }
     }
@@ -353,7 +353,7 @@ encase {
     loadApp(/** name 参数可选 */) {
         loadHooker(CustomHooker)
          // ✅ 正确的使用方法，在 APP 作用域内 Hook
-        findClass(name = "com.example.demo.DemoClass").hook {
+        "com.example.demo.DemoClass".toClass().hook {
             // ...
         }
         // ✅ 正确的使用方法，在 APP 作用域内 Hook
@@ -379,7 +379,7 @@ object CustomHooker : YukiBaseHooker() {
     override fun onHook() {
         // ✅ 正确的使用方法，由于外层没有任何判断对象，需要判断 APP 作用域后再进行 Hook
         loadApp(/** name 参数可选 */) {
-            findClass(name = "com.example.demo.DemoClass").hook {
+            "com.example.demo.DemoClass".toClass().hook {
                 // ...
             }
         }

@@ -30,7 +30,7 @@ override fun onHook() = encase {
     // Hook 指定的 APP
     loadApp(name = "com.demo.test") {
         // Class Hook
-        findClass("com.demo.test.TestClass").hook {
+        "com.demo.test.TestClass".toClass().hook {
             injectMember {
                 method {
                     name = "test"

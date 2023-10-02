@@ -138,14 +138,14 @@ loadApp(name = "com.android.browser") {
 }
 ```
 
-对于当前项目下没有的 `Class`，你可以使用 `stub` 方式或 `findClass` 方法来得到需要 Hook 的类。
+对于当前项目下没有的 `Class`，你可以使用 `stub` 方式或 `String.toClass(...)` 方法来得到需要 Hook 的类。
 
 比如，我要得到 `com.example.demo.TestClass`。
 
 > 示例如下
 
 ```kotlin
-findClass(name = "com.example.demo.TestClass").hook {
+"com.example.demo.TestClass".toClass().hook {
     injectMember {
         // Your code here.
     }
@@ -157,35 +157,7 @@ findClass(name = "com.example.demo.TestClass").hook {
 > 示例如下
 
 ```kotlin
-findClass(name = "$packageName.TestClass").hook {
-    injectMember {
-        // Your code here.
-    }
-}
-```
-
-到这里有些同学可能就开始说了，在某些场景下 `findClass` 显得有些繁琐。
-
-因为可能有些同学有如下需求。
-
-> 示例如下
-
-```kotlin
-const val TestClass = "com.example.demo.TestClass"
-
-TestClass.hook {
-    injectMember {
-        // Your code here.
-    }
-}
-```
-
-没关系，你还可以使用字符串类名直接创建一个 Hook。
-
-> 示例如下
-
-```kotlin
-"$packageName.TestClass".hook {
+"$packageName.TestClass".toClass().hook {
     injectMember {
         // Your code here.
     }

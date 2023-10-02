@@ -1578,15 +1578,7 @@ For more functions, please refer to [VariousClass](../public/com/highcapable/yuk
 
 If it is used when creating a Hook, it can be more convenient, and it can also automatically intercept the exception that `Class` cannot be found.
 
-> The following example
-
-```kotlin
-findClass("com.demo.ATest", "com.demo.BTest").hook {
-    // Your code here.
-}
-```
-
-You can also define this `Class` as a constant type to use.
+You can define this `Class` as a constant type to use.
 
 > The following example
 
@@ -1598,12 +1590,6 @@ ABTestClass.hook {
     // Your code here.
 }
 ```
-
-::: tip
-
-For more functions, please refer to the [PackageParam.findClass](../public/com/highcapable/yukihookapi/hook/param/PackageParam#findclass-method) method.
-
-:::
 
 ### Calling Generics
 

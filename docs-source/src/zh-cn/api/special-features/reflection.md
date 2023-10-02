@@ -1525,15 +1525,7 @@ VariousClass("com.demo.ATest", "com.demo.BTest").toClass().method {
 
 若在创建 Hook 的时候使用，可以更加方便，还可以自动拦截找不到 `Class` 的异常。
 
-> 示例如下
-
-```kotlin
-findClass("com.demo.ATest", "com.demo.BTest").hook {
-    // Your code here.
-}
-```
-
-你还可以把这个 `Class` 定义为一个常量类型来使用。
+你可以把这个 `Class` 定义为一个常量类型来使用。
 
 > 示例如下
 
@@ -1545,12 +1537,6 @@ ABTestClass.hook {
     // Your code here.
 }
 ```
-
-::: tip
-
-更多功能请参考 [PackageParam.findClass](../public/com/highcapable/yukihookapi/hook/param/PackageParam#findclass-method) 方法。
-
-:::
 
 ### 调用泛型
 

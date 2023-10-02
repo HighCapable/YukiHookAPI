@@ -138,14 +138,14 @@ loadApp(name = "com.android.browser") {
 }
 ```
 
-For the `Class` that does not exist in the current project, you can use the `stub` method or the `findClass` method to get the class that needs to be hooked.
+For the `Class` that does not exist in the current project, you can use the `stub` method or the `String.toClass(...)` method to get the class that needs to be hooked.
 
 For example, I want to get `com.example.demo.TestClass`.
 
 > The following example
 
 ```kotlin
-findClass(name = "com.example.demo.TestClass").hook {
+"com.example.demo.TestClass".toClass().hook {
     injectMember {
         // Your code here.
     }
@@ -157,35 +157,7 @@ If `com.example.demo` is the app you want to hook, then the writing method can b
 > The following example
 
 ```kotlin
-findClass(name = "$packageName.TestClass").hook {
-    injectMember {
-        // Your code here.
-    }
-}
-```
-
-Some people may have started to say that `findClass` is a bit cumbersome in some scenarios.
-
-Because some people may have the following needs.
-
-> The following example
-
-```kotlin
-const val TestClass = "com.example.demo.TestClass"
-
-TestClass.hook {
-    injectMember {
-        // Your code here.
-    }
-}
-```
-
-That's okay, you can also create a Hook directly using the string class name.
-
-> The following example
-
-```kotlin
-"$packageName.TestClass".hook {
+"$packageName.TestClass".toClass().hook {
     injectMember {
         // Your code here.
     }

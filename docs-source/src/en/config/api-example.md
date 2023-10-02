@@ -51,7 +51,7 @@ The `encase` method can be created in the `onHook` method using two schemes.
 ```kotlin
 YukiHookAPI.encase {
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook {
+        "$packageName.DemoClass".toClass().hook {
             // Your code here.
         }
     }
@@ -63,7 +63,7 @@ YukiHookAPI.encase {
 ```kotlin
 encase {
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook {
+        "$packageName.DemoClass".toClass().hook {
             // Your code here.
         }
     }
@@ -120,12 +120,12 @@ object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         loadApp(name = "com.example.demo1") {
-            findClass(name = "$packageName.DemoClass").hook {
+            "$packageName.DemoClass".toClass().hook {
                 // Your code here.
             }
         }
         loadApp(name = "com.example.demo2") {
-            findClass(name = "$packageName.CustomClass").hook {
+            "$packageName.CustomClass".toClass().hook {
                 // Your code here.
             }
         }
@@ -148,7 +148,7 @@ object HookEntry : IYukiHookXposedInit {
 object ChildCustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        findClass(name = "$packageName.DemoClass").hook {
+        "$packageName.DemoClass".toClass().hook {
             // Your code here.
         }
     }
@@ -163,7 +163,7 @@ You can use the `loadHooker` method to load another Hooker in multiple layers in
 object FirstHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        findClass(name = "$packageName.DemoClass").hook {
+        "$packageName.DemoClass".toClass().hook {
             // Your code here.
         }
         loadHooker(SecondHooker)
@@ -235,7 +235,7 @@ In `YukiHookAPI`, these functions **are seamless**.
 ```kotlin
 encase {
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook {
+        "$packageName.DemoClass".toClass().hook {
             // Your code here.
         }
         // Create a Resources Hook (fixed usage)
@@ -262,7 +262,7 @@ encase {
         }
     }
     loadApp(name = "com.example.demo") {
-        findClass(name = "$packageName.DemoClass").hook {
+        "$packageName.DemoClass".toClass().hook {
             // Your code here.
         }
         // Create a Resources Hook in the app
@@ -299,7 +299,7 @@ Below are two **error** examples.
 ```kotlin
 encase {
     //  Wrong usage, can't start Hook directly
-    findClass(name = "com.example.demo.DemoClass").hook {
+    "com.example.demo.DemoClass".toClass().hook {
         // ...
     }
     //  Wrong usage, can't start Hook directly
@@ -329,7 +329,7 @@ object CustomHooker : YukiBaseHooker() {
     override fun onHook() {
         //  Wrong method of use
         // Because there is no judgment object in the outer layer, you cannot start Hook directly
-        findClass(name = "com.example.demo.DemoClass").hook {
+        "com.example.demo.DemoClass".toClass().hook {
             // ...
         }
     }
@@ -357,7 +357,7 @@ encase {
     loadApp(/** name parameter optional */) {
         loadHooker(CustomHooker)
          // ✅ Correct usage, Hook in app scope
-        findClass(name = "com.example.demo.DemoClass").hook {
+        "com.example.demo.DemoClass".toClass().hook {
             // ...
         }
         // ✅ Correct usage, Hook in app scope
@@ -384,7 +384,7 @@ object CustomHooker : YukiBaseHooker() {
         // ✅ The correct method of use, since there is no judgment object in the outer layer
         // it is necessary to judge the scope of the app before performing Hook
         loadApp(/** name parameter optional */) {
-            findClass(name = "com.example.demo.DemoClass").hook {
+            "com.example.demo.DemoClass".toClass().hook {
                 // ...
             }
         }
