@@ -29,18 +29,16 @@ override fun onHook() = encase {
     appContext
     // Hook 指定的 APP
     loadApp(name = "com.demo.test") {
-        // Class Hook
-        "com.demo.test.TestClass".toClass().hook {
-            injectMember {
-                method {
-                    name = "test"
-                    param(BooleanType)
-                }
-                afterHook {
+        // Member Hook
+        "com.demo.test.TestClass".toClass()
+            .method {
+                name = "test"
+                param(BooleanType)
+            }.hook {
+                after {
                     // ...
                 }
             }
-        }
         // Resources Hook (固定用法)
         resources().hook {
             injectResource {
@@ -107,7 +105,7 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 
 #### Before/After Hook
 
-`YukiHookAPI` 同样对 `HookParam` 实现了 **lambda** 方法体 `this` 用法，在 `beforeHook`、`afterHook` 等方法体内即可全局得到 `HookParam` 对象。
+`YukiHookAPI` 同样对 `HookParam` 实现了 **lambda** 方法体 `this` 用法，在 `before`、`after` 等方法体内即可全局得到 `HookParam` 对象。
 
 > API 功能差异对比如下
 
@@ -115,7 +113,7 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 ::: code-group-item Yuki Hook API
 
 ```kotlin
-afterHook {
+after {
     // 得到当前 Hook 的实例
     instance
     // 得到当前 Hook 的 Class 实例

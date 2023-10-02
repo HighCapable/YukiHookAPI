@@ -226,7 +226,7 @@ If the problem persists, please bring detailed logs for feedback.
 
 ::: danger loggerE
 
-Hooked Member with a finding error by **CLASS**
+Hooked Member with a finding error / by **CLASS**
 
 :::
 
@@ -242,7 +242,7 @@ Please check the previous error log before this error occurs, maybe there is an 
 
 ::: danger loggerE
 
-Hooked Member cannot be non-null by **CLASS**
+Hooked Member cannot be null / by **CLASS**
 
 :::
 
@@ -255,7 +255,7 @@ After the Hook is executed, the `member` of the Hook is `null` and the target Ho
 ```kotlin
 injectMember {
     // There are no search conditions for methods and constructors that require hooks
-    afterHook {
+    after {
         // ...
     }
 }
@@ -273,7 +273,7 @@ injectMember {
     method {
         // Your code here.
     }
-    afterHook {
+    after {
         // ...
     }
 }
@@ -302,13 +302,12 @@ private boolean test()
 Below is an error case.
 
 ```kotlin
-injectMember {
-    method {
-        name = "test"
-        emptyParam()
-    }
+method {
+    name = "test"
+    emptyParam()
+}.hook {
     // <Scenario 1> Set the wrong type, the original type is Boolean
-    beforeHook {
+    before {
         result = 0
     }
     // <Scenario 2> Return the wrong type, the original type is Boolean
@@ -322,7 +321,7 @@ injectMember {
 
 ::: warning
 
-If the above scenario occurs in **beforeHook** or **afterHook**, it will cause the Host App to throw an exception from **XposedBridge** (which will expose the fact of being Hooked).
+If the above scenario occurs in **before** or **after**, it will cause the Host App to throw an exception from **XposedBridge** (which will expose the fact of being Hooked).
 
 :::
 
@@ -1515,7 +1514,7 @@ Custom Hooking Members is empty
 injectMember {
     // Method parameters in parentheses are left blank
     members()
-    afterHook {
+    after {
         // ...
     }
 }
@@ -1542,7 +1541,7 @@ HookParam Method args index must be >= 0
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // Assume param is empty
         args().last()...
         // Set an index less than 0
@@ -1572,7 +1571,7 @@ An object that calls an `instance` variable or `instance` method in a `HookParam
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // This variable is called
         instance...
         // This method is called
@@ -1606,7 +1605,7 @@ The `args` variable is called in `HookParam`, but the parameter array of the cur
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // This variable is called
         args...
     }
@@ -1636,7 +1635,7 @@ Call the `member` variable in `HookParam` but cannot get the method and construc
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // This variable is called
         member...
     }
@@ -1666,7 +1665,7 @@ Calling the `method` variable in `HookParam` but not getting the method instance
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // This variable is called
         method...
     }
@@ -1696,7 +1695,7 @@ A method instance for calling a `constructor` variable in a `HookParam` but not 
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // This variable is called
         constructor...
     }
@@ -1726,7 +1725,7 @@ Invoking the `instance` method in a `HookParam` specifies the wrong type.
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // The type is cast to Activity
         // But assumes the current instance's type is not this type
         instance<Activity>()...
@@ -1757,7 +1756,7 @@ The `ArgsModifyer.set` method is called in `HookParam` but the method parameter 
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // This method is called
         args(...).set(...)
     }
@@ -1785,7 +1784,7 @@ Calling the `ArgsModifyer.set` method in `HookParam` specifies an array number b
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // The subscript starts from 0
         // Assuming the original parameter subscript is 5, but fill in 6 here
         args(index = 6).set(...)
@@ -1867,6 +1866,54 @@ TargetClass.hook {
 Using `instanceClass` directly in `hook` is very dangerous, if the Class does not exist, it will directly cause the Hook process to "die".
 
 For details, please refer to [Status Monitor](../guide/example#status-monitor).
+
+###### exception
+
+::: danger IllegalStateException 
+
+This hook instance is create by Members, not support any hook class instance
+
+:::
+
+**Abnormal**
+
+Hook instance is created using `Member.hook { ... }` instead of `Class.hook { ... }` and uses `instanceClass`.
+
+**Solution**
+
+You can only use `instanceClass` if you created a Hook instance using `Class.hook { ... }`.
+
+###### exception
+
+::: danger IllegalStateException 
+
+Use of searchClass { ... }.hook { ... } is an error, please use like searchClass { ... }.get()?.hook { ... }
+
+:::
+
+**Abnormal**
+
+The Hook instance are created directly using the `searchClass { ... }.hook { ... }` method.
+
+**Solution**
+
+Please use `searchClass { ... }.get()?.hook { ... }` to create a Hook instance.
+
+###### exception
+
+::: danger IllegalStateException 
+
+This type \[**TYPE**\] not support to hook, supported are Constructors and Methods
+
+:::
+
+**Abnormal**
+
+Using `Member.hook { ... }` creates member objects that do not support Hooks, such as `Field`.
+
+**Solution**
+
+You can only Hook `Constructor` and `Method`.
 
 ###### exception
 

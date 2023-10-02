@@ -33,19 +33,32 @@ Host Environment
 > The above structure can be written in the following form in code.
 
 ```kotlin
-TargetClass.hook {
-    injectMember {
-        method {
+// New version
+TargetClass.method { 
+    // Your code here.
+}.hook {
+    before {
+        // Your code here.
+    }
+    after {
+        // Your code here.
+    }
+}
+// Old version
+TargetClass.hook { 
+    injectMember { 
+        method { 
             // Your code here.
         }
-        beforeHook {
+        before {
             // Your code here.
         }
-        afterHook {
+        after {
             // Your code here.
         }
     }
 }
+// Resources Hook (2.x.x will be discontinued)
 resources().hook {
     injectResource {
         conditions {
@@ -80,20 +93,17 @@ Add code in the body of the `encase` method.
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.hook {
-        injectMember {
-            method {
-                name = "onCreate"
-                param(BundleClass)
-                returnType = UnitType
-            }
-            afterHook {
-                AlertDialog.Builder(instance())
-                    .setTitle("Hooked")
-                    .setMessage("I am hook!")
-                    .setPositiveButton("OK", null)
-                    .show()
-            }
+    ActivityClass.method { 
+        name = "onCreate"
+        param(BundleClass)
+        returnType = UnitType
+    }.hook {
+        after {
+            AlertDialog.Builder(instance())
+                .setTitle("Hooked")
+                .setMessage("I am hook!")
+                .setPositiveButton("OK", null)
+                .show()
         }
     }
 }
@@ -103,20 +113,19 @@ At this point, the `onCreate` method will be successfully hooked and this dialog
 
 So, what should I do if I want to continue the Hook `onStart` method?
 
-In the code just now, continue to insert an `injectMember` method body.
+We can use Kotlin's `apply` method on `ActivityClass` to create a call space.
 
 > The following example
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.hook {
-        injectMember {
-            method {
-                name = "onCreate"
-                param(BundleClass)
-                returnType = UnitType
-            }
-            afterHook {
+    ActivityClass.apply { 
+        method { 
+            name = "onCreate"
+            param(BundleClass)
+            returnType = UnitType
+        }.hook {
+            after {
                 AlertDialog.Builder(instance())
                     .setTitle("Hooked")
                     .setMessage("I am hook!")
@@ -124,13 +133,12 @@ loadApp(name = "com.android.browser") {
                     .show()
             }
         }
-        injectMember {
-            method {
-                name = "onStart"
-                emptyParam()
-                returnType = UnitType
-            }
-            afterHook {
+        method { 
+            name = "onStart"
+            emptyParam()
+            returnType = UnitType
+        }.hook {
+            after {
                 // Your code here.
             }
         }
@@ -145,11 +153,12 @@ For example, I want to get `com.example.demo.TestClass`.
 > The following example
 
 ```kotlin
-"com.example.demo.TestClass".toClass().hook {
-    injectMember {
+"com.example.demo.TestClass".toClass()
+    .method {
         // Your code here.
+    }.hook {
+         // Your code here.
     }
-}
 ```
 
 If `com.example.demo` is the app you want to hook, then the writing method can be simpler.
@@ -157,11 +166,12 @@ If `com.example.demo` is the app you want to hook, then the writing method can b
 > The following example
 
 ```kotlin
-"$packageName.TestClass".toClass().hook {
-    injectMember {
+"$packageName.TestClass".toClass()
+    .method {
         // Your code here.
+    }.hook {
+         // Your code here.
     }
-}
 ```
 
 ::: tip
@@ -182,16 +192,13 @@ Add code in the body of the `encase` method.
 
 ```kotlin
 loadZygote {
-    ActivityClass.hook {
-        injectMember {
-            method {
-                name = "onCreate"
-                param(BundleClass)
-                returnType = UnitType
-            }
-            afterHook {
-                // Your code here.
-            }
+    ActivityClass.method { 
+        name = "onCreate"
+        param(BundleClass)
+        returnType = UnitType
+    }.hook {
+        after {
+            // Your code here.
         }
     }
 }
@@ -215,10 +222,14 @@ Add code in the body of the `encase` method.
 
 ```kotlin
 loadSystem {
-    ApplicationInfoClass.hook {
+    ApplicationInfoClass.method {
+        // Your code here.
+    }.hook {
         // Your code here.
     }
-    PackageInfoClass.hook {
+    PackageInfoClass.method {
+        // Your code here.
+    }.hook {
         // Your code here.
     }
 }
@@ -231,6 +242,12 @@ loadSystem {
 :::
 
 ### Hook Resources
+
+::: warning
+
+This feature will be discontinued and removed in version 2.x.x.
+
+:::
 
 Suppose, we want to replace the content of `app_name` of type `string` in Hook `com.android.browser` with `123`.
 
@@ -303,15 +320,15 @@ The first way, save the `Result` instance of the current injected object, and ca
 
 ```kotlin
 // Set a variable to save the current instance
-val hookResult = injectMember {
-    method {
+val hookResult = 
+    method { 
         name = "test"
         returnType = UnitType
+    }.hook {
+        after {
+            // ...
+        }
     }
-    afterHook {
-        // ...
-    }
-}
 // Call the following method when appropriate
 hookResult.remove()
 ```
@@ -321,12 +338,11 @@ The second method, call `removeSelf` in the Hook callback method to remove itsel
 > The following example
 
 ```kotlin
-injectMember {
-    method {
-        name = "test"
-        returnType = UnitType
-    }
-    afterHook {
+method { 
+    name = "test"
+    returnType = UnitType
+}.hook {
+    after {
         // Just call the following method directly
         removeSelf()
     }
@@ -350,7 +366,7 @@ You can handle exceptions that occur during the Hook method.
 > The following example
 
 ```kotlin
-injectMember {
+hook {
     // Your code here.
 }.result {
     // Handle the exception at the start of the hook
@@ -377,7 +393,7 @@ injectResource {
 }
 ```
 
-You can also handle exceptions that occur when the Hook's `Class` does not exist.
+**(Applicable to older versions)** You can also handle exceptions that occur when the Hook's `Class` does not exist.
 
 > The following example
 
@@ -427,7 +443,7 @@ injectMember {
     method {
         throw RuntimeException("Exception Test")
     }
-    afterHook {
+    after {
         // ...
     }
 }.result {
@@ -439,7 +455,7 @@ injectMember {
     method {
         // ...
     }
-    afterHook {
+    after {
         throw RuntimeException("Exception Test")
     }
 }.result {
@@ -457,11 +473,10 @@ If you want to throw an exception directly to the Host App in the Hook callback 
 > The following example
 
 ```kotlin
-injectMember {
-    method {
-        // ...
-    }
-    afterHook {
+method {
+    // ...
+}.hook {
+    after {
         RuntimeException("Exception Test").throwToApp()
     }
 }
@@ -472,11 +487,10 @@ You can also throw exceptions directly in the Hook callback method body, and the
 > The following example
 
 ```kotlin
-injectMember {
-    method {
-        // ...
-    }
-    afterHook {
+method {
+    // ...
+}.hook {
+    after {
         throw RuntimeException("Exception Test")
     }.onFailureThrowToApp()
 }
@@ -486,7 +500,7 @@ The above two methods can receive an exception at the Host App and cause the Hos
 
 ::: warning
 
-In order to ensure that the Hook calling domain and the calling domain within the Host App are isolated from each other, exceptions can only be thrown to the Host App in the **beforeHook** and **afterHook** callback method bodies.
+In order to ensure that the Hook calling domain and the calling domain within the Host App are isolated from each other, exceptions can only be thrown to the Host App in the **before** and **after** callback method bodies.
 
 :::
 
@@ -495,42 +509,6 @@ In order to ensure that the Hook calling domain and the calling domain within th
 For more functions, please refer to [Throwable.throwToApp](../api/public/com/highcapable/yukihookapi/hook/param/HookParam#throwable-throwtoapp-i-ext-method), [YukiMemberHookCreator.MemberMookCreator.HookCallback](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#hookcallback-class).
 
 :::
-
-## Status Monitor
-
-People who use `XposedHelpers` often print `Unhook` after the Hook to determine whether the Hook is successful.
-
-In `YukiHookAPI`, you can easily reimplement this functionality with the following methods.
-
-First we can monitor that the Hook is ready to start.
-
-> The following example
-
-```kotlin
-YourClass.hook {
-    // Your code here.
-}.onPrepareHook {
-    loggerD(msg = "$instanceClass hook start")
-}
-```
-
-::: danger
-
-**instanceClass** is recommended to be used only in **onPrepareHook**, otherwise the Hook's **Class** does not exist and an uninterceptable exception will be thrown, causing the Hook process to "die".
-
-:::
-
-Then, we can also monitor the success of the method result of the Hook.
-
-> The following example
-
-```kotlin
-injectMember {
-    // Your code here.
-}.onHooked { member ->
-    loggerD(msg = "$member has hooked")
-}
-```
 
 ## Expansion Usage
 

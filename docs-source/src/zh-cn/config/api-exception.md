@@ -210,7 +210,7 @@ Hook 目标方法、构造方法时发生错误。
 
 ::: danger loggerE
 
-Hooked Member with a finding error by **CLASS**
+Hooked Member with a finding error / by **CLASS**
 
 :::
 
@@ -226,7 +226,7 @@ Hooked Member with a finding error by **CLASS**
 
 ::: danger loggerE
 
-Hooked Member cannot be non-null by **CLASS**
+Hooked Member cannot be null / by **CLASS**
 
 :::
 
@@ -239,7 +239,7 @@ Hooked Member cannot be non-null by **CLASS**
 ```kotlin
 injectMember {
     // 这里并没有设置需要 Hook 的方法、构造方法的查找条件
-    afterHook {
+    after {
         // ...
     }
 }
@@ -257,7 +257,7 @@ injectMember {
     method {
         // Your code here.
     }
-    afterHook {
+    after {
         // ...
     }
 }
@@ -286,13 +286,12 @@ private boolean test()
 下面是一个错误的案列。
 
 ```kotlin
-injectMember {
-    method {
-        name = "test"
-        emptyParam()
-    }
+method {
+    name = "test"
+    emptyParam()
+}.hook {
     // <情景1> 设置了错误的类型，原类型为 Boolean
-    beforeHook {
+    before {
         result = 0
     }
     // <情景2> 返回了错误的类型，原类型为 Boolean
@@ -306,7 +305,7 @@ injectMember {
 
 ::: warning
 
-若上述场景在 **beforeHook** 或 **afterHook** 中发生，则会造成被 Hook 的 APP (宿主) 由 **XposedBridge** 抛出异常 (会对其暴露被 Hook 的事实)。
+若上述场景在 **before** 或 **after** 中发生，则会造成被 Hook 的 APP (宿主) 由 **XposedBridge** 抛出异常 (会对其暴露被 Hook 的事实)。
 
 :::
 
@@ -1452,7 +1451,7 @@ Custom Hooking Members is empty
 injectMember {
     // 括号里的方法参数被留空了
     members()
-    afterHook {
+    after {
         // ...
     }
 }
@@ -1479,7 +1478,7 @@ HookParam Method args index must be >= 0
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 假设 param 是空的
         args().last()...
         // 设置了小于 0 的 index
@@ -1509,7 +1508,7 @@ HookParam instance got null! Is this a static member?
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 调用了此变量
         instance...
         // 调用了此方法
@@ -1539,7 +1538,7 @@ Current hooked Member args is null
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 调用了此变量
         args...
     }
@@ -1567,7 +1566,7 @@ Current hooked Member is null
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 调用了此变量
         member...
     }
@@ -1595,7 +1594,7 @@ Current hooked Member is not a Method
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 调用了此变量
         method...
     }
@@ -1623,7 +1622,7 @@ Current hooked Member is not a Constructor
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 调用了此变量
         constructor...
     }
@@ -1651,7 +1650,7 @@ HookParam instance cannot cast to **TYPE**
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 类型被 cast 为 Activity 但假设当前实例的类型并非此类型
         instance<Activity>()...
     }
@@ -1679,7 +1678,7 @@ HookParam Method args is empty, mabe not has args
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 调用了此方法
         args(...).set(...)
     }
@@ -1707,7 +1706,7 @@ HookParam Method args index out of bounds, max is **NUMBER**
 ```kotlin
 injectMember {
     // ...
-    afterHook {
+    after {
         // 下标从 0 开始，假设原始的参数下标是 5 个，但是这里填写了 6
         args(index = 6).set(...)
     }
@@ -1785,6 +1784,54 @@ TargetClass.hook {
 在 `hook` 内直接使用 `instanceClass` 是很危险的，若 Class 不存在则会直接导致 Hook 进程“死掉”。
 
 详情请参考 [状态监听](../guide/example#状态监听)。
+
+###### exception
+
+::: danger IllegalStateException 
+
+This hook instance is create by Members, not support any hook class instance
+
+:::
+
+**异常原因**
+
+使用 `Member.hook { ... }` 并非 `Class.hook { ... }` 创建了 Hook 实例并使用了 `instanceClass`。
+
+**解决方案**
+
+你只能在使用 `Class.hook { ... }` 创建 Hook 实例的情况下使用 `instanceClass`。
+
+###### exception
+
+::: danger IllegalStateException 
+
+Use of searchClass { ... }.hook { ... } is an error, please use like searchClass { ... }.get()?.hook { ... }
+
+:::
+
+**异常原因**
+
+使用 `searchClass { ... }.hook { ... }` 方式直接创建了 Hook 实例。
+
+**解决方案**
+
+请使用 `searchClass { ... }.get()?.hook { ... }` 方式创建 Hook 实例。
+
+###### exception
+
+::: danger IllegalStateException 
+
+This type \[**TYPE**\] not support to hook, supported are Constructors and Methods
+
+:::
+
+**异常原因**
+
+使用 `Member.hook { ... }` 时创建了不支持 Hook 的成员对象，例如 `Field`。
+
+**解决方案**
+
+你只能 Hook `Constructor` 和 `Method`。
 
 ###### exception
 

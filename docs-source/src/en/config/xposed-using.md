@@ -188,9 +188,40 @@ The **entryClassName** you define must not be the same as the class name in **xp
 
 #### isUsingResourcesHook Parameter
 
-`isUsingResourcesHook` determines whether the automatic builder generates relevant code for the Resources Hook, this feature is enabled by default.
+`isUsingResourcesHook` determines whether the automatic builder generates relevant code for the Resources Hook, This feature is not enabled by default.
 
-The generated entry class after enabling it will look like the following.
+By default the generated entry class will look like this.
+
+> The following example
+
+```kotlin:no-line-numbers
+class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
+
+    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
+        // ...
+    }
+
+    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
+        // ...
+    }
+}
+```
+
+If your current project need to use Resources Hook, you can set `isUsingResourcesHook = true` to enable automatic generation.
+
+::: warning
+
+This feature will no longer be enabled by default after version **1.2.0**, please enable it manually if you want to use it.
+
+:::
+
+> The following example
+
+```kotlin
+@InjectYukiHookWithXposed(isUsingResourcesHook = true)
+```
+
+The resulting entry class after enabled will look like the following.
 
 > The following example
 
@@ -206,31 +237,6 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXpos
     }
 
     override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {
-        // ...
-    }
-}
-```
-
-If your current project does not need to use Resources Hook, you can set `isUsingResourcesHook = false` to disable automatic generation.
-
-> The following example
-
-```kotlin
-@InjectYukiHookWithXposed(isUsingResourcesHook = false)
-```
-
-The resulting entry class after closing will look like the following.
-
-> The following example
-
-```kotlin:no-line-numbers
-class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
-
-    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
-        // ...
-    }
-
-    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
         // ...
     }
 }

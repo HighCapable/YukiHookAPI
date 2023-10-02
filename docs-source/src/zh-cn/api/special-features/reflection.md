@@ -1245,15 +1245,12 @@ public class Test {
 > 示例如下
 
 ```kotlin
-Test::class.java.hook {
-    injectMember {
-        method {
-            name = "getString"
-            emptyParam()
-            returnType = StringClass
-        }
-        replaceTo("Hooked")
-    }
+Test::class.java.method {
+    name = "getString"
+    emptyParam()
+    returnType = StringClass
+}.hook {
+    replaceTo("Hooked")
 }
 ```
 
@@ -1394,33 +1391,7 @@ Test::class.java.method {
 }
 ```
 
-以当前 `Class` 举例，若 [多重查找](#多重查找) 结合 `RemedyPlan` 在创建 Hook 的时候使用，你需要稍微改变一下用法。
-
-> 示例如下
-
-```kotlin
-injectMember {
-    method {
-        name = "doTask"
-        emptyParam()
-    }.remedys {
-        method {
-            name = "doTask"
-            paramCount(0..1)
-        }
-        method {
-            name = "doTask"
-            paramCount(1..2)
-        }
-    }.all()
-    beforeHook {}
-    afterHook {}
-}
-```
-
 ::: tip
-
-在创建 Hook 的时候使用可参考 [MethodFinder.Process.all](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#all-method)、[ConstructorFinder.Process.all](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#all-method) 方法。
 
 更多功能请参考 [MethodFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#remedyplan-class)、[ConstructorFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#remedyplan-class)、[FieldFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#remedyplan-class)。
 

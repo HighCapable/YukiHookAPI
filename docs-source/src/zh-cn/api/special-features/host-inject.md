@@ -35,12 +35,11 @@ android {
 > 示例如下
 
 ```kotlin
-injectMember {
-    method {
-        name = "onCreate"
-        param(BundleClass)
-    }
-    afterHook {
+method {
+    name = "onCreate"
+    param(BundleClass)
+}.hook {
+    after {
         instance<Activity>().also {
             // <方案1> 通过 Context 注入模块资源
             it.injectModuleAppResources()
@@ -87,12 +86,11 @@ onAppLifecycle {
 > 示例如下
 
 ```kotlin
-injectMember {
-    method {
-        name = "onCreate"
-        param(BundleClass)
-    }
-    afterHook {
+method {
+    name = "onCreate"
+    param(BundleClass)
+}.hook {
+    after {
         instance<Activity>().registerModuleAppActivities()
     }
 }
@@ -229,12 +227,11 @@ The style on this component requires your app theme to be Theme.AppCompat (or a 
 > 示例如下
 
 ```kotlin
-injectMember {
-    method {
-        name = "onCreate"
-        param(BundleClass)
-    }
-    afterHook {
+method {
+     name = "onCreate"
+    param(BundleClass)
+}.hook {
+    after {
         // 使用 applyModuleTheme 创建一个当前模块中的主题资源
         val appCompatContext = instance<Activity>().applyModuleTheme(R.style.Theme_AppCompat)
         // 直接使用这个包装了模块主题后的 Context 创建对话框
@@ -252,12 +249,11 @@ injectMember {
 > 示例如下
 
 ```kotlin
-injectMember {
-    method {
-        name = "onCreate"
-        param(BundleClass)
-    }
-    afterHook {
+method {
+    name = "onCreate"
+    param(BundleClass)
+}.hook {
+    after {
         // 定义当前模块中的主题资源
         var appCompatContext: ModuleContextThemeWrapper
         // <方案1> 直接得到 Configuration 对象进行设置

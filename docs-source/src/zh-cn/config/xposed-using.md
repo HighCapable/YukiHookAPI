@@ -182,7 +182,38 @@ class HookXposedEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 
 #### isUsingResourcesHook 参数
 
-`isUsingResourcesHook` 决定了自动处理程序是否生成针对 Resources Hook 的相关代码，此功能默认是启用的。
+`isUsingResourcesHook` 决定了自动处理程序是否生成针对 Resources Hook 的相关代码，此功能默认不启用。
+
+默认情况下生成的入口类将为如下所示。
+
+> 示例如下
+
+```kotlin:no-line-numbers
+class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
+
+    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
+        // ...
+    }
+
+    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
+        // ...
+    }
+}
+```
+
+若你当前的项目需要用到 Resources Hook，可以设置 `isUsingResourcesHook = true` 来启用自动生成。
+
+::: warning
+
+此功能在 **1.2.0** 版本后将不再默认启用，如需使用请手动启用。
+
+:::
+
+>  示例如下
+
+```kotlin
+@InjectYukiHookWithXposed(isUsingResourcesHook = true)
+```
 
 启用后生成的入口类将为如下所示。
 
@@ -200,31 +231,6 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXpos
     }
 
     override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {
-        // ...
-    }
-}
-```
-
-若你当前的项目并不需要用到 Resources Hook，可以设置 `isUsingResourcesHook = false` 来关闭自动生成。
-
->  示例如下
-
-```kotlin
-@InjectYukiHookWithXposed(isUsingResourcesHook = false)
-```
-
-关闭后生成的入口类将为如下所示。
-
-> 示例如下
-
-```kotlin:no-line-numbers
-class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage {
-
-    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
-        // ...
-    }
-
-    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
         // ...
     }
 }

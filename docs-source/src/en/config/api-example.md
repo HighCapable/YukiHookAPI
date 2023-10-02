@@ -51,9 +51,12 @@ The `encase` method can be created in the `onHook` method using two schemes.
 ```kotlin
 YukiHookAPI.encase {
     loadApp(name = "com.example.demo") {
-        "$packageName.DemoClass".toClass().hook {
-            // Your code here.
-        }
+        "$packageName.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
     }
 }
 ```
@@ -63,9 +66,12 @@ YukiHookAPI.encase {
 ```kotlin
 encase {
     loadApp(name = "com.example.demo") {
-        "$packageName.DemoClass".toClass().hook {
-            // Your code here.
-        }
+        "$packageName.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
     }
 }
 ```
@@ -120,14 +126,20 @@ object CustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         loadApp(name = "com.example.demo1") {
-            "$packageName.DemoClass".toClass().hook {
-                // Your code here.
-            }
+            "$packageName.DemoClass".toClass()
+                .method { 
+                    // Your code here.
+                }.hook {
+                    // Your code here.
+                }
         }
         loadApp(name = "com.example.demo2") {
-            "$packageName.CustomClass".toClass().hook {
-                // Your code here.
-            }
+            "$packageName.CustomClass".toClass()
+                .method { 
+                    // Your code here.
+                }.hook {
+                    // Your code here.
+                }
         }
     }
 }
@@ -148,9 +160,12 @@ object HookEntry : IYukiHookXposedInit {
 object ChildCustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        "$packageName.DemoClass".toClass().hook {
-            // Your code here.
-        }
+        "$packageName.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
     }
 }
 ```
@@ -163,9 +178,12 @@ You can use the `loadHooker` method to load another Hooker in multiple layers in
 object FirstHooker : YukiBaseHooker() {
 
     override fun onHook() {
-        "$packageName.DemoClass".toClass().hook {
-            // Your code here.
-        }
+        "$packageName.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
         loadHooker(SecondHooker)
         loadHooker(ThirdHooker)
     }
@@ -235,9 +253,12 @@ In `YukiHookAPI`, these functions **are seamless**.
 ```kotlin
 encase {
     loadApp(name = "com.example.demo") {
-        "$packageName.DemoClass".toClass().hook {
-            // Your code here.
-        }
+        "$packageName.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
         // Create a Resources Hook (fixed usage)
         resources().hook {
             // Your code here.
@@ -262,9 +283,12 @@ encase {
         }
     }
     loadApp(name = "com.example.demo") {
-        "$packageName.DemoClass".toClass().hook {
-            // Your code here.
-        }
+        "$packageName.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
         // Create a Resources Hook in the app
         resources().hook {
             // Your code here.
@@ -299,9 +323,12 @@ Below are two **error** examples.
 ```kotlin
 encase {
     //  Wrong usage, can't start Hook directly
-    "com.example.demo.DemoClass".toClass().hook {
-        // ...
-    }
+    "com.example.demo.DemoClass".toClass()
+        .method { 
+            // Your code here.
+        }.hook {
+            // Your code here.
+        }
     //  Wrong usage, can't start Hook directly
     resources().hook {
         // ...
@@ -329,9 +356,12 @@ object CustomHooker : YukiBaseHooker() {
     override fun onHook() {
         //  Wrong method of use
         // Because there is no judgment object in the outer layer, you cannot start Hook directly
-        "com.example.demo.DemoClass".toClass().hook {
-            // ...
-        }
+        "com.example.demo.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
     }
 }
 ```
@@ -357,9 +387,12 @@ encase {
     loadApp(/** name parameter optional */) {
         loadHooker(CustomHooker)
          // ✅ Correct usage, Hook in app scope
-        "com.example.demo.DemoClass".toClass().hook {
-            // ...
-        }
+        "com.example.demo.DemoClass".toClass()
+            .method { 
+                // Your code here.
+            }.hook {
+                // Your code here.
+            }
         // ✅ Correct usage, Hook in app scope
         resources().hook {
             // ...
@@ -384,9 +417,12 @@ object CustomHooker : YukiBaseHooker() {
         // ✅ The correct method of use, since there is no judgment object in the outer layer
         // it is necessary to judge the scope of the app before performing Hook
         loadApp(/** name parameter optional */) {
-            "com.example.demo.DemoClass".toClass().hook {
-                // ...
-            }
+            "com.example.demo.DemoClass".toClass()
+                .method { 
+                    // Your code here.
+                }.hook {
+                    // Your code here.
+                }
         }
     }
 }

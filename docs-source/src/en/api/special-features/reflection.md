@@ -1298,15 +1298,12 @@ Here's how the `getString` method in this `Class` Hooks.
 > The following example
 
 ```kotlin
-Test::class.java.hook {
-    injectMember {
-        method {
-            name = "getString"
-            emptyParam()
-            returnType = StringClass
-        }
-        replaceTo("Hooked")
-    }
+Test::class.java.method {
+    name = "getString"
+    emptyParam()
+    returnType = StringClass
+}.hook {
+    replaceTo("Hooked")
 }
 ```
 
@@ -1447,33 +1444,7 @@ Test::class.java.method {
 }
 ```
 
-Take the current `Class` as an example, if [Multiple Find](#multiple-find) is used in conjunction with `RemedyPlan` when creating a Hook, you need to change the usage slightly.
-
-> The following example
-
-```kotlin
-injectMember {
-    method {
-        name = "doTask"
-        emptyParam()
-    }.remedys {
-        method {
-            name = "doTask"
-            paramCount(0..1)
-        }
-        method {
-            name = "doTask"
-            paramCount(1..2)
-        }
-    }.all()
-    beforeHook {}
-    afterHook {}
-}
-```
-
 ::: tip
-
-When creating a Hook, please refer to [MethodFinder.Process.all](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#all-method), [ConstructorFinder.Process.all]( ../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#all-method) methods.
 
 For more functions, please refer to [MethodFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/MethodFinder#remedyplan-class), [ConstructorFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/ConstructorFinder#remedyplan-class), [FieldFinder.RemedyPlan](../public/com/highcapable/yukihookapi/hook/core/finder/members/FieldFinder#remedyplan-class) .
 

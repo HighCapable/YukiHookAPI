@@ -51,52 +51,28 @@ object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadZygote {
-            ActivityClass.hook {
-                injectMember {
-                    method {
-                        name = "onCreate"
-                        param(BundleClass)
-                    }
-                    beforeHook {
-                        // Your code here.
-                    }
-                    afterHook {
-                        // Your code here.
-                    }
+            ActivityClass.method {
+                name = "onCreate"
+                param(BundleClass)
+            }.hook {
+                before {
+                  // Your code here.
                 }
-            }
-            resources().hook {
-                injectResource {
-                    conditions {
-                        name = "sym_def_app_icon"
-                        mipmap()
-                    }
-                    replaceToModuleResource(R.mipmap.ic_launcher)
+                after {
+                  // Your code here.
                 }
             }
         }
         loadApp(name = "com.android.browser") {
-            ActivityClass.hook {
-                injectMember {
-                    method {
-                        name = "onCreate"
-                        param(BundleClass)
-                    }
-                    beforeHook {
-                        // Your code here.
-                    }
-                    afterHook {
-                        // Your code here.
-                    }
+            ActivityClass.method {
+                name = "onCreate"
+                param(BundleClass)
+            }.hook {
+                before {
+                  // Your code here.
                 }
-            }
-            resources().hook {
-                injectResource {
-                    conditions {
-                        name = "ic_launcher"
-                        mipmap()
-                    }
-                    replaceToModuleResource(R.mipmap.ic_launcher)
+                after {
+                  // Your code here.
                 }
             }
         }
@@ -108,16 +84,12 @@ object HookEntry : IYukiHookXposedInit {
 ::: code-group-item Rovo89 Xposed API
 
 ```kotlin
-class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
+class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
     private lateinit var moduleResources: XModuleResources
 
     override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam) {
         moduleResources = XModuleResources.createInstance(sparam.modulePath, null)
-        XResources.setSystemWideReplacement(
-            "android", "mipmap", "sym_def_app_icon",
-            moduleResources.fwd(R.mipmap.ic_launcher)
-        )
         XposedHelpers.findAndHookMethod(
                 Activity::class.java.name,
                 null, "onCreate",
@@ -148,14 +120,6 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInit
                         // Your code here.
                     }
                 })
-    }
-
-    override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam) {
-        if (resparam.packageName == "com.android.browser")
-            resparam.res.setReplacement(
-                "com.android.browser", "mipmap", "ic_launcher",
-                moduleResources.fwd(R.mipmap.ic_launcher)
-            )
     }
 }
 ```

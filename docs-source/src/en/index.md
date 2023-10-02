@@ -29,27 +29,15 @@ footer: MIT License | Copyright (C) 2019-2023 HighCapable
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.hook {
-        injectMember {
-            method {
-                name = "onCreate"
-                param(BundleClass)
-            }
-            beforeHook {
-                // Your code here.
-            }
-            afterHook {
-                // Your code here.
-            }
+    ActivityClass.method {
+        name = "onCreate"
+        param(BundleClass)
+    }.hook {
+        before {
+          // Your code here.
         }
-    }
-    resources().hook {
-        injectResource {
-            conditions {
-                name = "ic_launcher"
-                mipmap()
-            }
-            replaceToModuleResource(R.mipmap.ic_launcher)
+        after {
+          // Your code here.
         }
     }
 }

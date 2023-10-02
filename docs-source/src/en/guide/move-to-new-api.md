@@ -29,18 +29,16 @@ override fun onHook() = encase {
     appContext
     // Hook specified app
     loadApp(name = "com.demo.test") {
-        // Class Hook
-        "com.demo.test.TestClass".toClass().hook {
-            injectMember {
-                method {
-                    name = "test"
-                    param(BooleanType)
-                }
-                afterHook {
+        // Member Hook
+        "com.demo.test.TestClass".toClass()
+            .method {
+                name = "test"
+                param(BooleanType)
+            }.hook {
+                after {
                     // ...
                 }
             }
-        }
         // Resources Hook (fixed usage)
         resources().hook {
             injectResource {
@@ -107,7 +105,7 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 
 #### Before/After Hook
 
-`YukiHookAPI` also implements the **lambda** method body `this` usage for `HookParam`, and the `HookParam` object can be obtained globally in the method bodies such as `beforeHook` and `afterHook`.
+`YukiHookAPI` also implements the **lambda** method body `this` usage for `HookParam`, and the `HookParam` object can be obtained globally in the method bodies such as `before` and `after`.
 
 > The API function differences are compared as follows
 
@@ -115,7 +113,7 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 ::: code-group-item Yuki Hook API
 
 ```kotlin
-afterHook {
+after {
     // Get the current Hook instance
     instance
     // Get the Class instance of the current Hook
