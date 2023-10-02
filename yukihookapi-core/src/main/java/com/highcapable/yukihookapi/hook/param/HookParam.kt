@@ -168,7 +168,7 @@ class HookParam private constructor(
      *
      * 使用 [throwable] 获取当前设置的方法调用抛出异常
      *
-     * - 仅会在回调方法的 [MemberHookCreator.beforeHook] or [MemberHookCreator.afterHook] 中生效
+     * - 仅会在回调方法的 [MemberHookCreator.before] or [MemberHookCreator.after] 中生效
      *
      * - 设置后会同时执行 [resultNull] 方法并将异常抛出给当前 Hook APP
      * @return [Throwable] or null

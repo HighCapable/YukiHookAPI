@@ -43,11 +43,16 @@ import com.highcapable.yukihookapi.hook.bean.HookResources
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
+import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
+import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.yukihookapi.hook.param.annotation.LegacyHookApi
+import com.highcapable.yukihookapi.hook.param.annotation.LegacyResourcesHook
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.factory.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
@@ -57,6 +62,9 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
+import java.lang.reflect.Constructor
+import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
@@ -210,6 +218,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * 请调用 [HookResources.hook] 方法开始 Hook
      * @return [HookResources]
      */
+    @LegacyResourcesHook
     fun resources() = HookResources(wrapper?.appResources)
 
     /** 刷新当前 Xposed 模块自身 [Resources] */
@@ -590,6 +599,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
+    @LegacyHookApi
     @Deprecated(message = "不再推荐使用此方法", ReplaceWith("this.toClass().hook(initiate = initiate)"))
     inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit) = toClass().hook(initiate = initiate)
 
@@ -603,6 +613,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
+    @LegacyHookApi
     inline fun Class<*>.hook(isForceUseAbsolute: Boolean = false, initiate: YukiMemberHookCreator.() -> Unit) = when {
         isForceUseAbsolute -> toHookClass()
         name.hasClass() -> name.toClass().toHookClass()
@@ -616,6 +627,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
+    @LegacyHookApi
     inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass(appClassLoader).hook(initiate)
 
     /**
@@ -623,15 +635,99 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.Result]
      */
+    @LegacyHookApi
     inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit) =
         YukiMemberHookCreator(packageParam = this@PackageParam, hookClass = this).apply(initiate).hook()
 
     /**
+     * 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    inline fun Member.hook(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) = listOf(this).baseHook(initiate)
+
+    /**
+     * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    inline fun BaseFinder.BaseResult.hook(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) = baseHook(isMultiple = false, initiate)
+
+    /**
+     * 直接 Hook 方法、构造方法 (批量)
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    inline fun Array<Member>.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) = toList().baseHook(initiate)
+
+    /**
+     * 直接 Hook 方法、构造方法 (批量)
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    inline fun List<Member>.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) = baseHook(initiate)
+
+    /**
+     * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法 (批量)
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    inline fun BaseFinder.BaseResult.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) = baseHook(isMultiple = true, initiate)
+
+    /**
+     * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param isMultiple 是否为多重查找
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    private inline fun BaseFinder.BaseResult.baseHook(isMultiple: Boolean, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) =
+        when (this) {
+            is DexClassFinder.Result ->
+                error("Use of searchClass { ... }.hook { ... } is an error, please use like searchClass { ... }.get()?.hook { ... }")
+            is ConstructorFinder.Result -> {
+                val members = if (isMultiple) giveAll()
+                else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
+                YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, initiate)
+            }
+            is MethodFinder.Result -> {
+                val members = if (isMultiple) giveAll()
+                else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
+                YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, initiate)
+            }
+            else -> error("This type [$this] not support to hook, supported are Constructors and Methods")
+        }
+
+    /**
+     * 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    private inline fun List<Member>.baseHook(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) =
+        YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, onEach {
+            if (it !is Constructor<*> && it !is Method) error("This type [$it] not support to hook, supported are Constructors and Methods")
+        }, initiate)
+
+    /**
      * Hook APP 的 Resources
      *
-     * - 请注意你需要确保当前 Hook Framework 支持且 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用
+     * - 此功能将不再默认启用 - 如需启用 - 请手动设置 [InjectYukiHookWithXposed.isUsingResourcesHook]
      * @param initiate 方法体
      */
+    @LegacyResourcesHook
     inline fun HookResources.hook(initiate: YukiResourcesHookCreator.() -> Unit) =
         YukiResourcesHookCreator(packageParam = this@PackageParam, hookResources = this).apply(initiate).hook()
 
@@ -640,6 +736,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
      * @return [HookClass]
      */
+    @LegacyHookApi
     internal fun VariousClass.toHookClass(loader: ClassLoader? = null) =
         runCatching { get(loader).toHookClass() }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
 
@@ -647,6 +744,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * [Class] 转换为 [HookClass]
      * @return [HookClass]
      */
+    @LegacyHookApi
     internal fun Class<*>.toHookClass() = HookClass(instance = this, name)
 
     /**

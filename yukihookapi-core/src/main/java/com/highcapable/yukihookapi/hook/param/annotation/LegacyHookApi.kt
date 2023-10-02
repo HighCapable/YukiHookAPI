@@ -23,39 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is created by fankes on 2022/2/9.
+ * This file is created by fankes on 2023/10/3.
  */
-package com.highcapable.yukihookapi.hook.bean
+package com.highcapable.yukihookapi.hook.param.annotation
 
+@RequiresOptIn(message = "这种方式将不再被推荐且将在 2.x.x 版本完全移除，建议迁移到使用 Member 创建 Hook 的新写法", level = RequiresOptIn.Level.WARNING)
+@MustBeDocumented
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
 /**
- * 创建一个当前 Hook 的 [Class] 接管类
- * @param instance 实例
- * @param name 完整名称
- * @param throwable 异常
+ * 标记需要 [RequiresOptIn] 的功能
  */
-class HookClass internal constructor(
-    internal var instance: Class<*>? = null,
-    internal var name: String,
-    internal var throwable: Throwable? = null
-) {
-
-    internal companion object {
-
-        /** 占位符 [Class] 名称 */
-        private const val PLACEHOLDER_CLASS_NAME = "placeholder_hook_class"
-
-        /**
-         * 创建占位符 [HookClass]
-         * @return [HookClass]
-         */
-        internal fun createPlaceholder() = HookClass(name = PLACEHOLDER_CLASS_NAME, throwable = Throwable("There is no hook class instance"))
-    }
-
-    /**
-     * 是否为占位符 [HookClass]
-     * @return [Boolean]
-     */
-    internal val isPlaceholder get() = name == PLACEHOLDER_CLASS_NAME
-
-    override fun toString() = "[class] $name [throwable] $throwable [instance] $instance"
-}
+annotation class LegacyHookApi

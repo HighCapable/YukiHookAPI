@@ -25,7 +25,10 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress(
+    "unused", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter",
+    "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "OPT_IN_USAGE"
+)
 
 package com.highcapable.yukihookapi.hook.core
 
@@ -55,6 +58,7 @@ import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.param.annotation.LegacyHookApi
 import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.type.java.JavaClass
 import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
@@ -79,6 +83,27 @@ import java.lang.reflect.Method
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
 class YukiMemberHookCreator internal constructor(private val packageParam: PackageParam, private val hookClass: HookClass) {
+
+    internal companion object {
+
+        /**
+         * 创建 [YukiMemberHookCreator.MemberHookCreator]
+         * @param packageParam 需要传入 [PackageParam] 实现方法调用
+         * @param members 要指定的 [Member] 数组
+         * @param initiate 方法体
+         * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+         */
+        internal inline fun createMemberHook(
+            packageParam: PackageParam,
+            members: List<Member>,
+            initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
+        ): YukiMemberHookCreator.MemberHookCreator.Result {
+            val creator = YukiMemberHookCreator(packageParam, HookClass.createPlaceholder())
+            val result = creator.injectMember { if (members.isNotEmpty()) members(*members.toTypedArray()); apply(initiate) }
+            creator.hook()
+            return result
+        }
+    }
 
     /** 默认 Hook 回调优先级 */
     val PRIORITY_DEFAULT = 0x0
@@ -120,10 +145,12 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      *
      * - 不推荐直接使用 - 万一得不到 [Class] 对象则会无法处理异常导致崩溃
      * @return [Class]
-     * @throws IllegalStateException 如果当前 [Class] 未被正确装载
+     * @throws IllegalStateException 如果当前 [Class] 未被正确装载或为 [HookClass.isPlaceholder]
      */
     val instanceClass
-        get() = hookClass.instance ?: error("Cannot get hook class \"${hookClass.name}\" cause ${hookClass.throwable?.message}")
+        get() = if (hookClass.isPlaceholder)
+            error("This hook instance is create by Members, not support any hook class instance")
+        else hookClass.instance ?: error("Cannot get hook class \"${hookClass.name}\" cause ${hookClass.throwable?.message}")
 
     /**
      * 注入要 Hook 的 [Method]、[Constructor]
@@ -132,6 +159,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      * @param initiate 方法体
      * @return [MemberHookCreator.Result]
      */
+    @LegacyHookApi
     inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreator.() -> Unit) =
         MemberHookCreator(priority, tag).apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
@@ -161,15 +189,16 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         preHookMembers.isEmpty() -> Result().also { YLog.innerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
         else -> Result().await {
             when {
-                isDisableCreatorRunHook.not() && hookClass.instance != null -> runCatching {
-                    hookClass.instance?.checkingDangerous()
-                    it.onPrepareHook?.invoke()
-                    preHookMembers.forEach { (_, m) -> m.hook() }
-                }.onFailure {
-                    if (onHookClassNotFoundFailureCallback == null)
-                        YLog.innerE(msg = "Hook initialization failed because got an Exception", e = it)
-                    else onHookClassNotFoundFailureCallback?.invoke(it)
-                }
+                isDisableCreatorRunHook.not() && (hookClass.instance != null || hookClass.isPlaceholder) ->
+                    runCatching {
+                        hookClass.instance?.checkingDangerous()
+                        it.onPrepareHook?.invoke()
+                        preHookMembers.forEach { (_, m) -> m.hook() }
+                    }.onFailure {
+                        if (onHookClassNotFoundFailureCallback == null)
+                            YLog.innerE(msg = "Hook initialization failed because got an Exception", e = it)
+                        else onHookClassNotFoundFailureCallback?.invoke(it)
+                    }
                 isDisableCreatorRunHook.not() && hookClass.instance == null ->
                     if (onHookClassNotFoundFailureCallback == null)
                         YLog.innerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
@@ -240,19 +269,19 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /** 是否已经执行 Hook */
         private var isHooked = false
 
-        /** [beforeHook] 回调方法体 ID */
+        /** [before] 回调方法体 ID */
         private val beforeHookId = RandomSeed.createString()
 
-        /** [afterHook] 回调方法体 ID */
+        /** [after] 回调方法体 ID */
         private val afterHookId = RandomSeed.createString()
 
         /** [replaceAny]、[replaceUnit] 回调方法体 ID */
         private val replaceHookId = RandomSeed.createString()
 
-        /** [beforeHook] 回调 */
+        /** [before] 回调 */
         private var beforeHookCallback: (HookParam.() -> Unit)? = null
 
-        /** [afterHook] 回调 */
+        /** [after] 回调 */
         private var afterHookCallback: (HookParam.() -> Unit)? = null
 
         /** [replaceAny]、[replaceUnit] 回调 */
@@ -421,6 +450,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param initiate 方法体
          * @return [MemberHookCreator.Result]
          */
+        @LegacyHookApi
         inline fun HookParam.injectMember(
             priority: Int = PRIORITY_DEFAULT,
             tag: String = "InnerDefault",
@@ -434,7 +464,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param initiate [HookParam] 方法体
          * @return [HookCallback]
          */
-        fun beforeHook(initiate: HookParam.() -> Unit): HookCallback {
+        fun before(initiate: HookParam.() -> Unit): HookCallback {
             isReplaceHookMode = false
             beforeHookCallback = initiate
             return HookCallback()
@@ -447,16 +477,38 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param initiate [HookParam] 方法体
          * @return [HookCallback]
          */
-        fun afterHook(initiate: HookParam.() -> Unit): HookCallback {
+        fun after(initiate: HookParam.() -> Unit): HookCallback {
             isReplaceHookMode = false
             afterHookCallback = initiate
             return HookCallback()
         }
 
         /**
+         * 在 [Member] 执行完成前 Hook
+         *
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         *
+         * - 请现在迁移到 [before]
+         * @return [HookCallback]
+         */
+        @Deprecated(message = "请使用新的命名方法", ReplaceWith("before(initiate)"))
+        fun beforeHook(initiate: HookParam.() -> Unit) = before(initiate)
+
+        /**
+         * 在 [Member] 执行完成后 Hook
+         *
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         *
+         * - 请现在迁移到 [after]
+         * @return [HookCallback]
+         */
+        @Deprecated(message = "请使用新的命名方法", ReplaceWith("after(initiate)"))
+        fun afterHook(initiate: HookParam.() -> Unit) = after(initiate)
+
+        /**
          * 拦截并替换此 [Member] 内容 - 给出返回值
          *
-         * - 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [before]、[after] 同时使用
          * @param initiate [HookParam] 方法体
          */
         fun replaceAny(initiate: HookParam.() -> Any?) {
@@ -467,7 +519,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 拦截并替换此 [Member] 内容 - 没有返回值 ([Unit])
          *
-         * - 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [before]、[after] 同时使用
          * @param initiate [HookParam] 方法体
          */
         fun replaceUnit(initiate: HookParam.() -> Unit) {
@@ -478,7 +530,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /**
          * 拦截并替换 [Member] 返回值
          *
-         * - 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [before]、[after] 同时使用
          * @param any 要替换为的返回值对象
          */
         fun replaceTo(any: Any?) {
@@ -491,7 +543,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          *
          * - 确保替换 [Member] 的返回对象为 [Boolean]
          *
-         * - 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [before]、[after] 同时使用
          */
         fun replaceToTrue() {
             isReplaceHookMode = true
@@ -503,7 +555,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          *
          * - 确保替换 [Member] 的返回对象为 [Boolean]
          *
-         * - 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [before]、[after] 同时使用
          */
         fun replaceToFalse() {
             isReplaceHookMode = true
@@ -517,7 +569,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          *
          * - 注意：例如 [Int]、[Long]、[Boolean] 常量返回值的 [Member] 一旦被设置为 null 可能会造成 Hook APP 抛出异常
          *
-         * - 不可与 [beforeHook]、[afterHook] 同时使用
+         * - 不可与 [before]、[after] 同时使用
          */
         fun intercept() {
             isReplaceHookMode = true
@@ -542,7 +594,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         internal fun hook() {
             if (HookApiCategoryHelper.hasAvailableHookApi.not() || isHooked || isDisableMemberRunHook) return
             isHooked = true
-            if (hookClass.instance == null) {
+            if (hookClass.instance == null && hookClass.isPlaceholder.not()) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
                     onHookingFailureCallback?.invoke(it)
                     onAllFailureCallback?.invoke(it)
@@ -572,10 +624,16 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                 onHookingFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
                 if (isNotIgnoredNoSuchMemberFailure) YLog.innerE(
-                    msg = (if (isHookMemberSetup)
-                        "Hooked Member with a finding error by $hookClass [$tag]"
-                    else "Hooked Member cannot be non-null by $hookClass [$tag]"),
-                    e = findingThrowable ?: it
+                    msg = when {
+                        hookClass.isPlaceholder ->
+                            if (isHookMemberSetup)
+                                "Hooked Member with a finding error [$tag]"
+                            else "Hooked Member cannot be null [$tag]"
+                        else ->
+                            if (isHookMemberSetup)
+                                "Hooked Member with a finding error by $hookClass [$tag]"
+                            else "Hooked Member cannot be null by $hookClass [$tag]"
+                    }, e = findingThrowable ?: it
                 )
             }
         }
@@ -663,7 +721,9 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param member 异常 [Member] - 可空
          */
         private fun hookErrorMsg(e: Throwable, member: Member? = null) =
-            YLog.innerE("Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]", e)
+            if (hookClass.isPlaceholder)
+                YLog.innerE("Try to hook ${member?.let { "[$it]" } ?: "nothing"} got an Exception [$tag]", e)
+            else YLog.innerE("Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception [$tag]", e)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截
@@ -677,7 +737,10 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          */
         internal val isNotIgnoredNoSuchMemberFailure get() = onNoSuchMemberFailureCallback == null && isNotIgnoredHookingFailure
 
-        override fun toString() = "[tag] $tag [priority] $priority [class] $hookClass [members] $members"
+        override fun toString() =
+            if (hookClass.isPlaceholder)
+                "[tag] $tag [priority] $priority [members] $members"
+            else "[tag] $tag [priority] $priority [class] $hookClass [members] $members"
 
         /**
          * Hook 方法体回调实现类
