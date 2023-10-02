@@ -56,12 +56,12 @@ import de.robv.android.xposed.IXposedHookInitPackageResources
  * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
  * @param modulePackageName 模块包名 - 不填默认自动生成
  * @param entryClassName 定义 [YukiHookAPI] 自动生成 Xposed 模块入口类的名称 - 不填默认使用 "入口类名_YukiHookXposedInit" 进行生成
- * @param isUsingResourcesHook 是否启用 Resources Hook (资源钩子) - 启用后将自动注入 [IXposedHookInitPackageResources] - 默认是
+ * @param isUsingResourcesHook 是否启用 Resources Hook (资源钩子) - 启用后将自动注入 [IXposedHookInitPackageResources] - 默认否
  */
 @Target(AnnotationTarget.CLASS)
 annotation class InjectYukiHookWithXposed(
     val sourcePath: String = "src/main",
     val modulePackageName: String = "",
     val entryClassName: String = "",
-    val isUsingResourcesHook: Boolean = true
+    val isUsingResourcesHook: Boolean = false
 )
