@@ -44,12 +44,12 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.TransactionTooLargeException
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.log.data.YLogData
 import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.channel.annotation.SendTooLargeChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataWrapper
 import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
@@ -343,12 +343,12 @@ class YukiHookDataChannel private constructor() {
          *
          * 仅会在每次调用时生效 - 下一次没有调用此方法则此功能将被自动关闭
          *
-         * 你还需要在整个调用域中声明注解 [CauseProblemsApi] 以消除警告
+         * 你还需要在整个调用域中声明注解 [SendTooLargeChannelData] 以消除警告
          *
          * - 若你不知道允许此功能会带来何种后果 - 请勿使用
          * @return [NameSpace]
          */
-        @CauseProblemsApi
+        @SendTooLargeChannelData
         fun allowSendTooLargeData(): NameSpace {
             isAllowSendTooLargeData = true
             return this

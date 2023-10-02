@@ -134,7 +134,7 @@ fun allowSendTooLargeData(): NameSpace
 
 仅会在每次调用时生效，下一次没有调用此方法则此功能将被自动关闭。
 
-你还需要在整个调用域中声明注解 `CauseProblemsApi` 以消除警告。
+你还需要在整个调用域中声明注解 `SendTooLargeChannelData` 以消除警告。
 
 ::: danger
 

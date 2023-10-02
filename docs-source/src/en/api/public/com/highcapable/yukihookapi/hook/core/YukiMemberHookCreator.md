@@ -170,7 +170,7 @@ fun useDangerousOperation(option: String)
 
 请在 `option` 中键入 `Yes do as I say!` 代表你同意允许所有危险行为。
 
-你还需要在整个调用域中声明注解 `CauseProblemsApi` 以消除警告。
+你还需要在整个调用域中声明注解 `DangerousHookOperation` 以消除警告。
 
 若你只需要 Hook `ClassLoader` 的 `loadClass` 方法，请参考 [ClassLoader.onLoadClass](../factory/ReflectionFactory#classloader-onloadclass-ext-method)。
 

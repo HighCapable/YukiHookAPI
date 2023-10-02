@@ -23,33 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This file is created by fankes on 2022/4/3.
+ * This file is created by fankes on 2023/10/3.
  */
-@file:Suppress("unused")
+package com.highcapable.yukihookapi.hook.xposed.channel.annotation
 
-package com.highcapable.yukihookapi.annotation
-
-@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
+@RequiresOptIn(message = "这是一个危险的操作，允许发送过大的数据可能导致宿主或模块崩溃", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
-@Target(
-    AnnotationTarget.CLASS,
-    AnnotationTarget.CONSTRUCTOR,
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.ANNOTATION_CLASS,
-    AnnotationTarget.PROPERTY,
-    AnnotationTarget.FIELD,
-    AnnotationTarget.LOCAL_VARIABLE,
-    AnnotationTarget.VALUE_PARAMETER,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER,
-    AnnotationTarget.TYPEALIAS
-)
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)
 /**
- * - 标记为不规范使用可能会引发问题的 API
- *
- * 此功能用于规范代码调用域 - 非调用域内的 API 将会在 IDE 中显示警告
- *
- * 此功能除继承和接口外不应该在这里被调用
+ * 标记需要 [RequiresOptIn] 的功能
  */
-annotation class CauseProblemsApi
+annotation class SendTooLargeChannelData

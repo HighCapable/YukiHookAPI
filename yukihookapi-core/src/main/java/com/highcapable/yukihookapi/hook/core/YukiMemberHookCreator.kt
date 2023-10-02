@@ -30,8 +30,8 @@
 package com.highcapable.yukihookapi.hook.core
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.CauseProblemsApi
 import com.highcapable.yukihookapi.hook.bean.HookClass
+import com.highcapable.yukihookapi.hook.core.annotation.DangerousHookOperation
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
@@ -140,12 +140,12 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      *
      * 请在 [option] 中键入 "Yes do as I say!" 代表你同意允许所有危险行为
      *
-     * 你还需要在整个调用域中声明注解 [CauseProblemsApi] 以消除警告
+     * 你还需要在整个调用域中声明注解 [DangerousHookOperation] 以消除警告
      *
      * - 若你不知道允许此功能会带来何种后果 - 请勿使用
      * @param option 操作选项内容
      */
-    @CauseProblemsApi
+    @DangerousHookOperation
     fun useDangerousOperation(option: String) {
         hookOption = option
     }
