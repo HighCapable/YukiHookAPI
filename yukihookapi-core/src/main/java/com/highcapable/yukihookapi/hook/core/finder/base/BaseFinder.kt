@@ -136,5 +136,5 @@ abstract class BaseFinder {
      *
      * - 此功能交由方法体自动完成 - 你不应该手动继承此接口
      */
-    internal interface BaseResult
+    interface BaseResult
 }
