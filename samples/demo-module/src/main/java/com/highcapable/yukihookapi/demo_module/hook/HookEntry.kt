@@ -208,7 +208,7 @@ object HookEntry : IYukiHookXposedInit {
                 }
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
-                findClass(name = "$packageName.ui.MainActivity").hook {
+                "$packageName.ui.MainActivity".toClass().hook {
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
                     injectMember {
@@ -335,7 +335,7 @@ object HookEntry : IYukiHookXposedInit {
                 }
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
-                findClass(name = "$packageName.test.Main").hook {
+                "$packageName.test.Main".toClass().hook {
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
                     injectMember {
