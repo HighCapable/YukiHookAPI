@@ -25,11 +25,11 @@
  *
  * This file is created by fankes on 2023/10/3.
  */
-package com.highcapable.yukihookapi.hook.param.annotation
+package com.highcapable.yukihookapi.hook.core.annotation
 
 @RequiresOptIn(message = "这种方式将不再被推荐且将在 2.x.x 版本完全移除，建议迁移到使用 Member 创建 Hook 的新写法", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.BINARY)
 /**
  * 标记需要 [RequiresOptIn] 的功能

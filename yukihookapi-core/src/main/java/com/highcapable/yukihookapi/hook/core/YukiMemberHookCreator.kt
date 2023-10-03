@@ -35,6 +35,7 @@ package com.highcapable.yukihookapi.hook.core
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.annotation.DangerousHookOperation
+import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
@@ -56,7 +57,6 @@ import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.annotation.LegacyHookApi
 import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.type.java.JavaClass
 import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
@@ -167,6 +167,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      * @return [Class]
      * @throws IllegalStateException 如果当前 [Class] 未被正确装载或为 [HookClass.isPlaceholder]
      */
+    @LegacyHookApi
     val instanceClass
         get() = if (hookClass.isPlaceholder)
             error("This hook instance is create by Members, not support any hook class instance")

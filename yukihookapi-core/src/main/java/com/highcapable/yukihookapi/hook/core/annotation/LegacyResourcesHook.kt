@@ -25,11 +25,11 @@
  *
  * This file is created by fankes on 2023/10/3.
  */
-package com.highcapable.yukihookapi.hook.param.annotation
+package com.highcapable.yukihookapi.hook.core.annotation
 
 @RequiresOptIn(message = "Resources Hook 功能将在 2.x.x 版本完全移除 (如果必须使用，你可以继续使用 1.x.x 版本)", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.BINARY)
 /**
  * 标记需要 [RequiresOptIn] 的功能

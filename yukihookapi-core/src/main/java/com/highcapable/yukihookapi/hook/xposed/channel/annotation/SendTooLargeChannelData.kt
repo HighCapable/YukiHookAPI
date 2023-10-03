@@ -29,7 +29,7 @@ package com.highcapable.yukihookapi.hook.xposed.channel.annotation
 
 @RequiresOptIn(message = "这是一个危险的操作，允许发送过大的数据可能导致宿主或模块崩溃", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.BINARY)
 /**
  * 标记需要 [RequiresOptIn] 的功能

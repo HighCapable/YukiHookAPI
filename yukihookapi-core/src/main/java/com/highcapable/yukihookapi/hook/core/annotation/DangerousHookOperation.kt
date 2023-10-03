@@ -29,7 +29,7 @@ package com.highcapable.yukihookapi.hook.core.annotation
 
 @RequiresOptIn(message = "允许 Hook 过程中的所有危险行为可能导致意料之外的情况发生", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.BINARY)
 /**
  * 标记需要 [RequiresOptIn] 的功能
