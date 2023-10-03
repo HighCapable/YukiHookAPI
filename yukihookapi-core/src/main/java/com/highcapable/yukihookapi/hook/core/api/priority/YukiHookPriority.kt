@@ -30,7 +30,7 @@ package com.highcapable.yukihookapi.hook.core.api.priority
 /**
  * Hook 回调优先级配置类
  */
-internal enum class YukiHookPriority {
+enum class YukiHookPriority {
 
     /** 默认 Hook 回调优先级 */
     DEFAULT,

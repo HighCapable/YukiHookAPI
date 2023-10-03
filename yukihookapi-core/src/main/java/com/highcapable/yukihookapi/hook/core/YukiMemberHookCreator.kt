@@ -87,28 +87,51 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * 创建 [YukiMemberHookCreator.MemberHookCreator]
          * @param packageParam 需要传入 [PackageParam] 实现方法调用
          * @param members 要指定的 [Member] 数组
+         * @param priority Hook 优先级
          * @param initiate 方法体
          * @return [YukiMemberHookCreator.MemberHookCreator.Result]
          */
         internal inline fun createMemberHook(
             packageParam: PackageParam,
             members: List<Member>,
+            priority: YukiHookPriority,
             initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
         ): YukiMemberHookCreator.MemberHookCreator.Result {
             val creator = YukiMemberHookCreator(packageParam, HookClass.createPlaceholder())
-            val result = creator.injectMember { if (members.isNotEmpty()) members(*members.toTypedArray()); apply(initiate) }
+            val result = creator.injectMember(priority) { if (members.isNotEmpty()) members(*members.toTypedArray()); apply(initiate) }
             creator.hook()
             return result
         }
     }
 
-    /** 默认 Hook 回调优先级 */
+    /**
+     * 默认 Hook 回调优先级
+     *
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - 请现在迁移到 [YukiHookPriority]
+     */
+    @Deprecated(message = "请使用新方式来实现此功能")
     val PRIORITY_DEFAULT = 0x0
 
-    /** 延迟回调 Hook 方法结果 */
+    /**
+     * 延迟回调 Hook 方法结果
+     *
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - 请现在迁移到 [YukiHookPriority]
+     */
+    @Deprecated(message = "请使用新方式来实现此功能")
     val PRIORITY_LOWEST = 0x1
 
-    /** 更快回调 Hook 方法结果 */
+    /**
+     * 更快回调 Hook 方法结果
+     *
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - 请现在迁移到 [YukiHookPriority]
+     */
+    @Deprecated(message = "请使用新方式来实现此功能")
     val PRIORITY_HIGHEST = 0x2
 
     /** Hook 操作选项内容 */
@@ -151,11 +174,12 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
 
     /**
      * 注入要 Hook 的 [Method]、[Constructor]
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
      * @return [MemberHookCreator.Result]
      */
     @LegacyHookApi
-    inline fun injectMember(priority: Int = PRIORITY_DEFAULT, initiate: MemberHookCreator.() -> Unit) =
+    inline fun injectMember(priority: YukiHookPriority = YukiHookPriority.DEFAULT, initiate: MemberHookCreator.() -> Unit) =
         MemberHookCreator(priority).apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
     /**
@@ -166,10 +190,11 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      * - 请现在迁移到另一个 [injectMember]
      * @return [MemberHookCreator.Result]
      */
+    @Suppress("DEPRECATION")
     @LegacyHookApi
     @Deprecated(message = "请使用新方式来实现 Hook 功能", ReplaceWith("injectMember(initiate = initiate)"))
     inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreator.() -> Unit) =
-        injectMember(priority, initiate)
+        injectMember(initiate = initiate)
 
     /**
      * 允许 Hook 过程中的所有危险行为
@@ -251,24 +276,12 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     }
 
     /**
-     * 转换到 [YukiHookPriority] 优先级
-     * @return [YukiHookPriority]
-     * @throws IllegalStateException 如果优先级不为 [PRIORITY_DEFAULT]、[PRIORITY_LOWEST]、[PRIORITY_HIGHEST]
-     */
-    private fun Int.toPriority() = when (this) {
-        PRIORITY_DEFAULT -> YukiHookPriority.DEFAULT
-        PRIORITY_LOWEST -> YukiHookPriority.LOWEST
-        PRIORITY_HIGHEST -> YukiHookPriority.HIGHEST
-        else -> error("Invalid Hook Priority $this")
-    }
-
-    /**
      * Hook 核心功能实现类
      *
      * 查找和处理需要 Hook 的 [Method]、[Constructor]
      * @param priority Hook 优先级
      */
-    inner class MemberHookCreator internal constructor(private val priority: Int) {
+    inner class MemberHookCreator internal constructor(private val priority: YukiHookPriority) {
 
         /** Hook 结果实例 */
         private var result: Result? = null
@@ -430,6 +443,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          *
          * - 嵌套 Hook 功能已弃用
          */
+        @Suppress("DEPRECATION")
         @LegacyHookApi
         @Deprecated(message = "嵌套 Hook 功能已弃用")
         inline fun HookParam.injectMember(
@@ -625,7 +639,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          */
         private fun Member.hook(): YukiHookResult {
             /** 定义替换 Hook 回调方法体 */
-            val replaceMent = object : YukiMemberReplacement(priority.toPriority()) {
+            val replaceMent = object : YukiMemberReplacement(priority) {
                 override fun replaceHookedMember(param: Param) =
                     HookParam.create(this@YukiMemberHookCreator, replaceHookId, param).let { assign ->
                         runCatching {
@@ -645,7 +659,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             }
 
             /** 定义前后 Hook 回调方法体 */
-            val beforeAfterHook = object : YukiMemberHook(priority.toPriority()) {
+            val beforeAfterHook = object : YukiMemberHook(priority) {
                 override fun beforeHookedMember(param: Param) {
                     HookParam.create(this@YukiMemberHookCreator, beforeHookId, param).also { assign ->
                         runCatching {
