@@ -42,6 +42,7 @@ import com.highcapable.yukihookapi.demo_module.hook.factory.compatStyle
 import com.highcapable.yukihookapi.demo_module.ui.MainActivity
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
 import com.highcapable.yukihookapi.hook.factory.constructor
+import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.param.annotation.LegacyResourcesHook
@@ -230,6 +231,10 @@ object HookEntry : IYukiHookXposedInit {
                         // Before hook the method
                         // 在方法执行之前拦截
                         before {
+                            // The instance is "$packageName.ui.MainActivity"
+                            // We used "apply" function on the top
+                            // 当前实例为 "$packageName.ui.MainActivity"
+                            // 我们在顶部使用了 "apply" 方法
                             field {
                                 name = "secondText"
                                 type = StringClass
