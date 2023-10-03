@@ -333,21 +333,21 @@ inline fun Class<*>.hasModifiers(conditions: ModifierConditions) = conditions(Mo
  * @param initiate 查找方法体
  * @return [FieldFinder.Result]
  */
-inline fun Class<*>.field(initiate: FieldConditions) = FieldFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.field(initiate: FieldConditions = {}) = FieldFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到方法
  * @param initiate 查找方法体
  * @return [MethodFinder.Result]
  */
-inline fun Class<*>.method(initiate: MethodConditions) = MethodFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.method(initiate: MethodConditions = {}) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
  * 查找并得到构造方法
  * @param initiate 查找方法体
  * @return [ConstructorFinder.Result]
  */
-inline fun Class<*>.constructor(initiate: ConstructorConditions = { emptyParam() }) = ConstructorFinder(classSet = this).apply(initiate).build()
+inline fun Class<*>.constructor(initiate: ConstructorConditions = {}) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
  * 获得当前 [Class] 的泛型父类
