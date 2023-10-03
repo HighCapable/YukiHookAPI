@@ -102,11 +102,7 @@ val instanceClass: Class<*>
 
 :::
 
-## injectMember <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
-```
+<h2 class="deprecated">injectMember - method</h2>
 
 **Change Records**
 
@@ -118,41 +114,23 @@ inline fun injectMember(priority: Int, tag: String, initiate: MemberHookCreator.
 
 增加 `priority` Hook 优先级
 
+`v1.2.0` `deprecated`
+
+请迁移到另一个 `injectMember`
+
+## injectMember <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+inline fun injectMember(priority: Int, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
+```
+
+**Change Records**
+
+`v1.2.0` `added`
+
 **Function Illustrate**
 
 > 注入要 Hook 的 `Method`、`Constructor`。
-
-**Function Example**
-
-你可以注入任意 `Method` 与 `Constructor`，使用 `injectMember` 即可创建一个 `Hook` 对象。
-
-> The following example
-
-```kotlin
-injectMember {
-    // Your code here.
-}
-```
-
-你还可以自定义 `tag`，方便你在调试的时候能够区分你的 `Hook` 对象。
-
-> The following example
-
-```kotlin
-injectMember(tag = "KuriharaYuki") {
-    // Your code here.
-}
-```
-
-你还可以自定义 `priority`，以控制当前 Hook 对象并列执行的优先级速度。
-
-> The following example
-
-```kotlin
-injectMember(priority = PRIORITY_HIGHEST) {
-    // Your code here.
-}
-```
 
 ## useDangerousOperation <span class="symbol">- method</span>
 
@@ -183,7 +161,7 @@ fun useDangerousOperation(option: String)
 ## MemberHookCreator <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class MemberHookCreator internal constructor(private val priority: Int, internal val tag: String)
+inner class MemberHookCreator internal constructor(private val priority: Int)
 ```
 
 **Change Records**
@@ -203,6 +181,10 @@ inner class MemberHookCreator internal constructor(private val priority: Int, in
 移除 `packageName`
 
 修正拼写错误的 **Creater** 命名到 **Creator**
+
+`v1.2.0` `modified`
+
+移除 `tag`
 
 **Function Illustrate**
 
@@ -314,11 +296,7 @@ inline fun constructor(initiate: ConstructorConditions): ConstructorFinder.Resul
 
 > 查找当前 `Class` 需要 Hook 的 `Constructor`。
 
-### HookParam.field <span class="symbol">- i-ext-method</span>
-
-```kotlin:no-line-numbers
-inline fun HookParam.field(initiate: FieldConditions): FieldFinder.Result
-```
+<h3 class="deprecated">HookParam.field - i-ext-method</h3>
 
 **Change Records**
 
@@ -328,59 +306,41 @@ inline fun HookParam.field(initiate: FieldConditions): FieldFinder.Result
 
 将方法体进行 inline
 
-**Function Illustrate**
+`v1.2.0` `removed`
 
-> 使用当前 `hookClass` 查找并得到 `Field`。
-
-### HookParam.method <span class="symbol">- i-ext-method</span>
-
-```kotlin:no-line-numbers
-inline fun HookParam.method(initiate: MethodConditions): MethodFinder.Result
-```
+<h3 class="deprecated">HookParam.method - i-ext-method</h3>
 
 **Change Records**
 
-`v1.0.2` `first`
+`v1.0.2` `added`
 
 `v1.0.80` `modified`
 
 将方法体进行 inline
 
-**Function Illustrate**
+`v1.2.0` `removed`
 
-> 使用当前 `hookClass` 查找并得到 `Method` 。
-
-### HookParam.constructor <span class="symbol">- i-ext-method</span>
-
-```kotlin:no-line-numbers
-inline fun HookParam.constructor(initiate: ConstructorConditions): ConstructorFinder.Result
-```
+<h3 class="deprecated">HookParam.constructor - i-ext-method</h3>
 
 **Change Records**
 
-`v1.0.2` `first`
+`v1.0.2` `added`
 
 `v1.0.80` `modified`
 
 将方法体进行 inline
 
-**Function Illustrate**
+`v1.2.0` `removed`
 
-> 使用当前 `hookClass` 查找并得到 `Constructor`。
-
-### HookParam.injectMember <span class="symbol">- i-ext-method</span>
-
-```kotlin:no-line-numbers
-inline fun HookParam.injectMember(priority: Int, tag: String, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
-```
+<h3 class="deprecated">HookParam.injectMember - i-ext-method</h3>
 
 **Change Records**
 
 `v1.0.88` `added`
 
-**Function Illustrate**
+`v1.2.0` `deprecated`
 
-> 注入要 Hook 的 `Method`、`Constructor` (嵌套 Hook)。
+嵌套 Hook 功能已弃用
 
 ### before <span class="symbol">- method</span>
 
