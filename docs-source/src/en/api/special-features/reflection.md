@@ -1642,11 +1642,7 @@ For more functions, please refer to [CurrentClass.generic](../public/com/highcap
 
 #### Restrictive Find Conditions
 
-::: danger
-
-In find conditions you can only use **index** function once except **order**.
-
-:::
+In find conditions you can <u>**only**</u> use `index` function once except `order`.
 
 > The following example
 
@@ -1673,11 +1669,7 @@ method {
 
 #### Necessary Find Conditions
 
-::: danger
-
 In common method find conditions, <u>**even methods without parameters need to set find conditions**</u>.
-
-:::
 
 Suppose we have the following `Class`.
 
@@ -1734,9 +1726,7 @@ In the past historical versions of the API, it was allowed to match the method w
 
 :::
 
-#### Abbreviated Find Conditions
-
-> In the construction method find conditions, <u>**constructors without parameters do not need to fill in the find conditions**</u>.
+In the find conditions for constructors, <u>**even constructors without parameters need to set find conditions**</u>.
 
 Suppose we have the following `Class`.
 
@@ -1751,7 +1741,7 @@ public class TestFoo {
 }
 ```
 
-We want to get the `public TestFoo()` constructor, which can be written as follows.
+To get the `public TestFoo()` constructor, we must write it in the following form.
 
 > The following example
 
@@ -1759,31 +1749,57 @@ We want to get the `public TestFoo()` constructor, which can be written as follo
 TestFoo::class.java.constructor { emptyParam() }
 ```
 
-The above example can successfully obtain the `public TestFoo()` constructor, but it feels a bit cumbersome.
+The above example can successfully obtain the `public TestFoo()` constructor.
 
-Unlike normal methods, since the constructor does not need to consider the `name`, when the constructor has no parameters, we can omit the `emptyParam` parameter.
+If you write `constructor()` and miss `emptyParam()`, the result found at this time will be the first one in bytecode order, <u>**may not be parameterless** </u>.
+
+::: tip Compatibility Notes
+
+In past historical versions of the API, if the constructor does not fill in any search parameters, the constructor will not be found directly. 
+
+<u>**This is a BUG and has been fixed in the latest version**</u>, please make sure you are using the latest API version.
+
+:::
+
+::: danger API Behavior Changes
+
+In **1.2.0** and later versions, the behavior of **constructor()** is no longer **constructor { emptyParam() }** but **constructor {}**, please pay attention to the behavior change reasonably adjust the find parameters.
+
+:::
+
+#### No Find Conditions
+
+Without setting find conditions, using `field()`, `constructor()`, `method()` will return all members under the current `Class`.
+
+Using `get(...)` or `give()` will only get the first bit in bytecode order.
 
 > The following example
 
 ```kotlin
-TestFoo::class.java.constructor()
+Test::class.java.field().get(...)
+Test::class.java.method().give()
+```
+
+If you want to get all members, you can use `all(...)` or `giveAll()`
+
+> The following example
+
+```kotlin
+Test::class.java.field().all(...)
+Test::class.java.method().giveAll()
 ```
 
 ::: tip Compatibility Notes
 
-In the past historical versions of the API, if the constructor does not fill in any find conditions, the constructor will not be found directly.
+In past historical versions of the API, failure to set find conditions will throw an exception.
 
-<u>**This is a bug, the latest version has been fixed**</u>, please make sure you are using the latest API version.
+This feature was added in **1.2.0** and later versions.
 
 :::
 
 #### Bytecode Type
 
-::: danger
-
-In the bytecode call result, the **cast** method can only specify the type corresponding to the bytecode.
-
-:::
+In the bytecode call result, the **cast** method can <u>**only**</u> specify the type corresponding to the bytecode.
 
 For example we want to get a field of type `Boolean` and cast it to `String`.
 

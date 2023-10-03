@@ -1583,11 +1583,7 @@ TestGeneric::class.java.generic()?.argument()?.method {
 
 #### 限制性查找条件
 
-::: danger
-
-在查找条件中，除了 **order** 你只能使用一次 **index** 功能。
-
-:::
+在查找条件中，除了 `order` 你<u>**只能**</u>使用一次 `index` 功能。
 
 > 示例如下
 
@@ -1614,11 +1610,7 @@ method {
 
 #### 必要的查找条件
 
-::: danger
-
 在普通方法查找条件中，<u>**即使是无参的方法也需要设置查找条件**</u>。
-
-:::
 
 假设我们有如下的 `Class`。
 
@@ -1675,9 +1667,7 @@ TestFoo::class.java.method {
 
 :::
 
-#### 可简写查找条件
-
-> 在构造方法查找条件中，<u>**无参的构造方法可以不需要填写查找条件**</u>。
+在构造方法查找条件中，<u>**即使是无参的构造方法也需要设置查找条件**</u>。
 
 假设我们有如下的 `Class`。
 
@@ -1692,7 +1682,7 @@ public class TestFoo {
 }
 ```
 
-我们要得到其中的 `public TestFoo()` 构造方法，可以写作如下形式。
+我们要得到其中的 `public TestFoo()` 构造方法，必须写作如下形式。
 
 > 示例如下
 
@@ -1700,15 +1690,9 @@ public class TestFoo {
 TestFoo::class.java.constructor { emptyParam() }
 ```
 
-上面的例子可以成功获取到 `public TestFoo()` 构造方法，但是感觉有一些繁琐。
+上面的例子可以成功获取到 `public TestFoo()` 构造方法。
 
-与普通方法不同，由于构造方法不需要考虑 `name` 名称，当构造方法没有参数的时候，我们可以省略 `emptyParam` 参数。
-
-> 示例如下
-
-```kotlin
-TestFoo::class.java.constructor()
-```
+如果你写作 `constructor()` 而丢失了 `emptyParam()`，此时查找到的结果会是按照字节码顺序排列的的第一位，<u>**可能并不是无参的**</u>。
 
 ::: tip 兼容性说明
 
@@ -1716,13 +1700,43 @@ TestFoo::class.java.constructor()
 
 :::
 
-#### 字节码类型
+::: danger API 行为变更
 
-::: danger
-
-在字节码调用结果中，**cast** 方法只能指定字节码对应的类型。
+在 **1.2.0** 及之后的版本中，**constructor()** 的行为不再是 **constructor { emptyParam() }** 而是 **constructor {}**，请注意行为变更合理调整查找参数。
 
 :::
+
+#### 不设置查找条件
+
+在不设置查找条件的情况下，使用 `field()`、`constructor()`、`method()` 将返回当前 `Class` 下的所有成员对象。
+
+使用 `get(...)` 或 `give()` 的方式获取将只能得到按照字节码顺序排列的的第一位。
+
+> 示例如下
+
+```kotlin
+Test::class.java.field().get(...)
+Test::class.java.method().give()
+```
+
+如果你想得到全部成员对象，你可以使用 `all(...)` 或 `giveAll()`
+
+> 示例如下
+
+```kotlin
+Test::class.java.field().all(...)
+Test::class.java.method().giveAll()
+```
+
+::: tip 兼容性说明
+
+在过往历史版本的 API 中，不设置查找条件将抛出异常，此特性在 **1.2.0** 及之后的版本中加入。
+
+:::
+
+#### 字节码类型
+
+在字节码调用结果中，**cast** 方法<u>**只能**</u>指定字节码对应的类型。
 
 例如我们想得到一个 `Boolean` 类型的变量，把他转换为 `String`。
 
