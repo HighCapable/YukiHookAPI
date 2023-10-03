@@ -438,5 +438,5 @@ class HookParam private constructor(
         override fun toString() = "Args of index $index"
     }
 
-    override fun toString() = "HookParam by $param"
+    override fun toString() = "HookParam(${super.toString()}) by $param"
 }

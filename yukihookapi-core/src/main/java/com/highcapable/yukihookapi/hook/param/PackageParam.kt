@@ -863,5 +863,5 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         }
     }
 
-    override fun toString() = "PackageParam by $wrapper"
+    override fun toString() = "PackageParam(${super.toString()}) by $wrapper"
 }
