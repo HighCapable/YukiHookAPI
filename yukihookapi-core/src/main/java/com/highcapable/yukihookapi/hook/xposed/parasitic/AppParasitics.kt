@@ -112,10 +112,13 @@ internal object AppParasitics {
     /** [ClassLoader] 监听回调数组 */
     private var classLoaderCallbacks = mutableMapOf<Int, (Class<*>) -> Unit>()
 
+    /** 当前 Hook APP (宿主) 的生命周期演绎者数组 */
+    private val appLifecycleActors = mutableMapOf<String, AppLifecycleActor>()
+
     /**
      * 当前 Hook APP (宿主) 的全局生命周期 [Application]
      *
-     * 需要 [YukiHookAPI.Configs.isEnableDataChannel] or [AppLifecycleCallback.isCallbackSetUp] 才会生效
+     * 需要 [YukiHookAPI.Configs.isEnableDataChannel] or [appLifecycleActors] 不为空才会生效
      */
     internal var hostApplication: Application? = null
 
@@ -267,36 +270,44 @@ internal object AppParasitics {
          * @param throwable 当前异常
          */
         fun YukiHookCallback.Param.throwToAppOrLogger(throwable: Throwable) {
-            if (AppLifecycleCallback.isOnFailureThrowToApp) this.throwable = throwable
+            if (AppLifecycleActor.isOnFailureThrowToApp != false) this.throwable = throwable
             else YLog.innerE("An exception occurred during AppLifecycle event", e = throwable)
         }
         /** Hook [Application] 装载方法 */
         runCatching {
-            if (AppLifecycleCallback.isCallbackSetUp) {
+            if (appLifecycleActors.isNotEmpty()) {
                 YukiHookHelper.hook(ApplicationClass.method { name = "attach"; param(ContextClass) }, object : YukiMemberHook() {
                     override fun beforeHookedMember(param: Param) {
                         runCatching {
-                            (param.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, false) }
+                            appLifecycleActors.forEach { (_, actor) ->
+                                (param.args?.get(0) as? Context?)?.also { actor.attachBaseContextCallback?.invoke(it, false) }
+                            }
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
 
                     override fun afterHookedMember(param: Param) {
                         runCatching {
-                            (param.args?.get(0) as? Context?)?.also { AppLifecycleCallback.attachBaseContextCallback?.invoke(it, true) }
+                            appLifecycleActors.forEach { (_, actor) ->
+                                (param.args?.get(0) as? Context?)?.also { actor.attachBaseContextCallback?.invoke(it, true) }
+                            }
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onTerminate" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
-                            (param.instance as? Application?)?.also { AppLifecycleCallback.onTerminateCallback?.invoke(it) }
+                            appLifecycleActors.forEach { (_, actor) ->
+                                (param.instance as? Application?)?.also { actor.onTerminateCallback?.invoke(it) }
+                            }
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
                 YukiHookHelper.hook(ApplicationClass.method { name = "onLowMemory" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
-                            (param.instance as? Application?)?.also { AppLifecycleCallback.onLowMemoryCallback?.invoke(it) }
+                            appLifecycleActors.forEach { (_, actor) ->
+                                (param.instance as? Application?)?.also { actor.onLowMemoryCallback?.invoke(it) }
+                            }
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
@@ -305,7 +316,7 @@ internal object AppParasitics {
                         runCatching {
                             val self = param.instance as? Application? ?: return
                             val type = param.args?.get(0) as? Int? ?: return
-                            AppLifecycleCallback.onTrimMemoryCallback?.invoke(self, type)
+                            appLifecycleActors.forEach { (_, actor) -> actor.onTrimMemoryCallback?.invoke(self, type) }
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
@@ -314,12 +325,12 @@ internal object AppParasitics {
                         runCatching {
                             val self = param.instance as? Application? ?: return
                             val config = param.args?.get(0) as? Configuration? ?: return
-                            AppLifecycleCallback.onConfigurationChangedCallback?.invoke(self, config)
+                            appLifecycleActors.forEach { (_, actor) -> actor.onConfigurationChangedCallback?.invoke(self, config) }
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
             }
-            if (YukiHookAPI.Configs.isEnableDataChannel || AppLifecycleCallback.isCallbackSetUp)
+            if (YukiHookAPI.Configs.isEnableDataChannel || appLifecycleActors.isNotEmpty())
                 YukiHookHelper.hook(InstrumentationClass.method { name = "callApplicationOnCreate" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
@@ -346,14 +357,16 @@ internal object AppParasitics {
                                     }
                                 }
                                 hostApplication = it
-                                AppLifecycleCallback.onCreateCallback?.invoke(it)
-                                AppLifecycleCallback.onReceiverActionsCallbacks.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
-                                    if (e.first.isNotEmpty()) IntentFilter().apply {
-                                        e.first.forEach { action -> addAction(action) }
-                                    }.registerReceiver(e.second)
+                                appLifecycleActors.forEach { (_, actor) ->
+                                    actor.onCreateCallback?.invoke(it)
+                                    actor.onReceiverActionsCallbacks.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
+                                        if (e.first.isNotEmpty()) IntentFilter().apply {
+                                            e.first.forEach { action -> addAction(action) }
+                                        }.registerReceiver(e.second)
+                                    }
+                                    actor.onReceiverFiltersCallbacks.takeIf { e -> e.isNotEmpty() }
+                                        ?.forEach { (_, e) -> e.first.registerReceiver(e.second) }
                                 }
-                                AppLifecycleCallback.onReceiverFiltersCallbacks.takeIf { e -> e.isNotEmpty() }
-                                    ?.forEach { (_, e) -> e.first.registerReceiver(e.second) }
                                 runCatching {
                                     /** 过滤系统框架与一系列服务组件包名不唯一的情况 */
                                     if (isDataChannelRegistered ||
@@ -446,15 +459,23 @@ internal object AppParasitics {
     }
 
     /**
-     * 当前 Hook APP (宿主) 的生命周期回调处理类
+     * 当前 Hook APP (宿主) 的生命周期演绎者
      */
-    internal object AppLifecycleCallback {
+    internal class AppLifecycleActor {
 
-        /** 是否已设置回调 */
-        internal var isCallbackSetUp = false
+        internal companion object {
 
-        /** 是否在发生异常时将异常抛出给宿主 */
-        internal var isOnFailureThrowToApp = true
+            /** 是否在发生异常时将异常抛出给宿主 */
+            internal var isOnFailureThrowToApp: Boolean? = null
+
+            /**
+             * 获取、创建新的 [AppLifecycleActor]
+             * @param instance 实例
+             * @return [AppLifecycleActor]
+             */
+            internal fun get(instance: Any) =
+                appLifecycleActors[instance.toString()] ?: AppLifecycleActor().apply { appLifecycleActors[instance.toString()] = this }
+        }
 
         /** [Application.attachBaseContext] 回调 */
         internal var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null

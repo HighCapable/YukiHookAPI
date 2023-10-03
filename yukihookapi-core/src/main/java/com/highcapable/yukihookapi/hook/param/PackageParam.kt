@@ -231,7 +231,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - 在 [loadZygote] 中不会被装载 - 仅会在 [loadSystem]、[loadApp] 中装载
      *
      * - 作为 Hook API 装载时请使用原生的 [Application] 实现生命周期监听
-     * @param isOnFailureThrowToApp 是否在发生异常时将异常抛出给宿主 - 默认是
+     * @param isOnFailureThrowToApp 是否在发生异常时将异常抛出给宿主 - 默认是 (仅在第一个 Hooker 设置有效)
      * @param initiate 方法体
      */
     inline fun onAppLifecycle(isOnFailureThrowToApp: Boolean = true, initiate: AppLifecycle.() -> Unit) =
@@ -794,7 +794,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          * @param result 回调 - ([Context] baseContext,[Boolean] 是否已执行 super)
          */
         fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleCallback.attachBaseContextCallback = result
+            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).attachBaseContextCallback = result
         }
 
         /**
@@ -802,7 +802,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          * @param initiate 方法体
          */
         fun onCreate(initiate: Application.() -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onCreateCallback = initiate
+            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onCreateCallback = initiate
         }
 
         /**
@@ -810,7 +810,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          * @param initiate 方法体
          */
         fun onTerminate(initiate: Application.() -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onTerminateCallback = initiate
+            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onTerminateCallback = initiate
         }
 
         /**
@@ -818,7 +818,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          * @param initiate 方法体
          */
         fun onLowMemory(initiate: Application.() -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onLowMemoryCallback = initiate
+            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onLowMemoryCallback = initiate
         }
 
         /**
@@ -826,7 +826,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          * @param result 回调 - ([Application] 当前实例,[Int] 类型)
          */
         fun onTrimMemory(result: (self: Application, level: Int) -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onTrimMemoryCallback = result
+            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onTrimMemoryCallback = result
         }
 
         /**
@@ -834,7 +834,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          * @param result 回调 - ([Application] 当前实例,[Configuration] 配置实例)
          */
         fun onConfigurationChanged(result: (self: Application, config: Configuration) -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onConfigurationChangedCallback = result
+            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onConfigurationChangedCallback = result
         }
 
         /**
@@ -844,7 +844,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          */
         fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit) {
             if (isCurrentScope && action.isNotEmpty())
-                AppParasitics.AppLifecycleCallback.onReceiverActionsCallbacks[action.value()] = Pair(action, result)
+                AppParasitics.AppLifecycleActor.get(this@PackageParam).onReceiverActionsCallbacks[action.value()] = action to result
         }
 
         /**
@@ -853,13 +853,14 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
          * @param result 回调 - ([Context] 当前上下文,[Intent] 当前 Intent)
          */
         fun registerReceiver(filter: IntentFilter, result: (context: Context, intent: Intent) -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleCallback.onReceiverFiltersCallbacks[filter.toString()] = Pair(filter, result)
+            if (isCurrentScope)
+                AppParasitics.AppLifecycleActor.get(this@PackageParam).onReceiverFiltersCallbacks[filter.toString()] = filter to result
         }
 
         /** 设置创建生命周期监听回调 */
         internal fun build() {
-            AppParasitics.AppLifecycleCallback.isOnFailureThrowToApp = isOnFailureThrowToApp
-            AppParasitics.AppLifecycleCallback.isCallbackSetUp = true
+            if (AppParasitics.AppLifecycleActor.isOnFailureThrowToApp == null)
+                AppParasitics.AppLifecycleActor.isOnFailureThrowToApp = isOnFailureThrowToApp
         }
     }
 
