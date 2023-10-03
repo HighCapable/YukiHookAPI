@@ -333,7 +333,7 @@ class ConstructorFinder internal constructor(override val classSet: Class<*>? = 
                 if (isFindSuccess) return
                 errorMsg(msg = "RemedyPlan failed after ${remedyPlans.size} attempts", es = errors, isAlwaysMode = true)
                 remedyPlans.clear()
-            } else YLog.innerW("RemedyPlan is empty, forgot it?${hookerManager.tailTag}")
+            } else YLog.innerW("RemedyPlan is empty, forgot it?")
         }
 
         /**

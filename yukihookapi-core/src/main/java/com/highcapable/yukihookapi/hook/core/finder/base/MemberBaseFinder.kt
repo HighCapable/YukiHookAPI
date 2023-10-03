@@ -94,8 +94,7 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
      * @param msg 消息内容
      */
     internal fun debugMsg(msg: String) {
-        if (HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null)
-            YLog.innerD("$msg${hookerManager.tailTag}")
+        if (HookApiCategoryHelper.hasAvailableHookApi && hookerManager.instance != null) YLog.innerD(msg)
     }
 
     /**
@@ -111,7 +110,7 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
         await {
             if (isIgnoreErrorLogs || hookerManager.isNotIgnoredNoSuchMemberFailure.not()) return@await
             if (isAlwaysMode.not() && isUsingRemedyPlan) return@await
-            YLog.innerE("NoSuch$tag happend in [$classSet] $msg${hookerManager.tailTag}".trim(), e)
+            YLog.innerE("NoSuch$tag happend in [$classSet] $msg".trim(), e)
             es.forEachIndexed { index, e -> YLog.innerE("Throwable [${index + 1}]", e) }
         }
     }
@@ -149,12 +148,6 @@ abstract class MemberBaseFinder internal constructor(private val tag: String, in
          * @return [Boolean] 没有设置任何异常拦截
          */
         internal val isNotIgnoredNoSuchMemberFailure get() = instance?.isNotIgnoredNoSuchMemberFailure ?: true
-
-        /**
-         * 获取当前日志尾部打印的 TAG 用于标识当前 Hook 实例
-         * @return [String]
-         */
-        internal val tailTag get() = instance?.tag?.let { if (it.isNotBlank()) " [$it]" else "" } ?: ""
 
         /**
          * 绑定当前 [Member] 到当前 Hooker
