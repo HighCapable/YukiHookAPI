@@ -265,7 +265,7 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
                 }
             }.onFailure {
                 if (onHookFailureCallback == null)
-                    YLog.innerE("Resources Hook got an Exception [$tag]", it)
+                    YLog.innerE("Resources Hook got an exception [$tag]", it)
                 else onHookFailureCallback?.invoke(it)
             }
         }

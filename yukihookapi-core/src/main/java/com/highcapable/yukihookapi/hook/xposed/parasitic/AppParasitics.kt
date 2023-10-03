@@ -442,7 +442,7 @@ internal object AppParasitics {
                 }
             }
             isActivityProxyRegistered = true
-        }.onFailure { YLog.innerE("Activity Proxy initialization failed because got an Exception", it) }
+        }.onFailure { YLog.innerE("Activity Proxy initialization failed because got an exception", it) }
     }
 
     /**

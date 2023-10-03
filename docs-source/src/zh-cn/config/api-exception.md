@@ -317,7 +317,7 @@ method {
 
 ::: danger loggerE
 
-Hook initialization failed because got an Exception
+Hook initialization failed because got an exception
 
 :::
 
@@ -333,7 +333,7 @@ Hook initialization failed because got an Exception
 
 ::: danger loggerE
 
-Try to hook **NAME**\[**NAME**\] got an Exception
+Try to hook **NAME**\[**NAME**\] got an exception
 
 :::
 
@@ -677,7 +677,7 @@ Resources Hook type is invalid \[**TAG**\]
 
 ::: danger loggerE
 
-Resources Hook got an Exception \[**TAG**\]
+Resources Hook got an exception \[**TAG**\]
 
 :::
 
@@ -851,7 +851,7 @@ You cannot inject module resources into yourself
 
 ::: danger loggerE
 
-Activity Proxy initialization failed because got an Exception
+Activity Proxy initialization failed because got an exception
 
 :::
 
@@ -867,7 +867,7 @@ Activity Proxy initialization failed because got an Exception
 
 ::: danger loggerE
 
-Activity Proxy got an Exception in msg.what \[**WHAT**\]
+Activity Proxy got an exception in msg.what \[**WHAT**\]
 
 :::
 

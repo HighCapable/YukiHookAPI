@@ -204,7 +204,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                         preHookMembers.forEach { (_, m) -> m.hook() }
                     }.onFailure {
                         if (onHookClassNotFoundFailureCallback == null)
-                            YLog.innerE(msg = "Hook initialization failed because got an Exception", e = it)
+                            YLog.innerE(msg = "Hook initialization failed because got an exception", e = it)
                         else onHookClassNotFoundFailureCallback?.invoke(it)
                     }
                 isDisableCreatorRunHook.not() && hookClass.instance == null ->
@@ -703,8 +703,8 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          */
         private fun hookErrorMsg(e: Throwable, member: Member? = null) =
             if (hookClass.isPlaceholder)
-                YLog.innerE("Try to hook ${member?.let { "[$it]" } ?: "nothing"} got an Exception", e)
-            else YLog.innerE("Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an Exception", e)
+                YLog.innerE("Try to hook ${member?.let { "[$it]" } ?: "nothing"} got an exception", e)
+            else YLog.innerE("Try to hook [${hookClass.instance ?: hookClass.name}]${member?.let { "[$it]" } ?: ""} got an exception", e)
 
         /**
          * 判断是否没有设置 Hook 过程中的任何异常拦截

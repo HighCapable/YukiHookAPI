@@ -333,7 +333,7 @@ Please confirm the correct return value type of the current Hook method, modify 
 
 ::: danger loggerE
 
-Hook initialization failed because got an Exception
+Hook initialization failed because got an exception
 
 :::
 
@@ -349,7 +349,7 @@ This is a reminder that an exception occurred during the Hook preparation stage,
 
 ::: danger loggerE
 
-Try to hook **NAME**\[**NAME**\] got an Exception
+Try to hook **NAME**\[**NAME**\] got an exception
 
 :::
 
@@ -709,7 +709,7 @@ The current Hook Framework needs to support and enable the Resources Hook functi
 
 ::: danger loggerE
 
-Resources Hook got an Exception \[**TAG**\]
+Resources Hook got an exception \[**TAG**\]
 
 :::
 
@@ -897,7 +897,7 @@ If you must obtain the resources of the Module App itself, please use it directl
 
 ::: danger loggerE
 
-Activity Proxy initialization failed because got an Exception
+Activity Proxy initialization failed because got an exception
 
 :::
 
@@ -917,7 +917,7 @@ If you cannot find the description of the relevant error log, after eliminating 
 
 ::: danger loggerE
 
-Activity Proxy got an Exception in msg.what \[**WHAT**\]
+Activity Proxy got an exception in msg.what \[**WHAT**\]
 
 :::
 

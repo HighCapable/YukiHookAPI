@@ -76,7 +76,7 @@ internal object HandlerDelegateCaller {
                             set(intent.getParcelableExtra(ActivityProxyConfig.proxyIntentName))
                     }
                 }
-            }.onFailure { YLog.innerE("Activity Proxy got an Exception in msg.what [$LAUNCH_ACTIVITY]", it) }
+            }.onFailure { YLog.innerE("Activity Proxy got an exception in msg.what [$LAUNCH_ACTIVITY]", it) }
             EXECUTE_TRANSACTION -> msg.obj?.runCatching client@{
                 ClientTransactionClass.method { name = "getCallbacks" }.ignored().get(this).list<Any?>().takeIf { it.isNotEmpty() }
                     ?.forEach { item ->
@@ -100,7 +100,7 @@ internal object HandlerDelegateCaller {
                                 }
                             }
                     }
-            }?.onFailure { YLog.innerE("Activity Proxy got an Exception in msg.what [$EXECUTE_TRANSACTION]", it) }
+            }?.onFailure { YLog.innerE("Activity Proxy got an exception in msg.what [$EXECUTE_TRANSACTION]", it) }
         }
         return baseInstance?.handleMessage(msg) ?: false
     }
