@@ -36,47 +36,35 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
 
 > `YukiHookAPI` 的 `Member` 核心 Hook 实现类。
 
-## PRIORITY_DEFAULT <span class="symbol">- field</span>
+<h2 class="deprecated">PRIORITY_DEFAULT - field</h2>
 
-```kotlin:no-line-numbers
-val PRIORITY_DEFAULT: Int
-```
-
-**Change Records**
+**变更记录**
 
 `v1.0.80` `added`
 
-**Function Illustrate**
+`v1.2.0` `deprecated`
 
-> 默认 Hook 回调优先级。
+请迁移到 `YukiHookPriority`
 
-## PRIORITY_LOWEST <span class="symbol">- field</span>
+<h2 class="deprecated">PRIORITY_LOWEST - field</h2>
 
-```kotlin:no-line-numbers
-val PRIORITY_LOWEST: Int
-```
-
-**Change Records**
+**变更记录**
 
 `v1.0.80` `added`
 
-**Function Illustrate**
+`v1.2.0` `deprecated`
 
-> 延迟回调 Hook 方法结果。
+请迁移到 `YukiHookPriority`
 
-## PRIORITY_HIGHEST <span class="symbol">- field</span>
+<h2 class="deprecated">PRIORITY_HIGHEST - field</h2>
 
-```kotlin:no-line-numbers
-val PRIORITY_HIGHEST: Int
-```
-
-**Change Records**
+**变更记录**
 
 `v1.0.80` `added`
 
-**Function Illustrate**
+`v1.2.0` `deprecated`
 
-> 更快回调 Hook 方法结果。
+请迁移到 `YukiHookPriority`
 
 ## instanceClass <span class="symbol">- field</span>
 
@@ -121,7 +109,7 @@ val instanceClass: Class<*>
 ## injectMember <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun injectMember(priority: Int, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
+inline fun injectMember(priority: YukiHookPriority, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
 ```
 
 **Change Records**
@@ -161,7 +149,7 @@ fun useDangerousOperation(option: String)
 ## MemberHookCreator <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class MemberHookCreator internal constructor(private val priority: Int)
+inner class MemberHookCreator internal constructor(private val priority: YukiHookPriority)
 ```
 
 **Change Records**
@@ -185,6 +173,8 @@ inner class MemberHookCreator internal constructor(private val priority: Int)
 `v1.2.0` `modified`
 
 移除 `tag`
+
+`priority` 类型由 `Int` 变更为 `YukiHookPriority`
 
 **Function Illustrate**
 

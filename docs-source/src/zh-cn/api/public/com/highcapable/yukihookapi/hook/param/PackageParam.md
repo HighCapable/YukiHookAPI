@@ -872,11 +872,11 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMembe
 ## Member+BaseFinder.BaseResult.hook <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
-inline fun Member.hook(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+inline fun Member.hook(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
 ```kotlin:no-line-numbers
-inline fun BaseFinder.BaseResult.hook(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+inline fun BaseFinder.BaseResult.hook(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
 **变更记录**
@@ -896,15 +896,15 @@ inline fun BaseFinder.BaseResult.hook(initiate: YukiMemberHookCreator.MemberHook
 ## Array&lt;Member&gt;+List&lt;Member&gt;+BaseFinder.BaseResult.hookAll <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
-inline fun Array<Member>.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+inline fun Array<Member>.hookAll(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
 ```kotlin:no-line-numbers
-inline fun List<Member>.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+inline fun List<Member>.hookAll(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
 ```kotlin:no-line-numbers
-inline fun BaseFinder.BaseResult.hookAll(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+inline fun BaseFinder.BaseResult.hookAll(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
 **变更记录**
