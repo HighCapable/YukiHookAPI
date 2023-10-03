@@ -26,7 +26,7 @@
  * This file is created by fankes on 2022/2/2.
  */
 @file:Suppress(
-    "unused", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "DeprecatedCallableAddReplaceWith",
+    "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "DeprecatedCallableAddReplaceWith",
     "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "OPT_IN_USAGE"
 )
 

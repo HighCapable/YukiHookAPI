@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/2/3.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "DeprecatedCallableAddReplaceWith", "DEPRECATION")
+@file:Suppress("unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "DeprecatedCallableAddReplaceWith", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.log
 
