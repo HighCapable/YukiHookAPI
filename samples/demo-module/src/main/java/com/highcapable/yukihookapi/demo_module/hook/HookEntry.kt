@@ -154,7 +154,7 @@ object HookEntry : IYukiHookXposedInit {
         }
     }
 
-    @LegacyResourcesHook
+    @OptIn(LegacyResourcesHook::class)
     override fun onHook() {
         // Start your hook
         // Can be shortened to encase {}

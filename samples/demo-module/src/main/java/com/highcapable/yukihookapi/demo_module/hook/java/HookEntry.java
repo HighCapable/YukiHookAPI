@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.highcapable.yukihookapi.YukiHookAPI;
+import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority;
 import com.highcapable.yukihookapi.hook.factory.ReflectionFactoryKt;
 import com.highcapable.yukihookapi.hook.log.YLog;
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent;
@@ -83,7 +84,7 @@ public class HookEntry implements IYukiHookXposedInit {
                     m.param(Bundle.class);
                     return Unit.INSTANCE;
                 });
-                l.hook(result, h -> {
+                l.hook(result, YukiHookPriority.DEFAULT, h -> {
                     h.after(a -> {
                         Activity instance = ((Activity) a.getInstance());
                         instance.setTitle(instance.getTitle() + " [Active]");
