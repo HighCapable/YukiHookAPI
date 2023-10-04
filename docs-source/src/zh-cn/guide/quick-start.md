@@ -18,6 +18,8 @@
 
 - Java 11 及以上 (Since API `1.0.80`)
 
+- Java 17 及以上 (Since API `1.2.0`)
+
 ## 自动构建项目
 
 `YukiHookAPI` 提供了一个自动化构建工具，它可以帮助你快速构建一个拥有 Xposed 模块依赖的 Android 标准项目模板，使用构建好的模板即可直接开始下一步工作。
@@ -193,18 +195,18 @@ dependencies {
 
 #### 配置 Java 版本
 
-在你的项目 `build.gradle.kts` 或 `build.gradle` 中修改 Kotlin 的 Java 版本为 11 及以上。
+在你的项目 `build.gradle.kts` 或 `build.gradle` 中修改 Kotlin 的 Java 版本为 17 及以上。
 
 > Kotlin DSL
 
 ```kt
 android {
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 ```
@@ -214,11 +216,11 @@ android {
 ```groovy
 android {
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '17'
     }
 }
 ```
@@ -226,6 +228,8 @@ android {
 ::: warning
 
 自 API **1.0.80** 版本后 Kotlin 使用的 Java 版本默认为 11，不再支持 1.8 及以下版本。
+
+自 API **1.2.0** 版本后 Kotlin 使用的 Java 版本默认为 17，不再支持 11 及以下版本。
 
 :::
 

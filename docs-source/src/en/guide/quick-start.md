@@ -18,6 +18,8 @@
 
 - Java 11 and above (Since API `1.0.80`)
 
+- Java 17 and above (Since API `1.2.0`)
+
 ## Automatically Build Project
 
 `YukiHookAPI` provides an automated build tool that can help you quickly build an Android standard project template with Xposed Module dependencies, and use the built template to start the next step directly.
@@ -194,18 +196,18 @@ We recommend using [SweetDependency](https://github.com/HighCapable/SweetDepende
 
 #### Configure Java Version
 
-Modify the Java version of Kotlin in your project `build.gradle.kts` or `build.gradle` to 11 or above.
+Modify the Java version of Kotlin in your project `build.gradle.kts` or `build.gradle` to 17 or above.
 
 > Kotlin DSL
 
 ```kt
 android {
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 ```
@@ -215,11 +217,11 @@ android {
 ```groovy
 android {
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '17'
     }
 }
 ```
@@ -227,6 +229,8 @@ android {
 ::: warning
 
 Since API **1.0.80**, the Java version used by Kotlin defaults to 11, and versions 1.8 and below are no longer supported.
+
+Since API **1.2.0**, the Java version used by Kotlin defaults to 17, and versions 11 and below are no longer supported.
 
 :::
 
