@@ -98,7 +98,8 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
         ): YukiMemberHookCreator.MemberHookCreator.Result {
             val creator = YukiMemberHookCreator(packageParam, HookClass.createPlaceholder())
-            val result = creator.injectMember(priority) { if (members.isNotEmpty()) members(*members.toTypedArray()); apply(initiate) }
+            if (members.isEmpty()) return creator.createMemberHook(priority).build()
+            val result = creator.injectMember(priority) { members(*members.toTypedArray()); apply(initiate) }
             creator.hook()
             return result
         }
@@ -181,7 +182,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      */
     @LegacyHookApi
     inline fun injectMember(priority: YukiHookPriority = YukiHookPriority.DEFAULT, initiate: MemberHookCreator.() -> Unit) =
-        MemberHookCreator(priority).apply(initiate).apply { preHookMembers[toString()] = this }.build()
+        createMemberHook(priority).apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
     /**
      * 注入要 Hook 的 [Method]、[Constructor]
@@ -275,6 +276,13 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             )
         }
     }
+
+    /**
+     * 创建 [MemberHookCreator]
+     * @param priority Hook 优先级
+     * @return [MemberHookCreator]
+     */
+    private fun createMemberHook(priority: YukiHookPriority) = MemberHookCreator(priority)
 
     /**
      * Hook 核心功能实现类
@@ -807,6 +815,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
              * @param result 回调错误
              * @return [Result] 可继续向下监听
              */
+            @LegacyHookApi
             fun onNoSuchMemberFailure(result: (Throwable) -> Unit): Result {
                 onNoSuchMemberFailureCallback = result
                 return this
@@ -816,6 +825,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
              * 忽略 [members] 不存在发生的错误
              * @return [Result] 可继续向下监听
              */
+            @LegacyHookApi
             fun ignoredNoSuchMemberFailure() = onNoSuchMemberFailure {}
 
             /**
