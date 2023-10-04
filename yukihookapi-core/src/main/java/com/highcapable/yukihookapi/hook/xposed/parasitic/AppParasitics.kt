@@ -228,7 +228,7 @@ internal object AppParasitics {
                 }
             })
         if (YukiHookAPI.Configs.isEnableHookModuleStatus.not()) return
-        YukiXposedModuleStatus.IMPL_CLASS_NAME.toClassOrNull(loader)?.apply {
+        YukiXposedModuleStatus.className.toClassOrNull(loader)?.apply {
             if (type != HookEntryType.RESOURCES) {
                 YukiHookHelper.hook(method { name = YukiXposedModuleStatus.IS_ACTIVE_METHOD_NAME },
                     object : YukiMemberReplacement() {

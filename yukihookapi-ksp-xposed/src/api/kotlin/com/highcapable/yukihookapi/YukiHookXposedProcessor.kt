@@ -280,6 +280,12 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 packageName = PackageName.YukiXposedModuleStatus_Impl,
                 content = data.sources()[ClassName.YukiXposedModuleStatus_Impl]
             )
+            /** 插入 YukiXposedModuleStatus_Impl_Impl 代码 */
+            createCodeFile(
+                fileName = ClassName.YukiXposedModuleStatus_Impl_Impl,
+                packageName = PackageName.YukiXposedModuleStatus_Impl,
+                content = data.sources()[ClassName.YukiXposedModuleStatus_Impl_Impl]
+            )
             /** 插入 HandlerDelegateImpl_Impl 代码 */
             createCodeFile(
                 fileName = ClassName.HandlerDelegateImpl_Impl,

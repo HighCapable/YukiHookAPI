@@ -35,64 +35,9 @@ package com.highcapable.yukihookapi.hook.xposed.bridge.status
  */
 object YukiXposedModuleStatus_Impl {
 
-    private const val IS_ACTIVE_METHOD_NAME = "__--"
-    private const val IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME = "_--_"
-    private const val GET_EXECUTOR_NAME_METHOD_NAME = "_-_-"
-    private const val GET_EXECUTOR_API_LEVEL_METHOD_NAME = "-__-"
-    private const val GET_EXECUTOR_VERSION_NAME_METHOD_NAME = "-_-_"
-    private const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
-
     /**
-     * 此方法经过 Hook 后返回 true 即模块已激活
-     *
-     * 返回值将在每次编译时自动生成
-     * @return [Boolean]
-     */
-    @JvmName(IS_ACTIVE_METHOD_NAME)
-    fun isActive(): Boolean = error("Stub!")
-
-    /**
-     * 此方法经过 Hook 后返回 true 即当前 Hook Framework 支持资源钩子 (Resources Hook)
-     *
-     * 返回值将在每次编译时自动生成
-     * @return [Boolean]
-     */
-    @JvmName(IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME)
-    fun isSupportResourcesHook(): Boolean = error("Stub!")
-
-    /**
-     * 此方法经过 Hook 后返回当前 Hook Framework 名称
-     *
-     * 返回值将在每次编译时自动生成
+     * 获取 YukiXposedModuleStatus 完整类名
      * @return [String]
      */
-    @JvmName(GET_EXECUTOR_NAME_METHOD_NAME)
-    fun getExecutorName(): String = error("Stub!")
-
-    /**
-     * 此方法经过 Hook 后返回当前 Hook Framework 的 API 版本
-     *
-     * 返回值将在每次编译时自动生成
-     * @return [Int]
-     */
-    @JvmName(GET_EXECUTOR_API_LEVEL_METHOD_NAME)
-    fun getExecutorApiLevel(): Int = error("Stub!")
-
-    /**
-     * 此方法经过 Hook 后返回当前 Hook Framework 版本名称
-     *
-     * 返回值将在每次编译时自动生成
-     * @return [String]
-     */
-    @JvmName(GET_EXECUTOR_VERSION_NAME_METHOD_NAME)
-    fun getExecutorVersionName(): String = error("Stub!")
-
-    /**
-     * 此方法经过 Hook 后返回当前 Hook Framework 版本号
-     *
-     * 返回值将在每次编译时自动生成
-     * @return [Int]
-     */
-    @JvmName(GET_EXECUTOR_VERSION_CODE_METHOD_NAME)
-    fun getExecutorVersionCode(): Int = error("Stub!")
+    val className: String = error("Stub!")
 }

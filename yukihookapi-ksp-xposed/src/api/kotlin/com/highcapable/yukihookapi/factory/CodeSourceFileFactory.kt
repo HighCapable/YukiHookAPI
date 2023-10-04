@@ -54,6 +54,7 @@ object ClassName {
     const val YukiHookAPI_Impl = "YukiHookAPI_Impl"
     const val ModuleApplication_Impl = "ModuleApplication_Impl"
     const val YukiXposedModuleStatus_Impl = "YukiXposedModuleStatus_Impl"
+    const val YukiXposedModuleStatus_Impl_Impl = "YukiXposedModuleStatus_Impl_Impl"
     const val HandlerDelegateImpl_Impl = "HandlerDelegateImpl_Impl"
     const val HandlerDelegateClass = "HandlerDelegate"
     const val IActivityManagerProxyImpl_Impl = "IActivityManagerProxyImpl_Impl"
@@ -162,49 +163,68 @@ fun GenerateData.sources() = mapOf(
       
       package ${PackageName.YukiXposedModuleStatus_Impl}
       
+    """.trimIndent() + "\n\n" + createCommentContent(ClassName.YukiXposedModuleStatus_Impl) + "\n" + """
+      object ${ClassName.YukiXposedModuleStatus_Impl} {
+
+          val className get() = "${PackageName.YukiXposedModuleStatus_Impl}.${tailPackageName(ClassName.YukiXposedModuleStatus_Impl_Impl)}"
+      }
+    """.trimIndent(),
+    ClassName.YukiXposedModuleStatus_Impl_Impl to """
+      @file:Suppress("ClassName")
+      
+      package ${PackageName.YukiXposedModuleStatus_Impl}
+      
       import android.util.Log
       import androidx.annotation.Keep
     """.trimIndent() + "\n\n" + createCommentContent(ClassName.YukiXposedModuleStatus_Impl) + "\n" + """
       @Keep
-      object ${ClassName.YukiXposedModuleStatus_Impl} {
+      object ${tailPackageName(ClassName.YukiXposedModuleStatus_Impl_Impl)} {
       
+          @JvmStatic
           @JvmName("${YukiXposedModuleStatusJvmName.IS_ACTIVE_METHOD_NAME}")
-          fun isActive(): Boolean {
-              placeholderExecution()
+          fun function${(1000..99999).random()}(): Boolean {
+              phe()
               return false
           }
       
+          @JvmStatic
           @JvmName("${YukiXposedModuleStatusJvmName.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME}")
-          fun isSupportResourcesHook(): Boolean {
-              placeholderExecution()
+          fun function${(1000..99999).random()}(): Boolean {
+              phe()
               return false
           }
       
+          @JvmStatic
           @JvmName("${YukiXposedModuleStatusJvmName.GET_EXECUTOR_NAME_METHOD_NAME}")
-          fun getExecutorName(): String {
-              placeholderExecution()
+          fun function${(1000..99999).random()}(): String {
+              phe()
               return "unknown"
           }
       
+          @JvmStatic
           @JvmName("${YukiXposedModuleStatusJvmName.GET_EXECUTOR_API_LEVEL_METHOD_NAME}")
-          fun getExecutorApiLevel(): Int {
-              placeholderExecution()
+          fun function${(1000..99999).random()}(): Int {
+              phe()
               return -1
           }
       
+          @JvmStatic
           @JvmName("${YukiXposedModuleStatusJvmName.GET_EXECUTOR_VERSION_NAME_METHOD_NAME}")
-          fun getExecutorVersionName(): String {
-              placeholderExecution()
+          fun function${(1000..99999).random()}(): String {
+              phe()
               return "unknown"
           }
       
+          @JvmStatic
           @JvmName("${YukiXposedModuleStatusJvmName.GET_EXECUTOR_VERSION_CODE_METHOD_NAME}")
-          fun getExecutorVersionCode(): Int {
-              placeholderExecution()
+          fun function${(1000..99999).random()}(): Int {
+              phe()
               return -1
           }
       
-          private fun placeholderExecution() {
+          @JvmStatic
+          @JvmName("_${(1000..99999).random()}")
+          private fun phe() {
               /** Consume a long method body */
               if (System.currentTimeMillis() == 0L) Log.d("${(1000..9999).random()}", "${(100000..999999).random()}")
           }

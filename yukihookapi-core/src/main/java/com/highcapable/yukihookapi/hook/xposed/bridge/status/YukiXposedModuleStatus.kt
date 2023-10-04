@@ -29,6 +29,10 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.status
 
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
+import com.highcapable.yukihookapi.hook.factory.method
+import com.highcapable.yukihookapi.hook.factory.toClass
+import com.highcapable.yukihookapi.hook.log.YLog
 
 /**
  * 这是一个 Xposed 模块 Hook 状态类
@@ -54,8 +58,11 @@ internal object YukiXposedModuleStatus {
     internal const val GET_EXECUTOR_VERSION_NAME_METHOD_NAME = "-_-_"
     internal const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
 
-    /** [YukiXposedModuleStatus_Impl] 完整类名 */
-    internal const val IMPL_CLASS_NAME = "com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus_Impl"
+    /**
+     * 获取 YukiXposedModuleStatus 完整类名
+     * @return [String]
+     */
+    internal val className get() = runCatching { YukiXposedModuleStatus_Impl.className }.getOrNull() ?: ""
 
     /**
      * 获取当前模块的激活状态
@@ -63,7 +70,7 @@ internal object YukiXposedModuleStatus {
      * 请使用 [YukiHookAPI.Status.isModuleActive]、[YukiHookAPI.Status.isXposedModuleActive]、[YukiHookAPI.Status.isTaiChiModuleActive] 判断模块激活状态
      * @return [Boolean]
      */
-    internal val isActive get() = runCatching { YukiXposedModuleStatus_Impl.isActive() }.getOrNull() ?: false
+    internal val isActive get() = classMethod(IS_ACTIVE_METHOD_NAME).boolean()
 
     /**
      * 获取当前 Hook Framework 是否支持资源钩子 (Resources Hook)
@@ -71,7 +78,7 @@ internal object YukiXposedModuleStatus {
      * 请使用 [YukiHookAPI.Status.isSupportResourcesHook] 判断支持状态
      * @return [Boolean]
      */
-    internal val isSupportResourcesHook get() = runCatching { YukiXposedModuleStatus_Impl.isSupportResourcesHook() }.getOrNull() ?: false
+    internal val isSupportResourcesHook get() = classMethod(IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME).boolean()
 
     /**
      * 获取当前 Hook Framework 名称
@@ -79,7 +86,7 @@ internal object YukiXposedModuleStatus {
      * 请使用 [YukiHookAPI.Status.Executor.name] 获取
      * @return [String] 模块未激活会返回 unknown
      */
-    internal val executorName get() = runCatching { YukiXposedModuleStatus_Impl.getExecutorName() }.getOrNull() ?: "unknown"
+    internal val executorName get() = classMethod(GET_EXECUTOR_NAME_METHOD_NAME).string().ifBlank { "unknown" }
 
     /**
      * 获取当前 Hook Framework 的 API 版本
@@ -87,7 +94,7 @@ internal object YukiXposedModuleStatus {
      * 请使用 [YukiHookAPI.Status.Executor.apiLevel] 获取
      * @return [Int] 模块未激活会返回 -1
      */
-    internal val executorApiLevel get() = runCatching { YukiXposedModuleStatus_Impl.getExecutorApiLevel() }.getOrNull() ?: -1
+    internal val executorApiLevel get() = classMethod(GET_EXECUTOR_API_LEVEL_METHOD_NAME).int().takeIf { it > 0 } ?: -1
 
     /**
      * 获取当前 Hook Framework 版本名称
@@ -95,7 +102,7 @@ internal object YukiXposedModuleStatus {
      * 请使用 [YukiHookAPI.Status.Executor.versionName] 获取
      * @return [Int] 模块未激活会返回 unknown
      */
-    internal val executorVersionName get() = runCatching { YukiXposedModuleStatus_Impl.getExecutorVersionName() }.getOrNull() ?: "unknown"
+    internal val executorVersionName get() = classMethod(GET_EXECUTOR_VERSION_NAME_METHOD_NAME).string().ifBlank { "unknown" }
 
     /**
      * 获取当前 Hook Framework 版本号
@@ -103,5 +110,14 @@ internal object YukiXposedModuleStatus {
      * 请使用 [YukiHookAPI.Status.Executor.versionCode] 获取
      * @return [Int] 模块未激活会返回 -1
      */
-    internal val executorVersionCode get() = runCatching { YukiXposedModuleStatus_Impl.getExecutorVersionCode() }.getOrNull() ?: -1
+    internal val executorVersionCode get() = classMethod(GET_EXECUTOR_VERSION_CODE_METHOD_NAME).int().takeIf { it > 0 } ?: -1
+
+    /**
+     * 通过 [className] 获取方法实例
+     * @param name 方法名称
+     * @return [MethodFinder.Result.Instance]
+     */
+    private fun classMethod(name: String) = className.toClass().method { this.name = name }.ignored().onNoSuchMethod {
+        YLog.innerW("Failed to initialize YukiXposedModuleStatus", it)
+    }.get()
 }
