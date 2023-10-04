@@ -148,7 +148,7 @@ object YukiHookAPI {
          *
          * - 在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
          *
-         * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
          *
          * - 在 (Xposed) 宿主环境中仅返回非 [isTaiChiModuleActive] 的激活状态
          * @return [Boolean] 是否激活
@@ -158,7 +158,7 @@ object YukiHookAPI {
         /**
          * 仅判断模块是否在 Xposed 中激活
          *
-         * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
          *
          * - 在 (Xposed) 宿主环境中始终返回 true
          * @return [Boolean] 是否激活
@@ -178,7 +178,7 @@ object YukiHookAPI {
         /**
          * 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)
          *
-         * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+         * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
          *
          * - 在 (Xposed) 宿主环境中可能会延迟等待事件回调后才会返回 true
          *
@@ -196,7 +196,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 名称
              *
-             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
              * @return [String] 无法获取会返回 unknown - 获取失败会返回 invalid
              */
             val name
@@ -209,7 +209,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 类型
              *
-             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
              * @return [ExecutorType]
              */
             val type get() = HookApiProperty.type.takeIf { isXposedEnvironment } ?: HookApiProperty.type(YukiXposedModuleStatus.executorName)
@@ -217,7 +217,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 的 API 版本
              *
-             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
              * @return [Int] 无法获取会返回 -1
              */
             val apiLevel get() = HookApiProperty.apiLevel.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorApiLevel
@@ -225,7 +225,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 版本名称
              *
-             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
              * @return [String] 无法获取会返回 unknown - 不支持会返回 unsupported
              */
             val versionName get() = HookApiProperty.versionName.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionName
@@ -233,7 +233,7 @@ object YukiHookAPI {
             /**
              * 获取当前 Hook Framework 版本号
              *
-             * - 在模块环境中需要启用 [Configs.isEnableHookModuleStatus]
+             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
              * @return [Int] 无法获取会返回 -1 - 不支持会返回 0
              */
             val versionCode get() = HookApiProperty.versionCode.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionCode
@@ -322,10 +322,11 @@ object YukiHookAPI {
         /**
          * 是否启用 Hook Xposed 模块激活等状态功能
          *
-         * - 为原生支持 Xposed 模块激活状态检测 - 此功能默认启用
+         * - 此方法已弃用 - 在之后的版本中将直接被删除
          *
-         * - 关闭后你将不能再在模块环境中使用 [YukiHookAPI.Status] 中的功能
+         * - 请现在迁移到 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
          */
+        @Deprecated(message = "请手动迁移到新用法")
         var isEnableHookModuleStatus = true
 
         /**

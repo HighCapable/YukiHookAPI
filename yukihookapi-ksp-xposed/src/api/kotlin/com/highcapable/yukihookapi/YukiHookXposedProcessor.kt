@@ -184,6 +184,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 data.customMPackageName = args.value.toString().trim()
                             if (args.name?.asString() == "entryClassName")
                                 data.xInitClassName = args.value.toString().trim()
+                            if (args.name?.asString() == "isUsingXposedModuleStatus")
+                                data.isUsingXposedModuleStatus = args.value as? Boolean ?: true
                             if (args.name?.asString() == "isUsingResourcesHook")
                                 data.isUsingResourcesHook = args.value as? Boolean ?: true
                         }
@@ -274,18 +276,20 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 packageName = PackageName.ModuleApplication_Impl,
                 content = data.sources()[ClassName.ModuleApplication_Impl]
             )
-            /** 插入 YukiXposedModuleStatus_Impl 代码 */
-            createCodeFile(
-                fileName = ClassName.YukiXposedModuleStatus_Impl,
-                packageName = PackageName.YukiXposedModuleStatus_Impl,
-                content = data.sources()[ClassName.YukiXposedModuleStatus_Impl]
-            )
-            /** 插入 YukiXposedModuleStatus_Impl_Impl 代码 */
-            createCodeFile(
-                fileName = ClassName.YukiXposedModuleStatus_Impl_Impl,
-                packageName = PackageName.YukiXposedModuleStatus_Impl,
-                content = data.sources()[ClassName.YukiXposedModuleStatus_Impl_Impl]
-            )
+            if (data.isUsingXposedModuleStatus) {
+                /** 插入 YukiXposedModuleStatus_Impl 代码 */
+                createCodeFile(
+                    fileName = ClassName.YukiXposedModuleStatus_Impl,
+                    packageName = PackageName.YukiXposedModuleStatus_Impl,
+                    content = data.sources()[ClassName.YukiXposedModuleStatus_Impl]
+                )
+                /** 插入 YukiXposedModuleStatus_Impl_Impl 代码 */
+                createCodeFile(
+                    fileName = ClassName.YukiXposedModuleStatus_Impl_Impl,
+                    packageName = PackageName.YukiXposedModuleStatus_Impl,
+                    content = data.sources()[ClassName.YukiXposedModuleStatus_Impl_Impl]
+                )
+            }
             /** 插入 HandlerDelegateImpl_Impl 代码 */
             createCodeFile(
                 fileName = ClassName.HandlerDelegateImpl_Impl,

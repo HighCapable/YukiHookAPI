@@ -35,6 +35,7 @@ package com.highcapable.yukihookapi.bean
  * @param entryClassName 入口类名
  * @param xInitClassName xposed_init 入口类名
  * @param isEntryClassKindOfObject 入口类种类 (类型) 是否为 object (单例)
+ * @param isUsingXposedModuleStatus 是否启用 Xposed 模块状态检测
  * @param isUsingResourcesHook 是否启用 Resources Hook
  */
 data class GenerateData(
@@ -44,5 +45,6 @@ data class GenerateData(
     var entryClassName: String = "",
     var xInitClassName: String = "",
     var isEntryClassKindOfObject: Boolean = false,
-    var isUsingResourcesHook: Boolean = true
+    var isUsingXposedModuleStatus: Boolean = true,
+    var isUsingResourcesHook: Boolean = false
 )

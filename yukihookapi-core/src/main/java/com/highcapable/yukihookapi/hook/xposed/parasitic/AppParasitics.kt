@@ -227,7 +227,6 @@ internal object AppParasitics {
                     if ((param.args?.get(0) as? String?)?.endsWith("preferences.xml") == true) param.args?.set(1, 1)
                 }
             })
-        if (YukiHookAPI.Configs.isEnableHookModuleStatus.not()) return
         YukiXposedModuleStatus.className.toClassOrNull(loader)?.apply {
             if (type != HookEntryType.RESOURCES) {
                 YukiHookHelper.hook(method { name = YukiXposedModuleStatus.IS_ACTIVE_METHOD_NAME },
