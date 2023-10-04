@@ -17,6 +17,7 @@ annotation class InjectYukiHookWithXposed(
     val sourcePath: String,
     val modulePackageName: String,
     val entryClassName: String,
+    val isUsingXposedModuleStatus: Boolean,
     val isUsingResourcesHook: Boolean
 )
 ```
@@ -32,6 +33,10 @@ annotation class InjectYukiHookWithXposed(
 `v1.0.92` `modified`
 
 新增 `isUsingResourcesHook` 参数
+
+`v1.2.0` `modified`
+
+新增 `isUsingXposedModuleStatus` 参数
 
 **Function Illustrate**
 

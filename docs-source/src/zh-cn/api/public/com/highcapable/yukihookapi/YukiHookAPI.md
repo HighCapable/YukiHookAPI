@@ -164,7 +164,7 @@ val isModuleActive: Boolean
 
 在模块环境中你需要将 **Application** 继承于 **ModuleApplication**。
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 在 (Xposed) 宿主环境中仅返回非 **isTaiChiModuleActive** 的激活状态。
 
@@ -186,7 +186,7 @@ val isXposedModuleActive: Boolean
 
 ::: warning
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 在 (Xposed) 宿主环境中始终返回 true。
 
@@ -226,11 +226,11 @@ val isSupportResourcesHook: Boolean
 
 **功能描述**
 
-> 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)。
+> 判断当前 Hook Framework 是否支持资源钩子 (Resources Hook)。
 
 ::: warning
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 在 (Xposed) 宿主环境中可能会延迟等待事件回调后才会返回 true。
 
@@ -268,7 +268,7 @@ val name: String
 
 ::: warning
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 :::
 
@@ -288,7 +288,7 @@ val type: ExecutorType
 
 ::: warning
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 :::
 
@@ -308,7 +308,7 @@ val apiLevel: Int
 
 ::: warning
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 :::
 
@@ -328,7 +328,7 @@ val versionName: String
 
 ::: warning
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 :::
 
@@ -348,7 +348,7 @@ val versionCode: Int
 
 ::: warning
 
-在模块环境中需要启用 **Configs.isEnableHookModuleStatus**。
+在模块环境中需要启用 **InjectYukiHookWithXposed.isUsingXposedModuleStatus**。
 
 :::
 
@@ -460,27 +460,15 @@ var isEnableModuleAppResourcesCache: Boolean
 
 :::
 
-### isEnableHookModuleStatus <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-var isEnableHookModuleStatus: Boolean
-```
+<h3 class="deprecated">isEnableHookModuleStatus - field</h3>
 
 **变更记录**
 
 `v1.0.88` `新增`
 
-**功能描述**
+`v1.2.0` `作废`
 
-> 是否启用 Hook Xposed 模块激活等状态功能.
-
-为原生支持 Xposed 模块激活状态检测，此功能默认启用。
-
-::: warning
-
-关闭后你将不能再在模块环境中使用 **YukiHookAPI.Status** 中的激活状态判断功能。
-
-:::
+请手动迁移到 `InjectYukiHookWithXposed.isUsingXposedModuleStatus`
 
 ### isEnableHookSharedPreferences <span class="symbol">- field</span>
 
@@ -631,7 +619,7 @@ object HookEntry : IYukiHookXposedInit {
         )
         YukiHookAPI.Configs.isDebug = BuildConfig.DEBUG
         YukiHookAPI.Configs.isEnableModuleAppResourcesCache = true
-        YukiHookAPI.Configs.isEnableHookModuleStatus = true
+        YukiHookAPI.InjectYukiHookWithXposed.isUsingXposedModuleStatus = true
         YukiHookAPI.Configs.isEnableHookSharedPreferences = false
         YukiHookAPI.Configs.isEnableDataChannel = true
     }
