@@ -316,20 +316,6 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 packageName = data.entryPackageName,
                 content = data.sources()[ClassName.XposedInit_Impl]
             )
-            /* 插入 FreeReflection 代码 */
-            createCodeFile(
-                fileName = ClassName.BootstrapClass,
-                packageName = PackageName.BootstrapReflectionClass,
-                content = data.sources()[ClassName.BootstrapClass],
-                extensionName = JAVA_FILE_EXT_NAME
-            )
-            /* 插入 FreeReflection 代码 */
-            createCodeFile(
-                fileName = ClassName.Reflection,
-                packageName = PackageName.BootstrapReflectionClass,
-                content = data.sources()[ClassName.Reflection],
-                extensionName = JAVA_FILE_EXT_NAME
-            )
         }
 
         /**

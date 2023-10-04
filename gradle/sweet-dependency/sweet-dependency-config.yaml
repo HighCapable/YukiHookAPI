@@ -7,6 +7,7 @@ repositories:
     scope: PLUGINS
   google:
   maven-central:
+  jit-pack:
   rovo89-xposed-api:
     scope: LIBRARIES
     url: https://api.xposed.info/
@@ -41,6 +42,11 @@ libraries:
       version: 82
       repositories:
         rovo89-xposed-api
+  com.github.tiann:
+    FreeReflection:
+      version: 3.1.0
+      repositories:
+        jit-pack
   com.google.devtools.ksp:
     symbol-processing-api:
       version-ref: <plugins>::kotlin-ksp

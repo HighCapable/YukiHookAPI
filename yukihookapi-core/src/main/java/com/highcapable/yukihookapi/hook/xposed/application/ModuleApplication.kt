@@ -33,7 +33,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication.Companion.appContext
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import com.highcapable.yukihookapi.thirdparty.me.weishu.reflection.Reflection
+import me.weishu.reflection.Reflection
 
 /**
  * 这是对使用 [YukiHookAPI] Xposed 模块实现中的一个扩展功能
