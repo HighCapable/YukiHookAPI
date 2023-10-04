@@ -62,6 +62,32 @@ annotation class InjectYukiHookWithXposed(
 
 :::
 
+::: danger
+
+在 Android Gradle Plugin **8+** 版本中，你需要手动在项目的 **build.gradle** 或 **build.gradle.kts** 中启用 **buildConfig**。
+
+> Groovy DSL
+
+```groovy
+android {
+    buildFeatures {
+        buildConfig true
+    }
+}
+```
+
+> Kotlin DSL
+
+```kt
+android {
+    buildFeatures {
+        buildConfig = true
+    }
+}
+```
+
+:::
+
 示例命名空间 `com.example.demo`，以下定义方式任选其一。
 
 以下定义方式仅供参考，通常情况下**只要你的项目能够正常生成 `BuildConfig.java` 文件，就不需要做额外操作**。
@@ -96,6 +122,12 @@ android {
 ```kotlin
 @InjectYukiHookWithXposed(modulePackageName = "com.example.demo")
 ```
+
+::: danger
+
+请不要在 **modulePackageName** 中填写 **BuildConfig.APPLICATION_ID**，这会在编译过程中获取到空字符串，这取决于 Android Gradle Plugin 的行为。 
+
+:::
 
 只要你自定义了 `modulePackageName` 的参数，你就会在编译时收到警告。
 
