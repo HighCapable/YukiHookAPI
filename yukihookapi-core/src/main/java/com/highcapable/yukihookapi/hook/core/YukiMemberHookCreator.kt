@@ -604,6 +604,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                         when {
                             it.hookedMember?.member == null -> error("Hook Member [$member] failed")
                             it.isAlreadyHooked -> onAlreadyHookedCallback?.invoke(it.hookedMember.member!!)
+                                ?: YLog.innerW("Already Hooked Member [$member], this will be ignored")
                             else -> {
                                 hookedMembers.add(it.hookedMember)
                                 onHookedCallback?.invoke(it.hookedMember.member!!)
