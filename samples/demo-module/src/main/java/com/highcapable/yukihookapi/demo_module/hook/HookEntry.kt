@@ -123,15 +123,6 @@ object HookEntry : IYukiHookXposedInit {
             // 若无上述需求 - 在宿主重新启动之前建议开启
             // 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
             isEnableModuleAppResourcesCache = true
-            // Whether to enable status functions such as Hook Xposed Module activation
-            // Enable state detection for natively supported Xposed Modules, this feature is enabled by default
-            // After closing you will no longer be able to use the functions in [YukiHookAPI.Status] in the Module environment
-            // When the feature is enabled, it will be automatically hooked [YukiHookModuleStatus] when the Host App starts up
-            // 是否启用 Hook Xposed 模块激活等状态功能
-            // 为原生支持 Xposed 模块激活状态检测 - 此功能默认启用
-            // 关闭后你将不能再在模块环境中使用 [YukiHookAPI.Status] 中的功能
-            // 功能启用后 - 将会在宿主启动时自动 Hook [YukiHookModuleStatus]
-            isEnableHookModuleStatus = true
             // Whether to enable Hook [SharedPreferences]
             // Enable will force [SharedPreferences] file permissions to be adjusted to [Context.MODE_WORLD_READABLE] (0664) at Module App startup
             // This is an optional experimental feature, this feature is not enabled by default

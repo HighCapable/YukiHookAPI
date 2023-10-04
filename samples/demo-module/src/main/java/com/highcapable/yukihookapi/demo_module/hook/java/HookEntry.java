@@ -67,7 +67,6 @@ public class HookEntry implements IYukiHookXposedInit {
         );
         configs.setDebug(true);
         configs.setEnableModuleAppResourcesCache(true);
-        configs.setEnableHookModuleStatus(true);
         configs.setEnableDataChannel(true);
     }
 
