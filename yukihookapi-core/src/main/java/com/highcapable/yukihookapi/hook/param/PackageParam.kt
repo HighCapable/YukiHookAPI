@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -575,10 +575,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
      * - 请现在迁移到 [toClass]
-     * @return [Class]
+     * @return [HookClass]
      */
+    @LegacyHookApi
     @Deprecated(message = "不再推荐使用此方法", ReplaceWith("name.toClass(loader)"))
-    fun findClass(name: String, loader: ClassLoader? = appClassLoader) = name.toClass(loader)
+    fun findClass(name: String, loader: ClassLoader? = appClassLoader) = name.toHookClass(loader)
 
     /**
      * 查找并装载 [HookClass]
@@ -586,10 +587,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
      * - 请现在迁移到 [VariousClass]
-     * @return [VariousClass]
+     * @return [HookClass]
      */
+    @LegacyHookApi
     @Deprecated(message = "不再推荐使用此方法", ReplaceWith("VariousClass(*name)"))
-    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name)
+    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name).toHookClass(loader)
 
     /**
      * Hook 方法、构造方法
@@ -602,7 +604,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      */
     @LegacyHookApi
     @Deprecated(message = "不再推荐使用此方法", ReplaceWith("this.toClass().hook(initiate = initiate)"))
-    inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit) = toClass().hook(initiate = initiate)
+    inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass().hook(initiate = initiate)
 
     /**
      * Hook 方法、构造方法
@@ -629,7 +631,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [YukiMemberHookCreator.Result]
      */
     @LegacyHookApi
-    inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass(appClassLoader).hook(initiate)
+    inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass().hook(initiate)
 
     /**
      * Hook 方法、构造方法
@@ -759,11 +761,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
 
     /**
      * [VariousClass] 转换为 [HookClass]
-     * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
+     * @param loader 当前 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [HookClass]
      */
     @LegacyHookApi
-    internal fun VariousClass.toHookClass(loader: ClassLoader? = null) =
+    private fun VariousClass.toHookClass(loader: ClassLoader? = appClassLoader) =
         runCatching { get(loader).toHookClass() }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
 
     /**
@@ -771,7 +773,15 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [HookClass]
      */
     @LegacyHookApi
-    internal fun Class<*>.toHookClass() = HookClass(instance = this, name)
+    private fun Class<*>.toHookClass() = HookClass(instance = this, name)
+
+    /**
+     * 字符串类名转换为 [HookClass]
+     * @param loader 当前 [ClassLoader] - 不填使用 [appClassLoader]
+     * @return [HookClass]
+     */
+    @LegacyHookApi
+    private fun String.toHookClass(loader: ClassLoader? = appClassLoader) = HookClass(toClassOrNull(loader), name = this)
 
     /**
      * 当前 Hook APP 的生命周期实例处理类
