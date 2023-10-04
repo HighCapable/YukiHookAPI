@@ -6,7 +6,7 @@
 
 > 作为 Xposed 模块，`YukiHookAPI` 提供了一个自动处理程序。
 
-你需要在你的 `build.gradle` 中集成 `com.highcapable.yukihookapi:ksp-xposed` 依赖的最新版本。
+你需要在你的构建脚本中集成 `com.highcapable.yukihookapi:ksp-xposed` 依赖的最新版本。
 
 ## 自定义处理程序
 
@@ -19,6 +19,7 @@ annotation class InjectYukiHookWithXposed(
     val sourcePath: String,
     val modulePackageName: String,
     val entryClassName: String,
+    val isUsingXposedModuleStatus: Boolean,
     val isUsingResourcesHook: Boolean
 )
 ```
@@ -179,6 +180,14 @@ class HookXposedEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 你定义的 **entryClassName** 不可与 **xposed_init** 中的类名相同，否则自动处理程序<u>**会在编译时抛出异常**</u>。
 
 :::
+
+#### isUsingXposedModuleStatus 参数
+
+`isUsingXposedModuleStatus` 决定了自动处理程序是否生成针对 Xposed 模块激活等状态功能的相关代码，此功能默认启用。
+
+生成后你将可以在模块进程中使用 `YukiHookAPI.Status` 的相关功能。
+
+如果你不希望生成相关代码，你可以手动关闭此功能，仅对模块进程生效。
 
 #### isUsingResourcesHook 参数
 

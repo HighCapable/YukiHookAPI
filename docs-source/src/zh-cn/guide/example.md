@@ -676,7 +676,7 @@ val frameworkApiLevel = YukiHookAPI.Status.Executor.apiLevel
 
 **1.0.91** 版本后的 **YukiHookAPI** 修改了获取 Xposed 模块状态的逻辑判断方式，现在你可以在模块与 Hook APP (宿主) 中同时使用此 API；
 
-需要确保 **YukiHookAPI.Configs.isEnableHookModuleStatus** 是启用状态；
+需要确保 **InjectYukiHookWithXposed.isUsingXposedModuleStatus** 是启用状态；
 
 **YukiHookAPI** 仅对已知的获取方式进行了对接，除了提供标准 API 的 Hook Framework 之外，其它情况下模块可能都将无法判断自己是否被激活或是获取 Hook Framework 的相关信息。
 

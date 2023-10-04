@@ -6,7 +6,7 @@
 
 > As an Xposed Module, `YukiHookAPI` provides an automatic builder.
 
-You need to integrate the latest version of the `com.highcapable.yukihookapi:ksp-xposed` dependency in your `build.gradle`.
+You need to integrate the latest version of the `com.highcapable.yukihookapi:ksp-xposed` dependency in your build script.
 
 ## Custom Automatic Builder
 
@@ -19,6 +19,7 @@ annotation class InjectYukiHookWithXposed(
     val sourcePath: String,
     val modulePackageName: String,
     val entryClassName: String,
+    val isUsingXposedModuleStatus: Boolean,
     val isUsingResourcesHook: Boolean
 )
 ```
@@ -186,9 +187,17 @@ The **entryClassName** you define must not be the same as the class name in **xp
 
 :::
 
+#### isUsingXposedModuleStatus Parameter
+
+`isUsingXposedModuleStatus` determines whether the automatic builder generates relevant code for status functions such as Xposed Module activation, this feature is enabled by default.
+
+After generation, you will be able to use the related functions of `YukiHookAPI.Status` in the Module App's process.
+
+If you do not want to generate related code, you can manually turn off this feature, which will only take effect for the Module App's process.
+
 #### isUsingResourcesHook Parameter
 
-`isUsingResourcesHook` determines whether the automatic builder generates relevant code for the Resources Hook, This feature is not enabled by default.
+`isUsingResourcesHook` determines whether the automatic builder generates relevant code for the Resources Hook, this feature is not enabled by default.
 
 By default the generated entry class will look like this.
 

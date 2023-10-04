@@ -676,7 +676,7 @@ For more functions, please refer to [YukiHookAPI.Status.Executor](../api/public/
 
 **YukiHookAPI** after **1.0.91** version modifies the logical judgment method of obtaining the status of the Xposed Module, and now you can use this API in the Module App and Host App at the same time;
 
-Need to make sure **YukiHookAPI.Configs.isEnableHookModuleStatus** is enabled;
+Need to make sure **InjectYukiHookWithXposed.isUsingXposedModuleStatus** is enabled;
 
 **YukiHookAPI** only connects to the known acquisition methods.
 
