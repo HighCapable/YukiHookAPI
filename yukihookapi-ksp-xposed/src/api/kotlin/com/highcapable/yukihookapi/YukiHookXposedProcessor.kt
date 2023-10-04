@@ -44,12 +44,9 @@ import com.highcapable.yukihookapi.factory.ClassName
 import com.highcapable.yukihookapi.factory.PackageName
 import com.highcapable.yukihookapi.factory.sources
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
-import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * 这是 [YukiHookAPI] 的自动生成处理类 - 核心基于 KSP
@@ -99,7 +96,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         private fun SymbolProcessorEnvironment.problem(msg: String): Nothing {
             val helpMsg = "Looking for help? Please see the documentation link below\n" +
                 "- English: https://fankes.github.io/YukiHookAPI/en/config/xposed-using\n" +
-                "- Chinese(Simplified): https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using"
+                "- Chinese (Simplified): https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using"
             logger.error(message = "[$TAG] $msg\n$helpMsg")
             throw RuntimeException("[$TAG] $msg\n$helpMsg")
         }
@@ -163,8 +160,11 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                     ClassKind.CLASS -> false
                                     ClassKind.OBJECT -> true
                                     else -> problem(msg = "Invalid hook entry class \"${it.simpleName.asString()}\" kind \"${it.classKind}\"")
-                                }
-                                generateAssetsFile(codePath = (it.location as? FileLocation?)?.filePath ?: "", sourcePath = sourcePath, data)
+                                }; generateAssetsFile(
+                                    codePath = (it.location as? FileLocation?)?.filePath?.parseFileSeparator() ?: "",
+                                    sourcePath = sourcePath.parseFileSeparator(),
+                                    data = data
+                                )
                             }
                             it.superTypes.any { type -> type.element.toString() == "YukiHookXposedInitProxy" } ->
                                 problem(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
@@ -212,47 +212,26 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          * @param data 生成的模板数据
          */
         private fun generateAssetsFile(codePath: String, sourcePath: String, data: GenerateData) = environment {
-            if (codePath.isBlank()) problem(msg = "Project CodePath not available")
-            if (sourcePath.isBlank()) problem(msg = "Project SourcePath not available")
-            /**
-             * Gradle 在这里自动处理了 Windows 和 Unix 下的反斜杠路径问题
-             *
-             * 为了防止万一还是做了一下反斜杠处理防止旧版本不支持此用法
-             */
-            val separator = when {
-                codePath.contains("\\") -> "\\"
-                codePath.contains("/") -> "/"
-                else -> error("Unix File Separator unknown")
-            }
-            var rootPath = ""
-            val projectPath = when {
-                codePath.contains("\\") -> sourcePath.replace("/", "\\")
-                codePath.contains("/") -> sourcePath.replace("\\", "/")
-                else -> error("Unknown Unix File Separator")
-            }.let {
-                if (codePath.contains(it))
-                    codePath.split(it)[0].apply { rootPath = this } + it
-                else problem(msg = "Project Source Path \"$it\" not matched")
-            }
-            val gradleFile = File("$rootPath${separator}build.gradle")
-            val gradleKtsFile = File("$rootPath${separator}build.gradle.kts")
-            val manifestFile = File("$projectPath${separator}AndroidManifest.xml")
-            val assetsFolder = File("$projectPath${separator}assets")
-            val metaInfFolder = File("$projectPath${separator}resources${separator}META-INF")
+            if (codePath.isBlank()) problem(msg = "Project code path not available")
+            if (sourcePath.isBlank()) problem(msg = "Project source path not available")
+            val projectDir = if (codePath.contains(sourcePath))
+                codePath.split(sourcePath)[0].toFile()
+            else problem(msg = "Project source path \"$sourcePath\" not matched")
+            val manifestFile = projectDir.resolve(sourcePath).resolve("AndroidManifest.xml")
+            val assetsDir = projectDir.resolve(sourcePath).resolve("assets")
+            val metaInfDir = projectDir.resolve(sourcePath).resolve("resources").resolve("META-INF")
             if (manifestFile.exists()) {
-                if (assetsFolder.exists().not() || assetsFolder.isDirectory.not()) assetsFolder.apply { delete(); mkdirs() }
-                if (metaInfFolder.exists().not() || metaInfFolder.isDirectory.not()) metaInfFolder.apply { delete(); mkdirs() }
-                data.modulePackageName = parseModulePackageName(manifestFile, gradleFile, gradleKtsFile)
+                if (assetsDir.exists().not() || assetsDir.isDirectory.not()) assetsDir.apply { delete(); mkdirs() }
+                if (metaInfDir.exists().not() || metaInfDir.isDirectory.not()) metaInfDir.apply { delete(); mkdirs() }
+                data.modulePackageName = parseModulePackageName(projectDir)
                 if (data.modulePackageName.isBlank() && data.customMPackageName.isBlank())
-                    problem(msg = "Cannot identify your Module App's package name, tried AndroidManifest.xml, build.gradle and build.gradle.kts")
-                File("${assetsFolder.absolutePath}${separator}xposed_init")
-                    .writeText(text = "${data.entryPackageName}.${data.xInitClassName}")
-                File("${metaInfFolder.absolutePath}${separator}yukihookapi_init")
-                    .writeText(text = "${data.entryPackageName}.${data.entryClassName}")
+                    problem(msg = "Cannot identify your Module App's package name, please make sure \"BuildConfig.java\" is generated correctly")
+                assetsDir.resolve("xposed_init").writeText(text = "${data.entryPackageName}.${data.xInitClassName}")
+                metaInfDir.resolve("yukihookapi_init").writeText(text = "${data.entryPackageName}.${data.entryClassName}")
                 /** 移除旧版本 API 创建的入口类名称文件 */
-                File("${assetsFolder.absolutePath}${separator}yukihookapi_init").apply { if (exists()) delete() }
+                assetsDir.resolve("yukihookapi_init").apply { if (exists()) delete() }
                 generateClassFile(data)
-            } else problem(msg = "Project Source Path \"$sourcePath\" verify failed! Is this an Android Project?")
+            } else problem(msg = "Project source path \"$sourcePath\" verify failed, is this an Android project?")
         }
 
         /**
@@ -330,37 +309,33 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
 
         /**
          * 解析模块包名
-         * @param manifestFile AndroidManifest.xml 文件
-         * @param gradleFile build.gradle 文件
-         * @param gradleKtsFile build.gradle.kts 文件
+         * @param projectDir 项目目录
          * @return [String] 模块包名
          */
-        private fun parseModulePackageName(manifestFile: File, gradleFile: File, gradleKtsFile: File) = when {
-            gradleFile.exists() -> runCatching {
-                gradleFile.readText()
-                    .removeSpecialChars()
-                    .split("namespace'")[1]
-                    .split("'")[0]
-            }.getOrNull()
-            gradleKtsFile.exists() -> runCatching {
-                gradleKtsFile.readText()
-                    .removeSpecialChars()
-                    .replace("varnamespace", "")
-                    .replace("valnamespace", "")
-                    .split("namespace='")[1]
-                    .split("'")[0]
-            }.getOrNull()
-            else -> null
-        } ?: runCatching {
-            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(manifestFile).let { document ->
-                document.getElementsByTagName("manifest").let { nodeList ->
-                    nodeList.item(0).let { node ->
-                        if (node.nodeType == Node.ELEMENT_NODE)
-                            (node as? Element?)?.getAttribute("package") ?: ""
-                        else ""
-                    }
-                }
-            }
-        }.getOrNull() ?: ""
+        private fun parseModulePackageName(projectDir: File): String {
+            val buildConfigFile = projectDir
+                .resolve("build")
+                .resolve("generated")
+                .resolve("source")
+                .resolve("buildConfig")
+                .walkTopDown()
+                .filter { it.name == "BuildConfig.java" }
+                .sortedByDescending { it.lastModified() }
+                .firstOrNull() ?: return ""
+            val matcher = "APPLICATION_ID\\s*=\\s*\"([^\"]+)\"".toRegex()
+            return runCatching { matcher.find(buildConfigFile.readText())?.groups?.get(1)?.value }.getOrNull() ?: ""
+        }
+
+        /**
+         * 格式化文件分隔符
+         * @return [String]
+         */
+        private fun String.parseFileSeparator() = replace("\\", "/")
+
+        /**
+         * 字符串转换为 [File]
+         * @return [File]
+         */
+        private fun String.toFile() = File(parseFileSeparator())
     }
 }

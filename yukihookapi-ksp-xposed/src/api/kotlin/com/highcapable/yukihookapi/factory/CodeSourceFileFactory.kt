@@ -346,11 +346,10 @@ fun GenerateData.sources() = mapOf(
       import de.robv.android.xposed.XposedBridge
       import de.robv.android.xposed.callbacks.XC_InitPackageResources
       import de.robv.android.xposed.callbacks.XC_LoadPackage
-      ${if (customMPackageName.isBlank()) "import $modulePackageName.BuildConfig" else ""}
     """.trimIndent() + "\n\n" + createCommentContent("Xposed Init Impl") + "\n" + """
       object ${entryClassName}_Impl {
       
-          private const val modulePackageName = ${if (customMPackageName.isNotBlank()) "\"$customMPackageName\"" else "BuildConfig.APPLICATION_ID"}
+          private const val MODULE_PACKAGE_NAME = "${customMPackageName.ifBlank { modulePackageName }}"
           private var isZygoteCalled = false
           private val hookEntry = ${if (isEntryClassKindOfObject) entryClassName else "$entryClassName()"}
       
@@ -387,7 +386,7 @@ fun GenerateData.sources() = mapOf(
           fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
               if (sparam == null) return
               runCatching {
-                  ${ExternalCallerName.YukiXposedModuleCaller.second}.callOnStartLoadModule(modulePackageName, sparam.modulePath)
+                  ${ExternalCallerName.YukiXposedModuleCaller.second}.callOnStartLoadModule(MODULE_PACKAGE_NAME, sparam.modulePath)
                   callOnXposedModuleLoaded(isZygoteLoaded = true)
                   isZygoteCalled = true
               }.onFailure { ${ExternalCallerName.YukiXposedModuleCaller.second}.callLogError("An exception occurred when YukiHookAPI loading Xposed Module", it) }
