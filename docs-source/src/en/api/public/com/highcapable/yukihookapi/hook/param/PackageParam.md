@@ -772,6 +772,50 @@ fun VariousClass.toClassOrNull(loader: ClassLoader?, initialize: Boolean): Class
 
 用法请参考 [String+VariousClass.toClass](#string-variousclass-toclass-i-ext-method) 方法。
 
+## lazyClass <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun lazyClass(name: String, initialize: Boolean, loader: ClassLoaderInitializer?): LazyClass.NonNull<Any>
+```
+
+```kotlin:no-line-numbers
+inline fun <reified T> lazyClass(name: String, initialize: Boolean, loader: ClassLoaderInitializer?): LazyClass.NonNull<T>
+```
+
+```kotlin:no-line-numbers
+fun lazyClass(variousClass: VariousClass, initialize: Boolean, loader: ClassLoaderInitializer?): LazyClass.NonNull<Any>
+```
+
+**Change Records**
+
+`v1.2.0` `added`
+
+**Function Illustrate**
+
+> 懒装载 `Class`。
+
+## lazyClassOrNull <span class="symbol">- method</span>
+
+```kotlin:no-line-numbers
+fun lazyClassOrNull(name: String, initialize: Boolean, loader: ClassLoaderInitializer?): LazyClass.Nullable<Any>
+```
+
+```kotlin:no-line-numbers
+inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean, loader: ClassLoaderInitializer?): LazyClass.Nullable<T>
+```
+
+```kotlin:no-line-numbers
+fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean, loader: ClassLoaderInitializer?): LazyClass.Nullable<Any>
+```
+
+**Change Records**
+
+`v1.2.0` `added`
+
+**Function Illustrate**
+
+> 懒装载 `Class`。
+
 ## String.hasClass <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
