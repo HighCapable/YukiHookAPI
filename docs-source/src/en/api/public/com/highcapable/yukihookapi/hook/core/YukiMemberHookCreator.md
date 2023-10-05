@@ -149,7 +149,7 @@ fun useDangerousOperation(option: String)
 ## MemberHookCreator <span class="symbol">- class</span>
 
 ```kotlin:no-line-numbers
-inner class MemberHookCreator internal constructor(private val priority: YukiHookPriority)
+inner class MemberHookCreator internal constructor(private val priority: YukiHookPriority, private val hookMode: HookMode)
 ```
 
 **Change Records**
@@ -175,6 +175,8 @@ inner class MemberHookCreator internal constructor(private val priority: YukiHoo
 移除 `tag`
 
 `priority` 类型由 `Int` 变更为 `YukiHookPriority`
+
+增加 `hookMode` Hook 模式
 
 **Function Illustrate**
 

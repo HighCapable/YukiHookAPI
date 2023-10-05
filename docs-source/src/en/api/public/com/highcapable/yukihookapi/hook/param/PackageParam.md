@@ -884,7 +884,15 @@ inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit): YukiMembe
 ## Member+BaseFinder.BaseResult.hook <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
+inline fun Member.hook(priority: YukiHookPriority): YukiMemberHookCreator.MemberHookCreator
+```
+
+```kotlin:no-line-numbers
 inline fun Member.hook(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+```
+
+```kotlin:no-line-numbers
+inline fun BaseFinder.BaseResult.hook(priority: YukiHookPriority): YukiMemberHookCreator.MemberHookCreator
 ```
 
 ```kotlin:no-line-numbers
@@ -908,11 +916,23 @@ inline fun BaseFinder.BaseResult.hook(priority: YukiHookPriority, initiate: Yuki
 ## Array&lt;Member&gt;+List&lt;Member&gt;+BaseFinder.BaseResult.hookAll <span class="symbol">- i-ext-method</span>
 
 ```kotlin:no-line-numbers
+inline fun Array<Member>.hookAll(priority: YukiHookPriority): YukiMemberHookCreator.MemberHookCreator
+```
+
+```kotlin:no-line-numbers
 inline fun Array<Member>.hookAll(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
 ```
 
 ```kotlin:no-line-numbers
+inline fun List<Member>.hookAll(priority: YukiHookPriority): YukiMemberHookCreator.MemberHookCreator
+```
+
+```kotlin:no-line-numbers
 inline fun List<Member>.hookAll(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit): YukiMemberHookCreator.MemberHookCreator.Result
+```
+
+```kotlin:no-line-numbers
+inline fun BaseFinder.BaseResult.hookAll(priority: YukiHookPriority): YukiMemberHookCreator.MemberHookCreator
 ```
 
 ```kotlin:no-line-numbers
