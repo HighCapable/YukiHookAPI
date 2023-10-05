@@ -31,7 +31,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
 ## appClassLoader <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
-var appClassLoader：ClassLoader
+var appClassLoader：ClassLoader?
 ```
 
 **Change Records**
@@ -41,6 +41,10 @@ var appClassLoader：ClassLoader
 `v1.1.5` `modified`
 
 可以动态修改此变量的值
+
+`v1.2.0` `modified`
+
+加入可空类型 (空安全)
 
 **Function Illustrate**
 
