@@ -31,6 +31,7 @@ package com.highcapable.yukihookapi.hook.factory
 
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.GenericClass
+import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
@@ -38,6 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassLoaderInitializer
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ConstructorConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
@@ -68,6 +70,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
+import kotlin.reflect.KProperty
 
 /**
  * 定义一个 [Class] 中的 [Member] 类型
@@ -81,6 +84,78 @@ enum class MembersType {
 
     /** 全部 [Constructor] */
     CONSTRUCTOR
+}
+
+/**
+ * 懒装载 [Class] 实例
+ * @param instance 当前实例
+ * @param initialize 是否初始化
+ * @param loader [ClassLoader] 装载实例
+ */
+open class LazyClass<T> internal constructor(
+    private val instance: Any,
+    private val initialize: Boolean,
+    private val loader: ClassLoaderInitializer?,
+) {
+
+    /** 当前实例 */
+    private var baseInstance: Class<T>? = null
+
+    /**
+     * 获取非空实例
+     * @return [Class]<[T]>
+     */
+    internal val nonNull get(): Class<T> {
+        if (baseInstance == null) baseInstance = when (instance) {
+            is String -> instance.toClass(loader?.invoke(), initialize) as Class<T>
+            is VariousClass -> instance.get(loader?.invoke(), initialize) as Class<T>
+            else -> error("Unknown lazy class type \"$instance\"")
+        }
+        return baseInstance ?: error("Exception has been thrown above")
+    }
+
+    /**
+     * 获取可空实例
+     * @return [Class]<[T]> or null
+     */
+    internal val nullable get(): Class<T>? {
+        if (baseInstance == null) baseInstance = when (instance) {
+            is String -> instance.toClassOrNull(loader?.invoke(), initialize) as? Class<T>?
+            is VariousClass -> instance.getOrNull(loader?.invoke(), initialize) as? Class<T>?
+            else -> error("Unknown lazy class type \"$instance\"")
+        }
+        return baseInstance
+    }
+
+    /**
+     * 非空实例
+     * @param instance 当前实例
+     * @param initialize 是否初始化
+     * @param loader [ClassLoader] 装载实例
+     */
+    class NonNull<T> internal constructor(
+        instance: Any,
+        initialize: Boolean,
+        loader: ClassLoaderInitializer?,
+    ) : LazyClass<T>(instance, initialize, loader) {
+
+        operator fun getValue(thisRef: Any?, property: KProperty<*>) = nonNull
+    }
+
+    /**
+     * 可空实例
+     * @param instance 当前实例
+     * @param initialize 是否初始化
+     * @param loader [ClassLoader] 装载实例
+     */
+    class Nullable<T> internal constructor(
+        instance: Any,
+        initialize: Boolean,
+        loader: ClassLoaderInitializer?,
+    ) : LazyClass<T>(instance, initialize, loader) {
+
+        operator fun getValue(thisRef: Any?, property: KProperty<*>) = nullable
+    }
 }
 
 /**
@@ -285,6 +360,68 @@ inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = null, initial
  */
 inline fun <reified T> classOf(loader: ClassLoader? = null, initialize: Boolean = false) =
     loader?.let { T::class.java.name.toClass(loader, initialize) as Class<T> } ?: T::class.java
+
+/**
+ * 懒装载 [Class]
+ * @param name 完整类名
+ * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [LazyClass.NonNull]
+ */
+fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
+    lazyClass<Any>(name, initialize, loader)
+
+/**
+ * 懒装载 [Class]<[T]>
+ * @param name 完整类名
+ * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [LazyClass.NonNull]<[T]>
+ */
+@JvmName("lazyClass_Generics")
+inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = null) =
+    LazyClass.NonNull<T>(name, initialize, loader)
+
+/**
+ * 懒装载 [Class]
+ * @param variousClass [VariousClass]
+ * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [LazyClass.NonNull]
+ */
+fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
+    LazyClass.NonNull<Any>(variousClass, initialize, loader)
+
+/**
+ * 懒装载 [Class]
+ * @param name 完整类名
+ * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [LazyClass.Nullable]
+ */
+fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
+    lazyClassOrNull<Any>(name, initialize, loader)
+
+/**
+ * 懒装载 [Class]<[T]>
+ * @param name 完整类名
+ * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [LazyClass.Nullable]<[T]>
+ */
+@JvmName("lazyClassOrNull_Generics")
+inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = null) =
+    LazyClass.Nullable<T>(name, initialize, loader)
+
+/**
+ * 懒装载 [Class]
+ * @param variousClass [VariousClass]
+ * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * @return [LazyClass.Nullable]
+ */
+fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
+    LazyClass.Nullable<Any>(variousClass, initialize, loader)
 
 /**
  * 通过字符串类名使用指定的 [ClassLoader] 查找是否存在

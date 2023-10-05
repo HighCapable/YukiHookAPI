@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -50,9 +50,11 @@ import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
+import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassLoaderInitializer
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.LazyClass
+import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.factory.value
@@ -66,6 +68,11 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
+import com.highcapable.yukihookapi.hook.factory.hasClass as hasClassGlobal
+import com.highcapable.yukihookapi.hook.factory.lazyClass as lazyClassGlobal
+import com.highcapable.yukihookapi.hook.factory.lazyClassOrNull as lazyClassOrNullGlobal
+import com.highcapable.yukihookapi.hook.factory.toClass as toClassGlobal
+import com.highcapable.yukihookapi.hook.factory.toClassOrNull as toClassOrNullGlobal
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
@@ -505,7 +512,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @throws NoClassDefFoundError 如果找不到 [Class]
      */
     fun String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
-        ReflectionTool.findClassByName(name = this, loader, initialize)
+        toClassGlobal(loader, initialize)
 
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
@@ -517,8 +524,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      */
     @JvmName("toClass_Generics")
     inline fun <reified T> String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
-        ReflectionTool.findClassByName(name = this, loader, initialize) as? Class<T>?
-            ?: error("Target Class type cannot cast to ${T::class.java}")
+        toClassGlobal<T>(loader, initialize)
 
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
@@ -529,7 +535,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [Class] or null
      */
     fun String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
-        runCatching { toClass(loader, initialize) }.getOrNull()
+        toClassOrNullGlobal(loader, initialize)
 
     /**
      * 通过字符串类名转换为 [loader] 中的实体类
@@ -541,7 +547,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      */
     @JvmName("toClassOrNull_Generics")
     inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
-        runCatching { toClass<T>(loader, initialize) }.getOrNull()
+        toClassOrNullGlobal<T>(loader, initialize)
 
     /**
      * [VariousClass] 转换为 [loader] 中的实体类
@@ -563,11 +569,73 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = getOrNull(loader, initialize)
 
     /**
+     * 懒装载 [Class]
+     * @param name 完整类名
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.NonNull]
+     */
+    fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+        lazyClassGlobal(name, initialize, loader)
+
+    /**
+     * 懒装载 [Class]<[T]>
+     * @param name 完整类名
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.NonNull]<[T]>
+     */
+    @JvmName("lazyClass_Generics")
+    inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = { appClassLoader }) =
+        lazyClassGlobal<T>(name, initialize, loader)
+
+    /**
+     * 懒装载 [Class]
+     * @param variousClass [VariousClass]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.NonNull]
+     */
+    fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+        lazyClassGlobal(variousClass, initialize, loader)
+
+    /**
+     * 懒装载 [Class]
+     * @param name 完整类名
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.Nullable]
+     */
+    fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+        lazyClassOrNullGlobal(name, initialize, loader)
+
+    /**
+     * 懒装载 [Class]<[T]>
+     * @param name 完整类名
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.Nullable]<[T]>
+     */
+    @JvmName("lazyClassOrNull_Generics")
+    inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = { appClassLoader }) =
+        lazyClassOrNullGlobal<T>(name, initialize, loader)
+
+    /**
+     * 懒装载 [Class]
+     * @param variousClass [VariousClass]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.Nullable]
+     */
+    fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+        lazyClassOrNullGlobal(variousClass, initialize, loader)
+
+    /**
      * 通过字符串类名查找是否存在
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Boolean] 是否存在
      */
-    fun String.hasClass(loader: ClassLoader? = appClassLoader) = ReflectionTool.hasClassByName(name = this, loader)
+    fun String.hasClass(loader: ClassLoader? = appClassLoader) = hasClassGlobal(loader)
 
     /**
      * 查找并装载 [HookClass]

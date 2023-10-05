@@ -36,6 +36,9 @@ import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 
+/** 定义 [ClassLoader] 装载实例方法体类型 */
+internal typealias ClassLoaderInitializer = () -> ClassLoader?
+
 /** 定义 [DexClassFinder] 方法体类型 */
 internal typealias ClassConditions = DexClassFinder.() -> Unit
 
