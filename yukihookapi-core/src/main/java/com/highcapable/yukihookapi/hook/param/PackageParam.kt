@@ -647,13 +647,31 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    fun Member.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = listOf(this).baseHook(priority)
+
+    /**
+     * 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
      */
     inline fun Member.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = listOf(this).baseHook(priority, initiate)
+    ) = listOf(this).baseHook(priority, isLazyMode = true).apply(initiate).build()
+
+    /**
+     * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    fun BaseFinder.BaseResult.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(isMultiple = false, priority)
 
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
@@ -666,7 +684,16 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     inline fun BaseFinder.BaseResult.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = baseHook(isMultiple = false, priority, initiate)
+    ) = baseHook(isMultiple = false, priority, isLazyMode = true).apply(initiate).build()
+
+    /**
+     * 直接 Hook 方法、构造方法 (批量)
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    fun Array<Member>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = toList().baseHook(priority)
 
     /**
      * 直接 Hook 方法、构造方法 (批量)
@@ -679,7 +706,16 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     inline fun Array<Member>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = toList().baseHook(priority, initiate)
+    ) = toList().baseHook(priority, isLazyMode = true).apply(initiate).build()
+
+    /**
+     * 直接 Hook 方法、构造方法 (批量)
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    fun List<Member>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(priority)
 
     /**
      * 直接 Hook 方法、构造方法 (批量)
@@ -692,7 +728,16 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     inline fun List<Member>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = baseHook(priority, initiate)
+    ) = baseHook(priority, isLazyMode = true).apply(initiate).build()
+
+    /**
+     * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法 (批量)
+     *
+     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    fun BaseFinder.BaseResult.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(isMultiple = true, priority)
 
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法 (批量)
@@ -705,7 +750,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     inline fun BaseFinder.BaseResult.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = baseHook(isMultiple = true, priority, initiate)
+    ) = baseHook(isMultiple = true, priority, isLazyMode = true).apply(initiate).build()
 
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
@@ -713,41 +758,38 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param isMultiple 是否为多重查找
      * @param priority Hook 优先级
-     * @param initiate 方法体
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     * @param isLazyMode 是否为惰性模式 - 默认否
+     * @return [YukiMemberHookCreator.MemberHookCreator]
      */
-    private inline fun BaseFinder.BaseResult.baseHook(
-        isMultiple: Boolean,
-        priority: YukiHookPriority,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = when (this) {
-        is DexClassFinder.Result ->
-            error("Use of searchClass { ... }.hook { ... } is an error, please use like searchClass { ... }.get()?.hook { ... }")
-        is ConstructorFinder.Result -> {
-            val members = if (isMultiple) giveAll()
-            else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
-            YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, priority, initiate)
+    private fun BaseFinder.BaseResult.baseHook(isMultiple: Boolean, priority: YukiHookPriority, isLazyMode: Boolean = false) =
+        when (this) {
+            is DexClassFinder.Result ->
+                error("Use of searchClass { ... }.hook { ... } is an error, please use like searchClass { ... }.get()?.hook { ... }")
+            is ConstructorFinder.Result -> {
+                val members = if (isMultiple) giveAll()
+                else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
+                YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, priority, isLazyMode)
+            }
+            is MethodFinder.Result -> {
+                val members = if (isMultiple) giveAll()
+                else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
+                YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, priority, isLazyMode)
+            }
+            else -> error("This type [$this] not support to hook, supported are Constructors and Methods")
         }
-        is MethodFinder.Result -> {
-            val members = if (isMultiple) giveAll()
-            else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
-            YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, priority, initiate)
-        }
-        else -> error("This type [$this] not support to hook, supported are Constructors and Methods")
-    }
 
     /**
      * 直接 Hook 方法、构造方法
      *
      * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级
-     * @param initiate 方法体
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     * @param isLazyMode 是否为惰性模式 - 默认否
+     * @return [YukiMemberHookCreator.MemberHookCreator]
      */
-    private inline fun List<Member>.baseHook(priority: YukiHookPriority, initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) =
+    private fun List<Member>.baseHook(priority: YukiHookPriority, isLazyMode: Boolean = false) =
         YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, onEach {
             if (it !is Constructor<*> && it !is Method) error("This type [$it] not support to hook, supported are Constructors and Methods")
-        }, priority, initiate)
+        }, priority, isLazyMode)
 
     /**
      * Hook APP 的 Resources

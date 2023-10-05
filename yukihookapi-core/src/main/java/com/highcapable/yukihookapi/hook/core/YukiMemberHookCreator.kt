@@ -26,8 +26,8 @@
  * This file is created by fankes on 2022/2/2.
  */
 @file:Suppress(
-    "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "DeprecatedCallableAddReplaceWith",
-    "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "OPT_IN_USAGE"
+    "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter",
+    "DeprecatedCallableAddReplaceWith", "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE",
 )
 
 package com.highcapable.yukihookapi.hook.core
@@ -88,21 +88,13 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param packageParam 需要传入 [PackageParam] 实现方法调用
          * @param members 要指定的 [Member] 数组
          * @param priority Hook 优先级
-         * @param initiate 方法体
-         * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+         * @param isLazyMode 是否为惰性模式
+         * @return [YukiMemberHookCreator.MemberHookCreator]
          */
-        internal inline fun createMemberHook(
-            packageParam: PackageParam,
-            members: List<Member>,
-            priority: YukiHookPriority,
-            initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-        ): YukiMemberHookCreator.MemberHookCreator.Result {
-            val creator = YukiMemberHookCreator(packageParam, HookClass.createPlaceholder())
-            if (members.isEmpty()) return creator.createMemberHook(priority).build()
-            val result = creator.injectMember(priority) { members(*members.toTypedArray()); apply(initiate) }
-            creator.hook()
-            return result
-        }
+        internal fun createMemberHook(packageParam: PackageParam, members: List<Member>, priority: YukiHookPriority, isLazyMode: Boolean) =
+            YukiMemberHookCreator(packageParam, HookClass.createPlaceholder())
+                .createMemberHook(priority, if (isLazyMode) HookMode.LAZY_MEMBERS else HookMode.IMMEDIATE)
+                .apply { if (members.isNotEmpty()) members(*members.toTypedArray()) }
     }
 
     /**
@@ -162,6 +154,14 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     }
 
     /**
+     * 当前是否为不需要 Hook 的调用域
+     *
+     * 过滤 [HookEntryType.ZYGOTE] and [HookEntryType.PACKAGE]
+     * @return [Boolean]
+     */
+    private val isHooklessScope get() = packageParam.wrapper?.type == HookEntryType.RESOURCES
+
+    /**
      * 得到当前被 Hook 的 [Class]
      *
      * - 不推荐直接使用 - 万一得不到 [Class] 对象则会无法处理异常导致崩溃
@@ -182,7 +182,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      */
     @LegacyHookApi
     inline fun injectMember(priority: YukiHookPriority = YukiHookPriority.DEFAULT, initiate: MemberHookCreator.() -> Unit) =
-        createMemberHook(priority).apply(initiate).apply { preHookMembers[toString()] = this }.build()
+        createMemberHook(priority, HookMode.LAZY_CLASSES).apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
     /**
      * 注入要 Hook 的 [Method]、[Constructor]
@@ -218,10 +218,11 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      * @return [Result]
      */
     internal fun hook() = when {
-        HookApiCategoryHelper.hasAvailableHookApi.not() -> Result()
-        /** 过滤 [HookEntryType.ZYGOTE] and [HookEntryType.PACKAGE] or [HookParam.isCallbackCalled] 已被执行 */
-        packageParam.wrapper?.type == HookEntryType.RESOURCES && HookParam.isCallbackCalled.not() -> Result()
-        preHookMembers.isEmpty() -> Result().also { YLog.innerW(msg = "Hook Members is empty in [${hookClass.name}], hook aborted") }
+        HookApiCategoryHelper.hasAvailableHookApi.not() || isHooklessScope && HookParam.isCallbackCalled.not() -> Result()
+        preHookMembers.isEmpty() -> Result().also {
+            if (hookClass.isPlaceholder) YLog.innerW("Hook Members is empty, hook aborted")
+            else YLog.innerW("Hook Members is empty in [${hookClass.name}], hook aborted")
+        }
         else -> Result().await {
             when {
                 isDisableCreatorRunHook.not() && (hookClass.instance != null || hookClass.isPlaceholder) ->
@@ -231,12 +232,12 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                         preHookMembers.forEach { (_, m) -> m.hook() }
                     }.onFailure {
                         if (onHookClassNotFoundFailureCallback == null)
-                            YLog.innerE(msg = "Hook initialization failed because got an exception", e = it)
+                            YLog.innerE("Hook initialization failed because got an exception", e = it)
                         else onHookClassNotFoundFailureCallback?.invoke(it)
                     }
                 isDisableCreatorRunHook.not() && hookClass.instance == null ->
                     if (onHookClassNotFoundFailureCallback == null)
-                        YLog.innerE(msg = "HookClass [${hookClass.name}] not found", e = hookClass.throwable)
+                        YLog.innerE("HookClass [${hookClass.name}] not found", e = hookClass.throwable)
                     else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
             }
         }
@@ -280,17 +281,19 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     /**
      * 创建 [MemberHookCreator]
      * @param priority Hook 优先级
+     * @param hookMode Hook 模式
      * @return [MemberHookCreator]
      */
-    private fun createMemberHook(priority: YukiHookPriority) = MemberHookCreator(priority)
+    private fun createMemberHook(priority: YukiHookPriority, hookMode: HookMode) = MemberHookCreator(priority, hookMode)
 
     /**
      * Hook 核心功能实现类
      *
      * 查找和处理需要 Hook 的 [Method]、[Constructor]
      * @param priority Hook 优先级
+     * @param hookMode Hook 模式
      */
-    inner class MemberHookCreator internal constructor(private val priority: YukiHookPriority) {
+    inner class MemberHookCreator internal constructor(private val priority: YukiHookPriority, private val hookMode: HookMode) {
 
         /** Hook 结果实例 */
         private var result: Result? = null
@@ -471,6 +474,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun before(initiate: HookParam.() -> Unit): HookCallback {
             isReplaceHookMode = false
             beforeHookCallback = initiate
+            immediateHook()
             return HookCallback()
         }
 
@@ -484,6 +488,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun after(initiate: HookParam.() -> Unit): HookCallback {
             isReplaceHookMode = false
             afterHookCallback = initiate
+            immediateHook()
             return HookCallback()
         }
 
@@ -518,6 +523,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun replaceAny(initiate: HookParam.() -> Any?) {
             isReplaceHookMode = true
             replaceHookCallback = initiate
+            immediateHook()
         }
 
         /**
@@ -529,6 +535,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun replaceUnit(initiate: HookParam.() -> Unit) {
             isReplaceHookMode = true
             replaceHookCallback = initiate
+            immediateHook()
         }
 
         /**
@@ -540,6 +547,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun replaceTo(any: Any?) {
             isReplaceHookMode = true
             replaceHookCallback = { any }
+            immediateHook()
         }
 
         /**
@@ -552,6 +560,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun replaceToTrue() {
             isReplaceHookMode = true
             replaceHookCallback = { true }
+            immediateHook()
         }
 
         /**
@@ -564,6 +573,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun replaceToFalse() {
             isReplaceHookMode = true
             replaceHookCallback = { false }
+            immediateHook()
         }
 
         /**
@@ -578,6 +588,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         fun intercept() {
             isReplaceHookMode = true
             replaceHookCallback = { null }
+            immediateHook()
         }
 
         /**
@@ -592,11 +603,22 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * Hook 创建入口
          * @return [Result]
          */
-        internal fun build() = Result().apply { result = this }
+        internal fun build() = Result().apply {
+            result = this
+            immediateHook(isLazyMode = true)
+        }
+
+        /**
+         * 调用即时 Hook
+         * @param isLazyMode 是否为惰性模式 - 默认否
+         */
+        private fun immediateHook(isLazyMode: Boolean = false) {
+            if (isLazyMode && hookMode == HookMode.LAZY_MEMBERS || hookMode == HookMode.IMMEDIATE) hook()
+        }
 
         /** Hook 执行入口 */
         internal fun hook() {
-            if (HookApiCategoryHelper.hasAvailableHookApi.not() || isHooked || isDisableMemberRunHook) return
+            if (HookApiCategoryHelper.hasAvailableHookApi.not() || isHooklessScope || isHooked || isDisableMemberRunHook) return
             isHooked = true
             if (hookClass.instance == null && hookClass.isPlaceholder.not()) {
                 (hookClass.throwable ?: Throwable("HookClass [${hookClass.name}] not found")).also {
@@ -953,5 +975,19 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             by { hookClass.instance != null }
             return this
         }
+    }
+
+    /**
+     * Hook 模式类型定义类
+     */
+    internal enum class HookMode {
+        /** 惰性模式 [Class] */
+        LAZY_CLASSES,
+
+        /** 惰性模式 [Member] */
+        LAZY_MEMBERS,
+
+        /** 即时模式 */
+        IMMEDIATE
     }
 }
