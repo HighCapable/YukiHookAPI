@@ -84,15 +84,21 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     private var currentClassLoader: ClassLoader? = null
 
     /**
+     * 获取 [appClassLoader] 装载实例
+     * @return [ClassLoaderInitializer]
+     */
+    private val appLoaderInit get(): ClassLoaderInitializer = { appClassLoader }
+
+    /**
      * 获取、设置当前 Hook APP 的 [ClassLoader]
      *
      * 你可以在这里手动设置当前 Hook APP 的 [ClassLoader] - 默认情况下会自动获取
      *
      * - 如果设置了错误或无效的 [ClassLoader] 会造成功能异常 - 请谨慎操作
-     * @return [ClassLoader]
+     * @return [ClassLoader] or null
      */
     var appClassLoader
-        get() = currentClassLoader ?: wrapper?.appClassLoader ?: AppParasitics.currentApplication?.classLoader ?: AppParasitics.baseClassLoader
+        get() = currentClassLoader ?: wrapper?.appClassLoader ?: AppParasitics.currentApplication?.classLoader
         set(value) {
             currentClassLoader = value
         }
@@ -575,7 +581,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
      * @return [LazyClass.NonNull]
      */
-    fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+    fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassGlobal(name, initialize, loader)
 
     /**
@@ -586,7 +592,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [LazyClass.NonNull]<[T]>
      */
     @JvmName("lazyClass_Generics")
-    inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = { appClassLoader }) =
+    inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassGlobal<T>(name, initialize, loader)
 
     /**
@@ -596,7 +602,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
      * @return [LazyClass.NonNull]
      */
-    fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+    fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassGlobal(variousClass, initialize, loader)
 
     /**
@@ -606,7 +612,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
      * @return [LazyClass.Nullable]
      */
-    fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+    fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassOrNullGlobal(name, initialize, loader)
 
     /**
@@ -617,7 +623,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [LazyClass.Nullable]<[T]>
      */
     @JvmName("lazyClassOrNull_Generics")
-    inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = { appClassLoader }) =
+    inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassOrNullGlobal<T>(name, initialize, loader)
 
     /**
@@ -627,7 +633,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
      * @return [LazyClass.Nullable]
      */
-    fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = { appClassLoader }) =
+    fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassOrNullGlobal(variousClass, initialize, loader)
 
     /**
