@@ -26,8 +26,8 @@
  * This file is created by fankes on 2022/2/2.
  */
 @file:Suppress(
-    "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter",
-    "DeprecatedCallableAddReplaceWith", "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE",
+    "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "DeprecatedCallableAddReplaceWith",
+    "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "OPT_IN_USAGE",
 )
 
 package com.highcapable.yukihookapi.hook.core
@@ -217,6 +217,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      * Hook 执行入口
      * @return [Result]
      */
+    @LegacyHookApi
     internal fun hook() = when {
         HookApiCategoryHelper.hasAvailableHookApi.not() || isHooklessScope && HookParam.isCallbackCalled.not() -> Result()
         preHookMembers.isEmpty() -> Result().also {
@@ -369,6 +370,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param member 要指定的 [Member] or [Member] 数组
          * @throws IllegalStateException 如果 [member] 参数为空
          */
+        @LegacyHookApi
         fun members(vararg member: Member?) {
             if (member.isEmpty()) error("Custom Hooking Members is empty")
             members.clear()
@@ -383,6 +385,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * - 请现在迁移到 [MethodFinder] or [allMembers]
          * @param name 方法名称
          */
+        @LegacyHookApi
         @Deprecated(message = "请使用新方式来实现 Hook 所有方法", ReplaceWith("method { this.name = name }.all()"))
         fun allMethods(name: String) = method { this.name = name }.all()
 
@@ -393,6 +396,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          *
          * - 请现在迁移到 [ConstructorFinder] or [allMembers]
          */
+        @LegacyHookApi
         @Deprecated(
             message = "请使用新方式来实现 Hook 所有构造方法",
             ReplaceWith("allMembers(MembersType.CONSTRUCTOR)", "com.highcapable.yukihookapi.hook.factory.MembersType")
@@ -409,6 +413,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * - 如果 [hookClass] 中没有 [Member] 可能会发生错误
          * @param type 过滤 [Member] 类型 - 默认为 [MembersType.ALL]
          */
+        @LegacyHookApi
         fun allMembers(type: MembersType = MembersType.ALL) {
             members.clear()
             if (type == MembersType.ALL || type == MembersType.CONSTRUCTOR)
@@ -425,6 +430,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param initiate 方法体
          * @return [MethodFinder.Process]
          */
+        @LegacyHookApi
         inline fun method(initiate: MethodConditions) = runCatching {
             isHookMemberSetup = true
             MethodFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).process()
@@ -440,6 +446,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param initiate 方法体
          * @return [ConstructorFinder.Process]
          */
+        @LegacyHookApi
         inline fun constructor(initiate: ConstructorConditions = { emptyParam() }) = runCatching {
             isHookMemberSetup = true
             ConstructorFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).process()
@@ -933,6 +940,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
+        @LegacyHookApi
         inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
@@ -942,6 +950,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param condition 条件方法体
          * @return [Result] 可继续向下监听
          */
+        @LegacyHookApi
         inline fun by(condition: () -> Boolean): Result {
             updateDisableCreatorRunHookReasons((runCatching { condition() }.getOrNull() ?: false).not())
             return this
@@ -952,6 +961,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param callback 准备开始 Hook 后回调
          * @return [Result] 可继续向下监听
          */
+        @LegacyHookApi
         fun onPrepareHook(callback: () -> Unit): Result {
             onPrepareHook = callback
             return this
@@ -962,6 +972,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
+        @LegacyHookApi
         fun onHookClassNotFoundFailure(result: (Throwable) -> Unit): Result {
             onHookClassNotFoundFailureCallback = result
             return this
@@ -971,6 +982,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          * 忽略 [hookClass] 找不到时出现的错误
          * @return [Result] 可继续向下监听
          */
+        @LegacyHookApi
         fun ignoredHookClassNotFoundFailure(): Result {
             by { hookClass.instance != null }
             return this
