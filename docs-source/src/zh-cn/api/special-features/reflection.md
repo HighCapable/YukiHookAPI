@@ -74,6 +74,52 @@ var instance = classOf<Test>(customClassLoader)
 
 :::
 
+### 延迟装载
+
+假设我们要得到一个不能直接调用的 `Class`，但是我们也不是立刻就需要这个 `Class`。
+
+这个时候，你可以使用 `lazyClass` 来完成这个功能。
+
+> 示例如下
+
+```kotlin
+// 延迟装载这个 Class
+// 如果当前正处于 PackageParam 环境，那么你可以不需要考虑 ClassLoader
+val instance by lazyClass("com.demo.Test")
+// 自定义 Class 所在的 ClassLoader
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+val instance by lazyClass("com.demo.Test") { customClassLoader }
+// 在适当的时候调用这个 Class
+instance.method { 
+    // ...   
+}
+```
+
+如果当前 `Class` 并不存在，使用上述方法会抛出异常，如果你不确定 `Class` 是否存在，可以参考下面的解决方案。
+
+> 示例如下
+
+```kotlin
+// 延迟装载这个 Class
+// 如果当前正处于 PackageParam 环境，那么你可以不需要考虑 ClassLoader
+// 得不到时结果会为 null 但不会抛出异常
+val instance by lazyClassOrNull("com.demo.Test")
+// 自定义 Class 所在的 ClassLoader
+val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
+// 得不到时结果会为 null 但不会抛出异常
+val instance by lazyClassOrNull("com.demo.Test") { customClassLoader }
+// 在适当的时候调用这个 Class
+instance?.method { 
+    // ...   
+}
+```
+
+::: tip
+
+更多功能请参考 [lazyClass](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#lazyclass-method)、[lazyClassOrNull](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#lazyclassornull-method)、[PackageParam → lazyClass](../public/com/highcapable/yukihookapi/hook/param/PackageParam#lazyclass-method)、[PackageParam → lazyClassOrNull](../public/com/highcapable/yukihookapi/hook/param/PackageParam#lazyclassornull-method) 方法。
+
+:::
+
 ### 存在判断
 
 假设我们要判断一个 `Class` 是否存在，通常情况下，我们可以使用标准的反射 API 去查找这个 `Class` 通过异常来判断是否存在。

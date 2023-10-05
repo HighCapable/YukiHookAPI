@@ -157,7 +157,7 @@ loadApp(name = "com.android.browser") {
     .method {
         // Your code here.
     }.hook {
-         // Your code here.
+        // Your code here.
     }
 ```
 
@@ -170,8 +170,28 @@ loadApp(name = "com.android.browser") {
     .method {
         // Your code here.
     }.hook {
-         // Your code here.
+        // Your code here.
     }
+```
+
+若这个 `Class` 不是马上就能被得到的，你可以使用 `lazyClass(...)` 来定义它。
+
+> 示例如下
+
+定义 `TestClass`。
+
+```kotlin
+val TestClass by lazyClass("com.example.demo.TestClass")
+```
+
+在适当的时候使用它。
+
+```kotlin
+TestClass.method {
+    // Your code here.
+}.hook {
+    // Your code here.
+}
 ```
 
 ::: tip
@@ -564,6 +584,18 @@ withProcess(name = "$packageName:tool") {
 
 ```kotlin
 override fun onHook() = encase {
+    // Your code here.
+}
+```
+
+你还可以在仅需要一个 Hook 回调事件的时候简写 `hook { ... }` 方法体。
+
+> 示例如下
+
+```kotlin
+ActvityClass.method {
+    // Your code here.
+}.hook().after {
     // Your code here.
 }
 ```

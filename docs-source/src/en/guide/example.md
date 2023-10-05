@@ -157,7 +157,7 @@ For example, I want to get `com.example.demo.TestClass`.
     .method {
         // Your code here.
     }.hook {
-         // Your code here.
+        // Your code here.
     }
 ```
 
@@ -170,8 +170,28 @@ If `com.example.demo` is the app you want to hook, then the writing method can b
     .method {
         // Your code here.
     }.hook {
-         // Your code here.
+        // Your code here.
     }
+```
+
+If this `Class` is not immediately available, you can use `lazyClass(...)` to define it.
+
+> The following example
+
+Define `TestClass`.
+
+```kotlin
+val TestClass by lazyClass("com.example.demo.TestClass")
+```
+
+Use it when appropriate.
+
+```kotlin
+TestClass.method {
+    // Your code here.
+}.hook {
+    // Your code here.
+}
 ```
 
 ::: tip
@@ -564,6 +584,18 @@ To make the code more concise, you can omit the name of `YukiHookAPI` and write 
 
 ```kotlin
 override fun onHook() = encase {
+    // Your code here.
+}
+```
+
+You can also abbreviate the `hook { ... }` method body when you only need a Hook callback event.
+
+> The following example
+
+```kotlin
+ActivityClass.method {
+    // Your code here.
+}.hook().after {
     // Your code here.
 }
 ```

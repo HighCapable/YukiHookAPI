@@ -78,6 +78,54 @@ For more functions, please refer to [classOf](../public/com/highcapable/yukihook
 
 :::
 
+### Lazy Loading
+
+Suppose we want to get a `Class` that cannot be called directly, but we do not need this `Class` immediately.
+
+At this time, you can use `lazyClass` to complete this function.
+
+> The following example
+
+```kotlin
+// Lazy loading of this Class
+// If you are currently in a PackageParam environment, then you do not need to consider ClassLoader
+val instance by lazyClass("com.demo.Test")
+// Customize the ClassLoader where the Class is located
+val customClassLoader: ClassLoader? = ... // Assume this is your ClassLoader
+val instance by lazyClass("com.demo.Test") { customClassLoader }
+// Call this Class at the appropriate time
+instance.method {
+    // ...
+}
+```
+
+If the current `Class` does not exist, using the above method will throw an exception.
+
+If you are not sure whether `Class` exists, you can refer to the following solution.
+
+> The following example
+
+```kotlin
+// Lazy loading of this Class
+// If you are currently in a PackageParam environment, then you do not need to consider ClassLoader
+// If not available, the result will be null but no exception will be thrown
+val instance by lazyClassOrNull("com.demo.Test")
+// Customize the ClassLoader where the Class is located
+val customClassLoader: ClassLoader? = ... // Assume this is your ClassLoader
+// If not available, the result will be null but no exception will be thrown
+val instance by lazyClassOrNull("com.demo.Test") { customClassLoader }
+// Call this Class at the appropriate time
+instance?.method {
+    // ...
+}
+```
+
+::: tip
+
+For more functions, please refer to [lazyClass](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#lazyclass-method), [lazyClassOrNull](../public/com/highcapable/yukihookapi/hook/factory/ReflectionFactory#lazyclassornull-method), [PackageParam → lazyClass](../public/com/highcapable/yukihookapi/hook/param/PackageParam#lazyclass-method), [PackageParam → lazyClassOrNull](../public/com/highcapable/yukihookapi/hook/param/PackageParam#lazyclassornull-method) methods.
+
+:::
+
 ### Existential Judgment
 
 Suppose we want to determine whether a `Class` exists.
