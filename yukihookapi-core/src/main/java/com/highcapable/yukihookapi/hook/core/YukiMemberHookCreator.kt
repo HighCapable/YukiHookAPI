@@ -657,6 +657,8 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                 onNoSuchMemberFailureCallback?.invoke(it)
                 onHookingFailureCallback?.invoke(it)
                 onAllFailureCallback?.invoke(it)
+                /** 如果不是使用 [injectMember] 创建的实例将不发出任何警告 */
+                if (hookMode != HookMode.LAZY_CLASSES) return
                 if (isNotIgnoredNoSuchMemberFailure) YLog.innerE(
                     msg = when {
                         hookClass.isPlaceholder ->
