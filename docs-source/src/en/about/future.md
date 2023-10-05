@@ -16,6 +16,14 @@ Some Xposed Module developers currently choose the Hook target app self's Shared
 
 In the later period, the permissions of the Android system will become more and more strict, and `selinux` is a big problem currently facing, which needs to be discussed and studied.
 
+::: tip Updated on 2023.10.06
+
+LSPosed has now experimentally launched [Modern Xposed API](https://github.com/libxposed), which uses Service to communicate with modules, which will solve the problem of module data storage.
+
+In order to ensure the compatibility of most modules, **YukiHookAPI** plans to use a customized ContentProvider to realize data exchange between the Module App and the Host App in the future, so stay tuned.
+
+:::
+
 ## Future Plans
 
 > Features that `YukiHookAPI` may add later are included here.
@@ -42,8 +50,58 @@ You can submit **issues** with us.
 
 We have provided the Xposed native API listening interface, you can find or view the implementation method of the Demo [here](../config/xposed-using#native-xposed-api-events).
 
-### Support for More Hook Framework
+### Milestone Plan
 
-As an API, currently only docking `XposedBridge` as a compatibility layer still has certain limitations.
+The plans below have been published in `issues` on GitHub, and you can view the progress of each project.
 
-Most `inline hook` do not have a Java compatibility layer, and the Java compatibility layer adaptation of `native hook` may be considered later.
+All functions are expected to be completed in `2.0.0` version, so stay tuned.
+
+- [New Xposed Module Config Plan](https://github.com/fankes/YukiHookAPI/issues/49)
+- [New Hook Entry Class](https://github.com/fankes/YukiHookAPI/issues/48)
+- [New Hook Code Style](https://github.com/fankes/YukiHookAPI/issues/33)
+
+#### New Hook Code Style (Preview)
+
+`YukiHookAPI` introduced the `New Hook Code Style` (New API) of `2.0.0` in the `1.2.0` version, it is now in the experimental stage.
+
+You can before the `2.0.0` version is officially released, start migrating and experience the New API.
+
+For example, we want to Hook the `test` method in the `com.example.Test` class.
+
+> Legacy API
+
+```kotlin
+findClass("com.example.Test").hook {
+    injectMember {
+        method {
+            name = "test"
+        }
+        beforeHook {
+            // Your code here.
+        }
+        afterHook {
+            // Your code here.
+        }
+    }
+}
+```
+
+> New API
+
+```kotlin
+"com.example.Test".toClass()
+    .method {
+        name = "test"
+    }.hook {
+        before {
+            // Your code here.
+        }
+        after {
+            // Your code here.
+        }
+    }
+```
+
+The Hook object of the New API has been migrated from `Class` to `Member`, which will be more intuitive.
+
+All legacy APIs have been marked `LegacyHookApi`, you can use `@OptIn(LegacyHookApi::class)` to eliminate the warning and continue to use the legacy API.
