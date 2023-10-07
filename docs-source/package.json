@@ -1,6 +1,6 @@
 {
   "name": "yukihookapi_docs",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@mr-hope/vuepress-plugin-copy-code": "^1.30.0",
     "@vuepress/plugin-prismjs": "2.0.0-beta.67",
