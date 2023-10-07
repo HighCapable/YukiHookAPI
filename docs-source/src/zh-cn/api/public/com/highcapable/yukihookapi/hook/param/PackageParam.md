@@ -945,7 +945,7 @@ inline fun BaseFinder.BaseResult.hook(priority: YukiHookPriority, initiate: Yuki
 
 ::: warning
 
-此功能尚在实验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
+此功能尚在实验阶段，在 **1.x.x** 版本将暂定于此，在 **2.0.0** 版本将完全合并到新 API。
 
 :::
 
@@ -985,7 +985,7 @@ inline fun BaseFinder.BaseResult.hookAll(priority: YukiHookPriority, initiate: Y
 
 ::: warning
 
-此功能尚在实验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
+此功能尚在实验阶段，在 **1.x.x** 版本将暂定于此，在 **2.0.0** 版本将完全合并到新 API。
 
 :::
 

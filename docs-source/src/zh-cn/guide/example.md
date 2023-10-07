@@ -58,7 +58,7 @@ TargetClass.hook {
         }
     }
 }
-// Resources Hook (2.x.x 将停止支持)
+// Resources Hook (2.0.0 将停止支持)
 resources().hook {
     injectResource {
         conditions {
@@ -265,7 +265,7 @@ loadSystem {
 
 ::: warning
 
-此功能将在 2.x.x 版本停止支持并移除。
+此功能将在 **2.0.0** 版本停止支持并移除。
 
 :::
 

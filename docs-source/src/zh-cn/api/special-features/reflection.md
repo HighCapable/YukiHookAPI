@@ -183,7 +183,7 @@ var isExist = "com.demo.Test".hasClass(customClassLoader)
 
 ::: danger
 
-在 **YukiHookAPI** 发布 2.x.x 版本后，此功能将被标记为作废，且不再会迁移到 [YukiReflection](https://github.com/fankes/YukiReflection)。
+在 **YukiHookAPI** 发布 **2.0.0** 版本后，此功能将被标记为作废，且不再会迁移到 [YukiReflection](https://github.com/fankes/YukiReflection)。
 
 我们欢迎各位开发者开始使用 [DexKit](https://github.com/LuckyPray/DexKit)，它是一个使用 C++ 实现的 **Dex** 高性能运行时解析库，在性能方面比 Java 层更加高效与优秀，目前尚在开发阶段，欢迎提出宝贵建议。
 

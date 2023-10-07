@@ -27,7 +27,7 @@
  */
 package com.highcapable.yukihookapi.hook.core.annotation
 
-@RequiresOptIn(message = "Resources Hook 功能将在 2.x.x 版本完全移除 (如果必须使用，你可以继续使用 1.x.x 版本)", level = RequiresOptIn.Level.WARNING)
+@RequiresOptIn(message = "Resources Hook 功能将在 2.0.0 版本完全移除 (如果必须使用，你可以继续使用 1.x.x 版本)", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.BINARY)
