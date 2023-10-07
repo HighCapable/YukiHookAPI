@@ -26,15 +26,14 @@
  * This file is created by fankes on 2022/2/2.
  */
 @file:Suppress(
-    "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter", "DeprecatedCallableAddReplaceWith",
-    "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "OPT_IN_USAGE",
+    "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter",
+    "DeprecatedCallableAddReplaceWith", "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE"
 )
 
 package com.highcapable.yukihookapi.hook.core
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
-import com.highcapable.yukihookapi.hook.core.annotation.DangerousHookOperation
 import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
@@ -57,13 +56,6 @@ import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.java.AnyClass
-import com.highcapable.yukihookapi.hook.type.java.JavaClass
-import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
-import com.highcapable.yukihookapi.hook.type.java.JavaConstructorClass
-import com.highcapable.yukihookapi.hook.type.java.JavaFieldClass
-import com.highcapable.yukihookapi.hook.type.java.JavaMemberClass
-import com.highcapable.yukihookapi.hook.type.java.JavaMethodClass
 import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
 import com.highcapable.yukihookapi.hook.utils.factory.await
 import com.highcapable.yukihookapi.hook.utils.factory.conditions
@@ -94,7 +86,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         internal fun createMemberHook(packageParam: PackageParam, members: List<Member>, priority: YukiHookPriority, isLazyMode: Boolean) =
             YukiMemberHookCreator(packageParam, HookClass.createPlaceholder())
                 .createMemberHook(priority, if (isLazyMode) HookMode.LAZY_MEMBERS else HookMode.IMMEDIATE)
-                .apply { if (members.isNotEmpty()) members(*members.toTypedArray()) }
+                .also { if (members.isNotEmpty()) it.members.apply { clear(); addAll(members) } }
     }
 
     /**
@@ -127,9 +119,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     @Deprecated(message = "请使用新方式来实现此功能")
     val PRIORITY_HIGHEST = 0x2
 
-    /** Hook 操作选项内容 */
-    private var hookOption = ""
-
     /** [hookClass] 找不到时出现的错误回调 */
     private var onHookClassNotFoundFailureCallback: ((Throwable) -> Unit)? = null
 
@@ -140,7 +129,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     private var isDisableCreatorRunHook = false
 
     /** 设置要 Hook 的 [Method]、[Constructor] */
-    private var preHookMembers = mutableMapOf<String, MemberHookCreator>()
+    private var preHookMembers = mutableMapOf<String, MemberHookCreator.LegacyCreator>()
 
     /**
      * 更新当前 [YukiMemberHookCreator] 禁止执行 Hook 操作的条件
@@ -164,15 +153,13 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     /**
      * 得到当前被 Hook 的 [Class]
      *
-     * - 不推荐直接使用 - 万一得不到 [Class] 对象则会无法处理异常导致崩溃
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     *
+     * - 不再推荐使用
      * @return [Class]
-     * @throws IllegalStateException 如果当前 [Class] 未被正确装载或为 [HookClass.isPlaceholder]
      */
-    @LegacyHookApi
-    val instanceClass
-        get() = if (hookClass.isPlaceholder)
-            error("This hook instance is create by Members, not support any hook class instance")
-        else hookClass.instance ?: error("Cannot get hook class \"${hookClass.name}\" cause ${hookClass.throwable?.message}")
+    @Deprecated(message = "不再推荐使用")
+    val instanceClass: Class<*> get() = hookClass.instance ?: error("This function \"instanceClass\" was deprecated")
 
     /**
      * 注入要 Hook 的 [Method]、[Constructor]
@@ -181,8 +168,8 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
      * @return [MemberHookCreator.Result]
      */
     @LegacyHookApi
-    inline fun injectMember(priority: YukiHookPriority = YukiHookPriority.DEFAULT, initiate: MemberHookCreator.() -> Unit) =
-        createMemberHook(priority, HookMode.LAZY_CLASSES).apply(initiate).apply { preHookMembers[toString()] = this }.build()
+    inline fun injectMember(priority: YukiHookPriority = YukiHookPriority.DEFAULT, initiate: MemberHookCreator.LegacyCreator.() -> Unit) =
+        createMemberHook(priority, HookMode.LAZY_CLASSES).createLegacy().apply(initiate).apply { preHookMembers[toString()] = this }.build()
 
     /**
      * 注入要 Hook 的 [Method]、[Constructor]
@@ -195,22 +182,18 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
     @Suppress("DEPRECATION")
     @LegacyHookApi
     @Deprecated(message = "请使用新方式来实现 Hook 功能", ReplaceWith("injectMember(initiate = initiate)"))
-    inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreator.() -> Unit) =
+    inline fun injectMember(priority: Int = PRIORITY_DEFAULT, tag: String = "Default", initiate: MemberHookCreator.LegacyCreator.() -> Unit) =
         injectMember(initiate = initiate)
 
     /**
      * 允许 Hook 过程中的所有危险行为
      *
-     * 请在 [option] 中键入 "Yes do as I say!" 代表你同意允许所有危险行为
+     * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * 你还需要在整个调用域中声明注解 [DangerousHookOperation] 以消除警告
-     *
-     * - 若你不知道允许此功能会带来何种后果 - 请勿使用
-     * @param option 操作选项内容
+     * - 此功能已被弃用
      */
-    @DangerousHookOperation
+    @Deprecated(message = "此功能已被弃用")
     fun useDangerousOperation(option: String) {
-        hookOption = option
     }
 
     /**
@@ -228,7 +211,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             when {
                 isDisableCreatorRunHook.not() && (hookClass.instance != null || hookClass.isPlaceholder) ->
                     runCatching {
-                        hookClass.instance?.checkingDangerous()
                         it.onPrepareHook?.invoke()
                         preHookMembers.forEach { (_, m) -> m.hook() }
                     }.onFailure {
@@ -241,41 +223,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                         YLog.innerE("HookClass [${hookClass.name}] not found", e = hookClass.throwable)
                     else onHookClassNotFoundFailureCallback?.invoke(hookClass.throwable ?: Throwable("[${hookClass.name}] not found"))
             }
-        }
-    }
-
-    /**
-     * 检查不应该被 Hook 警告范围内的 [HookClass] 对象
-     * @throws UnsupportedOperationException 如果遇到警告范围内的 [HookClass] 对象
-     */
-    private fun Class<*>.checkingDangerous() {
-        /**
-         * 警告并抛出异常
-         * @param name 对象名称
-         * @param content 警告内容
-         * @throws UnsupportedOperationException 抛出警告异常
-         */
-        fun throwProblem(name: String, content: String) {
-            if (hookOption != "Yes do as I say!") throw UnsupportedOperationException(
-                "!!!DANGEROUS!!! Hook [$name] Class is a dangerous behavior! $content\n" +
-                    "The hook request was rejected, if you still want to use it, " +
-                    "call \"useDangerousOperation\" and type \"Yes do as I say!\""
-            )
-        }
-        when (hookClass.name) {
-            AnyClass.name -> throwProblem(
-                name = "Object",
-                content = "This is the parent Class of all objects, if you hook it, it may cause a lot of memory leaks"
-            )
-            JavaClassLoader.name -> throwProblem(
-                name = "ClassLoader",
-                content = "If you only want to listen to \"loadClass\", just use \"ClassLoader.onLoadClass\" instead it"
-            )
-            JavaClass.name, JavaMethodClass.name, JavaFieldClass.name,
-            JavaConstructorClass.name, JavaMemberClass.name -> throwProblem(
-                name = "Class/Method/Field/Constructor/Member",
-                content = "Those Class should not be hooked, it may cause StackOverflow errors"
-            )
         }
     }
 
@@ -360,118 +307,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         internal val members = mutableSetOf<Member>()
 
         /**
-         * 手动指定要 Hook 的 [Method]、[Constructor]
-         *
-         * 你可以调用 [instanceClass] 来手动查找要 Hook 的 [Method]、[Constructor]
-         *
-         * - 不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] or [constructor] 方法
-         *
-         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
-         * @param member 要指定的 [Member] or [Member] 数组
-         * @throws IllegalStateException 如果 [member] 参数为空
-         */
-        @LegacyHookApi
-        fun members(vararg member: Member?) {
-            if (member.isEmpty()) error("Custom Hooking Members is empty")
-            members.clear()
-            member.forEach { it?.also { members.add(it) } }
-        }
-
-        /**
-         * 查找并 Hook [hookClass] 中指定 [name] 的全部 [Method]
-         *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
-         *
-         * - 请现在迁移到 [MethodFinder] or [allMembers]
-         * @param name 方法名称
-         */
-        @LegacyHookApi
-        @Deprecated(message = "请使用新方式来实现 Hook 所有方法", ReplaceWith("method { this.name = name }.all()"))
-        fun allMethods(name: String) = method { this.name = name }.all()
-
-        /**
-         * 查找并 Hook [hookClass] 中的全部 [Constructor]
-         *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
-         *
-         * - 请现在迁移到 [ConstructorFinder] or [allMembers]
-         */
-        @LegacyHookApi
-        @Deprecated(
-            message = "请使用新方式来实现 Hook 所有构造方法",
-            ReplaceWith("allMembers(MembersType.CONSTRUCTOR)", "com.highcapable.yukihookapi.hook.factory.MembersType")
-        )
-        fun allConstructors() = allMembers(MembersType.CONSTRUCTOR)
-
-        /**
-         * 查找并 Hook [hookClass] 中的全部 [Method]、[Constructor]
-         *
-         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
-         *
-         * - 警告：无法准确处理每个 [Member] 的返回值和 param - 建议使用 [method] or [constructor] 对每个 [Member] 单独 Hook
-         *
-         * - 如果 [hookClass] 中没有 [Member] 可能会发生错误
-         * @param type 过滤 [Member] 类型 - 默认为 [MembersType.ALL]
-         */
-        @LegacyHookApi
-        fun allMembers(type: MembersType = MembersType.ALL) {
-            members.clear()
-            if (type == MembersType.ALL || type == MembersType.CONSTRUCTOR)
-                hookClass.instance?.allConstructors { _, constructor -> members.add(constructor) }
-            if (type == MembersType.ALL || type == MembersType.METHOD)
-                hookClass.instance?.allMethods { _, method -> members.add(method) }
-            isHookMemberSetup = true
-        }
-
-        /**
-         * 查找 [hookClass] 需要 Hook 的 [Method]
-         *
-         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
-         * @param initiate 方法体
-         * @return [MethodFinder.Process]
-         */
-        @LegacyHookApi
-        inline fun method(initiate: MethodConditions) = runCatching {
-            isHookMemberSetup = true
-            MethodFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).process()
-        }.getOrElse {
-            findingThrowable = it
-            MethodFinder.fromHooker(hookInstance = this).denied(it)
-        }
-
-        /**
-         * 查找 [hookClass] 需要 Hook 的 [Constructor]
-         *
-         * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
-         * @param initiate 方法体
-         * @return [ConstructorFinder.Process]
-         */
-        @LegacyHookApi
-        inline fun constructor(initiate: ConstructorConditions = { emptyParam() }) = runCatching {
-            isHookMemberSetup = true
-            ConstructorFinder.fromHooker(hookInstance = this, hookClass.instance).apply(initiate).process()
-        }.getOrElse {
-            findingThrowable = it
-            ConstructorFinder.fromHooker(hookInstance = this).denied(it)
-        }
-
-        /**
-         * 注入要 Hook 的 [Method]、[Constructor] (嵌套 Hook)
-         *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
-         *
-         * - 嵌套 Hook 功能已弃用
-         */
-        @Suppress("DEPRECATION")
-        @LegacyHookApi
-        @Deprecated(message = "嵌套 Hook 功能已弃用")
-        inline fun HookParam.injectMember(
-            priority: Int = PRIORITY_DEFAULT,
-            tag: String = "InnerDefault",
-            initiate: MemberHookCreator.() -> Unit
-        ) = Unit
-
-        /**
          * 在 [Member] 执行完成前 Hook
          *
          * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
@@ -498,28 +333,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             immediateHook()
             return HookCallback()
         }
-
-        /**
-         * 在 [Member] 执行完成前 Hook
-         *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
-         *
-         * - 请现在迁移到 [before]
-         * @return [HookCallback]
-         */
-        @Deprecated(message = "请使用新的命名方法", ReplaceWith("before(initiate)"))
-        fun beforeHook(initiate: HookParam.() -> Unit) = before(initiate)
-
-        /**
-         * 在 [Member] 执行完成后 Hook
-         *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
-         *
-         * - 请现在迁移到 [after]
-         * @return [HookCallback]
-         */
-        @Deprecated(message = "请使用新的命名方法", ReplaceWith("after(initiate)"))
-        fun afterHook(initiate: HookParam.() -> Unit) = after(initiate)
 
         /**
          * 拦截并替换此 [Member] 内容 - 给出返回值
@@ -776,6 +589,214 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         override fun toString() =
             if (hookClass.isPlaceholder) "[priority] $priority [members] $members"
             else "[priority] $priority [class] $hookClass [members] $members"
+
+        /**
+         * 创建 [LegacyCreator]
+         * @return [LegacyCreator]
+         */
+        internal fun createLegacy() = LegacyCreator()
+
+        /**
+         * 使用 [injectMember] 创建的 Hook 核心功能实现类 (旧版本)
+         */
+        inner class LegacyCreator internal constructor() {
+
+            /**
+             * 手动指定要 Hook 的 [Method]、[Constructor]
+             *
+             * 你可以调用 [instanceClass] 来手动查找要 Hook 的 [Method]、[Constructor]
+             *
+             * - 不建议使用此方法设置目标需要 Hook 的 [Member] 对象 - 你可以使用 [method] or [constructor] 方法
+             *
+             * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+             * @param member 要指定的 [Member] or [Member] 数组
+             * @throws IllegalStateException 如果 [member] 参数为空
+             */
+            fun members(vararg member: Member?) {
+                if (member.isEmpty()) error("Custom Hooking Members is empty")
+                members.clear()
+                member.forEach { it?.also { members.add(it) } }
+            }
+
+            /**
+             * 查找并 Hook [hookClass] 中指定 [name] 的全部 [Method]
+             *
+             * - 此方法已弃用 - 在之后的版本中将直接被删除
+             *
+             * - 请现在迁移到 [MethodFinder] or [allMembers]
+             * @param name 方法名称
+             */
+            @Deprecated(message = "请使用新方式来实现 Hook 所有方法", ReplaceWith("method { this.name = name }.all()"))
+            fun allMethods(name: String) = method { this.name = name }.all()
+
+            /**
+             * 查找并 Hook [hookClass] 中的全部 [Constructor]
+             *
+             * - 此方法已弃用 - 在之后的版本中将直接被删除
+             *
+             * - 请现在迁移到 [ConstructorFinder] or [allMembers]
+             */
+            @Deprecated(
+                message = "请使用新方式来实现 Hook 所有构造方法",
+                ReplaceWith("allMembers(MembersType.CONSTRUCTOR)", "com.highcapable.yukihookapi.hook.factory.MembersType")
+            )
+            fun allConstructors() = allMembers(MembersType.CONSTRUCTOR)
+
+            /**
+             * 查找并 Hook [hookClass] 中的全部 [Method]、[Constructor]
+             *
+             * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+             *
+             * - 警告：无法准确处理每个 [Member] 的返回值和 param - 建议使用 [method] or [constructor] 对每个 [Member] 单独 Hook
+             *
+             * - 如果 [hookClass] 中没有 [Member] 可能会发生错误
+             * @param type 过滤 [Member] 类型 - 默认为 [MembersType.ALL]
+             */
+            fun allMembers(type: MembersType = MembersType.ALL) {
+                members.clear()
+                if (type == MembersType.ALL || type == MembersType.CONSTRUCTOR)
+                    hookClass.instance?.allConstructors { _, constructor -> members.add(constructor) }
+                if (type == MembersType.ALL || type == MembersType.METHOD)
+                    hookClass.instance?.allMethods { _, method -> members.add(method) }
+                isHookMemberSetup = true
+            }
+
+            /**
+             * 查找 [hookClass] 需要 Hook 的 [Method]
+             *
+             * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+             * @param initiate 方法体
+             * @return [MethodFinder.Process]
+             */
+            inline fun method(initiate: MethodConditions) = runCatching {
+                isHookMemberSetup = true
+                MethodFinder.fromHooker(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).process()
+            }.getOrElse {
+                findingThrowable = it
+                MethodFinder.fromHooker(hookInstance = this@MemberHookCreator).denied(it)
+            }
+
+            /**
+             * 查找 [hookClass] 需要 Hook 的 [Constructor]
+             *
+             * - 在同一个 [injectMember] 中你只能使用一次 [members]、[allMembers]、[method]、[constructor] 方法 - 否则结果会被替换
+             * @param initiate 方法体
+             * @return [ConstructorFinder.Process]
+             */
+            inline fun constructor(initiate: ConstructorConditions = { emptyParam() }) = runCatching {
+                isHookMemberSetup = true
+                ConstructorFinder.fromHooker(hookInstance = this@MemberHookCreator, hookClass.instance).apply(initiate).process()
+            }.getOrElse {
+                findingThrowable = it
+                ConstructorFinder.fromHooker(hookInstance = this@MemberHookCreator).denied(it)
+            }
+
+            /**
+             * 注入要 Hook 的 [Method]、[Constructor] (嵌套 Hook)
+             *
+             * - 此方法已弃用 - 在之后的版本中将直接被删除
+             *
+             * - 嵌套 Hook 功能已弃用
+             */
+            @Suppress("DEPRECATION")
+            @LegacyHookApi
+            @Deprecated(message = "嵌套 Hook 功能已弃用")
+            inline fun HookParam.injectMember(
+                priority: Int = PRIORITY_DEFAULT,
+                tag: String = "InnerDefault",
+                initiate: MemberHookCreator.() -> Unit
+            ) = Unit
+
+            /**
+             * 在 [Member] 执行完成前 Hook
+             *
+             * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
+             * @param initiate [HookParam] 方法体
+             * @return [HookCallback]
+             */
+            fun beforeHook(initiate: HookParam.() -> Unit) = before(initiate)
+
+            /**
+             * 在 [Member] 执行完成后 Hook
+             *
+             * - 不可与 [replaceAny]、[replaceUnit]、[replaceTo] 同时使用
+             * @param initiate [HookParam] 方法体
+             * @return [HookCallback]
+             */
+            fun afterHook(initiate: HookParam.() -> Unit) = after(initiate)
+
+            /**
+             * 拦截并替换此 [Member] 内容 - 给出返回值
+             *
+             * - 不可与 [before]、[after] 同时使用
+             * @param initiate [HookParam] 方法体
+             */
+            fun replaceAny(initiate: HookParam.() -> Any?) = this@MemberHookCreator.replaceAny(initiate)
+
+            /**
+             * 拦截并替换此 [Member] 内容 - 没有返回值 ([Unit])
+             *
+             * - 不可与 [before]、[after] 同时使用
+             * @param initiate [HookParam] 方法体
+             */
+            fun replaceUnit(initiate: HookParam.() -> Unit) = this@MemberHookCreator.replaceUnit(initiate)
+
+            /**
+             * 拦截并替换 [Member] 返回值
+             *
+             * - 不可与 [before]、[after] 同时使用
+             * @param any 要替换为的返回值对象
+             */
+            fun replaceTo(any: Any?) = this@MemberHookCreator.replaceTo(any)
+
+            /**
+             * 拦截并替换 [Member] 返回值为 true
+             *
+             * - 确保替换 [Member] 的返回对象为 [Boolean]
+             *
+             * - 不可与 [before]、[after] 同时使用
+             */
+            fun replaceToTrue() = this@MemberHookCreator.replaceToTrue()
+
+            /**
+             * 拦截并替换 [Member] 返回值为 false
+             *
+             * - 确保替换 [Member] 的返回对象为 [Boolean]
+             *
+             * - 不可与 [before]、[after] 同时使用
+             */
+            fun replaceToFalse() = this@MemberHookCreator.replaceToFalse()
+
+            /**
+             * 拦截此 [Member]
+             *
+             * - 这将会禁止此 [Member] 执行并返回 null
+             *
+             * - 注意：例如 [Int]、[Long]、[Boolean] 常量返回值的 [Member] 一旦被设置为 null 可能会造成 Hook APP 抛出异常
+             *
+             * - 不可与 [before]、[after] 同时使用
+             */
+            fun intercept() = this@MemberHookCreator.intercept()
+
+            /**
+             * 移除当前注入的 Hook [Method]、[Constructor] (解除 Hook)
+             *
+             * - 你只能在 Hook 回调方法中使用此功能
+             * @param result 回调是否成功
+             */
+            fun removeSelf(result: (Boolean) -> Unit = {}) = this@MemberHookCreator.removeSelf(result)
+
+            /**
+             * Hook 创建入口
+             * @return [Result]
+             */
+            internal fun build() = this@MemberHookCreator.build()
+
+            /** Hook 执行入口 */
+            internal fun hook() = this@MemberHookCreator.hook()
+
+            override fun toString() = "LegacyCreator by ${this@MemberHookCreator}"
+        }
 
         /**
          * Hook 方法体回调实现类

@@ -25,7 +25,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "OPT_IN_USAGE")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -106,9 +106,11 @@ class HookParam private constructor(
 
     /**
      * 获取当前 Hook 实例的类对象
-     * @return [Class]
+     *
+     * - 如果你当前 Hook 的对象是一个静态 - 那么它将不存在实例的对象
+     * @return [Class] or null
      */
-    val instanceClass get() = param?.instance?.javaClass ?: creatorInstance.instanceClass
+    val instanceClass get() = param?.instance?.javaClass
 
     /**
      * 获取当前 Hook 对象的 [Member]
