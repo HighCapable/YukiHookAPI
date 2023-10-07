@@ -323,9 +323,9 @@ object YLog {
 
         /** 打印到 [Log] */
         fun logByLogd() = when (data.priority) {
-            "D" -> Log.d(data.tag, data.msg)
-            "I" -> Log.i(data.tag, data.msg)
-            "W" -> Log.w(data.tag, data.msg)
+            "D" -> Log.d(data.tag, data.msg, data.throwable)
+            "I" -> Log.i(data.tag, data.msg, data.throwable)
+            "W" -> Log.w(data.tag, data.msg, data.throwable)
             "E" -> Log.e(data.tag, data.msg, data.throwable)
             else -> Log.wtf(data.tag, data.msg, data.throwable)
         }
