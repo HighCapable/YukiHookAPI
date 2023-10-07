@@ -36,6 +36,7 @@ The following are the related functions, Xposed Frameworks, Hook Frameworks and 
 
 | Name                                                      | ST  | Description                                                                                  |
 | --------------------------------------------------------- | --- | -------------------------------------------------------------------------------------------- |
+| [LSPlant](https://github.com/LSPosed/LSPlant)             | ⭕   | Please visit [AliuHook](https://github.com/Aliucord/hook)                                    |
 | [Pine](https://github.com/canyie/pine)                    | ⭕   | Theoretical support (not tested by developer)                                                |
 | [SandHook](https://github.com/asLody/SandHook)            | ❎   | The latests Android are not supported, you need to integrated the Rovo89 Xposed API yourself |
 | [Whale](https://github.com/asLody/whale)                  | ❎   | The latests Android are not supported, you need to integrated the Rovo89 Xposed API yourself |

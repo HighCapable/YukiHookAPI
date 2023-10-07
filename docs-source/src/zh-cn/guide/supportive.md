@@ -36,6 +36,7 @@
 
 | Name                                                      | ST  | Description                                              |
 | --------------------------------------------------------- | --- | -------------------------------------------------------- |
+| [LSPlant](https://github.com/LSPosed/LSPlant)             | ⭕   | 请参考 [AliuHook](https://github.com/Aliucord/hook)      |
 | [Pine](https://github.com/canyie/pine)                    | ⭕   | 理论支持 (未经过开发者测试)                              |
 | [SandHook](https://github.com/asLody/SandHook)            | ❎   | 不支持较新版本的 Android，需要自行对接 Rovo89 Xposed API |
 | [Whale](https://github.com/asLody/whale)                  | ❎   | 不支持较新版本的 Android，需要自行对接 Rovo89 Xposed API |
