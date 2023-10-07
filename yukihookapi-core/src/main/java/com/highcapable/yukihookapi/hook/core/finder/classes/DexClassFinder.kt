@@ -64,7 +64,7 @@ import java.lang.reflect.Method
  *
  * 可使用 [BaseDexClassLoader] 通过指定条件查找指定 [Class] 或一组 [Class]
  *
- * - 此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
+ * - 此功能尚在实验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
  * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存必须启用 [async]
  * @param async 是否启用异步
  * @param loaderSet 当前使用的 [ClassLoader] 实例

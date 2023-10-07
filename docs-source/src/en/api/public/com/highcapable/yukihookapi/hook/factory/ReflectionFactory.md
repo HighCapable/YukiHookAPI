@@ -136,7 +136,7 @@ inline fun ClassLoader.searchClass(name: String, async: Boolean, initiate: Class
 
 建议启用 **async** 或设置 **name** 参数，**name** 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率。
 
-此功能尚在试验阶段，性能与稳定性可能仍然存在问题，使用过程遇到问题请向我们报告并帮助我们改进。
+此功能尚在实验阶段，性能与稳定性可能仍然存在问题，使用过程遇到问题请向我们报告并帮助我们改进。
 
 :::
 

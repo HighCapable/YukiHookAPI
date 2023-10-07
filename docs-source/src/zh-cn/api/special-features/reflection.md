@@ -173,7 +173,7 @@ var isExist = "com.demo.Test".hasClass(customClassLoader)
 
 ::: warning
 
-目前 **DexClassFinder** 的功能尚在试验阶段，由于仅通过 Java 层实现查找功能，在宿主 **Class** 过多时性能可能不能达到最佳水平，如果发生查找不到、定位有误的问题欢迎向我们反馈。
+目前 **DexClassFinder** 的功能尚在实验阶段，由于仅通过 Java 层实现查找功能，在宿主 **Class** 过多时性能可能不能达到最佳水平，如果发生查找不到、定位有误的问题欢迎向我们反馈。
 
 由于是反射层面的 API，目前它只能通过**类与成员**的特征来定位指定的 **Class**，不能通过指定字节码中的字符串和方法内容特征来进行定位。
 

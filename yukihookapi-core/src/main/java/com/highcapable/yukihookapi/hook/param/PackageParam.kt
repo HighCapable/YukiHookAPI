@@ -463,7 +463,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - 建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
      *
-     * - 此功能尚在试验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
+     * - 此功能尚在实验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
      * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存自动启用 [async]
      * @param async 是否启用异步 - 默认否
      * @param initiate 方法体
@@ -719,7 +719,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 直接 Hook 方法、构造方法
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
@@ -728,7 +728,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 直接 Hook 方法、构造方法
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
@@ -741,7 +741,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
@@ -750,7 +750,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
@@ -763,7 +763,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 直接 Hook 方法、构造方法 (批量)
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
@@ -772,7 +772,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 直接 Hook 方法、构造方法 (批量)
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
@@ -785,7 +785,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 直接 Hook 方法、构造方法 (批量)
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
@@ -794,7 +794,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 直接 Hook 方法、构造方法 (批量)
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
@@ -807,7 +807,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法 (批量)
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
@@ -816,7 +816,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法 (批量)
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
@@ -829,7 +829,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 通过 [BaseFinder.BaseResult] 直接 Hook 方法、构造方法
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param isMultiple 是否为多重查找
      * @param priority Hook 优先级
      * @param isLazyMode 是否为惰性模式 - 默认否
@@ -855,7 +855,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * 直接 Hook 方法、构造方法
      *
-     * - 此功能尚在试验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.x.x 版本将完全合并到新 API
      * @param priority Hook 优先级
      * @param isLazyMode 是否为惰性模式 - 默认否
      * @return [YukiMemberHookCreator.MemberHookCreator]
