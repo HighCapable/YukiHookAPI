@@ -16,7 +16,7 @@ You can use **@OptIn(LegacyResourcesHook::class)** to eliminate the warning, con
 
 ## New API
 
-`YukiHookAPI` introduced the [New Hook Code Style](https://github.com/fankes/YukiHookAPI/issues/33) (New API) of `2.0.0` in the `1.2.0` version, it is now in the experimental stage.
+`YukiHookAPI` introduced the [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33) (New API) of `2.0.0` in the `1.2.0` version, it is now in the experimental stage.
 
 You can before the `2.0.0` version is officially released, start migrating and experience the New API.
 

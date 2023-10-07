@@ -1,15 +1,15 @@
 # Yuki Hook API
 
-[![GitHub license](https://img.shields.io/github/license/fankes/YukiHookAPI?color=blue)](https://github.com/fankes/YukiHookAPI/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/fankes/YukiHookAPI?display_name=release&logo=github&color=green)](https://github.com/fankes/YukiHookAPI/releases)
+[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHookAPI?color=blue)](https://github.com/HighCapable/YukiHookAPI/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHookAPI?display_name=release&logo=github&color=green)](https://github.com/HighCapable/YukiHookAPI/releases)
 [![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
 [![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram)](https://t.me/HighCapable_Dev)
 
-<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100" alt="LOGO"/>
+<img src="https://github.com/HighCapable/YukiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100" alt="LOGO"/>
 
 ⛱️ An efficient Hook API and Xposed Module solution built in Kotlin.
 
-English | [简体中文](https://github.com/fankes/YukiHookAPI/blob/master/README-zh-CN.md)
+English | [简体中文](https://github.com/HighCapable/YukiHookAPI/blob/master/README-zh-CN.md)
 
 ## What's this
 
@@ -22,9 +22,9 @@ Formerly the Innocent Xposed API used in [Development Learning Project](https://
 
 ## Get Started
 
-[Click here](https://fankes.github.io/YukiHookAPI/en/) go to the documentation page for more detailed tutorials and content.
+[Click here](https://highcapable.github.io/YukiHookAPI/en/) go to the documentation page for more detailed tutorials and content.
 
-For supportive related information, you can check it directly [click here](https://fankes.github.io/YukiHookAPI/en/guide/supportive).
+For supportive related information, you can check it directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/supportive).
 
 ## Cooperations
 
@@ -67,7 +67,7 @@ This project also uses **SweetDependency** and **SweetProperty**.
 
 ## Star History
 
-![Star History Chart](https://api.star-history.com/svg?repos=fankes/YukiHookAPI&type=Date)
+![Star History Chart](https://api.star-history.com/svg?repos=HighCapable/YukiHookAPI&type=Date)
 
 ## Third-Party Open Source Usage Statement
 

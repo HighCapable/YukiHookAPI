@@ -1,7 +1,7 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2023 HighCapable
- * https://github.com/fankes/YukiHookAPI
+ * https://github.com/HighCapable/YukiHookAPI
  *
  * MIT License
  *
@@ -45,9 +45,9 @@ import com.highcapable.yukihookapi.hook.log.YLog
  *
  * 你还可以通过调用 [YukiHookAPI.Status.Executor] 获取当前 Hook Framework 的详细信息
  *
- * 详情请参考 [Xposed 模块判断自身激活状态](https://fankes.github.io/YukiHookAPI/zh-cn/guide/example#xposed-%E6%A8%A1%E5%9D%97%E5%88%A4%E6%96%AD%E8%87%AA%E8%BA%AB%E6%BF%80%E6%B4%BB%E7%8A%B6%E6%80%81)
+ * 详情请参考 [Xposed 模块判断自身激活状态](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/example#xposed-%E6%A8%A1%E5%9D%97%E5%88%A4%E6%96%AD%E8%87%AA%E8%BA%AB%E6%BF%80%E6%B4%BB%E7%8A%B6%E6%80%81)
  *
- * For English version, see [Xposed Module own Active State](https://fankes.github.io/YukiHookAPI/en/guide/example#xposed-module-own-active-state)
+ * For English version, see [Xposed Module own Active State](https://highcapable.github.io/YukiHookAPI/en/guide/example#xposed-module-own-active-state)
  */
 internal object YukiXposedModuleStatus {
 

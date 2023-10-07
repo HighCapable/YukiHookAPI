@@ -1,7 +1,7 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2023 HighCapable
- * https://github.com/fankes/YukiHookAPI
+ * https://github.com/HighCapable/YukiHookAPI
  *
  * MIT License
  *
@@ -51,9 +51,9 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
  *
  * 你还可以实现监听原生 Xposed API 功能 - 重写 [onXposedEvent] 方法即可
  *
- * 详情请参考 [IYukiHookXposedInit 接口](https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using#iyukihookxposedinit-%E6%8E%A5%E5%8F%A3)
+ * 详情请参考 [IYukiHookXposedInit 接口](https://highcapable.github.io/YukiHookAPI/zh-cn/config/xposed-using#iyukihookxposedinit-%E6%8E%A5%E5%8F%A3)
  *
- * For English version, see [IYukiHookXposedInit Interface](https://fankes.github.io/YukiHookAPI/en/config/xposed-using#iyukihookxposedinit-interface)
+ * For English version, see [IYukiHookXposedInit Interface](https://highcapable.github.io/YukiHookAPI/en/config/xposed-using#iyukihookxposedinit-interface)
  */
 interface IYukiHookXposedInit {
 

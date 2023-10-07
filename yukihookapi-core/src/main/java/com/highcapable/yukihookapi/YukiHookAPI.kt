@@ -1,7 +1,7 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2023 HighCapable
- * https://github.com/fankes/YukiHookAPI
+ * https://github.com/HighCapable/YukiHookAPI
  *
  * MIT License
  *
@@ -366,9 +366,9 @@ object YukiHookAPI {
     /**
      * 配置 [YukiHookAPI] 相关参数
      *
-     * 详情请参考 [configs 方法](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#configs-%E6%96%B9%E6%B3%95)
+     * 详情请参考 [configs 方法](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#configs-%E6%96%B9%E6%B3%95)
      *
-     * For English version, see [configs Method](https://fankes.github.io/YukiHookAPI/en/config/api-example#configs-method)
+     * For English version, see [configs Method](https://highcapable.github.io/YukiHookAPI/en/config/api-example#configs-method)
      * @param initiate 方法体
      */
     inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
@@ -376,13 +376,13 @@ object YukiHookAPI {
     /**
      * 作为 Xposed 模块装载调用入口方法
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
+     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
      *
-     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
      *
-     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     * 配置请参考 [通过 lambda 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
      *
-     * For English version, see [Created by lambda](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
+     * For English version, see [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
      * @param initiate Hook 方法体
      */
     fun encase(initiate: PackageParam.() -> Unit) {
@@ -395,13 +395,13 @@ object YukiHookAPI {
     /**
      * 作为 Xposed 模块装载调用入口方法
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
+     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
      *
-     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
      *
-     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
+     * 配置请参考 [通过自定义 Hooker 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      *
-     * For English version, see [Created by Custom Hooker](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
+     * For English version, see [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的
      */
@@ -421,17 +421,17 @@ object YukiHookAPI {
      *
      * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
      *
-     * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
+     * 详情请参考 [作为 Hook API 使用](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     * For English version, see [Use as Hook API](https://fankes.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
+     * For English version, see [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
+     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
      *
-     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
      *
-     * 配置请参考 [通过 lambda 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
+     * 配置请参考 [通过 lambda 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
      *
-     * For English version, see [Created by lambda](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
+     * For English version, see [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
      * @param baseContext attachBaseContext
      * @param initiate Hook 方法体
      */
@@ -449,17 +449,17 @@ object YukiHookAPI {
      *
      * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
      *
-     * 详情请参考 [作为 Hook API 使用](https://fankes.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
+     * 详情请参考 [作为 Hook API 使用](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
-     * For English version, see [Use as Hook API](https://fankes.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
+     * For English version, see [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
      *
-     * 用法请参考 [API 文档](https://fankes.github.io/YukiHookAPI/zh-cn/api/home)
+     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
      *
-     * For English version, see [API Document](https://fankes.github.io/YukiHookAPI/en/api/home)
+     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
      *
-     * 配置请参考 [通过自定义 Hooker 创建](https://fankes.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
+     * 配置请参考 [通过自定义 Hooker 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      *
-     * For English version, see [Created by Custom Hooker](https://fankes.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
+     * For English version, see [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
      * @param baseContext attachBaseContext
      * @param hooker Hook 子类数组 - 必填不能为空
      * @throws IllegalStateException 如果 [hooker] 是空的

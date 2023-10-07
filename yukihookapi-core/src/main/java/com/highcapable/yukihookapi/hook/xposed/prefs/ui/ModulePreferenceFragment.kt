@@ -1,7 +1,7 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2023 HighCapable
- * https://github.com/fankes/YukiHookAPI
+ * https://github.com/HighCapable/YukiHookAPI
  *
  * MIT License
  *
@@ -49,9 +49,9 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
  *
  * 然后请将重写方法由 [onCreatePreferences] 替换为 [onCreatePreferencesInModuleApp] 即可
  *
- * 详情请参考 [API 文档 - ModulePreferenceFragment](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/ModulePreferenceFragment)
+ * 详情请参考 [API 文档 - ModulePreferenceFragment](https://highcapable.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/ModulePreferenceFragment)
  *
- * For English version, see [API Document - ModulePreferenceFragment](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/ModulePreferenceFragment)
+ * For English version, see [API Document - ModulePreferenceFragment](https://highcapable.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/ModulePreferenceFragment)
  */
 abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 

@@ -1,7 +1,7 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2023 HighCapable
- * https://github.com/fankes/YukiHookAPI
+ * https://github.com/HighCapable/YukiHookAPI
  *
  * MIT License
  *
@@ -54,9 +54,9 @@ import me.weishu.reflection.Reflection
  *
  * - 在模块中使用 [YukiHookAPI.Status.isTaiChiModuleActive] 判断太极、无极激活状态
  *
- * 详情请参考 [API 文档 - ModuleApplication](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication)
+ * 详情请参考 [API 文档 - ModuleApplication](https://highcapable.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication)
  *
- * For English version, see [API Document - ModuleApplication](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication)
+ * For English version, see [API Document - ModuleApplication](https://highcapable.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication)
  */
 open class ModuleApplication : Application() {
 

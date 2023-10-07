@@ -34,7 +34,7 @@ If you like the Reflection API of `YukiHookAPI`, but your project may not need r
 
 Well here is some good news for you:
 
-The core Reflection API of `YukiHookAPI` has been decoupled into [YukiReflection](https://github.com/fankes/YukiReflection) project, which can now be used in any Android project.
+The core Reflection API of `YukiHookAPI` has been decoupled into [YukiReflection](https://github.com/HighCapable/YukiReflection) project, which can now be used in any Android project.
 
 ::: tip To be Discussed
 
@@ -56,6 +56,6 @@ The plans below have been published in `issues` on GitHub, and you can view the 
 
 All functions are expected to be completed in `2.0.0` version, so stay tuned.
 
-- [New Xposed Module Config Plan](https://github.com/fankes/YukiHookAPI/issues/49)
-- [New Hook Entry Class](https://github.com/fankes/YukiHookAPI/issues/48)
-- [New Hook Code Style](https://github.com/fankes/YukiHookAPI/issues/33)
+- [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHookAPI/issues/49)
+- [New Hook Entry Class](https://github.com/HighCapable/YukiHookAPI/issues/48)
+- [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33)

@@ -280,7 +280,7 @@ method {
 
 ::: warning 可能存在的问题
 
-由于一些 APP 自身使用的 **androidx** 依赖库或自定义主题可能会对当前 **MaterialAlertDialog** 实际样式造成干扰，例如对话框的按钮样式，这种情况你可以参考 **模块 Demo** 中 [这里的示例代码](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) 来修复这个问题。
+由于一些 APP 自身使用的 **androidx** 依赖库或自定义主题可能会对当前 **MaterialAlertDialog** 实际样式造成干扰，例如对话框的按钮样式，这种情况你可以参考 **模块 Demo** 中 [这里的示例代码](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) 来修复这个问题。
 
 某些 APP 在创建时可能会发生 **ClassCastException** 异常，请手动指定新的 **Configuration** 实例来进行修复。
 

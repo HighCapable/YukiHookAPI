@@ -34,7 +34,7 @@ LSPosed 现已实验性推出了 [Modern Xposed API](https://github.com/libxpose
 
 那么这里有一个好消息要告诉你：
 
-`YukiHookAPI` 的核心反射 API 已被解耦合为 [YukiReflection](https://github.com/fankes/YukiReflection) 项目，它现在能在任何 Android 项目中使用。
+`YukiHookAPI` 的核心反射 API 已被解耦合为 [YukiReflection](https://github.com/HighCapable/YukiReflection) 项目，它现在能在任何 Android 项目中使用。
 
 ::: tip 待讨论
 
@@ -50,6 +50,6 @@ API 已经提供了 Xposed 原生 API 监听接口，你可以 [在这里](../co
 
 所有功能预计在 `2.0.0` 版本完成，敬请期待。
 
-- [New Xposed Module Config Plan](https://github.com/fankes/YukiHookAPI/issues/49)
-- [New Hook Entry Class](https://github.com/fankes/YukiHookAPI/issues/48)
-- [New Hook Code Style](https://github.com/fankes/YukiHookAPI/issues/33)
+- [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHookAPI/issues/49)
+- [New Hook Entry Class](https://github.com/HighCapable/YukiHookAPI/issues/48)
+- [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33)

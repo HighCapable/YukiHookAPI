@@ -12,9 +12,9 @@ This project is open source and free, and will be maintained continuously accord
 
 The original version may have imperfections or bugs. We welcome to your feedback.
 
-Project Address [YukiHookAPI-ProjectBuilder](https://github.com/fankes/YukiHookAPI-ProjectBuilder)。
+Project Address [YukiHookAPI-ProjectBuilder](https://github.com/HighCapable/YukiHookAPI-ProjectBuilder)。
 
-If you want to download directly, you can [click here](https://github.com/fankes/YukiHookAPI-ProjectBuilder/releases) to go to the Release address.
+If you want to download directly, you can [click here](https://github.com/HighCapable/YukiHookAPI-ProjectBuilder/releases) to go to the Release address.
 
 ## Usage
 

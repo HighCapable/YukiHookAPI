@@ -48,7 +48,7 @@
 
 ### 1.1.8 | 2023.02.01 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
-- 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/fankes/YukiHookAPI/issues/23)
+- 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/23)
 - 移动 `YukiHookAPI` 自动生成的入口类名称文件 `assets/yukihookapi_init` 到 `resources/META-INF/yukihookapi_init`
 - 允许在仅打印异常堆栈时 `msg` 参数为空并可以不设置 `msg` 参数，留空 `msg` 参数的日志除非异常堆栈不为空否则将不会被记录
 - 修复 Hook 回调方法体内发生的异常打印的日志无具体方法信息的 BUG
@@ -181,7 +181,7 @@
 - 新增反射查找中的多重查找功能，可使用相对查找条件同时获取多个查找结果，感谢 **AA** 以及 [Kitsune](https://github.com/KyuubiRan) 的建议
 - 修复 `appClassLoader` 获取到的对象在某些系统中的系统应用中不正确的问题，感谢 [Luckyzyx](https://github.com/luckyzyx) 的反馈
 - 修改了 `XposedBridge.invokeOriginalMethod` 的调用方式并在 `MethodFinder.Result.Instance` 中增加 `original` 功能
-- 修复 `YukiHookModulePrefs` 中 `getStringSet` 方法取值错误的问题并优化代码风格，感谢 [Teddy_Zhu](https://github.com/Teddy-Zhu) 的 [PR](https://github.com/fankes/YukiHookAPI/pull/19)
+- 修复 `YukiHookModulePrefs` 中 `getStringSet` 方法取值错误的问题并优化代码风格，感谢 [Teddy_Zhu](https://github.com/Teddy-Zhu) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/19)
 - 修改 `YukiHookModulePrefs`，拦截 `XSharePreference` 可能不存在的异常
 - 修复 `YukiHookDataChannel` 在某些第三方 ROM 系统框架中无法注册成功的问题
 - 安全化 `YukiHookDataChannel`，现在它只能在来自指定包名的模块与宿主之间通信
@@ -204,7 +204,7 @@
 - Hook 过程中新增解除 Hook 功能，可使用 `remove` 及 `removeSelf` 方法解除 Hook
 - 修复在 ReplaceHook 失败的时候导致宿主抛出异常的问题，现修改为调用原始方法保证宿主功能正常运行
 - 新增 Hook 过程中对方法返回值的检查功能，在返回值不匹配的情况下会根据情景自动抛出异常或打印错误
-- Resources Hook 中新增 `array` 类型，感谢 [GSWXXN](https://github.com/GSWXXN) 的 [PR](https://github.com/fankes/YukiHookAPI/pull/12)
+- Resources Hook 中新增 `array` 类型，感谢 [GSWXXN](https://github.com/GSWXXN) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/12)
 - 移动 `me.weishu.reflection` 到 `thirdparty` 防止同时引入的同名依赖冲突
 - 移除 Hook 方法体为空时抛出的异常，修改为打印警告日志
 - 修改 `AppLifecycle` 的异常处理逻辑，当其发生异常时直接抛给宿主

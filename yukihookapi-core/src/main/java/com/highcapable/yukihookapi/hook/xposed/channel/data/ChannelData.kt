@@ -1,7 +1,7 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2023 HighCapable
- * https://github.com/fankes/YukiHookAPI
+ * https://github.com/HighCapable/YukiHookAPI
  *
  * MIT License
  *
@@ -35,9 +35,9 @@ import java.io.Serializable
  *
  * 这个类是对 [YukiHookDataChannel] 的一个扩展用法
  *
- * 详情请参考 [API 文档 - ChannelData](https://fankes.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/channel/data/ChannelData)
+ * 详情请参考 [API 文档 - ChannelData](https://highcapable.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/channel/data/ChannelData)
  *
- * For English version, see [API Document - ChannelData](https://fankes.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/channel/data/ChannelData)
+ * For English version, see [API Document - ChannelData](https://highcapable.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/channel/data/ChannelData)
  * @param key 键值
  * @param value 键值数据 - 作为接收数据时可空
  */

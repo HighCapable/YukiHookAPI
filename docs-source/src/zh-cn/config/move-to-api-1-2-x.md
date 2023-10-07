@@ -14,7 +14,7 @@ Resources Hook (资源钩子) 将在 **2.0.0** 版本被移除，现已被标记
 
 ## 新版 API
 
-`YukiHookAPI` 在 `1.2.0` 版本引入了 `2.0.0` 准备实现的 [New Hook Code Style](https://github.com/fankes/YukiHookAPI/issues/33) (新版 API)，现处于实验性阶段，你可以在 `2.0.0` 版本正式发布前，开始迁移并体验新版 API。
+`YukiHookAPI` 在 `1.2.0` 版本引入了 `2.0.0` 准备实现的 [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33) (新版 API)，现处于实验性阶段，你可以在 `2.0.0` 版本正式发布前，开始迁移并体验新版 API。
 
 ::: warning
 

@@ -73,9 +73,9 @@ resources().hook {
 
 > 你可以在下方找到 API 提供的 Demo 来学习 `YukiHookAPI` 的使用方法。
 
-- 宿主 APP Demo [点击这里查看](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-app)
+- 宿主 APP Demo [点击这里查看](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-app)
 
-- 模块 APP Demo [点击这里查看](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module)
+- 模块 APP Demo [点击这里查看](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module)
 
 同时安装宿主和模块 Demo，通过激活模块来测试宿主中被 Hook 的功能。
 

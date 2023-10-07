@@ -1,7 +1,7 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
  * Copyright (C) 2019-2023 HighCapable
- * https://github.com/fankes/YukiHookAPI
+ * https://github.com/HighCapable/YukiHookAPI
  *
  * MIT License
  *
@@ -95,8 +95,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
          */
         private fun SymbolProcessorEnvironment.problem(msg: String): Nothing {
             val helpMsg = "Looking for help? Please see the documentation link below\n" +
-                "- English: https://fankes.github.io/YukiHookAPI/en/config/xposed-using\n" +
-                "- Chinese (Simplified): https://fankes.github.io/YukiHookAPI/zh-cn/config/xposed-using"
+                "- English: https://highcapable.github.io/YukiHookAPI/en/config/xposed-using\n" +
+                "- Chinese (Simplified): https://highcapable.github.io/YukiHookAPI/zh-cn/config/xposed-using"
             logger.error(message = "[$TAG] $msg\n$helpMsg")
             throw RuntimeException("[$TAG] $msg\n$helpMsg")
         }

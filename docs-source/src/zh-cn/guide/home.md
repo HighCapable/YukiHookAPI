@@ -22,7 +22,7 @@
 
 文档全部的 Demo 示例代码都将使用 Kotlin 进行描述，如果你完全不会使用 Kotlin 那你将有可能无法使用 `YukiHookAPI`。
 
-部分 Java Demo 代码可在 [这里](https://github.com/fankes/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java) 找到，但不推荐使用。
+部分 Java Demo 代码可在 [这里](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java) 找到，但不推荐使用。
 
 ## 灵感来源
 

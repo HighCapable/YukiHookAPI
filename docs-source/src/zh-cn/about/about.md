@@ -4,7 +4,7 @@
 
 ## License
 
-[The MIT License (MIT)](https://github.com/fankes/YukiHookAPI/blob/master/LICENSE)
+[The MIT License (MIT)](https://github.com/HighCapable/YukiHookAPI/blob/master/LICENSE)
 
 ```:no-line-numbers
 MIT License

@@ -1,15 +1,15 @@
 # Yuki Hook API
 
-[![GitHub license](https://img.shields.io/github/license/fankes/YukiHookAPI?color=blue)](https://github.com/fankes/YukiHookAPI/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/fankes/YukiHookAPI?display_name=release&logo=github&color=green)](https://github.com/fankes/YukiHookAPI/releases)
+[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHookAPI?color=blue)](https://github.com/HighCapable/YukiHookAPI/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHookAPI?display_name=release&logo=github&color=green)](https://github.com/HighCapable/YukiHookAPI/releases)
 [![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram)](https://t.me/YukiHookAPI)
 [![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram)](https://t.me/HighCapable_Dev)
 
-<img src="https://github.com/fankes/YuKiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100" alt="LOGO"/>
+<img src="https://github.com/HighCapable/YukiHookAPI/blob/master/img-src/icon.png?raw=true" width = "100" height = "100" alt="LOGO"/>
 
 ⛱️ 一个使用 Kotlin 构建的高效 Hook API 与 Xposed 模块解决方案。
 
-[English](https://github.com/fankes/YukiHookAPI/blob/master/README.md) | 简体中文
+[English](https://github.com/HighCapable/YukiHookAPI/blob/master/README.md) | 简体中文
 
 ## 这是什么
 
@@ -21,9 +21,9 @@
 
 ## 开始使用
 
-[点击这里](https://fankes.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
+[点击这里](https://highcapable.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
 
-有关支持性的相关信息，你可以直接 [点击这里](https://fankes.github.io/YukiHookAPI/zh-cn/guide/supportive) 进行查看。
+有关支持性的相关信息，你可以直接 [点击这里](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/supportive) 进行查看。
 
 ## 合作项目
 
@@ -69,7 +69,7 @@
 
 ## Star History
 
-![Star History Chart](https://api.star-history.com/svg?repos=fankes/YukiHookAPI&type=Date)
+![Star History Chart](https://api.star-history.com/svg?repos=HighCapable/YukiHookAPI&type=Date)
 
 ## 第三方开源使用声明
 
