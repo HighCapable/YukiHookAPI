@@ -16,7 +16,41 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.1.11 | 2023.04.25 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.2.0 | 2023.10.07 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- The license agreement has been changed from `MIT` to `Apache-2.0`, subsequent versions will be distributed under this license agreement, you should change the relevant license agreement after using this version
+- This is a breaking update, please refer to [Migrate to YukiHookAPI 1.2.x](https://highcapable.github.io/YukiHookAPI/en/config/move-to-api-1-2-x) for details
+- Adapted to Android 14, thanks to [BlueCat300](https://github.com/BlueCat300) for [PR](https://github.com/HighCapable/YukiHookAPI/pull/44)
+- Fixed `findAllInterfaces` related issues, thanks to [buffcow](https://github.com/buffcow) for [PR](https://github.com/HighCapable/YukiHookAPI/pull/38)
+- Fixed the delayed callback problem in the Hook process, thanks to [cesaryuan](https://github.com/cesaryuan) for his [Issue](https://github.com/HighCapable/YukiHookAPI/issues/47)
+- Added support for Resources Hook related functions, please refer to this [Issue](https://github.com/HighCapable/YukiHookAPI/issues/36) for details
+- Added `YukiHookAPI.TAG`
+- Obsolete ~~`YukiHookAPI.API_VERSION_NAME`~~, ~~`YukiHookAPI.API_VERSION_CODE`~~, merged into `YukiHookAPI.VERSION`
+- Added `YukiHookAPI.TAG`
+- Obsolete ~~`YYukiHookAPI.API_VERSION_NAME`~~, ~~`YukiHookAPI.API_VERSION_CODE`~~, merged into `YukiHookAPI.VERSION`
+- Deprecated the `useDangerousOperation` method in `YukiMemberHookCreator`
+- The `instanceClass` function in `YukiMemberHookCreator` is obsolete and is no longer recommended
+- Modify `instanceClass` in `HookParam` to be a null safe return value type
+- Detach all Hook objects created using `injectMember` to `LegacyCreator`
+- Modify `appClassLoader` in `PackageParam` to be a null safe return value type
+- Refactor all `logger...` methods to new usage `YLog`
+- Removed the `-->` style behind the print log function
+- Fixed and improved the problem that the module package name cannot be obtained through KSP after using `namespace`
+- Functions such as whether to enable module activation status have now been moved to the `InjectYukiHookWithXposed` annotation
+- Detached [FreeReflection](https://github.com/tiann/FreeReflection) will no longer be automatically generated and will be automatically imported as a dependency
+- Added a warning log that will be automatically printed when the same Hook method is repeated
+- The `findClass(...)` method in `PackageParam` is obsolete, please migrate to the `"...".toClass()` method
+- The `String.hook { ... }` method in `PackageParam` is obsolete, and it is recommended to use a new method for Hook
+- `AppLifecycle` can now be created repeatedly in different Hookers
+- The old version of Hook priority writing is obsolete and migrated to `YukiHookPriority`
+- Removed the `tag` function in the Hook process
+- Refactored `remendy` functionality in find methods, which now prints exceptions in steps
+- The multi-method find result type is changed from `HashSet` to `MutableList`
+- Added `method()`, `constructor()`, `field()` to directly obtain all object functions in the class
+- `constructor()` no longer behaves like `constructor { emptyParam() }`
+- Added `lazyClass` and `lazyClassOrNull` methods to lazily load `Class`
+
+### 1.1.11 | 2023.04.25 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Fixed a critical issue since `1.1.5` version where the `Member` cache did not take effect and persistent storage eventually caused app out of memory (OOM), thanks to [Art-Chen](https://github.com/Art-Chen)
 - Remove the direct cache function of `Member` and deprecated ~~`YukiReflection.Configs.isEnableMemberCache`~~, keep the cache function of `Class`

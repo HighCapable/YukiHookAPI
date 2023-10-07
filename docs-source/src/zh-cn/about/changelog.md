@@ -8,7 +8,39 @@
 
 :::
 
-### 1.1.11 | 2023.04.25 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.2.0 | 2023.10.07 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 许可协议由 `MIT` 变更为 `Apache-2.0`，在此之后的版本将由此许可协议进行分发，您在使用此版本后应变更相关许可协议
+- 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.2.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-2-x)
+- 适配 Android 14，感谢 [BlueCat300](https://github.com/BlueCat300) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/44)
+- 修复 `findAllInterfaces` 相关问题，感谢 [buffcow](https://github.com/buffcow) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/38)
+- 修复 Hook 过程中的延迟回调问题，感谢 [cesaryuan](https://github.com/cesaryuan) 的 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/47)
+- 新增 Resources Hook 相关功能支持，详情请参考这个 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/36)
+- 新增 `YukiHookAPI.TAG`
+- 作废了 ~~`YukiHookAPI.API_VERSION_NAME`~~、~~`YukiHookAPI.API_VERSION_CODE`~~，统一合并到 `YukiHookAPI.VERSION`
+- 作废了 `YukiMemberHookCreator` 中的 `useDangerousOperation` 方法
+- 作废了 `YukiMemberHookCreator` 中的 `instanceClass` 功能，不再推荐使用
+- 修改 `HookParam` 中的 `instanceClass` 为空安全返回值类型
+- 分离全部使用 `injectMember` 创建的 Hook 对象到 `LegacyCreator`
+- 修改 `PackageParam` 中的 `appClassLoader` 为空安全返回值类型
+- 重构全部 `logger...` 方法到新用法 `YLog`
+- 移除了打印日志功能后方的 `-->` 样式
+- 修复并改进在使用 `namespace` 后通过 KSP 无法获取模块包名的问题
+- 是否启用模块激活状态等功能现已移动到 `InjectYukiHookWithXposed` 注解中
+- 分离 [FreeReflection](https://github.com/tiann/FreeReflection) 不再自动生成，将作为依赖自动导入
+- 新增重复 Hook 同一个方法时将自动打印警告日志
+- 作废了 `PackageParam` 中的 `findClass(...)` 方法，请迁移到 `"...".toClass()` 方法
+- 作废了 `PackageParam` 中的 `String.hook { ... }` 方法，推荐使用新方式进行 Hook
+- `AppLifecycle` 现在可以在不同 Hooker 中重复创建
+- 作废了旧版 Hook 优先级写法，统一迁移到 `YukiHookPriority`
+- 移除了 Hook 过程中的 `tag` 功能
+- 重构方法查找中的 `remendy` 功能，现在可以对其进行分步打印异常
+- 多重方法查找结果类型由 `HashSet` 改为 `MutableList`
+- 新增使用 `method()`、`constructor()`、`field()` 可直接获取到类中的所有对象功能
+- `constructor()` 的行为不再是 `constructor { emptyParam() }`
+- 新增 `lazyClass`、`lazyClassOrNull` 方法，可延迟装载 `Class`
+
+### 1.1.11 | 2023.04.25 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 修复从 `1.1.5` 版本开始的一个严重问题，`Member` 缓存未生效且持续存储最终引发 APP 内存溢出 (OOM)，感谢 [Art-Chen](https://github.com/Art-Chen)
 - 移除 `Member` 的直接缓存功能并作废 ~~`YukiHookAPI.Configs.isEnableMemberCache`~~，保留 `Class` 的缓存功能
