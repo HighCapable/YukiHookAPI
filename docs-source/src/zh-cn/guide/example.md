@@ -50,10 +50,10 @@ TargetClass.hook {
         method { 
             // Your code here.
         }
-        before {
+        beforeHook {
             // Your code here.
         }
-        after {
+        afterHook {
             // Your code here.
         }
     }
@@ -463,7 +463,7 @@ injectMember {
     method {
         throw RuntimeException("Exception Test")
     }
-    after {
+    afterHook {
         // ...
     }
 }.result {
@@ -475,7 +475,7 @@ injectMember {
     method {
         // ...
     }
-    after {
+    afterHook {
         throw RuntimeException("Exception Test")
     }
 }.result {
