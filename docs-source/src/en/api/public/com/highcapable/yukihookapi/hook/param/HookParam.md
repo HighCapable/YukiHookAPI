@@ -123,16 +123,26 @@ val instanceOrNull: Any?
 ## instanceClass <span class="symbol">- field</span>
 
 ```kotlin:no-line-numbers
-val instanceClass: Class<*>
+val instanceClass: Class<*>?
 ```
 
 **Change Records**
 
 `v1.0` `first`
 
+`v1.2.0` `modified`
+
+加入可空类型 (空安全)
+
 **Function Illustrate**
 
 > 获取当前 Hook 实例的类对象。
+
+::: danger
+
+如果你当前 Hook 的对象是一个静态，那么它将不存在实例的对象。
+
+:::
 
 ## member <span class="symbol">- field</span>
 

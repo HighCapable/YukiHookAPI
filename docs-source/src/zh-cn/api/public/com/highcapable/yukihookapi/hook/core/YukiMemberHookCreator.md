@@ -58,11 +58,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
 
 请迁移到 `YukiHookPriority`
 
-## instanceClass <span class="symbol">- field</span>
-
-```kotlin:no-line-numbers
-val instanceClass: Class<*>
-```
+<h2 class="deprecated">instanceClass - field</h2>
 
 **变更记录**
 
@@ -72,15 +68,9 @@ val instanceClass: Class<*>
 
 ~~`thisClass`~~ 更名为 `instanceClass`
 
-**功能描述**
+`v1.2.0` `作废`
 
-> 得到当前被 Hook 的 `Class`。
-
-::: danger
-
-不推荐直接使用，万一得不到 **Class** 对象则会无法处理异常导致崩溃。
-
-:::
+不再推荐使用
 
 <h2 class="deprecated">injectMember - method</h2>
 
@@ -101,7 +91,7 @@ val instanceClass: Class<*>
 ## injectMember <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
-inline fun injectMember(priority: YukiHookPriority, initiate: MemberHookCreator.() -> Unit): MemberHookCreator.Result
+inline fun injectMember(priority: YukiHookPriority, initiate: MemberHookCreator.LegacyCreator.() -> Unit): MemberHookCreator.Result
 ```
 
 **变更记录**
@@ -112,31 +102,15 @@ inline fun injectMember(priority: YukiHookPriority, initiate: MemberHookCreator.
 
 > 注入要 Hook 的 `Method`、`Constructor`。
 
-## useDangerousOperation <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun useDangerousOperation(option: String)
-```
+<h2 class="deprecated">useDangerousOperation - method</h2>
 
 **变更记录**
 
 `v1.1.0` `新增`
 
-**功能描述**
+`v1.2.0` `作废`
 
-> 允许 Hook 过程中的所有危险行为。
-
-请在 `option` 中键入 `Yes do as I say!` 代表你同意允许所有危险行为。
-
-你还需要在整个调用域中声明注解 `DangerousHookOperation` 以消除警告。
-
-若你只需要 Hook `ClassLoader` 的 `loadClass` 方法，请参考 [ClassLoader.onLoadClass](../factory/ReflectionFactory#classloader-onloadclass-ext-method)。
-
-::: danger
-
-若你不知道允许此功能会带来何种后果，请勿使用。
-
-:::
+此功能已被弃用
 
 ## MemberHookCreator <span class="symbol">- class</span>
 
@@ -174,158 +148,6 @@ inner class MemberHookCreator internal constructor(private val priority: YukiHoo
 
 > Hook 核心功能实现类，查找和处理需要 Hook 的 `Method`、`Constructor`。
 
-<h3 class="deprecated">member - field</h3>
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.1.0` `移除`
-
-请迁移到 `members`
-
-### members <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun members(vararg member: Member?)
-```
-
-**变更记录**
-
-`v1.1.0` `新增`
-
-**功能描述**
-
-> 手动指定要 Hook 的 `Method`、`Constructor`。
-
-::: warning
-
-不建议使用此方法设置目标需要 Hook 的 **Member** 对象，你可以使用 **method** 或 **constructor** 方法。
-
-:::
-
-<h3 class="deprecated">allMethods - method</h3>
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.1.0` `作废`
-
-请使用 `method { name = /** name */ }.all()` 来取代它
-
-<h3 class="deprecated">allConstructors - method</h3>
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.1.0` `作废`
-
-请使用 `allMembers(MembersType.CONSTRUCTOR)` 来取代它
-
-### allMembers <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-fun allMembers(type: MembersType)
-```
-
-**变更记录**
-
-`v1.1.0` `新增`
-
-**功能描述**
-
-> 查找并 Hook `hookClass` 中的全部 `Method`、`Constructor`。
-
-::: warning
-
-无法准确处理每个 **Member** 的返回值和 **param**，建议使用 **method** or **constructor** 对每个 **Member** 单独 Hook。
-
-:::
-
-### method <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-inline fun method(initiate: MethodConditions): MethodFinder.Result
-```
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.0.80` `修改`
-
-将方法体进行 inline
-
-**功能描述**
-
-> 查找当前 `Class` 需要 Hook 的 `Method`。
-
-### constructor <span class="symbol">- method</span>
-
-```kotlin:no-line-numbers
-inline fun constructor(initiate: ConstructorConditions): ConstructorFinder.Result
-```
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.0.80` `修改`
-
-将方法体进行 inline
-
-**功能描述**
-
-> 查找当前 `Class` 需要 Hook 的 `Constructor`。
-
-<h3 class="deprecated">HookParam.field - i-ext-method</h3>
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.0.80` `修改`
-
-将方法体进行 inline
-
-`v1.2.0` `移除`
-
-<h3 class="deprecated">HookParam.method - i-ext-method</h3>
-
-**变更记录**
-
-`v1.0.2` `新增`
-
-`v1.0.80` `修改`
-
-将方法体进行 inline
-
-`v1.2.0` `移除`
-
-<h3 class="deprecated">HookParam.constructor - i-ext-method</h3>
-
-**变更记录**
-
-`v1.0.2` `新增`
-
-`v1.0.80` `修改`
-
-将方法体进行 inline
-
-`v1.2.0` `移除`
-
-<h3 class="deprecated">HookParam.injectMember - i-ext-method</h3>
-
-**变更记录**
-
-`v1.0.88` `新增`
-
-`v1.2.0` `作废`
-
-嵌套 Hook 功能已弃用
-
 ### before <span class="symbol">- method</span>
 
 ```kotlin:no-line-numbers
@@ -353,34 +175,6 @@ fun after(initiate: HookParam.() -> Unit): HookCallback
 **功能描述**
 
 > 在 `Member` 执行完成后 Hook。
-
-<h3 class="deprecated">beforeHook - method</h3>
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.1.0` `修改`
-
-新增 `HookCallback` 返回类型
-
-`v1.2.0` `作废`
-
-请迁移到 `before`
-
-<h3 class="deprecated">afterHook - method</h3>
-
-**变更记录**
-
-`v1.0` `添加`
-
-`v1.1.0` `修改`
-
-新增 `HookCallback` 返回类型
-
-`v1.2.0` `作废`
-
-请迁移到 `after`
 
 ### replaceAny <span class="symbol">- method</span>
 
@@ -503,6 +297,26 @@ fun removeSelf(result: (Boolean) -> Unit)
 ::: danger
 
 你只能在 Hook 回调方法中使用此功能。
+
+:::
+
+### LegacyCreator <span class="symbol">- class</span>
+
+```kotlin:no-line-numbers
+inner class LegacyCreator internal constructor()
+```
+
+**变更记录**
+
+`v1.2.0` `新增`
+
+**功能描述**
+
+> 使用 `injectMember` 创建的 Hook 核心功能实现类 (旧版本)。
+
+::: warning
+
+大部分旧版 API 已被迁移至此处，将不再特殊说明其中包含的旧版 API。
 
 :::
 

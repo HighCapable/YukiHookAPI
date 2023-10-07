@@ -601,7 +601,7 @@ inline fun searchClass(name: String, async: Boolean, initiate: ClassConditions):
 
 建议启用 **async** 或设置 **name** 参数，**name** 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率。
 
-此功能尚在试验阶段，性能与稳定性可能仍然存在问题，使用过程遇到问题请向我们报告并帮助我们改进。
+此功能尚在实验阶段，性能与稳定性可能仍然存在问题，使用过程遇到问题请向我们报告并帮助我们改进。
 
 :::
 
@@ -945,7 +945,7 @@ inline fun BaseFinder.BaseResult.hook(priority: YukiHookPriority, initiate: Yuki
 
 ::: warning
 
-此功能尚在试验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
+此功能尚在实验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
 
 :::
 
@@ -985,7 +985,7 @@ inline fun BaseFinder.BaseResult.hookAll(priority: YukiHookPriority, initiate: Y
 
 ::: warning
 
-此功能尚在试验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
+此功能尚在实验阶段，在 1.x.x 版本将暂定于此，在 2.x.x 版本将完全合并到新 API。
 
 :::
 
