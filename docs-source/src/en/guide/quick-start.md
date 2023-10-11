@@ -289,10 +289,6 @@ override fun onInit() = configs {
 }
 ```
 
-**YukiHookAPI** will print all logs for debugging by default.
-
-For a release build, be sure to turn off debugging to prevent a lot of log stuffing on the user's device.
-
 You can also extends **Application** of your Module App from **ModuleApplication** to achieve a complete user experience.
 
 For more functions, please refer to [ModuleApplication](../api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication).

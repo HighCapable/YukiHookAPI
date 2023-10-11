@@ -25,11 +25,11 @@ Time zone of version release date: **UTC+8**
 - Fixed the delayed callback problem in the Hook process, thanks to [cesaryuan](https://github.com/cesaryuan) for his [Issue](https://github.com/HighCapable/YukiHookAPI/issues/47)
 - Added support for Resources Hook related functions, please refer to this [Issue](https://github.com/HighCapable/YukiHookAPI/issues/36) for details
 - Added `YukiHookAPI.TAG`
-- Obsolete ~~`YukiHookAPI.API_VERSION_NAME`~~, ~~`YukiHookAPI.API_VERSION_CODE`~~, merged into `YukiHookAPI.VERSION`
+- Deprecated ~~`YukiHookAPI.API_VERSION_NAME`~~, ~~`YukiHookAPI.API_VERSION_CODE`~~, merged into `YukiHookAPI.VERSION`
 - Added `YukiHookAPI.TAG`
-- Obsolete ~~`YYukiHookAPI.API_VERSION_NAME`~~, ~~`YukiHookAPI.API_VERSION_CODE`~~, merged into `YukiHookAPI.VERSION`
-- Deprecated the `useDangerousOperation` method in `YukiMemberHookCreator`
-- The `instanceClass` function in `YukiMemberHookCreator` is obsolete and is no longer recommended
+- Deprecated ~~`YukiHookAPI.API_VERSION_NAME`~~, ~~`YukiHookAPI.API_VERSION_CODE`~~, merged into `YukiHookAPI.VERSION`
+- Deprecated ~~`useDangerousOperation`~~ method in `YukiMemberHookCreator`
+- Deprecated ~~`instanceClass`~~ function in `YukiMemberHookCreator`, it is no longer recommended
 - Modify `instanceClass` in `HookParam` to be a null safe return value type
 - Detach all Hook objects created using `injectMember` to `LegacyCreator`
 - Modify `appClassLoader` in `PackageParam` to be a null safe return value type

@@ -1286,7 +1286,7 @@ Xposed modulePackageName load failed, please reset and rebuild it
 
 **Abnormal**
 
-When using `YYukiHookPrefsBridge` or `YukiHookDataChannel` in the Hook process, the `modulePackageName` at load time cannot be read, resulting in the package name of the own Module App cannot be determined.
+When using `YukiHookPrefsBridge` or `YukiHookDataChannel` in the Hook process, the `modulePackageName` at load time cannot be read, resulting in the package name of the own Module App cannot be determined.
 
 **Solution**
 

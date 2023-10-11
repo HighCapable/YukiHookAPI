@@ -287,8 +287,6 @@ override fun onInit() = configs {
 }
 ```
 
-**YukiHookAPI** 默认会打印所有用于调试的日志，若作为发布版本请务必关闭调试功能防止对用户设备造成大量日志填充。
-
 你还可以将你的模块 APP 的 **Application** 继承于 **ModuleApplication** 以实现完整使用体验。
 
 更多功能请参考 [ModuleApplication](../api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication)。

@@ -490,7 +490,7 @@ var isEnableHookSharedPreferences: Boolean
 
 这是一个可选的实验性功能，此功能默认不启用。
 
-仅用于修复某些系统可能会出现在启用了 **New XSharedPreferences** 后依然出现文件权限错误问题，若你能正常使用 **YYukiHookPrefsBridge** 就不建议启用此功能。
+仅用于修复某些系统可能会出现在启用了 **New XSharedPreferences** 后依然出现文件权限错误问题，若你能正常使用 **YukiHookPrefsBridge** 就不建议启用此功能。
 
 :::
 

@@ -18,8 +18,8 @@
 - 新增 Resources Hook 相关功能支持，详情请参考这个 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/36)
 - 新增 `YukiHookAPI.TAG`
 - 作废了 ~~`YukiHookAPI.API_VERSION_NAME`~~、~~`YukiHookAPI.API_VERSION_CODE`~~，统一合并到 `YukiHookAPI.VERSION`
-- 作废了 `YukiMemberHookCreator` 中的 `useDangerousOperation` 方法
-- 作废了 `YukiMemberHookCreator` 中的 `instanceClass` 功能，不再推荐使用
+- 作废了 ~~`YukiMemberHookCreator`~~ 中的 ~~`useDangerousOperation`~~ 方法
+- 作废了 ~~`YukiMemberHookCreator`~~ 中的 ~~`instanceClass`~~ 功能，不再推荐使用
 - 修改 `HookParam` 中的 `instanceClass` 为空安全返回值类型
 - 分离全部使用 `injectMember` 创建的 Hook 对象到 `LegacyCreator`
 - 修改 `PackageParam` 中的 `appClassLoader` 为空安全返回值类型
