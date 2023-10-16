@@ -23,6 +23,7 @@ package com.highcapable.yukihookapi.hook.entity
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
@@ -44,7 +45,7 @@ abstract class YukiBaseHooker : PackageParam() {
      */
     internal fun assignInstance(packageParam: PackageParam) {
         assign(packageParam.wrapper)
-        onHook()
+        runCatching { onHook() }.onFailure { YLog.innerE("An exception occurred in $this", it) }
     }
 
     /** 子类 Hook 开始 */
