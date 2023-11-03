@@ -7,8 +7,8 @@ pluginManagement {
     }
 }
 plugins {
-    id("com.highcapable.sweetdependency") version "1.0.2"
-    id("com.highcapable.sweetproperty") version "1.0.3"
+    id("com.highcapable.sweetdependency") version "1.0.3"
+    id("com.highcapable.sweetproperty") version "1.0.4"
 }
 sweetProperty {
     global {
@@ -19,11 +19,8 @@ sweetProperty {
     }
     rootProject { all { isEnable = false } }
     project(":samples") { all { isEnable = false } }
-    project(":samples:demo-app") { sourcesCode { isEnable = false } }
-    project(":samples:demo-module") { sourcesCode { isEnable = false } }
-    project(":yukihookapi-core") { sourcesCode { className = rootProject.name } }
-    project(":yukihookapi-ksp-xposed") { sourcesCode { className = rootProject.name } }
-    project(":yukihookapi-stub") { sourcesCode { isEnable = false } }
+    project(":samples:demo-app", ":samples:demo-module", ":yukihookapi-stub") { sourcesCode { isEnable = false } }
+    project(":yukihookapi-core", ":yukihookapi-ksp-xposed") { sourcesCode { className = rootProject.name } }
 }
 rootProject.name = "YukiHookAPI"
 include(":samples:demo-app", ":samples:demo-module")
