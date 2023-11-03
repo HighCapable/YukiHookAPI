@@ -19,16 +19,16 @@ repositories:
 plugins:
   org.jetbrains.kotlin.jvm:
     alias: kotlin-jvm
-    version: 1.9.10
+    version: 1.9.20
   org.jetbrains.kotlin.android:
     alias: kotlin-android
     version-ref: kotlin-jvm
   com.google.devtools.ksp:
     alias: kotlin-ksp
-    version: 1.9.10-1.0.13
+    version: 1.9.20-1.0.14
   com.android.application:
     alias: android-application
-    version: 8.1.1
+    version: 8.1.2
   com.android.library:
     alias: android-library
     version-ref: android-application
@@ -44,7 +44,7 @@ libraries:
         rovo89-xposed-api
   com.github.tiann:
     FreeReflection:
-      version: 3.1.0
+      version: 3.2.0
       repositories:
         jit-pack
   com.google.devtools.ksp:
@@ -52,28 +52,28 @@ libraries:
       version-ref: <plugins>::kotlin-ksp
   com.google.auto.service:
     auto-service-annotations:
-      version: 1.0.1
+      version: 1.1.1
   dev.zacsweers.autoservice:
     auto-service-ksp:
-      version: 1.0.0
+      version: 1.1.0
   androidx.annotation:
     annotation:
-      version: 1.6.0
+      version: 1.7.0
   androidx.preference:
     preference-ktx:
-      version: 1.2.0
+      version: 1.2.1
   androidx.core:
     core-ktx:
-      version: 1.10.0
+      version: 1.12.0
   androidx.appcompat:
     appcompat:
       version: 1.6.1
   androidx.lifecycle:
     lifecycle-viewmodel-ktx:
-      version: 2.6.1
+      version: 2.6.2
   com.google.android.material:
     material:
-      version: 1.8.0
+      version: 1.10.0
   androidx.constraintlayout:
     constraintlayout:
       version: 2.1.4
