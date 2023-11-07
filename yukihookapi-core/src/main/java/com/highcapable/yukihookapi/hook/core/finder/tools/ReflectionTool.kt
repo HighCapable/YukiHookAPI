@@ -38,6 +38,7 @@ import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
+import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.type.java.DalvikBaseDexClassLoader
 import com.highcapable.yukihookapi.hook.type.java.NoClassDefFoundErrorClass
 import com.highcapable.yukihookapi.hook.type.java.NoSuchFieldErrorClass
@@ -584,15 +585,15 @@ internal object ReflectionTool {
      */
     private inline fun <reified T, R : MemberRulesData> R.findSuperOrThrow(classSet: Class<*>): T = when (this) {
         is FieldRulesData ->
-            if (isFindInSuper && classSet.hasExtends)
+            if (isFindInSuper && classSet != AnyClass)
                 findFields(classSet.superclass, rulesData = this) as T
             else throwNotFoundError(classSet)
         is MethodRulesData ->
-            if (isFindInSuper && classSet.hasExtends)
+            if (isFindInSuper && classSet != AnyClass)
                 findMethods(classSet.superclass, rulesData = this) as T
             else throwNotFoundError(classSet)
         is ConstructorRulesData ->
-            if (isFindInSuper && classSet.hasExtends)
+            if (isFindInSuper && classSet != AnyClass)
                 findConstructors(classSet.superclass, rulesData = this) as T
             else throwNotFoundError(classSet)
         else -> error("Type [$this] not allowed")
