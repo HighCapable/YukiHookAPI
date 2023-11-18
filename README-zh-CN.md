@@ -60,11 +60,14 @@
 
 ## 项目推广
 
-如果你正在寻找一个可以自动管理 Gradle 项目依赖的 Gradle 插件，你可以了解一下 [SweetDependency](https://github.com/HighCapable/SweetDependency) 项目。
-
-如果你正在寻找一个可以自动生成属性键值的 Gradle 插件，你可以了解一下 [SweetProperty](https://github.com/HighCapable/SweetProperty) 项目。
-
-本项目同样使用了 **SweetDependency** 和 **SweetProperty**。
+<!--suppress HtmlDeprecatedAttribute -->
+<div align="center">
+    <h2>嘿，还请君留步！👋</h2>
+    <h3>这里有 Android 开发工具、UI 设计、Gradle 插件、Xposed 模块和实用软件等相关项目。</h3>
+    <h3>如果下方的项目能为你提供帮助，不妨为我点个 star 吧！</h3>
+    <h3>所有项目免费、开源，遵循对应开源许可协议。</h3>
+    <h1><a href="https://github.com/fankes/fankes/blob/main/project-promote/README-zh-CN.md">→ 查看更多关于我的项目，请点击这里 ←</a></h1>
+</div>
 
 ## 捐赠支持
 

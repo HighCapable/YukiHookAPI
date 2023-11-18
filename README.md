@@ -62,13 +62,14 @@ links).
 
 ## Promotion
 
-If you are looking for a Gradle plugin that can automatically manage Gradle project dependencies,
-you can check out the [SweetDependency](https://github.com/HighCapable/SweetDependency) project.
-
-If you are looking for a Gradle plugin that can automatically generate properties key-values,
-you can check out the [SweetProperty](https://github.com/HighCapable/SweetProperty) project.
-
-This project also uses **SweetDependency** and **SweetProperty**.
+<!--suppress HtmlDeprecatedAttribute -->
+<div align="center">
+     <h2>Hey, please stay! 👋</h2>
+     <h3>Here are related projects such as Android development tools, UI design, Gradle plugins, Xposed Modules and practical software. </h3>
+     <h3>If the project below can help you, please give me a star! </h3>
+     <h3>All projects are free, open source, and follow the corresponding open source license agreement. </h3>
+     <h1><a href="https://github.com/fankes/fankes/blob/main/project-promote/README.md">→ To see more about my projects, please click here ←</a></h1>
+</div>
 
 ## Star History
 
