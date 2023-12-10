@@ -51,7 +51,7 @@
 | [QDReadHook](https://github.com/xihan123/QDReadHook)                            | [xihan123](https://github.com/xihan123)         |
 | [HXReadHook](https://github.com/xihan123/HXReadHook)                            | [xihan123](https://github.com/xihan123)         |
 | [WxRecordRead](https://github.com/pwh-pwh/wxrecordread)                         | [Coderpwh](https://github.com/pwh-pwh)          |
-| [FuckShake](https://github.com/pwh-pwh/fuck_shake)                         | [Coderpwh](https://github.com/pwh-pwh)          |
+| [FuckShake](https://github.com/pwh-pwh/fuck_shake)                              | [Coderpwh](https://github.com/pwh-pwh)          |
 | [MIUI更新进化](https://miup.utssg.xyz)                                              | [ZQDesigned](https://github.com/ZQDesigned)     |
 | [MIUI录屏进化](https://www.coolapk.com/apk/UTSSG.ZQDesigned.miuirecordercracker)    | [ZQDesigned](https://github.com/ZQDesigned)     |
 | [Fuck AD](https://github.com/hujiayucc/Fuck-AD)                                 | [hujiayucc](https://github.com/hujiayucc)       |
@@ -69,12 +69,6 @@
     <h3>所有项目免费、开源，遵循对应开源许可协议。</h3>
     <h1><a href="https://github.com/fankes/fankes/blob/main/project-promote/README-zh-CN.md">→ 查看更多关于我的项目，请点击这里 ←</a></h1>
 </div>
-
-## 捐赠支持
-
-工作不易，无意外情况此项目将继续维护下去，提供更多可能，欢迎打赏。
-
-<img src="https://github.com/fankes/fankes/blob/main/img-src/payment_code.jpg?raw=true" width = "500" alt="Payment Code"/>
 
 ## Star History
 
