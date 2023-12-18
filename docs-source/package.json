@@ -3,10 +3,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@mr-hope/vuepress-plugin-copy-code": "^1.30.0",
-    "@vuepress/plugin-prismjs": "2.0.0-beta.67",
-    "@vuepress/plugin-search": "2.0.0-beta.67",
-    "@vuepress/plugin-shiki": "2.0.0-beta.67",
-    "vuepress": "2.0.0-beta.67"
+    "@vuepress/plugin-prismjs": "2.0.0-rc.0",
+    "@vuepress/plugin-search": "2.0.0-rc.0",
+    "@vuepress/plugin-shiki": "2.0.0-rc.0",
+    "vuepress": "2.0.0-rc.0"
   },
   "scripts": {
     "docs:dev": "vuepress dev src",
