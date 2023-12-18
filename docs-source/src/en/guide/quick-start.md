@@ -38,7 +38,7 @@ Use `Android Studio` or `IntelliJ IDEA` to create a new Android project and sele
 
 We recommend using Kotlin DSL as the Gradle build script language and [SweetDependency](https://github.com/HighCapable/SweetDependency) to manage dependencies.
 
-#### SweetDependency Method
+#### SweetDependency (Recommended)
 
 Add the repositories and dependencies in your project's `SweetDependency` configuration file.
 
@@ -104,7 +104,7 @@ dependencies {
 }
 ```
 
-#### Traditional Method (Not Recommended)
+#### Traditional Method
 
 Add repositories in your project `build.gradle.kts` or `build.gradle`.
 
