@@ -1,8 +1,13 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+
 plugins {
     autowire(libs.plugins.android.library)
     autowire(libs.plugins.kotlin.android)
     autowire(libs.plugins.maven.publish)
 }
+
+group = property.project.groupName
+version = property.project.yukihookapi.core.version
 
 android {
     namespace = property.project.groupName
@@ -43,31 +48,10 @@ dependencies {
 }
 
 mavenPublishing {
-    coordinates(property.project.groupName, property.project.yukihookapi.core.moduleName, property.project.yukihookapi.core.version)
-    pom {
-        name = property.project.name
-        description = property.project.description
-        url = property.project.url
-        licenses {
-            license {
-                name = property.project.licence.name
-                url = property.project.licence.url
-                distribution = property.project.licence.url
-            }
-        }
-        developers {
-            developer {
-                id = property.project.developer.id
-                name = property.project.developer.name
-                email = property.project.developer.email
-            }
-        }
-        scm {
-            url = property.maven.publish.scm.url
-            connection = property.maven.publish.scm.connection
-            developerConnection = property.maven.publish.scm.developerConnection
-        }
-    }
-    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.S01)
-    signAllPublications()
+    configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
+    coordinates(
+        groupId = group.toString(),
+        artifactId = property.project.yukihookapi.core.moduleName,
+        version = version.toString()
+    )
 }
