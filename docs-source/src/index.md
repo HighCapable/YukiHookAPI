@@ -13,5 +13,5 @@ actions:
   - text: 简体中文
     link: /zh-cn/
     type: secondary
-footer: Apache-2.0 License | Copyright (C) 2019-2023 HighCapable
+footer: Apache-2.0 License | Copyright (C) 2019-2024 HighCapable
 ---

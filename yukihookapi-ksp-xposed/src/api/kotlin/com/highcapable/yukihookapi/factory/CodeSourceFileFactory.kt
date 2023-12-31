@@ -1,6 +1,6 @@
 /*
  * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
- * Copyright (C) 2019-2023 HighCapable
+ * Copyright (C) 2019-2024 HighCapable
  * https://github.com/HighCapable/YukiHookAPI
  *
  * Apache License Version 2.0
@@ -116,7 +116,7 @@ private fun createCommentContent(currrentClassTag: String) =
        *
        * Generate Date: ${SimpleDateFormat.getDateTimeInstance().format(Date())}
        *
-       * Powered by YukiHookAPI (C) HighCapable 2019-2023
+       * Powered by YukiHookAPI (C) HighCapable 2019-2024
        *
        * Project URL: [${YukiHookAPIProperties.PROJECT_NAME}](${YukiHookAPIProperties.PROJECT_URL})
        */
