@@ -1,4 +1,4 @@
-# About this Document
+# About This Document
 
 > This document is powered by [VuePress](https://v2.vuepress.vuejs.org/en).
 
