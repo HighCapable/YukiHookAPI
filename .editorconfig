@@ -19,7 +19,6 @@ ktlint_standard_if-else-wrapping = disabled
 ktlint_standard_if-else-bracing = disabled
 ktlint_standard_statement-wrapping = disabled
 ktlint_standard_blank-line-before-declaration = disabled
-ktlint_standard_indent = disabled
 ktlint_standard_no-empty-file = disabled
 ktlint_standard_property-naming = disabled
 ktlint_standard_function-naming = disabled
