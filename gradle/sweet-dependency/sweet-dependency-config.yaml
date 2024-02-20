@@ -25,16 +25,16 @@ plugins:
     version-ref: kotlin-jvm
   com.google.devtools.ksp:
     alias: kotlin-ksp
-    version: 1.9.22-1.0.16
+    version: 1.9.22-1.0.17
   com.android.application:
     alias: android-application
-    version: 8.2.0
+    version: 8.2.2
   com.android.library:
     alias: android-library
     version-ref: android-application
   com.vanniktech.maven.publish:
     alias: maven-publish
-    version: 0.26.0
+    version: 0.27.0
 
 libraries:
   de.robv.android.xposed:
@@ -70,7 +70,7 @@ libraries:
       version: 1.6.1
   androidx.lifecycle:
     lifecycle-viewmodel-ktx:
-      version: 2.6.2
+      version: 2.7.0
   com.google.android.material:
     material:
       version: 1.11.0
