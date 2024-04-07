@@ -94,6 +94,26 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             logger.error(message = "[$TAG] $msg\n$helpMsg")
             throw RuntimeException("[$TAG] $msg\n$helpMsg")
         }
+        private fun isKotlinKeyword(word: String): Boolean {
+            val kotlinHardKeywords = listOf(
+                "as", "as?", "break", "class", "continue", "do",
+                "else", "false", "for", "fun", "if", "in", "!in", "interface",
+                "is", "!is", "null", "object", "package", "return", "super",
+                "this", "throw", "true", "try", "typealias", "typeof", "val",
+                "var", "when", "while"
+            )
+            return kotlinHardKeywords.contains(word)
+        }
+
+        private fun SymbolProcessorEnvironment.preprocessPackageName(name: String): String {
+            val firstPart = name.substringBefore(".")
+            val remainingPart = name.substringAfter(".", "") // returns "" if "." not found
+
+            val processedFirstPart = if (isKotlinKeyword(firstPart)) "`$firstPart`" else firstPart
+            val r =  if (remainingPart.isNotEmpty()) "$processedFirstPart.$remainingPart" else processedFirstPart
+
+            return r
+        }
 
         /**
          * 创建代码文件
@@ -147,7 +167,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 val xInitPatchName = data.xInitClassName.ifBlank { "${it.simpleName.asString()}$XPOSED_CLASS_SHORT_NAME" }
                                 if (data.xInitClassName == it.simpleName.asString())
                                     problem(msg = "Duplicate entryClassName \"${data.xInitClassName}\"")
-                                data.entryPackageName = it.packageName.asString()
+                                data.entryPackageName = preprocessPackageName(it.packageName.asString())
                                 data.entryClassName = it.simpleName.asString()
                                 data.xInitClassName = xInitPatchName
                                 data.isEntryClassKindOfObject = when (it.classKind) {
