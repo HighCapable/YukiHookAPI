@@ -34,5 +34,7 @@ internal enum class HookEntryType {
     PACKAGE,
 
     /** 装载 Resources Hook */
-    RESOURCES
+    RESOURCES;
+
+    companion object
 }
