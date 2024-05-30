@@ -67,10 +67,10 @@ libraries:
       version: 1.13.1
   androidx.appcompat:
     appcompat:
-      version: 1.6.1
+      version: 1.7.0
   androidx.lifecycle:
     lifecycle-viewmodel-ktx:
-      version: 2.8.0
+      version: 2.8.1
   com.google.android.material:
     material:
       version: 1.12.0
