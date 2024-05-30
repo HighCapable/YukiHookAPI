@@ -461,11 +461,11 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = true
         if (HookApiCategoryHelper.hasAvailableHookApi)
-            (if (baseContext != null)
+            if (baseContext != null)
                 if (hooker.isNotEmpty()) {
                     printSplashInfo()
                     hooker.forEach { it.assignInstance(packageParam = baseContext.createPackageParam()) }
-                } else YLog.innerE("Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true))
+                } else YLog.innerE("Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true)
         else printNotFoundHookApiError()
     }
 
