@@ -25,6 +25,7 @@ package com.highcapable.yukihookapi.factory
 
 import com.highcapable.yukihookapi.bean.GenerateData
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
+import com.highcapable.yukihookapi.utils.SymbolConverterTool
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -142,7 +143,7 @@ fun GenerateData.sources() = mapOf(
       
       package ${PackageName.ModuleApplication_Impl}
       
-      import $entryPackageName.$entryClassName
+      import ${SymbolConverterTool.process(entryPackageName)}.$entryClassName
     """.trimIndent() + "\n\n" + createCommentContent(ClassName.ModuleApplication_Impl) + "\n" + """
       object ${ClassName.ModuleApplication_Impl} {
       
@@ -295,7 +296,7 @@ fun GenerateData.sources() = mapOf(
     ClassName.XposedInit to """
       @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
-      package $entryPackageName
+      package ${SymbolConverterTool.process(entryPackageName)}
       
       import androidx.annotation.Keep
       import ${ExternalCallerName.YukiXposedEventCaller.first}
@@ -331,7 +332,7 @@ fun GenerateData.sources() = mapOf(
     ClassName.XposedInit_Impl to """
       @file:Suppress("ClassName", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
       
-      package $entryPackageName
+      package ${SymbolConverterTool.process(entryPackageName)}
       
       import ${ExternalCallerName.YukiXposedModuleCaller.first}
       import ${ExternalCallerName.YukiXposedResourcesCaller.first}
