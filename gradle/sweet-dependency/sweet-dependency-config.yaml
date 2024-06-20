@@ -25,10 +25,10 @@ plugins:
     version-ref: kotlin-jvm
   com.google.devtools.ksp:
     alias: kotlin-ksp
-    version: 2.0.0-1.0.21
+    version: 2.0.0-1.0.22
   com.android.application:
     alias: android-application
-    version: 8.4.1
+    version: 8.5.0
   com.android.library:
     alias: android-library
     version-ref: android-application
@@ -55,7 +55,7 @@ libraries:
       version: 1.1.1
   dev.zacsweers.autoservice:
     auto-service-ksp:
-      version: 1.1.0
+      version: 1.2.0
   androidx.annotation:
     annotation:
       version: 1.8.0
@@ -70,7 +70,7 @@ libraries:
       version: 1.7.0
   androidx.lifecycle:
     lifecycle-viewmodel-ktx:
-      version: 2.8.1
+      version: 2.8.2
   com.google.android.material:
     material:
       version: 1.12.0
