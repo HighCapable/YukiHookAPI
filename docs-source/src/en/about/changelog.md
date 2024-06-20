@@ -16,7 +16,13 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.2.0 | 2023.10.07 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.2.1 | 2024.06.20 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Catch exceptions in singleton Hooker to prevent it from blocking the entire process
+- Add automatic use of "`" in the automatic handler to fix the situation where Kotlin keywords are package names, thanks to [Fengning Zhu](https://github.com/zhufengning) for [PR](https://github.com/HighCapable/YukiHookAPI/pull/70)
+- Adapt to Kotlin 2.0.0+, fix the problem that it cannot be compiled during automatic processing, thanks to [xihan123](https://github.com/xihan123) for [PR](https://github.com/HighCapable/YukiHookAPI/pull/76)
+
+### 1.2.0 | 2023.10.07 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - The license agreement has been changed from `MIT` to `Apache-2.0`, subsequent versions will be distributed under this license agreement, you should change the relevant license agreement after using this version
 - This is a breaking update, please refer to [Migrate to YukiHookAPI 1.2.x](https://highcapable.github.io/YukiHookAPI/en/config/move-to-api-1-2-x) for details

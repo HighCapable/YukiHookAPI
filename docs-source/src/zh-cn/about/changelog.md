@@ -8,7 +8,13 @@
 
 :::
 
-### 1.2.0 | 2023.10.07 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.2.1 | 2024.06.20 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 捕获单例 Hooker 中的异常，防止其阻断整个进程
+- 在自动处理程序中添加自动使用 "`" 来修复 Kotlin 关键字为包名的情况，感谢 [Fengning Zhu](https://github.com/zhufengning) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/70)
+- 适配 Kotlin 2.0.0+，修复在自动处理过程中无法通过编译的问题，感谢 [xihan123](https://github.com/xihan123) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/76)
+
+### 1.2.0 | 2023.10.07 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 许可协议由 `MIT` 变更为 `Apache-2.0`，在此之后的版本将由此许可协议进行分发，您在使用此版本后应变更相关许可协议
 - 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.2.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-2-x)
