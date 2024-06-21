@@ -25,6 +25,7 @@ ktlint_standard_function-naming = disabled
 ktlint_standard_chain-method-continuation = disabled
 ktlint_standard_class-signature = disabled
 ktlint_standard_condition-wrapping = disabled
+ktlint_standard_class-signature = disabled
 ij_continuation_indent_size = 2
 indent_size = 4
 indent_style = space
