@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-4f5c6182","path":"/zh-cn/guide/supportive.html","title":"支持性","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1696672215000,"contributors":[{"name":"fankesyooni","email":"qzmmcn@163.com","commits":4}]},"filePathRelative":"zh-cn/guide/supportive.md"}');export{e as data};
