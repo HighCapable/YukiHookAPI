@@ -58,6 +58,7 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [MIUI录屏进化](https://www.coolapk.com/apk/UTSSG.ZQDesigned.miuirecordercracker)    | [ZQDesigned](https://github.com/ZQDesigned)     |
 | [Fuck AD](https://github.com/hujiayucc/Fuck-AD)                                 | [hujiayucc](https://github.com/hujiayucc)       |
 | [Zuiyou ADFree](https://github.com/kazutoiris/zuiyou-adfree)                    | [kazutoiris](https://github.com/kazutoiris)     |
+| [Dingda ADFree](https://github.com/kazutoiris/dingda-adfree)                    | [kazutoiris](https://github.com/kazutoiris)     |
 
 Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private repositories do not need to indicate web
 links).
