@@ -23,7 +23,7 @@
 
 この API の名前は[ももくり](https://www.comico.jp/comic/29)のヒロイン、[栗原雪](https://momokuri-anime.jp/character.html)の名前から由来しています。
 
-以前は[開発の学習でのプロジェクト](https://github.com/fankes/TMore)で使用されていた Innocent Xposed API でしたが、名前が変更され現在はオープンソース化されています。
+元々は[開発の学習でのプロジェクト](https://github.com/fankes/TMore)内で使用していた Innocent Xposed API でしたが、名前を変更して現在はオープンソース化されています。
 
 ## 始め方
 
