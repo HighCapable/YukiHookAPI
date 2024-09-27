@@ -21,7 +21,7 @@
 
 これは、Kotlin を使用して Xposed API に基づきビルドされた効率的なフック API です。Xposed モジュールの開発のための豊富な機能拡張が作成できます。
 
-この API は[ももくり](https://www.comico.jp/comic/29)のヒロイン、[栗原雪](https://momokuri-anime.jp/character.html)名前から由来しています。
+この API 名は[ももくり](https://www.comico.jp/comic/29)のヒロイン、[栗原雪](https://momokuri-anime.jp/character.html)の名前から由来しています。
 
 元々は[開発の学習でのプロジェクト](https://github.com/fankes/TMore)内で使用していた Innocent Xposed API でしたが、名前を変更して現在はオープンソース化されています。
 
