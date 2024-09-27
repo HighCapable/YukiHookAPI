@@ -66,7 +66,7 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
      <h2>ねぇねぇ、ちょっときいて! 👋</h2>
-     <h3>ここではAndroid の開発ツール、UI デザイン、Gradle プラグイン、実用的なソフトウェアなどの関連したプロジェクトを紹介しています。</h3>
+     <h3>ここではAndroid の開発ツール、UI デザイン、Gradle プラグイン、Xposed モジュール、実用的なソフトウェアなどの関連したプロジェクトを紹介しています。</h3>
      <h3>プロジェクトがあなたの役に立てたのであれば、Star を付けてください!</h3>
      <h3>すべてのプロジェクトは無料でオープンソースであり、対応するオープンソースライセンスのルールに従っています。</h3>
      <h1><a href="https://github.com/fankes/fankes/blob/main/project-promote/README.md">→ 私のプロジェクトの詳細はここをクリックしてください ←</a></h1>
