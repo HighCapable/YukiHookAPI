@@ -10,7 +10,7 @@
 
 ⛱️ An efficient Hook API and Xposed Module solution built in Kotlin.
 
-English | [简体中文](README-zh-CN.md)
+English | [简体中文](README-zh-CN.md) | [日本語](README-ja-JP.md)
 
 | <img src="https://github.com/HighCapable/.github/blob/main/img-src/logo.jpg?raw=true" width = "30" height = "30" alt="LOGO"/> | [HighCapable](https://github.com/HighCapable) |
 |-------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
