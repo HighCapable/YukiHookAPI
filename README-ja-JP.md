@@ -10,7 +10,7 @@
 
 ⛱️ Kotlin でビルドされた効率的なフック API と Xposed モジュールソリューションです。
 
-[English](README.md) | [简体中文](README-zh-CN.md)
+[English](README.md) | [简体中文](README-zh-CN.md) | 日本語
 
 | <img src="https://github.com/HighCapable/.github/blob/main/img-src/logo.jpg?raw=true" width = "30" height = "30" alt="LOGO"/> | [HighCapable](https://github.com/HighCapable) |
 |-------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
