@@ -59,8 +59,7 @@
 | [Zuiyou ADFree](https://github.com/kazutoiris/zuiyou-adfree)                    | [kazutoiris](https://github.com/kazutoiris)     |
 | [Dingda ADFree](https://github.com/kazutoiris/dingda-adfree)                    | [kazutoiris](https://github.com/kazutoiris)     |
 
-そこのあなたも `YukiHookAPI` を使って開発をしていますか?<br>
-是非、**PR** をしてあなたのリポジトリを上記のリストに追加しませんか? (プライベートリポジトリは Web リンクを出す必要はありません)
+そこのあなたも `YukiHookAPI` を使って開発をしていますか? 是非、**PR** をしてあなたのリポジトリを上記のリストに追加しませんか? (プライベートリポジトリは Web リンクを出す必要はありません)
 
 ## プロモーション
 
