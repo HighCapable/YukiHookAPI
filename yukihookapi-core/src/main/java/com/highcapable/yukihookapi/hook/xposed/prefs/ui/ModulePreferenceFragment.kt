@@ -66,7 +66,8 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
      * 获取应用默认的 [SharedPreferences]
      * @return [SharedPreferences]
      */
-    private val currentSharedPrefs get() = PreferenceManager.getDefaultSharedPreferences(currentActivity)
+    @Suppress("DEPRECATION", "WorldReadableFiles")
+    private val currentSharedPrefs get() = currentActivity.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
 
     @CallSuper
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
