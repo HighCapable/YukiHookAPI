@@ -59,6 +59,7 @@
 | [最右强力去广告](https://github.com/kazutoiris/zuiyou-adfree)                          | [kazutoiris](https://github.com/kazutoiris)     |
 | [叮嗒出行强力去广告](https://github.com/kazutoiris/dingda-adfree)                          | [kazutoiris](https://github.com/kazutoiris)     |
 | [无限幻境](https://github.com/kazutoiris/infinite-illusion)                          | [kazutoiris](https://github.com/kazutoiris)     |
+| [Make RoamingX Great Again](https://github.com/kazutoiris/MRGA)                    | [kazutoiris](https://github.com/kazutoiris)     |
 
 你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
 
