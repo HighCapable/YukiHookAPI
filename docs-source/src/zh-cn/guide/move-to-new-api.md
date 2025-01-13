@@ -260,6 +260,49 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 :::
 ::::
 
+### 迁移 XposedHelpers 注意事项
+
+`YukiHookAPI` 中提供的反射功能与 `XposedHelpers` 的反射功能有所不同，这里提供一个误区指引。
+
+`XposedHelpers.callMethod`、`XposedHelpers.callStaticMethod` 等方法自动查找的方法会自动调用所有公开的方法 (包括 `super` 超类)，这是 Java 原生反射的特性，
+而 `YukiHookAPI` 提供的反射方案为先反射查找再调用，而查找过程默认不会自动查找 `super` 超类的方法。
+
+例如，类 `A` 继承于 `B`， `B` 中存在公开的方法 `test`，而 `A` 中并不存在。
+
+```java
+public class B {
+    public void test(String a) {
+        // ...
+    }
+}
+
+public class A extends B {
+    // ...
+}
+```
+
+此时 `XposedHelpers` 的用法。
+
+```kotlin
+val instance: A = ...
+XposedHelpers.callMethod(instance, "test", "some string")
+```
+
+`YukiHookAPI` 的用法。
+
+```kotlin
+val instance: A = ...
+instance.current().method {
+    name = "test"
+    // 请注意，这里需要添加此查找条件以确保其会查找超类的方法
+    superClass()
+}.call("some string")
+// 或者直接调用 superClass() 方法
+instance.current().superClass()?.method {
+    name = "test"
+}?.call("some string")
+```
+
 ## 迁移更多有关 Hook API 的功能
 
 `YukiHookAPI` 是一套全新的 Hook API，与其它 Hook API 存在着本质区别，你可以参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection) 来决定一些功能性的迁移和使用。

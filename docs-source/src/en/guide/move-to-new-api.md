@@ -260,6 +260,50 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 :::
 ::::
 
+### Notes on Migrating XposedHelpers
+
+The reflection functionality provided in `YukiHookAPI` differs from the reflection functionality of `XposedHelpers`.
+
+Here is a guide to avoid common pitfalls.
+
+Methods like `XposedHelpers.callMethod` and `XposedHelpers.callStaticMethod` automatically search and invoke all public methods (including those in superclasses), which is a feature of native Java reflection. In contrast, the reflection solution provided by `YukiHookAPI` first searches and then calls, and by default, the search process does not automatically look for methods in superclasses.
+
+For example, class `A` inherits from `B`, and `B` has a public method `test`, while `A` does not.
+
+```java
+public class B {
+    public void test(String a) {
+        // ...
+    }
+}
+
+public class A extends B {
+    // ...
+}
+```
+
+Usage with `XposedHelpers`.
+
+```kotlin
+val instance: A = ...
+XposedHelpers.callMethod(instance, "test", "some string")
+```
+
+Usage with `YukiHookAPI`.
+
+```kotlin
+val instance: A = ...
+instance.current().method {
+    name = "test"
+    // Note that you need to add this search condition to ensure it searches for methods in superclasses.
+    superClass()
+}.call("some string")
+// Or directly call the superClass() method.
+instance.current().superClass()?.method {
+    name = "test"
+}?.call("some string")
+```
+
 ## Migrate More Functions Related to Hook API
 
 `YukiHookAPI` is a brand new Hook API, which is fundamentally different from other Hook APIs, you can refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) to determine some functional Migration and use.
