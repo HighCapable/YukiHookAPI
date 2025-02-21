@@ -30,14 +30,21 @@
 .idea/**/libraries
 
 # Gradle and Maven with auto-import
+.idea/.name
 .idea/artifacts
 .idea/compiler.xml
 .idea/jarRepositories.xml
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
+.idea/caches
+.idea/material_theme**
+.idea/other.xml
 *.iml
 *.ipr
+
+# Kotlin
+.kotlin
 
 # Misc
 .idea/misc.xml
