@@ -4,4 +4,7 @@
     <ktlintMode>MANUAL</ktlintMode>
     <formatOnSave>false</formatOnSave>
   </component>
+  <component name="com.nbadal.ktlint.KtlintProjectSettings">
+    <ktlintMode>MANUAL</ktlintMode>
+  </component>
 </project>
