@@ -6,5 +6,6 @@
   </component>
   <component name="com.nbadal.ktlint.KtlintProjectSettings">
     <ktlintMode>MANUAL</ktlintMode>
+    <ktlintRulesetVersion>DEFAULT</ktlintRulesetVersion>
   </component>
 </project>

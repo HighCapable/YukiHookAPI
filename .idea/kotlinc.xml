@@ -7,6 +7,6 @@
     <option name="additionalArguments" value="-version -Xopt-in=kotlin.RequiresOptIn" />
   </component>
   <component name="KotlinJpsPluginSettings">
-    <option name="version" value="2.0.21" />
+    <option name="version" value="2.1.10" />
   </component>
 </project>
