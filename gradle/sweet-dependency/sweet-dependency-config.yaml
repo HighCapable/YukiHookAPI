@@ -19,22 +19,22 @@ repositories:
 plugins:
   org.jetbrains.kotlin.jvm:
     alias: kotlin-jvm
-    version: 2.0.21
+    version: 2.1.10
   org.jetbrains.kotlin.android:
     alias: kotlin-android
     version-ref: kotlin-jvm
   com.google.devtools.ksp:
     alias: kotlin-ksp
-    version: 2.0.21-1.0.27
+    version: 2.1.10-1.0.31
   com.android.application:
     alias: android-application
-    version: 8.5.2
+    version: 8.9.0
   com.android.library:
     alias: android-library
     version-ref: android-application
   com.vanniktech.maven.publish:
     alias: maven-publish
-    version: 0.30.0
+    version: 0.31.0
 
 libraries:
   de.robv.android.xposed:
@@ -76,7 +76,7 @@ libraries:
       version: 1.12.0
   androidx.constraintlayout:
     constraintlayout:
-      version: 2.2.0
+      version: 2.2.1
   androidx.test.ext:
     junit:
       version: 1.2.1
