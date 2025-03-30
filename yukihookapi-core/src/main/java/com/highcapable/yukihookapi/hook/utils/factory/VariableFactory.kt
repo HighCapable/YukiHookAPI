@@ -182,7 +182,7 @@ internal object RandomSeed {
      * @param length 生成长度 - 默认 15
      * @return [String]
      */
-    internal fun createString(length: Int = 15) = StringBuilder().apply {
-        for (i in 1..length) append(RANDOM_LETTERS_NUMBERS[(0..RANDOM_LETTERS_NUMBERS.lastIndex).random()])
-    }.toString()
+    internal fun createString(length: Int = 15): String = buildString {
+        repeat(length) { append(RANDOM_LETTERS_NUMBERS.random()) }
+    }
 }
