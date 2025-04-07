@@ -106,7 +106,7 @@ abstract class BaseFinder {
         is String -> runCatching { toClass(loader) }.getOrNull() ?: UndefinedType
         is VariousClass -> runCatching { get(loader) }.getOrNull() ?: UndefinedType
         else -> error("$tag match type \"$javaClass\" not allowed")
-    } as Class<*>?
+    }
 
     /**
      * 返回结果实现类
