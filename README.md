@@ -61,6 +61,7 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [Dingda ADFree](https://github.com/kazutoiris/dingda-adfree)                    | [kazutoiris](https://github.com/kazutoiris)     |
 | [Infinite Illusion](https://github.com/kazutoiris/infinite-illusion)                    | [kazutoiris](https://github.com/kazutoiris)     |
 | [HookGG](https://github.com/HdShare/HookGG)                                     | [HdShare](https://github.com/HdShare)           |
+| [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 
 Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private repositories do not need to indicate web
 links).
