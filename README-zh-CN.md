@@ -57,9 +57,10 @@
 | [MIUI录屏进化](https://www.coolapk.com/apk/UTSSG.ZQDesigned.miuirecordercracker)    | [ZQDesigned](https://github.com/ZQDesigned)     |
 | [Fuck AD](https://github.com/hujiayucc/Fuck-AD)                                 | [hujiayucc](https://github.com/hujiayucc)       |
 | [最右强力去广告](https://github.com/kazutoiris/zuiyou-adfree)                          | [kazutoiris](https://github.com/kazutoiris)     |
-| [叮嗒出行强力去广告](https://github.com/kazutoiris/dingda-adfree)                          | [kazutoiris](https://github.com/kazutoiris)     |
-| [无限幻境](https://github.com/kazutoiris/infinite-illusion)                          | [kazutoiris](https://github.com/kazutoiris)     |
+| [叮嗒出行强力去广告](https://github.com/kazutoiris/dingda-adfree)                        | [kazutoiris](https://github.com/kazutoiris)     |
+| [无限幻境](https://github.com/kazutoiris/infinite-illusion)                         | [kazutoiris](https://github.com/kazutoiris)     |
 | [HookGG](https://github.com/HdShare/HookGG)                                     | [HdShare](https://github.com/HdShare)           |
+| [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 
 你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
 
