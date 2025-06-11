@@ -1,6 +1,7 @@
 plugins {
     autowire(libs.plugins.android.application)
     autowire(libs.plugins.kotlin.android)
+    autowire(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -41,6 +42,11 @@ android {
 }
 
 dependencies {
+    ksp(com.highcapable.hikage.hikage.compiler)
+    implementation(com.highcapable.hikage.hikage.core)
+    implementation(com.highcapable.hikage.hikage.extension)
+    implementation(com.highcapable.hikage.hikage.widget.androidx)
+    implementation(com.highcapable.hikage.hikage.widget.material)
     implementation(androidx.core.core.ktx)
     implementation(androidx.appcompat.appcompat)
     implementation(androidx.lifecycle.lifecycle.viewmodel.ktx)

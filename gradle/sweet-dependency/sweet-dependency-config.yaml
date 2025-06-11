@@ -56,6 +56,17 @@ libraries:
   dev.zacsweers.autoservice:
     auto-service-ksp:
       version: 1.2.0
+  com.highcapable.hikage:
+    hikage-core:
+      version: 1.0.1
+    hikage-compiler:
+      version: 1.0.0
+    hikage-extension:
+      version: 1.0.0
+    hikage-widget-androidx:
+      version: 1.0.0
+    hikage-widget-material:
+      version: 1.0.0
   androidx.annotation:
     annotation:
       version: 1.9.1

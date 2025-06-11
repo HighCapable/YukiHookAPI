@@ -23,13 +23,26 @@
 
 package com.highcapable.yukihookapi.demo_module.ui
 
-import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
+import android.view.Gravity
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.updateMargins
+import com.highcapable.betterandroid.ui.extension.component.startActivity
+import com.highcapable.betterandroid.ui.extension.view.textToString
+import com.highcapable.betterandroid.ui.extension.view.toast
+import com.highcapable.betterandroid.ui.extension.view.updateMargins
+import com.highcapable.hikage.extension.setContentView
+import com.highcapable.hikage.widget.android.widget.Button
+import com.highcapable.hikage.widget.android.widget.EditText
+import com.highcapable.hikage.widget.android.widget.LinearLayout
+import com.highcapable.hikage.widget.android.widget.TextView
+import com.highcapable.hikage.widget.androidx.core.widget.NestedScrollView
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
-import com.highcapable.yukihookapi.demo_module.databinding.ActivityMainBinding
 import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.prefs
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
@@ -42,48 +55,140 @@ class MainActivity : ModuleAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityMainBinding.inflate(layoutInflater).apply {
-            setContentView(root)
-            moduleEnvironment {
-                dataChannel(packageName = "com.highcapable.yukihookapi.demo_app").with {
-                    wait(DataConst.TEST_CN_DATA) {
-                        Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
-                    }
+        moduleEnvironment {
+            dataChannel(packageName = "com.highcapable.yukihookapi.demo_app").with {
+                wait(DataConst.TEST_CN_DATA) {
+                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
                 }
             }
-            moduleDemoActiveText.text = "Module is Active: ${YukiHookAPI.Status.isModuleActive}"
-            moduleDemoActiveZhText.text = "Xposed 模块激活状态"
-            moduleDemoFrameworkText.text = "Hook Framework: ${YukiHookAPI.Status.Executor.name}"
-            moduleDemoFrameworkZhText.text = "当前的 Hook 框架"
-            moduleDemoApiVersionText.text = "Xposed API Version: ${YukiHookAPI.Status.Executor.apiLevel}"
-            moduleDemoApiVersionZhText.text = "Xposed API 版本"
-            moduleDemoYukiHookApiVersionText.text = "${YukiHookAPI.TAG} Version: ${YukiHookAPI.VERSION}"
-            moduleDemoYukiHookApiVersionZhText.text = "${YukiHookAPI.TAG} 版本"
-            moduleDemoNewXshareText.text =
-                "${if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences Readable" else "New XSharedPreferences"}: ${prefs().isPreferencesAvailable}"
-            moduleDemoNewXshareZhText.text =
-                if (YukiHookAPI.Status.isXposedEnvironment) "XSharedPreferences 是否可用" else "New XSharedPreferences 支持状态"
-            moduleDemoResHookText.text = "Support Resources Hook: ${YukiHookAPI.Status.isSupportResourcesHook}"
-            moduleDemoResHookZhText.text = "资源钩子支持状态"
-            moduleDemoComTimeStampText.text =
-                "Compiled Time：${SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))}"
-            moduleDemoEditText.also {
-                hostEnvironment {
-                    it.isEnabled = false
-                    moduleDemoButton.isEnabled = false
-                }
-                it.setText(prefs().get(DataConst.TEST_KV_DATA))
-                moduleDemoButton.setOnClickListener { _ ->
-                    moduleEnvironment {
-                        if (it.text.toString().isNotEmpty()) {
-                            prefs().edit { put(DataConst.TEST_KV_DATA, it.text.toString()) }
-                            Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
-                        } else Toast.makeText(applicationContext, "Please enter the text", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            moduleDemoFrgButton.setOnClickListener { startActivity(Intent(this@MainActivity, PreferenceActivity::class.java)) }
         }
+        val hikage = setContentView {
+            NestedScrollView(
+                lparams = LayoutParams(matchParent = true),
+                init = {
+                    isFillViewport = true
+                    isVerticalScrollBarEnabled = false
+                }
+            ) {
+                LinearLayout(
+                    lparams = LayoutParams(widthMatchParent = true) {
+                        updateMargins(vertical = 20.dp)
+                    },
+                    init = {
+                        orientation = LinearLayout.VERTICAL
+                        gravity = Gravity.CENTER
+                    }
+                ) {
+                    lateinit var editText: TextView
+                    LinearLayout(
+                        lparams = LayoutParams(widthMatchParent = true) {
+                            updateMargins(horizontal = 50.dp)
+                            updateMargins(bottom = 15.dp)
+                        },
+                        init = {
+                            orientation = LinearLayout.VERTICAL
+                            gravity = Gravity.CENTER or Gravity.START
+                        }
+                    ) {
+                        repeat(6) { index ->
+                            TextView(
+                                id = "sample_title_text_$index",
+                                lparams = LayoutParams {
+                                    bottomMargin = 5.dp
+                                }
+                            ) {
+                                textSize = 18f
+                                isSingleLine = true
+                                ellipsize = TextUtils.TruncateAt.END
+                                gravity = Gravity.CENTER or Gravity.START
+                            }
+                            TextView(
+                                id = "sample_subtitle_text_$index",
+                                lparams = LayoutParams {
+                                    bottomMargin = if (index < 5) 15.dp else 25.dp
+                                }
+                            ) {
+                                alpha = 0.85f
+                                textSize = 15f
+                                isSingleLine = true
+                                ellipsize = TextUtils.TruncateAt.END
+                                gravity = Gravity.CENTER or Gravity.START
+                            }
+                        }
+                        TextView(
+                            lparams = LayoutParams {
+                                leftMargin = 5.dp
+                                bottomMargin = 25.dp
+                            }
+                        ) {
+                            textSize = 15f
+                            isSingleLine = true
+                            ellipsize = TextUtils.TruncateAt.END
+                            gravity = Gravity.CENTER or Gravity.START
+                            text = "Leave something in there"
+                        }
+                        editText = EditText(
+                            lparams = LayoutParams(width = 250.dp)
+                        ) {
+                            hint = "Please enter the text"
+                            isSingleLine = true
+                            textSize = 18f
+                            hostEnvironment { isEnabled = false }
+                            setText(prefs().get(DataConst.TEST_KV_DATA))
+                        }
+                    }
+                    Button(
+                        id = "button",
+                        lparams = LayoutParams { 
+                            bottomMargin = 15.dp
+                        }
+                    ) { 
+                        text = "Save Test Data"
+                        hostEnvironment { isEnabled = false }
+                        setOnClickListener { _ ->
+                            moduleEnvironment {
+                                if (editText.textToString().isNotEmpty()) {
+                                    prefs().edit { put(DataConst.TEST_KV_DATA, editText.textToString()) }
+                                    toast("Saved")
+                                } else toast("Please enter the text")
+                            }
+                        }
+                    }
+                    Button {
+                        text = "Open PreferenceFragment"
+                        setOnClickListener { startActivity<PreferenceActivity>() }
+                    }
+                    TextView(
+                        lparams = LayoutParams {
+                            topMargin = 25.dp
+                        }
+                    ) {
+                        alpha = 0.45f
+                        textSize = 13f
+                        isSingleLine = true
+                        ellipsize = TextUtils.TruncateAt.END
+                        gravity = Gravity.CENTER or Gravity.START
+                        text = "Compiled Time：${SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))}"
+                    }
+                }
+            }
+        }
+        hikage.get<TextView>("sample_title_text_0").text = "Module is Active: ${YukiHookAPI.Status.isModuleActive}"
+        hikage.get<TextView>("sample_subtitle_text_0").text = "Xposed 模块激活状态"
+        hikage.get<TextView>("sample_title_text_1").text = "Hook Framework: ${YukiHookAPI.Status.Executor.name}"
+        hikage.get<TextView>("sample_subtitle_text_1").text = "当前的 Hook 框架"
+        hikage.get<TextView>("sample_title_text_2").text = "Xposed API Version: ${YukiHookAPI.Status.Executor.apiLevel}"
+        hikage.get<TextView>("sample_subtitle_text_2").text = "Xposed API 版本"
+        hikage.get<TextView>("sample_title_text_3").text = "${YukiHookAPI.TAG} Version: ${YukiHookAPI.VERSION}"
+        hikage.get<TextView>("sample_subtitle_text_3").text = "${YukiHookAPI.TAG} 版本"
+        hikage.get<TextView>("sample_title_text_4").text = "${if (YukiHookAPI.Status.isXposedEnvironment)
+            "XSharedPreferences Readable"
+        else "New XSharedPreferences"}: ${prefs().isPreferencesAvailable}"
+        hikage.get<TextView>("sample_subtitle_text_4").text = if (YukiHookAPI.Status.isXposedEnvironment)
+            "XSharedPreferences 是否可用"
+        else "New XSharedPreferences 支持状态"
+        hikage.get<TextView>("sample_title_text_5").text = "Support Resources Hook: ${YukiHookAPI.Status.isSupportResourcesHook}"
+        hikage.get<TextView>("sample_subtitle_text_5").text = "资源钩子支持状态"
     }
 
     /**
