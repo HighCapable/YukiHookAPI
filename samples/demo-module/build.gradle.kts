@@ -47,6 +47,8 @@ dependencies {
     implementation(projects.yukihookapiCore)
     ksp(projects.yukihookapiKspXposed)
     ksp(com.highcapable.hikage.hikage.compiler)
+    implementation(com.highcapable.kavaref.kavaref.core)
+    implementation(com.highcapable.kavaref.kavaref.extension)
     implementation(com.highcapable.hikage.hikage.core)
     implementation(com.highcapable.hikage.hikage.extension)
     implementation(com.highcapable.hikage.hikage.widget.androidx)

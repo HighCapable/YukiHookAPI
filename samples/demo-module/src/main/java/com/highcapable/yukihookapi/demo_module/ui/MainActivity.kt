@@ -28,7 +28,6 @@ import android.text.TextUtils
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.updateMargins
 import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.betterandroid.ui.extension.view.textToString
@@ -58,7 +57,7 @@ class MainActivity : ModuleAppCompatActivity() {
         moduleEnvironment {
             dataChannel(packageName = "com.highcapable.yukihookapi.demo_app").with {
                 wait(DataConst.TEST_CN_DATA) {
-                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                    toast(it)
                 }
             }
         }
@@ -138,7 +137,6 @@ class MainActivity : ModuleAppCompatActivity() {
                         }
                     }
                     Button(
-                        id = "button",
                         lparams = LayoutParams { 
                             bottomMargin = 15.dp
                         }

@@ -25,7 +25,7 @@ import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
-import com.highcapable.yukihookapi.hook.factory.current
+import com.highcapable.kavaref.KavaRef.Companion.resolve
 
 /**
  * Fixed [AlertDialog] dialog button issue after injecting Module App's Resources in some Host Apps
@@ -38,11 +38,13 @@ import com.highcapable.yukihookapi.hook.factory.current
  * @return [AlertDialog]
  */
 fun AlertDialog.compatStyle(): AlertDialog {
-    current().field { name = "mAlert" }.current {
-        arrayOf(
-            field { name = "mButtonPositive" }.cast<Button>(),
-            field { name = "mButtonNegative" }.cast<Button>(),
-            field { name = "mButtonNeutral" }.cast<Button>()
+    resolve().firstField {
+        name = "mAlert"
+    }.get()?.resolve()?.apply {
+        listOf(
+            firstField { name = "mButtonPositive" }.get<Button>(),
+            firstField { name = "mButtonNegative" }.get<Button>(),
+            firstField { name = "mButtonNeutral" }.get<Button>()
         ).forEach {
             it?.setBackgroundResource(TypedValue().apply {
                 context.theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
@@ -51,6 +53,5 @@ fun AlertDialog.compatStyle(): AlertDialog {
                 context.theme.resolveAttribute(android.R.attr.colorPrimary, this, true)
             }.data)
         }
-    }
-    return this
+    }; return this
 }
