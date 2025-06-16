@@ -24,7 +24,6 @@ package com.highcapable.yukihookapi.hook.core.api.factory
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberReplacement
-import com.highcapable.yukihookapi.hook.core.api.store.YukiHookCacheStore
 import java.lang.reflect.Member
 
 /**
@@ -43,7 +42,6 @@ internal object YukiHookCallbackDelegate {
             override val member get() = member()
             override fun remove() {
                 onRemove()
-                runCatching { YukiHookCacheStore.hookedMembers.remove(this) }
             }
         }
 

@@ -29,6 +29,7 @@ package com.highcapable.yukihookapi.hook.core.finder.members
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.base.MemberBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
@@ -39,7 +40,6 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditi
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -726,7 +726,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @return [Any] or null
              */
             private fun baseCall(vararg args: Any?) =
-                if (isCallOriginal && YukiHookHelper.isMemberHooked(method))
+                if (isCallOriginal)
                     YukiHookHelper.invokeOriginalMember(method, instance, args)
                 else method?.invoke(instance, *args)
 

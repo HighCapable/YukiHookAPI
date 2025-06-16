@@ -26,7 +26,6 @@ import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.core.api.compat.HookCompatHelper
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
-import com.highcapable.yukihookapi.hook.core.api.store.YukiHookCacheStore
 import com.highcapable.yukihookapi.hook.log.YLog
 import java.lang.reflect.Member
 
@@ -50,27 +49,8 @@ internal object YukiHookHelper {
      * @param callback 回调
      * @return [YukiHookResult]
      */
-    internal fun hookMember(member: Member?, callback: YukiHookCallback): YukiHookResult {
-        runCatching {
-            YukiHookCacheStore.hookedMembers.takeIf { it.isNotEmpty() }?.forEach {
-                if (it.member.toString() == member?.toString()) return YukiHookResult(isAlreadyHooked = true, it)
-            }
-        }
-        return HookCompatHelper.hookMember(member, callback).let {
-            if (it != null) YukiHookCacheStore.hookedMembers.add(it)
-            YukiHookResult(hookedMember = it)
-        }
-    }
-
-    /**
-     * 获取当前 [Member] 是否被 Hook
-     * @param member 实例
-     * @return [Boolean]
-     */
-    internal fun isMemberHooked(member: Member?): Boolean {
-        if (member == null) return false
-        return HookApiCategoryHelper.hasAvailableHookApi && YukiHookCacheStore.hookedMembers.any { it.member.toString() == member.toString() }
-    }
+    internal fun hookMember(member: Member?, callback: YukiHookCallback) =
+        YukiHookResult(hookedMember = HookCompatHelper.hookMember(member, callback))
 
     /**
      * 执行原始 [Member]
@@ -81,13 +61,12 @@ internal object YukiHookHelper {
      * @return [Any] or null
      * @throws IllegalStateException 如果 [Member] 参数个数不正确
      */
-    internal fun invokeOriginalMember(member: Member?, instance: Any?, args: Array<out Any?>?) =
-        if (isMemberHooked(member)) member?.let {
-            runCatching { HookCompatHelper.invokeOriginalMember(member, instance, args) }.onFailure {
-                if (it.message?.lowercase()?.contains("wrong number of arguments") == true) error(it.message ?: it.toString())
-                YLog.innerE("Invoke original Member [$member] failed", it)
-            }.getOrNull()
-        } else null
+    internal fun invokeOriginalMember(member: Member?, instance: Any?, args: Array<out Any?>?) = member?.let {
+        runCatching { HookCompatHelper.invokeOriginalMember(member, instance, args) }.onFailure {
+            if (it.message?.lowercase()?.contains("wrong number of arguments") == true) error(it.message ?: it.toString())
+            YLog.innerE("Invoke original Member [$member] failed", it)
+        }.getOrNull()
+    }
 
     /**
      * 使用当前 Hook API 自带的日志功能打印日志

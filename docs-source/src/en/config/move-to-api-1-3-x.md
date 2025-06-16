@@ -78,3 +78,11 @@ val instance: Any
         emptyParameters()
     }.of(instance).invokeOriginal()
 ```
+
+## Repeat Hook Restricted Deprecated
+
+`YukiHookAPI` has deprecated the restriction of duplicate Hook since the `1.3.0` version.
+Now, `YukiHookAPI` no longer limits duplicate Hooks to the same method, you can hook multiple times on the same method.
+
+`YukiHookAPI` also deprecated the `onAlreadyHooked` method of `hook { ... }`.
+Now this method will be useless and will not be called back. If necessary, please manually handle the relevant logic of duplicate Hooks.

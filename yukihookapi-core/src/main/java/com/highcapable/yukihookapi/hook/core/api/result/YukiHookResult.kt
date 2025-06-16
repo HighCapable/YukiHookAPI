@@ -25,7 +25,6 @@ import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
 
 /**
  * Hook 结果实现类
- * @param isAlreadyHooked 是否已经被 Hook - 默认否
  * @param hookedMember 当前 Hook 的实例对象 - 默认空
  */
-internal data class YukiHookResult(val isAlreadyHooked: Boolean = false, val hookedMember: YukiMemberHook.HookedMember? = null)
+internal data class YukiHookResult(val hookedMember: YukiMemberHook.HookedMember? = null)

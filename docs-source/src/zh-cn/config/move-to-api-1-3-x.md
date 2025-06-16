@@ -74,3 +74,9 @@ val instance: Any
         emptyParameters()
     }.of(instance).invokeOriginal()
 ```
+
+## 重复 Hook 限制弃用
+
+`YukiHookAPI` 从 `1.3.0` 版本开始弃用了重复 Hook 的限制，现在，`YukiHookAPI` 不再限制重复 Hook 同一个方法，你可以在同一个方法上多次 Hook。
+
+`YukiHookAPI` 同时弃用了 `hook { ... }` 的 `onAlreadyHooked` 方法，现在此方法将无作用且不会被回调，如有需要，请手动处理重复 Hook 的相关逻辑。

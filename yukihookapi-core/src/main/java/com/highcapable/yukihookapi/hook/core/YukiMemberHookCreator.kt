@@ -264,9 +264,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
         /** Hook 成功时回调 */
         private var onHookedCallback: ((Member) -> Unit)? = null
 
-        /** 重复 Hook 时回调 */
-        private var onAlreadyHookedCallback: ((Member) -> Unit)? = null
-
         /** 找不到 [members] 出现错误回调 */
         private var onNoSuchMemberFailureCallback: ((Throwable) -> Unit)? = null
 
@@ -447,8 +444,6 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
                     member.hook().also {
                         when {
                             it.hookedMember?.member == null -> error("Hook Member [$member] failed")
-                            it.isAlreadyHooked -> onAlreadyHookedCallback?.invoke(it.hookedMember.member!!)
-                                ?: YLog.innerW("Already Hooked Member [$member], this will be ignored")
                             else -> {
                                 hookedMembers.add(it.hookedMember)
                                 onHookedCallback?.invoke(it.hookedMember.member!!)
@@ -847,14 +842,13 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             /**
              * 监听 [members] 重复 Hook 的回调方法
              *
-             * - 同一个 [hookClass] 中的同一个 [members] 不会被 API 重复 Hook - 若由于各种原因重复 Hook 会回调此方法
-             * @param result 回调被重复 Hook 的 [Member]
+             * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
+             * 
+             * - 不再限制重复 Hook 操作
              * @return [Result] 可继续向下监听
              */
-            fun onAlreadyHooked(result: (Member) -> Unit): Result {
-                onAlreadyHookedCallback = result
-                return this
-            }
+            @Deprecated(message = "此方法及功能已被移除，请删除此方法")
+            fun onAlreadyHooked(result: (Member) -> Unit) = this
 
             /**
              * 监听 [members] 不存在发生错误的回调方法
