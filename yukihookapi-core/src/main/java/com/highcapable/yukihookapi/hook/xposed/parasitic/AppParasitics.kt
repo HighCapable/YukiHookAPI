@@ -41,40 +41,21 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.Handler
+import android.os.UserHandle
 import androidx.annotation.RequiresApi
+import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.kavaref.extension.lazyClass
+import com.highcapable.kavaref.extension.lazyClassOrNull
+import com.highcapable.kavaref.extension.toClassOrNull
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiProperty
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberReplacement
-import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.factory.current
-import com.highcapable.yukihookapi.hook.factory.field
-import com.highcapable.yukihookapi.hook.factory.hasClass
-import com.highcapable.yukihookapi.hook.factory.hasMethod
-import com.highcapable.yukihookapi.hook.factory.method
-import com.highcapable.yukihookapi.hook.factory.toClass
-import com.highcapable.yukihookapi.hook.factory.toClassOrNull
+import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
 import com.highcapable.yukihookapi.hook.log.YLog
-import com.highcapable.yukihookapi.hook.type.android.ActivityManagerClass
-import com.highcapable.yukihookapi.hook.type.android.ActivityManagerNativeClass
-import com.highcapable.yukihookapi.hook.type.android.ActivityTaskManagerClass
-import com.highcapable.yukihookapi.hook.type.android.ActivityThreadClass
-import com.highcapable.yukihookapi.hook.type.android.ApplicationClass
-import com.highcapable.yukihookapi.hook.type.android.ContextClass
-import com.highcapable.yukihookapi.hook.type.android.ContextImplClass
-import com.highcapable.yukihookapi.hook.type.android.HandlerClass
-import com.highcapable.yukihookapi.hook.type.android.IActivityManagerClass
-import com.highcapable.yukihookapi.hook.type.android.IActivityTaskManagerClass
-import com.highcapable.yukihookapi.hook.type.android.InstrumentationClass
-import com.highcapable.yukihookapi.hook.type.android.IntentClass
-import com.highcapable.yukihookapi.hook.type.android.SingletonClass
-import com.highcapable.yukihookapi.hook.type.android.UserHandleClass
-import com.highcapable.yukihookapi.hook.type.java.BooleanType
-import com.highcapable.yukihookapi.hook.type.java.IntType
-import com.highcapable.yukihookapi.hook.type.java.JavaClassLoader
-import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
@@ -109,6 +90,14 @@ internal object AppParasitics {
     /** 当前 Hook APP (宿主) 的生命周期演绎者数组 */
     private val appLifecycleActors = mutableMapOf<String, AppLifecycleActor>()
 
+    private val ActivityThreadClass by lazyClass("android.app.ActivityThread")
+    private val ContextImplClass by lazyClass("android.app.ContextImpl")
+    private val ActivityManagerNativeClass by lazyClass("android.app.ActivityManagerNative")
+    private val SingletonClass by lazyClass("android.util.Singleton")
+    private val IActivityManagerClass by lazyClass("android.app.IActivityManager")
+    private val ActivityTaskManagerClass by lazyClassOrNull("android.app.ActivityTaskManager")
+    private val IActivityTaskManagerClass by lazyClass("android.app.IActivityTaskManager")
+
     /**
      * 当前 Hook APP (宿主) 的全局生命周期 [Application]
      *
@@ -127,34 +116,53 @@ internal object AppParasitics {
 
     /**
      * 获取当前系统框架的 [Context]
-     * @return [Context] ContextImpl 实例对象
-     * @throws IllegalStateException 如果获取不到系统框架的 [Context]
+     * @return [Context] ContextImpl 实例对象 or null
      */
-    internal val systemContext
-        get() = ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()?.let {
-            ActivityThreadClass.method { name = "getSystemContext" }.ignored().get(it).invoke<Context?>()
-        } ?: error("Failed to got SystemContext")
+    internal val systemContext get(): Context? {
+        val scope = ActivityThreadClass.resolve()
+            .processor(AndroidHiddenApiBypassResolver.get())
+            .optional()
+        val current = scope.firstMethodOrNull {
+            name = "currentActivityThread"
+            emptyParameters()
+        }?.invoke()
+        return scope.firstMethodOrNull {
+            name = "getSystemContext"
+            emptyParameters()
+        }?.of(current)?.invokeQuietly<Context>()
+    }
 
     /**
      * 获取当前宿主的 [Application]
      * @return [Application] or null
      */
     internal val currentApplication
-        get() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull() ?: runCatching {
-            ActivityThreadClass.method { name = "currentApplication" }.ignored().get().invoke<Application>()
-        }.getOrNull()
+        get() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull()
+            ?: ActivityThreadClass.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstMethodOrNull { name = "currentApplication" }
+                ?.invoke<Application>()
 
     /**
      * 获取当前宿主的 [ApplicationInfo]
      * @return [ApplicationInfo] or null
      */
     internal val currentApplicationInfo
-        get() = runCatching { AndroidAppHelper.currentApplicationInfo() }.getOrNull() ?: runCatching {
-            ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()
-                ?.current(ignored = true)?.field { name = "mBoundApplication" }
-                ?.current(ignored = true)?.field { name = "appInfo" }
-                ?.cast<ApplicationInfo>()
-        }.getOrNull()
+        get() = runCatching { AndroidAppHelper.currentApplicationInfo() }.getOrNull()
+            ?: let {
+                val scope = ActivityThreadClass.resolve()
+                    .processor(AndroidHiddenApiBypassResolver.get())
+                    .optional()
+                val current = scope.firstMethodOrNull {
+                    name = "currentActivityThread"
+                    emptyParameters()
+                }?.invoke()
+                val currentScope = current?.resolve()?.optional()
+                val mBoundApplication = currentScope?.firstFieldOrNull { name = "mBoundApplication" }?.get()
+                val appScope = mBoundApplication?.resolve()?.optional()
+                appScope?.firstFieldOrNull { name = "appInfo" }?.get<ApplicationInfo>()
+            }
 
     /**
      * 获取当前宿主的包名
@@ -167,10 +175,14 @@ internal object AppParasitics {
      * @return [String]
      */
     internal val currentProcessName
-        get() = runCatching { AndroidAppHelper.currentProcessName() }.getOrNull() ?: runCatching {
-            ActivityThreadClass.method { name = "currentPackageName" }.ignored().get().string()
-                .takeIf { it.isNotBlank() } ?: SYSTEM_FRAMEWORK_NAME
-        }.getOrNull() ?: SYSTEM_FRAMEWORK_NAME
+        get() = runCatching { AndroidAppHelper.currentProcessName() }.getOrNull()
+            ?: ActivityThreadClass.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstMethodOrNull { name = "currentPackageName" }
+                ?.invoke<String>()
+                ?.takeIf { it.isNotBlank() }
+            ?: SYSTEM_FRAMEWORK_NAME
 
     /**
      * 获取指定 [packageName] 的用户 ID
@@ -179,13 +191,17 @@ internal object AppParasitics {
      * @param packageName 当前包名
      * @return [Int]
      */
-    internal fun findUserId(packageName: String) = runCatching {
-        @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
-        UserHandleClass.method {
-            name = "getUserId"
-            param(IntType)
-        }.ignored().get().int(systemContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES).uid)
-    }.getOrNull() ?: 0
+    internal fun findUserId(packageName: String): Int {
+        val uid = systemContext?.packageManager?.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES)?.uid
+            ?: return 0
+        return UserHandle::class.resolve()
+            .processor(AndroidHiddenApiBypassResolver.get())
+            .optional()
+            .firstMethodOrNull {
+                name = "getUserId"
+                parameters(Int::class)
+            }?.invoke<Int>(uid) ?: 0
+    }
 
     /**
      * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
@@ -197,8 +213,12 @@ internal object AppParasitics {
         if (YukiXposedModule.isXposedEnvironment.not()) return YLog.innerW("You can only use hook ClassLoader method in Xposed Environment")
         classLoaderCallbacks[loader.hashCode()] = result
         if (isClassLoaderHooked) return
+        val loadClass = ClassLoader::class.resolve().optional().firstMethodOrNull { 
+            name = "loadClass"
+            parameters(String::class, Boolean::class)
+        }
         runCatching {
-            YukiHookHelper.hook(JavaClassLoader.method { name = "loadClass"; param(StringClass, BooleanType) }, object : YukiMemberHook() {
+            YukiHookHelper.hook(loadClass, object : YukiMemberHook() {
                 override fun afterHookedMember(param: Param) {
                     param.instance?.also { loader ->
                         (param.result as? Class<*>?)?.also { classLoaderCallbacks[loader.hashCode()]?.invoke(it) }
@@ -216,37 +236,43 @@ internal object AppParasitics {
      */
     internal fun hookModuleAppRelated(loader: ClassLoader?, type: HookEntryType) {
         if (YukiHookAPI.Configs.isEnableHookSharedPreferences && type == HookEntryType.PACKAGE)
-            YukiHookHelper.hook(ContextImplClass.method { name = "setFilePermissionsFromMode" }, object : YukiMemberHook() {
-                override fun beforeHookedMember(param: Param) {
-                    if ((param.args?.get(0) as? String?)?.endsWith("preferences.xml") == true) param.args?.set(1, 1)
+            YukiHookHelper.hook(
+                ContextImplClass.resolve()
+                    .processor(AndroidHiddenApiBypassResolver.get())
+                    .optional()
+                    .firstMethodOrNull { name = "setFilePermissionsFromMode" },
+                object : YukiMemberHook() {
+                    override fun beforeHookedMember(param: Param) {
+                        if ((param.args?.get(0) as? String?)?.endsWith("preferences.xml") == true) param.args?.set(1, 1)
+                    }
                 }
-            })
-        YukiXposedModuleStatus.className.toClassOrNull(loader)?.apply {
+            )
+        YukiXposedModuleStatus.className.toClassOrNull(loader)?.resolve()?.optional()?.apply {
             if (type != HookEntryType.RESOURCES) {
-                YukiHookHelper.hook(method { name = YukiXposedModuleStatus.IS_ACTIVE_METHOD_NAME },
+                YukiHookHelper.hook(firstMethodOrNull { name = YukiXposedModuleStatus.IS_ACTIVE_METHOD_NAME },
                     object : YukiMemberReplacement() {
                         override fun replaceHookedMember(param: Param) = true
                     })
-                YukiHookHelper.hook(method { name = YukiXposedModuleStatus.GET_EXECUTOR_NAME_METHOD_NAME },
+                YukiHookHelper.hook(firstMethodOrNull { name = YukiXposedModuleStatus.GET_EXECUTOR_NAME_METHOD_NAME },
                     object : YukiMemberReplacement() {
                         override fun replaceHookedMember(param: Param) = HookApiProperty.name
                     })
                 YukiHookHelper.hook(
-                    method { name = YukiXposedModuleStatus.GET_EXECUTOR_API_LEVEL_METHOD_NAME },
+                    firstMethodOrNull { name = YukiXposedModuleStatus.GET_EXECUTOR_API_LEVEL_METHOD_NAME },
                     object : YukiMemberReplacement() {
                         override fun replaceHookedMember(param: Param) = HookApiProperty.apiLevel
                     })
                 YukiHookHelper.hook(
-                    method { name = YukiXposedModuleStatus.GET_EXECUTOR_VERSION_NAME_METHOD_NAME },
+                    firstMethodOrNull { name = YukiXposedModuleStatus.GET_EXECUTOR_VERSION_NAME_METHOD_NAME },
                     object : YukiMemberReplacement() {
                         override fun replaceHookedMember(param: Param) = HookApiProperty.versionName
                     })
                 YukiHookHelper.hook(
-                    method { name = YukiXposedModuleStatus.GET_EXECUTOR_VERSION_CODE_METHOD_NAME },
+                    firstMethodOrNull { name = YukiXposedModuleStatus.GET_EXECUTOR_VERSION_CODE_METHOD_NAME },
                     object : YukiMemberReplacement() {
                         override fun replaceHookedMember(param: Param) = HookApiProperty.versionCode
                     })
-            } else YukiHookHelper.hook(method { name = YukiXposedModuleStatus.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME },
+            } else YukiHookHelper.hook(firstMethodOrNull { name = YukiXposedModuleStatus.IS_SUPPORT_RESOURCES_HOOK_METHOD_NAME },
                 object : YukiMemberReplacement() {
                     override fun replaceHookedMember(param: Param) = true
                 })
@@ -268,8 +294,8 @@ internal object AppParasitics {
         }
         /** Hook [Application] 装载方法 */
         runCatching {
-            if (appLifecycleActors.isNotEmpty()) {
-                YukiHookHelper.hook(ApplicationClass.method { name = "attach"; param(ContextClass) }, object : YukiMemberHook() {
+            if (appLifecycleActors.isNotEmpty()) Application::class.resolve().apply {
+                YukiHookHelper.hook(firstMethod { name = "attach"; parameters(Context::class) }, object : YukiMemberHook() {
                     override fun beforeHookedMember(param: Param) {
                         runCatching {
                             appLifecycleActors.forEach { (_, actor) ->
@@ -286,7 +312,7 @@ internal object AppParasitics {
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onTerminate" }, object : YukiMemberHook() {
+                YukiHookHelper.hook(firstMethod { name = "onTerminate" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             appLifecycleActors.forEach { (_, actor) ->
@@ -295,7 +321,7 @@ internal object AppParasitics {
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onLowMemory" }, object : YukiMemberHook() {
+                YukiHookHelper.hook(firstMethod { name = "onLowMemory" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             appLifecycleActors.forEach { (_, actor) ->
@@ -304,7 +330,7 @@ internal object AppParasitics {
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onTrimMemory"; param(IntType) }, object : YukiMemberHook() {
+                YukiHookHelper.hook(firstMethod { name = "onTrimMemory"; parameters(Int::class) }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             val self = param.instance as? Application? ?: return
@@ -313,7 +339,7 @@ internal object AppParasitics {
                         }.onFailure { param.throwToAppOrLogger(it) }
                     }
                 })
-                YukiHookHelper.hook(ApplicationClass.method { name = "onConfigurationChanged" }, object : YukiMemberHook() {
+                YukiHookHelper.hook(firstMethod { name = "onConfigurationChanged" }, object : YukiMemberHook() {
                     override fun afterHookedMember(param: Param) {
                         runCatching {
                             val self = param.instance as? Application? ?: return
@@ -324,54 +350,57 @@ internal object AppParasitics {
                 })
             }
             if (YukiHookAPI.Configs.isEnableDataChannel || appLifecycleActors.isNotEmpty())
-                YukiHookHelper.hook(InstrumentationClass.method { name = "callApplicationOnCreate" }, object : YukiMemberHook() {
-                    override fun afterHookedMember(param: Param) {
-                        runCatching {
-                            (param.args?.get(0) as? Application?)?.also {
-                                /**
-                                 * 注册广播
-                                 * @param result 回调 - ([Context] 当前实例, [Intent] 当前对象)
-                                 */
-                                fun IntentFilter.registerReceiver(result: (Context, Intent) -> Unit) {
-                                    object : BroadcastReceiver() {
-                                        override fun onReceive(context: Context?, intent: Intent?) {
-                                            if (context == null || intent == null) return
-                                            result(context, intent)
+                YukiHookHelper.hook(
+                    Instrumentation::class.resolve().optional().firstMethodOrNull { name = "callApplicationOnCreate" },
+                    object : YukiMemberHook() {
+                        override fun afterHookedMember(param: Param) {
+                            runCatching {
+                                (param.args?.get(0) as? Application?)?.also {
+                                    /**
+                                     * 注册广播
+                                     * @param result 回调 - ([Context] 当前实例, [Intent] 当前对象)
+                                     */
+                                    fun IntentFilter.registerReceiver(result: (Context, Intent) -> Unit) {
+                                        object : BroadcastReceiver() {
+                                            override fun onReceive(context: Context?, intent: Intent?) {
+                                                if (context == null || intent == null) return
+                                                result(context, intent)
+                                            }
+                                        }.also { receiver ->
+                                            /**
+                                             * 从 Android 14 (及预览版) 开始
+                                             * 外部广播必须声明 [Context.RECEIVER_EXPORTED]
+                                             */
+                                            @SuppressLint("UnspecifiedRegisterReceiverFlag")
+                                            if (Build.VERSION.SDK_INT >= 33)
+                                                it.registerReceiver(receiver, this, Context.RECEIVER_EXPORTED)
+                                            else it.registerReceiver(receiver, this)
                                         }
-                                    }.also { receiver ->
-                                        /**
-                                         * 从 Android 14 (及预览版) 开始
-                                         * 外部广播必须声明 [Context.RECEIVER_EXPORTED]
-                                         */
-                                        @SuppressLint("UnspecifiedRegisterReceiverFlag")
-                                        if (Build.VERSION.SDK_INT >= 33)
-                                            it.registerReceiver(receiver, this, Context.RECEIVER_EXPORTED)
-                                        else it.registerReceiver(receiver, this)
+                                    }
+                                    hostApplication = it
+                                    appLifecycleActors.forEach { (_, actor) ->
+                                        actor.onCreateCallback?.invoke(it)
+                                        actor.onReceiverActionsCallbacks.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
+                                            if (e.first.isNotEmpty()) IntentFilter().apply {
+                                                e.first.forEach { action -> addAction(action) }
+                                            }.registerReceiver(e.second)
+                                        }
+                                        actor.onReceiverFiltersCallbacks.takeIf { e -> e.isNotEmpty() }
+                                            ?.forEach { (_, e) -> e.first.registerReceiver(e.second) }
+                                    }
+                                    runCatching {
+                                        /** 过滤系统框架与一系列服务组件包名不唯一的情况 */
+                                        if (isDataChannelRegistered ||
+                                            (currentPackageName == SYSTEM_FRAMEWORK_NAME && packageName != SYSTEM_FRAMEWORK_NAME)
+                                        ) return
+                                        YukiHookDataChannel.instance().register(it, packageName)
+                                        isDataChannelRegistered = true
                                     }
                                 }
-                                hostApplication = it
-                                appLifecycleActors.forEach { (_, actor) ->
-                                    actor.onCreateCallback?.invoke(it)
-                                    actor.onReceiverActionsCallbacks.takeIf { e -> e.isNotEmpty() }?.forEach { (_, e) ->
-                                        if (e.first.isNotEmpty()) IntentFilter().apply {
-                                            e.first.forEach { action -> addAction(action) }
-                                        }.registerReceiver(e.second)
-                                    }
-                                    actor.onReceiverFiltersCallbacks.takeIf { e -> e.isNotEmpty() }
-                                        ?.forEach { (_, e) -> e.first.registerReceiver(e.second) }
-                                }
-                                runCatching {
-                                    /** 过滤系统框架与一系列服务组件包名不唯一的情况 */
-                                    if (isDataChannelRegistered ||
-                                        (currentPackageName == SYSTEM_FRAMEWORK_NAME && packageName != SYSTEM_FRAMEWORK_NAME)
-                                    ) return
-                                    YukiHookDataChannel.instance().register(it, packageName)
-                                    isDataChannelRegistered = true
-                                }
-                            }
-                        }.onFailure { param.throwToAppOrLogger(it) }
+                            }.onFailure { param.throwToAppOrLogger(it) }
+                        }
                     }
-                })
+                )
         }
     }
 
@@ -383,10 +412,13 @@ internal object AppParasitics {
         if (YukiXposedModule.isXposedEnvironment) runCatching {
             if (currentPackageName == YukiXposedModule.modulePackageName)
                 return YLog.innerE("You cannot inject module resources into yourself")
-            hostResources.assets.current(ignored = true).method {
-                name = "addAssetPath"
-                param(StringClass)
-            }.call(YukiXposedModule.moduleAppFilePath)
+            hostResources.assets.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstMethodOrNull {
+                    name = "addAssetPath"
+                    parameters(String::class)
+                }?.invoke(YukiXposedModule.moduleAppFilePath)
         }.onFailure {
             YLog.innerE("Failed to inject module resources into [$hostResources]", it)
         } else YLog.innerW("You can only inject module resources in Xposed Environment")
@@ -402,6 +434,7 @@ internal object AppParasitics {
         if (isActivityProxyRegistered) return
         if (YukiXposedModule.isXposedEnvironment.not()) return YLog.innerW("You can only register Activity Proxy in Xposed Environment")
         if (context.packageName == YukiXposedModule.modulePackageName) return YLog.innerE("You cannot register Activity Proxy into yourself")
+        @SuppressLint("ObsoleteSdkInt")
         if (Build.VERSION.SDK_INT < 24) return YLog.innerE("Activity Proxy only support for Android 7.0 (API 24) or higher")
         runCatching {
             ActivityProxyConfig.apply {
@@ -416,36 +449,85 @@ internal object AppParasitics {
                     @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
                     queryIntentActivities(getLaunchIntentForPackage(context.packageName)!!, 0).first().activityInfo.name
                 }?.getOrNull() ?: ""
-                if ((proxyClassName.hasClass(context.classLoader) && proxyClassName.toClass(context.classLoader).hasMethod {
-                        name = "setIntent"; param(IntentClass); superClass()
-                    }).not()
-                ) (if (proxyClassName.isBlank()) error("Cound not got launch intent for package \"${context.packageName}\"")
-                else error("Could not found \"$proxyClassName\" or Class is not a type of Activity"))
+                val checkIsActivity = proxyClassName.toClassOrNull(context.classLoader)
+                    ?.resolve()?.optional()
+                    ?.firstMethodOrNull {
+                        name = "setIntent"
+                        parameters(Intent::class)
+                        superclass()
+                    } != null
+                if (!checkIsActivity) {
+                    if (proxyClassName.isBlank()) error("Cound not got launch intent for package \"${context.packageName}\"")
+                    else error("Could not found \"$proxyClassName\" or Class is not a type of Activity")
+                }
             }
             /** Patched [Instrumentation] */
-            ActivityThreadClass.field { name = "sCurrentActivityThread" }.ignored().get().any()?.current(ignored = true) {
-                method { name = "getInstrumentation" }
-                    .invoke<Instrumentation>()
-                    ?.also { field { name = "mInstrumentation" }.set(InstrumentationDelegate.wrapper(it)) }
-                HandlerClass.field { name = "mCallback" }.get(field { name = "mH" }.any()).apply {
-                    cast<Handler.Callback?>()?.apply {
-                        if (current().name != HandlerDelegateImpl.wrapperClassName) set(HandlerDelegateImpl.createWrapper(baseInstance = this))
-                    } ?: set(HandlerDelegateImpl.createWrapper())
-                }
-            }
+            val sCurrentActivityThread = ActivityThreadClass.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstFieldOrNull { name = "sCurrentActivityThread" }
+                ?.get()
+            val instrumentation = sCurrentActivityThread?.resolve()
+                ?.processor(AndroidHiddenApiBypassResolver.get())
+                ?.optional()
+                ?.firstMethodOrNull { name = "getInstrumentation" }
+                ?.invoke<Instrumentation>() ?: error("Could not found Instrumentation in ActivityThread")
+            sCurrentActivityThread.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstFieldOrNull { name = "mInstrumentation" }
+                ?.set(InstrumentationDelegate.wrapper(instrumentation))
+            val mH = sCurrentActivityThread.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstFieldOrNull { name = "mH" }
+                ?.get<Handler>() ?: error("Could not found mH in ActivityThread")
+            val mCallbackResolver = Handler::class.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstFieldOrNull { name = "mCallback" }
+                ?.of(mH)
+            val mCallback = mCallbackResolver?.get<Handler.Callback>()
+            if (mCallback != null) {
+                if (mCallback.javaClass.name != HandlerDelegateImpl.wrapperClassName)
+                    mCallbackResolver.set(HandlerDelegateImpl.createWrapper(mCallback))
+            } else mCallbackResolver?.set(HandlerDelegateImpl.createWrapper())
             /** Patched [ActivityManager] */
-            runCatching {
-                runCatching {
-                    ActivityManagerNativeClass.field { name = "gDefault" }.ignored().get().any()
-                }.getOrNull() ?: ActivityManagerClass.field { name = "IActivityManagerSingleton" }.ignored().get().any()
-            }.getOrNull()?.also { default ->
-                SingletonClass.field { name = "mInstance" }.ignored().result {
-                    get(default).apply { any()?.also { set(IActivityManagerProxyImpl.createWrapper(IActivityManagerClass, it)) } }
-                    ActivityTaskManagerClass?.field { name = "IActivityTaskManagerSingleton" }?.ignored()?.get()?.any()?.also { singleton ->
-                        SingletonClass.method { name = "get" }.ignored().get(singleton).call()
-                        get(singleton).apply { any()?.also { set(IActivityManagerProxyImpl.createWrapper(IActivityTaskManagerClass, it)) } }
-                    }
-                }
+            val gDefault = ActivityManagerNativeClass.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional(silent = true)
+                .firstFieldOrNull { name = "gDefault" }
+                ?.get()
+                ?: ActivityManager::class.resolve()
+                    .processor(AndroidHiddenApiBypassResolver.get())
+                    .optional(silent = true)
+                    .firstFieldOrNull {
+                        name = "IActivityManagerSingleton"
+                    }?.get()
+            val mInstanceResolver = SingletonClass.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstFieldOrNull { name = "mInstance" }
+                ?.of(gDefault)
+            val mInstance = mInstanceResolver?.get()
+            mInstance?.let {
+                mInstanceResolver.set(IActivityManagerProxyImpl.createWrapper(IActivityManagerClass, it))
+            }
+            val singleton = ActivityTaskManagerClass?.resolve()
+                ?.processor(AndroidHiddenApiBypassResolver.get())
+                ?.optional(silent = true)
+                ?.firstFieldOrNull { name = "IActivityTaskManagerSingleton" }
+                ?.get()
+            SingletonClass.resolve()
+                .processor(AndroidHiddenApiBypassResolver.get())
+                .optional()
+                .firstMethodOrNull { name = "get" }
+                ?.of(singleton)
+                ?.invokeQuietly()
+            val mInstanceResolver2 = mInstanceResolver?.copy()?.of(singleton)
+            val mInstance2 = mInstanceResolver2?.get()
+            mInstance2?.let {
+                mInstanceResolver2.set(IActivityManagerProxyImpl.createWrapper(IActivityTaskManagerClass, it))
             }
             isActivityProxyRegistered = true
         }.onFailure { YLog.innerE("Activity Proxy initialization failed because got an exception", it) }

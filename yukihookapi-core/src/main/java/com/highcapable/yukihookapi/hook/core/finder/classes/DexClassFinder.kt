@@ -19,7 +19,10 @@
  *
  * This file is created by fankes on 2022/9/4.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress(
+    "unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "DEPRECATION", "UseKtx",
+    "TYPEALIAS_EXPANSION_DEPRECATION", "DeprecatedCallableAddReplaceWith"
+)
 
 package com.highcapable.yukihookapi.hook.core.finder.classes
 
@@ -39,6 +42,7 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberR
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.searchClass
 import com.highcapable.yukihookapi.hook.factory.toClass
@@ -63,6 +67,7 @@ import java.lang.reflect.Method
  * @param async 是否启用异步
  * @param loaderSet 当前使用的 [ClassLoader] 实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class DexClassFinder internal constructor(
     internal var name: String,
     internal var async: Boolean,
@@ -101,6 +106,7 @@ class DexClassFinder internal constructor(
          * @param versionName 版本名称 - 默认空
          * @param versionCode 版本号 - 默认空
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun clearCache(context: Context? = currentContext, versionName: String? = null, versionCode: Long? = null) {
             context?.currentSp(versionName, versionCode)?.edit()?.clear()?.apply()
                 ?: YLog.innerW("Cannot clear cache for DexClassFinder because got null context instance")
@@ -117,6 +123,7 @@ class DexClassFinder internal constructor(
      * 例如 com.demo.Test 需要填写 com.demo.Test
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var fullName
         get() = rulesData.fullName?.name ?: ""
         set(value) {
@@ -133,6 +140,7 @@ class DexClassFinder internal constructor(
      * 对于匿名类例如 com.demo.Test$InnerTest 会为空 - 此时你可以使用 [singleName]
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var simpleName
         get() = rulesData.simpleName?.name ?: ""
         set(value) {
@@ -149,6 +157,7 @@ class DexClassFinder internal constructor(
      * 对于匿名类例如 com.demo.Test$InnerTest 只需要填写 Test$InnerTest
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var singleName
         get() = rulesData.singleName?.name ?: ""
         set(value) {
@@ -170,6 +179,7 @@ class DexClassFinder internal constructor(
      * @param name 指定包名
      * @return [FromPackageRules] 可设置 [FromPackageRules.absolute] 标识包名绝对匹配
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun from(vararg name: String) = FromPackageRules(mutableListOf<ClassRulesData.PackageRulesData>().also {
         name.takeIf { e -> e.isNotEmpty() }?.forEach { e -> it.add(rulesData.createPackageRulesData(e)) }
         if (it.isNotEmpty()) rulesData.fromPackages.addAll(it)
@@ -181,6 +191,7 @@ class DexClassFinder internal constructor(
      * - 可不设置筛选条件
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
         rulesData.modifiers = conditions
     }
@@ -194,6 +205,7 @@ class DexClassFinder internal constructor(
      * @param value 名称
      * @return [ClassNameRules] 可设置 [ClassNameRules.optional] 标识类名可选
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun fullName(value: String) = rulesData.createNameRulesData(value).let {
         rulesData.fullName = it
         ClassNameRules(it)
@@ -210,6 +222,7 @@ class DexClassFinder internal constructor(
      * @param value 名称
      * @return [ClassNameRules] 可设置 [ClassNameRules.optional] 标识类名可选
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun simpleName(value: String) = rulesData.createNameRulesData(value).let {
         rulesData.simpleName = it
         ClassNameRules(it)
@@ -226,6 +239,7 @@ class DexClassFinder internal constructor(
      * @param value 名称
      * @return [ClassNameRules] 可设置 [ClassNameRules.optional] 标识类名可选
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun singleName(value: String) = rulesData.createNameRulesData(value).let {
         rulesData.singleName = it
         ClassNameRules(it)
@@ -237,6 +251,7 @@ class DexClassFinder internal constructor(
      * 只会查找匹配到的 [Class.getName]
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun fullName(conditions: NameConditions) {
         rulesData.fullNameConditions = conditions
     }
@@ -247,6 +262,7 @@ class DexClassFinder internal constructor(
      * 只会查找匹配到的 [Class.getSimpleName]
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun simpleName(conditions: NameConditions) {
         rulesData.simpleNameConditions = conditions
     }
@@ -257,11 +273,13 @@ class DexClassFinder internal constructor(
      * 设置后将首先使用 [Class.getSimpleName] - 若为空则会使用 [Class.getName] 进行处理
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun singleName(conditions: NameConditions) {
         rulesData.singleNameConditions = conditions
     }
 
     /** 设置 [Class] 继承的父类 */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun <reified T> extends() {
         rulesData.extendsClass.add(T::class.java.name)
     }
@@ -272,11 +290,13 @@ class DexClassFinder internal constructor(
      * 会同时查找 [name] 中所有匹配的父类
      * @param name [Class] 完整名称
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun extends(vararg name: String) {
         rulesData.extendsClass.addAll(name.toList())
     }
 
     /** 设置 [Class] 实现的接口类 */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun <reified T> implements() {
         rulesData.implementsClass.add(T::class.java.name)
     }
@@ -287,6 +307,7 @@ class DexClassFinder internal constructor(
      * 会同时查找 [name] 中所有匹配的接口类
      * @param name [Class] 完整名称
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun implements(vararg name: String) {
         rulesData.implementsClass.addAll(name.toList())
     }
@@ -298,6 +319,7 @@ class DexClassFinder internal constructor(
      *
      * 标识后你可以使用 [enclosing] 来进一步指定匿名类的 (封闭类) 主类
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun anonymous() {
         rulesData.isAnonymousClass = true
     }
@@ -309,6 +331,7 @@ class DexClassFinder internal constructor(
      *
      * - 设置此条件后 [extends] 将失效
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun noExtends() {
         rulesData.isNoExtendsClass = true
     }
@@ -318,6 +341,7 @@ class DexClassFinder internal constructor(
      *
      * - 设置此条件后 [implements] 将失效
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun noImplements() {
         rulesData.isNoImplementsClass = true
     }
@@ -329,12 +353,14 @@ class DexClassFinder internal constructor(
      *
      * - 设置此条件后 [extends] 与 [implements] 将失效
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun noSuper() {
         noExtends()
         noImplements()
     }
 
     /** 设置 [Class] 匿名类的 (封闭类) 主类 */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun <reified T> enclosing() {
         rulesData.enclosingClass.add(T::class.java.name)
     }
@@ -345,6 +371,7 @@ class DexClassFinder internal constructor(
      * 会同时查找 [name] 中所有匹配的 (封闭类) 主类
      * @param name [Class] 完整名称
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun enclosing(vararg name: String) {
         rulesData.enclosingClass.addAll(name.toList())
     }
@@ -353,6 +380,7 @@ class DexClassFinder internal constructor(
      * 包名范围名称过滤匹配条件实现类
      * @param packages 包名数组
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class FromPackageRules internal constructor(private val packages: MutableList<ClassRulesData.PackageRulesData>) {
 
         /**
@@ -370,6 +398,7 @@ class DexClassFinder internal constructor(
          *
          * 相反地 - 不设置以上示例会全部匹配
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun absolute() = packages.takeIf { it.isNotEmpty() }?.forEach { it.isAbsolute = true }
     }
 
@@ -377,6 +406,7 @@ class DexClassFinder internal constructor(
      * 类名匹配条件实现类
      * @param name 类名匹配实例
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class ClassNameRules internal constructor(private val name: ClassRulesData.NameRulesData) {
 
         /**
@@ -394,6 +424,7 @@ class DexClassFinder internal constructor(
          *
          * 这样就可在完全匹配类名情况下使用类名而忽略其它查找条件 - 否则忽略此条件继续使用其它查找条件
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun optional() {
             name.isOptional = true
         }
@@ -404,6 +435,7 @@ class DexClassFinder internal constructor(
      * @param initiate 条件方法体
      * @return [MemberRulesResult]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun member(initiate: MemberRules.() -> Unit = {}) = BaseRules.createMemberRules(this).apply(initiate).build()
 
     /**
@@ -411,6 +443,7 @@ class DexClassFinder internal constructor(
      * @param initiate 条件方法体
      * @return [MemberRulesResult]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun field(initiate: FieldRules.() -> Unit = {}) = BaseRules.createFieldRules(this).apply(initiate).build()
 
     /**
@@ -418,6 +451,7 @@ class DexClassFinder internal constructor(
      * @param initiate 条件方法体
      * @return [MemberRulesResult]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun method(initiate: MethodRules.() -> Unit = {}) = BaseRules.createMethodRules(this).apply(initiate).build()
 
     /**
@@ -425,6 +459,7 @@ class DexClassFinder internal constructor(
      * @param initiate 查找方法体
      * @return [MemberRulesResult]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun constructor(initiate: ConstructorRules.() -> Unit = {}) = BaseRules.createConstructorRules(this).apply(initiate).build()
 
     /**
@@ -500,6 +535,7 @@ class DexClassFinder internal constructor(
      * @param isNotFound 是否没有找到 [Class] - 默认否
      * @param throwable 错误信息
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class Result internal constructor(
         internal var isNotFound: Boolean = false,
         internal var throwable: Throwable? = null
@@ -519,6 +555,7 @@ class DexClassFinder internal constructor(
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
@@ -531,6 +568,7 @@ class DexClassFinder internal constructor(
          * - 若你设置了 [async] 请使用 [wait] 方法
          * @return [Class] or null
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun get() = all().takeIf { it.isNotEmpty() }?.first()
 
         /**
@@ -543,6 +581,7 @@ class DexClassFinder internal constructor(
          * - 若你设置了 [async] 请使用 [waitAll] 方法
          * @return [MutableList]<[Class]>
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all() = classInstances
 
         /**
@@ -556,6 +595,7 @@ class DexClassFinder internal constructor(
          * @param result 回调每个结果
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all(result: (Class<*>) -> Unit): Result {
             all().takeIf { it.isNotEmpty() }?.forEach(result)
             return this
@@ -572,6 +612,7 @@ class DexClassFinder internal constructor(
          * @param result 回调 - ([Class] or null)
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun wait(result: (Class<*>?) -> Unit): Result {
             waitResultCallback = result
             return this
@@ -588,6 +629,7 @@ class DexClassFinder internal constructor(
          * @param result 回调 - ([MutableList]<[Class]>)
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun waitAll(result: (MutableList<Class<*>>) -> Unit): Result {
             waitAllResultCallback = result
             return this
@@ -598,6 +640,7 @@ class DexClassFinder internal constructor(
          * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun onNoClassDefFoundError(result: (Throwable) -> Unit): Result {
             noClassDefFoundErrorCallback = { if (isNotFound) result(throwable ?: Throwable("Initialization Error")) }
             noClassDefFoundErrorCallback?.invoke()
@@ -610,6 +653,7 @@ class DexClassFinder internal constructor(
          * - 此时若要监听异常结果 - 你需要手动实现 [onNoClassDefFoundError] 方法
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun ignored(): Result {
             isIgnoreErrorLogs = true
             return this

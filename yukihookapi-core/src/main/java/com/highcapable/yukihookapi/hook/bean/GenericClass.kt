@@ -23,12 +23,14 @@
 
 package com.highcapable.yukihookapi.hook.bean
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.ParameterizedType
 
 /**
  * 当前 [Class] 的泛型父类操作对象
  * @param type 类型声明实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class GenericClass internal constructor(private val type: ParameterizedType) {
 
     /**
@@ -38,6 +40,7 @@ class GenericClass internal constructor(private val type: ParameterizedType) {
      * @param index 数组下标 - 默认 0
      * @return [Class] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun argument(index: Int = 0) = type.actualTypeArguments[index] as? Class<*>?
 
     /**
@@ -48,6 +51,7 @@ class GenericClass internal constructor(private val type: ParameterizedType) {
      * @return [Class]<[T]> or null
      * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     @JvmName("argument_Generics")
     inline fun <reified T> argument(index: Int = 0) =
         type.actualTypeArguments[index].let { args ->

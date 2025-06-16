@@ -21,14 +21,12 @@
  */
 package com.highcapable.yukihookapi.hook.core.api.helper
 
+import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.core.api.compat.HookCompatHelper
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.core.api.store.YukiHookCacheStore
-import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.log.YLog
 import java.lang.reflect.Member
 
@@ -38,19 +36,13 @@ import java.lang.reflect.Member
 internal object YukiHookHelper {
 
     /**
-     * Hook [BaseFinder.BaseResult]
-     * @param traction 直接调用 [BaseFinder.BaseResult]
+     * Hook [MemberResolver]
+     * @param resolver 需要 Hook 的 [MemberResolver]
      * @param callback 回调
      * @return [YukiHookResult]
      */
-    internal fun hook(traction: BaseFinder.BaseResult, callback: YukiHookCallback) = runCatching {
-        val member: Member? = when (traction) {
-            is MethodFinder.Result -> traction.ignored().give()
-            is ConstructorFinder.Result -> traction.ignored().give()
-            else -> error("Unexpected BaseFinder result interface type")
-        }
-        hookMember(member, callback)
-    }.onFailure { YLog.innerE("An exception occurred when hooking internal function", it) }.getOrNull() ?: YukiHookResult()
+    internal fun hook(resolver: MemberResolver<*, *>?, callback: YukiHookCallback) =
+        resolver?.self?.let { hookMember(it, callback) } ?: YukiHookResult()
 
     /**
      * Hook [Member]

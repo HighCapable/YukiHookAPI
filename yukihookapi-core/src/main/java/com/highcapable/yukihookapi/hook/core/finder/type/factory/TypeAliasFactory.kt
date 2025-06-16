@@ -19,6 +19,8 @@
  *
  * This file is created by fankes on 2022/9/14.
  */
+@file:Suppress("DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.type.factory
 
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
@@ -29,33 +31,44 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 
 /** 定义 [ClassLoader] 装载实例方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias ClassLoaderInitializer = () -> ClassLoader?
 
 /** 定义 [DexClassFinder] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias ClassConditions = DexClassFinder.() -> Unit
 
 /** 定义 [FieldFinder] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias FieldConditions = FieldFinder.() -> Unit
 
 /** 定义 [MethodFinder] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias MethodConditions = MethodFinder.() -> Unit
 
 /** 定义 [ConstructorFinder] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias ConstructorConditions = ConstructorFinder.() -> Unit
 
 /** 定义 [NameRules] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias NameConditions = NameRules.(String) -> Boolean
 
 /** 定义 [CountRules] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias CountConditions = CountRules.(Int) -> Boolean
 
 /** 定义 [ModifierRules] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias ModifierConditions = ModifierRules.() -> Boolean
 
 /** 定义 [ObjectRules] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias ObjectConditions = ObjectRules.(Class<*>) -> Boolean
 
 /** 定义 [ObjectRules] 方法体类型 */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal typealias ObjectsConditions = ObjectRules.(Array<Class<*>>) -> Boolean

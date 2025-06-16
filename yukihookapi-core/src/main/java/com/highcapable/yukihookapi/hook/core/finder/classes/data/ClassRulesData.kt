@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/9/5.
  */
-@file:Suppress("PropertyName")
+@file:Suppress("PropertyName", "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.core.finder.classes.data
 
@@ -30,6 +30,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
@@ -55,6 +56,7 @@ import java.lang.reflect.Method
  * @param methodRules [Method] 查找条件数据数组
  * @param constroctorRules [Constructor] 查找条件数据数组
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal class ClassRulesData internal constructor(
     var fromPackages: MutableList<PackageRulesData> = mutableListOf(),
     var fullName: NameRulesData? = null,
@@ -102,6 +104,7 @@ internal class ClassRulesData internal constructor(
      * @param name 包名
      * @param isOptional 是否可选 - 默认否
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class NameRulesData internal constructor(var name: String, var isOptional: Boolean = false) {
 
         /** [Class.getName] */
@@ -134,6 +137,7 @@ internal class ClassRulesData internal constructor(
      * @param name 包名
      * @param isAbsolute 是否绝对匹配 - 默认否
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class PackageRulesData internal constructor(var name: String, var isAbsolute: Boolean = false) {
         override fun toString() = "$name absolute($isAbsolute)"
     }

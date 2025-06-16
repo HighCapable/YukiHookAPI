@@ -19,6 +19,8 @@
  *
  * This file is created by fankes on 2022/9/12.
  */
+@file:Suppress("DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules
 
 import com.highcapable.yukihookapi.hook.bean.VariousClass
@@ -28,18 +30,21 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Field
 
 /**
  * [Field] 查找条件实现类
  * @param rulesData 当前查找条件规则数据
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class FieldRules internal constructor(private val rulesData: FieldRulesData) : BaseRules() {
 
     /**
      * 设置 [Field] 名称
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var name
         get() = rulesData.name
         set(value) {
@@ -54,6 +59,7 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
      * - 可不填写类型
      * @return [Any] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var type
         get() = rulesData.type
         set(value) {
@@ -66,6 +72,7 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
      * - 可不设置筛选条件
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
         rulesData.modifiers = conditions
     }
@@ -74,6 +81,7 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
      * 设置 [Field] 名称条件
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(conditions: NameConditions) {
         rulesData.nameConditions = conditions
     }
@@ -90,6 +98,7 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
      * ```
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun type(conditions: ObjectConditions) {
         rulesData.typeConditions = conditions
     }

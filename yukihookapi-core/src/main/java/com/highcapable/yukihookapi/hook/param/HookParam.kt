@@ -24,11 +24,11 @@
 package com.highcapable.yukihookapi.hook.param
 
 import android.os.Bundle
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator.MemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
-import com.highcapable.yukihookapi.hook.factory.classOf
 import com.highcapable.yukihookapi.hook.log.YLog
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
@@ -179,20 +179,20 @@ class HookParam private constructor(
      * 获取当前 Hook 对象的 [method] or [constructor] 的返回值 [T]
      * @return [T] or null
      */
-    inline fun <reified T> result() = result as? T?
+    inline fun <reified T : Any> result() = result as? T?
 
     /**
      * 获取当前 Hook 实例的对象 [T]
      * @return [T]
      * @throws IllegalStateException 如果对象为空或对象类型不是 [T]
      */
-    inline fun <reified T> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${classOf<T>().name}")
+    inline fun <reified T : Any> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${classOf<T>().name}")
 
     /**
      * 获取当前 Hook 实例的对象 [T]
      * @return [T] or null
      */
-    inline fun <reified T> instanceOrNull() = instanceOrNull as? T?
+    inline fun <reified T : Any> instanceOrNull() = instanceOrNull as? T?
 
     /**
      * 获取当前 Hook 对象的 [method] or [constructor] 的参数数组下标实例化类

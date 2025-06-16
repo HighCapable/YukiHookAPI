@@ -41,7 +41,9 @@ android {
 dependencies {
     compileOnly(de.robv.android.xposed.api)
     compileOnly(projects.yukihookapiStub)
-    implementation(com.github.tiann.freeReflection)
+    implementation(org.lsposed.hiddenapibypass.hiddenapibypass)
+    implementation(com.highcapable.kavaref.kavaref.core)
+    implementation(com.highcapable.kavaref.kavaref.extension)
     implementation(androidx.core.core.ktx)
     implementation(androidx.appcompat.appcompat)
     implementation(androidx.preference.preference.ktx)

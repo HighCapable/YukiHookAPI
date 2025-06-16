@@ -33,7 +33,25 @@ Host Environment
 > 上方的结构换做代码将可写为如下形式。
 
 ```kotlin
-// 新版写法
+// KavaRef 写法
+TargetClass.resolve().firstMethod {
+    // Your code here.
+}.hook {
+    before {
+        // Your code here.
+    }
+    after {
+        // Your code here.
+    }
+}
+```
+
+<details>
+
+<summary>点击查看以往写法</summary>
+
+```kotlin
+// 旧版 (1.2.x-1.3.0 (不含)) 写法
 TargetClass.method { 
     // Your code here.
 }.hook {
@@ -58,6 +76,11 @@ TargetClass.hook {
         }
     }
 }
+```
+
+</details>
+
+```kotlin
 // Resources Hook (2.0.0 将停止支持)
 resources().hook {
     injectResource {
@@ -83,6 +106,13 @@ resources().hook {
 
 > 这里给出了 Hook APP、Hook 系统框架与 Hook Resources 等例子，可供参考。
 
+::: tip
+
+从 `1.3.0` 版本开始，`YukiHookAPI` 已将自身的反射 API 部分迁移至
+[KavaRef](https://github.com/HighCapable/KavaRef)，下方演示部分的反射 API 均使用了 `KavaRef` 的写法，我们不再推荐使用 `YukiHookAPI` 自身的反射 API。
+
+:::
+
 ### Hook APP
 
 假设，我们要 Hook `com.android.browser` 中的 `onCreate` 方法并弹出一个对话框。
@@ -93,10 +123,9 @@ resources().hook {
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.method { 
+    Activity::class.resolve().firstMethod { 
         name = "onCreate"
-        param(BundleClass)
-        returnType = UnitType
+        parameters(Bundle::class)
     }.hook {
         after {
             AlertDialog.Builder(instance())
@@ -113,17 +142,16 @@ loadApp(name = "com.android.browser") {
 
 那么，我想继续 Hook `onStart` 方法要怎么做呢？
 
-我们可以对 `ActivityClass` 使用 Kotlin 的 `apply` 方法创建一个调用空间。
+我们可以对 `Activity::class.resolve()` 使用 Kotlin 的 `apply` 方法创建一个调用空间。
 
 > 示例如下
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.apply { 
-        method { 
+    Activity::class.resolve().apply { 
+        firstMethod { 
             name = "onCreate"
-            param(BundleClass)
-            returnType = UnitType
+            parameters(Bundle::class)
         }.hook {
             after {
                 AlertDialog.Builder(instance())
@@ -133,10 +161,9 @@ loadApp(name = "com.android.browser") {
                     .show()
             }
         }
-        method { 
+        firstMethod { 
             name = "onStart"
-            emptyParam()
-            returnType = UnitType
+            emptyParameters()
         }.hook {
             after {
                 // Your code here.
@@ -154,7 +181,8 @@ loadApp(name = "com.android.browser") {
 
 ```kotlin
 "com.example.demo.TestClass".toClass()
-    .method {
+    .resolve()
+    .firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
@@ -167,7 +195,8 @@ loadApp(name = "com.android.browser") {
 
 ```kotlin
 "$packageName.TestClass".toClass()
-    .method {
+    .resolve()
+    .firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
@@ -187,7 +216,7 @@ val TestClass by lazyClass("com.example.demo.TestClass")
 在适当的时候使用它。
 
 ```kotlin
-TestClass.method {
+TestClass.resolve().firstMethod {
     // Your code here.
 }.hook {
     // Your code here.
@@ -212,10 +241,9 @@ TestClass.method {
 
 ```kotlin
 loadZygote {
-    ActivityClass.method { 
+    Activity::class.resolve().firstMethod {
         name = "onCreate"
-        param(BundleClass)
-        returnType = UnitType
+        parameters(Bundle::class)
     }.hook {
         after {
             // Your code here.
@@ -242,12 +270,12 @@ loadZygote {
 
 ```kotlin
 loadSystem {
-    ApplicationInfoClass.method {
+    ApplicationInfo::class.resolve().firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
     }
-    PackageInfoClass.method {
+    PackageInfo::class.resolve().firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
@@ -341,9 +369,9 @@ loadZygote {
 ```kotlin
 // 设置一个变量保存当前实例
 val hookResult = 
-    method { 
+    resolve().firstMethod {
         name = "test"
-        returnType = UnitType
+        returnType = Void.TYPE
     }.hook {
         after {
             // ...
@@ -358,9 +386,9 @@ hookResult.remove()
 > 示例如下
 
 ```kotlin
-method { 
+resolve().firstMethod { 
     name = "test"
-    returnType = UnitType
+    returnType = Void.TYPE
 }.hook {
     after {
         // 直接调用如下方法即可
@@ -427,7 +455,7 @@ TargetClass.hook {
 }
 ```
 
-你还可以处理查找方法时的异常。
+**(旧版本适用)** 你还可以处理查找方法时的异常。
 
 > 示例如下
 
@@ -446,6 +474,12 @@ method {
 :::
 
 这里介绍了可能发生的常见异常，若要了解更多请参考 [API 异常处理](../config/api-exception)。
+
+::: warning
+
+`KavaRef` 的异常将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 `KavaRef` 的文档。
+
+:::
 
 ### 抛出异常
 
@@ -593,7 +627,7 @@ override fun onHook() = encase {
 > 示例如下
 
 ```kotlin
-ActvityClass.method {
+Activity::class.resolve().firstMethod {
     // Your code here.
 }.hook().after {
     // Your code here.

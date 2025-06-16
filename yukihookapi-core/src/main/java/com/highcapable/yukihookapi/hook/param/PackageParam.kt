@@ -19,7 +19,10 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress(
+    "unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "DeprecatedCallableAddReplaceWith", "DEPRECATION",
+    "TYPEALIAS_EXPANSION_DEPRECATION"
+)
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -30,11 +33,14 @@ import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
+import com.highcapable.kavaref.extension.VariousClass
+import com.highcapable.kavaref.resolver.ConstructorResolver
+import com.highcapable.kavaref.resolver.MethodResolver
+import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.bean.HookResources
-import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
 import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
@@ -46,9 +52,9 @@ import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassLoaderInitializer
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.LazyClass
-import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.utils.factory.value
@@ -62,11 +68,14 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
-import com.highcapable.yukihookapi.hook.factory.hasClass as hasClassGlobal
-import com.highcapable.yukihookapi.hook.factory.lazyClass as lazyClassGlobal
-import com.highcapable.yukihookapi.hook.factory.lazyClassOrNull as lazyClassOrNullGlobal
-import com.highcapable.yukihookapi.hook.factory.toClass as toClassGlobal
-import com.highcapable.yukihookapi.hook.factory.toClassOrNull as toClassOrNullGlobal
+import com.highcapable.kavaref.extension.lazyClass as lazyClassGlobal
+import com.highcapable.kavaref.extension.lazyClassOrNull as lazyClassOrNullGlobal
+import com.highcapable.kavaref.extension.toClass as toClassGlobal
+import com.highcapable.kavaref.extension.toClassOrNull as toClassOrNullGlobal
+import com.highcapable.yukihookapi.hook.bean.VariousClass as LegacyVariousClass
+import com.highcapable.yukihookapi.hook.factory.hasClass as hasClassLegacy
+import com.highcapable.yukihookapi.hook.factory.lazyClass as lazyClassGlobalLegacy
+import com.highcapable.yukihookapi.hook.factory.lazyClassOrNull as lazyClassOrNullGlobalLegacy
 
 /**
  * 装载 Hook 的目标 APP 入口对象实现类
@@ -132,7 +141,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [Context] ContextImpl 实例对象
      * @throws IllegalStateException 如果获取不到系统框架的 [Context]
      */
-    val systemContext get() = AppParasitics.systemContext
+    val systemContext get() = AppParasitics.systemContext ?: error("Failed to got SystemContext")
 
     /**
      * 获取当前 Hook APP 的进程名称
@@ -463,6 +472,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [DexClassFinder.Result]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun searchClass(name: String = "", async: Boolean = false, initiate: ClassConditions) =
         DexClassFinder(name, async = async || name.isNotBlank(), appClassLoader).apply(initiate).build()
 
@@ -480,7 +490,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         get() = toClass()
 
     /**
-     * [VariousClass] 转换为当前 Hook APP 的实体类
+     * [LegacyVariousClass] 转换为当前 Hook APP 的实体类
      *
      * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
@@ -489,7 +499,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
     @Deprecated(message = "请使用新的命名方法", ReplaceWith("toClass()"))
-    val VariousClass.clazz
+    val LegacyVariousClass.clazz
         get() = toClass()
 
     /**
@@ -523,7 +533,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
      */
     @JvmName("toClass_Generics")
-    inline fun <reified T> String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    inline fun <reified T : Any> String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
         toClassGlobal<T>(loader, initialize)
 
     /**
@@ -546,8 +556,18 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [Class]<[T]> or null
      */
     @JvmName("toClassOrNull_Generics")
-    inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    inline fun <reified T : Any> String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
         toClassOrNullGlobal<T>(loader, initialize)
+
+    /**
+     * [LegacyVariousClass] 转换为 [loader] 中的实体类
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @return [Class]
+     * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
+     */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
+    fun LegacyVariousClass.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = get(loader, initialize)
 
     /**
      * [VariousClass] 转换为 [loader] 中的实体类
@@ -556,7 +576,18 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
-    fun VariousClass.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = get(loader, initialize)
+    fun VariousClass.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = load(loader, initialize)
+
+    /**
+     * [LegacyVariousClass] 转换为 [loader] 中的实体类
+     *
+     * 匹配不到 [Class] 会返回 null - 不会抛出异常
+     * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @return [Class] or null
+     */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
+    fun LegacyVariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = getOrNull(loader, initialize)
 
     /**
      * [VariousClass] 转换为 [loader] 中的实体类
@@ -566,7 +597,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class] or null
      */
-    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = getOrNull(loader, initialize)
+    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = loadOrNull(loader, initialize)
 
     /**
      * 懒装载 [Class]
@@ -586,8 +617,19 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [LazyClass.NonNull]<[T]>
      */
     @JvmName("lazyClass_Generics")
-    inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
+    inline fun <reified T : Any> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassGlobal<T>(name, initialize, loader)
+
+    /**
+     * 懒装载 [Class]
+     * @param variousClass [LegacyVariousClass]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.NonNull]
+     */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
+    fun lazyClass(variousClass: LegacyVariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+        lazyClassGlobalLegacy(variousClass, initialize, loader)
 
     /**
      * 懒装载 [Class]
@@ -617,8 +659,19 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [LazyClass.Nullable]<[T]>
      */
     @JvmName("lazyClassOrNull_Generics")
-    inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
+    inline fun <reified T : Any> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassOrNullGlobal<T>(name, initialize, loader)
+
+    /**
+     * 懒装载 [Class]
+     * @param variousClass [LegacyVariousClass]
+     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * @param loader [ClassLoader] 装载实例 - 不填使用 [appClassLoader]
+     * @return [LazyClass.Nullable]
+     */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
+    fun lazyClassOrNull(variousClass: LegacyVariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+        lazyClassOrNullGlobalLegacy(variousClass, initialize, loader)
 
     /**
      * 懒装载 [Class]
@@ -635,7 +688,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param loader [Class] 所在的 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [Boolean] 是否存在
      */
-    fun String.hasClass(loader: ClassLoader? = appClassLoader) = hasClassGlobal(loader)
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
+    fun String.hasClass(loader: ClassLoader? = appClassLoader) = hasClassLegacy(loader)
 
     /**
      * 查找并装载 [HookClass]
@@ -654,12 +708,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - 此方法已弃用 - 在之后的版本中将直接被删除
      *
-     * - 请现在迁移到 [VariousClass]
+     * - 请现在迁移到 [LegacyVariousClass]
      * @return [HookClass]
      */
     @LegacyHookApi
     @Deprecated(message = "不再推荐使用此方法", ReplaceWith("VariousClass(*name)"))
-    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = VariousClass(*name).toHookClass(loader)
+    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = LegacyVariousClass(*name).toHookClass(loader)
 
     /**
      * Hook 方法、构造方法
@@ -699,7 +753,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [YukiMemberHookCreator.Result]
      */
     @LegacyHookApi
-    inline fun VariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass().hook(initiate)
+    inline fun LegacyVariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass().hook(initiate)
 
     /**
      * Hook 方法、构造方法
@@ -739,6 +793,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun BaseFinder.BaseResult.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(isMultiple = false, priority)
 
     /**
@@ -749,10 +804,55 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun BaseFinder.BaseResult.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
     ) = baseHook(isMultiple = false, priority, isLazyMode = true).apply(initiate).build()
+
+    /**
+     * 通过 [MemberResolver] 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全使用 KavaRef 接管
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    fun MemberResolver<*, *>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(priority)
+
+    /**
+     * 通过 [MemberResolver] 直接 Hook 方法、构造方法
+     *
+     * - - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全使用 KavaRef 接管
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    inline fun MemberResolver<*, *>.hook(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
+    ) = hook(priority).apply(initiate)
+
+    /**
+     * 通过 [List]<[MemberResolver]> 直接 Hook 方法、构造方法
+     *
+     * - - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全使用 KavaRef 接管
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    fun List<MemberResolver<*, *>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(priority)
+
+    /**
+     * 通过 [List]<[MemberResolver]> 直接 Hook 方法、构造方法
+     *
+     * - - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全使用 KavaRef 接管
+     * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
+     * @param initiate 方法体
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     */
+    inline fun List<MemberResolver<*, *>>.hookAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
+    ) = hookAll(priority).apply(initiate)
 
     /**
      * 直接 Hook 方法、构造方法 (批量)
@@ -783,6 +883,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
+    @JvmName("hookAll_Member")
     fun List<Member>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(priority)
 
     /**
@@ -805,6 +906,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun BaseFinder.BaseResult.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(isMultiple = true, priority)
 
     /**
@@ -815,6 +917,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun BaseFinder.BaseResult.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
@@ -847,6 +950,34 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         }
 
     /**
+     * 通过 [MemberResolver] 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全使用 KavaRef 接管
+     * @param priority Hook 优先级
+     * @param isLazyMode 是否为惰性模式 - 默认否
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    private fun MemberResolver<*, *>.baseHook(priority: YukiHookPriority, isLazyMode: Boolean = false) = when (this) {
+        is ConstructorResolver,
+        is MethodResolver -> YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, listOf(self), priority, isLazyMode)
+        else -> error("This type [$this] not support to hook, supported are Constructors and Methods")
+    }
+
+    /**
+     * 通过 [List]<[MemberResolver]> 直接 Hook 方法、构造方法
+     *
+     * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全使用 KavaRef 接管
+     * @param priority Hook 优先级
+     * @param isLazyMode 是否为惰性模式 - 默认否
+     * @return [YukiMemberHookCreator.MemberHookCreator]
+     */
+    private fun List<MemberResolver<*, *>>.baseHook(priority: YukiHookPriority, isLazyMode: Boolean = false) =
+        YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, onEach {
+            if (it !is ConstructorResolver && it !is MethodResolver)
+                error("This type [$it] not support to hook, supported are Constructors and Methods")
+        }.map { it.self }, priority, isLazyMode)
+
+    /**
      * 直接 Hook 方法、构造方法
      *
      * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全合并到新 API
@@ -854,6 +985,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param isLazyMode 是否为惰性模式 - 默认否
      * @return [YukiMemberHookCreator.MemberHookCreator]
      */
+    @JvmName("baseHook_Member")
     private fun List<Member>.baseHook(priority: YukiHookPriority, isLazyMode: Boolean = false) =
         YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, onEach {
             if (it !is Constructor<*> && it !is Method) error("This type [$it] not support to hook, supported are Constructors and Methods")
@@ -870,12 +1002,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         YukiResourcesHookCreator(packageParam = this@PackageParam, hookResources = this).apply(initiate).hook()
 
     /**
-     * [VariousClass] 转换为 [HookClass]
+     * [LegacyVariousClass] 转换为 [HookClass]
      * @param loader 当前 [ClassLoader] - 不填使用 [appClassLoader]
      * @return [HookClass]
      */
     @LegacyHookApi
-    private fun VariousClass.toHookClass(loader: ClassLoader? = appClassLoader) =
+    private fun LegacyVariousClass.toHookClass(loader: ClassLoader? = appClassLoader) =
         runCatching { get(loader).toHookClass() }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
 
     /**

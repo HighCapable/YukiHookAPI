@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/4/4.
  */
-@file:Suppress("unused", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress("unused", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.bean
 
@@ -27,6 +27,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.generic
 import com.highcapable.yukihookapi.hook.factory.method
@@ -36,6 +37,7 @@ import com.highcapable.yukihookapi.hook.factory.method
  * @param classSet 当前实例的 [Class]
  * @param instance 当前实例本身
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class CurrentClass internal constructor(private val classSet: Class<*>, internal val instance: Any) {
 
     /** 是否开启忽略错误警告功能 */
@@ -45,12 +47,14 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
      * 获得当前 [classSet] 的 [Class.getName]
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val name get() = classSet.name ?: instance.javaClass.name ?: ""
 
     /**
      * 获得当前 [classSet] 的 [Class.getSimpleName]
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val simpleName get() = classSet.simpleName ?: instance.javaClass.simpleName ?: ""
 
     /**
@@ -59,6 +63,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
      * 如果当前实例不存在泛型将返回 null
      * @return [GenericClass] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun generic() = classSet.generic()
 
     /**
@@ -68,12 +73,14 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
      * @param initiate 实例方法体
      * @return [GenericClass] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun generic(initiate: GenericClass.() -> Unit) = classSet.generic(initiate)
 
     /**
      * 调用父类实例
      * @return [SuperClass]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun superClass() = SuperClass(classSet.superclass)
 
     /**
@@ -81,6 +88,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
      * @param initiate 查找方法体
      * @return [FieldFinder.Result.Instance]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun field(initiate: FieldConditions) = classSet.field(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
     /**
@@ -88,6 +96,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
      * @param initiate 查找方法体
      * @return [MethodFinder.Result.Instance]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun method(initiate: MethodConditions) = classSet.method(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
     /**
@@ -96,18 +105,21 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
      * - 请使用 [superClass] 方法来获取 [SuperClass]
      * @param superClassSet 父类 [Class] 对象
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class SuperClass internal constructor(private val superClassSet: Class<*>) {
 
         /**
          * 获得当前 [classSet] 中父类的 [Class.getName]
          * @return [String]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         val name get() = superClassSet.name ?: ""
 
         /**
          * 获得当前 [classSet] 中父类的 [Class.getSimpleName]
          * @return [String]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         val simpleName get() = superClassSet.simpleName ?: ""
 
         /**
@@ -116,6 +128,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
          * 如果当前实例不存在泛型将返回 null
          * @return [GenericClass] or null
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun generic() = superClassSet.generic()
 
         /**
@@ -125,6 +138,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
          * @param initiate 实例方法体
          * @return [GenericClass] or null
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun generic(initiate: GenericClass.() -> Unit) = superClassSet.generic(initiate)
 
         /**
@@ -132,6 +146,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
          * @param initiate 查找方法体
          * @return [FieldFinder.Result.Instance]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun field(initiate: FieldConditions) = superClassSet.field(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
         /**
@@ -139,6 +154,7 @@ class CurrentClass internal constructor(private val classSet: Class<*>, internal
          * @param initiate 查找方法体
          * @return [MethodFinder.Result.Instance]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun method(initiate: MethodConditions) =
             superClassSet.method(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 

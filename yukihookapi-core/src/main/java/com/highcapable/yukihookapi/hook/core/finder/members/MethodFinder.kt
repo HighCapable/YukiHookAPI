@@ -19,7 +19,10 @@
  *
  * This file is created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "KotlinConstantConditions", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress(
+    "unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "KotlinConstantConditions", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE",
+    "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION", "DeprecatedCallableAddReplaceWith"
+)
 
 package com.highcapable.yukihookapi.hook.core.finder.members
 
@@ -36,6 +39,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditi
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
@@ -51,6 +55,7 @@ import java.lang.reflect.Method
  * 可通过指定类型查找指定 [Method] 或一组 [Method]
  * @param classSet 当前需要查找的 [Class] 实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MethodFinder internal constructor(override val classSet: Class<*>? = null) : MemberBaseFinder(tag = "Method", classSet) {
 
     internal companion object {
@@ -79,6 +84,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * - 若不填写名称则必须存在一个其它条件
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var name
         get() = rulesData.name
         set(value) {
@@ -93,6 +99,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * 若参数个数小于零则忽略并使用 [param]
      * @return [Int]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var paramCount
         get() = rulesData.paramCount
         set(value) {
@@ -107,6 +114,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * - 可不填写返回值
      * @return [Any] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var returnType
         get() = rulesData.returnType
         set(value) {
@@ -122,6 +130,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions): IndexTypeCondition {
         rulesData.modifiers = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -132,6 +141,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      *
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun emptyParam() = paramCount(num = 0)
 
     /**
@@ -161,6 +171,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param paramType 参数类型数组 - 只能是 [Class]、[String]、[VariousClass]
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(vararg paramType: Any): IndexTypeCondition {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         rulesData.paramTypes = mutableListOf<Class<*>>().apply { paramType.forEach { add(it.compat() ?: UndefinedType) } }.toTypedArray()
@@ -184,6 +195,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(conditions: ObjectsConditions): IndexTypeCondition {
         rulesData.paramTypesConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -193,6 +205,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * 顺序筛选字节码的下标
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
     /**
@@ -204,6 +217,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param value 名称
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(value: String): IndexTypeCondition {
         rulesData.name = value
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -218,6 +232,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(conditions: NameConditions): IndexTypeCondition {
         rulesData.nameConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -234,6 +249,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param num 个数
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(num: Int): IndexTypeCondition {
         rulesData.paramCount = num
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -254,6 +270,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param numRange 个数范围
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(numRange: IntRange): IndexTypeCondition {
         rulesData.paramCountRange = numRange
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -274,6 +291,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(conditions: CountConditions): IndexTypeCondition {
         rulesData.paramCountConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -288,6 +306,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param value 个数
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun returnType(value: Any): IndexTypeCondition {
         rulesData.returnType = value.compat()
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -308,6 +327,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun returnType(conditions: ObjectConditions): IndexTypeCondition {
         rulesData.returnTypeConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -319,6 +339,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * - 若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
      * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun superClass(isOnlySuperClass: Boolean = false) {
         rulesData.isFindInSuper = true
         if (isOnlySuperClass && classSet?.hasExtends == true) usedClassSet = classSet.superclass
@@ -377,6 +398,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      *
      * 可累计失败次数直到查找成功
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class RemedyPlan internal constructor() {
 
         /** 失败尝试次数数组 */
@@ -391,6 +413,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param initiate 方法体
          * @return [Result] 结果
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun method(initiate: MethodConditions) = Result().apply {
             remedyPlans.add(Pair(MethodFinder(classSet).apply {
                 hookerManager = this@MethodFinder.hookerManager
@@ -429,6 +452,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          *
          * 可在这里处理是否成功的回调
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class Result internal constructor() {
 
             /** 找到结果时的回调 */
@@ -438,6 +462,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * 当找到结果时
              * @param initiate 回调
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun onFind(initiate: MutableList<Method>.() -> Unit) {
                 onFindCallback = initiate
             }
@@ -449,6 +474,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param isNoSuch 是否没有找 [Method]  - 默认否
      * @param throwable 错误信息
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class Process internal constructor(
         internal val isNoSuch: Boolean = false,
         internal val throwable: Throwable? = null
@@ -459,12 +485,14 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param initiate 方法体
          * @return [Process] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun result(initiate: Process.() -> Unit) = apply(initiate)
 
         /**
          * 设置全部查找条件匹配的多个 [Method] 实例结果到 [hookerManager]
          * @return [Process] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all(): Process {
             fun MutableList<Member>.bind() = takeIf { it.isNotEmpty() }?.apply { hookerManager.bindMembers(members = this) }.unit()
             if (isUsingRemedyPlan)
@@ -484,6 +512,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param initiate 方法体
          * @return [Process] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun remedys(initiate: RemedyPlan.() -> Unit): Process {
             isUsingRemedyPlan = true
             if (isNoSuch) RemedyPlan().apply(initiate).build()
@@ -497,6 +526,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param result 回调错误
          * @return [Process] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun onNoSuchMethod(result: (Throwable) -> Unit): Process {
             if (isNoSuch) result(throwable ?: Throwable("Initialization Error"))
             return this
@@ -508,6 +538,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
      * @param isNoSuch 是否没有找到 [Method] - 默认否
      * @param throwable 错误信息
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class Result internal constructor(
         internal val isNoSuch: Boolean = false,
         internal val throwable: Throwable? = null
@@ -518,6 +549,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
@@ -531,6 +563,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param instance 所在实例
          * @return [Instance]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun get(instance: Any? = null) = Instance(instance, give())
 
         /**
@@ -544,6 +577,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param instance 所在实例
          * @return [MutableList]<[Instance]>
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all(instance: Any? = null) =
             mutableListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
 
@@ -555,6 +589,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * - 在查找条件找不到任何结果的时候将返回 null
          * @return [Method] or null
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun give() = giveAll().takeIf { it.isNotEmpty() }?.first()
 
         /**
@@ -565,6 +600,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * - 在查找条件找不到任何结果的时候将返回空的 [MutableList]
          * @return [MutableList]<[Method]>
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.methods() ?: mutableListOf()
 
         /**
@@ -578,6 +614,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param instance 所在实例
          * @param initiate 回调 [Instance]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun wait(instance: Any? = null, initiate: Instance.() -> Unit) {
             if (memberInstances.isNotEmpty()) initiate(get(instance))
             else remedyPlansCallback = { initiate(get(instance)) }
@@ -594,6 +631,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param instance 所在实例
          * @param initiate 回调 [MutableList]<[Instance]>
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun waitAll(instance: Any? = null, initiate: MutableList<Instance>.() -> Unit) {
             if (memberInstances.isNotEmpty()) initiate(all(instance))
             else remedyPlansCallback = { initiate(all(instance)) }
@@ -610,6 +648,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun remedys(initiate: RemedyPlan.() -> Unit): Result {
             isUsingRemedyPlan = true
             if (isNoSuch) RemedyPlan().apply(initiate).build()
@@ -623,6 +662,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result {
             if (isNoSuch) result(throwable ?: Throwable("Initialization Error"))
             return this
@@ -636,6 +676,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * - 此时若要监听异常结果 - 你需要手动实现 [onNoSuchMethod] 方法
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun ignored(): Result {
             isIgnoreErrorLogs = true
             return this
@@ -659,6 +700,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
          * @param instance 当前 [Method] 所在类的实例对象
          * @param method 当前 [Method] 实例对象
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class Instance internal constructor(private val instance: Any?, private val method: Method?) {
 
             /** 标识需要调用当前 [Method] 未经 Hook 的原始方法 */
@@ -672,6 +714,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * - 你只能在 (Xposed) 宿主环境中使用此功能
              * @return [Instance] 可继续向下监听
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun original(): Instance {
                 isCallOriginal = true
                 return this
@@ -692,6 +735,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Any] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun call(vararg args: Any?) = baseCall(*args)
 
             /**
@@ -699,6 +743,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [T] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun <T> invoke(vararg args: Any?) = baseCall(*args) as? T?
 
             /**
@@ -708,6 +753,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Byte] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun byte(vararg args: Any?) = invoke<Byte?>(*args)
 
             /**
@@ -717,6 +763,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Int] 取不到返回 0
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun int(vararg args: Any?) = invoke(*args) ?: 0
 
             /**
@@ -726,6 +773,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Long] 取不到返回 0L
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun long(vararg args: Any?) = invoke(*args) ?: 0L
 
             /**
@@ -735,6 +783,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Short] 取不到返回 0
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun short(vararg args: Any?) = invoke<Short?>(*args) ?: 0
 
             /**
@@ -744,6 +793,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Double] 取不到返回 0.0
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun double(vararg args: Any?) = invoke(*args) ?: 0.0
 
             /**
@@ -753,6 +803,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Float] 取不到返回 0f
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun float(vararg args: Any?) = invoke(*args) ?: 0f
 
             /**
@@ -760,6 +811,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [String] 取不到返回 ""
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun string(vararg args: Any?) = invoke(*args) ?: ""
 
             /**
@@ -767,6 +819,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Char] 取不到返回 ' '
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun char(vararg args: Any?) = invoke(*args) ?: ' '
 
             /**
@@ -776,6 +829,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * @param args 方法参数
              * @return [Boolean] 取不到返回 false
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun boolean(vararg args: Any?) = invoke(*args) ?: false
 
             /**
@@ -784,6 +838,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * - 请确认目标 [Method] 的返回值 - 发生错误会返回空数组
              * @return [Array] 取不到返回空数组
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             inline fun <reified T> array(vararg args: Any?) = invoke(*args) ?: arrayOf<T>()
 
             /**
@@ -792,6 +847,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
              * - 请确认目标 [Method] 的返回值 - 发生错误会返回空数组
              * @return [List] 取不到返回空数组
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             inline fun <reified T> list(vararg args: Any?) = invoke(*args) ?: listOf<T>()
 
             override fun toString() = "[${method?.name ?: "<empty>"}] in [${instance?.javaClass?.name ?: "<empty>"}]"

@@ -37,9 +37,9 @@ After the Host App is hooked, we can directly inject the `Context` obtained in t
 > The following example
 
 ```kotlin
-method {
+resolve().firstMethod {
     name = "onCreate"
-    param(BundleClass)
+    parameters(Bundle::class)
 }.hook {
     after {
         instance<Activity>().also {
@@ -90,9 +90,9 @@ After the Host App is hooked, we can directly register the `Activity` proxy of t
 > The following example
 
 ```kotlin
-method {
+resolve().firstMethod {
     name = "onCreate"
-    param(BundleClass)
+    parameters(Bundle::class)
 }.hook {
     after {
         instance<Activity>().registerModuleAppActivities()
@@ -236,9 +236,9 @@ At this time, we want to use `MaterialAlertDialogBuilder` to create a dialog in 
 > The following example
 
 ```kotlin
-method {
+resolve().firstMethod {
     name = "onCreate"
-    param(BundleClass)
+    parameters(Bundle::class)
 }.hook {
     after {
         // Use applyModuleTheme to create a theme resource in the current Module App
@@ -260,9 +260,9 @@ Which requires at least Android 10 and above system version support and the curr
 > The following example
 
 ```kotlin
-method {
+resolve().firstMethod {
     name = "onCreate"
-    param(BundleClass)
+    parameters(Bundle::class)
 }.hook {
     after {
         // Define the theme resource in the current Module App

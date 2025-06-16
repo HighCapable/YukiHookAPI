@@ -29,9 +29,9 @@ footer: Apache-2.0 License | Copyright (C) 2019 HighCapable
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.method {
+    Activity::class.resolve().firstMethod {
         name = "onCreate"
-        param(BundleClass)
+        parameters(Bundle::class)
     }.hook {
         before {
           // Your code here.

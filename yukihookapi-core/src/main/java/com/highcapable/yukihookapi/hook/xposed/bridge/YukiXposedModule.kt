@@ -24,9 +24,9 @@ package com.highcapable.yukihookapi.hook.xposed.bridge
 
 import android.content.pm.ApplicationInfo
 import android.content.res.Resources
+import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
-import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
@@ -105,7 +105,8 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
      * @return [Boolean] 是否存在
      */
     private fun isMiuiCatcherPatch(packageName: String?) =
-        (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") && "android.miui.R".hasClass()
+        (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") &&
+            javaClass.classLoader?.hasClass("android.miui.R") == true
 
     /**
      * 当前包名是否已在指定的 [HookEntryType] 被装载

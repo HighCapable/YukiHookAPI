@@ -19,11 +19,14 @@
  *
  * This file is created by fankes on 2022/9/4.
  */
+@file:Suppress("DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
@@ -33,6 +36,7 @@ import java.lang.reflect.Member
  * @param matchCountRange 匹配的字节码个数范围
  * @param matchCountConditions 匹配的字节码个数条件
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal open class MemberRulesData internal constructor(
     var isFindInSuper: Boolean = false,
     var matchCount: Int = -1,

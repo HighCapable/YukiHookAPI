@@ -2,6 +2,14 @@
 
 `YukiHookAPI` 从 `1.2.0` 版本开始进行了大量调整，你可以继续向下阅读以查看有哪些注意事项和新功能。
 
+::: warning
+
+如果你正在使用 `1.2.x` 之前版本的 `YukiHookAPI`，建议先参考此文档迁移到 `1.2.x` 版本。
+
+如果你正在使用 `1.2.x` 版本的 `YukiHookAPI`，请直接阅读 [迁移到 YukiHookAPI 1.3.x](move-to-api-1-3-x) 而不是此文档。
+
+:::
+
 ## 默认行为变更
 
 从 `1.2.0` 版本开始，`@InjectYukiHookWithXposed` 中 `isUsingResourcesHook` 功能默认不再启用，如有需要请手动启用。

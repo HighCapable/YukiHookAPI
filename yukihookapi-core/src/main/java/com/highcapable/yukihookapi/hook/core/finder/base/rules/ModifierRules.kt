@@ -20,10 +20,11 @@
  * This file is created by fankes on 2022/3/27.
  * This file is modified by fankes on 2022/9/14.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.core.finder.base.rules
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -35,6 +36,7 @@ import java.lang.reflect.Modifier
  * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
  * @param instance 当前实例对象
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class ModifierRules private constructor(private val instance: Any) {
 
     internal companion object {
@@ -71,6 +73,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isPublic get() = Modifier.isPublic(modifiers).also { templates.add("<isPublic> ($it)") }
 
     /**
@@ -83,6 +86,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isPrivate get() = Modifier.isPrivate(modifiers).also { templates.add("<isPrivate> ($it)") }
 
     /**
@@ -95,6 +99,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isProtected get() = Modifier.isProtected(modifiers).also { templates.add("<isProtected> ($it)") }
 
     /**
@@ -111,6 +116,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * - 注意 Kotlin → Jvm 后的 object 类中的方法并不是静态的
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isStatic get() = Modifier.isStatic(modifiers).also { templates.add("<isStatic> ($it)") }
 
     /**
@@ -125,6 +131,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * - 注意 Kotlin → Jvm 后没有 open 标识的 [Class]、[Member] 和没有任何关联的 [Class]、[Member] 都将为 final
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isFinal get() = Modifier.isFinal(modifiers).also { templates.add("<isFinal> ($it)") }
 
     /**
@@ -137,6 +144,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isSynchronized get() = Modifier.isSynchronized(modifiers).also { templates.add("<isSynchronized> ($it)") }
 
     /**
@@ -149,6 +157,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isVolatile get() = Modifier.isVolatile(modifiers).also { templates.add("<isVolatile> ($it)") }
 
     /**
@@ -161,6 +170,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isTransient get() = Modifier.isTransient(modifiers).also { templates.add("<isTransient> ($it)") }
 
     /**
@@ -175,6 +185,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isNative get() = Modifier.isNative(modifiers).also { templates.add("<isNative> ($it)") }
 
     /**
@@ -187,6 +198,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isInterface get() = Modifier.isInterface(modifiers).also { templates.add("<isInterface> ($it)") }
 
     /**
@@ -201,6 +213,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isAbstract get() = Modifier.isAbstract(modifiers).also { templates.add("<isAbstract> ($it)") }
 
     /**
@@ -213,6 +226,7 @@ class ModifierRules private constructor(private val instance: Any) {
      * ^^^
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isStrict get() = Modifier.isStrict(modifiers).also { templates.add("<isStrict> ($it)") }
 
     /**

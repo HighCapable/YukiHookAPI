@@ -29,15 +29,11 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Message
-import com.highcapable.yukihookapi.hook.factory.current
-import com.highcapable.yukihookapi.hook.factory.field
-import com.highcapable.yukihookapi.hook.factory.method
-import com.highcapable.yukihookapi.hook.log.YLog
-import com.highcapable.yukihookapi.hook.type.android.ActivityThreadClass
-import com.highcapable.yukihookapi.hook.type.android.ClientTransactionClass
-import com.highcapable.yukihookapi.hook.type.android.IBinderClass
-import com.highcapable.yukihookapi.hook.type.android.IntentClass
+import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.lazyClass
+import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 
@@ -52,6 +48,13 @@ internal object HandlerDelegateCaller {
     /** 执行事务处理 */
     private const val EXECUTE_TRANSACTION = 159
 
+    private val ActivityThreadClass by lazyClass("android.app.ActivityThread")
+    private val ClientTransactionClass by lazyClass("android.app.servertransaction.ClientTransaction")
+
+    private val mExtrasResolver by lazy {
+        Intent::class.resolve().optional().firstFieldOrNull { name = "mExtras" }
+    }
+
     /**
      * 调用代理的 [Handler.Callback.handleMessage] 方法
      * @param baseInstance 原始实例
@@ -60,41 +63,63 @@ internal object HandlerDelegateCaller {
      */
     internal fun callHandleMessage(baseInstance: Handler.Callback?, msg: Message): Boolean {
         when (msg.what) {
-            LAUNCH_ACTIVITY -> runCatching {
-                msg.obj.current(ignored = true).field { name = "intent" }.apply {
-                    cast<Intent?>()?.also { intent ->
-                        IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
-                            ?.classLoader = AppParasitics.currentApplication?.classLoader
+            LAUNCH_ACTIVITY -> {
+                val intentResolver = msg.obj.resolve()
+                    .processor(AndroidHiddenApiBypassResolver.get())
+                    .optional()
+                    .firstFieldOrNull { name = "intent" }
+                val intent = intentResolver?.get<Intent>()
+                val mExtras = mExtrasResolver?.copy()?.of(intent)?.getQuietly<Bundle>()
+                mExtras?.classLoader = AppParasitics.currentApplication?.classLoader
+                @Suppress("DEPRECATION")
+                if (intent?.hasExtra(ActivityProxyConfig.proxyIntentName) == true)
+                    intentResolver.set(intent.getParcelableExtra(ActivityProxyConfig.proxyIntentName))
+            }
+            EXECUTE_TRANSACTION -> {
+                val callbacks = ClientTransactionClass.resolve()
+                    .processor(AndroidHiddenApiBypassResolver.get())
+                    .optional()
+                    .firstMethodOrNull {
+                        name = "getCallbacks"
+                    }?.of(msg.obj)
+                    ?.invokeQuietly<List<Any>>()
+                    ?.takeIf { it.isNotEmpty() }
+                callbacks?.filter { it.javaClass.name.contains("LaunchActivityItem") }?.forEach { item ->
+                    val itemResolver = item.resolve().optional()
+                        .firstFieldOrNull { name = "mIntent" }
+                    val intent = itemResolver?.get<Intent>()
+                    val mExtras = mExtrasResolver?.copy()?.of(intent)?.getQuietly<Bundle>()
+                    mExtras?.classLoader = AppParasitics.currentApplication?.classLoader
+                    if (intent?.hasExtra(ActivityProxyConfig.proxyIntentName) == true) {
                         @Suppress("DEPRECATION")
-                        if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
-                            set(intent.getParcelableExtra(ActivityProxyConfig.proxyIntentName))
+                        val subIntent = intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName)
+                        if (Build.VERSION.SDK_INT >= 31) {
+                            val currentActivityThread = ActivityThreadClass.resolve()
+                                .processor(AndroidHiddenApiBypassResolver.get())
+                                .optional()
+                                .firstMethodOrNull { name = "currentActivityThread" }
+                                ?.invoke()
+                            val token = msg.obj.resolve()
+                                .processor(AndroidHiddenApiBypassResolver.get())
+                                .optional()
+                                .firstMethodOrNull { name = "getActivityToken" }
+                                ?.invokeQuietly()
+                            val launchingActivity = currentActivityThread?.resolve()
+                                ?.processor(AndroidHiddenApiBypassResolver.get())
+                                ?.optional()
+                                ?.firstMethodOrNull {
+                                    name = "getLaunchingActivity"
+                                    parameters(IBinder::class)
+                                }?.invokeQuietly(token)
+                            launchingActivity?.resolve()
+                                ?.processor(AndroidHiddenApiBypassResolver.get())
+                                ?.optional()
+                                ?.firstFieldOrNull { name = "intent" }
+                                ?.set(subIntent)
+                        }; itemResolver.set(subIntent)
                     }
                 }
-            }.onFailure { YLog.innerE("Activity Proxy got an exception in msg.what [$LAUNCH_ACTIVITY]", it) }
-            EXECUTE_TRANSACTION -> msg.obj?.runCatching client@{
-                ClientTransactionClass.method { name = "getCallbacks" }.ignored().get(this).list<Any?>().takeIf { it.isNotEmpty() }
-                    ?.forEach { item ->
-                        item?.current(ignored = true)?.takeIf { it.name.contains("LaunchActivityItem") }?.field { name = "mIntent" }
-                            ?.apply {
-                                cast<Intent?>()?.also { intent ->
-                                    IntentClass.field { name = "mExtras" }.ignored().get(intent).cast<Bundle?>()
-                                        ?.classLoader = AppParasitics.currentApplication?.classLoader
-                                    @Suppress("DEPRECATION")
-                                    if (intent.hasExtra(ActivityProxyConfig.proxyIntentName))
-                                        intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName).also { subIntent ->
-                                            if (Build.VERSION.SDK_INT >= 31)
-                                                ActivityThreadClass.method { name = "currentActivityThread" }.ignored().get().call()
-                                                    ?.current(ignored = true)?.method {
-                                                        name = "getLaunchingActivity"
-                                                        param(IBinderClass)
-                                                    }?.call(this@client.current(ignored = true).method { name = "getActivityToken" }.call())
-                                                    ?.current(ignored = true)?.field { name = "intent" }?.set(subIntent)
-                                            set(subIntent)
-                                        }
-                                }
-                            }
-                    }
-            }?.onFailure { YLog.innerE("Activity Proxy got an exception in msg.what [$EXECUTE_TRANSACTION]", it) }
+            }
         }
         return baseInstance?.handleMessage(msg) ?: false
     }

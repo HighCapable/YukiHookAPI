@@ -22,8 +22,6 @@ Please use Kotlin, the framework part of the code composition is also compatible
 
 All demo code in this document will be described using Kotlin, if you don't know how to use Kotlin then you may not be able to use `YukiHookAPI`.
 
-Part of the Java Demo code can be found [here](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java), but not recommended.
-
 ## Source of Inspiration
 
 Previously, when we built an Xposed Module, we first needed to create an `xposed_init` file under `assets`.
@@ -51,9 +49,9 @@ object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadZygote {
-            ActivityClass.method {
+            Activity::class.resolve().firstMethod {
                 name = "onCreate"
-                param(BundleClass)
+                parameters(Bundle::class)
             }.hook {
                 before {
                   // Your code here.
@@ -64,9 +62,9 @@ object HookEntry : IYukiHookXposedInit {
             }
         }
         loadApp(name = "com.android.browser") {
-            ActivityClass.method {
+            Activity::class.resolve().firstMethod {
                 name = "onCreate"
-                param(BundleClass)
+                parameters(Bundle::class)
             }.hook {
                 before {
                   // Your code here.
@@ -130,3 +128,11 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 Yes, you read that right, just needing these codes can completely replace the traditional Xposed API to achieve the same function.
 
 Now, with the help of the efficient and powerful `YukiHookAPI`, you can implement a very simple Xposed Module.
+
+::: tip
+
+Starting with version `1.3.0`, `YukiHookAPI` has migrated its own reflection API part to [KavaRef](https://github.com/HighCapable/KavaRef) (including the reflection API part demonstrated above).
+
+Now, you can make the `YukiHookAPI` more easy to use with the powerful reflection ability of `KavaRef`.
+
+:::

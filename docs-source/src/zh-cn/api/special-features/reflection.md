@@ -1,12 +1,25 @@
-# 字节码与反射扩展
+# 字节码与反射扩展 (已迁移)
 
 > `YukiHookAPI` 为开发者封装了一套接近零反射写法的反射 API，它几乎可以完全取代原生 Java 的反射 API 相关用法。
 
-此功能的核心部分已被解耦合为 [YukiReflection](https://github.com/HighCapable/YukiReflection) 项目，它可以独立使用于任何 Java、Android 项目中。
+~~此功能的核心部分已被解耦合为 [YukiReflection](https://github.com/HighCapable/YukiReflection) 项目，它可以独立使用于任何 Java、Android 项目中。~~
 
-现在 `YukiReflection` 作为核心依赖集成于 `YukiHookAPI`。
+~~现在 `YukiReflection` 作为核心依赖集成于 `YukiHookAPI`。~~
 
-`YukiHookAPI` 在 `YukiReflection` 的基础上加入了针对 Hook 功能的相关扩展，使用 `YukiHookAPI` 无需引入此依赖。
+~~`YukiHookAPI` 在 `YukiReflection` 的基础上加入了针对 Hook 功能的相关扩展，使用 `YukiHookAPI` 无需引入此依赖。~~
+
+::: warning
+
+从 `1.3.0` 版本开始，`YukiHookAPI` 已将自身的反射 API 部分迁移至
+[KavaRef](https://github.com/HighCapable/KavaRef)，我们不再推荐使用 `YukiHookAPI` 自身的反射 API，这些 API 已被标记为弃用。
+
+`YukiReflection` 项目由于很多未能解决的黑盒问题已被弃用，我们不再推荐任何人使用它。
+
+如果你依然在使用 `YukiHookAPI` 的反射 API 部分，请参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/config/migration) 的迁移文档，这将跳转到 `KavaRef` 的文档。
+
+:::
+
+<div style="opacity: 0.35">
 
 ## Class 扩展
 
@@ -1892,3 +1905,5 @@ Java 中共有 9 个**原始类型关键字**，其中 8 个为**原始类型**�
 :::
 
 同时，欢迎你能贡献更多的常用类型。
+
+</div>

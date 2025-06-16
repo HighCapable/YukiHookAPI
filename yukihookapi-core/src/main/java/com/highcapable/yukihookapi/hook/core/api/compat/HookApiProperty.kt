@@ -23,10 +23,10 @@
 
 package com.highcapable.yukihookapi.hook.core.api.compat
 
+import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.condition.type.Modifiers
+import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.yukihookapi.hook.core.api.compat.type.ExecutorType
-import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.factory.field
-import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import de.robv.android.xposed.XposedBridge
 
@@ -63,10 +63,15 @@ internal object HookApiProperty {
     internal val name
         get() = when (HookApiCategoryHelper.currentCategory) {
             HookApiCategory.ROVO89_XPOSED -> when {
-                EXPOSED_BRIDGE_CLASS_NAME.hasClass(AppParasitics.currentApplication?.classLoader) -> TAICHI_XPOSED_NAME
-                BUG_LOAD_CLASS_NAME.hasClass(AppParasitics.currentApplication?.classLoader) -> BUG_XPOSED_NAME
+                AppParasitics.currentApplication?.classLoader?.hasClass(EXPOSED_BRIDGE_CLASS_NAME) == true -> TAICHI_XPOSED_NAME
+                AppParasitics.currentApplication?.classLoader?.hasClass(BUG_LOAD_CLASS_NAME) == true -> BUG_XPOSED_NAME
                 else -> runCatching {
-                    classOf<XposedBridge>().field { name = "TAG" }.ignored().get().string().takeIf { it.isNotBlank() }
+                    XposedBridge::class.resolve()
+                        .optional(silent = true)
+                        .firstFieldOrNull {
+                            name = "TAG"
+                            modifiers(Modifiers.STATIC)
+                        }?.get<String>()?.takeIf { it.isNotBlank() }
                         ?.replace("Bridge", "")?.replace("-", "")?.trim() ?: "unknown"
                 }.getOrNull() ?: "invalid"
             }

@@ -39,11 +39,10 @@ import android.os.PersistableBundle
 import android.os.TestLooperManager
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.highcapable.yukihookapi.hook.factory.buildOf
-import com.highcapable.yukihookapi.hook.factory.current
+import com.highcapable.kavaref.extension.createInstanceOrNull
+import com.highcapable.kavaref.extension.toClass
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
 import com.highcapable.yukihookapi.hook.factory.processName
-import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 
@@ -68,16 +67,16 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
      * @param icicle [Bundle]
      */
     private fun Activity.injectLifecycle(icicle: Bundle?) {
-        if (icicle != null && current().name.startsWith(YukiXposedModule.modulePackageName))
+        if (icicle != null && javaClass.name.startsWith(YukiXposedModule.modulePackageName))
             icicle.classLoader = AppParasitics.baseClassLoader
-        if (current().name.startsWith(YukiXposedModule.modulePackageName)) injectModuleAppResources()
+        if (javaClass.name.startsWith(YukiXposedModule.modulePackageName)) injectModuleAppResources()
     }
 
     override fun newActivity(cl: ClassLoader?, className: String?, intent: Intent?): Activity? = try {
         baseInstance.newActivity(cl, className, intent)
     } catch (e: Throwable) {
         if (className?.startsWith(YukiXposedModule.modulePackageName) == true)
-            className.toClass().buildOf<Activity>() ?: throw e
+            className.toClass<Activity>().createInstanceOrNull() ?: throw e
         else throw e
     }
 
@@ -130,7 +129,7 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
     override fun getTargetContext(): Context? = baseInstance.targetContext
 
     override fun getProcessName(): String? =
-        if (Build.VERSION.SDK_INT >= 26) baseInstance.processName else AppParasitics.systemContext.processName
+        if (Build.VERSION.SDK_INT >= 26) baseInstance.processName else AppParasitics.systemContext?.processName
 
     override fun isProfiling() = baseInstance.isProfiling
 

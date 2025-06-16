@@ -1,12 +1,26 @@
-# Reflection Extensions
+# Reflection Extensions (Migrated)
 
 > `YukiHookAPI` encapsulates a set of reflection API with near-zero reflection writing for developers, which can almost completely replace the usage of reflection API in Java.
 
-The core part of this functionality has been decoupled into the [YukiReflection](https://github.com/HighCapable/YukiReflection) project, which can be used independently in any Java or Android project.
+~~The core part of this functionality has been decoupled into the [YukiReflection](https://github.com/HighCapable/YukiReflection) project, which can be used independently in any Java or Android project.~~
 
-Now `YukiReflection` is integrated into `YukiHookAPI` as a core dependency.
+~~Now `YukiReflection` is integrated into `YukiHookAPI` as a core dependency.~~
 
-`YukiHookAPI` adds related extensions for Hook functions on the basis of `YukiReflection`, and there is no need to introduce this dependency to use `YukiHookAPI`.
+~~`YukiHookAPI` adds related extensions for Hook functions on the basis of `YukiReflection`, and there is no need to introduce this dependency to use `YukiHookAPI`.~~
+
+::: warning
+
+Starting with version `1.3.0`, `YukiHookAPI` has moved its own reflection API partially to
+[KavaRef](https://github.com/HighCapable/KavaRef), we no longer recommend the reflection API of `YukiHookAPI` itself, which have been marked as deprecated.
+
+The `YukiReflection` project has been deprecated due to many unsolved black box issues, and we no longer recommend anyone to use it.
+
+If you are still using the reflection API section of `YukiHookAPI`,
+please refer to the migration document [here](https://highcapable.github.io/KavaRef/zh-cn/config/migration) which will jump to the `KavaRef` document.
+
+:::
+
+<div style="opacity: 0.35">
 
 ## Class Extensions
 
@@ -1959,3 +1973,5 @@ For more types, see [ComponentTypeFactory](../public/com/highcapable/yukihookapi
 :::
 
 At the same time, you are welcome to contribute more commonly used types.
+
+</div>

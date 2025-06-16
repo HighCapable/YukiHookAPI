@@ -19,10 +19,11 @@
  *
  * This file is created by fankes on 2022/9/14.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "DEPRECATION", "DeprecatedCallableAddReplaceWith")
 
 package com.highcapable.yukihookapi.hook.core.finder.base.rules
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
@@ -31,6 +32,7 @@ import java.lang.reflect.Member
  * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
  * @param instance 当前实例对象
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class CountRules private constructor(private val instance: Int) {
 
     internal companion object {
@@ -47,6 +49,7 @@ class CountRules private constructor(private val instance: Int) {
      * 是否为 0
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun Int.isZero() = this == 0
 
     /**
@@ -54,6 +57,7 @@ class CountRules private constructor(private val instance: Int) {
      * @param count 目标对象
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun Int.moreThan(count: Int) = this > count
 
     /**
@@ -61,6 +65,7 @@ class CountRules private constructor(private val instance: Int) {
      * @param count 目标对象
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun Int.lessThan(count: Int) = this < count
 
     /**
@@ -68,6 +73,7 @@ class CountRules private constructor(private val instance: Int) {
      * @param countRange 区间
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun Int.inInterval(countRange: IntRange) = this in countRange
 
     override fun toString() = "CountRules [$instance]"

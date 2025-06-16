@@ -19,6 +19,8 @@
  *
  * This file is created by fankes on 2022/9/8.
  */
+@file:Suppress("DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.base.data
 
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
@@ -26,6 +28,7 @@ import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ObjectRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -38,6 +41,7 @@ import java.lang.reflect.Method
  * @param orderIndex 字节码、数组顺序下标
  * @param matchIndex 字节码、数组筛选下标
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal abstract class BaseRulesData internal constructor(
     var modifiers: ModifierConditions? = null,
     var orderIndex: Pair<Int, Boolean>? = null,

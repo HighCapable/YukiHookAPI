@@ -19,10 +19,13 @@
  *
  * This file is created by fankes on 2022/9/4.
  */
+@file:Suppress("TYPEALIAS_EXPANSION_DEPRECATION", "DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Field
 
 /**
@@ -32,6 +35,7 @@ import java.lang.reflect.Field
  * @param type 类型
  * @param typeConditions 类型条件
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal class FieldRulesData internal constructor(
     var name: String = "",
     var nameConditions: NameConditions? = null,

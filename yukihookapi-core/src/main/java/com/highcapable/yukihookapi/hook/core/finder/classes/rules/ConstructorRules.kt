@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/9/12.
  */
-@file:Suppress("MemberVisibilityCanBePrivate")
+@file:Suppress("MemberVisibilityCanBePrivate", "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules
 
@@ -30,6 +30,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRule
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Constructor
@@ -38,6 +39,7 @@ import java.lang.reflect.Constructor
  * [Constructor] 查找条件实现类
  * @param rulesData 当前查找条件规则数据
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class ConstructorRules internal constructor(private val rulesData: ConstructorRulesData) : BaseRules() {
 
     /**
@@ -48,6 +50,7 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * 若参数个数小于零则忽略并使用 [param]
      * @return [Int]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var paramCount
         get() = rulesData.paramCount
         set(value) {
@@ -60,11 +63,13 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * - 可不设置筛选条件
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
         rulesData.modifiers = conditions
     }
 
     /** 设置 [Constructor] 空参数、无参数 */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun emptyParam() {
         rulesData.paramCount = 0
     }
@@ -93,6 +98,7 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * - 有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param paramType 参数类型数组 - 只能是 [Class]、[String]、[VariousClass]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(vararg paramType: Any) {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         rulesData.paramTypes =
@@ -113,6 +119,7 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * - 有参 [Constructor] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(conditions: ObjectsConditions) {
         rulesData.paramTypesConditions = conditions
     }
@@ -129,6 +136,7 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * ```
      * @param numRange 个数范围
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(numRange: IntRange) {
         rulesData.paramCountRange = numRange
     }
@@ -145,6 +153,7 @@ class ConstructorRules internal constructor(private val rulesData: ConstructorRu
      * ```
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(conditions: CountConditions) {
         rulesData.paramCountConditions = conditions
     }

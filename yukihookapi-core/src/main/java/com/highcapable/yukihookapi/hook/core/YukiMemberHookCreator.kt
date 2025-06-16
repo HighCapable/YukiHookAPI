@@ -21,11 +21,12 @@
  */
 @file:Suppress(
     "unused", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "UnusedReceiverParameter",
-    "DeprecatedCallableAddReplaceWith", "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE"
+    "DeprecatedCallableAddReplaceWith", "PropertyName", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION"
 )
 
 package com.highcapable.yukihookapi.hook.core
 
+import com.highcapable.kavaref.extension.isNotSubclassOf
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
 import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
@@ -44,8 +45,6 @@ import com.highcapable.yukihookapi.hook.factory.allConstructors
 import com.highcapable.yukihookapi.hook.factory.allMethods
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.factory.method
-import com.highcapable.yukihookapi.hook.factory.notExtends
-import com.highcapable.yukihookapi.hook.factory.notImplements
 import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookParam
@@ -65,6 +64,7 @@ import java.lang.reflect.Method
  * @param packageParam 需要传入 [PackageParam] 实现方法调用
  * @param hookClass 要 Hook 的 [HookClass] 实例
  */
+@OptIn(LegacyHookApi::class)
 class YukiMemberHookCreator internal constructor(private val packageParam: PackageParam, private val hookClass: HookClass) {
 
     internal companion object {
@@ -552,7 +552,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
             if (origin == null || target == null) return
             origin.toJavaPrimitiveType().also { o ->
                 target.toJavaPrimitiveType().also { t ->
-                    if (o notExtends t && t notExtends o && o notImplements t && t notImplements o)
+                    if (o isNotSubclassOf t && t isNotSubclassOf o)
                         error("Hooked method return type match failed, required [$origin] but got [$target]")
                 }
             }

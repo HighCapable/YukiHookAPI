@@ -2,23 +2,15 @@
 
 > 集成 `YukiHookAPI` 到你的项目中。
 
-## 环境要求
+## 项目要求
 
-- Windows 7 及以上/macOS 10.14 及以上/Linux 发行版 (Arch/Debian)
+项目需要使用 `Android Studio` 或 `IntelliJ IDEA` 创建且类型为 Android 项目并已集成 Kotlin 环境依赖。
 
-- Android Studio 2021.1 及以上
+- Android Studio (建议 [从这里](https://developer.android.com/studio) 获取最新版本)
 
-- IntelliJ IDEA 2021.1 及以上
+- IntelliJ IDEA (建议 [从这里](https://www.jetbrains.com/idea) 获取最新版本)
 
-- Kotlin 1.7.0 及以上
-
-- Android Gradle Plugin 7.0 及以上
-
-- Gradle 7.0 及以上
-
-- Java 11 及以上 (Since API `1.0.80`)
-
-- Java 17 及以上 (Since API `1.2.0`)
+- Kotlin 1.9.0+、Gradle 8+、Java 11、17+、Android Gradle Plugin 8+
 
 ## 自动构建项目
 
@@ -49,8 +41,6 @@ repositories:
   # 作为 Xposed 模块使用务必添加，其它情况可选
   rovo89-xposed-api:
     url: https://api.xposed.info/
-  # MavenCentral 有 2 小时缓存，若无法集成最新版本请添加
-  sonatype-oss-releases:
 
 plugins:
   # 作为 Xposed 模块使用务必添加，其它情况可选
@@ -71,6 +61,13 @@ libraries:
     # 作为 Xposed 模块使用务必添加，其它情况可选
     ksp-xposed:
       version-ref: <this>::api
+  # YukiHookAPI 1.3.0 版本后使用 KavaRef 作为核心反射 API
+  # YukiHookAPI 不再绑定自身的反射 API，你可以开始尝试使用 KavaRef
+  com.highcapable.kavaref:
+    kavaref-core:
+      version: +
+    kavaref-extension:
+      version: +
   ...
 ```
 
@@ -96,6 +93,9 @@ plugins {
 dependencies {
     // 基础依赖
     implementation(com.highcapable.yukihookapi.api)
+    // 推荐使用 KavaRef 作为核心反射 API
+    implementation(com.highcapable.kavaref.kavaref.core)
+    implementation(com.highcapable.kavaref.kavaref.extension)
     // 作为 Xposed 模块使用务必添加，其它情况可选
     compileOnly(de.robv.android.xposed.api)
     // 作为 Xposed 模块使用务必添加，其它情况可选
@@ -103,9 +103,9 @@ dependencies {
 }
 ```
 
-#### 传统方式
+#### Version Catalog
 
-在你的项目 `build.gradle.kts` 或 `build.gradle` 中添加存储库。
+在你的项目 `build.gradle.kts` 中添加存储库。
 
 > Kotlin DSL
 
@@ -115,25 +115,81 @@ repositories {
     mavenCentral()
     // 作为 Xposed 模块使用务必添加，其它情况可选
     maven { url("https://api.xposed.info/") }
-    // MavenCentral 有 2 小时缓存，若无法集成最新版本请添加此地址
-    maven { url("https://s01.oss.sonatype.org/content/repositories/releases/") }
 }
 ```
 
-> Groovy DSL
+在你的项目 `gradle/libs.versions.toml` 中添加依赖。
 
-```groovy
+> 示例如下
+
+```toml
+[versions]
+yukihookapi = "<yuki-version>"
+ksp = "<ksp-version>"
+kavaref-core = "<kavaref-version>"
+kavaref-extension = "<kavaref-version>"
+
+[plugins]
+# 作为 Xposed 模块使用务必添加，其它情况可选
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[libraries]
+yukihookapi-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yukihookapi" }
+# 作为 Xposed 模块使用务必添加，其它情况可选
+yukihookapi-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yukihookapi" }
+# YukiHookAPI 1.3.0 版本后使用 KavaRef 作为核心反射 API
+# YukiHookAPI 不再绑定自身的反射 API，你可以开始尝试使用 KavaRef
+kavaref-core = { module = "com.highcapable.kavaref:kavaref-core", version.ref = "kavaref-core" }
+kavaref-extension = { module = "com.highcapable.kavaref:kavaref-extension", version.ref = "kavaref-extension" }
+# 作为 Xposed 模块使用务必添加，其它情况可选
+xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
+```
+
+接下来，在你的项目 `build.gradle.kts` 中部署插件。
+
+> Kotlin DSL
+
+```kotlin
+plugins {
+    // 作为 Xposed 模块使用务必添加，其它情况可选
+    alias(libs.plugins.ksp)
+}
+```
+
+然后，在你的项目 `build.gradle.kts` 中部署依赖。
+
+> Kotlin DSL
+
+```kotlin
+dependencies {
+    // 基础依赖
+    implementation(libs.yukihookapi.api)
+    // 推荐使用 KavaRef 作为核心反射 API
+    implementation(libs.kavaref.core)
+    implementation(libs.kavaref.extension)
+    // 作为 Xposed 模块使用务必添加，其它情况可选
+    compileOnly(libs.xposed.api)
+    // 作为 Xposed 模块使用务必添加，其它情况可选
+    ksp(libs.yukihookapi.ksp.xposed)
+}
+```
+
+#### 传统方式
+
+在你的项目 `build.gradle.kts` 中添加存储库。
+
+> Kotlin DSL
+
+```kotlin
 repositories {
     google()
     mavenCentral()
     // 作为 Xposed 模块使用务必添加，其它情况可选
-    maven { url 'https://api.xposed.info/' }
-    // MavenCentral 有 2 小时缓存，若无法集成最新版本请添加此地址
-    maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
+    maven { url("https://api.xposed.info/") }
 }
 ```
 
-在你的项目 `build.gradle.kts` 或 `build.gradle` 中添加插件。
+在你的项目 `build.gradle.kts` 中添加插件。
 
 > Kotlin DSL
 
@@ -144,16 +200,7 @@ plugins {
 }
 ```
 
-> Groovy DSL
-
-```groovy
-plugins {
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    id 'com.google.devtools.ksp' version '<ksp-version>'
-}
-```
-
-在你的项目 `build.gradle.kts` 或 `build.gradle` 中添加依赖。
+在你的项目 `build.gradle.kts` 中添加依赖。
 
 > Kotlin DSL
 
@@ -161,6 +208,9 @@ plugins {
 dependencies {
     // 基础依赖
     implementation("com.highcapable.yukihookapi:api:<yuki-version>")
+    // 推荐使用 KavaRef 作为核心反射 API
+    implementation("com.highcapable.kavaref:kavaref-core:<kavaref-version>")
+    implementation("com.highcapable.kavaref:kavaref-extension:<kavaref-version>")
     // 作为 Xposed 模块使用务必添加，其它情况可选
     compileOnly("de.robv.android.xposed:api:82")
     // 作为 Xposed 模块使用务必添加，其它情况可选
@@ -168,34 +218,21 @@ dependencies {
 }
 ```
 
-> Groovy DSL
-
-```groovy
-dependencies {
-    // 基础依赖
-    implementation 'com.highcapable.yukihookapi:api:<yuki-version>'
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    compileOnly 'de.robv.android.xposed:api:82'
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    ksp 'com.highcapable.yukihookapi:ksp-xposed:<yuki-version>'
-}
-```
-
 请将 **&lt;ksp-version&gt;** 修改为 [这里](https://github.com/google/ksp/releases) 的最新版本 **(请注意选择你当前对应的 Kotlin 版本)**。
 
 请将 **&lt;yuki-version&gt;** 修改为 [这里](../about/changelog) 的最新版本。
+
+请将 **&lt;kavaref-version&gt;** 修改为 [这里](https://highcapable.github.io/KavaRef/zh-cn/about/changelog) 的最新版本。
 
 ::: danger
 
 **YukiHookAPI** 的 **api** 与 **ksp-xposed** 依赖的版本必须一一对应，否则将会造成版本不匹配错误。
 
-我们推荐使用 [SweetDependency](https://github.com/HighCapable/SweetDependency) 来自动帮你装配依赖。
-
 :::
 
 #### 配置 Java 版本
 
-在你的项目 `build.gradle.kts` 或 `build.gradle` 中修改 Kotlin 的 Java 版本为 17 及以上。
+在你的项目 `build.gradle.kts` 中修改 Kotlin 的 Java 版本为 17 及以上。
 
 > Kotlin DSL
 
@@ -207,20 +244,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
-    }
-}
-```
-
-> Groovy DSL
-
-```groovy
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = '17'
     }
 }
 ```

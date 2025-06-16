@@ -2,23 +2,15 @@
 
 > Integrate `YukiHookAPI` into your project.
 
-## Environment Requirements
+## Project Requirements
 
-- Windows 7 and above / macOS 10.14 and above / Linux distributions (Arch/Debian)
+The project needs to be created using `Android Studio` or `IntelliJ IDEA` and be of type Android project and have integrated Kotlin environment dependencies.
 
-- Android Studio 2021.1 and above
+- Android Studio (It is recommended to get the latest version [from here](https://developer.android.com/studio))
 
-- IntelliJ IDEA 2021.1 and above
+- IntelliJ IDEA (It is recommended to get the latest version [from here](https://www.jetbrains.com/idea))
 
-- Kotlin 1.7.0 and above
-
-- Android Gradle Plugin 7.0 and above
-
-- Gradle 7.0 and above
-
-- Java 11 and above (Since API `1.0.80`)
-
-- Java 17 and above (Since API `1.2.0`)
+- Kotlin 1.9.0+, Gradle 8+, Java 11, 17+, Android Gradle Plugin 8+
 
 ## Automatically Build Project
 
@@ -49,9 +41,6 @@ repositories:
   # Must be added when used as an Xposed Module, otherwise optional
   rovo89-xposed-api:
     url: https://api.xposed.info/
-  # MavenCentral has a 2-hour cache,
-  # if the latest version cannot be integrated, please add this
-  sonatype-oss-releases:
 
 plugins:
   # Must be added when used as an Xposed Module, otherwise optional
@@ -72,6 +61,13 @@ libraries:
     # Must be added when used as an Xposed Module, otherwise optional
     ksp-xposed:
       version-ref: <this>::api
+  # YukiHookAPI version 1.3.0 uses KavaRef as core reflection API
+  # YukiHookAPI no longer binds its own reflection API, you can start trying to use KavaRef
+  com.highcapable.kavaref:
+    kavaref-core:
+      version: +
+    kavaref-extension:
+      version: +
   ...
 ```
 
@@ -97,6 +93,9 @@ Then, deploy dependencies in your project `build.gradle.kts`.
 dependencies {
     // Basic dependencies
     implementation(com.highcapable.yukihookapi.api)
+    // It is recommended to use KavaRef as the core reflection API
+    implementation(com.highcapable.kavaref.kavaref.core)
+    implementation(com.highcapable.kavaref.kavaref.extension)
     // Must be added when used as an Xposed Module, otherwise optional
     compileOnly(de.robv.android.xposed.api)
     // Must be added when used as an Xposed Module, otherwise optional
@@ -104,9 +103,9 @@ dependencies {
 }
 ```
 
-#### Traditional Method
+#### Version Catalog
 
-Add repositories in your project `build.gradle.kts` or `build.gradle`.
+Add repositories in your project `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -116,25 +115,81 @@ repositories {
     mavenCentral()
     // Must be added when used as an Xposed Module, otherwise optional
     maven { url("https://api.xposed.info/") }
-    // MavenCentral has a 2-hour cache, if the latest version cannot be integrated, please add this URL
-    maven { url("https://s01.oss.sonatype.org/content/repositories/releases/") }
 }
 ```
 
-> Groovy DSL
+Add dependency in your project's `gradle/libs.versions.toml`.
 
-```groovy
+> The following example
+
+```toml
+[versions]
+yukihookapi = "<yuki-version>"
+ksp = "<ksp-version>"
+kavaref-core = "<kavaref-version>"
+kavaref-extension = "<kavaref-version>"
+
+[plugins]
+# Must be added when used as an Xposed Module, otherwise optional
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[libraries]
+yukihookapi-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yukihookapi" }
+# Must be added when used as an Xposed Module, otherwise optional
+yukihookapi-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yukihookapi" }
+# YukiHookAPI version 1.3.0 uses KavaRef as core reflection API
+# YukiHookAPI no longer binds its own reflection API, you can start trying to use KavaRef
+kavaref-core = { module = "com.highcapable.kavaref:kavaref-core", version.ref = "kavaref-core" }
+kavaref-extension = { module = "com.highcapable.kavaref:kavaref-extension", version.ref = "kavaref-extension" }
+# Must be added when used as an Xposed Module, otherwise optional
+xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
+```
+
+Next, deploy plugins in your project `build.gradle.kts`.
+
+> Kotlin DSL
+
+```kotlin
+plugins {
+    // Must be added when used as an Xposed Module, otherwise optional
+    alias(libs.plugins.ksp)
+}
+```
+
+Then, deploy dependencies in your project `build.gradle.kts`.
+
+> Kotlin DSL
+
+```kotlin
+dependencies {
+    // Basic dependency
+    implementation(libs.yukihookapi.api)
+    // It is recommended to use KavaRef as the core reflection API
+    implementation(libs.kavaref.core)
+    implementation(libs.kavaref.extension)
+    // Must be added when used as an Xposed Module, otherwise optional
+    compileOnly(libs.xposed.api)
+    // Must be added when used as an Xposed Module, otherwise optional
+    ksp(libs.yukihookapi.ksp.xposed)
+}
+```
+
+#### Traditional Method
+
+Add repositories in your project `build.gradle.kts`.
+
+> Kotlin DSL
+
+```kotlin
 repositories {
     google()
     mavenCentral()
     // Must be added when used as an Xposed Module, otherwise optional
-    maven { url 'https://api.xposed.info/' }
-    // MavenCentral has a 2-hour cache, if the latest version cannot be integrated, please add this URL
-    maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
+    maven { url("https://api.xposed.info/") }
 }
 ```
 
-Add plugins in your project `build.gradle.kts` or `build.gradle`.
+Add plugins in your project `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -145,16 +200,7 @@ plugins {
 }
 ```
 
-> Groovy DSL
-
-```groovy
-plugins {
-    // Must be added when used as an Xposed Module, otherwise optional
-    id 'com.google.devtools.ksp' version '<ksp-version>'
-}
-```
-
-Add dependencies in your project `build.gradle.kts` or `build.gradle`.
+Add dependencies in your project `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -162,6 +208,9 @@ Add dependencies in your project `build.gradle.kts` or `build.gradle`.
 dependencies {
     // Basic dependency
     implementation("com.highcapable.yukihookapi:api:<yuki-version>")
+    // It is recommended to use KavaRef as the core reflection API
+    implementation("com.highcapable.kavaref:kavaref-core:<kavaref-version>")
+    implementation("com.highcapable.kavaref:kavaref-extension:<kavaref-version>")
     // Must be added when used as an Xposed Module, otherwise optional
     compileOnly("de.robv.android.xposed:api:82")
     // Must be added when used as an Xposed Module, otherwise optional
@@ -169,28 +218,15 @@ dependencies {
 }
 ```
 
-> Groovy DSL
-
-```groovy
-dependencies {
-    // Basic dependency
-    implementation 'com.highcapable.yukihookapi:api:<yuki-version>'
-    // Must be added when used as an Xposed Module, otherwise optional
-    compileOnly 'de.robv.android.xposed:api:82'
-    // Must be added when used as an Xposed Module, otherwise optional
-    ksp 'com.highcapable.yukihookapi:ksp-xposed:<yuki-version>'
-}
-```
-
 Please modify **&lt;ksp-version&gt;** to the latest version found [here](https://github.com/google/ksp/releases) **(please note to select your current corresponding Kotlin version)**.
 
 Please change **&lt;yuki-version&gt;** to the latest version [here](../about/changelog).
 
+Please change **&lt;kavaref-version&gt;** to the latest version [here](https://highcapable.github.io/KavaRef/en/about/changelog).
+
 :::danger
 
 The **api** and **ksp-xposed** dependency versions of **YukiHookAPI** must correspond one-to-one, otherwise a version mismatch error will occur.
-
-We recommend using [SweetDependency](https://github.com/HighCapable/SweetDependency) to autowire dependencies for you.
 
 :::
 

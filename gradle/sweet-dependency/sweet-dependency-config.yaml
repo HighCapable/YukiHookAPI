@@ -42,11 +42,9 @@ libraries:
       version: 82
       repositories:
         rovo89-xposed-api
-  com.github.tiann:
-    FreeReflection:
-      version: 3.2.2
-      repositories:
-        jit-pack
+  org.lsposed.hiddenapibypass:
+    hiddenapibypass:
+      version: 6.1
   com.google.devtools.ksp:
     symbol-processing-api:
       version-ref: <plugins>::kotlin-ksp
@@ -56,6 +54,11 @@ libraries:
   dev.zacsweers.autoservice:
     auto-service-ksp:
       version: 1.2.0
+  com.highcapable.kavaref:
+    kavaref-core:
+      version: 1.0.0
+    kavaref-extension:
+      version: 1.0.0
   com.highcapable.hikage:
     hikage-core:
       version: 1.0.1

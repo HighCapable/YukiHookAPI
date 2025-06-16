@@ -19,7 +19,10 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress(
+    "unused", "UNCHECKED_CAST", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION",
+    "DeprecatedCallableAddReplaceWith"
+)
 
 package com.highcapable.yukihookapi.hook.factory
 
@@ -38,6 +41,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ConstructorCond
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
@@ -86,6 +90,7 @@ enum class MembersType {
  * @param initialize 是否初始化
  * @param loader [ClassLoader] 装载实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 open class LazyClass<T> internal constructor(
     private val instance: Any,
     private val initialize: Boolean,
@@ -161,6 +166,7 @@ open class LazyClass<T> internal constructor(
  * @return [List]<[String]>
  * @throws IllegalStateException 如果当前 [ClassLoader] 不是 [BaseDexClassLoader]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun ClassLoader.listOfClasses() = ReflectionTool.findDexClassList(loader = this)
 
 /**
@@ -176,6 +182,7 @@ fun ClassLoader.listOfClasses() = ReflectionTool.findDexClassList(loader = this)
  * @param initiate 方法体
  * @return [DexClassFinder.Result]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun ClassLoader.searchClass(name: String = "", async: Boolean = false, initiate: ClassConditions) =
     DexClassFinder(name, async = async || name.isNotBlank(), loaderSet = this).apply(initiate).build()
 
@@ -195,6 +202,7 @@ fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit) = AppParasitics.hookClas
  * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
  * @return [Boolean]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 val Class<*>.hasExtends get() = superclass != null && superclass != AnyClass
 
 /**
@@ -206,6 +214,7 @@ val Class<*>.hasExtends get() = superclass != null && superclass != AnyClass
  * @param other 需要判断的 [Class]
  * @return [Boolean]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 infix fun Class<*>?.extends(other: Class<*>?): Boolean {
     if (this == null || other == null) return false
     var isMatched = false
@@ -230,6 +239,7 @@ infix fun Class<*>?.extends(other: Class<*>?): Boolean {
  * @param other 需要判断的 [Class]
  * @return [Boolean]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 infix fun Class<*>?.notExtends(other: Class<*>?) = extends(other).not()
 
 /**
@@ -239,6 +249,7 @@ infix fun Class<*>?.notExtends(other: Class<*>?) = extends(other).not()
  * @param other 需要判断的 [Class]
  * @return [Boolean]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 infix fun Class<*>?.implements(other: Class<*>?): Boolean {
     if (this == null || other == null) return false
     /**
@@ -256,6 +267,7 @@ infix fun Class<*>?.implements(other: Class<*>?): Boolean {
  * @param other 需要判断的 [Class]
  * @return [Boolean]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 infix fun Class<*>?.notImplements(other: Class<*>?) = implements(other).not()
 
 /**
@@ -277,6 +289,7 @@ infix fun Class<*>?.notImplements(other: Class<*>?) = implements(other).not()
  * - [java.lang.Byte]
  * @return [Class]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun Class<*>.toJavaPrimitiveType() = when (this) {
     classOf<Unit>(), UnitClass, UnitType -> UnitType
     BooleanClass, BooleanType -> BooleanType
@@ -309,6 +322,7 @@ fun classOf(name: String, loader: ClassLoader? = null) = name.toClass(loader)
  * @return [Class]
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun String.toClass(loader: ClassLoader? = null, initialize: Boolean = false) = ReflectionTool.findClassByName(name = this, loader, initialize)
 
 /**
@@ -319,6 +333,7 @@ fun String.toClass(loader: ClassLoader? = null, initialize: Boolean = false) = R
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName("toClass_Generics")
 inline fun <reified T> String.toClass(loader: ClassLoader? = null, initialize: Boolean = false) =
     ReflectionTool.findClassByName(name = this, loader, initialize) as? Class<T>? ?: error("Target Class type cannot cast to ${T::class.java}")
@@ -331,6 +346,7 @@ inline fun <reified T> String.toClass(loader: ClassLoader? = null, initialize: B
  * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
  * @return [Class] or null
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun String.toClassOrNull(loader: ClassLoader? = null, initialize: Boolean = false) = runCatching { toClass(loader, initialize) }.getOrNull()
 
 /**
@@ -341,6 +357,7 @@ fun String.toClassOrNull(loader: ClassLoader? = null, initialize: Boolean = fals
  * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
  * @return [Class]<[T]> or null
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName("toClassOrNull_Generics")
 inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = null, initialize: Boolean = false) =
     runCatching { toClass<T>(loader, initialize) }.getOrNull()
@@ -352,6 +369,7 @@ inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = null, initial
  * @return [Class]<[T]>
  * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun <reified T> classOf(loader: ClassLoader? = null, initialize: Boolean = false) =
     loader?.let { T::class.java.name.toClass(loader, initialize) as Class<T> } ?: T::class.java
 
@@ -362,6 +380,7 @@ inline fun <reified T> classOf(loader: ClassLoader? = null, initialize: Boolean 
  * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
  * @return [LazyClass.NonNull]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
     lazyClass<Any>(name, initialize, loader)
 
@@ -372,6 +391,7 @@ fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInit
  * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
  * @return [LazyClass.NonNull]<[T]>
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName("lazyClass_Generics")
 inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = null) =
     LazyClass.NonNull<T>(name, initialize, loader)
@@ -383,6 +403,7 @@ inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noin
  * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
  * @return [LazyClass.NonNull]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
     LazyClass.NonNull<Any>(variousClass, initialize, loader)
 
@@ -393,6 +414,7 @@ fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: C
  * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
  * @return [LazyClass.Nullable]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
     lazyClassOrNull<Any>(name, initialize, loader)
 
@@ -403,6 +425,7 @@ fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoad
  * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
  * @return [LazyClass.Nullable]<[T]>
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName("lazyClassOrNull_Generics")
 inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = null) =
     LazyClass.Nullable<T>(name, initialize, loader)
@@ -414,6 +437,7 @@ inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false
  * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
  * @return [LazyClass.Nullable]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = null) =
     LazyClass.Nullable<Any>(variousClass, initialize, loader)
 
@@ -422,6 +446,7 @@ fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loa
  * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
  * @return [Boolean] 是否存在
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun String.hasClass(loader: ClassLoader? = null) = ReflectionTool.hasClassByName(name = this, loader)
 
 /**
@@ -429,6 +454,7 @@ fun String.hasClass(loader: ClassLoader? = null) = ReflectionTool.hasClassByName
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasField(initiate: FieldConditions) = field(initiate).ignored().isNoSuch.not()
 
 /**
@@ -436,6 +462,7 @@ inline fun Class<*>.hasField(initiate: FieldConditions) = field(initiate).ignore
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasMethod(initiate: MethodConditions) = method(initiate).ignored().isNoSuch.not()
 
 /**
@@ -443,6 +470,7 @@ inline fun Class<*>.hasMethod(initiate: MethodConditions) = method(initiate).ign
  * @param initiate 方法体
  * @return [Boolean] 是否存在
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
 
 /**
@@ -450,6 +478,7 @@ inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyPara
  * @param conditions 条件方法体
  * @return [Boolean] 是否存在
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Member.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(instance = this))
 
 /**
@@ -457,6 +486,7 @@ inline fun Member.hasModifiers(conditions: ModifierConditions) = conditions(Modi
  * @param conditions 条件方法体
  * @return [Boolean] 是否存在
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(instance = this))
 
 /**
@@ -464,6 +494,7 @@ inline fun Class<*>.hasModifiers(conditions: ModifierConditions) = conditions(Mo
  * @param initiate 查找方法体
  * @return [FieldFinder.Result]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.field(initiate: FieldConditions = {}) = FieldFinder(classSet = this).apply(initiate).build()
 
 /**
@@ -471,6 +502,7 @@ inline fun Class<*>.field(initiate: FieldConditions = {}) = FieldFinder(classSet
  * @param initiate 查找方法体
  * @return [MethodFinder.Result]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.method(initiate: MethodConditions = {}) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
@@ -478,6 +510,7 @@ inline fun Class<*>.method(initiate: MethodConditions = {}) = MethodFinder(class
  * @param initiate 查找方法体
  * @return [ConstructorFinder.Result]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.constructor(initiate: ConstructorConditions = {}) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
@@ -486,6 +519,7 @@ inline fun Class<*>.constructor(initiate: ConstructorConditions = {}) = Construc
  * 如果当前实例不存在泛型将返回 null
  * @return [GenericClass] or null
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun Class<*>.generic() = genericSuperclass?.let { (it as? ParameterizedType?)?.let { e -> GenericClass(e) } }
 
 /**
@@ -495,6 +529,7 @@ fun Class<*>.generic() = genericSuperclass?.let { (it as? ParameterizedType?)?.l
  * @param initiate 实例方法体
  * @return [GenericClass] or null
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.generic(initiate: GenericClass.() -> Unit) = generic()?.apply(initiate)
 
 /**
@@ -502,6 +537,7 @@ inline fun Class<*>.generic(initiate: GenericClass.() -> Unit) = generic()?.appl
  * @param ignored 是否开启忽略错误警告功能 - 默认否
  * @return [CurrentClass]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun <reified T : Any> T.current(ignored: Boolean = false) =
     CurrentClass(javaClass, instance = this).apply { isIgnoreErrorLogs = ignored }
 
@@ -511,6 +547,7 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false) =
  * @param initiate 方法体
  * @return [T]
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: CurrentClass.() -> Unit): T {
     current(ignored).apply(initiate)
     return this
@@ -533,6 +570,7 @@ fun Class<*>.buildOfAny(vararg args: Any?, initiate: ConstructorConditions = { e
  * @param initiate 查找方法体
  * @return [Any] or null
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions = { emptyParam() }) =
     constructor(initiate).get().call(*args)
 
@@ -542,6 +580,7 @@ inline fun Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions =
  * @param initiate 查找方法体
  * @return [T] or null
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName(name = "buildOf_Generics")
 inline fun <T> Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions = { emptyParam() }) =
     constructor(initiate).get().newInstance<T>(*args)
@@ -551,6 +590,7 @@ inline fun <T> Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditio
  * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
  * @param result 回调 - ([Int] 下标,[Method] 实例)
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.allMethods(isAccessible: Boolean = true, result: (index: Int, method: Method) -> Unit) =
     declaredMethods.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
 
@@ -559,6 +599,7 @@ inline fun Class<*>.allMethods(isAccessible: Boolean = true, result: (index: Int
  * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
  * @param result 回调 - ([Int] 下标,[Constructor] 实例)
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.allConstructors(isAccessible: Boolean = true, result: (index: Int, constructor: Constructor<*>) -> Unit) =
     declaredConstructors.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
 
@@ -567,5 +608,6 @@ inline fun Class<*>.allConstructors(isAccessible: Boolean = true, result: (index
  * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
  * @param result 回调 - ([Int] 下标,[Field] 实例)
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.allFields(isAccessible: Boolean = true, result: (index: Int, field: Field) -> Unit) =
     declaredFields.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }

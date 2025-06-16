@@ -19,10 +19,11 @@
  *
  * This file is created by fankes on 2022/12/30.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.core.finder.base.rules
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
@@ -31,6 +32,7 @@ import java.lang.reflect.Member
  * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
  * @param instance 当前实例对象
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class ObjectRules private constructor(private val instance: Any) {
 
     internal companion object {

@@ -27,11 +27,10 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.call
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Intent
-import com.highcapable.yukihookapi.hook.factory.buildOf
-import com.highcapable.yukihookapi.hook.factory.classOf
-import com.highcapable.yukihookapi.hook.factory.extends
-import com.highcapable.yukihookapi.hook.factory.hasClass
-import com.highcapable.yukihookapi.hook.factory.toClassOrNull
+import com.highcapable.kavaref.extension.createInstanceAsTypeOrNull
+import com.highcapable.kavaref.extension.hasClass
+import com.highcapable.kavaref.extension.isSubclassOf
+import com.highcapable.kavaref.extension.toClassOrNull
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
@@ -67,17 +66,19 @@ internal object IActivityManagerProxyCaller {
              */
             if (component != null &&
                 component.packageName == AppParasitics.currentPackageName &&
-                component.className.hasClass()
+                javaClass.classLoader?.hasClass(component.className) == true
             ) args[index] = Intent().apply {
                 /**
                  * 验证类名是否存在
                  * @return [String] or null
                  */
-                fun String.verify() = if (hasClass(AppParasitics.hostApplication?.classLoader)) this else null
+                fun String.verify() = if (AppParasitics.hostApplication?.classLoader?.hasClass(this) == true) this else null
                 setClassName(component.packageName, component.className.toClassOrNull()?.runCatching {
                     when {
-                        this extends classOf<ModuleAppActivity>() -> buildOf<ModuleAppActivity>()?.proxyClassName?.verify()
-                        this extends classOf<ModuleAppCompatActivity>() -> buildOf<ModuleAppCompatActivity>()?.proxyClassName?.verify()
+                        this isSubclassOf ModuleAppActivity::class ->
+                            createInstanceAsTypeOrNull<ModuleAppActivity>()?.proxyClassName?.verify()
+                        this isSubclassOf ModuleAppCompatActivity::class ->
+                            createInstanceAsTypeOrNull<ModuleAppCompatActivity>()?.proxyClassName?.verify()
                         else -> null
                     }
                 }?.getOrNull() ?: ActivityProxyConfig.proxyClassName)

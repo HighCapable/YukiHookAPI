@@ -19,11 +19,14 @@
  *
  * This file is created by fankes on 2022/2/18.
  */
+@file:Suppress("DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.utils.factory.await
 import java.lang.reflect.Constructor
@@ -36,6 +39,7 @@ import java.lang.reflect.Method
  * @param tag 当前查找类的标识
  * @param classSet 当前需要查找的 [Class] 实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 abstract class MemberBaseFinder internal constructor(private val tag: String, internal open val classSet: Class<*>? = null) : BaseFinder() {
 
     internal companion object {

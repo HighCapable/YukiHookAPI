@@ -21,12 +21,15 @@
  */
 package com.highcapable.yukihookapi.hook.bean
 
+import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
+
 /**
  * 创建一个当前 Hook 的 [Class] 接管类
  * @param instance 实例
  * @param name 完整名称
  * @param throwable 异常
  */
+@LegacyHookApi
 class HookClass internal constructor(
     internal var instance: Class<*>? = null,
     internal var name: String,

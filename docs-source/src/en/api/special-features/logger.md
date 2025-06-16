@@ -2,6 +2,14 @@
 
 > Log is the most important part of the debugging process, `YukiHookAPI` encapsulates a set of stable and efficient debugging log functions for developers.
 
+::: warning
+
+The log of `KavaRef` will be managed separately by itself.
+For detailed configuration plans, you can refer to [here](https://highcapable.github.io/KavaRef/en/library/kavaref-core#exception-handling),
+which will jump to the `KavaRef` document.
+
+:::
+
 ## Normal Logs
 
 You can call `YLog.debug`, `YLog.info`, `YLog.warn` to print normal logs to the console.

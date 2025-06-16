@@ -19,24 +19,27 @@
  *
  * This file is created by fankes on 2022/9/12.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION", "DeprecatedCallableAddReplaceWith")
 
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules.result
 
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
  * 当前 [Member] 查找条件结果实现类
  * @param rulesData 当前查找条件规则数据
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MemberRulesResult internal constructor(private val rulesData: MemberRulesData) {
 
     /**
      * 设置当前 [Member] 在查找条件中个数为 0
      * @return [MemberRulesResult] 可继续向下监听
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun none() = count(num = 0)
 
     /**
@@ -44,6 +47,7 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
      * @param num 个数
      * @return [MemberRulesResult] 可继续向下监听
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun count(num: Int): MemberRulesResult {
         rulesData.matchCount = num
         return this
@@ -60,6 +64,7 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
      * @param numRange 个数范围
      * @return [MemberRulesResult] 可继续向下监听
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun count(numRange: IntRange): MemberRulesResult {
         rulesData.matchCountRange = numRange
         return this
@@ -76,6 +81,7 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
      * @param conditions 条件方法体
      * @return [MemberRulesResult] 可继续向下监听
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun count(conditions: CountConditions): MemberRulesResult {
         rulesData.matchCountConditions = conditions
         return this

@@ -35,9 +35,9 @@ android {
 > 示例如下
 
 ```kotlin
-method {
+resolve().firstMethod {
     name = "onCreate"
-    param(BundleClass)
+    parameters(Bundle::class)
 }.hook {
     after {
         instance<Activity>().also {
@@ -86,9 +86,9 @@ onAppLifecycle {
 > 示例如下
 
 ```kotlin
-method {
+resolve().firstMethod {
     name = "onCreate"
-    param(BundleClass)
+    parameters(Bundle::class)
 }.hook {
     after {
         instance<Activity>().registerModuleAppActivities()
@@ -227,9 +227,9 @@ The style on this component requires your app theme to be Theme.AppCompat (or a 
 > 示例如下
 
 ```kotlin
-method {
-     name = "onCreate"
-    param(BundleClass)
+resolve().firstMethod {
+    name = "onCreate"
+    parameters(Bundle::class)
 }.hook {
     after {
         // 使用 applyModuleTheme 创建一个当前模块中的主题资源
@@ -249,9 +249,9 @@ method {
 > 示例如下
 
 ```kotlin
-method {
+resolve().firstMethod {
     name = "onCreate"
-    param(BundleClass)
+    parameters(Bundle::class)
 }.hook {
     after {
         // 定义当前模块中的主题资源

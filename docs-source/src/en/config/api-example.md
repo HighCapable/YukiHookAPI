@@ -52,7 +52,8 @@ The `encase` method can be created in the `onHook` method using two schemes.
 YukiHookAPI.encase {
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -67,7 +68,8 @@ YukiHookAPI.encase {
 encase {
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -127,7 +129,8 @@ object CustomHooker : YukiBaseHooker() {
     override fun onHook() {
         loadApp(name = "com.example.demo1") {
             "$packageName.DemoClass".toClass()
-                .method { 
+                .resolve()
+                .firstMethod {
                     // Your code here.
                 }.hook {
                     // Your code here.
@@ -135,7 +138,8 @@ object CustomHooker : YukiBaseHooker() {
         }
         loadApp(name = "com.example.demo2") {
             "$packageName.CustomClass".toClass()
-                .method { 
+                .resolve()
+                .firstMethod {
                     // Your code here.
                 }.hook {
                     // Your code here.
@@ -161,7 +165,8 @@ object ChildCustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -179,7 +184,8 @@ object FirstHooker : YukiBaseHooker() {
 
     override fun onHook() {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -254,7 +260,8 @@ In `YukiHookAPI`, these functions **are seamless**.
 encase {
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -274,7 +281,7 @@ You can also use the `loadZygote` method to load the first event `initZygote` af
 ```kotlin
 encase {
     loadZygote {
-        ActivityClass.hook {
+        Activity::class.resolve().firstMethod {
             // Your code here.
         }
         // Create a Resources Hook in Zygote
@@ -284,7 +291,8 @@ encase {
     }
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -324,7 +332,8 @@ Below are two **error** examples.
 encase {
     //  Wrong usage, can't start Hook directly
     "com.example.demo.DemoClass".toClass()
-        .method { 
+        .resolve()
+        .firstMethod {
             // Your code here.
         }.hook {
             // Your code here.
@@ -357,7 +366,8 @@ object CustomHooker : YukiBaseHooker() {
         //  Wrong method of use
         // Because there is no judgment object in the outer layer, you cannot start Hook directly
         "com.example.demo.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -388,7 +398,8 @@ encase {
         loadHooker(CustomHooker)
          // ✅ Correct usage, Hook in app scope
         "com.example.demo.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -418,7 +429,8 @@ object CustomHooker : YukiBaseHooker() {
         // it is necessary to judge the scope of the app before performing Hook
         loadApp(/** name parameter optional */) {
             "com.example.demo.DemoClass".toClass()
-                .method { 
+                .resolve()
+                .firstMethod {
                     // Your code here.
                 }.hook {
                     // Your code here.

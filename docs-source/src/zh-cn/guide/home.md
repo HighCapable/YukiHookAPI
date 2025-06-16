@@ -22,8 +22,6 @@
 
 文档全部的 Demo 示例代码都将使用 Kotlin 进行描述，如果你完全不会使用 Kotlin 那你将有可能无法使用 `YukiHookAPI`。
 
-部分 Java Demo 代码可在 [这里](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/java) 找到，但不推荐使用。
-
 ## 灵感来源
 
 以前，我们在构建 Xposed 模块的时候，首先需要在 `assets` 下创建 `xposed_init` 文件。
@@ -51,9 +49,9 @@ object HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadZygote {
-            ActivityClass.method {
+            Activity::class.resolve().firstMethod {
                 name = "onCreate"
-                param(BundleClass)
+                parameters(Bundle::class)
             }.hook {
                 before {
                   // Your code here.
@@ -64,9 +62,9 @@ object HookEntry : IYukiHookXposedInit {
             }
         }
         loadApp(name = "com.android.browser") {
-            ActivityClass.method {
+            Activity::class.resolve().firstMethod {
                 name = "onCreate"
-                param(BundleClass)
+                parameters(Bundle::class)
             }.hook {
                 before {
                   // Your code here.
@@ -130,3 +128,11 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 是的，你没有看错，仅仅就需要这些代码，就能完全取代传统的 Xposed API 实现同样的功能。
 
 现在，借助高效强大的 `YukiHookAPI`，你就可以实现一个非常简单的 Xposed 模块。
+
+::: tip
+
+从 `1.3.0` 版本开始，`YukiHookAPI` 已将自身的反射 API 部分迁移至 [KavaRef](https://github.com/HighCapable/KavaRef) (包括上方演示的反射 API 部分)。
+
+现在，你可以借助 `KavaRef` 的强大反射能力让 `YukiHookAPI` 更加易用。
+
+:::

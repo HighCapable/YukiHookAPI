@@ -19,14 +19,18 @@
  *
  * This file is created by fankes on 2022/2/10.
  */
+@file:Suppress("DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.bean
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.toClassOrNull
 
 /**
  * 这是一个不确定性 [Class] 类名装载器
  * @param name 可指定多个类名 - 将会自动匹配存在的第一个类名
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class VariousClass(private vararg val name: String) {
 
     /**
@@ -38,6 +42,7 @@ class VariousClass(private vararg val name: String) {
      * @return [Class]
      * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun get(loader: ClassLoader? = null, initialize: Boolean = false): Class<*> {
         var finalClass: Class<*>? = null
         if (name.isNotEmpty()) run {
@@ -59,6 +64,7 @@ class VariousClass(private vararg val name: String) {
      * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
      * @return [Class] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun getOrNull(loader: ClassLoader? = null, initialize: Boolean = false) = runCatching { get(loader, initialize) }.getOrNull()
 
     override fun toString(): String {

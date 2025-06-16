@@ -8,6 +8,14 @@ pageClass: hidden-anchor-page
 
 这里的异常说明只会同步最新的 API 版本，较旧的 API 版本的异常将不会再进行说明，请始终保持 API 版本为最新。
 
+::: warning
+
+由于维护成本，`YukiHookAPI` 从 `1.3.0` 版本开始将不再会对此文档进行更新且也不会有新的未说明异常在这里添加，如遇到无法解决的问题，你可以通过 [联系我们](../about/contacts) 与我们联系。
+
+`KavaRef` 的异常将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 `KavaRef` 的文档。
+
+:::
+
 ## 非阻断异常
 
 > 这些异常不会导致 APP 停止运行 (FC)，但是会在控制台打印 `E` 级别的日志，也可能会停止继续执行相关功能。

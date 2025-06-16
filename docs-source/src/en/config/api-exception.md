@@ -8,6 +8,17 @@ pageClass: hidden-anchor-page
 
 The exception description here will only synchronize the latest API version, and the exception of the older API version will not be described again, please always keep the API version up-to-date.
 
+::: warning
+
+Due to maintenance costs, `YukiHookAPI` will no longer update this document from the `1.3.0` version and there will be no new unspecified exceptions added here.
+If you encounter unsolvable problems, you can contact us via [Contact Us](../about/contacts).
+
+The exception of `KavaRef` will be managed separately by itself.
+For detailed configuration plans, you can refer to [here](https://highcapable.github.io/KavaRef/en/library/kavaref-core#exception-handling),
+which will jump to the `KavaRef` document.
+
+:::
+
 ## Non-Blocking Exceptions
 
 > These exceptions will not cause the app to stop running (FC), but will print `E` level logs on the console, and may also stop continuing to execute related functions.

@@ -17,6 +17,7 @@ const navigationLinks = {
         '/config/xposed-using',
         '/config/api-using',
         '/config/move-to-api-1-2-x',
+        '/config/move-to-api-1-3-x',
         '/config/r8-proguard'
     ],
     tools: '/tools/yukihookapi-projectbuilder',
@@ -145,7 +146,8 @@ export const navBarItems = {
                 { text: 'Use as Xposed Module Configs', link: i18n.string(navigationLinks.config[2], 'en') },
                 { text: 'Use as Hook API Configs', link: i18n.string(navigationLinks.config[3], 'en') },
                 { text: 'Migrate to YukiHookAPI 1.2.x', link: i18n.string(navigationLinks.config[4], 'en') },
-                { text: 'R8 & Proguard Obfuscate', link: i18n.string(navigationLinks.config[5], 'en') }
+                { text: 'Migrate to YukiHookAPI 1.3.x', link: i18n.string(navigationLinks.config[5], 'en') },
+                { text: 'R8 & Proguard Obfuscate', link: i18n.string(navigationLinks.config[6], 'en') }
             ]
         }, {
             text: 'Tools',
@@ -196,7 +198,8 @@ export const navBarItems = {
                 { text: '作为 Xposed 模块使用的相关配置', link: i18n.string(navigationLinks.config[2], 'zh-cn') },
                 { text: '作为 Hook API 使用的相关配置', link: i18n.string(navigationLinks.config[3], 'zh-cn') },
                 { text: '迁移到 YukiHookAPI 1.2.x', link: i18n.string(navigationLinks.config[4], 'zh-cn') },
-                { text: 'R8 与 Proguard 混淆', link: i18n.string(navigationLinks.config[5], 'zh-cn') }
+                { text: '迁移到 YukiHookAPI 1.3.x', link: i18n.string(navigationLinks.config[5], 'zh-cn') },
+                { text: 'R8 与 Proguard 混淆', link: i18n.string(navigationLinks.config[6], 'zh-cn') }
             ]
         }, {
             text: '工具',

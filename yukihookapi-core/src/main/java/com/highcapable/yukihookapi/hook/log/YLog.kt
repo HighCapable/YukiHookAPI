@@ -27,7 +27,6 @@ import android.system.ErrnoException
 import android.util.Log
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
-import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.log.data.YLogData
 import com.highcapable.yukihookapi.hook.utils.factory.dumpToString
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
@@ -182,7 +181,7 @@ object YLog {
         data.takeIf { it.isNotEmpty() }?.forEach {
             content += "${it.head}$it\n"
             it.throwable?.also { e ->
-                content += "${it.head}Dump stack trace for \"${e.current().name}\":\n"
+                content += "${it.head}Dump stack trace for \"${e.javaClass.name}\":\n"
                 content += e.dumpToString()
             }
         }; return content

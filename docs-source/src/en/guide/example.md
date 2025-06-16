@@ -33,7 +33,25 @@ Host Environment
 > The above structure can be written in the following form in code.
 
 ```kotlin
-// New version
+// KavaRef
+TargetClass.resolve().firstMethod {
+    // Your code here.
+}.hook {
+    before {
+        // Your code here.
+    }
+    after {
+        // Your code here.
+    }
+}
+```
+
+<details>
+
+<summary>Click to view the previous writing method</summary>
+
+```kotlin
+// Old version (1.2.x-1.3.0 (Not included))
 TargetClass.method { 
     // Your code here.
 }.hook {
@@ -58,6 +76,11 @@ TargetClass.hook {
         }
     }
 }
+```
+
+</details>
+
+```kotlin
 // Resources Hook (2.0.0 will be discontinued)
 resources().hook {
     injectResource {
@@ -83,6 +106,14 @@ Install the Host App and Module App Demo at the same time, and test the hooked f
 
 > Here are examples of Hook App, Hook System Framework and Hook Resources for reference.
 
+::: tip
+
+Starting with version `1.3.0`, YukiHookAPI has moved its own reflection API partially to
+[KavaRef](https://github.com/HighCapable/KavaRef), the reflection APIs in the demonstration section below use the `KavaRef` writing method.
+We no longer recommend using the `YukiHookAPI`'s own reflection API.
+
+:::
+
 ### Hook App
 
 Suppose, we want to hook the `onCreate` method in `com.android.browser` and show a dialog.
@@ -93,10 +124,9 @@ Add code in the body of the `encase` method.
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.method { 
+    Activity::class.resolve().firstMethod { 
         name = "onCreate"
-        param(BundleClass)
-        returnType = UnitType
+        parameters(Bundle::class)
     }.hook {
         after {
             AlertDialog.Builder(instance())
@@ -113,17 +143,16 @@ At this point, the `onCreate` method will be successfully hooked and this dialog
 
 So, what should I do if I want to continue the Hook `onStart` method?
 
-We can use Kotlin's `apply` method on `ActivityClass` to create a call space.
+We can use Kotlin's `apply` method on `Activity::class.resolve()` to create a call space.
 
 > The following example
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    ActivityClass.apply { 
-        method { 
+    Activity::class.resolve().apply { 
+        firstMethod { 
             name = "onCreate"
-            param(BundleClass)
-            returnType = UnitType
+            parameters(Bundle::class)
         }.hook {
             after {
                 AlertDialog.Builder(instance())
@@ -133,10 +162,9 @@ loadApp(name = "com.android.browser") {
                     .show()
             }
         }
-        method { 
+        firstMethod { 
             name = "onStart"
-            emptyParam()
-            returnType = UnitType
+            emptyParameters()
         }.hook {
             after {
                 // Your code here.
@@ -154,7 +182,8 @@ For example, I want to get `com.example.demo.TestClass`.
 
 ```kotlin
 "com.example.demo.TestClass".toClass()
-    .method {
+    .resolve()
+    .firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
@@ -167,7 +196,8 @@ If `com.example.demo` is the app you want to hook, then the writing method can b
 
 ```kotlin
 "$packageName.TestClass".toClass()
-    .method {
+    .resolve()
+    .firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
@@ -187,7 +217,7 @@ val TestClass by lazyClass("com.example.demo.TestClass")
 Use it when appropriate.
 
 ```kotlin
-TestClass.method {
+TestClass.resolve().firstMethod {
     // Your code here.
 }.hook {
     // Your code here.
@@ -212,10 +242,9 @@ Add code in the body of the `encase` method.
 
 ```kotlin
 loadZygote {
-    ActivityClass.method { 
+    Activity::class.resolve().firstMethod {
         name = "onCreate"
-        param(BundleClass)
-        returnType = UnitType
+        parameters(Bundle::class)
     }.hook {
         after {
             // Your code here.
@@ -242,12 +271,12 @@ Add code in the body of the `encase` method.
 
 ```kotlin
 loadSystem {
-    ApplicationInfoClass.method {
+    ApplicationInfo::class.resolve().firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
     }
-    PackageInfoClass.method {
+    PackageInfo::class.resolve().firstMethod {
         // Your code here.
     }.hook {
         // Your code here.
@@ -341,9 +370,9 @@ The first way, save the `Result` instance of the current injected object, and ca
 ```kotlin
 // Set a variable to save the current instance
 val hookResult = 
-    method { 
+    resolve().firstMethod {
         name = "test"
-        returnType = UnitType
+        returnType = Void.TYPE
     }.hook {
         after {
             // ...
@@ -358,9 +387,9 @@ The second method, call `removeSelf` in the Hook callback method to remove itsel
 > The following example
 
 ```kotlin
-method { 
+resolve().firstMethod { 
     name = "test"
-    returnType = UnitType
+    returnType = Void.TYPE
 }.hook {
     after {
         // Just call the following method directly
@@ -427,7 +456,7 @@ TargetClass.hook {
 }
 ```
 
-You can also handle exceptions when looking up methods.
+**(Applicable to older versions)** You can also handle exceptions when looking up methods.
 
 > The following example
 
@@ -446,6 +475,14 @@ For more functions, please refer to [MemberHookCreator.Result](../api/public/com
 :::
 
 Common exceptions that may occur are described here. For more information, please refer to [API Exception Handling](../config/api-exception).
+
+::: warning
+
+The exception of `KavaRef` will be managed separately by itself.
+For detailed configuration plans, you can refer to [here](https://highcapable.github.io/KavaRef/en/library/kavaref-core#exception-handling),
+which will jump to the `KavaRef` document.
+
+:::
 
 ### Throw an Exception
 
@@ -593,7 +630,7 @@ You can also abbreviate the `hook { ... }` method body when you only need a Hook
 > The following example
 
 ```kotlin
-ActivityClass.method {
+Activity::class.resolve().firstMethod {
     // Your code here.
 }.hook().after {
     // Your code here.

@@ -19,7 +19,10 @@
  *
  * This file is created by fankes on 2022/2/4.
  */
-@file:Suppress("unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate", "KotlinConstantConditions", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress(
+    "unused", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate", "KotlinConstantConditions", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE",
+    "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION", "DeprecatedCallableAddReplaceWith"
+)
 
 package com.highcapable.yukihookapi.hook.core.finder.members
 
@@ -34,6 +37,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.hasExtends
 import com.highcapable.yukihookapi.hook.log.YLog
@@ -46,6 +50,7 @@ import java.lang.reflect.Field
  * 可通过指定类型查找指定 [Field] 或一组 [Field]
  * @param classSet 当前需要查找的 [Class] 实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class FieldFinder internal constructor(override val classSet: Class<*>? = null) : MemberBaseFinder(tag = "Field", classSet) {
 
     internal companion object {
@@ -74,6 +79,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * - 若不填写名称则必须存在一个其它条件
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var name
         get() = rulesData.name
         set(value) {
@@ -88,6 +94,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * - 可不填写类型
      * @return [Any] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var type
         get() = rulesData.type
         set(value) {
@@ -103,6 +110,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions): IndexTypeCondition {
         rulesData.modifiers = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -112,6 +120,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * 顺序筛选字节码的下标
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
     /**
@@ -123,6 +132,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * @param value 名称
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(value: String): IndexTypeCondition {
         rulesData.name = value
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -137,6 +147,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(conditions: NameConditions): IndexTypeCondition {
         rulesData.nameConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -151,6 +162,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * @param value 类型 - 只能是 [Class]、[String]、[VariousClass]
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun type(value: Any): IndexTypeCondition {
         rulesData.type = value.compat()
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -171,6 +183,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * @param conditions 条件方法体
      * @return [BaseFinder.IndexTypeCondition]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun type(conditions: ObjectConditions): IndexTypeCondition {
         rulesData.typeConditions = conditions
         return IndexTypeCondition(IndexConfigType.MATCH)
@@ -182,6 +195,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * - 若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
      * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun superClass(isOnlySuperClass: Boolean = false) {
         rulesData.isFindInSuper = true
         if (isOnlySuperClass && classSet?.hasExtends == true) usedClassSet = classSet.superclass
@@ -232,6 +246,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      *
      * 可累计失败次数直到查找成功
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class RemedyPlan internal constructor() {
 
         /** 失败尝试次数数组 */
@@ -246,6 +261,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param initiate 方法体
          * @return [Result] 结果
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun field(initiate: FieldConditions) = Result().apply {
             remedyPlans.add(FieldFinder(classSet).apply {
                 hookerManager = this@FieldFinder.hookerManager
@@ -284,6 +300,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          *
          * 可在这里处理是否成功的回调
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class Result internal constructor() {
 
             /** 找到结果时的回调 */
@@ -293,6 +310,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * 当找到结果时
              * @param initiate 回调
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun onFind(initiate: MutableList<Field>.() -> Unit) {
                 onFindCallback = initiate
             }
@@ -305,6 +323,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
      * @param isNoSuch 是否没有找到 [Field] - 默认否
      * @param throwable 错误信息
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class Result internal constructor(
         internal val isNoSuch: Boolean = false,
         internal val throwable: Throwable? = null
@@ -315,6 +334,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
@@ -330,6 +350,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param instance [Field] 所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [Instance]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun get(instance: Any? = null) = Instance(instance, give())
 
         /**
@@ -345,6 +366,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param instance [Field] 所在的实例对象 - 如果是静态可不填 - 默认 null
          * @return [MutableList]<[Instance]>
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all(instance: Any? = null) =
             mutableListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
 
@@ -356,6 +378,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * - 在查找条件找不到任何结果的时候将返回 null
          * @return [Field] or null
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun give() = giveAll().takeIf { it.isNotEmpty() }?.first()
 
         /**
@@ -366,6 +389,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * - 在查找条件找不到任何结果的时候将返回空的 [MutableList]
          * @return [MutableList]<[Field]>
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.fields() ?: mutableListOf()
 
         /**
@@ -379,6 +403,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param instance 所在实例
          * @param initiate 回调 [Instance]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun wait(instance: Any? = null, initiate: Instance.() -> Unit) {
             if (memberInstances.isNotEmpty()) initiate(get(instance))
             else remedyPlansCallback = { initiate(get(instance)) }
@@ -395,6 +420,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param instance 所在实例
          * @param initiate 回调 [MutableList]<[Instance]>
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun waitAll(instance: Any? = null, initiate: MutableList<Instance>.() -> Unit) {
             if (memberInstances.isNotEmpty()) initiate(all(instance))
             else remedyPlansCallback = { initiate(all(instance)) }
@@ -411,6 +437,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param initiate 方法体
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun remedys(initiate: RemedyPlan.() -> Unit): Result {
             isUsingRemedyPlan = true
             if (isNoSuch) RemedyPlan().apply(initiate).build()
@@ -424,6 +451,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param result 回调错误
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun onNoSuchField(result: (Throwable) -> Unit): Result {
             if (isNoSuch) result(throwable ?: Throwable("Initialization Error"))
             return this
@@ -437,6 +465,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * - 此时若要监听异常结果 - 你需要手动实现 [onNoSuchField] 方法
          * @return [Result] 可继续向下监听
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun ignored(): Result {
             isIgnoreErrorLogs = true
             return this
@@ -460,6 +489,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
          * @param instance 当前 [Field] 所在类的实例对象
          * @param field 当前 [Field] 实例对象
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class Instance internal constructor(private val instance: Any?, private val field: Field?) {
 
             /**
@@ -475,6 +505,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * @param ignored 是否开启忽略错误警告功能 - 默认否
              * @return [CurrentClass] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun current(ignored: Boolean = false) = self?.current(ignored)
 
             /**
@@ -483,12 +514,14 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * @param initiate 方法体
              * @return [Any] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             inline fun current(ignored: Boolean = false, initiate: CurrentClass.() -> Unit) = self?.current(ignored, initiate)
 
             /**
              * 得到当前 [Field] 实例
              * @return [T] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun <T> cast() = self as? T?
 
             /**
@@ -497,6 +530,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回 null
              * @return [Byte] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun byte() = cast<Byte?>()
 
             /**
@@ -505,6 +539,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Int] 取不到返回 0
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun int() = cast() ?: 0
 
             /**
@@ -513,6 +548,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Long] 取不到返回 0L
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun long() = cast() ?: 0L
 
             /**
@@ -521,6 +557,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Short] 取不到返回 0
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun short() = cast<Short?>() ?: 0
 
             /**
@@ -529,6 +566,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Double] 取不到返回 0.0
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun double() = cast() ?: 0.0
 
             /**
@@ -537,6 +575,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Float] 取不到返回 0f
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun float() = cast() ?: 0f
 
             /**
@@ -545,6 +584,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [String] 取不到返回 ""
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun string() = cast() ?: ""
 
             /**
@@ -553,6 +593,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Char] 取不到返回 ' '
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun char() = cast() ?: ' '
 
             /**
@@ -561,12 +602,14 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回默认值
              * @return [Boolean] 取不到返回 false
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun boolean() = cast() ?: false
 
             /**
              * 得到当前 [Field] 的 [Any] 实例
              * @return [Any] or null
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun any() = self
 
             /**
@@ -575,6 +618,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回空数组
              * @return [Array] 取不到返回空数组
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             inline fun <reified T> array() = cast() ?: arrayOf<T>()
 
             /**
@@ -583,12 +627,14 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              * - 请确认目标 [Field] 的类型 - 发生错误会返回空数组
              * @return [List] 取不到返回空数组
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             inline fun <reified T> list() = cast() ?: listOf<T>()
 
             /**
              * 设置当前 [Field] 实例
              * @param any 设置的实例内容
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun set(any: Any?) = field?.set(instance, any)
 
             /**
@@ -596,6 +642,7 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              *
              * - 请确保示例对象类型为 [Boolean]
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun setTrue() = set(true)
 
             /**
@@ -603,9 +650,11 @@ class FieldFinder internal constructor(override val classSet: Class<*>? = null) 
              *
              * - 请确保示例对象类型为 [Boolean]
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun setFalse() = set(false)
 
             /** 设置当前 [Field] 实例为 null */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun setNull() = set(null)
 
             override fun toString() =

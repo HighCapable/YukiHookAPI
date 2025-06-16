@@ -4,22 +4,22 @@
 
 > 基本功能
 
-| Name                             | ST  | Description                                                                                                     |
-| -------------------------------- | --- | --------------------------------------------------------------------------------------------------------------- |
+| Name                             | ST  | Description                                                                                                          |
+| -------------------------------- | --- | -------------------------------------------------------------------------------------------------------------------- |
 | 自动化 Xposed 模块构建           | ✅   | 计划 `YukiHookAPI` `2.0.0` 版本使用 [新的 Xposed 模块配置方案](https://github.com/HighCapable/YukiHookAPI/issues/49) |
-| ART 动态方法 Hook                | ✅   | 多场景下稳定使用                                                                                                |
-| Xposed 资源钩子 (Resources Hook) | ❗   | 支持，但计划 `YukiHookAPI` `2.0.0` 版本作废                                                                     |
+| ART 动态方法 Hook                | ✅   | 多场景下稳定使用                                                                                                     |
+| Xposed 资源钩子 (Resources Hook) | ❗   | 支持，但计划 `YukiHookAPI` `2.0.0` 版本移除                                                                          |
 
 > 扩展功能
 
-| Name                                                                                   | ST  | Description                                                                                      |
-| -------------------------------------------------------------------------------------- | --- | ------------------------------------------------------------------------------------------------ |
-| [字节码与反射扩展](../api/special-features/reflection)                                 | ⭕   | 计划 `YukiHookAPI` `2.0.0` 版本合并到 [YukiReflection](https://github.com/HighCapable/YukiReflection) |
-| [Xposed 模块数据存储](../api/special-features/xposed-storage)                          | ✅   | 正常使用                                                                                         |
-| [Xposed 模块与宿主通讯桥](../api/special-features/xposed-channel)                      | ✅   | 正常使用                                                                                         |
-| [宿主生命周期扩展](../api/special-features/host-lifecycle)                             | ✅   | 正常使用                                                                                         |
-| [注入模块资源 (Resources)](../api/special-features/host-inject#注入模块资源-resources) | ✅   | 正常使用                                                                                         |
-| [注册模块 Activity](../api/special-features/host-inject#注册模块-activity)             | ✅   | 正常使用                                                                                         |
+| Name                                                                                   | ST  | Description                                                                                                   |
+| -------------------------------------------------------------------------------------- | --- | ------------------------------------------------------------------------------------------------------------- |
+| ~~[字节码与反射扩展](../api/special-features/reflection)~~                             | ❗   | 已全面弃用，推荐迁移至 [KavaRef](https://github.com/HighCapable/KavaRef)，计划 `YukiHookAPI` `2.0.0` 版本移除 |
+| [Xposed 模块数据存储](../api/special-features/xposed-storage)                          | ✅   | 正常使用                                                                                                      |
+| [Xposed 模块与宿主通讯桥](../api/special-features/xposed-channel)                      | ✅   | 正常使用                                                                                                      |
+| [宿主生命周期扩展](../api/special-features/host-lifecycle)                             | ✅   | 正常使用                                                                                                      |
+| [注入模块资源 (Resources)](../api/special-features/host-inject#注入模块资源-resources) | ✅   | 正常使用                                                                                                      |
+| [注册模块 Activity](../api/special-features/host-inject#注册模块-activity)             | ✅   | 正常使用                                                                                                      |
 
 > Xposed 框架
 

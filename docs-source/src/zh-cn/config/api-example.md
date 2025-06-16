@@ -36,7 +36,7 @@ fun encase(initiate: PackageParam.() -> Unit)
 
 `encase` 方法是 Hook 一切生命的开始，在一个模块或一个 Hook 过程中，`encase` 方法只能作用一次，用于创建 Hooker。
 
-`PackageParam` 为宿主(目标 APP)的重要实例对象，通过 `PackageParam` 来实现对当前 Hook 作用对象的全部 Hook 操作。
+`PackageParam` 为宿主 (目标 APP) 的重要实例对象，通过 `PackageParam` 来实现对当前 Hook 作用对象的全部 Hook 操作。
 
 ::: tip
 
@@ -52,7 +52,8 @@ fun encase(initiate: PackageParam.() -> Unit)
 YukiHookAPI.encase {
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -67,7 +68,8 @@ YukiHookAPI.encase {
 encase {
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -127,7 +129,8 @@ object CustomHooker : YukiBaseHooker() {
     override fun onHook() {
         loadApp(name = "com.example.demo1") {
             "$packageName.DemoClass".toClass()
-                .method { 
+                .resolve()
+                .firstMethod {
                     // Your code here.
                 }.hook {
                     // Your code here.
@@ -135,7 +138,8 @@ object CustomHooker : YukiBaseHooker() {
         }
         loadApp(name = "com.example.demo2") {
             "$packageName.CustomClass".toClass()
-                .method { 
+                .resolve()
+                .firstMethod {
                     // Your code here.
                 }.hook {
                     // Your code here.
@@ -161,7 +165,8 @@ object ChildCustomHooker : YukiBaseHooker() {
 
     override fun onHook() {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -179,7 +184,8 @@ object FirstHooker : YukiBaseHooker() {
 
     override fun onHook() {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -252,7 +258,8 @@ encase {
 encase {
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -272,7 +279,7 @@ encase {
 ```kotlin
 encase {
     loadZygote {
-        ActivityClass.hook { 
+        Activity::class.resolve().firstMethod {
             // Your code here.
         }
         // 在 Zygote 中创建 Resources Hook
@@ -282,7 +289,8 @@ encase {
     }
     loadApp(name = "com.example.demo") {
         "$packageName.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -321,7 +329,8 @@ encase {
 encase {
     // 错误的使用方法，不能直接开始 Hook
     "com.example.demo.DemoClass".toClass()
-        .method { 
+        .resolve()
+        .firstMethod {
             // Your code here.
         }.hook {
             // Your code here.
@@ -353,7 +362,8 @@ object CustomHooker : YukiBaseHooker() {
     override fun onHook() {
         // 错误的使用方法，由于外层没有任何判断对象，不能直接开始 Hook
         "com.example.demo.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -384,7 +394,8 @@ encase {
         loadHooker(CustomHooker)
          // ✅ 正确的使用方法，在 APP 作用域内 Hook
         "com.example.demo.DemoClass".toClass()
-            .method { 
+            .resolve()
+            .firstMethod {
                 // Your code here.
             }.hook {
                 // Your code here.
@@ -413,7 +424,8 @@ object CustomHooker : YukiBaseHooker() {
         // ✅ 正确的使用方法，由于外层没有任何判断对象，需要判断 APP 作用域后再进行 Hook
         loadApp(/** name 参数可选 */) {
             "com.example.demo.DemoClass".toClass()
-                .method { 
+                .resolve()
+                .firstMethod {
                     // Your code here.
                 }.hook {
                     // Your code here.

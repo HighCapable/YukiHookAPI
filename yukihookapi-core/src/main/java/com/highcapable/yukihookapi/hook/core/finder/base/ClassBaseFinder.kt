@@ -19,16 +19,20 @@
  *
  * This file is created by fankes on 2022/9/4.
  */
+@file:Suppress("DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.log.YLog
 
 /**
  * 这是 [Class] 查找类功能的基本类实现
  * @param loaderSet 当前使用的 [ClassLoader] 实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 abstract class ClassBaseFinder internal constructor(internal open val loaderSet: ClassLoader? = null) : BaseFinder() {
 
     internal companion object {

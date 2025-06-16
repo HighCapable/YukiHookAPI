@@ -28,13 +28,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.net.Uri
 import android.os.Build
 import android.os.Process
 import android.view.ContextThemeWrapper
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
+import androidx.core.net.toUri
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -209,7 +209,7 @@ internal val Context.isTaiChiModuleActive: Boolean
          * @return [Boolean] or null
          */
         fun isModuleActive() =
-            contentResolver?.call(Uri.parse("content://me.weishu.exposed.CP/"), "active", null, null)?.getBoolean("active", false)
+            contentResolver?.call("content://me.weishu.exposed.CP/".toUri(), "active", null, null)?.getBoolean("active", false)
         return runCatching { isModuleActive() }.getOrNull() ?: runCatching {
             startActivity(Intent("me.weishu.exp.ACTION_ACTIVE").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
             isModuleActive()

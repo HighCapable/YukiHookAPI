@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/9/12.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules
 
@@ -32,6 +32,7 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditi
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Method
@@ -40,12 +41,14 @@ import java.lang.reflect.Method
  * [Method] 查找条件实现类
  * @param rulesData 当前查找条件规则数据
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MethodRules internal constructor(private val rulesData: MethodRulesData) : BaseRules() {
 
     /**
      * 设置 [Method] 名称
      * @return [String]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var name
         get() = rulesData.name
         set(value) {
@@ -60,6 +63,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * 若参数个数小于零则忽略并使用 [param]
      * @return [Int]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var paramCount
         get() = rulesData.paramCount
         set(value) {
@@ -74,6 +78,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * - 可不填写返回值
      * @return [Any] or null
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var returnType
         get() = rulesData.returnType
         set(value) {
@@ -86,11 +91,13 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * - 可不设置筛选条件
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
         rulesData.modifiers = conditions
     }
 
     /** 设置 [Method] 空参数、无参数 */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun emptyParam() {
         rulesData.paramCount = 0
     }
@@ -119,6 +126,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param paramType 参数类型数组 - 只能是 [Class]、[String]、[VariousClass]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(vararg paramType: Any) {
         if (paramType.isEmpty()) error("paramTypes is empty, please use emptyParam() instead")
         rulesData.paramTypes =
@@ -139,6 +147,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(conditions: ObjectsConditions) {
         rulesData.paramTypesConditions = conditions
     }
@@ -147,6 +156,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * 设置 [Method] 名称条件
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(conditions: NameConditions) {
         rulesData.nameConditions = conditions
     }
@@ -163,6 +173,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * ```
      * @param numRange 个数范围
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(numRange: IntRange) {
         rulesData.paramCountRange = numRange
     }
@@ -179,6 +190,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * ```
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(conditions: CountConditions) {
         rulesData.paramCountConditions = conditions
     }
@@ -195,6 +207,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
      * ```
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun returnType(conditions: ObjectConditions) {
         rulesData.returnTypeConditions = conditions
     }

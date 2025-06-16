@@ -19,8 +19,11 @@
  *
  * This file is created by fankes on 2022/4/3.
  */
+@file:Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
+
 package com.highcapable.yukihookapi.hook.type.defined
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.classOf
 
 /**
@@ -28,6 +31,7 @@ import com.highcapable.yukihookapi.hook.factory.classOf
  *
  * 请使用 [UndefinedType] 来调用它
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal class UndefinedClass private constructor()
 
 /**
@@ -35,16 +39,19 @@ internal class UndefinedClass private constructor()
  *
  * 请使用 [VagueType] 来调用它
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class VagueClass private constructor()
 
 /**
  * 得到未定义类型
  * @return [Class]<[UndefinedClass]>
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal val UndefinedType get() = classOf<UndefinedClass>()
 
 /**
  * 得到模糊类型
  * @return [Class]<[VagueClass]>
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 val VagueType get() = classOf<VagueClass>()

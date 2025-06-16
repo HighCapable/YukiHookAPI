@@ -31,9 +31,10 @@ override fun onHook() = encase {
     loadApp(name = "com.demo.test") {
         // Member Hook
         "com.demo.test.TestClass".toClass()
-            .method {
+            .resolve()
+            .firstMethod {
                 name = "test"
-                param(BooleanType)
+                parameters(Boolean::class)
             }.hook {
                 after {
                     // ...
@@ -267,6 +268,16 @@ The reflection functionality provided in `YukiHookAPI` differs from the reflecti
 Here is a guide to avoid common pitfalls.
 
 Methods like `XposedHelpers.callMethod` and `XposedHelpers.callStaticMethod` automatically search and invoke all public methods (including those in superclasses), which is a feature of native Java reflection. In contrast, the reflection solution provided by `YukiHookAPI` first searches and then calls, and by default, the search process does not automatically look for methods in superclasses.
+
+::: warning
+
+The reflection API of `YukiHookAPI` itself has been deprecated in `1.3.0` version.
+The following content is only used as migration guidelines before `1.3.0` version, we will retain it but will not update the content again.
+
+You can migrate to [KavaRef](https://github.com/HighCapable/KavaRef), and this feature is also applicable to `KavaRef`.
+
+:::
+
 
 For example, class `A` inherits from `B`, and `B` has a public method `test`, while `A` does not.
 

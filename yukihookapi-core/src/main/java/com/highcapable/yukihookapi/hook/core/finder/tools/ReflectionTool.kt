@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/3/27.
  */
-@file:Suppress("KotlinConstantConditions", "KDocUnresolvedReference")
+@file:Suppress("KotlinConstantConditions", "KDocUnresolvedReference", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
@@ -30,6 +30,7 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRule
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.hasClass
@@ -62,6 +63,7 @@ import kotlin.math.abs
 /**
  * 这是一个对 [Class]、[Member] 查找的工具实现类
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal object ReflectionTool {
 
     /** 当前工具类的标签 */

@@ -19,18 +19,22 @@
  *
  * This file is created by fankes on 2022/9/12.
  */
+@file:Suppress("DEPRECATION", "TYPEALIAS_EXPANSION_DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules
 
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.base.BaseRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberRulesResult
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
  * [Member] 查找条件实现类
  * @param rulesData 当前查找条件规则数据
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MemberRules internal constructor(private val rulesData: MemberRulesData) : BaseRules() {
 
     /**
@@ -39,6 +43,7 @@ class MemberRules internal constructor(private val rulesData: MemberRulesData) :
      * - 可不设置筛选条件
      * @param conditions 条件方法体
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
         rulesData.modifiers = conditions
     }

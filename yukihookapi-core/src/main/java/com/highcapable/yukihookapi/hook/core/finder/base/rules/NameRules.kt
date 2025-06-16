@@ -20,10 +20,11 @@
  * This file is created by fankes on 2022/5/16.
  * This file is modified by fankes on 2022/9/14.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "DEPRECATION", "DeprecatedCallableAddReplaceWith")
 
 package com.highcapable.yukihookapi.hook.core.finder.base.rules
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
@@ -32,6 +33,7 @@ import java.lang.reflect.Member
  * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
  * @param instance 当前实例对象
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 class NameRules private constructor(private val instance: String) {
 
     internal companion object {
@@ -51,6 +53,7 @@ class NameRules private constructor(private val instance: String) {
      * @param index 下标 - 默认 0
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isSynthetic(index: Int = 0) = this == "this$$index"
 
     /**
@@ -61,6 +64,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlySymbols() = matches("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-_+=<>]+".toRegex())
 
     /**
@@ -71,6 +75,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyLetters() = matches("[a-zA-Z]+".toRegex())
 
     /**
@@ -81,6 +86,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyNumbers() = matches("\\d+".toRegex())
 
     /**
@@ -91,6 +97,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyLettersNumbers() = matches("[a-zA-Z\\d]+".toRegex())
 
     /**
@@ -101,6 +108,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyLowercase() = matches("[a-z]+".toRegex())
 
     /**
@@ -111,6 +119,7 @@ class NameRules private constructor(private val instance: String) {
      * 你可以使用 [matches] 方法进行更详细的正则匹配
      * @return [Boolean]
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyUppercase() = matches("[A-Z]+".toRegex())
 
     override fun toString() = "NameRules [$instance]"

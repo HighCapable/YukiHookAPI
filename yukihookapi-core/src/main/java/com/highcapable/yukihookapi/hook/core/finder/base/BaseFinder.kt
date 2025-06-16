@@ -19,10 +19,13 @@
  *
  * This file is created by fankes on 2022/9/4.
  */
+@file:Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
+
 package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.hook.bean.VariousClass
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Member
@@ -31,6 +34,7 @@ import kotlin.math.abs
 /**
  * 这是 [Class] 与 [Member] 查找类功能的基本类实现
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 abstract class BaseFinder {
 
     /** 当前查找条件规则数据 */
@@ -45,6 +49,7 @@ abstract class BaseFinder {
      * 字节码、数组下标筛选实现类
      * @param type 类型
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class IndexTypeCondition internal constructor(private val type: IndexConfigType) {
 
         /**
@@ -55,6 +60,7 @@ abstract class BaseFinder {
          * 可使用 [IndexTypeConditionSort.first] 和 [IndexTypeConditionSort.last] 设置首位和末位筛选条件
          * @param num 下标
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun index(num: Int) = when (type) {
             IndexConfigType.ORDER -> rulesData.orderIndex = Pair(num, true)
             IndexConfigType.MATCH -> rulesData.matchIndex = Pair(num, true)
@@ -64,6 +70,7 @@ abstract class BaseFinder {
          * 得到下标
          * @return [IndexTypeConditionSort]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun index() = IndexTypeConditionSort()
 
         /**
@@ -71,12 +78,15 @@ abstract class BaseFinder {
          *
          * - 请使用 [index] 方法来获取 [IndexTypeConditionSort]
          */
+        @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class IndexTypeConditionSort internal constructor() {
 
             /** 设置满足条件的第一个*/
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun first() = index(num = 0)
 
             /** 设置满足条件的最后一个*/
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun last() = when (type) {
                 IndexConfigType.ORDER -> rulesData.orderIndex = Pair(0, false)
                 IndexConfigType.MATCH -> rulesData.matchIndex = Pair(0, false)
@@ -86,6 +96,7 @@ abstract class BaseFinder {
              * 设置倒序下标
              * @param num 下标
              */
+            @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun reverse(num: Int) = when {
                 num < 0 -> index(abs(num))
                 num == 0 -> index().last()
@@ -130,5 +141,6 @@ abstract class BaseFinder {
      *
      * - 此功能交由方法体自动完成 - 你不应该手动继承此接口
      */
+    @Deprecated(ReflectionMigration.KAVAREF_INFO)
     interface BaseResult
 }

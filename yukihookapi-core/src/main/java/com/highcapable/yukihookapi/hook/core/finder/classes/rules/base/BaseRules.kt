@@ -19,6 +19,8 @@
  *
  * This file is created by fankes on 2022/9/12.
  */
+@file:Suppress("DEPRECATION")
+
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules.base
 
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
@@ -30,12 +32,14 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRule
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
  * [Member] 查找条件实现父类
  * @param instance 当前查找类实例
  */
+@Deprecated(ReflectionMigration.KAVAREF_INFO)
 open class BaseRules internal constructor(internal var instance: DexClassFinder? = null) {
 
     internal companion object {

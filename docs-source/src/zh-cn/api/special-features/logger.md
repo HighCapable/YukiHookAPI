@@ -2,6 +2,12 @@
 
 > 日志是调试过程最重要的一环，`YukiHookAPI` 为开发者封装了一套稳定高效的调试日志功能。
 
+::: warning
+
+`KavaRef` 的日志将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 `KavaRef` 的文档。
+
+:::
+
 ## 普通日志
 
 你可以调用 `YLog.debug`、`YLog.info`、`YLog.warn` 来向控制台打印普通日志。

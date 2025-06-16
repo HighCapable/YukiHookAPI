@@ -22,12 +22,10 @@
 package com.highcapable.yukihookapi.hook.xposed.application
 
 import android.app.Application
-import android.content.Context
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication.Companion.appContext
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import me.weishu.reflection.Reflection
 
 /**
  * 这是对使用 [YukiHookAPI] Xposed 模块实现中的一个扩展功能
@@ -43,8 +41,6 @@ import me.weishu.reflection.Reflection
  * - 在模块与宿主中装载 [YukiHookAPI.Configs] 以确保 [YukiHookAPI.Configs.debugTag] 不需要重复定义
  *
  * - 在模块与宿主中使用 [YukiHookDataChannel] 进行通讯
- *
- * - 在模块中使用系统隐藏 API - 核心技术引用了开源项目 [FreeReflection](https://github.com/tiann/FreeReflection)
  *
  * - 在模块中使用 [YukiHookAPI.Status.isTaiChiModuleActive] 判断太极、无极激活状态
  *
@@ -65,11 +61,6 @@ open class ModuleApplication : Application() {
          * @throws IllegalStateException 如果 [Application] 没有正确装载完成
          */
         val appContext get() = currentContext ?: error("App is dead, You cannot call to appContext")
-    }
-
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
-        runCatching { Reflection.unseal(base) }
     }
 
     override fun onCreate() {

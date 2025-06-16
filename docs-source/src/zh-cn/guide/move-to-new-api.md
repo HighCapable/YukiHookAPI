@@ -31,9 +31,10 @@ override fun onHook() = encase {
     loadApp(name = "com.demo.test") {
         // Member Hook
         "com.demo.test.TestClass".toClass()
-            .method {
+            .resolve()
+            .firstMethod {
                 name = "test"
-                param(BooleanType)
+                parameters(Boolean::class)
             }.hook {
                 after {
                     // ...
@@ -266,6 +267,14 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 
 `XposedHelpers.callMethod`、`XposedHelpers.callStaticMethod` 等方法自动查找的方法会自动调用所有公开的方法 (包括 `super` 超类)，这是 Java 原生反射的特性，
 而 `YukiHookAPI` 提供的反射方案为先反射查找再调用，而查找过程默认不会自动查找 `super` 超类的方法。
+
+::: warning
+
+`YukiHookAPI` 自身的反射 API 在 `1.3.0` 版本已被弃用，以下内容仅作为 `1.3.0` 版本之前的迁移指引，我们会对其进行保留但不会再进行内容的更新。
+
+你可以迁移至 [KavaRef](https://github.com/HighCapable/KavaRef)，`KavaRef` 同样适用此特性。
+
+:::
 
 例如，类 `A` 继承于 `B`， `B` 中存在公开的方法 `test`，而 `A` 中并不存在。
 
