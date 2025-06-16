@@ -46,13 +46,13 @@ import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
 import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
 import com.highcapable.yukihookapi.hook.core.annotation.LegacyResourcesHook
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassLoaderInitializer
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.LazyClass
 import com.highcapable.yukihookapi.hook.log.YLog
@@ -825,12 +825,13 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本将完全使用 KavaRef 接管
      * @param priority Hook 优先级 - 默认为 [YukiHookPriority.DEFAULT]
      * @param initiate 方法体
-     * @return [YukiMemberHookCreator.MemberHookCreator]
+     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
      */
+    @JvmName("hook_MemberResolver")
     inline fun MemberResolver<*, *>.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = hook(priority).apply(initiate)
+    ) = hook(priority).apply(initiate).build()
 
     /**
      * 通过 [List]<[MemberResolver]> 直接 Hook 方法、构造方法
@@ -849,10 +850,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param initiate 方法体
      * @return [YukiMemberHookCreator.MemberHookCreator.Result]
      */
+    @JvmName("hookAll_MemberResolver")
     inline fun List<MemberResolver<*, *>>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = hookAll(priority).apply(initiate)
+    ) = hookAll(priority).apply(initiate).build()
 
     /**
      * 直接 Hook 方法、构造方法 (批量)
