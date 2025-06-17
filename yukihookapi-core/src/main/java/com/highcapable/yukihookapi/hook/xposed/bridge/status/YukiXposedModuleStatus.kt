@@ -111,7 +111,9 @@ internal object YukiXposedModuleStatus {
      * @param name 方法名称
      * @return [MethodResolver] or null
      */
-    private fun classMethod(name: String) = className.toClassOrNull()?.resolve()?.optional()?.firstMethodOrNull { this.name = name }.apply {
-        if (this == null) YLog.innerW("Failed to initialize YukiXposedModuleStatus")
-    }
+    private fun classMethod(name: String) = className.toClassOrNull()?.resolve()
+        ?.optional(silent = true)
+        ?.firstMethodOrNull { this.name = name }.apply {
+            if (this == null) YLog.innerW("Failed to initialize YukiXposedModuleStatus")
+        }
 }

@@ -25,6 +25,8 @@ package com.highcapable.yukihookapi.hook.log
 
 import android.system.ErrnoException
 import android.util.Log
+import com.highcapable.kavaref.KavaRef
+import com.highcapable.kavaref.runtime.KavaRefRuntime
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.log.data.YLogData
@@ -311,6 +313,8 @@ object YLog {
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
     private fun log(env: EnvType, data: YLogData, isImplicit: Boolean = false) {
+        initKavaRefLoggerIfNot()
+
         /** 是否为有效日志 */
         val isNotBlankLog = data.msg.isNotBlank() || (data.msg.isBlank() && data.throwable != null)
 
@@ -337,6 +341,48 @@ object YLog {
             }
         }
         if (isImplicit.not() && Configs.isRecord && isNotBlankLog) inMemoryData.add(data)
+    }
+
+    /** 定义 [KavaRef] 日志记录器 */
+    private val kavaRefLogger = object : KavaRefRuntime.Logger {
+
+        override val tag get() = Configs.tag
+
+        override fun debug(msg: Any?, throwable: Throwable?) {
+            this@YLog.debug(msg.toString(), throwable)
+        }
+
+        override fun error(msg: Any?, throwable: Throwable?) {
+            this@YLog.error(msg.toString(), throwable)
+        }
+
+        override fun info(msg: Any?, throwable: Throwable?) {
+            this@YLog.info(msg.toString(), throwable)
+        }
+
+        override fun warn(msg: Any?, throwable: Throwable?) {
+            this@YLog.warn(msg.toString(), throwable)
+        }
+    }
+
+    /** 是否已初始化 [KavaRef] 日志记录器 */
+    private var isKavaRefLoggerInit = false
+
+    /** 初始化 [KavaRef] 日志记录器 - 仅在第一次调用时进行初始化 */
+    private fun initKavaRefLoggerIfNot() {
+        updateKavaRefLogLevel()
+        if (isKavaRefLoggerInit) return
+        KavaRef.setLogger(kavaRefLogger)
+        isKavaRefLoggerInit = true
+    }
+
+    /** 更新 [KavaRef] 日志记录器的日志级别 */
+    private fun updateKavaRefLogLevel() {
+        KavaRef.logLevel = when {
+            !Configs.isEnable -> KavaRefRuntime.LogLevel.OFF
+            YukiHookAPI.Configs.isDebug -> KavaRefRuntime.LogLevel.DEBUG
+            else -> KavaRefRuntime.LogLevel.INFO
+        }
     }
 
     /**

@@ -121,7 +121,7 @@ internal object AppParasitics {
     internal val systemContext get(): Context? {
         val scope = ActivityThreadClass.resolve()
             .processor(AndroidHiddenApiBypassResolver.get())
-            .optional()
+            .optional(silent = true)
         val current = scope.firstMethodOrNull {
             name = "currentActivityThread"
             emptyParameters()
@@ -140,7 +140,7 @@ internal object AppParasitics {
         get() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull()
             ?: ActivityThreadClass.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstMethodOrNull { name = "currentApplication" }
                 ?.invoke<Application>()
 
@@ -153,14 +153,14 @@ internal object AppParasitics {
             ?: let {
                 val scope = ActivityThreadClass.resolve()
                     .processor(AndroidHiddenApiBypassResolver.get())
-                    .optional()
+                    .optional(silent = true)
                 val current = scope.firstMethodOrNull {
                     name = "currentActivityThread"
                     emptyParameters()
                 }?.invoke()
-                val currentScope = current?.resolve()?.optional()
+                val currentScope = current?.resolve()?.optional(silent = true)
                 val mBoundApplication = currentScope?.firstFieldOrNull { name = "mBoundApplication" }?.get()
-                val appScope = mBoundApplication?.resolve()?.optional()
+                val appScope = mBoundApplication?.resolve()?.optional(silent = true)
                 appScope?.firstFieldOrNull { name = "appInfo" }?.get<ApplicationInfo>()
             }
 
@@ -178,7 +178,7 @@ internal object AppParasitics {
         get() = runCatching { AndroidAppHelper.currentProcessName() }.getOrNull()
             ?: ActivityThreadClass.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstMethodOrNull { name = "currentPackageName" }
                 ?.invoke<String>()
                 ?.takeIf { it.isNotBlank() }
@@ -196,7 +196,7 @@ internal object AppParasitics {
             ?: return 0
         return UserHandle::class.resolve()
             .processor(AndroidHiddenApiBypassResolver.get())
-            .optional()
+            .optional(silent = true)
             .firstMethodOrNull {
                 name = "getUserId"
                 parameters(Int::class)
@@ -213,10 +213,12 @@ internal object AppParasitics {
         if (YukiXposedModule.isXposedEnvironment.not()) return YLog.innerW("You can only use hook ClassLoader method in Xposed Environment")
         classLoaderCallbacks[loader.hashCode()] = result
         if (isClassLoaderHooked) return
-        val loadClass = ClassLoader::class.resolve().optional().firstMethodOrNull { 
-            name = "loadClass"
-            parameters(String::class, Boolean::class)
-        }
+        val loadClass = ClassLoader::class.resolve()
+            .optional(silent = true)
+            .firstMethodOrNull { 
+                name = "loadClass"
+                parameters(String::class, Boolean::class)
+            }
         runCatching {
             YukiHookHelper.hook(loadClass, object : YukiMemberHook() {
                 override fun afterHookedMember(param: Param) {
@@ -239,7 +241,7 @@ internal object AppParasitics {
             YukiHookHelper.hook(
                 ContextImplClass.resolve()
                     .processor(AndroidHiddenApiBypassResolver.get())
-                    .optional()
+                    .optional(silent = true)
                     .firstMethodOrNull { name = "setFilePermissionsFromMode" },
                 object : YukiMemberHook() {
                     override fun beforeHookedMember(param: Param) {
@@ -247,7 +249,7 @@ internal object AppParasitics {
                     }
                 }
             )
-        YukiXposedModuleStatus.className.toClassOrNull(loader)?.resolve()?.optional()?.apply {
+        YukiXposedModuleStatus.className.toClassOrNull(loader)?.resolve()?.optional(silent = true)?.apply {
             if (type != HookEntryType.RESOURCES) {
                 YukiHookHelper.hook(firstMethodOrNull { name = YukiXposedModuleStatus.IS_ACTIVE_METHOD_NAME },
                     object : YukiMemberReplacement() {
@@ -294,7 +296,7 @@ internal object AppParasitics {
         }
         /** Hook [Application] 装载方法 */
         runCatching {
-            if (appLifecycleActors.isNotEmpty()) Application::class.resolve().apply {
+            if (appLifecycleActors.isNotEmpty()) Application::class.resolve().optional(silent = true).apply {
                 YukiHookHelper.hook(firstMethod { name = "attach"; parameters(Context::class) }, object : YukiMemberHook() {
                     override fun beforeHookedMember(param: Param) {
                         runCatching {
@@ -351,7 +353,7 @@ internal object AppParasitics {
             }
             if (YukiHookAPI.Configs.isEnableDataChannel || appLifecycleActors.isNotEmpty())
                 YukiHookHelper.hook(
-                    Instrumentation::class.resolve().optional().firstMethodOrNull { name = "callApplicationOnCreate" },
+                    Instrumentation::class.resolve().optional(silent = true).firstMethodOrNull { name = "callApplicationOnCreate" },
                     object : YukiMemberHook() {
                         override fun afterHookedMember(param: Param) {
                             runCatching {
@@ -414,7 +416,7 @@ internal object AppParasitics {
                 return YLog.innerE("You cannot inject module resources into yourself")
             hostResources.assets.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstMethodOrNull {
                     name = "addAssetPath"
                     parameters(String::class)
@@ -450,7 +452,7 @@ internal object AppParasitics {
                     queryIntentActivities(getLaunchIntentForPackage(context.packageName)!!, 0).first().activityInfo.name
                 }?.getOrNull() ?: ""
                 val checkIsActivity = proxyClassName.toClassOrNull(context.classLoader)
-                    ?.resolve()?.optional()
+                    ?.resolve()?.optional(silent = true)
                     ?.firstMethodOrNull {
                         name = "setIntent"
                         parameters(Intent::class)
@@ -464,27 +466,27 @@ internal object AppParasitics {
             /** Patched [Instrumentation] */
             val sCurrentActivityThread = ActivityThreadClass.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstFieldOrNull { name = "sCurrentActivityThread" }
                 ?.get()
             val instrumentation = sCurrentActivityThread?.resolve()
                 ?.processor(AndroidHiddenApiBypassResolver.get())
-                ?.optional()
+                ?.optional(silent = true)
                 ?.firstMethodOrNull { name = "getInstrumentation" }
                 ?.invoke<Instrumentation>() ?: error("Could not found Instrumentation in ActivityThread")
             sCurrentActivityThread.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstFieldOrNull { name = "mInstrumentation" }
                 ?.set(InstrumentationDelegate.wrapper(instrumentation))
             val mH = sCurrentActivityThread.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstFieldOrNull { name = "mH" }
                 ?.get<Handler>() ?: error("Could not found mH in ActivityThread")
             val mCallbackResolver = Handler::class.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstFieldOrNull { name = "mCallback" }
                 ?.of(mH)
             val mCallback = mCallbackResolver?.get<Handler.Callback>()
@@ -506,7 +508,7 @@ internal object AppParasitics {
                     }?.get()
             val mInstanceResolver = SingletonClass.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstFieldOrNull { name = "mInstance" }
                 ?.of(gDefault)
             val mInstance = mInstanceResolver?.get()
@@ -520,7 +522,7 @@ internal object AppParasitics {
                 ?.get()
             SingletonClass.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
-                .optional()
+                .optional(silent = true)
                 .firstMethodOrNull { name = "get" }
                 ?.of(singleton)
                 ?.invokeQuietly()

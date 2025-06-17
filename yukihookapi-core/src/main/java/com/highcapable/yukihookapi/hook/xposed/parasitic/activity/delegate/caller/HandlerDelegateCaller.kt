@@ -52,7 +52,7 @@ internal object HandlerDelegateCaller {
     private val ClientTransactionClass by lazyClass("android.app.servertransaction.ClientTransaction")
 
     private val mExtrasResolver by lazy {
-        Intent::class.resolve().optional().firstFieldOrNull { name = "mExtras" }
+        Intent::class.resolve().optional(silent = true).firstFieldOrNull { name = "mExtras" }
     }
 
     /**
@@ -66,7 +66,7 @@ internal object HandlerDelegateCaller {
             LAUNCH_ACTIVITY -> {
                 val intentResolver = msg.obj.resolve()
                     .processor(AndroidHiddenApiBypassResolver.get())
-                    .optional()
+                    .optional(silent = true)
                     .firstFieldOrNull { name = "intent" }
                 val intent = intentResolver?.get<Intent>()
                 val mExtras = mExtrasResolver?.copy()?.of(intent)?.getQuietly<Bundle>()
@@ -78,14 +78,14 @@ internal object HandlerDelegateCaller {
             EXECUTE_TRANSACTION -> {
                 val callbacks = ClientTransactionClass.resolve()
                     .processor(AndroidHiddenApiBypassResolver.get())
-                    .optional()
+                    .optional(silent = true)
                     .firstMethodOrNull {
                         name = "getCallbacks"
                     }?.of(msg.obj)
                     ?.invokeQuietly<List<Any>>()
                     ?.takeIf { it.isNotEmpty() }
                 callbacks?.filter { it.javaClass.name.contains("LaunchActivityItem") }?.forEach { item ->
-                    val itemResolver = item.resolve().optional()
+                    val itemResolver = item.resolve().optional(silent = true)
                         .firstFieldOrNull { name = "mIntent" }
                     val intent = itemResolver?.get<Intent>()
                     val mExtras = mExtrasResolver?.copy()?.of(intent)?.getQuietly<Bundle>()
@@ -96,31 +96,30 @@ internal object HandlerDelegateCaller {
                         if (Build.VERSION.SDK_INT >= 31) {
                             val currentActivityThread = ActivityThreadClass.resolve()
                                 .processor(AndroidHiddenApiBypassResolver.get())
-                                .optional()
+                                .optional(silent = true)
                                 .firstMethodOrNull { name = "currentActivityThread" }
                                 ?.invoke()
                             val token = msg.obj.resolve()
                                 .processor(AndroidHiddenApiBypassResolver.get())
-                                .optional()
+                                .optional(silent = true)
                                 .firstMethodOrNull { name = "getActivityToken" }
                                 ?.invokeQuietly()
                             val launchingActivity = currentActivityThread?.resolve()
                                 ?.processor(AndroidHiddenApiBypassResolver.get())
-                                ?.optional()
+                                ?.optional(silent = true)
                                 ?.firstMethodOrNull {
                                     name = "getLaunchingActivity"
                                     parameters(IBinder::class)
                                 }?.invokeQuietly(token)
                             launchingActivity?.resolve()
                                 ?.processor(AndroidHiddenApiBypassResolver.get())
-                                ?.optional()
+                                ?.optional(silent = true)
                                 ?.firstFieldOrNull { name = "intent" }
                                 ?.set(subIntent)
                         }; itemResolver.set(subIntent)
                     }
                 }
             }
-        }
-        return baseInstance?.handleMessage(msg) ?: false
+        }; return baseInstance?.handleMessage(msg) ?: false
     }
 }

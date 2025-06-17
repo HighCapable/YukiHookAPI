@@ -2,9 +2,11 @@
 
 > 日志是调试过程最重要的一环，`YukiHookAPI` 为开发者封装了一套稳定高效的调试日志功能。
 
-::: warning
+::: tip
 
-`KavaRef` 的日志将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 `KavaRef` 的文档。
+`KavaRef` 的日志可以由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86)，这将跳转到 `KavaRef` 的文档。
+
+`YukiHookAPI` 默认接管了 `KavaRef` 的日志功能，你也可以自己配置 `KavaRef` 的日志功能。
 
 :::
 
