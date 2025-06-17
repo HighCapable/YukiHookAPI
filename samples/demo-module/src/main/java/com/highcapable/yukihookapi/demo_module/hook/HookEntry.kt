@@ -147,6 +147,9 @@ object HookEntry : IYukiHookXposedInit {
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
                 Activity::class.resolve()
+                    // 由于 Activity 的方法比较多，演示的时候将其静音防止刷爆日志
+                    // Since there are many methods in Activity, it is muted during the demo to prevent flooding the log
+                    .optional(silent = true)
                     .firstMethod {
                         name = "onCreate"
                         parameters(Bundle::class)
