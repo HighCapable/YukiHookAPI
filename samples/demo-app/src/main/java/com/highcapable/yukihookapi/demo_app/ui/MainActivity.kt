@@ -27,7 +27,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import com.highcapable.betterandroid.ui.component.activity.AppViewsActivity
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.betterandroid.ui.extension.view.updateMargins
 import com.highcapable.hikage.extension.setContentView
@@ -36,67 +36,82 @@ import com.highcapable.hikage.widget.android.widget.ImageView
 import com.highcapable.hikage.widget.android.widget.LinearLayout
 import com.highcapable.hikage.widget.android.widget.TextView
 import com.highcapable.hikage.widget.androidx.core.widget.NestedScrollView
+import com.highcapable.hikage.widget.com.google.android.material.appbar.MaterialToolbar
 import com.highcapable.yukihookapi.demo_app.R
 import com.highcapable.yukihookapi.demo_app.test.Main
 import android.R as Android_R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppViewsActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val hikage = setContentView {
-            NestedScrollView(
-                lparams = LayoutParams(matchParent = true),
+            LinearLayout(
+                lparams = LayoutParams(widthMatchParent = true),
                 init = {
-                    isFillViewport = true
-                    isVerticalScrollBarEnabled = false
+                    orientation = LinearLayout.VERTICAL
                 }
             ) {
-                LinearLayout(
-                    lparams = LayoutParams(widthMatchParent = true) {
-                        updateMargins(vertical = 20.dp)
-                    },
+                MaterialToolbar(
+                    lparams = LayoutParams(widthMatchParent = true),
                     init = {
-                        orientation = LinearLayout.VERTICAL
-                        gravity = Gravity.CENTER
+                        title = stringResource(R.string.app_name)
+                    }
+                )
+                NestedScrollView(
+                    lparams = LayoutParams(matchParent = true),
+                    init = {
+                        isFillViewport = true
+                        isVerticalScrollBarEnabled = false
+                        isVerticalFadingEdgeEnabled = true
                     }
                 ) {
-                    ImageView(
-                        lparams = LayoutParams(50.dp, 50.dp) {
-                            bottomMargin = 15.dp
+                    LinearLayout(
+                        lparams = LayoutParams(widthMatchParent = true) {
+                            updateMargins(vertical = 20.dp)
+                        },
+                        init = {
+                            orientation = LinearLayout.VERTICAL
+                            gravity = Gravity.CENTER
                         }
                     ) {
-                        setImageResource(R.mipmap.ic_face_unhappy)
-                    }
-                    TextView(
-                        lparams = LayoutParams {
-                            bottomMargin = 25.dp
-                        }
-                    ) {
-                        text = stringResource(R.string.test_string)
-                        textSize = 17.5f
-                    }
-                    repeat(11) {
-                        TextView(
-                            id = "sample_text_$it",
-                            lparams = LayoutParams {
+                        ImageView(
+                            lparams = LayoutParams(50.dp, 50.dp) {
                                 bottomMargin = 15.dp
+                            }
+                        ) {
+                            setImageResource(R.mipmap.ic_face_unhappy)
+                        }
+                        TextView(
+                            lparams = LayoutParams {
+                                bottomMargin = 25.dp
                             }
                         ) {
                             text = stringResource(R.string.test_string)
                             textSize = 17.5f
                         }
-                    }
-                    ImageView(
-                        lparams = LayoutParams(30.dp, 30.dp) {
-                            bottomMargin = 15.dp
+                        repeat(11) {
+                            TextView(
+                                id = "sample_text_$it",
+                                lparams = LayoutParams {
+                                    bottomMargin = 15.dp
+                                }
+                            ) {
+                                text = stringResource(R.string.test_string)
+                                textSize = 17.5f
+                            }
                         }
-                    ) {
-                        setImageResource(Android_R.mipmap.sym_def_app_icon)
-                    }
-                    Button {
-                        text = "Click Me!"
-                        setOnClickListener { toast() }
+                        ImageView(
+                            lparams = LayoutParams(30.dp, 30.dp) {
+                                bottomMargin = 15.dp
+                            }
+                        ) {
+                            setImageResource(Android_R.mipmap.sym_def_app_icon)
+                        }
+                        Button {
+                            text = "Click Me!"
+                            setOnClickListener { toast() }
+                        }
                     }
                 }
             }

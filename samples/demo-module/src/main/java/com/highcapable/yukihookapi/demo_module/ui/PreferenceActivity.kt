@@ -25,12 +25,12 @@ import android.os.Bundle
 import androidx.preference.SwitchPreference
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.R
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
+import com.highcapable.yukihookapi.demo_module.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
 
-class PreferenceActivity : ModuleAppCompatActivity() {
+class PreferenceActivity : BaseActivity() {
 
-    override val moduleTheme get() = R.style.Theme_Default
+    override val moduleTheme get() = R.style.Theme_Default_ActionBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -35,22 +35,22 @@ import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.betterandroid.ui.extension.view.updateMargins
 import com.highcapable.hikage.extension.setContentView
 import com.highcapable.hikage.widget.android.widget.Button
-import com.highcapable.hikage.widget.android.widget.EditText
 import com.highcapable.hikage.widget.android.widget.LinearLayout
 import com.highcapable.hikage.widget.android.widget.TextView
 import com.highcapable.hikage.widget.androidx.core.widget.NestedScrollView
+import com.highcapable.hikage.widget.com.google.android.material.appbar.MaterialToolbar
+import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputEditText
+import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
+import com.highcapable.yukihookapi.demo_module.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.prefs
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class MainActivity : ModuleAppCompatActivity() {
-
-    override val moduleTheme get() = R.style.Theme_Default
+class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,111 +62,129 @@ class MainActivity : ModuleAppCompatActivity() {
             }
         }
         val hikage = setContentView {
-            NestedScrollView(
-                lparams = LayoutParams(matchParent = true),
+            LinearLayout(
+                lparams = LayoutParams(widthMatchParent = true),
                 init = {
-                    isFillViewport = true
-                    isVerticalScrollBarEnabled = false
+                    orientation = LinearLayout.VERTICAL
                 }
             ) {
-                LinearLayout(
-                    lparams = LayoutParams(widthMatchParent = true) {
-                        updateMargins(vertical = 20.dp)
-                    },
+                MaterialToolbar(
+                    lparams = LayoutParams(widthMatchParent = true),
                     init = {
-                        orientation = LinearLayout.VERTICAL
-                        gravity = Gravity.CENTER
+                        title = stringResource(R.string.app_name)
+                    }
+                )
+                NestedScrollView(
+                    lparams = LayoutParams(matchParent = true),
+                    init = {
+                        isFillViewport = true
+                        isVerticalScrollBarEnabled = false
+                        isVerticalFadingEdgeEnabled = true
                     }
                 ) {
-                    lateinit var editText: TextView
                     LinearLayout(
                         lparams = LayoutParams(widthMatchParent = true) {
-                            updateMargins(horizontal = 50.dp)
-                            updateMargins(bottom = 15.dp)
+                            updateMargins(vertical = 20.dp)
                         },
                         init = {
                             orientation = LinearLayout.VERTICAL
-                            gravity = Gravity.CENTER or Gravity.START
+                            gravity = Gravity.CENTER
                         }
                     ) {
-                        repeat(6) { index ->
-                            TextView(
-                                id = "sample_title_text_$index",
-                                lparams = LayoutParams {
-                                    bottomMargin = 5.dp
-                                }
-                            ) {
-                                textSize = 18f
-                                isSingleLine = true
-                                ellipsize = TextUtils.TruncateAt.END
+                        lateinit var editText: TextView
+                        LinearLayout(
+                            lparams = LayoutParams(widthMatchParent = true) {
+                                updateMargins(horizontal = 50.dp)
+                                updateMargins(bottom = 15.dp)
+                            },
+                            init = {
+                                orientation = LinearLayout.VERTICAL
                                 gravity = Gravity.CENTER or Gravity.START
                             }
+                        ) {
+                            repeat(6) { index ->
+                                TextView(
+                                    id = "sample_title_text_$index",
+                                    lparams = LayoutParams {
+                                        bottomMargin = 5.dp
+                                    }
+                                ) {
+                                    textSize = 18f
+                                    isSingleLine = true
+                                    ellipsize = TextUtils.TruncateAt.END
+                                    gravity = Gravity.CENTER or Gravity.START
+                                }
+                                TextView(
+                                    id = "sample_subtitle_text_$index",
+                                    lparams = LayoutParams {
+                                        bottomMargin = if (index < 5) 15.dp else 25.dp
+                                    }
+                                ) {
+                                    alpha = 0.85f
+                                    textSize = 15f
+                                    isSingleLine = true
+                                    ellipsize = TextUtils.TruncateAt.END
+                                    gravity = Gravity.CENTER or Gravity.START
+                                }
+                            }
                             TextView(
-                                id = "sample_subtitle_text_$index",
                                 lparams = LayoutParams {
-                                    bottomMargin = if (index < 5) 15.dp else 25.dp
+                                    leftMargin = 5.dp
+                                    bottomMargin = 25.dp
                                 }
                             ) {
-                                alpha = 0.85f
                                 textSize = 15f
                                 isSingleLine = true
                                 ellipsize = TextUtils.TruncateAt.END
                                 gravity = Gravity.CENTER or Gravity.START
+                                text = "Leave something in there"
                             }
+                            TextInputLayout(
+                                lparams = LayoutParams(widthMatchParent = true)
+                            ) {
+                                editText = TextInputEditText(
+                                    lparams = LayoutParams(widthMatchParent = true)
+                                ) {
+                                    hint = "Please enter the text"
+                                    isSingleLine = true
+                                    textSize = 18f
+                                    hostEnvironment { isEnabled = false }
+                                    setText(prefs().get(DataConst.TEST_KV_DATA))
+                                }
+                            }
+                        }
+                        Button(
+                            lparams = LayoutParams {
+                                bottomMargin = 15.dp
+                            }
+                        ) {
+                            text = "Save Test Data"
+                            hostEnvironment { isEnabled = false }
+                            setOnClickListener { _ ->
+                                moduleEnvironment {
+                                    if (editText.textToString().isNotEmpty()) {
+                                        prefs().edit { put(DataConst.TEST_KV_DATA, editText.textToString()) }
+                                        toast("Saved")
+                                    } else toast("Please enter the text")
+                                }
+                            }
+                        }
+                        Button {
+                            text = "Open PreferenceFragment"
+                            setOnClickListener { startActivity<PreferenceActivity>() }
                         }
                         TextView(
                             lparams = LayoutParams {
-                                leftMargin = 5.dp
-                                bottomMargin = 25.dp
+                                topMargin = 25.dp
                             }
                         ) {
-                            textSize = 15f
+                            alpha = 0.45f
+                            textSize = 13f
                             isSingleLine = true
                             ellipsize = TextUtils.TruncateAt.END
                             gravity = Gravity.CENTER or Gravity.START
-                            text = "Leave something in there"
+                            text = "Compiled Time：${SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))}"
                         }
-                        editText = EditText(
-                            lparams = LayoutParams(width = 250.dp)
-                        ) {
-                            hint = "Please enter the text"
-                            isSingleLine = true
-                            textSize = 18f
-                            hostEnvironment { isEnabled = false }
-                            setText(prefs().get(DataConst.TEST_KV_DATA))
-                        }
-                    }
-                    Button(
-                        lparams = LayoutParams { 
-                            bottomMargin = 15.dp
-                        }
-                    ) { 
-                        text = "Save Test Data"
-                        hostEnvironment { isEnabled = false }
-                        setOnClickListener { _ ->
-                            moduleEnvironment {
-                                if (editText.textToString().isNotEmpty()) {
-                                    prefs().edit { put(DataConst.TEST_KV_DATA, editText.textToString()) }
-                                    toast("Saved")
-                                } else toast("Please enter the text")
-                            }
-                        }
-                    }
-                    Button {
-                        text = "Open PreferenceFragment"
-                        setOnClickListener { startActivity<PreferenceActivity>() }
-                    }
-                    TextView(
-                        lparams = LayoutParams {
-                            topMargin = 25.dp
-                        }
-                    ) {
-                        alpha = 0.45f
-                        textSize = 13f
-                        isSingleLine = true
-                        ellipsize = TextUtils.TruncateAt.END
-                        gravity = Gravity.CENTER or Gravity.START
-                        text = "Compiled Time：${SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))}"
                     }
                 }
             }

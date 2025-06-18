@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Default" parent="Theme.Material3.DayNight">
+    <style name="Theme.Default" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/yuki_theme_color</item>
         <item name="colorPrimaryVariant">@color/yuki_theme_color</item>

@@ -25,10 +25,10 @@ package com.highcapable.yukihookapi.demo_module.hook
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.highcapable.betterandroid.system.extension.tool.SystemVersion
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
 import com.highcapable.yukihookapi.YukiHookAPI
@@ -190,7 +190,7 @@ object HookEntry : IYukiHookXposedInit {
                 // Register Activity Proxy
                 // 注册模块 Activity 代理
                 onAppLifecycle {
-                    onCreate { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) registerModuleAppActivities() }
+                    onCreate { if (SystemVersion.isHighOrEqualsTo(SystemVersion.N)) registerModuleAppActivities() }
                 }
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
@@ -288,7 +288,7 @@ object HookEntry : IYukiHookXposedInit {
                                     .setTitle("Hooked")
                                     .setMessage("I am hook your toast showing!")
                                     .apply {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                                        if (SystemVersion.isHighOrEqualsTo(SystemVersion.N))
                                             setPositiveButton("START PARASITIC") { _, _ ->
                                                 MaterialAlertDialogBuilder(context)
                                                     .setTitle("Start Parasitic")

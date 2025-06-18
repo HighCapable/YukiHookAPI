@@ -50,6 +50,7 @@
 
         <activity
             android:name=".ui.PreferenceActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Default.ActionBar" />
     </application>
 </manifest>

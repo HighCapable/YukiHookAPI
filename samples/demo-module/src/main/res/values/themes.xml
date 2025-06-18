@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Default" parent="Theme.Material3.DayNight">
+    <style name="Theme.Default" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/yuki_theme_color</item>
         <item name="colorPrimaryVariant">@color/yuki_theme_color</item>
@@ -15,5 +15,12 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <!-- Customize your theme here. -->
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@mipmap/ic_launcher</item>
+    </style>
+
+    <style name="Theme.Default.ActionBar" parent="Theme.Material3.DayNight">
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/yuki_light_color</item>
+        <item name="android:navigationBarColor">@android:color/background_light</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 </resources>
