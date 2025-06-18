@@ -21,7 +21,7 @@
  */
 package com.highcapable.yukihookapi.hook.core.api.reflect
 
-import android.os.Build
+import com.highcapable.betterandroid.system.extension.tool.SystemVersion
 import com.highcapable.kavaref.resolver.processor.MemberProcessor
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.reflect.Constructor
@@ -49,21 +49,13 @@ class AndroidHiddenApiBypassResolver private constructor() : MemberProcessor.Res
         fun get() = self
     }
 
-    override fun <T : Any> getDeclaredConstructors(declaringClass: Class<T>): List<Constructor<T>> {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
-            return super.getDeclaredConstructors(declaringClass)
-        val constructors = HiddenApiBypass.getDeclaredMethods(declaringClass)
-            .filterIsInstance<Constructor<T>>()
-            .toList()
-        return constructors
-    }
+    override fun <T : Any> getDeclaredConstructors(declaringClass: Class<T>): List<Constructor<T>> =
+        SystemVersion.require(SystemVersion.P, super.getDeclaredConstructors(declaringClass)) {
+            HiddenApiBypass.getDeclaredMethods(declaringClass).filterIsInstance<Constructor<T>>().toList()
+        }
 
-    override fun <T : Any> getDeclaredMethods(declaringClass: Class<T>): List<Method> {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
-            return super.getDeclaredMethods(declaringClass)
-        val methods = HiddenApiBypass.getDeclaredMethods(declaringClass)
-            .filterIsInstance<Method>()
-            .toList()
-        return methods
-    }
+    override fun <T : Any> getDeclaredMethods(declaringClass: Class<T>): List<Method> =
+        SystemVersion.require(SystemVersion.P, super.getDeclaredMethods(declaringClass)) {
+            HiddenApiBypass.getDeclaredMethods(declaringClass).filterIsInstance<Method>().toList()
+        }
 }

@@ -23,45 +23,38 @@
 package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base
 
 import android.app.Activity
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.annotation.CallSuper
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
-import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
-import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
 
 /**
  * 代理 [Activity]
  *
- * 继承于此类的 [Activity] 可以同时在宿主与模块中启动
+ * - 由于超类继承者的不唯一性 - 此类已弃用 - 在之后的版本中将直接被删除
  *
- * - 在 (Xposed) 宿主环境需要在宿主启动时调用 [Context.registerModuleAppActivities] 进行注册
+ * - 请现在参考并迁移到 [ModuleActivity]
  */
-open class ModuleAppActivity : Activity() {
+@Deprecated(message = "请使用新方式来实现此功能")
+open class ModuleAppActivity : Activity(), ModuleActivity {
 
-    /**
-     * 设置当前代理的 [Activity] 类名
-     *
-     * 留空则使用 [Context.registerModuleAppActivities] 时设置的类名
-     *
-     * - 代理的 [Activity] 类名必须存在于宿主的 AndroidMainifest 清单中
-     * @return [String]
-     */
-    open val proxyClassName get() = ""
-
-    override fun getClassLoader(): ClassLoader? = ModuleClassLoader.instance()
+    override fun getClassLoader() = delegate.getClassLoader()
 
     @CallSuper
     override fun onConfigurationChanged(newConfig: Configuration) {
-        if (YukiXposedModule.isXposedEnvironment) injectModuleAppResources()
+        delegate.onConfigurationChanged(newConfig)
         super.onConfigurationChanged(newConfig)
     }
 
     @CallSuper
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.getBundle("android:viewHierarchyState")?.classLoader = classLoader
+        delegate.onRestoreInstanceState(savedInstanceState)
         super.onRestoreInstanceState(savedInstanceState)
+    }
+
+    @CallSuper
+    override fun onCreate(savedInstanceState: Bundle?) {
+        delegate.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
     }
 }

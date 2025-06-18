@@ -70,6 +70,13 @@ libraries:
       version: 1.0.0
     hikage-widget-material:
       version: 1.0.0
+  com.highcapable.betterandroid:
+    ui-component:
+      version: 1.0.7
+    ui-extension:
+      version: 1.0.6
+    system-extension:
+      version: 1.0.2
   androidx.annotation:
     annotation:
       version: 1.9.1

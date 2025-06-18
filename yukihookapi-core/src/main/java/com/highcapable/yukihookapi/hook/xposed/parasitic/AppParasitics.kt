@@ -30,7 +30,6 @@ import android.app.ActivityManager
 import android.app.AndroidAppHelper
 import android.app.Application
 import android.app.Instrumentation
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -39,10 +38,11 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.os.Build
 import android.os.Handler
 import android.os.UserHandle
 import androidx.annotation.RequiresApi
+import com.highcapable.betterandroid.system.extension.component.registerReceiver
+import com.highcapable.betterandroid.system.extension.tool.SystemVersion
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.lazyClass
@@ -363,20 +363,8 @@ internal object AppParasitics {
                                      * @param result 回调 - ([Context] 当前实例, [Intent] 当前对象)
                                      */
                                     fun IntentFilter.registerReceiver(result: (Context, Intent) -> Unit) {
-                                        object : BroadcastReceiver() {
-                                            override fun onReceive(context: Context?, intent: Intent?) {
-                                                if (context == null || intent == null) return
-                                                result(context, intent)
-                                            }
-                                        }.also { receiver ->
-                                            /**
-                                             * 从 Android 14 (及预览版) 开始
-                                             * 外部广播必须声明 [Context.RECEIVER_EXPORTED]
-                                             */
-                                            @SuppressLint("UnspecifiedRegisterReceiverFlag")
-                                            if (Build.VERSION.SDK_INT >= 33)
-                                                it.registerReceiver(receiver, this, Context.RECEIVER_EXPORTED)
-                                            else it.registerReceiver(receiver, this)
+                                        it.registerReceiver(filter = this, exported = true) { context, intent ->
+                                            result(context, intent)
                                         }
                                     }
                                     hostApplication = it
@@ -431,13 +419,13 @@ internal object AppParasitics {
      * @param context 当前 [Context]
      * @param proxy 代理的 [Activity]
      */
-    @RequiresApi(Build.VERSION_CODES.N)
+    @RequiresApi(SystemVersion.N)
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
         if (isActivityProxyRegistered) return
         if (YukiXposedModule.isXposedEnvironment.not()) return YLog.innerW("You can only register Activity Proxy in Xposed Environment")
         if (context.packageName == YukiXposedModule.modulePackageName) return YLog.innerE("You cannot register Activity Proxy into yourself")
         @SuppressLint("ObsoleteSdkInt")
-        if (Build.VERSION.SDK_INT < 24) return YLog.innerE("Activity Proxy only support for Android 7.0 (API 24) or higher")
+        if (SystemVersion.isLowTo(SystemVersion.N)) return YLog.innerE("Activity Proxy only support for Android 7.0 (API 24) or higher")
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${YukiXposedModule.modulePackageName}.ACTIVITY_PROXY_INTENT"

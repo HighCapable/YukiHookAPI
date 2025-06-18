@@ -86,3 +86,9 @@ Now, `YukiHookAPI` no longer limits duplicate Hooks to the same method, you can 
 
 `YukiHookAPI` also deprecated the `onAlreadyHooked` method of `hook { ... }`.
 Now this method will be useless and will not be called back. If necessary, please manually handle the relevant logic of duplicate Hooks.
+
+## Register Module App's Activity Behavior Change
+
+`YukiHookAPI` Starting with `1.3.0`, the way in which the module `Activity` behavior has changed.
+
+Please read [Register Module App's Activity](../api/special-features/host-inject#register-module-app-s-activity) for more information.

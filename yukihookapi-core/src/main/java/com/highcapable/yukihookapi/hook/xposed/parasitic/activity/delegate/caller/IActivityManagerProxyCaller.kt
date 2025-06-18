@@ -32,9 +32,8 @@ import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.kavaref.extension.isSubclassOf
 import com.highcapable.kavaref.extension.toClassOrNull
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppActivity
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 
@@ -75,10 +74,8 @@ internal object IActivityManagerProxyCaller {
                 fun String.verify() = if (AppParasitics.hostApplication?.classLoader?.hasClass(this) == true) this else null
                 setClassName(component.packageName, component.className.toClassOrNull()?.runCatching {
                     when {
-                        this isSubclassOf ModuleAppActivity::class ->
-                            createInstanceAsTypeOrNull<ModuleAppActivity>()?.proxyClassName?.verify()
-                        this isSubclassOf ModuleAppCompatActivity::class ->
-                            createInstanceAsTypeOrNull<ModuleAppCompatActivity>()?.proxyClassName?.verify()
+                        this isSubclassOf ModuleActivity::class ->
+                            createInstanceAsTypeOrNull<ModuleActivity>()?.proxyClassName?.verify()
                         else -> null
                     }
                 }?.getOrNull() ?: ActivityProxyConfig.proxyClassName)

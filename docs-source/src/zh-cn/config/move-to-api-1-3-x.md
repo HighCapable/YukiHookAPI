@@ -80,3 +80,9 @@ val instance: Any
 `YukiHookAPI` 从 `1.3.0` 版本开始弃用了重复 Hook 的限制，现在，`YukiHookAPI` 不再限制重复 Hook 同一个方法，你可以在同一个方法上多次 Hook。
 
 `YukiHookAPI` 同时弃用了 `hook { ... }` 的 `onAlreadyHooked` 方法，现在此方法将无作用且不会被回调，如有需要，请手动处理重复 Hook 的相关逻辑。
+
+## 注册模块 Activity 行为变更
+
+`YukiHookAPI` 从 `1.3.0` 版本开始，注册模块 `Activity` 行为的方式发生了变更。
+
+请阅读 [注册模块 Activity](../api/special-features/host-inject#注册模块-activity) 以了解更多信息。

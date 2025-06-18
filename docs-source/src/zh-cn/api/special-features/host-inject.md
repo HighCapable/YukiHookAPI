@@ -142,32 +142,45 @@ registerModuleAppActivities(proxy = "com.demo.test.activity.TestActivity")
 registerModuleAppActivities(TestActivity::class.java)
 ```
 
-注册完成后，请将你需要使用宿主启动的模块中的 `Activity` 继承于 `ModuleAppActivity` 或 `ModuleAppCompatActivity`。
+注册完成后，请将你需要使用宿主启动的模块中的 `Activity` 实现 `ModuleActivity` 接口。
 
 这些 `Activity` 现在无需注册即可无缝存活于宿主中。
+
+我们推荐你创建 `BaseActivity` 作为所有模块 `Activity` 的基类。
 
 > 示例如下
 
 ```kotlin
-class HostTestActivity : ModuleAppActivity() {
+abstract class BaseActivity : AppCompatActivity(), ModuleActivity {
+
+    // 设置 AppCompat 主题 (如果当前是 [AppCompatActivity])
+    override val moduleTheme get() = R.style.YourAppTheme
+
+    override fun getClassLoader() = delegate.getClassLoader()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        delegate.onCreate(savedInstanceState)
         super.onCreate(savedInstanceState)
-        // 模块资源已被自动注入，可以直接使用 xml 装载布局
-        setContentView(R.layout.activity_main)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        delegate.onConfigurationChanged(newConfig)
+        super.onConfigurationChanged(newConfig)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        delegate.onRestoreInstanceState(savedInstanceState)
+        super.onRestoreInstanceState(savedInstanceState)
     }
 }
 ```
 
-若你需要继承于 `ModuleAppCompatActivity`，你需要手动设置 AppCompat 主题。
+然后将需要实现的 `Activity` 继承于 `BaseActivity`。
 
 > 示例如下
 
 ```kotlin
-class HostTestActivity : ModuleAppCompatActivity() {
-
-    // 这里的主题名称仅供参考，请填写你模块中已有的主题名称
-    override val moduleTheme get() = R.style.Theme_AppCompat
+class HostTestActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -193,7 +206,7 @@ context.startActivity(context, HostTestActivity::class.java)
 > 示例如下
 
 ```kotlin
-class HostTestActivity : ModuleAppActivity() {
+class HostTestActivity : BaseActivity() {
 
     // 指定一个另外的代理 Activity 类名，其也必须存在于宿主的 AndroidManifest 中
     override val proxyClassName get() = "com.demo.test.activity.OtherActivity"

@@ -26,11 +26,11 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.call
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
+import com.highcapable.betterandroid.system.extension.tool.SystemVersion
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.lazyClass
 import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
@@ -93,7 +93,7 @@ internal object HandlerDelegateCaller {
                     if (intent?.hasExtra(ActivityProxyConfig.proxyIntentName) == true) {
                         @Suppress("DEPRECATION")
                         val subIntent = intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName)
-                        if (Build.VERSION.SDK_INT >= 31) {
+                        if (SystemVersion.isHighOrEqualsTo(SystemVersion.S)) {
                             val currentActivityThread = ActivityThreadClass.resolve()
                                 .processor(AndroidHiddenApiBypassResolver.get())
                                 .optional(silent = true)

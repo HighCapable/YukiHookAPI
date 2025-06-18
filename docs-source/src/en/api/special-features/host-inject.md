@@ -146,34 +146,45 @@ Alternatively, if you write a `stub` for the Host App's class, you can register 
 registerModuleAppActivities(TestActivity::class.java)
 ```
 
-After the registration is complete, extends the `Activity` in the Module App you need to use the Host App to start by `ModuleAppActivity` or `ModuleAppCompatActivity`.
+After registration is completed, please implement the `ModuleActivity` interface using the `Activity` module in the host-started module.
 
-These `Activity` now live seamlessly in the Host App without registration.
+These `Activity` (ies) now live seamlessly in the host without registration.
+
+We recommend that you create `BaseActivity` as the base class for all modules `Activity`.
 
 > The following example
 
 ```kotlin
-class HostTestActivity : ModuleAppActivity() {
+abstract class BaseActivity : AppCompatActivity(), ModuleActivity {
+
+    // Set up AppCompat Theme (if currently is [AppCompatActivity])
+    override val moduleTheme get() = R.style.YourAppTheme
+
+    override fun getClassLoader() = delegate.getClassLoader()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        delegate.onCreate(savedInstanceState)
         super.onCreate(savedInstanceState)
-        // Module App's Resources have been injected automatically
-        // You can directly use xml to load the layout
-        setContentView(R.layout.activity_main)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        delegate.onConfigurationChanged(newConfig)
+        super.onConfigurationChanged(newConfig)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        delegate.onRestoreInstanceState(savedInstanceState)
+        super.onRestoreInstanceState(savedInstanceState)
     }
 }
 ```
 
-If you need to extends `ModuleAppCompatActivity`, you need to set the AppCompat theme manually.
+Then inherit the `Activity` you want to implement in `BaseActivity`.
 
 > The following example
 
 ```kotlin
-class HostTestActivity : ModuleAppCompatActivity() {
-
-    // The theme name here is for reference only
-    // Please fill in the theme name already in your Module App
-    override val moduleTheme get() = R.style.Theme_AppCompat
+class HostTestActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -200,7 +211,7 @@ If you need to specify a delegated `Activity` to use another Host App's `Activit
 > The following example
 
 ```kotlin
-class HostTestActivity : ModuleAppActivity() {
+class HostTestActivity : BaseActivity() {
 
     // Specify an additional proxy Activity class name
     // Which must also exist in the Host App's AndroidManifest
@@ -210,7 +221,7 @@ class HostTestActivity : ModuleAppActivity() {
         super.onCreate(savedInstanceState)
         // Module App's Resources have been injected automatically
         // You can directly use xml to load the layout
-        setContentView(R. layout. activity_main)
+        setContentView(R.layout.activity_main)
     }
 }
 ```

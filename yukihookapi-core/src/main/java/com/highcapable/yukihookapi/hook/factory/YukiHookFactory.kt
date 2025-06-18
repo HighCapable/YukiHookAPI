@@ -28,20 +28,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.os.Build
 import android.os.Process
 import android.view.ContextThemeWrapper
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import androidx.core.net.toUri
+import com.highcapable.betterandroid.system.extension.tool.SystemVersion
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppActivity
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
+import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper.ModuleContextThemeWrapper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
@@ -163,7 +162,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  *
  * 使用此方法会在未注册的 [Activity] 在 Hook APP (宿主) 中启动时自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
  *
- * - 你要将需要在宿主启动的 [Activity] 继承于 [ModuleAppActivity] or [ModuleAppCompatActivity]
+ * - 你要将需要在宿主启动的 [Activity] 实现 [ModuleActivity] 接口
  *
  * 详情请参考 [注册模块 Activity](https://highcapable.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject#%E6%B3%A8%E5%86%8C%E6%A8%A1%E5%9D%97-activity)
  *
@@ -174,7 +173,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  * - 最低支持 Android 7.0 (API 24)
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
  */
-@RequiresApi(Build.VERSION_CODES.N)
+@RequiresApi(SystemVersion.N)
 fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)
 
 /**

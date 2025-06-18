@@ -44,6 +44,8 @@ dependencies {
     implementation(org.lsposed.hiddenapibypass.hiddenapibypass)
     implementation(com.highcapable.kavaref.kavaref.core)
     implementation(com.highcapable.kavaref.kavaref.extension)
+    implementation(com.highcapable.betterandroid.ui.extension)
+    implementation(com.highcapable.betterandroid.system.extension)
     implementation(androidx.core.core.ktx)
     implementation(androidx.appcompat.appcompat)
     implementation(androidx.preference.preference.ktx)

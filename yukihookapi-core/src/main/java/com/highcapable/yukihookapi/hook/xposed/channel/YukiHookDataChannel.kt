@@ -23,7 +23,6 @@
 
 package com.highcapable.yukihookapi.hook.xposed.channel
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
@@ -32,11 +31,13 @@ import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.TransactionTooLargeException
+import com.highcapable.betterandroid.system.extension.component.BroadcastReceiver
+import com.highcapable.betterandroid.system.extension.component.registerReceiver
+import com.highcapable.betterandroid.system.extension.component.sendBroadcast
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.log.data.YLogData
@@ -142,26 +143,21 @@ class YukiHookDataChannel private constructor() {
     private var isAllowSendTooLargeData = false
 
     /** 广播接收器 */
-    private val handlerReceiver by lazy {
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent == null) return
-                intent.action?.also { action ->
-                    runCatching {
-                        receiverCallbacks.takeIf { it.isNotEmpty() }?.apply {
-                            mutableListOf<String>().also { destroyedCallbacks ->
-                                forEach { (key, it) ->
-                                    when {
-                                        (it.first as? Activity?)?.isDestroyed == true -> destroyedCallbacks.add(key)
-                                        isCurrentBroadcast(it.first) -> it.second(action, intent)
-                                    }
-                                }
-                                destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
+    private val handlerReceiver = BroadcastReceiver { _, intent ->
+        intent.action?.also { action ->
+            runCatching {
+                receiverCallbacks.takeIf { it.isNotEmpty() }?.apply {
+                    mutableListOf<String>().also { destroyedCallbacks ->
+                        forEach { (key, it) ->
+                            when {
+                                (it.first as? Activity?)?.isDestroyed == true -> destroyedCallbacks.add(key)
+                                isCurrentBroadcast(it.first) -> it.second(action, intent)
                             }
                         }
-                    }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
+                        destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
+                    }
                 }
-            }
+            }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
         }
     }
 
@@ -208,18 +204,10 @@ class YukiHookDataChannel private constructor() {
     internal fun register(context: Context?, packageName: String = context?.packageName ?: "") {
         if (YukiHookAPI.Configs.isEnableDataChannel.not() || context == null) return
         receiverContext = context
-        IntentFilter().apply {
+        val filter = IntentFilter().apply {
             addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
-        }.also { filter ->
-            /**
-             * 从 Android 14 (及预览版) 开始
-             * 外部广播必须声明 [Context.RECEIVER_EXPORTED]
-             */
-            @SuppressLint("UnspecifiedRegisterReceiverFlag")
-            if (Build.VERSION.SDK_INT >= 33)
-                context.registerReceiver(handlerReceiver, filter, Context.RECEIVER_EXPORTED)
-            else context.registerReceiver(handlerReceiver, filter)
         }
+        context.registerReceiver(filter, exported = true, body = handlerReceiver)
         /** 排除模块环境下模块注册自身广播 */
         if (isXposedEnvironment.not()) return
         nameSpace(context, packageName).with {
@@ -696,13 +684,13 @@ class YukiHookDataChannel private constructor() {
          */
         private fun pushReceiver(wrapper: ChannelDataWrapper<*>) {
             /** 发送广播 */
-            (context ?: AppParasitics.currentApplication)?.sendBroadcast(Intent().apply {
+            (context ?: AppParasitics.currentApplication)?.sendBroadcast {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
                 /** 由于系统框架的包名可能不唯一 - 为防止发生问题不再对系统框架的广播设置接收者包名 */
                 if (packageName != AppParasitics.SYSTEM_FRAMEWORK_NAME)
                     setPackage(if (isXposedEnvironment) YukiXposedModule.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
-            }) ?: YLog.innerE("Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
+            } ?: YLog.innerE("Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
         }
     }
 }
