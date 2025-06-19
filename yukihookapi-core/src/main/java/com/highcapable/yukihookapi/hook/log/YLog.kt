@@ -109,6 +109,10 @@ object YLog {
          * 当 [isEnable] 关闭后 [YukiHookAPI.Configs.isDebug] 也将同时关闭
          */
         var isEnable = true
+            set(value) {
+                field = value
+                initKavaRefLoggerIfNot()
+            }
 
         /**
          * 是否启用调试日志的记录功能 - 默认不启用
@@ -122,6 +126,10 @@ object YLog {
          * 开启后你可以调用 [saveToFile] 实时保存日志到文件或使用 [contents] 获取实时日志文件
          */
         var isRecord = false
+            set(value) {
+                field = value
+                initKavaRefLoggerIfNot()
+            }
 
         /** 当前已添加的元素顺序列表数组 */
         internal var elements = arrayOf(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
@@ -269,7 +277,7 @@ object YLog {
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
     internal fun innerD(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not() || YukiHookAPI.Configs.isDebug.not()) return
+        if (Configs.isEnable.not() || YukiHookAPI.Configs.isDebug.not()) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "D", msg = msg, throwable = e), isImplicit)
     }
 
@@ -280,7 +288,7 @@ object YLog {
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
     internal fun innerI(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not()) return
+        if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "I", msg = msg, throwable = e), isImplicit)
     }
 
@@ -291,7 +299,7 @@ object YLog {
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
     internal fun innerW(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not()) return
+        if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "W", msg = msg, throwable = e), isImplicit)
     }
 
@@ -302,7 +310,7 @@ object YLog {
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
     internal fun innerE(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not()) return
+        if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "E", msg = msg, throwable = e), isImplicit)
     }
 
