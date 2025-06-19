@@ -231,8 +231,8 @@ object YLog {
      * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [Configs.tag]
      * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
      */
-    fun debug(msg: String = "", e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
-        log(env, YLogData(priority = "D", tag = tag, msg = msg, throwable = e))
+    fun debug(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
+        log(env, YLogData(priority = "D", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
      * 打印 Info 级别 Log
@@ -243,8 +243,8 @@ object YLog {
      * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [Configs.tag]
      * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
      */
-    fun info(msg: String = "", e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
-        log(env, YLogData(priority = "I", tag = tag, msg = msg, throwable = e))
+    fun info(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
+        log(env, YLogData(priority = "I", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
      * 打印 Warn 级别 Log
@@ -255,8 +255,8 @@ object YLog {
      * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [Configs.tag]
      * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
      */
-    fun warn(msg: String = "", e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
-        log(env, YLogData(priority = "W", tag = tag, msg = msg, throwable = e))
+    fun warn(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
+        log(env, YLogData(priority = "W", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
      * 打印 Error 级别 Log
@@ -267,8 +267,8 @@ object YLog {
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
      */
-    fun error(msg: String = "", e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
-        log(env, YLogData(priority = "E", tag = tag, msg = msg, throwable = e))
+    fun error(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
+        log(env, YLogData(priority = "E", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
      * [YukiHookAPI] (内部) 打印 Debug 级别 Log
@@ -276,9 +276,9 @@ object YLog {
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
-    internal fun innerD(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+    internal fun innerD(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not() || YukiHookAPI.Configs.isDebug.not()) return initKavaRefLoggerIfNot()
-        log(EnvType.BOTH, YLogData(priority = "D", msg = msg, throwable = e), isImplicit)
+        log(EnvType.BOTH, YLogData(priority = "D", msg = msg.toString(), throwable = e), isImplicit)
     }
 
     /**
@@ -287,9 +287,9 @@ object YLog {
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
-    internal fun innerI(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+    internal fun innerI(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
-        log(EnvType.BOTH, YLogData(priority = "I", msg = msg, throwable = e), isImplicit)
+        log(EnvType.BOTH, YLogData(priority = "I", msg = msg.toString(), throwable = e), isImplicit)
     }
 
     /**
@@ -298,9 +298,9 @@ object YLog {
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
-    internal fun innerW(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+    internal fun innerW(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
-        log(EnvType.BOTH, YLogData(priority = "W", msg = msg, throwable = e), isImplicit)
+        log(EnvType.BOTH, YLogData(priority = "W", msg = msg.toString(), throwable = e), isImplicit)
     }
 
     /**
@@ -309,9 +309,9 @@ object YLog {
      * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
      * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
      */
-    internal fun innerE(msg: String = "", e: Throwable? = null, isImplicit: Boolean = false) {
+    internal fun innerE(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
-        log(EnvType.BOTH, YLogData(priority = "E", msg = msg, throwable = e), isImplicit)
+        log(EnvType.BOTH, YLogData(priority = "E", msg = msg.toString(), throwable = e), isImplicit)
     }
 
     /**

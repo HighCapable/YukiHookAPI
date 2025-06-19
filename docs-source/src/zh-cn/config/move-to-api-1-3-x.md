@@ -86,3 +86,7 @@ val instance: Any
 `YukiHookAPI` 从 `1.3.0` 版本开始，注册模块 `Activity` 行为的方式发生了变更。
 
 请阅读 [注册模块 Activity](../api/special-features/host-inject#注册模块-activity) 以了解更多信息。
+
+## YLog 行为变更
+
+`YukiHookAPI` 从 `1.3.0` 版本开始允许 `YLog` 的 `msg` 参数传入任意对象，它们都会自动使用 `toString()` 方法进行转换。
