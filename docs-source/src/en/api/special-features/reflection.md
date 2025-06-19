@@ -215,7 +215,7 @@ Please note that the more the same type **Class** is matched, the slower the spe
 
 ::: danger
 
-After **YukiHookAPI** **2.0.0** released, this function will be deprecated and will no longer be migrated to [YukiReflection](https://github.com/HighCapable/YukiReflection).
+~~After **YukiHookAPI** **2.0.0** released, this function will be deprecated and will no longer be migrated to [YukiReflection](https://github.com/HighCapable/YukiReflection).~~
 
 We welcome all developers to start using [DexKit](https://github.com/LuckyPray/DexKit), which is a high-performance runtime parsing library for **Dex** implemented in C++, which is more efficient than the Java layer in terms of performance, efficient and excellent, it is still in the development stage, your valuable suggestions are welcome.
 

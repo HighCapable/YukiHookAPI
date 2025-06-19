@@ -1,10 +1,10 @@
 # 从其它 Hook API 迁移
 
-此文档可以帮助你快速从你熟悉的 Hook API 迁移到 `YukiHookAPI` 来熟悉对 `YukiHookAPI` 的相关写法。
+此文档可以帮助你快速从你熟悉的 Hook API 迁移至 `YukiHookAPI` 来熟悉对 `YukiHookAPI` 的相关写法。
 
 ## Rovo89 Xposed API
 
-> 若你熟悉 [Rovo89 Xposed API](https://api.xposed.info/)，你可以参考下方的相同点将自己的 API 快速迁移到 `YukiHookAPI`。
+> 若你熟悉 [Rovo89 Xposed API](https://api.xposed.info/)，你可以参考下方的相同点将自己的 API 快速迁移至 `YukiHookAPI`。
 
 ### 迁移 Hook 入口点
 

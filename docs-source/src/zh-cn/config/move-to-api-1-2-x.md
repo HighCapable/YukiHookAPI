@@ -1,12 +1,12 @@
-# 迁移到 YukiHookAPI 1.2.x
+# 迁移至 YukiHookAPI 1.2.x
 
 `YukiHookAPI` 从 `1.2.0` 版本开始进行了大量调整，你可以继续向下阅读以查看有哪些注意事项和新功能。
 
 ::: warning
 
-如果你正在使用 `1.2.x` 之前版本的 `YukiHookAPI`，建议先参考此文档迁移到 `1.2.x` 版本。
+如果你正在使用 `1.2.x` 之前版本的 `YukiHookAPI`，建议先参考此文档迁移至 `1.2.x` 版本。
 
-如果你正在使用 `1.2.x` 版本的 `YukiHookAPI`，请直接阅读 [迁移到 YukiHookAPI 1.3.x](move-to-api-1-3-x) 而不是此文档。
+如果你正在使用 `1.2.x` 版本的 `YukiHookAPI`，请直接阅读 [迁移至 YukiHookAPI 1.3.x](move-to-api-1-3-x) 而不是此文档。
 
 :::
 
@@ -66,7 +66,7 @@ findClass("com.example.Test").hook {
     }
 ```
 
-新版 API 的 Hook 对象从 `Class` 迁移到了 `Member`，这种方式将更加直观。
+新版 API 的 Hook 对象从 `Class` 迁移至了 `Member`，这种方式将更加直观。
 
 ## 差异性功能
 

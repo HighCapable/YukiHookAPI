@@ -197,8 +197,8 @@ export const navBarItems = {
                 { text: 'API 异常处理', link: i18n.string(navigationLinks.config[1], 'zh-cn') },
                 { text: '作为 Xposed 模块使用的相关配置', link: i18n.string(navigationLinks.config[2], 'zh-cn') },
                 { text: '作为 Hook API 使用的相关配置', link: i18n.string(navigationLinks.config[3], 'zh-cn') },
-                { text: '迁移到 YukiHookAPI 1.2.x', link: i18n.string(navigationLinks.config[4], 'zh-cn') },
-                { text: '迁移到 YukiHookAPI 1.3.x', link: i18n.string(navigationLinks.config[5], 'zh-cn') },
+                { text: '迁移至 YukiHookAPI 1.2.x', link: i18n.string(navigationLinks.config[4], 'zh-cn') },
+                { text: '迁移至 YukiHookAPI 1.3.x', link: i18n.string(navigationLinks.config[5], 'zh-cn') },
                 { text: 'R8 与 Proguard 混淆', link: i18n.string(navigationLinks.config[6], 'zh-cn') }
             ]
         }, {

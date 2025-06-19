@@ -1,27 +1,27 @@
-# 迁移到 YukiHookAPI 1.3.x
+# 迁移至 YukiHookAPI 1.3.x
 
 `YukiHookAPI` 从 `1.3.0` 版本开始弃用了自身的反射 API，你可以继续向下阅读以查看有哪些注意事项和新功能。
 
 ::: warning
 
-如果你正在使用 `1.2.x` 及之前版本的 `YukiHookAPI`，建议先阅读 [迁移到 YukiHookAPI 1.2.x](move-to-api-1-2-x) 而不是此文档。
+如果你正在使用 `1.2.x` 及之前版本的 `YukiHookAPI`，建议先阅读 [迁移至 YukiHookAPI 1.2.x](move-to-api-1-2-x) 而不是此文档。
 
 :::
 
 ## 自身反射 API 弃用
 
-`YukiHookAPI` 从 `1.3.0` 版本开始弃用了自身的反射 API，现在我们推荐所有开发者迁移到全新开发的
+`YukiHookAPI` 从 `1.3.0` 版本开始弃用了自身的反射 API，现在我们推荐所有开发者迁移至全新开发的
 [KavaRef](https://github.com/HighCapable/KavaRef)，我们不再推荐使用 `YukiHookAPI` 自身的反射 API，这些 API 已被标记为弃用。
 
 请参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/config/migration) 的迁移文档，这将跳转到 `KavaRef` 的文档。
 
-`YukiHookAPI` 目前已经实现了反射 API 的完全解耦合，其内部 API 使用的反射 API 同样迁移到了 `KavaRef`，且已经稳定测试通过。
+`YukiHookAPI` 目前已经实现了反射 API 的完全解耦合，其内部 API 使用的反射 API 同样迁移至了 `KavaRef`，且已经稳定测试通过。
 
-在后期的 `2.0.0` 版本中，自身反射 API 将被完全移除，在此期间，你将有足够的时间来学习和迁移到这套全新的反射 API。
+在后期的 `2.0.0` 版本中，自身反射 API 将被完全移除，在此期间，你将有足够的时间来学习和迁移至这套全新的反射 API。
 
 ## FreeReflection 弃用
 
-`YukiHookAPI` 从 `1.3.0` 版本开始弃用了 [FreeReflection](https://github.com/tiann/FreeReflection) 并迁移到由 LSPosed 团队维护的
+`YukiHookAPI` 从 `1.3.0` 版本开始弃用了 [FreeReflection](https://github.com/tiann/FreeReflection) 并迁移至由 LSPosed 团队维护的
 [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass)。
 
 在反射系统隐藏 API 时，你不可以像之前那样直接进行反射，而是需要进行一些操作。
@@ -43,7 +43,7 @@
 
 ::: warning
 
-`AndroidHiddenApiBypassResolver` 是暂定的功能，可能会在 `2.0.0` 版本迁移到单独的模块中，你也可以参考
+`AndroidHiddenApiBypassResolver` 是暂定的功能，可能会在 `2.0.0` 版本迁移至单独的模块中，你也可以参考
 [第三方 Member 解析器](https://highcapable.github.io/KavaRef/zh-cn/config/processor-resolvers) 自己实现一份，这将跳转到 `KavaRef` 的文档。
 
 :::
