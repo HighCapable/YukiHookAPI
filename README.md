@@ -32,6 +32,12 @@ Formerly the Innocent Xposed API used in [Development Learning Project](https://
 
 For supportive related information, you can check it directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/supportive).
 
+| <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
+|-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+
+🚀 `YukiHookAPI` is using `KavaRef` as a powerful driver for the reflection API.
+**Click on the link above star project**, and you can also use it gracefully!
+
 ## Cooperations
 
 The following are projects that have collaborated and are using `YukiHookAPI`.
