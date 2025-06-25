@@ -12,6 +12,12 @@ This project is open source and free, and will be maintained continuously accord
 
 The original version may have imperfections or bugs. We welcome to your feedback.
 
+::: warning
+
+The project builder will be maintained before the release of the first `2.0.0` version of `YukiHookAPI`. This project will be officially deprecated after the new version is released.
+
+:::
+
 Project Address [YukiHookAPI-ProjectBuilder](https://github.com/HighCapable/YukiHookAPI-ProjectBuilder)。
 
 If you want to download directly, you can [click here](https://github.com/HighCapable/YukiHookAPI-ProjectBuilder/releases) to go to the Release address.

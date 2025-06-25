@@ -10,6 +10,12 @@
 
 本项目完全开源免费，且会根据大家的使用情况持续维护，初代版本可能存在不完善或 BUG，欢迎反馈。
 
+::: warning
+
+项目构建器将会在 `YukiHookAPI` 发布第一个 `2.0.0` 版本之前做最后的维护，在新的版本发布后，这个项目将正式弃用。
+
+:::
+
 项目地址 [YukiHookAPI-ProjectBuilder](https://github.com/HighCapable/YukiHookAPI-ProjectBuilder)。
 
 若你想直接下载可以 [点击这里](https://github.com/HighCapable/YukiHookAPI-ProjectBuilder/releases) 前往 Release 发布地址。
