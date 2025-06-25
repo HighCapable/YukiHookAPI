@@ -30,19 +30,19 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleAc
 abstract class BaseActivity : AppViewsActivity(), ModuleActivity {
 
     override val moduleTheme get() = R.style.Theme_Default
-    
+
     override fun getClassLoader() = delegate.getClassLoader()
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         delegate.onCreate(savedInstanceState)
         super.onCreate(savedInstanceState)
     }
-    
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         delegate.onConfigurationChanged(newConfig)
         super.onConfigurationChanged(newConfig)
     }
-    
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         delegate.onRestoreInstanceState(savedInstanceState)
         super.onRestoreInstanceState(savedInstanceState)
