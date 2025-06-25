@@ -8,7 +8,16 @@
 
 :::
 
-### 1.2.1 | 2024.06.20 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.3.0 | 2025.06.25 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-3-x)
+- 弃用了 `YukiHookAPI` 自身的反射 API，现在请迁移到全新的 [KavaRef](https://github.com/HighCapable/KavaRef)
+- 弃用了重复 Hook 的限制，现在你可以重复 Hook 同一个方法
+- 弃用了 ~~`ModuleAppActivity`~~、~~`ModuleAppCompatActivity`~~，现在请使用 `ModuleActivity` 创建自己的代理 `Activity`
+- `YLog` 现已允许 `msg` 传入任意对象，将自动转换为字符串进行打印
+- `FreeReflection` 已被弃用，现已切换至 [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass)
+
+### 1.2.1 | 2024.06.20 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 捕获单例 Hooker 中的异常，防止其阻断整个进程
 - 在自动处理程序中添加自动使用 "`" 来修复 Kotlin 关键字为包名的情况，感谢 [Fengning Zhu](https://github.com/zhufengning) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/70)
@@ -46,7 +55,7 @@
 - `constructor()` 的行为不再是 `constructor { emptyParam() }`
 - 新增 `lazyClass`、`lazyClassOrNull` 方法，可延迟装载 `Class`
 
-### 1.1.11 | 2023.04.25 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.11 | 2023.04.25 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复从 `1.1.5` 版本开始的一个严重问题，`Member` 缓存未生效且持续存储最终引发 APP 内存溢出 (OOM)，感谢 [Art-Chen](https://github.com/Art-Chen)
 - 移除 `Member` 的直接缓存功能并作废 ~~`YukiHookAPI.Configs.isEnableMemberCache`~~，保留 `Class` 的缓存功能
@@ -55,7 +64,7 @@
 - 作废了 ~~`YukiHookAPI.Configs.isEnablePrefsBridgeCache`~~
 - 作废了 `YukiHookPrefsBridge` 中的 ~~`direct`~~、~~`clearCache`~~ 方法
 
-### 1.1.10 | 2023.04.21 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.10 | 2023.04.21 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - `Activity` 代理功能新增每个被代理的 `Activity` 指定单独的代理 `Activity` 功能
 - 修复 `YukiHookPrefsBridge` 中的 `contains`、`all` 方法未判断 `native` 功能的问题
@@ -64,7 +73,7 @@
 - 修改部分用于缓存的 `HashMap` 到 `ArrayMap` 以减少内存消耗
 - 修复一些其它可能出现的问题
 
-### 1.1.9 | 2023.04.17 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.9 | 2023.04.17 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 将依赖库的类型由 **Java Library** (jar) 修改为 **Android Library** (aar)
 - 移除通过 Hook 或反射 API 内部方法、参数的检查功能
@@ -84,7 +93,7 @@
 - 修改 `Activity` 代理功能的代理类为动态生成，防止不同模块注入宿主后造成冲突
 - 修复一些其它可能出现的问题
 
-### 1.1.8 | 2023.02.01 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.8 | 2023.02.01 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/23)
 - 移动 `YukiHookAPI` 自动生成的入口类名称文件 `assets/yukihookapi_init` 到 `resources/META-INF/yukihookapi_init`
@@ -98,7 +107,7 @@
 - 修复在 `PackageParam.AppLifecycle` 中可能存在多次注册生命周期的问题
 - Revert: 1.1.7 版本由于有一个严重问题已经撤回，请直接更新到此版本即可 (更新日志同 1.1.7 版本)
 
-### 1.1.6 | 2023.01.21 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.6 | 2023.01.21 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复 Xposed 模块装载时可能存在同一个进程多个包名的情况导致 `PackageParam` 保持单例后 `ClassLoader` 不符的严重问题
 - 新增同一个进程多个包名的情况下未区分包名时，停止装载单例化的子 Hooker 并打印警告信息
@@ -106,7 +115,7 @@
 - 修改 `MethodFinder`、`ConstructorFinder`、`ReflectionFactory` 中反射调用的方法参数名 `param` 为 `args`
 - 新增 Xposed 模块自动处理程序中判断入口类构造方法参数功能，入口类需要保证其不存在任何构造方法参数
 
-### 1.1.5 | 2023.01.13 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.5 | 2023.01.13 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 规范并优化整体代码风格
 - 对部分内部调用的 API 进行了私有化处理
@@ -148,7 +157,7 @@
 - 修复 `YukiHookLogger` 处理后的调试日志数据包名可能在 (Xposed) 宿主环境不正确的问题
 - 修复 Xposed 模块装载资源钩子 (Resources Hook) 事件时在部分系统上 (部分系统 APP 中) 包名可能不正确的问题
 
-### 1.1.4 | 2022.10.04 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.4 | 2022.10.04 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复 `YukiHookDataChannel` 可能不能响应系统框架中响应广播事件的问题，在 Android 13 中复现
 - 修复 `YukiHookDataChannel` 长达多个版本在 (Xposed) 宿主环境无法与模块通讯的问题
@@ -158,7 +167,7 @@
 - `PackageParam` 中新增 `loadApp`、`loadZygote`、`loadSystem`、`withProcess` 的同名多参数方法
 - 修复了一些可能存在的 BUG
 
-### 1.1.3 | 2022.09.30 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+### 1.1.3 | 2022.09.30 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复一个无法自定义 Hook 入口类名的致命错误
 - 添加 `LoggerFactory` 中的部分代码注释文案并更新特色功能文档
