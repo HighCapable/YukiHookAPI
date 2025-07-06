@@ -25,7 +25,7 @@ import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
-import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.KavaRef.Companion.asResolver
 
 /**
  * Fixed [AlertDialog] dialog button issue after injecting Module App's Resources in some Host Apps
@@ -38,9 +38,9 @@ import com.highcapable.kavaref.KavaRef.Companion.resolve
  * @return [AlertDialog]
  */
 fun AlertDialog.compatStyle(): AlertDialog {
-    resolve().firstField {
+    asResolver().firstField {
         name = "mAlert"
-    }.get()?.resolve()?.apply {
+    }.get()?.asResolver()?.apply {
         listOf(
             firstField { name = "mButtonPositive" }.get<Button>(),
             firstField { name = "mButtonNegative" }.get<Button>(),

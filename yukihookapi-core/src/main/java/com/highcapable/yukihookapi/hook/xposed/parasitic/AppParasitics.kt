@@ -43,6 +43,7 @@ import android.os.UserHandle
 import androidx.annotation.RequiresApi
 import com.highcapable.betterandroid.system.extension.component.registerReceiver
 import com.highcapable.betterandroid.system.extension.tool.SystemVersion
+import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.lazyClass
@@ -158,9 +159,9 @@ internal object AppParasitics {
                     name = "currentActivityThread"
                     emptyParameters()
                 }?.invoke()
-                val currentScope = current?.resolve()?.optional(silent = true)
+                val currentScope = current?.asResolver()?.optional(silent = true)
                 val mBoundApplication = currentScope?.firstFieldOrNull { name = "mBoundApplication" }?.get()
-                val appScope = mBoundApplication?.resolve()?.optional(silent = true)
+                val appScope = mBoundApplication?.asResolver()?.optional(silent = true)
                 appScope?.firstFieldOrNull { name = "appInfo" }?.get<ApplicationInfo>()
             }
 
@@ -402,7 +403,7 @@ internal object AppParasitics {
         if (YukiXposedModule.isXposedEnvironment) runCatching {
             if (currentPackageName == YukiXposedModule.modulePackageName)
                 return YLog.innerE("You cannot inject module resources into yourself")
-            hostResources.assets.resolve()
+            hostResources.assets.asResolver()
                 .processor(AndroidHiddenApiBypassResolver.get())
                 .optional(silent = true)
                 .firstMethodOrNull {
@@ -457,17 +458,17 @@ internal object AppParasitics {
                 .optional(silent = true)
                 .firstFieldOrNull { name = "sCurrentActivityThread" }
                 ?.get()
-            val instrumentation = sCurrentActivityThread?.resolve()
+            val instrumentation = sCurrentActivityThread?.asResolver()
                 ?.processor(AndroidHiddenApiBypassResolver.get())
                 ?.optional(silent = true)
                 ?.firstMethodOrNull { name = "getInstrumentation" }
                 ?.invoke<Instrumentation>() ?: error("Could not found Instrumentation in ActivityThread")
-            sCurrentActivityThread.resolve()
+            sCurrentActivityThread.asResolver()
                 .processor(AndroidHiddenApiBypassResolver.get())
                 .optional(silent = true)
                 .firstFieldOrNull { name = "mInstrumentation" }
                 ?.set(InstrumentationDelegate.wrapper(instrumentation))
-            val mH = sCurrentActivityThread.resolve()
+            val mH = sCurrentActivityThread.asResolver()
                 .processor(AndroidHiddenApiBypassResolver.get())
                 .optional(silent = true)
                 .firstFieldOrNull { name = "mH" }
