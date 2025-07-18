@@ -114,7 +114,7 @@ repositories {
     google()
     mavenCentral()
     // 作为 Xposed 模块使用务必添加，其它情况可选
-    maven { url("https://api.xposed.info/") }
+    maven("https://api.xposed.info/")
 }
 ```
 
@@ -185,7 +185,7 @@ repositories {
     google()
     mavenCentral()
     // 作为 Xposed 模块使用务必添加，其它情况可选
-    maven { url("https://api.xposed.info/") }
+    maven("https://api.xposed.info/")
 }
 ```
 
