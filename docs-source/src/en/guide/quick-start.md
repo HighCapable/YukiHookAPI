@@ -113,8 +113,8 @@ Add repositories in your project `build.gradle.kts`.
 repositories {
     google()
     mavenCentral()
-    // Must be added when used as an Xposed Module, otherwise optional
-    maven { url("https://api.xposed.info/") }
+    // Must be added when used as an Xposed Module, otherwise optional 
+    maven("https://api.xposed.info/")
 }
 ```
 
@@ -185,7 +185,7 @@ repositories {
     google()
     mavenCentral()
     // Must be added when used as an Xposed Module, otherwise optional
-    maven { url("https://api.xposed.info/") }
+    maven("https://api.xposed.info/")
 }
 ```
 
