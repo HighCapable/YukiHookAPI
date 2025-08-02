@@ -6,9 +6,9 @@
 
 The project needs to be created using `Android Studio` or `IntelliJ IDEA` and be of type Android project and have integrated Kotlin environment dependencies.
 
-- Android Studio (It is recommended to get the latest version [from here](https://developer.android.com/studio))
+- Android Studio (It is recommended to get the latest version from [here](https://developer.android.com/studio))
 
-- IntelliJ IDEA (It is recommended to get the latest version [from here](https://www.jetbrains.com/idea))
+- IntelliJ IDEA (It is recommended to get the latest version from [here](https://www.jetbrains.com/idea))
 
 - Kotlin 1.9.0+, Gradle 8+, Java 11, 17+, Android Gradle Plugin 8+
 
@@ -73,7 +73,7 @@ libraries:
 
 After adding it, run Gradle Sync and all dependencies will be autowired.
 
-Next, deploy plugins in your project `build.gradle.kts`.
+Next, deploy plugins in your project's `build.gradle.kts`.
 
 > The following example
 
@@ -85,7 +85,7 @@ plugins {
 }
 ```
 
-Then, deploy dependencies in your project `build.gradle.kts`.
+Then, deploy dependencies in your project's `build.gradle.kts`.
 
 > The following example
 
@@ -105,7 +105,7 @@ dependencies {
 
 #### Version Catalog
 
-Add repositories in your project `build.gradle.kts`.
+Add repositories in your project's `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -145,7 +145,7 @@ kavaref-extension = { module = "com.highcapable.kavaref:kavaref-extension", vers
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
 ```
 
-Next, deploy plugins in your project `build.gradle.kts`.
+Next, deploy plugins in your project's `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -156,7 +156,7 @@ plugins {
 }
 ```
 
-Then, deploy dependencies in your project `build.gradle.kts`.
+Then, deploy dependencies in your project's `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -176,7 +176,7 @@ dependencies {
 
 #### Traditional Method
 
-Add repositories in your project `build.gradle.kts`.
+Add repositories in your project's `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -189,7 +189,7 @@ repositories {
 }
 ```
 
-Add plugins in your project `build.gradle.kts`.
+Add plugins in your project's `build.gradle.kts`.
 
 > Kotlin DSL
 
@@ -200,7 +200,7 @@ plugins {
 }
 ```
 
-Add dependencies in your project `build.gradle.kts`.
+Add dependencies in your project's `build.gradle.kts`.
 
 > Kotlin DSL
 

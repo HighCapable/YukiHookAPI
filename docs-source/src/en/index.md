@@ -20,7 +20,7 @@ features:
     details: Natively supports multiple Xposed API usages and natively connects to multiple Xposed APIs, Hook Frameworks within the supported range can be quickly integrated.
   - title: Obfuscate Support
     details: The built Xposed Module simply supports R8, obfuscate will not destroy the hook entry point, and no other configuration is required under R8.
-  - title: Quickly Started
+  - title: Quick to Start
     details: Simple and easy to use it now! Do not need complex configuration and full development experience, Integrate dependencies and enjoy yourself.
 footer: Apache-2.0 License | Copyright (C) 2019 HighCapable
 ---

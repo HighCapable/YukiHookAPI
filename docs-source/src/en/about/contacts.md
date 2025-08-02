@@ -1,6 +1,6 @@
 # Contact Us
 
-> If you have any questions in use, or have any constructive suggestions, you can contact us.
+> If you have any questions during usage, or have any constructive suggestions, you can contact us.
 
 Join our developers group.
 
