@@ -1,4 +1,4 @@
-# Looking for Future
+# Looking Toward the Future
 
 > The future is bright and uncertain, let us look forward to the future development space of `YukiHookAPI`.
 
