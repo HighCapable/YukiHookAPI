@@ -6,9 +6,9 @@
 
 项目需要使用 `Android Studio` 或 `IntelliJ IDEA` 创建且类型为 Android 项目并已集成 Kotlin 环境依赖。
 
-- Android Studio (建议 [从这里](https://developer.android.com/studio) 获取最新版本)
+- Android Studio (建议从 [这里](https://developer.android.com/studio) 获取最新版本)
 
-- IntelliJ IDEA (建议 [从这里](https://www.jetbrains.com/idea) 获取最新版本)
+- IntelliJ IDEA (建议从 [这里](https://www.jetbrains.com/idea) 获取最新版本)
 
 - Kotlin 1.9.0+、Gradle 8+、Java 11、17+、Android Gradle Plugin 8+
 
