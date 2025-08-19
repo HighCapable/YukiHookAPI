@@ -26,6 +26,7 @@
 
 package com.highcapable.yukihookapi.hook.core
 
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.isNotSubclassOf
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -49,7 +50,6 @@ import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
 import com.highcapable.yukihookapi.hook.utils.factory.await
 import com.highcapable.yukihookapi.hook.utils.factory.conditions
@@ -546,7 +546,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          */
         private fun checkingReturnType(origin: Class<*>?, target: Class<*>?) {
             if (origin == null || target == null) return
-            if (origin == AnyClass) return
+            if (origin == classOf<Any>()) return
             origin.toJavaPrimitiveType().also { o ->
                 target.toJavaPrimitiveType().also { t ->
                     if (o isNotSubclassOf t && t isNotSubclassOf o)
