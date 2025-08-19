@@ -42,7 +42,7 @@ import android.os.Handler
 import android.os.UserHandle
 import androidx.annotation.RequiresApi
 import com.highcapable.betterandroid.system.extension.component.registerReceiver
-import com.highcapable.betterandroid.system.extension.tool.SystemVersion
+import com.highcapable.betterandroid.system.extension.tool.AndroidVersion
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
@@ -420,13 +420,13 @@ internal object AppParasitics {
      * @param context 当前 [Context]
      * @param proxy 代理的 [Activity]
      */
-    @RequiresApi(SystemVersion.N)
+    @RequiresApi(AndroidVersion.N)
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
         if (isActivityProxyRegistered) return
         if (YukiXposedModule.isXposedEnvironment.not()) return YLog.innerW("You can only register Activity Proxy in Xposed Environment")
         if (context.packageName == YukiXposedModule.modulePackageName) return YLog.innerE("You cannot register Activity Proxy into yourself")
         @SuppressLint("ObsoleteSdkInt")
-        if (SystemVersion.isLowTo(SystemVersion.N)) return YLog.innerE("Activity Proxy only support for Android 7.0 (API 24) or higher")
+        if (AndroidVersion.isAtMost(AndroidVersion.N)) return YLog.innerE("Activity Proxy only support for Android 7.0 (API 24) or higher")
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${YukiXposedModule.modulePackageName}.ACTIVITY_PROXY_INTENT"

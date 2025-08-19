@@ -30,7 +30,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
-import com.highcapable.betterandroid.system.extension.tool.SystemVersion
+import com.highcapable.betterandroid.system.extension.tool.AndroidVersion
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.lazyClass
@@ -94,7 +94,7 @@ internal object HandlerDelegateCaller {
                     if (intent?.hasExtra(ActivityProxyConfig.proxyIntentName) == true) {
                         @Suppress("DEPRECATION")
                         val subIntent = intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName)
-                        if (SystemVersion.isHighOrEqualsTo(SystemVersion.S)) {
+                        if (AndroidVersion.isAtLeast(AndroidVersion.S)) {
                             val currentActivityThread = ActivityThreadClass.resolve()
                                 .processor(AndroidHiddenApiBypassResolver.get())
                                 .optional(silent = true)
