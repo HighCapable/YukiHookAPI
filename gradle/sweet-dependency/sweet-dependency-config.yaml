@@ -19,16 +19,16 @@ repositories:
 plugins:
   org.jetbrains.kotlin.jvm:
     alias: kotlin-jvm
-    version: 2.1.10
+    version: 2.2.10
   org.jetbrains.kotlin.android:
     alias: kotlin-android
     version-ref: kotlin-jvm
   com.google.devtools.ksp:
     alias: kotlin-ksp
-    version: 2.1.10-1.0.31
+    version: 2.2.10-2.0.2
   com.android.application:
     alias: android-application
-    version: 8.9.3
+    version: 8.12.1
   com.android.library:
     alias: android-library
     version-ref: android-application
