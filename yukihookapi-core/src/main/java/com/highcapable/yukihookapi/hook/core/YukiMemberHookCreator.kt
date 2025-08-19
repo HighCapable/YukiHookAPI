@@ -49,6 +49,7 @@ import com.highcapable.yukihookapi.hook.factory.toJavaPrimitiveType
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
 import com.highcapable.yukihookapi.hook.utils.factory.await
 import com.highcapable.yukihookapi.hook.utils.factory.conditions
@@ -545,6 +546,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          */
         private fun checkingReturnType(origin: Class<*>?, target: Class<*>?) {
             if (origin == null || target == null) return
+            if (origin == AnyClass) return
             origin.toJavaPrimitiveType().also { o ->
                 target.toJavaPrimitiveType().also { t ->
                     if (o isNotSubclassOf t && t isNotSubclassOf o)
@@ -843,7 +845,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
              * 监听 [members] 重复 Hook 的回调方法
              *
              * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
-             * 
+             *
              * - 不再限制重复 Hook 操作
              * @return [Result] 可继续向下监听
              */
