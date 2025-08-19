@@ -26,6 +26,7 @@
 
 package com.highcapable.yukihookapi.hook.core
 
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.isNotSubclassOf
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.bean.HookClass
@@ -545,6 +546,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
          */
         private fun checkingReturnType(origin: Class<*>?, target: Class<*>?) {
             if (origin == null || target == null) return
+            if (origin == classOf<Any>()) return
             origin.toJavaPrimitiveType().also { o ->
                 target.toJavaPrimitiveType().also { t ->
                     if (o isNotSubclassOf t && t isNotSubclassOf o)
@@ -843,7 +845,7 @@ class YukiMemberHookCreator internal constructor(private val packageParam: Packa
              * 监听 [members] 重复 Hook 的回调方法
              *
              * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
-             * 
+             *
              * - 不再限制重复 Hook 操作
              * @return [Result] 可继续向下监听
              */
