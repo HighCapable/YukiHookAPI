@@ -61,15 +61,15 @@ libraries:
       version: 1.0.1
   com.highcapable.hikage:
     hikage-core:
-      version: 1.0.1
+      version: 1.0.2
     hikage-compiler:
-      version: 1.0.0
+      version: 1.0.1
     hikage-extension:
-      version: 1.0.0
+      version: 1.0.1
     hikage-widget-androidx:
-      version: 1.0.0
+      version: 1.0.1
     hikage-widget-material:
-      version: 1.0.0
+      version: 1.0.1
   com.highcapable.betterandroid:
     ui-component:
       version: 1.0.8
