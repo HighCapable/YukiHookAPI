@@ -216,7 +216,7 @@ internal object AppParasitics {
         if (isClassLoaderHooked) return
         val loadClass = ClassLoader::class.resolve()
             .optional(silent = true)
-            .firstMethodOrNull { 
+            .firstMethodOrNull {
                 name = "loadClass"
                 parameters(String::class, Boolean::class)
             }
@@ -509,16 +509,18 @@ internal object AppParasitics {
                 ?.optional(silent = true)
                 ?.firstFieldOrNull { name = "IActivityTaskManagerSingleton" }
                 ?.get()
-            SingletonClass.resolve()
-                .processor(AndroidHiddenApiBypassResolver.get())
-                .optional(silent = true)
-                .firstMethodOrNull { name = "get" }
-                ?.of(singleton)
-                ?.invokeQuietly()
-            val mInstanceResolver2 = mInstanceResolver?.copy()?.of(singleton)
-            val mInstance2 = mInstanceResolver2?.get()
-            mInstance2?.let {
-                mInstanceResolver2.set(IActivityManagerProxyImpl.createWrapper(IActivityTaskManagerClass, it))
+            singleton?.let {
+                SingletonClass.resolve()
+                    .processor(AndroidHiddenApiBypassResolver.get())
+                    .optional(silent = true)
+                    .firstMethodOrNull { name = "get" }
+                    ?.of(singleton)
+                    ?.invokeQuietly()
+                val mInstanceResolver2 = mInstanceResolver?.copy()?.of(singleton)
+                val mInstance2 = mInstanceResolver2?.get()
+                mInstance2?.let {
+                    mInstanceResolver2.set(IActivityManagerProxyImpl.createWrapper(IActivityTaskManagerClass, it))
+                }
             }
             isActivityProxyRegistered = true
         }.onFailure { YLog.innerE("Activity Proxy initialization failed because got an exception", it) }
