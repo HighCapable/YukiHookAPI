@@ -28,7 +28,7 @@ plugins:
     version: 2.2.10-2.0.2
   com.android.application:
     alias: android-application
-    version: 8.12.1
+    version: 8.13.0
   com.android.library:
     alias: android-library
     version-ref: android-application
@@ -91,7 +91,7 @@ libraries:
       version: 1.7.1
   androidx.lifecycle:
     lifecycle-viewmodel-ktx:
-      version: 2.9.2
+      version: 2.9.3
   com.google.android.material:
     material:
       version: 1.11.0
