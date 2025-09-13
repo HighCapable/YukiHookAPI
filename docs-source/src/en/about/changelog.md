@@ -16,7 +16,13 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.3.0 | 2024.06.25 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.3.1 | 2025.09.13 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+
+- Updated dependencies to resolve conflict issues with BetterAndroid
+- Fixed Activity proxy issues on Android 9 and below
+- Fixed an issue where return values were still checked when the Hook method return type was `Object`
+
+### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - This is a major update, please refer to [Migrate to YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-3-x)
 - The reflection API of `YukiHookAPI` is deprecated, please move to the brand new [KavaRef](https://github.com/HighCapable/KavaRef)

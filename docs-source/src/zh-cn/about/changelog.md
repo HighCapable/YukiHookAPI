@@ -8,7 +8,13 @@
 
 :::
 
-### 1.3.0 | 2025.06.25 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.3.1 | 2025.09.13 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+
+- 更新依赖以解决与 BetterAndroid 冲突的问题
+- 修复 Android 9 及以下系统 Activity 代理的问题
+- 修复在 Hook 方法返回值为 `Object` 时依然检查返回值的问题
+
+### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-3-x)
 - 弃用了 `YukiHookAPI` 自身的反射 API，现在请迁移到全新的 [KavaRef](https://github.com/HighCapable/KavaRef)
