@@ -34,7 +34,7 @@ import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import androidx.core.net.toUri
-import com.highcapable.betterandroid.system.extension.tool.SystemVersion
+import com.highcapable.betterandroid.system.extension.tool.AndroidVersion
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -118,7 +118,7 @@ fun Context.dataChannel(packageName: String) = YukiHookDataChannel.instance().na
 val Context.processName
     get() = runCatching {
         BufferedReader(FileReader(File("/proc/${Process.myPid()}/cmdline"))).let { buff ->
-            buff.readLine().trim { it <= ' ' }.let {
+            buff.readLine().trim().let {
                 buff.close()
                 it
             }
@@ -173,7 +173,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  * - 最低支持 Android 7.0 (API 24)
  * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
  */
-@RequiresApi(SystemVersion.N)
+@RequiresApi(AndroidVersion.N)
 fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)
 
 /**

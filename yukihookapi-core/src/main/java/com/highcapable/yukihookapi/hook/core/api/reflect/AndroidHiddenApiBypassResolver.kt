@@ -21,7 +21,7 @@
  */
 package com.highcapable.yukihookapi.hook.core.api.reflect
 
-import com.highcapable.betterandroid.system.extension.tool.SystemVersion
+import com.highcapable.betterandroid.system.extension.tool.AndroidVersion
 import com.highcapable.kavaref.resolver.processor.MemberProcessor
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.reflect.Constructor
@@ -50,12 +50,12 @@ class AndroidHiddenApiBypassResolver private constructor() : MemberProcessor.Res
     }
 
     override fun <T : Any> getDeclaredConstructors(declaringClass: Class<T>): List<Constructor<T>> =
-        SystemVersion.require(SystemVersion.P, super.getDeclaredConstructors(declaringClass)) {
+        AndroidVersion.require(AndroidVersion.P, super.getDeclaredConstructors(declaringClass)) {
             HiddenApiBypass.getDeclaredMethods(declaringClass).filterIsInstance<Constructor<T>>().toList()
         }
 
     override fun <T : Any> getDeclaredMethods(declaringClass: Class<T>): List<Method> =
-        SystemVersion.require(SystemVersion.P, super.getDeclaredMethods(declaringClass)) {
+        AndroidVersion.require(AndroidVersion.P, super.getDeclaredMethods(declaringClass)) {
             HiddenApiBypass.getDeclaredMethods(declaringClass).filterIsInstance<Method>().toList()
         }
 }
