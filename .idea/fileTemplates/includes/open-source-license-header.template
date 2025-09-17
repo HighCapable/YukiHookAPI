@@ -1,0 +1,13 @@
+/*
+ * #parse("project-name") - #parse("project-description")
+
+ * Copyright (C) #parse("copyright-name")
+
+ * #parse("project-url")
+
+ *
+ #parse("license-content")
+
+ *
+ * This file is created by $USER on $DATE.
+ */
