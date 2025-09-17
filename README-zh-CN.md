@@ -29,12 +29,20 @@
 
 [点击这里](https://highcapable.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
 
-有关支持性的相关信息，你可以直接 [点击这里](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/supportive) 进行查看。
+有关支持性的相关信息，你可以直接 [点击这里](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/supportive)
+进行查看。
 
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
 🚀 `YukiHookAPI` 正使用 `KavaRef` 作为反射 API 强力驱动，**点击上方链接 star 这个项目**，你也可以优雅地使用它！
+
+## 探索新版本
+
+`2.x` 版本正在重构中，你可以下方切换到 `2.x` 分支查看当前的开发进度。
+
+| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHookAPI/tree/2.x) |
+|---------------------------------------------------------------------|---------------------------------------------------------------------|
 
 ## 合作项目
 
@@ -67,7 +75,8 @@
 | [HookGG](https://github.com/HdShare/HookGG)                                     | [HdShare](https://github.com/HdShare)           |
 | [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 
-你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
+你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (
+私有仓库可以不需要注明网页链接)。
 
 ## 项目推广
 

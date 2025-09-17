@@ -15,28 +15,41 @@ English | [简体中文](README-zh-CN.md)
 | <img src="https://github.com/HighCapable/.github/blob/main/img-src/logo.jpg?raw=true" width = "30" height = "30" alt="LOGO"/> | [HighCapable](https://github.com/HighCapable) |
 |-------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
 
-This project belongs to the above-mentioned organization, **click the link above to follow this organization** and discover more good projects.
+This project belongs to the above-mentioned organization, **click the link above to follow this
+organization** and discover more good projects.
 
 ## What's this
 
 This is an efficient Hook API rebuilt based on the Xposed API using Kotlin,
 and creates rich function extensions for the development of Xposed Modules.
 
-The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016).
+The name is taken
+from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016).
 
-Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced.
+Formerly the Innocent Xposed API used
+in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced.
 
 ## Get Started
 
-[Click here](https://highcapable.github.io/YukiHookAPI/en/) go to the documentation page for more detailed tutorials and content.
+[Click here](https://highcapable.github.io/YukiHookAPI/en/) go to the documentation page for more
+detailed tutorials and content.
 
-For supportive related information, you can check it directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/supportive).
+For supportive related information, you can check it
+directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/supportive).
 
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
 🚀 `YukiHookAPI` is using `KavaRef` as a powerful driver for the reflection API.
 **Click on the link above star project**, and you can also use it gracefully!
+
+## Explore New Version
+
+The `2.x` version is being refactored, you can switch to the `2.x` branch below to view the current
+development progress.
+
+| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHookAPI/tree/2.x) |
+|---------------------------------------------------------------------|---------------------------------------------------------------------|
 
 ## Cooperations
 
@@ -69,7 +82,8 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [HookGG](https://github.com/HdShare/HookGG)                                     | [HdShare](https://github.com/HdShare)           |
 | [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 
-Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private repositories do not need to indicate web
+Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private
+repositories do not need to indicate web
 links).
 
 ## Promotion
