@@ -45,9 +45,11 @@
 
 # Kotlin
 .kotlin
+.idea/kotlinc.xml
 
 # Misc
 .idea/misc.xml
+.idea/markdown.xml
 
 # CMake
 cmake-build-*/
@@ -91,6 +93,8 @@ fabric.properties
 .idea/androidTestResultsUserPreferences.xml
 
 # Android projects
+.idea/AndroidProjectSystem.xml
+.idea/deviceManager.xml
 **/local.properties
 /captures
 .externalNativeBuild
@@ -105,6 +109,12 @@ docs-gen
 site
 *.bak
 .idea/appInsightsSettings.xml
+
+# Discord plugin for IntelliJ
+.idea/discord.xml
+
+# Copilot for IntelliJ
+.idea/copilot**
 
 # Mac OS
 .DS_Store
