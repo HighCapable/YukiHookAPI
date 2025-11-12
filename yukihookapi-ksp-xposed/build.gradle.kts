@@ -1,11 +1,11 @@
 plugins {
-    autowire(libs.plugins.kotlin.jvm)
-    autowire(libs.plugins.kotlin.ksp)
-    autowire(libs.plugins.maven.publish)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.maven.publish)
 }
 
-group = property.project.groupName
-version = property.project.yukihookapi.ksp.xposed.version
+group = gropify.project.groupName
+version = gropify.project.yukihookapi.ksp.xposed.version
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -27,15 +27,15 @@ kotlin {
 }
 
 dependencies {
-    implementation(com.google.auto.service.auto.service.annotations)
-    compileOnly(com.google.devtools.ksp.symbol.processing.api)
-    ksp(dev.zacsweers.autoservice.auto.service.ksp)
+    implementation(libs.auto.service.annotations)
+    compileOnly(libs.symbol.processing.api)
+    ksp(libs.auto.service.ksp)
 }
 
 mavenPublishing {
     coordinates(
         groupId = group.toString(),
-        artifactId = property.project.yukihookapi.ksp.xposed.moduleName,
+        artifactId = gropify.project.yukihookapi.ksp.xposed.moduleName,
         version = version.toString()
     )
 }

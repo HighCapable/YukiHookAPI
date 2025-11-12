@@ -1,0 +1,65 @@
+[versions]
+agp = "8.13.1"
+kotlin = "2.2.21"
+ksp = "2.2.21-2.0.4"
+maven-publish = "0.35.0"
+rovo89-xposed-api = "82"
+hiddenapibypass = "6.1"
+auto-service-annotations = "1.1.1"
+auto-service-ksp = "1.2.0"
+kavaref-core = "1.0.2"
+kavaref-extension = "1.0.1"
+hikage-core = "1.0.2"
+hikage-compiler = "1.0.1"
+hikage-extension = "1.0.1"
+hikage-widget-androidx = "1.0.1"
+hikage-widget-material = "1.0.1"
+betterandroid-ui-component = "1.0.8"
+betterandroid-ui-extension = "1.0.7"
+betterandroid-system-extension = "1.0.3"
+androidx-annotation = "1.9.1"
+androidx-preference-ktx = "1.2.1"
+androidx-core-ktx = "1.17.0"
+androidx-appcompat = "1.7.1"
+androidx-lifecycle-viewmodel-ktx = "2.9.4"
+# noinspection GradleDependency
+material = "1.11.0"
+androidx-constraintlayout = "2.2.1"
+junit = "4.13.2"
+androidx-test-ext-junit = "1.3.0"
+androidx-test-espresso-core = "3.7.0"
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+
+[libraries]
+rovo89-xposed-api = { module = "de.robv.android.xposed:api", version.ref = "rovo89-xposed-api" }
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
+symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service-annotations" }
+auto-service-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "auto-service-ksp" }
+kavaref-core = { module = "com.highcapable.kavaref:kavaref-core", version.ref = "kavaref-core" }
+kavaref-extension = { module = "com.highcapable.kavaref:kavaref-extension", version.ref = "kavaref-extension" }
+hikage-core = { module = "com.highcapable.hikage:hikage-core", version.ref = "hikage-core" }
+hikage-compiler = { module = "com.highcapable.hikage:hikage-compiler", version.ref = "hikage-compiler" }
+hikage-extension = { module = "com.highcapable.hikage:hikage-extension", version.ref = "hikage-extension" }
+hikage-widget-androidx = { module = "com.highcapable.hikage:hikage-widget-androidx", version.ref = "hikage-widget-androidx" }
+hikage-widget-material = { module = "com.highcapable.hikage:hikage-widget-material", version.ref = "hikage-widget-material" }
+betterandroid-ui-component = { module = "com.highcapable.betterandroid:ui-component", version.ref = "betterandroid-ui-component" }
+betterandroid-ui-extension = { module = "com.highcapable.betterandroid:ui-extension", version.ref = "betterandroid-ui-extension" }
+betterandroid-system-extension = { module = "com.highcapable.betterandroid:system-extension", version.ref = "betterandroid-system-extension" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference-ktx" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core-ktx" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle-viewmodel-ktx" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-ext-junit" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso-core" }

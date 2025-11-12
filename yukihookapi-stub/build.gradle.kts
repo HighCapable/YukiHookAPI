@@ -1,14 +1,14 @@
 plugins {
-    autowire(libs.plugins.android.library)
-    autowire(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = property.project.groupName
-    compileSdk = property.project.android.compileSdk
+    namespace = gropify.project.groupName
+    compileSdk = gropify.project.android.compileSdk
 
     defaultConfig {
-        minSdk = property.project.android.minSdk
+        minSdk = gropify.project.android.minSdk
         consumerProguardFiles("consumer-rules.pro")
     }
     buildTypes {
@@ -25,5 +25,5 @@ android {
 }
 
 dependencies {
-    implementation(androidx.annotation.annotation)
+    implementation(libs.androidx.annotation)
 }

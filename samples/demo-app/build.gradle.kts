@@ -1,19 +1,19 @@
 plugins {
-    autowire(libs.plugins.android.application)
-    autowire(libs.plugins.kotlin.android)
-    autowire(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
-    namespace = property.project.samples.demo.app.packageName
-    compileSdk = property.project.android.compileSdk
+    namespace = gropify.project.samples.demo.app.packageName
+    compileSdk = gropify.project.android.compileSdk
 
     defaultConfig {
-        applicationId = property.project.samples.demo.app.packageName
-        minSdk = property.project.android.minSdk
-        targetSdk = property.project.android.targetSdk
-        versionName = property.project.samples.demo.app.versionName
-        versionCode = property.project.samples.demo.app.versionCode
+        applicationId = gropify.project.samples.demo.app.packageName
+        minSdk = gropify.project.android.minSdk
+        targetSdk = gropify.project.android.targetSdk
+        versionName = gropify.project.samples.demo.app.versionName
+        versionCode = gropify.project.samples.demo.app.versionCode
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -34,20 +34,20 @@ android {
 }
 
 dependencies {
-    ksp(com.highcapable.hikage.hikage.compiler)
-    implementation(com.highcapable.hikage.hikage.core)
-    implementation(com.highcapable.hikage.hikage.extension)
-    implementation(com.highcapable.hikage.hikage.widget.androidx)
-    implementation(com.highcapable.hikage.hikage.widget.material)
-    implementation(com.highcapable.betterandroid.ui.component)
-    implementation(com.highcapable.betterandroid.ui.extension)
-    implementation(com.highcapable.betterandroid.system.extension)
-    implementation(androidx.core.core.ktx)
-    implementation(androidx.appcompat.appcompat)
-    implementation(androidx.lifecycle.lifecycle.viewmodel.ktx)
-    implementation(com.google.android.material.material)
-    implementation(androidx.constraintlayout.constraintlayout)
-    testImplementation(junit.junit)
-    androidTestImplementation(androidx.test.ext.junit)
-    androidTestImplementation(androidx.test.espresso.espresso.core)
+    ksp(libs.hikage.compiler)
+    implementation(libs.hikage.core)
+    implementation(libs.hikage.extension)
+    implementation(libs.hikage.widget.androidx)
+    implementation(libs.hikage.widget.material)
+    implementation(libs.betterandroid.ui.component)
+    implementation(libs.betterandroid.ui.extension)
+    implementation(libs.betterandroid.system.extension)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }

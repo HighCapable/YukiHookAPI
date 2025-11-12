@@ -1,20 +1,20 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 
 plugins {
-    autowire(libs.plugins.android.library)
-    autowire(libs.plugins.kotlin.android)
-    autowire(libs.plugins.maven.publish)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.maven.publish)
 }
 
-group = property.project.groupName
-version = property.project.yukihookapi.core.version
+group = gropify.project.groupName
+version = gropify.project.yukihookapi.core.version
 
 android {
-    namespace = property.project.groupName
-    compileSdk = property.project.android.compileSdk
+    namespace = gropify.project.groupName
+    compileSdk = gropify.project.android.compileSdk
 
     defaultConfig {
-        minSdk = property.project.android.minSdk
+        minSdk = gropify.project.android.minSdk
         consumerProguardFiles("consumer-rules.pro")
     }
     buildTypes {
@@ -31,23 +31,23 @@ android {
 }
 
 dependencies {
-    compileOnly(de.robv.android.xposed.api)
+    compileOnly(libs.rovo89.xposed.api)
     compileOnly(projects.yukihookapiStub)
-    implementation(org.lsposed.hiddenapibypass.hiddenapibypass)
-    implementation(com.highcapable.kavaref.kavaref.core)
-    implementation(com.highcapable.kavaref.kavaref.extension)
-    implementation(com.highcapable.betterandroid.ui.extension)
-    implementation(com.highcapable.betterandroid.system.extension)
-    implementation(androidx.core.core.ktx)
-    implementation(androidx.appcompat.appcompat)
-    implementation(androidx.preference.preference.ktx)
+    implementation(libs.hiddenapibypass)
+    implementation(libs.kavaref.core)
+    implementation(libs.kavaref.extension)
+    implementation(libs.betterandroid.ui.extension)
+    implementation(libs.betterandroid.system.extension)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.preference.ktx)
 }
 
 mavenPublishing {
     configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
     coordinates(
         groupId = group.toString(),
-        artifactId = property.project.yukihookapi.core.moduleName,
+        artifactId = gropify.project.yukihookapi.core.moduleName,
         version = version.toString()
     )
 }
