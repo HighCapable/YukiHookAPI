@@ -28,82 +28,9 @@
 
 ### 集成依赖
 
-我们推荐使用 Kotlin DSL 作为 Gradle 构建脚本语言并推荐使用 [SweetDependency](https://github.com/HighCapable/SweetDependency) 来管理依赖。
+我们推荐使用 Kotlin DSL 作为 Gradle 构建脚本语言。
 
-#### SweetDependency (推荐)
-
-在你的项目 `SweetDependency` 配置文件中添加存储库和依赖。
-
-> 示例如下
-
-```yaml
-repositories:
-  # 作为 Xposed 模块使用务必添加，其它情况可选
-  rovo89-xposed-api:
-    url: https://api.xposed.info/
-
-plugins:
-  # 作为 Xposed 模块使用务必添加，其它情况可选
-  com.google.devtools.ksp:
-    version: +
-  ...
-
-libraries:
-  # 作为 Xposed 模块使用务必添加，其它情况可选
-  de.robv.android.xposed:
-    api:
-      version: 82
-      repositories:
-        rovo89-xposed-api
-  com.highcapable.yukihookapi:
-    api:
-      version: +
-    # 作为 Xposed 模块使用务必添加，其它情况可选
-    ksp-xposed:
-      version-ref: <this>::api
-  # YukiHookAPI 1.3.0 版本后使用 KavaRef 作为核心反射 API
-  # YukiHookAPI 不再绑定自身的反射 API，你可以开始尝试使用 KavaRef
-  com.highcapable.kavaref:
-    kavaref-core:
-      version: +
-    kavaref-extension:
-      version: +
-  ...
-```
-
-添加完成后运行一次 Gradle Sync，所有依赖版本将自动装配。
-
-接下来，在你的项目 `build.gradle.kts` 中部署插件。
-
-> 示例如下
-
-```kotlin
-plugins {
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    autowire(libs.plugins.com.google.devtools.ksp)
-    // ...
-}
-```
-
-然后，在你的项目 `build.gradle.kts` 中部署依赖。
-
-> 示例如下
-
-```kotlin
-dependencies {
-    // 基础依赖
-    implementation(com.highcapable.yukihookapi.api)
-    // 推荐使用 KavaRef 作为核心反射 API
-    implementation(com.highcapable.kavaref.kavaref.core)
-    implementation(com.highcapable.kavaref.kavaref.extension)
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    compileOnly(de.robv.android.xposed.api)
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    ksp(com.highcapable.yukihookapi.ksp.xposed)
-}
-```
-
-#### Version Catalog
+#### Version Catalog (推荐)
 
 在你的项目 `build.gradle.kts` 中添加存储库。
 

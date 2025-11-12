@@ -28,82 +28,9 @@ Use `Android Studio` or `IntelliJ IDEA` to create a new Android project and sele
 
 ### Integration Dependencies
 
-We recommend using Kotlin DSL as the Gradle build script language and [SweetDependency](https://github.com/HighCapable/SweetDependency) to manage dependencies.
+We recommend using Kotlin DSL as the Gradle build script language.
 
-#### SweetDependency (Recommended)
-
-Add the repositories and dependencies in your project's `SweetDependency` configuration file.
-
-> The following example
-
-```yaml
-repositories:
-  # Must be added when used as an Xposed Module, otherwise optional
-  rovo89-xposed-api:
-    url: https://api.xposed.info/
-
-plugins:
-  # Must be added when used as an Xposed Module, otherwise optional
-  com.google.devtools.ksp:
-    version: +
-  ...
-
-libraries:
-  # Must be added when used as an Xposed Module, otherwise optional
-  de.robv.android.xposed:
-    api:
-      version: 82
-      repositories:
-        rovo89-xposed-api
-  com.highcapable.yukihookapi:
-    api:
-      version: +
-    # Must be added when used as an Xposed Module, otherwise optional
-    ksp-xposed:
-      version-ref: <this>::api
-  # YukiHookAPI version 1.3.0 uses KavaRef as core reflection API
-  # YukiHookAPI no longer binds its own reflection API, you can start trying to use KavaRef
-  com.highcapable.kavaref:
-    kavaref-core:
-      version: +
-    kavaref-extension:
-      version: +
-  ...
-```
-
-After adding it, run Gradle Sync and all dependencies will be autowired.
-
-Next, deploy plugins in your project's `build.gradle.kts`.
-
-> The following example
-
-```kotlin
-plugins {
-    // Must be added when used as an Xposed Module, otherwise optional
-    autowire(libs.plugins.com.google.devtools.ksp)
-    // ...
-}
-```
-
-Then, deploy dependencies in your project's `build.gradle.kts`.
-
-> The following example
-
-```kotlin
-dependencies {
-    // Basic dependencies
-    implementation(com.highcapable.yukihookapi.api)
-    // It is recommended to use KavaRef as the core reflection API
-    implementation(com.highcapable.kavaref.kavaref.core)
-    implementation(com.highcapable.kavaref.kavaref.extension)
-    // Must be added when used as an Xposed Module, otherwise optional
-    compileOnly(de.robv.android.xposed.api)
-    // Must be added when used as an Xposed Module, otherwise optional
-    ksp(com.highcapable.yukihookapi.ksp.xposed)
-}
-```
-
-#### Version Catalog
+#### Version Catalog (Recommended)
 
 Add repositories in your project's `build.gradle.kts`.
 
