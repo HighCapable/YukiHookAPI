@@ -8,20 +8,39 @@ pluginManagement {
     }
 }
 
-plugins {
-    id("com.highcapable.sweetdependency") version "1.0.4"
-    id("com.highcapable.sweetproperty") version "1.0.8"
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+        maven("https://api.xposed.info/")
+    }
 }
 
-sweetProperty {
+plugins {
+    id("com.highcapable.gropify") version "1.0.0"
+}
+
+gropify {
     global {
-        sourcesCode {
+        android {
             includeKeys("^project\\..*\$".toRegex())
-            isEnableRestrictedAccess = true
+            isRestrictedAccessEnabled = true
         }
     }
-    rootProject { all { isEnable = false } }
-    project(":samples:app", ":samples:module") { sourcesCode { isEnable = false } }
+
+    rootProject {
+        common {
+            isEnabled = false
+        }
+    }
+
+    projects(":samples:app", ":samples:module") {
+        android {
+            isEnabled = false
+        }
+    }
 }
 
 rootProject.name = "YukiHook"
