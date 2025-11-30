@@ -1,4 +1,3 @@
-# noinspection EditorConfigKeyCorrectness
 [{*.kt,*.kts}]
 ktlint_standard_annotation = disabled
 ktlint_standard_filename = disabled
@@ -25,7 +24,7 @@ ktlint_standard_function-naming = disabled
 ktlint_standard_chain-method-continuation = disabled
 ktlint_standard_class-signature = disabled
 ktlint_standard_condition-wrapping = disabled
-ktlint_standard_class-signature = disabled
+ktlint_standard_blank-line-between-when-conditions = disabled
 ktlint_standard_no-trailing-spaces = disabled
 ktlint_standard_multiline-loop = disabled
 ij_continuation_indent_size = 2
