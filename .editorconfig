@@ -27,6 +27,7 @@ ktlint_standard_condition-wrapping = disabled
 ktlint_standard_blank-line-between-when-conditions = disabled
 ktlint_standard_no-trailing-spaces = disabled
 ktlint_standard_multiline-loop = disabled
+ktlint_standard_when-entry-bracing = disabled
 ij_continuation_indent_size = 2
 indent_size = 4
 indent_style = space
