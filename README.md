@@ -82,6 +82,8 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [HookGG](https://github.com/HdShare/HookGG)                                     | [HdShare](https://github.com/HdShare)           |
 | [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 | [Lyricon](https://github.com/proify/lyricon)                                    | [Tomakino](https://github.com/proify)           |
+| [PurrfectSnap](https://github.com/particle-box/PurrfectSnap) | [ΞTΞRNAL](https://github.com/particle-box)
+
 
 Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private
 repositories do not need to indicate web
