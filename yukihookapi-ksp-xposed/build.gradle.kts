@@ -13,16 +13,8 @@ java {
 }
 
 kotlin {
-    jvmToolchain(17)
     sourceSets.getByName("main") {
         kotlin.srcDir("src/api/kotlin")
-    }
-    compilerOptions {
-        freeCompilerArgs = listOf(
-            "-Xno-param-assertions",
-            "-Xno-call-assertions",
-            "-Xno-receiver-assertions"
-        )
     }
 }
 

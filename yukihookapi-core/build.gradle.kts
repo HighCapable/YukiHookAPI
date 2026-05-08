@@ -1,8 +1,9 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.maven.publish)
 }
 
@@ -23,10 +24,6 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
     lint { checkReleaseBuilds = false }
 }
 
@@ -44,7 +41,7 @@ dependencies {
 }
 
 mavenPublishing {
-    configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
+    configure(AndroidSingleVariantLibrary(JavadocJar.None(), SourcesJar.Sources()))
     coordinates(
         groupId = group.toString(),
         artifactId = gropify.project.yukihookapi.core.moduleName,
