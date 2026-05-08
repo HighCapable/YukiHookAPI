@@ -1,26 +1,28 @@
 [versions]
-agp = "8.13.2"
-kotlin = "2.2.21"
-# noinspection NewerVersionAvailable
-dokka = "1.9.20"
-ksp = "2.2.21-2.0.4"
-maven-publish = "0.35.0"
+agp = "9.2.1"
+kotlin = "2.3.21"
+dokka = "2.2.0"
+ksp = "2.3.7"
+maven-publish = "0.36.0"
 rovo89-xposed-api = "82"
 hiddenapibypass = "6.1"
 auto-service-annotations = "1.1.1"
 auto-service-ksp = "1.2.0"
 kavaref-core = "1.0.2"
 kavaref-extension = "1.0.2"
-hikage-core = "1.0.2"
-hikage-compiler = "1.0.1"
-hikage-extension = "1.0.1"
-hikage-widget-androidx = "1.0.1"
-hikage-widget-material = "1.0.1"
-betterandroid-ui-component = "1.0.8"
-betterandroid-ui-extension = "1.0.7"
-betterandroid-system-extension = "1.0.3"
-androidx-annotation = "1.9.1"
+hikage-core = "1.0.4"
+hikage-compiler = "1.0.4"
+hikage-extension = "1.0.3"
+hikage-widget-androidx = "1.0.2"
+hikage-widget-material = "1.0.2"
+betterandroid-ui-component = "1.0.10"
+betterandroid-ui-extension = "1.0.9"
+betterandroid-system-extension = "1.0.4"
+androidx-annotation = "1.10.0"
 androidx-preference-ktx = "1.2.1"
+# The project current support min sdk version is 21,
+# suppress the warning about using newer versions of dependencies that may require higher min sdk version.
+# noinspection GradleDependency
 androidx-core-ktx = "1.17.0"
 androidx-appcompat = "1.7.1"
 androidx-lifecycle-viewmodel-ktx = "2.10.0"
@@ -33,7 +35,6 @@ androidx-test-espresso-core = "3.7.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-application = { id = "com.android.application", version.ref = "agp" }

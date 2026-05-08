@@ -1,6 +1,10 @@
+import com.android.build.api.dsl.CommonExtension
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import org.jetbrains.dokka.gradle.DokkaTask
+import com.vanniktech.maven.publish.SourcesJar
+import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.dokka.gradle.engine.plugins.DokkaHtmlPluginParameters
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -8,9 +12,47 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.dokka) apply false
     alias(libs.plugins.maven.publish) apply false
+}
+
+val androidApplicationPluginId = libs.plugins.android.application.get().pluginId
+val androidLibraryPluginId = libs.plugins.android.library.get().pluginId
+val dokkaPluginId = libs.plugins.kotlin.dokka.get().pluginId
+
+allprojects {
+    fun Project.configureAndroidJvm() {
+        configure<CommonExtension> {
+            compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+            compileOptions.targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+
+    plugins.withId(androidLibraryPluginId) {
+        configureAndroidJvm()
+    }
+
+    plugins.withId(androidApplicationPluginId) {
+        configureAndroidJvm()
+    }
+
+    plugins.withId("java") {
+        configure<JavaPluginExtension> {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs.addAll(
+                "-Xno-param-assertions",
+                "-Xno-call-assertions",
+                "-Xno-receiver-assertions"
+            )
+        }
+    }
 }
 
 libraryProjects {
@@ -33,41 +75,34 @@ libraryProjects {
         }
 
         configure<MavenPublishBaseExtension> {
-            configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
+            configure(AndroidSingleVariantLibrary(JavadocJar.None(), SourcesJar.Sources()))
         }
     }
 
-    tasks.withType<DokkaTask>().configureEach {
-        val configuration = """{ "footerMessage": "YukiHook | Apache-2.0 License | Copyright (C) 2019 HighCapable" }"""
-        pluginsMapConfiguration.set(mapOf("org.jetbrains.dokka.base.DokkaBase" to configuration))
-    }
-
-    tasks.register("publishKDoc") {
-        group = "documentation"
-        dependsOn("dokkaHtml")
-
-        doLast {
-            val docsDir = rootProject.projectDir
-                .resolve("docs-source")
-                .resolve("dist")
-                .resolve("KDoc")
-                .resolve(project.name)
-
-            if (docsDir.exists()) docsDir.deleteRecursively() else docsDir.mkdirs()
-            layout.buildDirectory.dir("dokka/html").get().asFile.copyRecursively(docsDir)
+    plugins.withId(dokkaPluginId) {
+        configure<DokkaExtension> {
+            dokkaPublications.named("html") {
+                outputDirectory.set(layout.buildDirectory.dir("dokka/html"))
+            }
+            pluginsConfiguration.withType<DokkaHtmlPluginParameters>().configureEach {
+                footerMessage.set("YukiHook | Apache-2.0 License | Copyright (C) 2019 HighCapable")
+            }
         }
-    }
-}
 
-allprojects {
-    tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-            freeCompilerArgs.addAll(
-                "-Xno-param-assertions",
-                "-Xno-call-assertions",
-                "-Xno-receiver-assertions"
-            )
+        tasks.register("publishKDoc") {
+            group = "documentation"
+            dependsOn("dokkaGeneratePublicationHtml")
+
+            doLast {
+                val docsDir = rootProject.projectDir
+                    .resolve("docs-source")
+                    .resolve("dist")
+                    .resolve("KDoc")
+                    .resolve(project.name)
+
+                if (docsDir.exists()) docsDir.deleteRecursively() else docsDir.mkdirs()
+                layout.buildDirectory.dir("dokka/html").get().asFile.copyRecursively(docsDir)
+            }
         }
     }
 }
