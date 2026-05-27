@@ -8,16 +8,13 @@ rovo89-xposed-api = "82"
 hiddenapibypass = "6.1"
 auto-service-annotations = "1.1.1"
 auto-service-ksp = "1.2.0"
-kavaref-core = "1.0.2"
-kavaref-extension = "1.0.2"
+kavaref-bom = "1.0.3"
 hikage-core = "1.0.4"
 hikage-compiler = "1.0.4"
 hikage-extension = "1.0.3"
 hikage-widget-androidx = "1.0.2"
 hikage-widget-material = "1.0.2"
-betterandroid-ui-component = "1.0.10"
-betterandroid-ui-extension = "1.0.9"
-betterandroid-system-extension = "1.0.4"
+betterandroid-android-bom = "1.1.0"
 androidx-annotation = "1.10.0"
 androidx-preference-ktx = "1.2.1"
 # The project current support min sdk version is 21,
@@ -47,16 +44,18 @@ hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", vers
 symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service-annotations" }
 auto-service-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "auto-service-ksp" }
-kavaref-core = { module = "com.highcapable.kavaref:kavaref-core", version.ref = "kavaref-core" }
-kavaref-extension = { module = "com.highcapable.kavaref:kavaref-extension", version.ref = "kavaref-extension" }
+kavaref-bom = { group = "com.highcapable.kavaref", name = "kavaref-bom", version.ref = "kavaref-bom" }
+kavaref-core = { group = "com.highcapable.kavaref", name = "kavaref-core" }
+kavaref-extension = { group = "com.highcapable.kavaref", name = "kavaref-extension" }
 hikage-core = { module = "com.highcapable.hikage:hikage-core", version.ref = "hikage-core" }
 hikage-compiler = { module = "com.highcapable.hikage:hikage-compiler", version.ref = "hikage-compiler" }
 hikage-extension = { module = "com.highcapable.hikage:hikage-extension", version.ref = "hikage-extension" }
 hikage-widget-androidx = { module = "com.highcapable.hikage:hikage-widget-androidx", version.ref = "hikage-widget-androidx" }
 hikage-widget-material = { module = "com.highcapable.hikage:hikage-widget-material", version.ref = "hikage-widget-material" }
-betterandroid-ui-component = { module = "com.highcapable.betterandroid:ui-component", version.ref = "betterandroid-ui-component" }
-betterandroid-ui-extension = { module = "com.highcapable.betterandroid:ui-extension", version.ref = "betterandroid-ui-extension" }
-betterandroid-system-extension = { module = "com.highcapable.betterandroid:system-extension", version.ref = "betterandroid-system-extension" }
+betterandroid-android-bom = { module = "com.highcapable.betterandroid:android-bom", version.ref = "betterandroid-android-bom" }
+betterandroid-ui-component = { module = "com.highcapable.betterandroid:ui-component" }
+betterandroid-ui-extension = { module = "com.highcapable.betterandroid:ui-extension" }
+betterandroid-system-extension = { module = "com.highcapable.betterandroid:system-extension" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference-ktx" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core-ktx" }
