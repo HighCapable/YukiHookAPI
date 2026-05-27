@@ -24,11 +24,11 @@
 package com.highcapable.yukihookapi.demo_module.hook
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.highcapable.betterandroid.system.extension.tool.AndroidVersion
+import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
+import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
 import com.highcapable.yukihookapi.YukiHookAPI
@@ -294,7 +294,7 @@ object HookEntry : IYukiHookXposedInit {
                                                     .setTitle("Start Parasitic")
                                                     .setMessage("This function will start MainActivity that exists in the module app.")
                                                     .setPositiveButton("YES") { _, _ ->
-                                                        context.startActivity(Intent(context, MainActivity::class.java))
+                                                        context.startActivity<MainActivity>()
                                                     }.setNegativeButton("NO", null).show().compatStyle()
                                             }
                                     }.setNegativeButton("SEND MSG TO MODULE") { _, _ ->

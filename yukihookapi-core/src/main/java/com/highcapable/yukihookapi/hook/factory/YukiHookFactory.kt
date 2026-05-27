@@ -34,7 +34,7 @@ import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import androidx.core.net.toUri
-import com.highcapable.betterandroid.system.extension.tool.AndroidVersion
+import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam

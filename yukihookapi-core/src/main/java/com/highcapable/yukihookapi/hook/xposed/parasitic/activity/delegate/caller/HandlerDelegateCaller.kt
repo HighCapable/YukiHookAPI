@@ -30,7 +30,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
-import com.highcapable.betterandroid.system.extension.tool.AndroidVersion
+import com.highcapable.betterandroid.system.extension.component.getParcelableExtraCompat
+import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.lazyClass
@@ -92,8 +93,7 @@ internal object HandlerDelegateCaller {
                     val mExtras = mExtrasResolver?.copy()?.of(intent)?.getQuietly<Bundle>()
                     mExtras?.classLoader = AppParasitics.currentApplication?.classLoader
                     if (intent?.hasExtra(ActivityProxyConfig.proxyIntentName) == true) {
-                        @Suppress("DEPRECATION")
-                        val subIntent = intent.getParcelableExtra<Intent>(ActivityProxyConfig.proxyIntentName)
+                        val subIntent = intent.getParcelableExtraCompat<Intent>(ActivityProxyConfig.proxyIntentName)
                         if (AndroidVersion.isAtLeast(AndroidVersion.S)) {
                             val currentActivityThread = ActivityThreadClass.resolve()
                                 .processor(AndroidHiddenApiBypassResolver.get())
