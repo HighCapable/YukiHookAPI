@@ -176,7 +176,7 @@ object HookEntry : IYukiHookXposedInit {
                             name = "sym_def_app_icon"
                             mipmap()
                         }
-                        // Replace with the Resources of the current Module App
+                        // Replace with the Resources of the current
                         // Module App's Resources can be obfuscated with R8, results are not affected
                         // 替换为当前模块的 Resources
                         // 模块的 Resources 可以使用 R8 混淆 - 结果不受影响
@@ -383,8 +383,8 @@ object HookEntry : IYukiHookXposedInit {
                         // Hook layout inflater
                         // Hook 布局装载器
                         injectAsLayout {
-                            // Replace the button text with the specified Id in this layout
-                            // 替换布局中指定 Id 的按钮文本
+                            // Replace the button text with the specified ID in this layout
+                            // 替换布局中指定 ID 的按钮文本
                             findViewByIdentifier<Button>(name = "app_demo_button")?.text = "Touch Me!"
                         }
                     }
@@ -410,7 +410,7 @@ object HookEntry : IYukiHookXposedInit {
                             name = "ic_face_unhappy"
                             mipmap()
                         }
-                        // Replace with the Resources of the current Module App
+                        // Replace with the Resources of the current
                         // Module App's Resources can be obfuscated with R8, results are not affected
                         // 替换为当前模块的 Resources
                         // 模块的 Resources 可以使用 R8 混淆 - 结果不受影响

@@ -25,7 +25,9 @@ import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
+import com.highcapable.betterandroid.ui.extension.view.textColor
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
+import android.R as Android_R
 
 /**
  * Fixed [AlertDialog] dialog button issue after injecting Module App's Resources in some Host Apps
@@ -47,11 +49,11 @@ fun AlertDialog.compatStyle(): AlertDialog {
             firstField { name = "mButtonNeutral" }.get<Button>()
         ).forEach {
             it?.setBackgroundResource(TypedValue().apply {
-                context.theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
+                context.theme.resolveAttribute(Android_R.attr.selectableItemBackground, this, true)
             }.resourceId)
-            it?.setTextColor(TypedValue().apply {
-                context.theme.resolveAttribute(android.R.attr.colorPrimary, this, true)
-            }.data)
+            it?.textColor = TypedValue().apply {
+                context.theme.resolveAttribute(Android_R.attr.colorPrimary, this, true)
+            }.data
         }
     }; return this
 }

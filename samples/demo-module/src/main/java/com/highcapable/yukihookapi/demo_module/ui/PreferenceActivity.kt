@@ -22,7 +22,13 @@
 package com.highcapable.yukihookapi.demo_module.ui
 
 import android.os.Bundle
+import android.view.View
+import android.widget.FrameLayout
+import androidx.core.view.updatePadding
+import androidx.fragment.app.commit
 import androidx.preference.SwitchPreference
+import com.highcapable.betterandroid.ui.extension.component.base.toPx
+import com.highcapable.betterandroid.ui.extension.component.fragmentManager
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.ui.base.BaseActivity
@@ -36,11 +42,15 @@ class PreferenceActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         title = "PreferenceFragment"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        if (savedInstanceState == null)
-            supportFragmentManager
-                .beginTransaction()
-                .replace(android.R.id.content, SettingsFragment())
-                .commitAllowingStateLoss()
+        if (savedInstanceState == null) findViewById<FrameLayout>(android.R.id.content).apply {
+            this.addView(FrameLayout(this@PreferenceActivity).apply {
+                id = View.generateViewId()
+                updatePadding(top = 100.toPx(this@PreferenceActivity))
+                fragmentManager().commit(allowStateLoss = true) {
+                    replace(id, SettingsFragment())
+                }
+            })
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
