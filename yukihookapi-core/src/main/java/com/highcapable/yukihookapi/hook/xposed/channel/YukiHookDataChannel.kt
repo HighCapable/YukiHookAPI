@@ -36,6 +36,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.TransactionTooLargeException
 import com.highcapable.betterandroid.system.extension.component.BroadcastReceiver
+import com.highcapable.betterandroid.system.extension.component.getSerializableCompat
 import com.highcapable.betterandroid.system.extension.component.registerReceiver
 import com.highcapable.betterandroid.system.extension.component.sendBroadcast
 import com.highcapable.yukihookapi.YukiHookAPI
@@ -440,8 +441,7 @@ class YukiHookDataChannel private constructor() {
          * @return [ChannelDataWrapper]<[T]> or null
          */
         private fun <T> Intent.getDataWrapper(key: String) = runCatching {
-            @Suppress("DEPRECATION")
-            extras?.getSerializable(key + keyNonRepeatName) as? ChannelDataWrapper<T>
+            extras?.getSerializableCompat<ChannelDataWrapper<T>>(key + keyNonRepeatName)
         }.getOrNull()
 
         /**

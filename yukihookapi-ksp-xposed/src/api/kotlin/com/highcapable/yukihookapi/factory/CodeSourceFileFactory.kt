@@ -23,7 +23,7 @@
 
 package com.highcapable.yukihookapi.factory
 
-import com.highcapable.yukihookapi.bean.GenerateData
+import com.highcapable.yukihookapi.entity.GenerateData
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
 import com.highcapable.yukihookapi.utils.SymbolConverterTool
 import java.text.SimpleDateFormat
@@ -105,13 +105,13 @@ private fun GenerateData.tailPackageName(name: String) = "${name}_${modulePackag
 
 /**
  * 创建文件注释
- * @param currrentClassTag 当前注入类标签
+ * @param currentClassTag 当前注入类标签
  * @return [String]
  */
-private fun createCommentContent(currrentClassTag: String) =
+private fun createCommentContent(currentClassTag: String) =
     """
       /**
-       * $currrentClassTag Class
+       * $currentClassTag Class
        *
        * Compiled from YukiHookXposedProcessor
        *

@@ -171,7 +171,7 @@ fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResource
  * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
  *
  * - 最低支持 Android 7.0 (API 24)
- * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidMainifest 清单中 - 不填使用默认 [Activity]
+ * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidManifest 清单中 - 不填使用默认 [Activity]
  */
 @RequiresApi(AndroidVersion.N)
 fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)

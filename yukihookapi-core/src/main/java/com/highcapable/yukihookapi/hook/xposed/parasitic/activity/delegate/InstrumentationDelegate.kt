@@ -31,7 +31,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Looper
@@ -39,6 +38,7 @@ import android.os.PersistableBundle
 import android.os.TestLooperManager
 import android.view.KeyEvent
 import android.view.MotionEvent
+import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.kavaref.extension.createInstanceOrNull
 import com.highcapable.kavaref.extension.toClass
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
@@ -99,7 +99,7 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
     }
 
     override fun addResults(results: Bundle?) {
-        if (Build.VERSION.SDK_INT >= 26) baseInstance.addResults(results)
+        if (AndroidVersion.isAtLeast(AndroidVersion.O)) baseInstance.addResults(results)
     }
 
     override fun finish(resultCode: Int, results: Bundle?) {
@@ -129,7 +129,7 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
     override fun getTargetContext(): Context? = baseInstance.targetContext
 
     override fun getProcessName(): String? =
-        if (Build.VERSION.SDK_INT >= 26) baseInstance.processName else AppParasitics.systemContext?.processName
+        if (AndroidVersion.isAtLeast(AndroidVersion.O)) baseInstance.processName else AppParasitics.systemContext?.processName
 
     override fun isProfiling() = baseInstance.isProfiling
 
@@ -160,7 +160,7 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
     override fun startActivitySync(intent: Intent?): Activity? = baseInstance.startActivitySync(intent)
 
     override fun startActivitySync(intent: Intent, options: Bundle?): Activity =
-        if (Build.VERSION.SDK_INT >= 28) baseInstance.startActivitySync(intent, options) else error("Operating system not supported")
+        if (AndroidVersion.isAtLeast(AndroidVersion.P)) baseInstance.startActivitySync(intent, options) else error("Operating system not supported")
 
     override fun addMonitor(monitor: ActivityMonitor?) {
         baseInstance.addMonitor(monitor)
@@ -300,7 +300,7 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
     }
 
     override fun callActivityOnPictureInPictureRequested(activity: Activity) {
-        if (Build.VERSION.SDK_INT >= 30) baseInstance.callActivityOnPictureInPictureRequested(activity)
+        if (AndroidVersion.isAtLeast(AndroidVersion.R)) baseInstance.callActivityOnPictureInPictureRequested(activity)
     }
 
     @Deprecated("Deprecated in Java")
@@ -322,8 +322,8 @@ internal class InstrumentationDelegate private constructor(private val baseInsta
     override fun getUiAutomation(): UiAutomation? = baseInstance.uiAutomation
 
     override fun getUiAutomation(flags: Int): UiAutomation? =
-        if (Build.VERSION.SDK_INT >= 24) baseInstance.getUiAutomation(flags) else error("Operating system not supported")
+        if (AndroidVersion.isAtLeast(AndroidVersion.N)) baseInstance.getUiAutomation(flags) else error("Operating system not supported")
 
     override fun acquireLooperManager(looper: Looper?): TestLooperManager? =
-        if (Build.VERSION.SDK_INT >= 26) baseInstance.acquireLooperManager(looper) else error("Operating system not supported")
+        if (AndroidVersion.isAtLeast(AndroidVersion.O)) baseInstance.acquireLooperManager(looper) else error("Operating system not supported")
 }

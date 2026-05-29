@@ -19,15 +19,12 @@
  *
  * This file is created by fankes on 2023/9/23.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "NOTHING_TO_INLINE")
 
 package com.highcapable.yukihookapi.hook.utils.factory
-
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
 
 /**
  * 写出异常堆栈到字符串
  * @return [String]
  */
-internal fun Throwable.dumpToString() = ByteArrayOutputStream().also { printStackTrace(PrintStream(it)) }.toString()
+internal inline fun Throwable.dumpToString() = stackTraceToString()

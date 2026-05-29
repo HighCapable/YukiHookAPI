@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/9/20.
  */
-package com.highcapable.yukihookapi.bean
+package com.highcapable.yukihookapi.entity
 
 /**
  * 生成的模板数据实例

@@ -35,7 +35,7 @@ internal fun <T> T?.unit() = let {}
  */
 internal inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
     var value = ""
-    forEach { value += it.toString() + ", " }
+    forEach { value += "$it, " }
     "[${value.trim().let { it.substring(0, it.lastIndex) }}]"
 } else "[]"
 

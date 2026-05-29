@@ -33,13 +33,13 @@ import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.highcapable.yukihookapi.bean.GenerateData
+import com.highcapable.yukihookapi.YukiHookXposedProcessor.Companion.KOTLIN_FILE_EXT_NAME
+import com.highcapable.yukihookapi.entity.GenerateData
 import com.highcapable.yukihookapi.factory.ClassName
 import com.highcapable.yukihookapi.factory.PackageName
 import com.highcapable.yukihookapi.factory.sources
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
 import java.io.File
-import java.util.*
 import java.util.regex.Pattern
 
 /**
@@ -314,8 +314,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                 .resolve("buildConfig")
                 .walkTopDown()
                 .filter { it.name == "BuildConfig.java" }
-                .sortedByDescending { it.lastModified() }
-                .firstOrNull() ?: return ""
+                .maxByOrNull { it.lastModified() } ?: return ""
             val matcher = "APPLICATION_ID\\s*=\\s*\"([^\"]+)\"".toRegex()
             return runCatching { matcher.find(buildConfigFile.readText())?.groups?.get(1)?.value }.getOrNull() ?: ""
         }

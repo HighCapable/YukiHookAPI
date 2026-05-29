@@ -126,7 +126,7 @@ interface ModuleActivity {
      *
      * 留空则使用 [Context.registerModuleAppActivities] 时设置的类名
      *
-     * - 代理的 [Activity] 类名必须存在于宿主的 AndroidMainifest 清单中
+     * - 代理的 [Activity] 类名必须存在于宿主的 AndroidManifest 清单中
      * @return [String]
      */
     val proxyClassName get() = ""
