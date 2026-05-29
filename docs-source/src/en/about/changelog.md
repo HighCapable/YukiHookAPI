@@ -16,10 +16,16 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.3.1 | 2025.09.13 &ensp;<Badge type="tip" text="latest" vertical="middle" />
+### 1.3.2 | 2026.05.30 &ensp;<Badge type="tip" text="latest" vertical="middle" />
 
-- Updated dependencies to resolve conflict issues with BetterAndroid
-- Fixed Activity proxy issues on Android 9 and below
+- Updated target SDK version to 37
+- Updated dependencies to resolve conflict issues with `BetterAndroid`
+- Adjusted API code style without actually changing function signatures
+
+### 1.3.1 | 2025.09.13 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+
+- Updated dependencies to resolve conflict issues with `BetterAndroid`
+- Fixed `Activity` proxy issues on Android 9 and below
 - Fixed an issue where return values were still checked when the Hook method return type was `Object`
 
 ### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="stale" vertical="middle" />

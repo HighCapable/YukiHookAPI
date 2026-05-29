@@ -8,10 +8,16 @@
 
 :::
 
-### 1.3.1 | 2025.09.13 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.3.2 | 2026.05.30 &ensp;<Badge type="tip" text="最新" vertical="middle" />
 
-- 更新依赖以解决与 BetterAndroid 冲突的问题
-- 修复 Android 9 及以下系统 Activity 代理的问题
+- 更新目标 SDK 版本到 37
+- 更新依赖以解决与 `BetterAndroid` 冲突的问题
+- 对 API 代码风格进行调整，但不实际改变函数签名
+
+### 1.3.1 | 2025.09.13 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
+
+- 更新依赖以解决与 `BetterAndroid` 冲突的问题
+- 修复 Android 9 及以下系统 `Activity` 代理的问题
 - 修复在 Hook 方法返回值为 `Object` 时依然检查返回值的问题
 
 ### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
