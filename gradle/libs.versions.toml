@@ -14,7 +14,7 @@ hikage-compiler = "1.0.4"
 hikage-extension = "1.0.3"
 hikage-widget-androidx = "1.0.2"
 hikage-widget-material = "1.0.2"
-betterandroid-android-bom = "1.1.0"
+betterandroid-android-bom = "1.1.1"
 androidx-annotation = "1.10.0"
 androidx-preference-ktx = "1.2.1"
 # The project current support min sdk version is 21,
