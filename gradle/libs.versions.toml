@@ -1,19 +1,19 @@
 [versions]
 agp = "9.2.1"
-kotlin = "2.3.21"
-ksp = "2.3.7"
+kotlin = "2.4.0"
+ksp = "2.3.9"
 maven-publish = "0.36.0"
 rovo89-xposed-api = "82"
 hiddenapibypass = "6.1"
 auto-service-annotations = "1.1.1"
 auto-service-ksp = "1.2.0"
-kavaref-bom = "1.0.3"
+kavaref-bom = "1.1.0"
 hikage-core = "1.0.4"
 hikage-compiler = "1.0.4"
 hikage-extension = "1.0.3"
 hikage-widget-androidx = "1.0.2"
 hikage-widget-material = "1.0.2"
-betterandroid-android-bom = "1.1.1"
+betterandroid-android-bom = "1.1.3"
 androidx-annotation = "1.10.0"
 androidx-preference-ktx = "1.2.1"
 # The project current support min sdk version is 21,
@@ -47,6 +47,7 @@ auto-service-annotations = { module = "com.google.auto.service:auto-service-anno
 auto-service-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "auto-service-ksp" }
 kavaref-bom = { group = "com.highcapable.kavaref", name = "kavaref-bom", version.ref = "kavaref-bom" }
 kavaref-core = { group = "com.highcapable.kavaref", name = "kavaref-core" }
+kavaref-android = { group = "com.highcapable.kavaref", name = "kavaref-android" }
 kavaref-extension = { group = "com.highcapable.kavaref", name = "kavaref-extension" }
 hikage-core = { module = "com.highcapable.hikage:hikage-core", version.ref = "hikage-core" }
 hikage-compiler = { module = "com.highcapable.hikage:hikage-compiler", version.ref = "hikage-compiler" }
