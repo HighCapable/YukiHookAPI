@@ -17,6 +17,7 @@ dependencyResolutionManagement {
                 includeGroup("de.robv.android.xposed")
             }
         }
+        maven("https://raw.githubusercontent.com/HighCapable/maven-repository/main/repository/releases")
     }
 }
 plugins {
