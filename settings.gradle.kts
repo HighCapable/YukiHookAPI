@@ -21,12 +21,12 @@ dependencyResolutionManagement {
     }
 }
 plugins {
-    id("com.highcapable.gropify") version "1.0.1"
+    id("com.highcapable.gropify") version "1.0.2"
 }
 gropify {
     global {
         android {
-            includeKeys("^project\\..*\$".toRegex())
+            includeKeys("^project\\..*$".toRegex())
             isRestrictedAccessEnabled = true
         }
     }
@@ -34,8 +34,7 @@ gropify {
     projects(":samples") { common { isEnabled = false } }
     projects(":samples:demo-app", ":samples:demo-module", ":yukihookapi-stub") { android { isEnabled = false } }
     projects(":yukihookapi-core", ":yukihookapi-ksp-xposed") {
-        android { className = rootProject.name }
-        jvm { className = rootProject.name }
+        sourceCode { className = rootProject.name }
     }
 }
 rootProject.name = "YukiHookAPI"
