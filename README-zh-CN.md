@@ -79,14 +79,13 @@
 你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (
 私有仓库可以不需要注明网页链接)。
 
-## 项目推广
+## 更多项目
 
 <!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
     <h2>嘿，还请君留步！👋</h2>
-    <h3>这里有 Android 开发工具、UI 设计、Gradle 插件、Xposed 模块和实用软件等相关项目。</h3>
-    <h3>如果下方的项目能为你提供帮助，不妨为我点个 star 吧！</h3>
-    <h3>所有项目免费、开源，遵循对应开源许可协议。</h3>
+    <h3>如果你觉得这个项目能给你提供帮助，不妨继续往下看看我的更多项目吧！</h3>
+    <h3>如果这些项目能为你提供帮助，不妨为我点个关注或者 star ⭐️ 吧！</h3>
     <h1><a href="https://github.com/fankes/fankes/blob/main/project-promote/README-zh-CN.md">→ 查看更多关于我的项目，请点击这里 ←</a></h1>
 </div>
 

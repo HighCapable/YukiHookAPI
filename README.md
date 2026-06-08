@@ -15,8 +15,7 @@ English | [简体中文](README-zh-CN.md)
 | <img src="https://github.com/HighCapable/.github/blob/main/img-src/logo.jpg?raw=true" width = "30" height = "30" alt="LOGO"/> | [HighCapable](https://github.com/HighCapable) |
 |-------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
 
-This project belongs to the above-mentioned organization, **click the link above to follow this
-organization** and discover more good projects.
+This project belongs to the organization above. **Click the link to follow us** and discover more awesome projects.
 
 ## What's this
 
@@ -51,7 +50,7 @@ development progress.
 | <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHookAPI/tree/2.x) |
 |---------------------------------------------------------------------|---------------------------------------------------------------------|
 
-## Cooperations
+## Cooperation
 
 The following are projects that have collaborated and are using `YukiHookAPI`.
 
@@ -87,15 +86,14 @@ Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the 
 repositories do not need to indicate web
 links).
 
-## Promotion
+## More Projects
 
 <!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
-     <h2>Hey, please stay! 👋</h2>
-     <h3>Here are related projects such as Android development tools, UI design, Gradle plugins, Xposed Modules and practical software. </h3>
-     <h3>If the project below can help you, please give me a star! </h3>
-     <h3>All projects are free, open source, and follow the corresponding open source license agreement. </h3>
-     <h1><a href="https://github.com/fankes/fankes/blob/main/project-promote/README.md">→ To see more about my projects, please click here ←</a></h1>
+    <h2>Hey, wait a second! 👋</h2>
+    <h3>If this project was helpful, why not stick around and check out more of my work below?</h3>
+    <h3>Feel free to leave a follow or a star ⭐️ if they bring you value!</h3>
+    <h1><a href="https://github.com/fankes/fankes/blob/main/project-promote/README.md">→ Click here to discover more of my projects ←</a></h1>
 </div>
 
 ## Star History
