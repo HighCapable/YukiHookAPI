@@ -8,11 +8,8 @@ hiddenapibypass = "6.1"
 auto-service-annotations = "1.1.1"
 auto-service-ksp = "1.2.0"
 kavaref-bom = "1.1.0"
-hikage-core = "1.0.4"
-hikage-compiler = "1.0.4"
-hikage-extension = "1.0.3"
-hikage-widget-androidx = "1.0.2"
-hikage-widget-material = "1.0.2"
+hikage-bom = "1.1.0"
+hikage-plugin = "1.0.0"
 betterandroid-android-bom = "1.1.4"
 androidx-annotation = "1.10.0"
 androidx-preference-ktx = "1.2.1"
@@ -37,6 +34,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+hikage = { id = "com.highcapable.hikage", version.ref = "hikage-plugin" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 
 [libraries]
@@ -49,11 +47,13 @@ kavaref-bom = { group = "com.highcapable.kavaref", name = "kavaref-bom", version
 kavaref-core = { group = "com.highcapable.kavaref", name = "kavaref-core" }
 kavaref-android = { group = "com.highcapable.kavaref", name = "kavaref-android" }
 kavaref-extension = { group = "com.highcapable.kavaref", name = "kavaref-extension" }
-hikage-core = { module = "com.highcapable.hikage:hikage-core", version.ref = "hikage-core" }
-hikage-compiler = { module = "com.highcapable.hikage:hikage-compiler", version.ref = "hikage-compiler" }
-hikage-extension = { module = "com.highcapable.hikage:hikage-extension", version.ref = "hikage-extension" }
-hikage-widget-androidx = { module = "com.highcapable.hikage:hikage-widget-androidx", version.ref = "hikage-widget-androidx" }
-hikage-widget-material = { module = "com.highcapable.hikage:hikage-widget-material", version.ref = "hikage-widget-material" }
+hikage-bom = { group = "com.highcapable.hikage", name = "hikage-bom", version.ref = "hikage-bom" }
+hikage-core = { group = "com.highcapable.hikage", name = "hikage-core" }
+hikage-runtime = { group = "com.highcapable.hikage", name = "hikage-runtime" }
+hikage-runtime-attribute = { group = "com.highcapable.hikage", name = "hikage-runtime-attribute" }
+hikage-extension = { group = "com.highcapable.hikage", name = "hikage-extension" }
+hikage-widget-androidx = { group = "com.highcapable.hikage", name = "hikage-widget-androidx" }
+hikage-widget-material = { group = "com.highcapable.hikage", name = "hikage-widget-material" }
 betterandroid-android-bom = { module = "com.highcapable.betterandroid:android-bom", version.ref = "betterandroid-android-bom" }
 betterandroid-ui-component = { module = "com.highcapable.betterandroid:ui-component" }
 betterandroid-ui-extension = { module = "com.highcapable.betterandroid:ui-extension" }

@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.hikage)
 }
 
 android {
@@ -29,8 +29,10 @@ android {
 }
 
 dependencies {
-    ksp(libs.hikage.compiler)
+    implementation(platform(libs.hikage.bom))
     implementation(libs.hikage.core)
+    implementation(libs.hikage.runtime)
+    implementation(libs.hikage.runtime.attribute)
     implementation(libs.hikage.extension)
     implementation(libs.hikage.widget.androidx)
     implementation(libs.hikage.widget.material)

@@ -33,7 +33,12 @@ import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.betterandroid.ui.extension.view.textToString
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.betterandroid.ui.extension.view.updateMargins
+import com.highcapable.hikage.core.attribute.android
+import com.highcapable.hikage.core.attribute.app
+import com.highcapable.hikage.core.layout.LayoutParams
 import com.highcapable.hikage.extension.setContentView
+import com.highcapable.hikage.runtime.attribute.AttributeSetResolver
+import com.highcapable.hikage.runtime.attribute.entity.AttributeResolverParams
 import com.highcapable.hikage.widget.android.widget.Button
 import com.highcapable.hikage.widget.android.widget.LinearLayout
 import com.highcapable.hikage.widget.android.widget.TextView
@@ -42,7 +47,6 @@ import com.highcapable.hikage.widget.com.google.android.material.appbar.Material
 import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputEditText
 import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputLayout
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.demo_module.R
 import com.highcapable.yukihookapi.demo_module.data.DataConst
 import com.highcapable.yukihookapi.demo_module.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.factory.dataChannel
@@ -61,6 +65,11 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
+        hostEnvironment {
+            AttributeSetResolver.defaultResolverParams = AttributeResolverParams(
+                resourcePackageName = "com.highcapable.yukihookapi.demo_module"
+            )
+        }
         val hikage = setContentView {
             LinearLayout(
                 lparams = LayoutParams(widthMatchParent = true),
@@ -70,16 +79,21 @@ class MainActivity : BaseActivity() {
             ) {
                 MaterialToolbar(
                     lparams = LayoutParams(widthMatchParent = true),
-                    init = {
-                        title = stringResource(R.string.app_name)
+                    attrs = {
+                        app {
+                            set("title", "@string/app_name")
+                        }
                     }
                 )
                 NestedScrollView(
                     lparams = LayoutParams(matchParent = true),
-                    init = {
-                        isFillViewport = true
-                        isVerticalScrollBarEnabled = false
-                        isVerticalFadingEdgeEnabled = true
+                    attrs = {
+                        android {
+                            set("fillViewport", true)
+                            set("scrollbars", "none")
+                            set("requiresFadingEdge", "vertical")
+                            set("fadingEdgeLength", 15.dp)
+                        }
                     }
                 ) {
                     LinearLayout(

@@ -30,6 +30,9 @@ import android.widget.TextView
 import com.highcapable.betterandroid.ui.component.activity.AppViewsActivity
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.betterandroid.ui.extension.view.updateMargins
+import com.highcapable.hikage.core.attribute.android
+import com.highcapable.hikage.core.attribute.app
+import com.highcapable.hikage.core.layout.LayoutParams
 import com.highcapable.hikage.extension.setContentView
 import com.highcapable.hikage.widget.android.widget.Button
 import com.highcapable.hikage.widget.android.widget.ImageView
@@ -54,16 +57,21 @@ class MainActivity : AppViewsActivity() {
             ) {
                 MaterialToolbar(
                     lparams = LayoutParams(widthMatchParent = true),
-                    init = {
-                        title = stringResource(R.string.app_name)
+                    attrs = {
+                        app {
+                            set("title", "@string/app_name")
+                        }
                     }
                 )
                 NestedScrollView(
                     lparams = LayoutParams(matchParent = true),
-                    init = {
-                        isFillViewport = true
-                        isVerticalScrollBarEnabled = false
-                        isVerticalFadingEdgeEnabled = true
+                    attrs = {
+                        android {
+                            set("fillViewport", true)
+                            set("scrollbars", "none")
+                            set("requiresFadingEdge", "vertical")
+                            set("fadingEdgeLength", 15.dp)
+                        }
                     }
                 ) {
                     LinearLayout(
