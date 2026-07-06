@@ -3,6 +3,7 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         google()
+        maven("https://raw.githubusercontent.com/HighCapable/maven-repository/main/repository/releases")
         mavenCentral()
     }
 }
