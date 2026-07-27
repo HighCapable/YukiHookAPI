@@ -26,49 +26,49 @@ import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import java.lang.reflect.Member
 
 /**
- * Hook 回调接口抽象类
- * @param priority Hook 优先级
+ * Base Hook callback.
+ * @param priority the Hook priority.
  */
 internal abstract class YukiHookCallback(internal open val priority: YukiHookPriority) {
 
     /**
-     * Hook 结果回调接口
+     * Provides parameters and mutable state for a Hook callback.
      */
     internal interface Param {
 
         /**
-         * [Member] 实例
-         * @return [Member] or null
+         * Gets the hooked [Member].
+         * @return [Member] or null.
          */
         val member: Member?
 
         /**
-         * 当前实例对象
-         * @return [Any] or null
+         * Gets the current receiver instance.
+         * @return [Any] or null.
          */
         val instance: Any?
 
         /**
-         * 方法、构造方法数组
-         * @return [Array] or null
+         * Gets the method or constructor arguments.
+         * @return [Array] or null.
          */
         val args: Array<Any?>?
 
         /**
-         * 获取、设置方法返回值 (结果)
-         * @return [Any] or null
+         * Gets or sets the invocation result.
+         * @return [Any] or null.
          */
         var result: Any?
 
         /**
-         * 是否存在设置过的方法调用抛出异常
+         * Gets whether the invocation has a configured throwable.
          * @return [Boolean]
          */
         val hasThrowable: Boolean
 
         /**
-         * 获取、设置方法调用抛出的异常
-         * @return [Throwable] or null
+         * Gets or sets the throwable raised by the invocation.
+         * @return [Throwable] or null.
          * @throws Throwable
          */
         var throwable: Throwable?

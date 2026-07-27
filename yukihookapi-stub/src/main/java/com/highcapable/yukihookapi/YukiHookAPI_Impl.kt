@@ -25,14 +25,14 @@
 package com.highcapable.yukihookapi
 
 /**
- * YukiHookAPI 注入 Stub
+ * Injection stub for YukiHookAPI.
  */
 object YukiHookAPI_Impl {
 
     /**
-     * 获取项目编译完成的时间戳 (当前本地时间)
+     * Gets the timestamp at which the project compilation completed, expressed in local time.
      *
-     * 返回值将在每次编译时自动生成
+     * The return value is generated automatically during each compilation.
      * @return [Long]
      */
     val compiledTimestamp: Long get() = error("Stub!")

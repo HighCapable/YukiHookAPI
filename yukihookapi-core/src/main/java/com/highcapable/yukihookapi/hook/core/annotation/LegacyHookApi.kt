@@ -22,9 +22,9 @@
 package com.highcapable.yukihookapi.hook.core.annotation
 
 /**
- * 标记需要 [RequiresOptIn] 的功能
+ * Marks a legacy Hook API that requires an explicit [RequiresOptIn].
  */
-@RequiresOptIn(message = "这种方式将不再被推荐且将在 2.0.0 版本完全移除，建议迁移到使用 Member 创建 Hook 的新写法", level = RequiresOptIn.Level.WARNING)
+@RequiresOptIn(message = "This API is no longer recommended and will be removed completely in version 2.0.0. Migrate to the new Member-based Hook API", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)

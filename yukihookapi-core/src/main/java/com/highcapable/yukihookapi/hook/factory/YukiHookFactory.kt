@@ -49,70 +49,70 @@ import java.io.File
 import java.io.FileReader
 
 /**
- * 在 [IYukiHookXposedInit] 中调用 [YukiHookAPI.configs]
- * @param initiate 配置方法体
+ * Calls [YukiHookAPI.configs] from [IYukiHookXposedInit].
+ * @param initiate the configuration block.
  */
 inline fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
 
 /**
- * 在 [IYukiHookXposedInit] 中调用 [YukiHookAPI.encase]
- * @param initiate Hook 方法体
+ * Calls [YukiHookAPI.encase] from [IYukiHookXposedInit].
+ * @param initiate the Hook block.
  */
 fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
 
 /**
- * 在 [IYukiHookXposedInit] 中装载 [YukiHookAPI]
- * @param hooker Hook 子类数组 - 必填不能为空
- * @throws IllegalStateException 如果 [hooker] 是空的
+ * Loads [YukiHookAPI] from [IYukiHookXposedInit].
+ * @param hooker the required, non-empty Hooker array.
+ * @throws IllegalStateException if [hooker] is empty.
  */
 fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
 
 /**
- * 获取模块的存取对象
+ * Gets the module preferences object.
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [Context.prefs] 方法
+ * - Migrate to [Context.prefs].
  * @return [YukiHookPrefsBridge]
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs()"))
+@Deprecated(message = "Use the new naming method", ReplaceWith("prefs()"))
 val Context.modulePrefs get() = prefs()
 
 /**
- * 获取模块的存取对象
+ * Gets the module preferences object.
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [Context.prefs] 方法
+ * - Migrate to [Context.prefs].
  * @return [YukiHookPrefsBridge]
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith("prefs(name)"))
+@Deprecated(message = "Use the new naming method", ReplaceWith("prefs(name)"))
 fun Context.modulePrefs(name: String) = prefs(name)
 
 /**
- * 创建 [YukiHookPrefsBridge] 对象
+ * Creates a [YukiHookPrefsBridge] object.
  *
- * 可以同时在模块与 (Xposed) 宿主环境中使用
+ * This API is available in both module and (Xposed) host environments.
  *
- * 如果你想在 (Xposed) 宿主环境将数据存入当前宿主的私有空间 - 请使用 [YukiHookPrefsBridge.native] 方法
+ * To store data in the current host app's private storage from a (Xposed) host environment, use [YukiHookPrefsBridge.native].
  *
- * 在未声明任何条件的情况下 (Xposed) 宿主环境默认读取模块中的数据
- * @param name 自定义 Sp 存储名称 - 默认空
+ * Without any explicit conditions, the (Xposed) host environment reads module data by default.
+ * @param name the custom SharedPreferences storage name, empty by default.
  * @return [YukiHookPrefsBridge]
  */
 fun Context.prefs(name: String = "") = YukiHookPrefsBridge.from(context = this).let { if (name.isNotBlank()) it.name(name) else it }
 
 /**
- * 获取 [YukiHookDataChannel] 对象
+ * Gets a [YukiHookDataChannel] object.
  *
- * - 只能在模块环境使用此功能 - 其它环境下使用将不起作用
- * @param packageName 目标 Hook APP (宿主) 包名
+ * - This API is available only in the module environment and has no effect elsewhere.
+ * @param packageName the target host app package name.
  * @return [YukiHookDataChannel.NameSpace]
  */
 fun Context.dataChannel(packageName: String) = YukiHookDataChannel.instance().nameSpace(context = this, packageName)
 
 /**
- * 获取当前进程名称
+ * Gets the current process name.
  * @return [String]
  */
 val Context.processName
@@ -126,86 +126,76 @@ val Context.processName
     }.getOrNull() ?: packageName ?: ""
 
 /**
- * 向 Hook APP (宿主) [Context] 注入当前 Xposed 模块的资源
+ * Injects the current Xposed module's resources into the host app [Context].
  *
- * 注入成功后 - 你就可以直接使用例如 [ImageView.setImageResource] or [Resources.getString] 装载当前 Xposed 模块的资源 ID
+ * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString] can load the current module's resource IDs directly.
  *
- * 注入的资源作用域仅限当前 [Context] - 你需要在每个用到宿主 [Context] 的地方重复调用此方法进行注入才能使用
+ * Injected resources are scoped to the current [Context], so call this method for every host [Context] that needs them.
  *
- * 详情请参考 [注入模块资源 (Resources)](https://highcapable.github.io/YukiHookAPI/zh-cn/special-features/host-inject#%E6%B3%A8%E5%85%A5%E6%A8%A1%E5%9D%97%E8%B5%84%E6%BA%90-resources)
+ * See [Inject Module App's Resources](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#inject-module-app-s-resources)
  *
- * For English version, see [Inject Module App's Resources](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#inject-module-app-s-resources)
- *
- * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * - This API is available only in a (Xposed) host environment. Elsewhere it has no effect and prints a warning.
  */
 fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
 
 /**
- * 向 Hook APP (宿主) 指定 [Resources] 直接注入当前 Xposed 模块的资源
+ * Injects the current Xposed module's resources directly into the specified host app [Resources].
  *
- * 注入成功后 - 你就可以直接使用例如 [ImageView.setImageResource] or [Resources.getString] 装载当前 Xposed 模块的资源 ID
+ * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString] can load the current module's resource IDs directly.
  *
- * 注入的资源作用域仅限当前 [Resources] - 你需要在每个用到宿主 [Resources] 的地方重复调用此方法进行注入才能使用
+ * Injected resources are scoped to the current [Resources], so call this method for every host [Resources] instance that needs them.
  *
- * 详情请参考 [注入模块资源 (Resources)](https://highcapable.github.io/YukiHookAPI/zh-cn/special-features/host-inject#%E6%B3%A8%E5%85%A5%E6%A8%A1%E5%9D%97%E8%B5%84%E6%BA%90-resources)
+ * See [Inject Module App's Resources](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#inject-module-app-s-resources)
  *
- * For English version, see [Inject Module App's Resources](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#inject-module-app-s-resources)
- *
- * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
+ * - This API is available only in a (Xposed) host environment. Elsewhere it has no effect and prints a warning.
  */
 fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResources(hostResources = this)
 
 /**
- * 向 Hook APP (宿主) 注册当前 Xposed 模块的 [Activity]
+ * Registers the current Xposed module's [Activity] in the host app.
  *
- * 注册成功后 - 你就可以直接使用 [Context.startActivity] 来启动未在宿主中注册的 [Activity]
+ * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host app.
  *
- * 使用此方法会在未注册的 [Activity] 在 Hook APP (宿主) 中启动时自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
+ * When an unregistered [Activity] starts in the host app, this API automatically calls [injectModuleAppResources] to inject module resources.
  *
- * - 你要将需要在宿主启动的 [Activity] 实现 [ModuleActivity] 接口
+ * - Each [Activity] that starts in the host app must implement [ModuleActivity].
  *
- * 详情请参考 [注册模块 Activity](https://highcapable.github.io/YukiHookAPI/zh-cn/special-features/host-inject#%E6%B3%A8%E5%86%8C%E6%A8%A1%E5%9D%97-activity)
+ * See [Register Module App's Activity](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#register-module-app-s-activity)
  *
- * For English version, see [Register Module App's Activity](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#register-module-app-s-activity)
+ * - This API is available only in a (Xposed) host environment. Elsewhere it has no effect and prints a warning.
  *
- * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
- *
- * - 最低支持 Android 7.0 (API 24)
- * @param proxy 代理的 [Activity] - 必须存在于宿主的 AndroidManifest 清单中 - 不填使用默认 [Activity]
+ * - Requires Android 7.0 (API 24) or later.
+ * @param proxy the proxy [Activity], which must exist in the host AndroidManifest. Omit it to use the default [Activity].
  */
 @RequiresApi(AndroidVersion.N)
 fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)
 
 /**
- * 生成一个 [ContextThemeWrapper] 代理以应用当前 Xposed 模块的主题资源
+ * Creates a [ContextThemeWrapper] proxy that applies the current Xposed module's theme resources.
  *
- * 在 Hook APP (宿主) 中使用此方法会自动调用 [injectModuleAppResources] 注入当前 Xposed 模块的资源
+ * In a host app, this API automatically calls [injectModuleAppResources] to inject the current module's resources.
  *
- * - 如果在 Hook APP (宿主) 中使用此方法发生 [ClassCastException] - 请手动设置新的 [configuration]
+ * - If this API throws [ClassCastException] in a host app, set a new [configuration] manually.
  *
- * 详情请参考 [创建 ContextThemeWrapper 代理](https://highcapable.github.io/YukiHookAPI/zh-cn/special-features/host-inject#%E5%88%9B%E5%BB%BA-contextthemewrapper-%E4%BB%A3%E7%90%86)
- *
- * For English version, see [Create ContextThemeWrapper Proxy](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#create-contextthemewrapper-proxy)
- * @param theme 主题资源 ID
- * @param configuration 使用的 [Configuration] - 默认空
+ * See [Create ContextThemeWrapper Proxy](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#create-contextthemewrapper-proxy)
+ * @param theme the theme resource ID.
+ * @param configuration the [Configuration] to use, null by default.
  * @return [ModuleContextThemeWrapper]
  */
 fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration? = null) =
     ModuleContextThemeWrapper.wrapper(baseContext = this, theme, configuration)
 
 /**
- * 仅判断模块是否在太极、无极中激活
+ * Checks only whether the module is active in TaiChi or Wuji.
  *
- * 此处的实现代码来自太极官方文档中示例代码的封装与改进
- *
- * 详情请参考太极开发指南中的 [如何判断模块是否激活了？](https://taichi.cool/zh/doc/for-xposed-dev.html#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E6%A8%A1%E5%9D%97%E6%98%AF%E5%90%A6%E6%BF%80%E6%B4%BB%E4%BA%86%EF%BC%9F)
- * @return [Boolean] 是否激活
+ * This implementation wraps and improves the example from the official TaiChi documentation.
+ * @return [Boolean] whether the module is active.
  */
 internal val Context.isTaiChiModuleActive: Boolean
     get() {
         /**
-         * 获取模块是否激活
-         * @return [Boolean] or null
+         * Gets whether the module is active.
+         * @return [Boolean] or null.
          */
         fun isModuleActive() =
             contentResolver?.call("content://me.weishu.exposed.CP/".toUri(), "active", null, null)?.getBoolean("active", false)

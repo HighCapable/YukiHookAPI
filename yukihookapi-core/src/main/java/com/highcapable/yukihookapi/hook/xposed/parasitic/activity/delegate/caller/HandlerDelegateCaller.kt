@@ -40,14 +40,14 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 
 /**
- * 代理当前 [Handler.Callback] 调用类
+ * Routes calls for the current [Handler.Callback] proxy.
  */
 internal object HandlerDelegateCaller {
 
-    /** 启动 [Activity] */
+    /** Launches an [Activity]. */
     private const val LAUNCH_ACTIVITY = 100
 
-    /** 执行事务处理 */
+    /** Executes an activity transaction. */
     private const val EXECUTE_TRANSACTION = 159
 
     private val ActivityThreadClass by lazyClass("android.app.ActivityThread")
@@ -58,9 +58,9 @@ internal object HandlerDelegateCaller {
     }
 
     /**
-     * 调用代理的 [Handler.Callback.handleMessage] 方法
-     * @param baseInstance 原始实例
-     * @param msg 当前消息实例
+     * Calls the proxied [Handler.Callback.handleMessage] method.
+     * @param baseInstance the original callback instance.
+     * @param msg the current message.
      * @return [Boolean]
      */
     internal fun callHandleMessage(baseInstance: Handler.Callback?, msg: Message): Boolean {

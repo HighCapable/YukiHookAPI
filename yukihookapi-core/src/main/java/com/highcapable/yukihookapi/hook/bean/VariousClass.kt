@@ -27,20 +27,20 @@ import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.toClassOrNull
 
 /**
- * 这是一个不确定性 [Class] 类名装载器
- * @param name 可指定多个类名 - 将会自动匹配存在的第一个类名
+ * Resolves the first available [Class] from multiple candidate names.
+ * @param name one or more class names, checked in declaration order.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class VariousClass(private vararg val name: String) {
 
     /**
-     * 获取匹配的实体类
+     * Gets the first matching class.
      *
-     * - 使用当前 [loader] 装载目标 [Class]
-     * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
-     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * - Uses [loader] to load each target [Class].
+     * @param loader the [ClassLoader], or the default loader when null.
+     * @param initialize whether to initialize static class blocks, defaults to false.
      * @return [Class]
-     * @throws IllegalStateException 如果任何 [Class] 都没有匹配到
+     * @throws IllegalStateException if none of the candidate classes can be resolved.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun get(loader: ClassLoader? = null, initialize: Boolean = false): Class<*> {
@@ -55,14 +55,14 @@ class VariousClass(private vararg val name: String) {
     }
 
     /**
-     * 获取匹配的实体类
+     * Gets the first matching class, or null.
      *
-     * - 使用当前 [loader] 装载目标 [Class]
+     * - Uses [loader] to load each target [Class].
      *
-     * 匹配不到 [Class] 会返回 null - 不会抛出异常
-     * @param loader 当前 [ClassLoader] - 若留空使用默认 [ClassLoader]
-     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
-     * @return [Class] or null
+     * Returns null instead of throwing when no [Class] matches.
+     * @param loader the [ClassLoader], or the default loader when null.
+     * @param initialize whether to initialize static class blocks, defaults to false.
+     * @return [Class] or null.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun getOrNull(loader: ClassLoader? = null, initialize: Boolean = false) = runCatching { get(loader, initialize) }.getOrNull()

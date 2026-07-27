@@ -30,36 +30,36 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
- * Xposed 模块核心功能调用类
+ * Routes calls to the Xposed module lifecycle implementation.
  */
 internal object YukiXposedModuleCaller {
 
     /**
-     * 模块是否装载了 Xposed 回调方法
+     * Gets whether the module has loaded its Xposed callback.
      * @return [Boolean]
      */
     internal val isXposedCallbackSetUp get() = YukiXposedModule.isXposedCallbackSetUp
 
     /**
-     * 标识 Xposed 模块开始装载
-     * @param packageName 当前 Xposed 模块包名
-     * @param appFilePath 当前 Xposed 模块自身 APK 路径
+     * Signals that the Xposed module started loading.
+     * @param packageName the current Xposed module package name.
+     * @param appFilePath the current Xposed module APK path.
      */
     internal fun callOnStartLoadModule(packageName: String, appFilePath: String) = YukiXposedModule.onStartLoadModule(packageName, appFilePath)
 
     /**
-     * 标识 Xposed 模块装载完成
+     * Signals that the Xposed module finished loading.
      */
     internal fun callOnFinishLoadModule() = YukiXposedModule.onFinishLoadModule()
 
     /**
-     * 标识可用的 Hook APP (宿主) 开始装载
-     * @param type 当前正在进行的 Hook 类型
-     * @param packageName 宿主包名
-     * @param processName 宿主进程名
-     * @param appClassLoader 宿主 [ClassLoader]
-     * @param appInfo 宿主 [ApplicationInfo]
-     * @param appResources 宿主 [YukiResources]
+     * Signals that an available host app started loading.
+     * @param type the current Hook entry type.
+     * @param packageName the host package name.
+     * @param processName the host process name.
+     * @param appClassLoader the host [ClassLoader].
+     * @param appInfo the host [ApplicationInfo].
+     * @param appResources the host [YukiResources].
      */
     internal fun callOnPackageLoaded(
         type: HookEntryType,
@@ -71,9 +71,9 @@ internal object YukiXposedModuleCaller {
     ) = YukiXposedModule.onPackageLoaded(type, packageName, processName, appClassLoader, appInfo, appResources)
 
     /**
-     * 打印 Error 级别 Log
-     * @param msg 日志打印的内容
-     * @param e 异常堆栈信息 - 默认空
+     * Prints an error-level log entry.
+     * @param msg the log message.
+     * @param e the exception stack trace, defaults to null.
      */
     internal fun callLogError(msg: String, e: Throwable? = null) = YLog.innerE(msg, e)
 }

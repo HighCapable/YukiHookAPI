@@ -30,14 +30,14 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import java.lang.reflect.Member
 
 /**
- * Hook 核心功能实现工具类
+ * Implements core Hook operations.
  */
 internal object YukiHookHelper {
 
     /**
      * Hook [MemberResolver]
-     * @param resolver 需要 Hook 的 [MemberResolver]
-     * @param callback 回调
+     * @param resolver the [MemberResolver] to Hook.
+     * @param callback the Hook callback.
      * @return [YukiHookResult]
      */
     internal fun hook(resolver: MemberResolver<*, *>?, callback: YukiHookCallback) =
@@ -45,21 +45,21 @@ internal object YukiHookHelper {
 
     /**
      * Hook [Member]
-     * @param member 需要 Hook 的方法、构造方法
-     * @param callback 回调
+     * @param member the method or constructor to Hook.
+     * @param callback the Hook callback.
      * @return [YukiHookResult]
      */
     internal fun hookMember(member: Member?, callback: YukiHookCallback) =
         YukiHookResult(hookedMember = HookCompatHelper.hookMember(member, callback))
 
     /**
-     * 执行原始 [Member]
+     * Invokes the original [Member].
      *
-     * 未进行 Hook 的 [Member]
-     * @param member 实例
-     * @param args 参数实例
-     * @return [Any] or null
-     * @throws IllegalStateException 如果 [Member] 参数个数不正确
+     * The [Member] is invoked without applying its Hook.
+     * @param member the member instance.
+     * @param args the argument array.
+     * @return [Any] or null.
+     * @throws IllegalStateException if the [Member] argument count is invalid.
      */
     internal fun invokeOriginalMember(member: Member?, instance: Any?, args: Array<out Any?>?) = member?.let {
         runCatching { HookCompatHelper.invokeOriginalMember(member, instance, args) }.onFailure {
@@ -69,9 +69,9 @@ internal object YukiHookHelper {
     }
 
     /**
-     * 使用当前 Hook API 自带的日志功能打印日志
-     * @param msg 日志打印的内容
-     * @param e 异常堆栈信息 - 默认空
+     * Prints through the current Hook API logger.
+     * @param msg the log message.
+     * @param e the exception stack trace, defaults to null.
      */
     internal fun logByHooker(msg: String, e: Throwable? = null) {
         if (HookApiCategoryHelper.hasAvailableHookApi) HookCompatHelper.logByHooker(msg, e)

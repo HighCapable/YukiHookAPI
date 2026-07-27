@@ -24,6 +24,7 @@
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules
 
 import com.highcapable.yukihookapi.hook.bean.VariousClass
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.base.BaseRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberRulesResult
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
@@ -32,20 +33,19 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditi
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Method
 
 /**
- * [Method] 查找条件实现类
- * @param rulesData 当前查找条件规则数据
+ * [Method] finder condition implementation.
+ * @param rulesData the current finder rule data.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MethodRules internal constructor(private val rulesData: MethodRulesData) : BaseRules() {
 
     /**
-     * 设置 [Method] 名称
+     * Sets the [Method] name.
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -56,11 +56,11 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
         }
 
     /**
-     * 设置 [Method] 参数个数
+     * Sets the [Method] parameter count.
      *
-     * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
+     * You can use this property to specify only the parameter count without using [param] to specify parameter types.
      *
-     * 若参数个数小于零则忽略并使用 [param]
+     * A negative parameter count is ignored and [param] is used instead.
      * @return [Int]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -71,12 +71,12 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
         }
 
     /**
-     * 设置 [Method] 返回值
+     * Sets the [Method] return type.
      *
-     * - 只能是 [Class]、[String]、[VariousClass]
+     * - The value must be [Class], [String], or [VariousClass].
      *
-     * - 可不填写返回值
-     * @return [Any] or null
+     * - The return type is optional.
+     * @return [Any] or null.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var returnType
@@ -86,45 +86,45 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
         }
 
     /**
-     * 设置 [Method] 标识符筛选条件
+     * Sets the [Method] modifier conditions.
      *
-     * - 可不设置筛选条件
-     * @param conditions 条件方法体
+     * - The conditions are optional.
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
         rulesData.modifiers = conditions
     }
 
-    /** 设置 [Method] 空参数、无参数 */
+    /** Configures an empty, parameterless [Method]. */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun emptyParam() {
         rulesData.paramCount = 0
     }
 
     /**
-     * 设置 [Method] 参数
+     * Sets the [Method] parameters.
      *
-     * 如果同时使用了 [paramCount] 则 [paramType] 的数量必须与 [paramCount] 完全匹配
+     * When [paramCount] is also used, the number of [paramType] entries must exactly match [paramCount].
      *
-     * 如果 [Method] 中存在一些无意义又很长的类型 - 你可以使用 [VagueType] 来替代它
+     * If a [Method] contains unhelpful long type names, use [VagueType] in their place.
      *
-     * 例如下面这个参数结构 ↓
+     * For example, given the following parameter structure:
      *
      * ```java
      * void foo(String var1, boolean var2, com.demo.Test var3, int var4)
      * ```
      *
-     * 此时就可以简单地写作 ↓
+     * It can be written as:
      *
      * ```kotlin
      * param(StringType, BooleanType, VagueType, IntType)
      * ```
      *
-     * - 无参 [Method] 请使用 [emptyParam] 设置查找条件
+     * - For a parameterless [Method], use [emptyParam] to set the finder condition.
      *
-     * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
-     * @param paramType 参数类型数组 - 只能是 [Class]、[String]、[VariousClass]
+     * - For a parameterized [Method], use this method to set parameters or [paramCount] to specify their count.
+     * @param paramType the parameter type array. Entries must be [Class], [String], or [VariousClass].
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(vararg paramType: Any) {
@@ -134,18 +134,18 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     }
 
     /**
-     * 设置 [Method] 参数条件
+     * Sets the [Method] parameter conditions.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * param { it[1] == StringClass || it[2].name == "java.lang.String" }
      * ```
      *
-     * - 无参 [Method] 请使用 [emptyParam] 设置查找条件
+     * - For a parameterless [Method], use [emptyParam] to set the finder condition.
      *
-     * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
-     * @param conditions 条件方法体
+     * - For a parameterized [Method], use this method to set parameters or [paramCount] to specify their count.
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun param(conditions: ObjectsConditions) {
@@ -153,8 +153,8 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     }
 
     /**
-     * 设置 [Method] 名称条件
-     * @param conditions 条件方法体
+     * Sets the [Method] name conditions.
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(conditions: NameConditions) {
@@ -162,16 +162,16 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     }
 
     /**
-     * 设置 [Method] 参数个数范围
+     * Sets the [Method] parameter-count range.
      *
-     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数范围
+     * You can use this method to specify only the parameter-count range without using [param] to specify parameter types.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * paramCount(1..5)
      * ```
-     * @param numRange 个数范围
+     * @param numRange the count range.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(numRange: IntRange) {
@@ -179,16 +179,16 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     }
 
     /**
-     * 设置 [Method] 参数个数条件
+     * Sets the [Method] parameter-count condition.
      *
-     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数条件
+     * You can use this method to specify only a parameter-count condition without using [param] to specify parameter types.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * paramCount { it >= 5 || it.isZero() }
      * ```
-     * @param conditions 条件方法体
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun paramCount(conditions: CountConditions) {
@@ -196,16 +196,16 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     }
 
     /**
-     * 设置 [Method] 返回值条件
+     * Sets the [Method] return-type condition.
      *
-     * - 可不填写返回值
+     * - The return type is optional.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * returnType { it == StringClass || it.name == "java.lang.String" }
      * ```
-     * @param conditions 条件方法体
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun returnType(conditions: ObjectConditions) {
@@ -213,7 +213,7 @@ class MethodRules internal constructor(private val rulesData: MethodRulesData) :
     }
 
     /**
-     * 返回结果实现类
+     * Builds the result implementation.
      * @return [MemberRulesResult]
      */
     internal fun build() = MemberRulesResult(rulesData)

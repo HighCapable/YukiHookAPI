@@ -30,15 +30,15 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * 调试日志数据实现类
- * @param timestamp 当前时间戳
- * @param time 当前 UTC 时间
- * @param tag 当前标签
- * @param priority 当前优先级 - D、I、W、E
- * @param packageName 当前包名
- * @param userId 当前用户 ID
- * @param msg 当前日志内容
- * @param throwable 当前异常堆栈
+ * Represents a debug log entry.
+ * @param timestamp the current timestamp.
+ * @param time the current UTC time.
+ * @param tag the current tag.
+ * @param priority the current priority: D, I, W, or E.
+ * @param packageName the current package name.
+ * @param userId the current user ID.
+ * @param msg the current log message.
+ * @param throwable the current exception stack trace.
  */
 data class YLogData internal constructor(
     var timestamp: Long = 0L,
@@ -51,7 +51,7 @@ data class YLogData internal constructor(
     var throwable: Throwable? = null
 ) : Serializable {
 
-    /** 是否隐式打印 */
+    /** Whether the entry is printed implicitly. */
     internal var isImplicit = false
 
     init {
@@ -62,7 +62,7 @@ data class YLogData internal constructor(
     }
 
     /**
-     * 获取头部时间字符串
+     * Gets the timestamp header.
      * @return [String]
      */
     internal val head get() = "$time ------ "

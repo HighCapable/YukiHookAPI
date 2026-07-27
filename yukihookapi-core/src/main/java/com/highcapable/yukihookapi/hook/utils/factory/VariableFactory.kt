@@ -24,13 +24,13 @@
 package com.highcapable.yukihookapi.hook.utils.factory
 
 /**
- * 对 [T] 返回无返回值的 [Unit]
+ * Converts [T] to a valueless [Unit].
  * @return [Unit]
  */
 internal fun <T> T?.unit() = let {}
 
 /**
- * 获取数组内容依次列出的字符串表示
+ * Gets a string representation that lists the array contents in order.
  * @return [String]
  */
 internal inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
@@ -40,96 +40,96 @@ internal inline fun <reified T> Array<out T>.value() = if (isNotEmpty()) {
 } else "[]"
 
 /**
- * 通过 [conditions] 查找符合条件的最后一个元素的下标
- * @return [Int] 没有找到符合条件的下标将返回 -1
+ * Finds the index of the last element matching [conditions].
+ * @return [Int] -1 when no matching index is found.
  */
 internal inline fun <reified T> Sequence<T>.findLastIndex(conditions: (T) -> Boolean) =
     withIndex().findLast { conditions(it.value) }?.index ?: -1
 
 /**
- * 返回最后一个元素的下标
- * @return [Int] 如果 [Sequence] 为空将返回 -1
+ * Returns the index of the last element.
+ * @return [Int] -1 when the [Sequence] is empty.
  */
 internal inline fun <reified T> Sequence<T>.lastIndex() = foldIndexed(-1) { index, _, _ -> index }.takeIf { it >= 0 } ?: -1
 
 /**
- * 满足条件判断方法体 - 对 [kotlin.takeIf] 进行封装
- * @param other 需要满足不为空的对象 - 仅用于判断是否为 null
- * @param predicate 原始方法体
- * @return [T] or null
+ * Conditional wrapper around [kotlin.takeIf].
+ * @param other the object that must be non-null. Used only for the null check.
+ * @param predicate the original predicate.
+ * @return [T] or null.
  */
 internal inline fun <T> T.takeIf(other: Any?, predicate: (T) -> Boolean) = if (other != null) takeIf(predicate) else null
 
 /**
- * 满足条件返回值 - 对 [kotlin.let] 进行封装
- * @param other 需要满足不为空的对象 - 仅用于判断是否为 null
- * @param block 原始方法体
- * @return [R] or null
+ * Conditional return-value wrapper around [kotlin.let].
+ * @param other the object that must be non-null. Used only for the null check.
+ * @param block the original block.
+ * @return [R] or null.
  */
 internal inline fun <T, R> T.let(other: Any?, block: (T) -> R) = if (other != null) let(block) else null
 
 /**
- * 条件判断方法体捕获异常返回 true
- * @param block 原始方法体
+ * Runs a condition block and returns true when it throws an exception.
+ * @param block the original block.
  * @return [Boolean]
  */
 internal inline fun runOrTrue(block: () -> Boolean) = runCatching { block() }.getOrNull() ?: true
 
 /**
- * 条件判断方法体捕获异常返回 false
- * @param block 原始方法体
+ * Runs a condition block and returns false when it throws an exception.
+ * @param block the original block.
  * @return [Boolean]
  */
 internal inline fun runOrFalse(block: () -> Boolean) = runCatching { block() }.getOrNull() ?: false
 
 /**
- * 创建多项条件判断 - 条件对象 [T]
- * @param initiate 方法体
+ * Creates a compound condition for [T].
+ * @param initiate the condition block.
  * @return [Conditions.Result]
  */
 internal inline fun <T> T.conditions(initiate: Conditions<T>.() -> Unit) = Conditions(value = this).apply(initiate).build()
 
 /**
- * 构造条件判断类
- * @param value 当前条件对象
+ * Compound condition implementation.
+ * @param value the current condition object.
  */
 internal class Conditions<T>(internal var value: T) {
 
-    /** 全部判断条件数组 (与) */
+    /** All AND conditions. */
     private val andConditions = mutableListOf<Boolean>()
 
-    /** 全部判断条件数组 (或) */
+    /** All OR conditions. */
     private val optConditions = mutableListOf<Boolean>()
 
     /**
-     * 添加与 (and) 条件
-     * @param value 条件值
+     * Adds an AND condition.
+     * @param value the condition value.
      */
     internal fun and(value: Boolean) {
         andConditions.add(value)
     }
 
     /**
-     * 添加或 (or) 条件
-     * @param value 条件值
+     * Adds an OR condition.
+     * @param value the condition value.
      */
     internal fun opt(value: Boolean) {
         optConditions.add(value)
     }
 
     /**
-     * 结束方法体
+     * Completes the condition block.
      * @return [Result]
      */
     internal fun build() = Result()
 
     /**
-     * 构造条件判断结果类
+     * Compound condition result implementation.
      */
     inner class Result internal constructor() {
 
         /**
-         * 获取条件判断结果
+         * Gets the condition result.
          * @return [Boolean]
          */
         private val result by lazy {
@@ -138,8 +138,8 @@ internal class Conditions<T>(internal var value: T) {
         }
 
         /**
-         * 当条件成立
-         * @param callback 回调
+         * Runs when the condition is satisfied.
+         * @param callback the callback.
          */
         internal inline fun finally(callback: () -> Unit): Result {
             if (result) callback()
@@ -147,8 +147,8 @@ internal class Conditions<T>(internal var value: T) {
         }
 
         /**
-         * 当条件不成立
-         * @param callback 回调
+         * Runs when the condition is not satisfied.
+         * @param callback the callback.
          */
         internal inline fun without(callback: () -> Unit): Result {
             if (result.not()) callback()
@@ -158,28 +158,28 @@ internal class Conditions<T>(internal var value: T) {
 }
 
 /**
- * 获取 [ModifyValue] 对象
+ * Gets a [ModifyValue] object.
  * @return [ModifyValue]
  */
 internal fun <T> T.value() = ModifyValue(value = this)
 
 /**
- * 可修改变量实现类
- * @param value 变量自身实例
+ * Mutable value implementation.
+ * @param value the value instance.
  */
 internal data class ModifyValue<T>(var value: T)
 
 /**
- * 随机种子工具类
+ * Random-seed utility.
  */
 internal object RandomSeed {
 
-    /** 随机字母和数字定义 */
+    /** Available random letters and digits. */
     private const val RANDOM_LETTERS_NUMBERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
     /**
-     * 生成随机字符串
-     * @param length 生成长度 - 默认 15
+     * Generates a random string.
+     * @param length the generated length, 15 by default.
      * @return [String]
      */
     internal fun createString(length: Int = 15): String = buildString {

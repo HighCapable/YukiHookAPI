@@ -22,16 +22,16 @@
 package com.highcapable.yukihookapi.hook.core.api.priority
 
 /**
- * Hook 回调优先级配置类
+ * Configures Hook callback priority.
  */
 enum class YukiHookPriority {
 
-    /** 默认 Hook 回调优先级 */
+    /** Default Hook callback priority. */
     DEFAULT,
 
-    /** 延迟回调 Hook 方法结果 */
+    /** Invokes the callback after higher-priority callbacks. */
     LOWEST,
 
-    /** 更快回调 Hook 方法结果 */
+    /** Invokes the callback before lower-priority callbacks. */
     HIGHEST
 }

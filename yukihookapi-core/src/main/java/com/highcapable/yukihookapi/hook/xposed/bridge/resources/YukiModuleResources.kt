@@ -28,8 +28,8 @@ import android.content.res.XModuleResources
 import android.content.res.XResForwarder
 
 /**
- * 对接 [XModuleResources] 的中间层实例
- * @param baseInstance 原始实例
+ * Wraps a [XModuleResources] instance.
+ * @param baseInstance the original instance.
  */
 class YukiModuleResources private constructor(private val baseInstance: XModuleResources) :
     Resources(
@@ -38,26 +38,26 @@ class YukiModuleResources private constructor(private val baseInstance: XModuleR
         runCatching { baseInstance.configuration }.getOrNull()
     ) {
 
-    internal companion object {
+        internal companion object {
+
+            /**
+             * Delegates to [XModuleResources.createInstance].
+             *
+             * Creates linked [YukiModuleResources] and [XModuleResources] instances.
+             * @param path the Xposed module APK path.
+             * @return [YukiModuleResources]
+             */
+            internal fun wrapper(path: String) = YukiModuleResources(XModuleResources.createInstance(path, null))
+        }
 
         /**
-         * 对接 [XModuleResources.createInstance] 方法
+         * Delegates to [XModuleResources.fwd].
          *
-         * 创建 [YukiModuleResources] 与 [XModuleResources] 实例
-         * @param path Xposed 模块 APK 路径
-         * @return [YukiModuleResources]
+         * Creates linked [YukiResForwarder] and [XResForwarder] instances.
+         * @param resId resources Id.
+         * @return [YukiResForwarder]
          */
-        internal fun wrapper(path: String) = YukiModuleResources(XModuleResources.createInstance(path, null))
+        fun fwd(resId: Int) = YukiResForwarder.wrapper(baseInstance.fwd(resId))
+
+        override fun toString() = "YukiModuleResources by $baseInstance"
     }
-
-    /**
-     * 对接 [XModuleResources.fwd] 方法
-     *
-     * 创建 [YukiResForwarder] 与 [XResForwarder] 实例
-     * @param resId Resources Id
-     * @return [YukiResForwarder]
-     */
-    fun fwd(resId: Int) = YukiResForwarder.wrapper(baseInstance.fwd(resId))
-
-    override fun toString() = "YukiModuleResources by $baseInstance"
-}

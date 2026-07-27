@@ -26,160 +26,160 @@ package com.highcapable.yukihookapi.hook.log
 import java.io.Serializable
 
 /**
- * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+ * - LoggerFactory is deprecated. Migrate to [YLog].
  */
-@Deprecated(message = "请迁移到 YLog")
+@Deprecated(message = "Migrate to YLog")
 enum class LoggerType {
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     LOGD,
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     XPOSEDBRIDGE,
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     XPOSED_ENVIRONMENT,
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     SCOPE,
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     BOTH
 }
 
 /**
- * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+ * - LoggerFactory is deprecated. Migrate to [YLog].
  */
-@Deprecated(message = "请迁移到 YLog")
-data class YukiLoggerData @Deprecated(message = "请迁移到 YLog") internal constructor(
-    @Deprecated(message = "请迁移到 YLog")
+@Deprecated(message = "Migrate to YLog")
+data class YukiLoggerData @Deprecated(message = "Migrate to YLog") internal constructor(
+    @Deprecated(message = "Migrate to YLog")
     var timestamp: Long = 0L,
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     var time: String = "",
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     var tag: String = YukiHookLogger.Configs.tag,
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     var priority: String = "",
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     var packageName: String = "",
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     var userId: Int = 0,
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     var msg: String = "",
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     var throwable: Throwable? = null
 ) : Serializable
 
 /**
- * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+ * - LoggerFactory is deprecated. Migrate to [YLog].
  */
-@Deprecated(message = "请迁移到 YLog")
+@Deprecated(message = "Migrate to YLog")
 object YukiHookLogger {
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     val inMemoryData = ArrayList<YukiLoggerData>()
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     val contents get() = ""
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     fun contents(data: ArrayList<YukiLoggerData> = inMemoryData) = ""
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     fun clear() = Unit
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     fun saveToFile(fileName: String, data: ArrayList<YukiLoggerData> = inMemoryData) = Unit
 
     /**
-     * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+     * - LoggerFactory is deprecated. Migrate to [YLog].
      */
-    @Deprecated(message = "请迁移到 YLog")
+    @Deprecated(message = "Migrate to YLog")
     object Configs {
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         const val TAG = ""
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         const val PRIORITY = -1
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         const val PACKAGE_NAME = -1
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         const val USER_ID = -1
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         var isEnable = true
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         var isRecord = false
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         var tag = ""
 
         /**
-         * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+         * - LoggerFactory is deprecated. Migrate to [YLog].
          */
-        @Deprecated(message = "请迁移到 YLog")
+        @Deprecated(message = "Migrate to YLog")
         fun elements(vararg item: Int) = Unit
     }
 }
 
 /**
- * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+ * - LoggerFactory is deprecated. Migrate to [YLog].
  */
-@Deprecated(message = "请迁移到 YLog", ReplaceWith("YLog.debug(msg = msg, tag = tag)"))
+@Deprecated(message = "Migrate to YLog", ReplaceWith("YLog.debug(msg = msg, tag = tag)"))
 fun loggerD(tag: String = YLog.Configs.tag, msg: String, type: LoggerType = LoggerType.BOTH) {
     YLog.debug(msg, tag = tag, env = when (type) {
         LoggerType.BOTH -> YLog.EnvType.BOTH
@@ -190,9 +190,9 @@ fun loggerD(tag: String = YLog.Configs.tag, msg: String, type: LoggerType = Logg
 }
 
 /**
- * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+ * - LoggerFactory is deprecated. Migrate to [YLog].
  */
-@Deprecated(message = "请迁移到 YLog", ReplaceWith("YLog.info(msg = msg, tag = tag)"))
+@Deprecated(message = "Migrate to YLog", ReplaceWith("YLog.info(msg = msg, tag = tag)"))
 fun loggerI(tag: String = YLog.Configs.tag, msg: String, type: LoggerType = LoggerType.BOTH) {
     YLog.info(msg, tag = tag, env = when (type) {
         LoggerType.BOTH -> YLog.EnvType.BOTH
@@ -203,9 +203,9 @@ fun loggerI(tag: String = YLog.Configs.tag, msg: String, type: LoggerType = Logg
 }
 
 /**
- * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+ * - LoggerFactory is deprecated. Migrate to [YLog].
  */
-@Deprecated(message = "请迁移到 YLog", ReplaceWith("YLog.warn(msg = msg, tag = tag)"))
+@Deprecated(message = "Migrate to YLog", ReplaceWith("YLog.warn(msg = msg, tag = tag)"))
 fun loggerW(tag: String = YLog.Configs.tag, msg: String, type: LoggerType = LoggerType.BOTH) {
     YLog.warn(msg, tag = tag, env = when (type) {
         LoggerType.BOTH -> YLog.EnvType.BOTH
@@ -216,9 +216,9 @@ fun loggerW(tag: String = YLog.Configs.tag, msg: String, type: LoggerType = Logg
 }
 
 /**
- * - LoggerFactory 已被弃用 - 请迁移到 [YLog]
+ * - LoggerFactory is deprecated. Migrate to [YLog].
  */
-@Deprecated(message = "请迁移到 YLog", ReplaceWith("YLog.error(msg = msg, e = e, tag = tag)"))
+@Deprecated(message = "Migrate to YLog", ReplaceWith("YLog.error(msg = msg, e = e, tag = tag)"))
 fun loggerE(tag: String = YLog.Configs.tag, msg: String = "", e: Throwable? = null, type: LoggerType = LoggerType.BOTH) {
     YLog.error(msg, e = e, tag = tag, env = when (type) {
         LoggerType.BOTH -> YLog.EnvType.BOTH

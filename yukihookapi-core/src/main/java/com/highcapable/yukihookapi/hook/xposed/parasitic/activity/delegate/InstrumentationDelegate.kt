@@ -47,24 +47,24 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 
 /**
- * 代理当前 [Instrumentation]
- * @param baseInstance 原始实例
+ * Proxies the current [Instrumentation].
+ * @param baseInstance the original instance.
  */
 internal class InstrumentationDelegate private constructor(private val baseInstance: Instrumentation) : Instrumentation() {
 
     internal companion object {
 
         /**
-         * 从 [Instrumentation] 创建 [InstrumentationDelegate] 实例
-         * @param baseInstance [Instrumentation] 实例
+         * Creates an [InstrumentationDelegate] from [Instrumentation].
+         * @param baseInstance the [Instrumentation] instance.
          * @return [InstrumentationDelegate]
          */
         internal fun wrapper(baseInstance: Instrumentation) = InstrumentationDelegate(baseInstance)
     }
 
     /**
-     * 注入当前 [Activity] 生命周期
-     * @param icicle [Bundle]
+     * Injects the current [Activity] lifecycle.
+     * @param icicle [Bundle].
      */
     private fun Activity.injectLifecycle(icicle: Bundle?) {
         if (icicle != null && javaClass.name.startsWith(YukiXposedModule.modulePackageName))

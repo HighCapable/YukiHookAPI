@@ -22,9 +22,9 @@
 package com.highcapable.yukihookapi.hook.xposed.channel.annotation
 
 /**
- * 标记需要 [RequiresOptIn] 的功能
+ * Marks an operation that requires an explicit [RequiresOptIn].
  */
-@RequiresOptIn(message = "这是一个危险的操作，允许发送过大的数据可能导致宿主或模块崩溃", level = RequiresOptIn.Level.WARNING)
+@RequiresOptIn(message = "This is a dangerous operation. Sending oversized data may crash the host app or module", level = RequiresOptIn.Level.WARNING)
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.BINARY)

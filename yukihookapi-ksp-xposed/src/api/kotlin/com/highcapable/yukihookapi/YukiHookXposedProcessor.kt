@@ -43,39 +43,39 @@ import java.io.File
 import java.util.regex.Pattern
 
 /**
- * 这是 [YukiHookAPI] 的自动生成处理类 - 核心基于 KSP
+ * KSP-based code generation processor for [YukiHookAPI].
  *
- * 可以帮你快速生成 Xposed 入口类和包名
+ * Generates the Xposed entry class and package metadata.
  *
- * 你只需要添加 [InjectYukiHookWithXposed] 注解即可完美解决一切问题
+ * Add the [InjectYukiHookWithXposed] annotation to enable generation.
  */
 @AutoService(SymbolProcessorProvider::class)
 class YukiHookXposedProcessor : SymbolProcessorProvider {
 
     private companion object {
 
-        /** 自动处理程序的 TAG */
+        /** Tag used by the processor. */
         private const val TAG = YukiHookAPIProperties.PROJECT_NAME
 
-        /** 查找的注解名称 */
+        /** Fully qualified name of the annotation to process. */
         private const val ANNOTATION_NAME = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
 
-        /** 插入 Xposed 尾部的名称 */
+        /** Suffix appended to generated Xposed entry classes. */
         private const val XPOSED_CLASS_SHORT_NAME = "_YukiHookXposedInit"
 
-        /** "kt" 文件扩展名 */
+        /** Kotlin source file extension. */
         private const val KOTLIN_FILE_EXT_NAME = "kt"
 
-        /** "java" 文件扩展名 */
+        /** Java source file extension. */
         private const val JAVA_FILE_EXT_NAME = "java"
     }
 
     override fun create(environment: SymbolProcessorEnvironment) = object : SymbolProcessor {
 
         /**
-         * 创建一个环境方法体方便调用
-         * @param ignored 是否忽略错误 - 默认否
-         * @param env 方法体
+         * Runs an action with the current processor environment.
+         * @param ignored whether errors should be ignored, defaults to false.
+         * @param env the action to run.
          */
         private fun environment(ignored: Boolean = false, env: SymbolProcessorEnvironment.() -> Unit) {
             if (ignored) runCatching { environment.apply(env) }
@@ -83,24 +83,23 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         }
 
         /**
-         * 终止并报错
-         * @param msg 错误消息
+         * Reports a fatal error and aborts processing.
+         * @param msg the error message.
          * @return [Nothing]
          */
         private fun SymbolProcessorEnvironment.problem(msg: String): Nothing {
             val helpMsg = "Looking for help? Please see the documentation link below\n" +
-                "- English: https://highcapable.github.io/YukiHookAPI/en/config/xposed-using\n" +
-                "- Chinese (Simplified): https://highcapable.github.io/YukiHookAPI/zh-cn/config/xposed-using"
+                "https://highcapable.github.io/YukiHookAPI/en/config/xposed-using"
             logger.error(message = "[$TAG] $msg\n$helpMsg")
             throw RuntimeException("[$TAG] $msg\n$helpMsg")
         }
 
         /**
-         * 创建代码文件
-         * @param fileName 文件名
-         * @param packageName 包名
-         * @param content 代码内容
-         * @param extensionName 文件扩展名 - 默认为 [KOTLIN_FILE_EXT_NAME]
+         * Creates a source file.
+         * @param fileName the file name.
+         * @param packageName the package name.
+         * @param content the source content.
+         * @param extensionName the file extension, defaults to [KOTLIN_FILE_EXT_NAME].
          */
         private fun SymbolProcessorEnvironment.createCodeFile(
             fileName: String,
@@ -113,13 +112,13 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         ).apply { content?.toByteArray()?.let { write(it) }; flush() }.close()
 
         /**
-         * 发出警告
-         * @param msg 错误消息
+         * Reports a warning.
+         * @param msg the warning message.
          */
         private fun SymbolProcessorEnvironment.warn(msg: String) = logger.warn(message = "[$TAG] $msg")
 
         /**
-         * 移除字符串中的空格与换行符并将双引号替换为单引号
+         * Removes whitespace and line breaks, then replaces double quotes with single quotes.
          * @return [String]
          */
         private fun String.removeSpecialChars() = replace("\\s*|\t|\r|\n".toRegex(), "").replace("\"", "'")
@@ -127,7 +126,7 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         override fun process(resolver: Resolver) = emptyList<KSAnnotated>().let { startProcess(resolver); it }
 
         /**
-         * 开始作业入口
+         * Starts symbol processing.
          * @param resolver [Resolver]
          */
         private fun startProcess(resolver: Resolver) = environment {
@@ -135,8 +134,8 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
             val data = GenerateData()
             resolver.getSymbolsWithAnnotation(ANNOTATION_NAME).apply {
                 /**
-                 * 检索需要注入的类
-                 * @param sourcePath 指定的 source 路径
+                 * Finds the class to inject.
+                 * @param sourcePath the configured source path.
                  */
                 fun fetchKSClassDeclaration(sourcePath: String) {
                     asSequence().filterIsInstance<KSClassDeclaration>().forEach {
@@ -164,13 +163,13 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                                 problem(msg = "\"YukiHookXposedInitProxy\" was deprecated, please replace to \"IYukiHookXposedInit\"")
                             else -> problem(msg = "The hook entry class \"${it.simpleName.asString()}\" must be implements \"IYukiHookXposedInit\"")
                         } else problem(msg = "\"@InjectYukiHookWithXposed\" only can be use in once times")
-                        /** 仅处理第一个标记的类 - 再次处理将拦截并报错 */
+                        // Only the first annotated class is processed. Additional classes produce an error.
                         isInjectOnce = false
                     }
                 }
                 forEach {
                     it.annotations.forEach { annotation ->
-                        var sourcePath = "" // 项目相对路径
+                        var sourcePath = "" // Path relative to the project root.
                         annotation.arguments.forEach { args ->
                             if (args.name?.asString() == "sourcePath")
                                 sourcePath = args.value.toString().trim()
@@ -200,10 +199,10 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         }
 
         /**
-         * 自动生成 Xposed assets 入口文件
-         * @param codePath 注解类的完整代码文件路径
-         * @param sourcePath 指定的 source 路径
-         * @param data 生成的模板数据
+         * Generates the Xposed assets entry file.
+         * @param codePath the full source path of the annotated class.
+         * @param sourcePath the configured source path.
+         * @param data the template generation data.
          */
         private fun generateAssetsFile(codePath: String, sourcePath: String, data: GenerateData) = environment {
             if (codePath.isBlank()) problem(msg = "Project code path not available")
@@ -222,78 +221,78 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
                     problem(msg = "Cannot identify your Module App's package name, please make sure \"BuildConfig.java\" is generated correctly")
                 assetsDir.resolve("xposed_init").writeText(text = "${data.entryPackageName}.${data.xInitClassName}")
                 metaInfDir.resolve("yukihookapi_init").writeText(text = "${data.entryPackageName}.${data.entryClassName}")
-                /** 移除旧版本 API 创建的入口类名称文件 */
+                // Removes the entry-class name file created by older API versions.
                 assetsDir.resolve("yukihookapi_init").apply { if (exists()) delete() }
                 generateClassFile(data)
             } else problem(msg = "Project source path \"$sourcePath\" verify failed, is this an Android project?")
         }
 
         /**
-         * 自动生成指定类文件
-         * @param data 生成的模板数据
+         * Generates the required class files.
+         * @param data the template generation data.
          */
         private fun generateClassFile(data: GenerateData) = environment(ignored = true) {
             if (data.customMPackageName.isNotBlank()) warn(
                 msg = "You set the customize module package name to \"${data.customMPackageName}\", " +
                     "please check for yourself if it is correct"
             )
-            /** 插入 YukiHookAPI_Impl 代码 */
+            // Generates YukiHookAPI_Impl.
             createCodeFile(
                 fileName = ClassName.YukiHookAPI_Impl,
                 packageName = PackageName.YukiHookAPI_Impl,
                 content = data.sources()[ClassName.YukiHookAPI_Impl]
             )
-            /** 插入 ModuleApplication_Impl 代码 */
+            // Generates ModuleApplication_Impl.
             createCodeFile(
                 fileName = ClassName.ModuleApplication_Impl,
                 packageName = PackageName.ModuleApplication_Impl,
                 content = data.sources()[ClassName.ModuleApplication_Impl]
             )
             if (data.isUsingXposedModuleStatus) {
-                /** 插入 YukiXposedModuleStatus_Impl 代码 */
+                // Generates YukiXposedModuleStatus_Impl.
                 createCodeFile(
                     fileName = ClassName.YukiXposedModuleStatus_Impl,
                     packageName = PackageName.YukiXposedModuleStatus_Impl,
                     content = data.sources()[ClassName.YukiXposedModuleStatus_Impl]
                 )
-                /** 插入 YukiXposedModuleStatus_Impl_Impl 代码 */
+                // Generates YukiXposedModuleStatus_Impl_Impl.
                 createCodeFile(
                     fileName = ClassName.YukiXposedModuleStatus_Impl_Impl,
                     packageName = PackageName.YukiXposedModuleStatus_Impl,
                     content = data.sources()[ClassName.YukiXposedModuleStatus_Impl_Impl]
                 )
             }
-            /** 插入 HandlerDelegateImpl_Impl 代码 */
+            // Generates HandlerDelegateImpl_Impl.
             createCodeFile(
                 fileName = ClassName.HandlerDelegateImpl_Impl,
                 packageName = PackageName.HandlerDelegateImpl_Impl,
                 content = data.sources()[ClassName.HandlerDelegateImpl_Impl]
             )
-            /** 插入 HandlerDelegateClass 代码 */
+            // Generates HandlerDelegateClass.
             createCodeFile(
                 fileName = ClassName.HandlerDelegateClass,
                 packageName = PackageName.HandlerDelegateClass,
                 content = data.sources()[ClassName.HandlerDelegateClass]
             )
-            /** 插入 IActivityManagerProxyImpl_Impl 代码 */
+            // Generates IActivityManagerProxyImpl_Impl.
             createCodeFile(
                 fileName = ClassName.IActivityManagerProxyImpl_Impl,
                 packageName = PackageName.IActivityManagerProxyImpl_Impl,
                 content = data.sources()[ClassName.IActivityManagerProxyImpl_Impl]
             )
-            /** 插入 IActivityManagerProxyClass 代码 */
+            // Generates IActivityManagerProxyClass.
             createCodeFile(
                 fileName = ClassName.IActivityManagerProxyClass,
                 packageName = PackageName.IActivityManagerProxyClass,
                 content = data.sources()[ClassName.IActivityManagerProxyClass]
             )
-            /** 插入 xposed_init 代码 */
+            // Generates xposed_init.
             createCodeFile(
                 fileName = data.xInitClassName,
                 packageName = data.entryPackageName,
                 content = data.sources()[ClassName.XposedInit]
             )
-            /** 插入 xposed_init_Impl 代码 */
+            // Generates xposed_init_Impl.
             createCodeFile(
                 fileName = "${data.entryClassName}_Impl",
                 packageName = data.entryPackageName,
@@ -302,9 +301,9 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         }
 
         /**
-         * 解析模块包名
-         * @param projectDir 项目目录
-         * @return [String] 模块包名
+         * Resolves the module package name.
+         * @param projectDir the project directory.
+         * @return [String] the module package name.
          */
         private fun parseModulePackageName(projectDir: File): String {
             val buildConfigFile = projectDir
@@ -320,13 +319,13 @@ class YukiHookXposedProcessor : SymbolProcessorProvider {
         }
 
         /**
-         * 格式化文件分隔符
+         * Normalizes file separators.
          * @return [String]
          */
         private fun String.parseFileSeparator() = replace("\\", "/")
 
         /**
-         * 字符串转换为 [File]
+         * Converts this path string to a [File].
          * @return [File]
          */
         private fun String.toFile() = File(parseFileSeparator())

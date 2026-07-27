@@ -27,15 +27,15 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 /**
- * 创建当前线程池服务
+ * Creates the current thread-pool service.
  * @return [ExecutorService]
  */
 private val currentThreadPool get() = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
 
 /**
- * 启动 [Thread] 延迟等待 [block] 的结果 [T]
- * @param delayMs 延迟毫秒 - 默认 1 ms
- * @param block 方法块
+ * Starts a [Thread] after a delay and returns the receiver [T].
+ * @param delayMs the delay in milliseconds, defaults to 1 ms.
+ * @param block the action to execute.
  * @return [T]
  */
 internal inline fun <T> T.await(delayMs: Long = 1, crossinline block: (T) -> Unit): T {
@@ -50,8 +50,8 @@ internal inline fun <T> T.await(delayMs: Long = 1, crossinline block: (T) -> Uni
 }
 
 /**
- * 计算方法执行耗时
- * @param block 方法块
+ * Measures the execution time of an action.
+ * @param block the action to execute.
  * @return [RunBlockResult]
  */
 internal inline fun <R> runBlocking(block: () -> R): RunBlockResult {
@@ -61,14 +61,14 @@ internal inline fun <R> runBlocking(block: () -> R): RunBlockResult {
 }
 
 /**
- * 构造耗时计算结果类
- * @param afterMs 耗时
+ * Holds an execution-time measurement.
+ * @param afterMs the elapsed time in milliseconds.
  */
 internal class RunBlockResult(internal val afterMs: Long) {
 
     /**
-     * 获取耗时计算结果
-     * @param result 回调结果 - ([Long] 耗时)
+     * Delivers the execution-time result.
+     * @param result the callback receiving the elapsed time as [Long].
      */
     internal inline fun result(result: (Long) -> Unit) = result(afterMs)
 }

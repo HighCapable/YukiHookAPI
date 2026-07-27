@@ -23,18 +23,18 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
- * [Member] 规则查找数据类
- * @param isFindInSuper 是否在未找到后继续在父类中查找
- * @param matchCount 匹配的字节码个数
- * @param matchCountRange 匹配的字节码个数范围
- * @param matchCountConditions 匹配的字节码个数条件
+ * Stores rules used to find a [Member].
+ * @param isFindInSuper whether to continue searching in superclasses after no match is found.
+ * @param matchCount the number of matching bytecode instructions.
+ * @param matchCountRange the accepted range of matching bytecode instructions.
+ * @param matchCountConditions the matching bytecode-count conditions.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal open class MemberRulesData internal constructor(
@@ -54,13 +54,13 @@ internal open class MemberRulesData internal constructor(
     override val objectName get() = "Member"
 
     /**
-     * 判断 [matchCount]、[matchCountRange] 规则是否已经初始化 (设置了任意一个参数)
+     * Gets whether any match-count rule has been initialized through [matchCount], [matchCountRange], or a condition.
      * @return [Boolean]
      */
     internal val isInitializeOfMatch get() = matchCount >= 0 || matchCountRange.isEmpty().not() || matchCountConditions != null
 
     /**
-     * 判断 [BaseRulesData] 规则是否已经初始化 (设置了任意一个参数)
+     * Gets whether any [BaseRulesData] rule has been initialized.
      * @return [Boolean]
      */
     internal val isInitializeOfSuper get() = super.isInitialize

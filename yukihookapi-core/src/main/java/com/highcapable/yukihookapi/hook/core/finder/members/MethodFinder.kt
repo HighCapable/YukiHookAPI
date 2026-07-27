@@ -50,10 +50,10 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * [Method] 查找类
+ * [Method] finder.
  *
- * 可通过指定类型查找指定 [Method] 或一组 [Method]
- * @param classSet 当前需要查找的 [Class] 实例
+ * Finds a specific [Method] or group of [Method] instances by type.
+ * @param classSet the [Class] instance to search.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MethodFinder internal constructor(override val classSet: Class<*>? = null) : MemberBaseFinder(tag = "Method", classSet) {
@@ -61,9 +61,9 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     internal companion object {
 
         /**
-         * 通过 [YukiMemberHookCreator.MemberHookCreator] 创建 [Method] 查找类
-         * @param hookInstance 当前 Hooker
-         * @param classSet 当前需要查找的 [Class] 实例
+         * Creates a [Method] finder through [YukiMemberHookCreator.MemberHookCreator].
+         * @param hookInstance the current Hooker.
+         * @param classSet the [Class] instance to search.
          * @return [MethodFinder]
          */
         internal fun fromHooker(hookInstance: YukiMemberHookCreator.MemberHookCreator, classSet: Class<*>? = null) =
@@ -72,16 +72,16 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
 
     override var rulesData = MethodRulesData()
 
-    /** 当前使用的 [classSet] */
+    /** The current [classSet]. */
     private var usedClassSet = classSet
 
-    /** 当前重查找结果回调 */
+    /** The current remedy-plan result callback. */
     private var remedyPlansCallback: (() -> Unit)? = null
 
     /**
-     * 设置 [Method] 名称
+     * Sets the [Method] name.
      *
-     * - 若不填写名称则必须存在一个其它条件
+     * - When no name is specified, at least one other condition is required.
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -92,11 +92,11 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
     /**
-     * 设置 [Method] 参数个数
+     * Sets the [Method] parameter count.
      *
-     * 你可以不使用 [param] 指定参数类型而是仅使用此变量指定参数个数
+     * You can use this property to specify only the parameter count without using [param] to specify parameter types.
      *
-     * 若参数个数小于零则忽略并使用 [param]
+     * A negative parameter count is ignored and [param] is used instead.
      * @return [Int]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -107,12 +107,12 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
     /**
-     * 设置 [Method] 返回值
+     * Sets the [Method] return type.
      *
-     * - 只能是 [Class]、[String]、[VariousClass]
+     * - The value must be [Class], [String], or [VariousClass].
      *
-     * - 可不填写返回值
-     * @return [Any] or null
+     * - The return type is optional.
+     * @return [Any] or null.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var returnType
@@ -122,12 +122,12 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
     /**
-     * 设置 [Method] 标识符筛选条件
+     * Sets the [Method] modifier conditions.
      *
-     * - 可不设置筛选条件
+     * - The conditions are optional.
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param conditions 条件方法体
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param conditions the condition block.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -137,7 +137,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 空参数、无参数
+     * Configures an empty, parameterless [Method].
      *
      * @return [BaseFinder.IndexTypeCondition]
      */
@@ -145,30 +145,30 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     fun emptyParam() = paramCount(num = 0)
 
     /**
-     * 设置 [Method] 参数
+     * Sets the [Method] parameters.
      *
-     * 如果同时使用了 [paramCount] 则 [paramType] 的数量必须与 [paramCount] 完全匹配
+     * When [paramCount] is also used, the number of [paramType] entries must exactly match [paramCount].
      *
-     * 如果 [Method] 中存在一些无意义又很长的类型 - 你可以使用 [VagueType] 来替代它
+     * If a [Method] contains unhelpful long type names, use [VagueType] in their place.
      *
-     * 例如下面这个参数结构 ↓
+     * For example, given the following parameter structure:
      *
      * ```java
      * void foo(String var1, boolean var2, com.demo.Test var3, int var4)
      * ```
      *
-     * 此时就可以简单地写作 ↓
+     * It can be written as:
      *
      * ```kotlin
      * param(StringType, BooleanType, VagueType, IntType)
      * ```
      *
-     * - 无参 [Method] 请使用 [emptyParam] 设置查找条件
+     * - For a parameterless [Method], use [emptyParam] to set the finder condition.
      *
-     * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * - For a parameterized [Method], use this method to set parameters or [paramCount] to specify their count.
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param paramType 参数类型数组 - 只能是 [Class]、[String]、[VariousClass]
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param paramType the parameter type array. Entries must be [Class], [String], or [VariousClass].
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -179,20 +179,20 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 参数条件
+     * Sets the [Method] parameter conditions.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * param { it[1] == StringClass || it[2].name == "java.lang.String" }
      * ```
      *
-     * - 无参 [Method] 请使用 [emptyParam] 设置查找条件
+     * - For a parameterless [Method], use [emptyParam] to set the finder condition.
      *
-     * - 有参 [Method] 必须使用此方法设定参数或使用 [paramCount] 指定个数
+     * - For a parameterized [Method], use this method to set parameters or [paramCount] to specify their count.
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param conditions 条件方法体
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param conditions the condition block.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -202,19 +202,19 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 顺序筛选字节码的下标
+     * Filters by the bytecode order index.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun order() = IndexTypeCondition(IndexConfigType.ORDER)
 
     /**
-     * 设置 [Method] 名称
+     * Sets the [Method] name.
      *
-     * - 若不填写名称则必须存在一个其它条件
+     * - When no name is specified, at least one other condition is required.
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param value 名称
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param value the name.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -224,12 +224,12 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 名称条件
+     * Sets the [Method] name condition.
      *
-     * - 若不填写名称则必须存在一个其它条件
+     * - When no name is specified, at least one other condition is required.
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param conditions 条件方法体
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param conditions the condition block.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -239,14 +239,14 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 参数个数
+     * Sets the [Method] parameter count.
      *
-     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数
+     * You can use this method to specify only the parameter count without using [param] to specify parameter types.
      *
-     * 若参数个数小于零则忽略并使用 [param]
+     * A negative parameter count is ignored and [param] is used instead.
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param num 个数
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param num the count.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -256,18 +256,18 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 参数个数范围
+     * Sets the [Method] parameter-count range.
      *
-     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数范围
+     * You can use this method to specify only the parameter-count range without using [param] to specify parameter types.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * paramCount(1..5)
      * ```
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param numRange 个数范围
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param numRange the count range.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -277,18 +277,18 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 参数个数条件
+     * Sets the [Method] parameter-count condition.
      *
-     * 你可以不使用 [param] 指定参数类型而是仅使用此方法指定参数个数条件
+     * You can use this method to specify only a parameter-count condition without using [param] to specify parameter types.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * paramCount { it >= 5 || it.isZero() }
      * ```
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param conditions 条件方法体
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param conditions the condition block.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -298,12 +298,12 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 返回值
+     * Sets the [Method] return type.
      *
-     * - 可不填写返回值
+     * - The return type is optional.
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param value 个数
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param value the return type. It must be [Class], [String], or [VariousClass].
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -313,18 +313,18 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置 [Method] 返回值条件
+     * Sets the [Method] return-type condition.
      *
-     * - 可不填写返回值
+     * - The return type is optional.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * returnType { it == StringClass || it.name == "java.lang.String" }
      * ```
      *
-     * - 存在多个 [BaseFinder.IndexTypeCondition] 时除了 [order] 只会生效最后一个
-     * @param conditions 条件方法体
+     * - When multiple [BaseFinder.IndexTypeCondition] instances are present, only the last one takes effect except for [order].
+     * @param conditions the condition block.
      * @return [BaseFinder.IndexTypeCondition]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -334,10 +334,10 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 设置在 [classSet] 的所有父类中查找当前 [Method]
+     * Searches for the current [Method] in all superclasses of [classSet].
      *
-     * - 若当前 [classSet] 的父类较多可能会耗时 - API 会自动循环到父类继承是 [Any] 前的最后一个类
-     * @param isOnlySuperClass 是否仅在当前 [classSet] 的父类中查找 - 若父类是 [Any] 则不会生效
+     * - A deep superclass hierarchy may take time to search. The API stops at the last class before [Any].
+     * @param isOnlySuperClass whether to search only superclasses of [classSet]. This has no effect when the superclass is [Any].
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun superClass(isOnlySuperClass: Boolean = false) {
@@ -346,15 +346,15 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * 得到 [Method] 或一组 [Method]
+     * Finds a [Method] or group of [Method] instances.
      * @return [MutableList]<[Method]>
-     * @throws NoSuchMethodError 如果找不到 [Method]
+     * @throws NoSuchMethodError if no [Method] can be found.
      */
     private val result get() = ReflectionTool.findMethods(usedClassSet, rulesData)
 
     /**
-     * 设置实例
-     * @param methods 当前找到的 [Method] 数组
+     * Sets the instances.
+     * @param methods the currently found [Method] instances.
      */
     private fun setInstance(methods: MutableList<Method>) {
         memberInstances.clear()
@@ -362,7 +362,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
             ?.first()?.apply { if (hookerManager.isMemberBinded) hookerManager.bindMember(member = this) }
     }
 
-    /** 得到 [Method] 结果 */
+    /** Gets the [Method] result. */
     private fun internalBuild() {
         if (classSet == null) error(CLASSSET_IS_NULL)
         runBlocking {
@@ -394,24 +394,24 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     override fun denied(throwable: Throwable?) = Process(isNoSuch = true, throwable)
 
     /**
-     * [Method] 重查找实现类
+     * [Method] remedy-plan implementation.
      *
-     * 可累计失败次数直到查找成功
+     * Accumulates failed attempts until the search succeeds.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class RemedyPlan internal constructor() {
 
-        /** 失败尝试次数数组 */
+        /** Failed attempts. */
         private val remedyPlans = mutableSetOf<Pair<MethodFinder, Result>>()
 
         /**
-         * 创建需要重新查找的 [Method]
+         * Adds a [Method] to search for again.
          *
-         * 你可以添加多个备选 [Method] - 直到成功为止
+         * Add multiple alternative [Method] definitions until one succeeds.
          *
-         * 若最后依然失败 - 将停止查找并输出错误日志
-         * @param initiate 方法体
-         * @return [Result] 结果
+         * If every attempt fails, the search stops and prints an error log.
+         * @param initiate the finder block.
+         * @return [Result] the result.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun method(initiate: MethodConditions) = Result().apply {
@@ -420,7 +420,7 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
             }.apply(initiate), this))
         }
 
-        /** 开始重查找 */
+        /** Starts the remedy plan. */
         internal fun build() {
             if (classSet == null) return
             if (remedyPlans.isNotEmpty()) {
@@ -448,19 +448,19 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * [RemedyPlan] 结果实现类
+         * [RemedyPlan] result implementation.
          *
-         * 可在这里处理是否成功的回调
+         * Handles the success callback.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class Result internal constructor() {
 
-            /** 找到结果时的回调 */
+            /** Callback invoked when a result is found. */
             internal var onFindCallback: (MutableList<Method>.() -> Unit)? = null
 
             /**
-             * 当找到结果时
-             * @param initiate 回调
+             * Runs when a result is found.
+             * @param initiate the callback.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun onFind(initiate: MutableList<Method>.() -> Unit) {
@@ -470,9 +470,9 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * [Method] 查找结果处理类 - 为 [hookerManager] 提供
-     * @param isNoSuch 是否没有找 [Method]  - 默认否
-     * @param throwable 错误信息
+     * [Method] finder result processor for [hookerManager].
+     * @param isNoSuch whether no [Method] was found, false by default.
+     * @param throwable the error.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class Process internal constructor(
@@ -481,16 +481,16 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     ) : BaseResult {
 
         /**
-         * 创建监听结果事件方法体
-         * @param initiate 方法体
-         * @return [Process] 可继续向下监听
+         * Creates the result listener block.
+         * @param initiate the listener block.
+         * @return [Process] this process for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun result(initiate: Process.() -> Unit) = apply(initiate)
 
         /**
-         * 设置全部查找条件匹配的多个 [Method] 实例结果到 [hookerManager]
-         * @return [Process] 可继续向下监听
+         * Assigns all matching [Method] instances to [hookerManager].
+         * @return [Process] this process for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all(): Process {
@@ -502,15 +502,15 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * 创建 [Method] 重查找功能
+         * Creates a [Method] remedy plan.
          *
-         * 当你遇到一种 [Method] 可能存在不同形式的存在时
+         * Use this when a [Method] may exist in different forms.
          *
-         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchMethod] 捕获异常二次查找 [Method]
+         * [RemedyPlan] can search again without using [onNoSuchMethod] to catch an exception and perform a second search.
          *
-         * 若第一次查找失败了 - 你还可以在这里继续添加此方法体直到成功为止
-         * @param initiate 方法体
-         * @return [Process] 可继续向下监听
+         * If the first search fails, add more finder blocks here until one succeeds.
+         * @param initiate the remedy-plan block.
+         * @return [Process] this process for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun remedys(initiate: RemedyPlan.() -> Unit): Process {
@@ -520,11 +520,11 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * 监听找不到 [Method] 时
+         * Listens for a missing [Method].
          *
-         * - 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
-         * @param result 回调错误
-         * @return [Process] 可继续向下监听
+         * - Returns only the first error, not errors from [RemedyPlan].
+         * @param result the error callback.
+         * @return [Process] this process for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun onNoSuchMethod(result: (Throwable) -> Unit): Process {
@@ -534,9 +534,9 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     }
 
     /**
-     * [Method] 查找结果实现类
-     * @param isNoSuch 是否没有找到 [Method] - 默认否
-     * @param throwable 错误信息
+     * [Method] finder result implementation.
+     * @param isNoSuch whether no [Method] was found, false by default.
+     * @param throwable the error.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class Result internal constructor(
@@ -545,36 +545,36 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
     ) : BaseResult {
 
         /**
-         * 创建监听结果事件方法体
-         * @param initiate 方法体
-         * @return [Result] 可继续向下监听
+         * Creates the result listener block.
+         * @param initiate the listener block.
+         * @return [Result] this result for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
-         * 获得 [Method] 实例处理类
+         * Gets a [Method] instance handler.
          *
-         * - 若有多个 [Method] 结果只会返回第一个
+         * - Returns only the first result when multiple [Method] instances match.
          *
-         * - 在 [memberInstances] 结果为空时使用此方法将无法获得对象
+         * - This method cannot return an object when [memberInstances] is empty.
          *
-         * - 若你设置了 [remedys] 请使用 [wait] 回调结果方法
-         * @param instance 所在实例
+         * - When [remedys] is set, use the [wait] result callback.
+         * @param instance the object containing the [Method]. Omit it for a static method. The default is null.
          * @return [Instance]
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun get(instance: Any? = null) = Instance(instance, give())
 
         /**
-         * 获得 [Method] 实例处理类数组
+         * Gets all [Method] instance handlers.
          *
-         * - 返回全部查找条件匹配的多个 [Method] 实例结果
+         * - Returns all [Method] instances matching the finder conditions.
          *
-         * - 在 [memberInstances] 结果为空时使用此方法将无法获得对象
+         * - This method cannot return objects when [memberInstances] is empty.
          *
-         * - 若你设置了 [remedys] 请使用 [waitAll] 回调结果方法
-         * @param instance 所在实例
+         * - When [remedys] is set, use the [waitAll] result callback.
+         * @param instance the object containing the [Method]. Omit it for a static method. The default is null.
          * @return [MutableList]<[Instance]>
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -582,37 +582,37 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
             mutableListOf<Instance>().apply { giveAll().takeIf { it.isNotEmpty() }?.forEach { add(Instance(instance, it)) } }
 
         /**
-         * 得到 [Method] 本身
+         * Gets the [Method] itself.
          *
-         * - 若有多个 [Method] 结果只会返回第一个
+         * - Returns only the first result when multiple [Method] instances match.
          *
-         * - 在查找条件找不到任何结果的时候将返回 null
-         * @return [Method] or null
+         * - Returns null when the finder conditions produce no result.
+         * @return [Method] or null.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun give() = giveAll().takeIf { it.isNotEmpty() }?.first()
 
         /**
-         * 得到 [Method] 本身数组
+         * Gets the [Method] instances themselves.
          *
-         * - 返回全部查找条件匹配的多个 [Method] 实例
+         * - Returns all [Method] instances matching the finder conditions.
          *
-         * - 在查找条件找不到任何结果的时候将返回空的 [MutableList]
+         * - Returns an empty [MutableList] when the finder conditions produce no result.
          * @return [MutableList]<[Method]>
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun giveAll() = memberInstances.takeIf { it.isNotEmpty() }?.methods() ?: mutableListOf()
 
         /**
-         * 获得 [Method] 实例处理类
+         * Gets a [Method] instance handler.
          *
-         * - 若有多个 [Method] 结果只会返回第一个
+         * - Returns only the first result when multiple [Method] instances match.
          *
-         * - 若你设置了 [remedys] 必须使用此方法才能获得结果
+         * - When [remedys] is set, this method is required to obtain the result.
          *
-         * - 若你没有设置 [remedys] 此方法将不会被回调
-         * @param instance 所在实例
-         * @param initiate 回调 [Instance]
+         * - This callback is not invoked when [remedys] is not set.
+         * @param instance the containing instance.
+         * @param initiate the [Instance] callback.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun wait(instance: Any? = null, initiate: Instance.() -> Unit) {
@@ -621,15 +621,15 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * 获得 [Method] 实例处理类数组
+         * Gets all [Method] instance handlers.
          *
-         * - 返回全部查找条件匹配的多个 [Method] 实例结果
+         * - Returns all [Method] instances matching the finder conditions.
          *
-         * - 若你设置了 [remedys] 必须使用此方法才能获得结果
+         * - When [remedys] is set, this method is required to obtain the result.
          *
-         * - 若你没有设置 [remedys] 此方法将不会被回调
-         * @param instance 所在实例
-         * @param initiate 回调 [MutableList]<[Instance]>
+         * - This callback is not invoked when [remedys] is not set.
+         * @param instance the containing instance.
+         * @param initiate the [MutableList]<[Instance]> callback.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun waitAll(instance: Any? = null, initiate: MutableList<Instance>.() -> Unit) {
@@ -638,15 +638,15 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * 创建 [Method] 重查找功能
+         * Creates a [Method] remedy plan.
          *
-         * 当你遇到一种 [Method] 可能存在不同形式的存在时
+         * Use this when a [Method] may exist in different forms.
          *
-         * 可以使用 [RemedyPlan] 重新查找它 - 而没有必要使用 [onNoSuchMethod] 捕获异常二次查找 [Method]
+         * [RemedyPlan] can search again without using [onNoSuchMethod] to catch an exception and perform a second search.
          *
-         * 若第一次查找失败了 - 你还可以在这里继续添加此方法体直到成功为止
-         * @param initiate 方法体
-         * @return [Result] 可继续向下监听
+         * If the first search fails, add more finder blocks here until one succeeds.
+         * @param initiate the remedy-plan block.
+         * @return [Result] this result for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun remedys(initiate: RemedyPlan.() -> Unit): Result {
@@ -656,11 +656,11 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * 监听找不到 [Method] 时
+         * Listens for a missing [Method].
          *
-         * - 只会返回第一次的错误信息 - 不会返回 [RemedyPlan] 的错误信息
-         * @param result 回调错误
-         * @return [Result] 可继续向下监听
+         * - Returns only the first error, not errors from [RemedyPlan].
+         * @param result the error callback.
+         * @return [Result] this result for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun onNoSuchMethod(result: (Throwable) -> Unit): Result {
@@ -669,12 +669,12 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * 忽略异常并停止打印任何错误日志
+         * Ignores exceptions and stops printing error logs.
          *
-         * - 若 [MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure] 为 false 则自动忽略
+         * - Automatically ignored when [MemberBaseFinder.MemberHookerManager.isNotIgnoredNoSuchMemberFailure] is false.
          *
-         * - 此时若要监听异常结果 - 你需要手动实现 [onNoSuchMethod] 方法
-         * @return [Result] 可继续向下监听
+         * - To listen for exception results in this state, implement [onNoSuchMethod] manually.
+         * @return [Result] this result for chaining.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun ignored(): Result {
@@ -683,36 +683,36 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
         }
 
         /**
-         * 忽略异常并停止打印任何错误日志
+         * Ignores exceptions and stops printing error logs.
          *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         * - This API is deprecated and will be removed in a future version.
          *
-         * - 请现在迁移到 [ignored]
-         * @return [Result] 可继续向下监听
+         * - Migrate to [ignored].
+         * @return [Result] this result for chaining.
          */
-        @Deprecated(message = "请使用新的命名方法", ReplaceWith("ignored()"))
+        @Deprecated(message = "Use the new naming method", ReplaceWith("ignored()"))
         fun ignoredError() = ignored()
 
         /**
-         * [Method] 实例处理类
+         * [Method] instance handler.
          *
-         * - 请使用 [get]、[wait]、[all]、[waitAll] 方法来获取 [Instance]
-         * @param instance 当前 [Method] 所在类的实例对象
-         * @param method 当前 [Method] 实例对象
+         * - Use [get], [wait], [all], or [waitAll] to obtain [Instance].
+         * @param instance the instance of the class containing the current [Method].
+         * @param method the current [Method] instance.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class Instance internal constructor(private val instance: Any?, private val method: Method?) {
 
-            /** 标识需要调用当前 [Method] 未经 Hook 的原始方法 */
+            /** Whether the original unhooked [Method] should be invoked. */
             private var isCallOriginal = false
 
             /**
-             * 标识需要调用当前 [Method] 未经 Hook 的原始 [Method]
+             * Marks the current [Method] to invoke its original unhooked implementation.
              *
-             * 若当前 [Method] 并未 Hook 则会使用原始的 [Method.invoke] 方法调用
+             * If the current [Method] is not hooked, the original [Method.invoke] is used.
              *
-             * - 你只能在 (Xposed) 宿主环境中使用此功能
-             * @return [Instance] 可继续向下监听
+             * - This feature is available only in the (Xposed) host environment.
+             * @return [Instance] this instance for chaining.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun original(): Instance {
@@ -721,9 +721,9 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
             }
 
             /**
-             * 执行 [Method]
-             * @param args 方法参数
-             * @return [Any] or null
+             * Invokes the [Method].
+             * @param args the method arguments.
+             * @return [Any] or null.
              */
             private fun baseCall(vararg args: Any?) =
                 if (isCallOriginal)
@@ -731,121 +731,121 @@ class MethodFinder internal constructor(override val classSet: Class<*>? = null)
                 else method?.invoke(instance, *args)
 
             /**
-             * 执行 [Method] - 不指定返回值类型
-             * @param args 方法参数
-             * @return [Any] or null
+             * Invokes the [Method] without specifying a return type.
+             * @param args the method arguments.
+             * @return [Any] or null.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun call(vararg args: Any?) = baseCall(*args)
 
             /**
-             * 执行 [Method] - 指定 [T] 返回值类型
-             * @param args 方法参数
-             * @return [T] or null
+             * Invokes the [Method] with return type [T].
+             * @param args the method arguments.
+             * @return [T] or null.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun <T> invoke(vararg args: Any?) = baseCall(*args) as? T?
 
             /**
-             * 执行 [Method] - 指定 [Byte] 返回值类型
+             * Invokes the [Method] with return type [Byte].
              *
-             * - 请确认目标变量的类型 - 发生错误会返回 null
-             * @param args 方法参数
-             * @return [Byte] or null
+             * - Verify the target variable type. An error returns null.
+             * @param args the method arguments.
+             * @return [Byte] or null.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun byte(vararg args: Any?) = invoke<Byte?>(*args)
 
             /**
-             * 执行 [Method] - 指定 [Int] 返回值类型
+             * Invokes the [Method] with return type [Int].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回默认值
-             * @param args 方法参数
-             * @return [Int] 取不到返回 0
+             * - Verify the target [Method] return value. An error returns the default value.
+             * @param args the method arguments.
+             * @return [Int] 0 when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun int(vararg args: Any?) = invoke(*args) ?: 0
 
             /**
-             * 执行 [Method] - 指定 [Long] 返回值类型
+             * Invokes the [Method] with return type [Long].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回默认值
-             * @param args 方法参数
-             * @return [Long] 取不到返回 0L
+             * - Verify the target [Method] return value. An error returns the default value.
+             * @param args the method arguments.
+             * @return [Long] 0L when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun long(vararg args: Any?) = invoke(*args) ?: 0L
 
             /**
-             * 执行 [Method] - 指定 [Short] 返回值类型
+             * Invokes the [Method] with return type [Short].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回默认值
-             * @param args 方法参数
-             * @return [Short] 取不到返回 0
+             * - Verify the target [Method] return value. An error returns the default value.
+             * @param args the method arguments.
+             * @return [Short] 0 when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun short(vararg args: Any?) = invoke<Short?>(*args) ?: 0
 
             /**
-             * 执行 [Method] - 指定 [Double] 返回值类型
+             * Invokes the [Method] with return type [Double].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回默认值
-             * @param args 方法参数
-             * @return [Double] 取不到返回 0.0
+             * - Verify the target [Method] return value. An error returns the default value.
+             * @param args the method arguments.
+             * @return [Double] 0.0 when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun double(vararg args: Any?) = invoke(*args) ?: 0.0
 
             /**
-             * 执行 [Method] - 指定 [Float] 返回值类型
+             * Invokes the [Method] with return type [Float].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回默认值
-             * @param args 方法参数
-             * @return [Float] 取不到返回 0f
+             * - Verify the target [Method] return value. An error returns the default value.
+             * @param args the method arguments.
+             * @return [Float] 0f when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun float(vararg args: Any?) = invoke(*args) ?: 0f
 
             /**
-             * 执行 [Method] - 指定 [String] 返回值类型
-             * @param args 方法参数
-             * @return [String] 取不到返回 ""
+             * Invokes the [Method] with return type [String].
+             * @param args the method arguments.
+             * @return [String] an empty string when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun string(vararg args: Any?) = invoke(*args) ?: ""
 
             /**
-             * 执行 [Method] - 指定 [Char] 返回值类型
-             * @param args 方法参数
-             * @return [Char] 取不到返回 ' '
+             * Invokes the [Method] with return type [Char].
+             * @param args the method arguments.
+             * @return [Char] a space character when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun char(vararg args: Any?) = invoke(*args) ?: ' '
 
             /**
-             * 执行 [Method] - 指定 [Boolean] 返回值类型
+             * Invokes the [Method] with return type [Boolean].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回默认值
-             * @param args 方法参数
-             * @return [Boolean] 取不到返回 false
+             * - Verify the target [Method] return value. An error returns the default value.
+             * @param args the method arguments.
+             * @return [Boolean] false when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun boolean(vararg args: Any?) = invoke(*args) ?: false
 
             /**
-             * 执行 [Method] - 指定 [Array] 返回值类型 - 每项类型 [T]
+             * Invokes the [Method] with an [Array] return value whose elements are of type [T].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回空数组
-             * @return [Array] 取不到返回空数组
+             * - Verify the target [Method] return value. An error returns an empty array.
+             * @return [Array] an empty array when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             inline fun <reified T> array(vararg args: Any?) = invoke(*args) ?: arrayOf<T>()
 
             /**
-             * 执行 [Method] - 指定 [List] 返回值类型 - 每项类型 [T]
+             * Invokes the [Method] with a [List] return value whose elements are of type [T].
              *
-             * - 请确认目标 [Method] 的返回值 - 发生错误会返回空数组
-             * @return [List] 取不到返回空数组
+             * - Verify the target [Method] return value. An error returns an empty list.
+             * @return [List] an empty list when unavailable.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             inline fun <reified T> list(vararg args: Any?) = invoke(*args) ?: listOf<T>()

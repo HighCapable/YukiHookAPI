@@ -40,39 +40,39 @@ import de.robv.android.xposed.XSharedPreferences
 import java.io.File
 
 /**
- * [YukiHookAPI] 对 [SharedPreferences]、[XSharedPreferences] 的扩展存储桥实现
+ * [YukiHookAPI] extended storage bridge implementation for [SharedPreferences] and [XSharedPreferences].
  *
- * 在不同环境智能选择存取使用的对象
+ * Selects the storage object intelligently for different environments.
  *
- * - 模块与宿主之前共享数据存储为实验性功能 - 仅在 LSPosed 环境测试通过 - EdXposed 理论也可以使用但不再推荐
+ * - Shared data storage between the module and host is experimental. It has only been tested under LSPosed. EdXposed should theoretically work but is no longer recommended.
  *
- * 对于在模块环境中使用 [PreferenceFragmentCompat] - [YukiHookAPI] 提供了 [ModulePreferenceFragment] 来实现同样的功能
- * @param context 上下文实例 - 默认空
+ * For using [PreferenceFragmentCompat] in the module environment, [YukiHookAPI] provides [ModulePreferenceFragment] with the same functionality.
+ * @param context the context instance, null by default.
  */
 class YukiHookPrefsBridge private constructor(private var context: Context? = null) {
 
     internal companion object {
 
-        /** 当前是否为 (Xposed) 宿主环境 */
+        /** Whether the current environment is a (Xposed) host environment. */
         private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
-        /** 当前缓存的 [XSharedPreferencesDelegate] 实例数组 */
+        /** Currently cached [XSharedPreferencesDelegate] instances. */
         private val xPrefs = mutableMapOf<String, XSharedPreferencesDelegate>()
 
-        /** 当前缓存的 [SharedPreferences] 实例数组 */
+        /** Currently cached [SharedPreferences] instances. */
         private val sPrefs = mutableMapOf<String, SharedPreferences>()
 
         /**
-         * 创建 [YukiHookPrefsBridge] 对象
-         * @param context 实例 - (Xposed) 宿主环境为空
+         * Creates a [YukiHookPrefsBridge] object.
+         * @param context the context instance, null in the (Xposed) host environment.
          * @return [YukiHookPrefsBridge]
          */
         internal fun from(context: Context? = null) = YukiHookPrefsBridge(context)
 
         /**
-         * 设置全局可读可写
-         * @param context 实例
-         * @param prefsFileName Sp 文件名
+         * Makes the preferences file globally readable and writable.
+         * @param context the context instance.
+         * @param prefsFileName the SharedPreferences file name.
          */
         internal fun makeWorldReadable(context: Context?, prefsFileName: String) {
             runCatching {
@@ -86,17 +86,17 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         }
     }
 
-    /** 存储名称 */
+    /** Storage name. */
     private var prefsName = ""
 
-    /** 是否使用新版存储方式 EdXposed、LSPosed */
+    /** Whether to use the new storage approach for EdXposed and LSPosed. */
     private var isUsingNewXSharedPreferences = false
 
-    /** 是否启用原生存储方式 */
+    /** Whether native storage is enabled. */
     private var isUsingNativeStorage = false
 
     /**
-     * 获取当前存储名称 - 默认包名 + _preferences
+     * Gets the current storage name, package name plus _preferences by default.
      * @return [String]
      */
     private val currentPrefsName
@@ -105,7 +105,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             else "${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "unknown" }}_preferences"
         }
 
-    /** 检查 API 装载状态 */
+    /** Checks the API loading state. */
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookPrefsBridge not allowed in Custom Hook API")
         if (isXposedEnvironment && YukiXposedModule.modulePackageName.isBlank())
@@ -113,8 +113,8 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 设置全局可读可写
-     * @param callback 回调方法体
+     * Makes the preferences file globally readable and writable.
+     * @param callback the callback block.
      * @return [T]
      */
     private inline fun <T> makeWorldReadable(callback: () -> T): T {
@@ -125,7 +125,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获取当前 [XSharedPreferences] 对象
+     * Gets the current [XSharedPreferences] object.
      * @return [XSharedPreferences]
      */
     private val currentXsp
@@ -143,7 +143,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         }
 
     /**
-     * 获取当前 [SharedPreferences] 对象
+     * Gets the current [SharedPreferences] object.
      * @return [SharedPreferences]
      */
     private val currentSp
@@ -164,47 +164,47 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         }
 
     /**
-     * 获取 [XSharedPreferences] 是否可读
+     * Whether [XSharedPreferences] is readable.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [isPreferencesAvailable]
+     * - Migrate to [isPreferencesAvailable].
      * @return [Boolean]
      */
-    @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
+    @Deprecated(message = "Use the new approach to implement this feature", ReplaceWith("isPreferencesAvailable"))
     val isXSharePrefsReadable get() = isPreferencesAvailable
 
     /**
-     * 获取 [YukiHookPrefsBridge] 是否正处于 EdXposed/LSPosed 的最高权限运行
+     * Whether [YukiHookPrefsBridge] is running with the highest EdXposed or LSPosed privileges.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [isPreferencesAvailable]
+     * - Migrate to [isPreferencesAvailable].
      * @return [Boolean]
      */
-    @Deprecated(message = "请使用新方式来实现此功能", ReplaceWith("isPreferencesAvailable"))
+    @Deprecated(message = "Use the new approach to implement this feature", ReplaceWith("isPreferencesAvailable"))
     val isRunInNewXShareMode get() = isPreferencesAvailable
 
     /**
-     * 获取当前 [YukiHookPrefsBridge] 的可用状态
+     * Gets the availability state of the current [YukiHookPrefsBridge].
      *
-     * - 在 (Xposed) 宿主环境中返回 [XSharedPreferences] 可用状态 (可读)
+     * - In the (Xposed) host environment, returns the availability state of [XSharedPreferences] (readable).
      *
-     * - 在模块环境中返回当前是否处于 New XSharedPreferences 模式 (可读可写)
+     * - In the module environment, returns whether New XSharedPreferences mode is active (readable and writable).
      * @return [Boolean]
      */
     val isPreferencesAvailable
         get() = if (isXposedEnvironment)
             (runCatching { currentXsp.let { it.file.exists() && it.file.canRead() } }.getOrNull() ?: false)
         else runCatching {
-            /** 执行一次装载 */
+            // Performs one load.
             currentSp.edit()
             isUsingNewXSharedPreferences
         }.getOrNull() ?: false
 
     /**
-     * 自定义 Sp 存储名称
-     * @param name 自定义的 Sp 存储名称
+     * Customizes the SharedPreferences storage name.
+     * @param name the custom SharedPreferences storage name.
      * @return [YukiHookPrefsBridge]
      */
     fun name(name: String): YukiHookPrefsBridge {
@@ -213,20 +213,20 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 忽略缓存直接读取键值
+     * Reads key-value data directly without using the cache.
      *
-     * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
+     * - This function and feature have been removed. They will be deleted in a future version.
      *
-     * - 键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+     * - Direct key-value caching has been removed because it can cause out-of-memory (OOM) issues.
      * @return [YukiHookPrefsBridge]
      */
-    @Deprecated(message = "此方法及功能已被移除，请删除此方法", ReplaceWith("this"))
+    @Deprecated(message = "This function and feature have been removed. Delete this function", ReplaceWith("this"))
     fun direct() = this
 
     /**
-     * 忽略当前环境直接使用 [Context.getSharedPreferences] 存取数据
+     * Ignores the current environment and uses [Context.getSharedPreferences] directly to access data.
      * @return [YukiHookPrefsBridge]
-     * @throws IllegalStateException 如果 [context] 为空
+     * @throws IllegalStateException if [context] is null.
      */
     fun native(): YukiHookPrefsBridge {
         if (isXposedEnvironment && context == null) context = AppParasitics.currentApplication
@@ -236,13 +236,13 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获取 [String] 键值
+     * Gets a [String] value.
      *
-     * - 智能识别对应环境读取键值数据
+     * - Detects the corresponding environment intelligently when reading key-value data.
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
-     * @param key 键值名称
-     * @param value 默认数据 - ""
+     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * @param key the key name.
+     * @param value the default value, "" by default.
      * @return [String]
      */
     fun getString(key: String, value: String = "") = makeWorldReadable {
@@ -252,13 +252,13 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获取 [Set]<[String]> 键值
+     * Gets a [Set] of [String] values.
      *
-     * - 智能识别对应环境读取键值数据
+     * - Detects the corresponding environment intelligently when reading key-value data.
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
-     * @param key 键值名称
-     * @param value 默认数据 - [MutableSet]<[String]>
+     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * @param key the key name.
+     * @param value the default value, an empty [MutableSet] of [String] values by default.
      * @return [Set]<[String]>
      */
     fun getStringSet(key: String, value: Set<String> = mutableSetOf()) = makeWorldReadable {
@@ -268,13 +268,13 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获取 [Boolean] 键值
+     * Gets a [Boolean] value.
      *
-     * - 智能识别对应环境读取键值数据
+     * - Detects the corresponding environment intelligently when reading key-value data.
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
-     * @param key 键值名称
-     * @param value 默认数据 - false
+     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * @param key the key name.
+     * @param value the default value, false by default.
      * @return [Boolean]
      */
     fun getBoolean(key: String, value: Boolean = false) = makeWorldReadable {
@@ -284,13 +284,13 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获取 [Int] 键值
+     * Gets an [Int] value.
      *
-     * - 智能识别对应环境读取键值数据
+     * - Detects the corresponding environment intelligently when reading key-value data.
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
-     * @param key 键值名称
-     * @param value 默认数据 - 0
+     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * @param key the key name.
+     * @param value the default value, 0 by default.
      * @return [Int]
      */
     fun getInt(key: String, value: Int = 0) = makeWorldReadable {
@@ -300,13 +300,13 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获取 [Float] 键值
+     * Gets a [Float] value.
      *
-     * - 智能识别对应环境读取键值数据
+     * - Detects the corresponding environment intelligently when reading key-value data.
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
-     * @param key 键值名称
-     * @param value 默认数据 - 0f
+     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * @param key the key name.
+     * @param value the default value, 0f by default.
      * @return [Float]
      */
     fun getFloat(key: String, value: Float = 0f) = makeWorldReadable {
@@ -316,13 +316,13 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 获取 [Long] 键值
+     * Gets a [Long] value.
      *
-     * - 智能识别对应环境读取键值数据
+     * - Detects the corresponding environment intelligently when reading key-value data.
      *
-     * - 建议使用 [PrefsData] 创建模板并使用 [get] 获取数据
-     * @param key 键值名称
-     * @param value 默认数据 - 0L
+     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * @param key the key name.
+     * @param value the default value, 0L by default.
      * @return [Long]
      */
     fun getLong(key: String, value: Long = 0L) = makeWorldReadable {
@@ -332,19 +332,19 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 智能获取指定类型的键值
-     * @param prefs 键值实例
-     * @param value 默认值 - 未指定默认为 [prefs] 中的 [PrefsData.value]
-     * @return [T] 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+     * Gets a value of the specified type intelligently.
+     * @param prefs the key-value instance.
+     * @param value the default value. The default is [PrefsData.value] in [prefs].
+     * @return [T] which can only be [String], [Set] of [String], [Int], [Float], [Long], or [Boolean].
      */
     inline fun <reified T> get(prefs: PrefsData<T>, value: T = prefs.value): T = getPrefsData(prefs.key, value) as T
 
     /**
-     * 智能获取指定类型的键值
+     * Gets a value of the specified type intelligently.
      *
-     * 封装方法以调用内联方法
-     * @param key 键值
-     * @param value 默认值
+     * Wrapper function for calling the inline function.
+     * @param key the key.
+     * @param value the default value.
      * @return [Any]
      */
     private fun getPrefsData(key: String, value: Any?): Any = when (value) {
@@ -358,10 +358,10 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 判断当前是否包含 [key] 键值的数据
+     * Whether data for [key] exists.
      *
-     * - 智能识别对应环境读取键值数据
-     * @return [Boolean] 是否包含
+     * - Detects the corresponding environment intelligently when reading key-value data.
+     * @return [Boolean] whether the key exists.
      */
     fun contains(key: String) =
         if (isXposedEnvironment && isUsingNativeStorage.not())
@@ -369,12 +369,12 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         else currentSp.contains(key)
 
     /**
-     * 获取全部存储的键值数据
+     * Gets all stored key-value data.
      *
-     * - 智能识别对应环境读取键值数据
+     * - Detects the corresponding environment intelligently when reading key-value data.
      *
-     * - 每次调用都会获取实时的数据 - 不受缓存控制 - 请勿在高并发场景中使用
-     * @return [MutableMap] 全部类型的键值数组
+     * - Each call retrieves real-time data without cache control. Do not use this in highly concurrent scenarios.
+     * @return [MutableMap] containing key-value data of all types.
      */
     fun all() = mutableMapOf<String, Any?>().apply {
         if (isXposedEnvironment && isUsingNativeStorage.not())
@@ -383,261 +383,261 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     }
 
     /**
-     * 移除全部包含 [key] 的存储数据
+     * Removes all stored data containing [key].
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param key 键值名称
+     * - Migrate to [edit].
+     * @param key the key name.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { remove(key) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { remove(key) }"))
     fun remove(key: String) = edit { remove(key) }
 
     /**
-     * 移除 [PrefsData.key] 的存储数据
+     * Removes the stored data for [PrefsData.key].
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param prefs 键值实例
+     * - Migrate to [edit].
+     * @param prefs the key-value instance.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { remove(prefs) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { remove(prefs) }"))
     inline fun <reified T> remove(prefs: PrefsData<T>) = edit { remove(prefs) }
 
     /**
-     * 移除全部存储数据
+     * Removes all stored data.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
+     * - Migrate to [edit].
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { clear() }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { clear() }"))
     fun clear() = edit { clear() }
 
     /**
-     * 存储 [String] 键值
+     * Stores a [String] value.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param key 键值名称
-     * @param value 键值数据
+     * - Migrate to [edit].
+     * @param key the key name.
+     * @param value the value data.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putString(key, value) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { putString(key, value) }"))
     fun putString(key: String, value: String) = edit { putString(key, value) }
 
     /**
-     * 存储 [Set]<[String]> 键值
+     * Stores a [Set] of [String] values.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param key 键值名称
-     * @param value 键值数据
+     * - Migrate to [edit].
+     * @param key the key name.
+     * @param value the value data.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putStringSet(key, value) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { putStringSet(key, value) }"))
     fun putStringSet(key: String, value: Set<String>) = edit { putStringSet(key, value) }
 
     /**
-     * 存储 [Boolean] 键值
+     * Stores a [Boolean] value.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param key 键值名称
-     * @param value 键值数据
+     * - Migrate to [edit].
+     * @param key the key name.
+     * @param value the value data.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putBoolean(key, value) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { putBoolean(key, value) }"))
     fun putBoolean(key: String, value: Boolean) = edit { putBoolean(key, value) }
 
     /**
-     * 存储 [Int] 键值
+     * Stores an [Int] value.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param key 键值名称
-     * @param value 键值数据
+     * - Migrate to [edit].
+     * @param key the key name.
+     * @param value the value data.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putInt(key, value) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { putInt(key, value) }"))
     fun putInt(key: String, value: Int) = edit { putInt(key, value) }
 
     /**
-     * 存储 [Float] 键值
+     * Stores a [Float] value.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param key 键值名称
-     * @param value 键值数据
+     * - Migrate to [edit].
+     * @param key the key name.
+     * @param value the value data.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putFloat(key, value) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { putFloat(key, value) }"))
     fun putFloat(key: String, value: Float) = edit { putFloat(key, value) }
 
     /**
-     * 存储 [Long] 键值
+     * Stores a [Long] value.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
-     * @param key 键值名称
-     * @param value 键值数据
+     * - Migrate to [edit].
+     * @param key the key name.
+     * @param value the value data.
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { putLong(key, value) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { putLong(key, value) }"))
     fun putLong(key: String, value: Long) = edit { putLong(key, value) }
 
     /**
-     * 智能存储指定类型的键值
+     * Stores a value of the specified type intelligently.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [edit] 方法
+     * - Migrate to [edit].
      */
-    @Deprecated(message = "此方法因为性能问题已被作废，请迁移到新用法", ReplaceWith("edit { put(prefs, value) }"))
+    @Deprecated(message = "This function is deprecated due to performance issues. Migrate to the new usage", ReplaceWith("edit { put(prefs, value) }"))
     inline fun <reified T> put(prefs: PrefsData<T>, value: T) = edit { put(prefs, value) }
 
     /**
-     * 创建新的 [Editor]
+     * Creates a new [Editor].
      *
-     * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
+     * - Use this in the module environment or after [isUsingNativeStorage] is enabled.
      *
-     * - 在 (Xposed) 宿主环境下只读 - 无法使用
+     * - The (Xposed) host environment is read-only, so this is unavailable there.
      * @return [Editor]
      */
     fun edit() = Editor()
 
     /**
-     * 创建新的 [Editor]
+     * Creates a new [Editor].
      *
-     * 自动调用 [Editor.apply] 方法
+     * Calls [Editor.apply] automatically.
      *
-     * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
+     * - Use this in the module environment or after [isUsingNativeStorage] is enabled.
      *
-     * - 在 (Xposed) 宿主环境下只读 - 无法使用
-     * @param initiate 方法体
+     * - The (Xposed) host environment is read-only, so this is unavailable there.
+     * @param initiate the editing block.
      */
     fun edit(initiate: Editor.() -> Unit) = edit().apply(initiate).apply()
 
     /**
-     * 清除 [YukiHookPrefsBridge] 中缓存的键值数据
+     * Clears key-value data cached in [YukiHookPrefsBridge].
      *
-     * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
+     * - This function and feature have been removed. They will be deleted in a future version.
      *
-     * - 键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+     * - Direct key-value caching has been removed because it can cause out-of-memory (OOM) issues.
      * @return [YukiHookPrefsBridge]
      */
-    @Deprecated(message = "此方法及功能已被移除，请删除此方法")
+    @Deprecated(message = "This function and feature have been removed. Delete this function")
     fun clearCache() {
     }
 
     /**
-     * [YukiHookPrefsBridge] 的存储代理类
+     * Storage proxy for [YukiHookPrefsBridge].
      *
-     * - 请使用 [edit] 方法来获取 [Editor]
+     * - Use [edit] to obtain [Editor].
      *
-     * - 在模块环境中或启用了 [isUsingNativeStorage] 后使用
+     * - Use this in the module environment or after [isUsingNativeStorage] is enabled.
      *
-     * - 在 (Xposed) 宿主环境下只读 - 无法使用
+     * - The (Xposed) host environment is read-only, so this is unavailable there.
      */
     inner class Editor internal constructor() {
 
-        /** 创建新的存储代理类 */
+        /** Creates a new storage proxy. */
         private var editor = runCatching { currentSp.edit() }.getOrNull()
 
         /**
-         * 移除全部包含 [key] 的存储数据
-         * @param key 键值名称
+         * Removes all stored data containing [key].
+         * @param key the key name.
          * @return [Editor]
          */
         fun remove(key: String) = specifiedScope { editor?.remove(key) }
 
         /**
-         * 移除 [PrefsData.key] 的存储数据
-         * @param prefs 键值实例
+         * Removes the stored data for [PrefsData.key].
+         * @param prefs the key-value instance.
          * @return [Editor]
          */
         inline fun <reified T> remove(prefs: PrefsData<T>) = remove(prefs.key)
 
         /**
-         * 移除全部存储数据
+         * Removes all stored data.
          * @return [Editor]
          */
         fun clear() = specifiedScope { editor?.clear() }
 
         /**
-         * 存储 [String] 键值
+         * Stores a [String] value.
          *
-         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
-         * @param key 键值名称
-         * @param value 键值数据
+         * - Using [PrefsData] to create a template and [put] to store data is recommended.
+         * @param key the key name.
+         * @param value the value data.
          * @return [Editor]
          */
         fun putString(key: String, value: String) = specifiedScope { editor?.putString(key, value) }
 
         /**
-         * 存储 [Set]<[String]> 键值
+         * Stores a [Set] of [String] values.
          *
-         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
-         * @param key 键值名称
-         * @param value 键值数据
+         * - Using [PrefsData] to create a template and [put] to store data is recommended.
+         * @param key the key name.
+         * @param value the value data.
          * @return [Editor]
          */
         fun putStringSet(key: String, value: Set<String>) = specifiedScope { editor?.putStringSet(key, value) }
 
         /**
-         * 存储 [Boolean] 键值
+         * Stores a [Boolean] value.
          *
-         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
-         * @param key 键值名称
-         * @param value 键值数据
+         * - Using [PrefsData] to create a template and [put] to store data is recommended.
+         * @param key the key name.
+         * @param value the value data.
          * @return [Editor]
          */
         fun putBoolean(key: String, value: Boolean) = specifiedScope { editor?.putBoolean(key, value) }
 
         /**
-         * 存储 [Int] 键值
+         * Stores an [Int] value.
          *
-         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
-         * @param key 键值名称
-         * @param value 键值数据
+         * - Using [PrefsData] to create a template and [put] to store data is recommended.
+         * @param key the key name.
+         * @param value the value data.
          * @return [Editor]
          */
         fun putInt(key: String, value: Int) = specifiedScope { editor?.putInt(key, value) }
 
         /**
-         * 存储 [Float] 键值
+         * Stores a [Float] value.
          *
-         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
-         * @param key 键值名称
-         * @param value 键值数据
+         * - Using [PrefsData] to create a template and [put] to store data is recommended.
+         * @param key the key name.
+         * @param value the value data.
          * @return [Editor]
          */
         fun putFloat(key: String, value: Float) = specifiedScope { editor?.putFloat(key, value) }
 
         /**
-         * 存储 [Long] 键值
+         * Stores a [Long] value.
          *
-         * - 建议使用 [PrefsData] 创建模板并使用 [put] 存储数据
-         * @param key 键值名称
-         * @param value 键值数据
+         * - Using [PrefsData] to create a template and [put] to store data is recommended.
+         * @param key the key name.
+         * @param value the value data.
          * @return [Editor]
          */
         fun putLong(key: String, value: Long) = specifiedScope { editor?.putLong(key, value) }
 
         /**
-         * 智能存储指定类型的键值
-         * @param prefs 键值实例
-         * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+         * Stores a value of the specified type intelligently.
+         * @param prefs the key-value instance.
+         * @param value the value to store. It can only be [String], [Set] of [String], [Int], [Float], [Long], or [Boolean].
          * @return [Editor]
          */
         inline fun <reified T> put(prefs: PrefsData<T>, value: T) = putPrefsData(prefs.key, value)
 
         /**
-         * 智能存储指定类型的键值
+         * Stores a value of the specified type intelligently.
          *
-         * 封装方法以调用内联方法
-         * @param key 键值
-         * @param value 要存储的值 - 只能是 [String]、[Set]<[String]>、[Int]、[Float]、[Long]、[Boolean]
+         * Wrapper function for calling the inline function.
+         * @param key the key.
+         * @param value the value to store. It can only be [String], [Set] of [String], [Int], [Float], [Long], or [Boolean].
          * @return [Editor]
          */
         private fun putPrefsData(key: String, value: Any?) = when (value) {
@@ -651,19 +651,19 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         }
 
         /**
-         * 提交更改 (同步)
-         * @return [Boolean] 是否成功
+         * Commits changes synchronously.
+         * @return [Boolean] whether the operation succeeded.
          */
         fun commit() = makeWorldReadable { editor?.commit() ?: false }
 
-        /** 提交更改 (异步) */
+        /** Applies changes asynchronously. */
         fun apply() = makeWorldReadable { editor?.apply() ?: Unit }
 
         /**
-         * 仅在模块环境或 [isUsingNativeStorage] 执行
+         * Executes only in the module environment or when [isUsingNativeStorage] is enabled.
          *
-         * 非模块环境使用会打印警告信息
-         * @param callback 在模块环境执行
+         * Using this outside the module environment prints a warning.
+         * @param callback the callback to execute in the module environment.
          * @return [Editor]
          */
         private inline fun specifiedScope(callback: () -> Unit): Editor {

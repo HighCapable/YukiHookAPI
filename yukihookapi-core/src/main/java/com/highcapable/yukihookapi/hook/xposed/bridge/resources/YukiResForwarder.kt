@@ -27,37 +27,37 @@ import android.content.res.Resources
 import android.content.res.XResForwarder
 
 /**
- * 对接 [XResForwarder] 的中间层实例
- * @param baseInstance 原始实例
+ * Wraps a [XResForwarder] instance.
+ * @param baseInstance the original instance.
  */
 class YukiResForwarder private constructor(private val baseInstance: XResForwarder) {
 
     internal companion object {
 
         /**
-         * 从 [XResForwarder] 创建 [YukiResForwarder] 实例
-         * @param baseInstance [XResForwarder] 实例
+         * Creates a [YukiResForwarder] from [XResForwarder].
+         * @param baseInstance the [XResForwarder] instance.
          * @return [YukiResForwarder]
          */
         internal fun wrapper(baseInstance: XResForwarder) = YukiResForwarder(baseInstance)
     }
 
     /**
-     * 获得 [XResForwarder] 实例
+     * Gets the wrapped [XResForwarder] instance.
      * @return [XResForwarder]
      */
     internal val instance get() = baseInstance
 
     /**
-     * 获得当前 Resources Id
+     * Gets the current resource ID.
      * @return [Int]
      */
     val id get() = baseInstance.id
 
     /**
-     * 获得当前 Resources
+     * Gets the current [Resources].
      * @return [Resources]
-     * @throws IllegalStateException 如果 [XResForwarder] 出现问题
+     * @throws IllegalStateException if [XResForwarder] is invalid.
      */
     val resources get() = baseInstance.resources ?: error("XResForwarder is invalid")
 

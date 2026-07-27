@@ -23,17 +23,17 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.type
 
 /**
- * 当前正在进行的 Hook 类型
+ * Identifies the currently processed Hook entry type.
  */
 internal enum class HookEntryType {
 
-    /** 装载 Zygote */
+    /** Loads Zygote. */
     ZYGOTE,
 
-    /** 装载 APP */
+    /** Loads an app package. */
     PACKAGE,
 
-    /** 装载 Resources Hook */
+    /** Loads Resources Hook. */
     RESOURCES;
 
     companion object

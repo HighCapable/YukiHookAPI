@@ -22,12 +22,12 @@
 package com.highcapable.yukihookapi.hook.core.api.compat
 
 /**
- * Hook API 类型定义类
+ * Identifies the active Hook API implementation.
  */
 internal enum class HookApiCategory {
-    /** 原版 Xposed API */
+    /** Original Xposed API. */
     ROVO89_XPOSED,
 
-    /** 未知类型的 API */
+    /** Unknown API implementation. */
     UNKNOWN
 }

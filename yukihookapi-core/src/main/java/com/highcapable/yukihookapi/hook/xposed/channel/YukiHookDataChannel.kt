@@ -54,92 +54,92 @@ import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 实现 Xposed 模块的数据通讯桥
+ * Data communication bridge for a Xposed module.
  *
- * 通过模块与宿主相互注册 [BroadcastReceiver] 来实现数据的交互
+ * Exchanges data by registering [BroadcastReceiver] instances in both the module and host app.
  *
- * 模块需要将 [Application] 继承于 [ModuleApplication] 来实现此功能
+ * The module's [Application] must extend [ModuleApplication] to use this feature.
  *
- * - 模块与宿主需要保持存活状态 - 否则无法建立通讯
+ * - Both the module and host app must remain alive to communicate.
  */
 class YukiHookDataChannel private constructor() {
 
     internal companion object {
 
-        /** 是否为 (Xposed) 宿主环境 */
+        /** Whether the current environment is a (Xposed) host environment. */
         private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
-        /** 自动生成的 Xposed 模块构建版本号 */
+        /** Automatically generated Xposed module build version. */
         private val moduleGeneratedVersion = YukiHookAPI.Status.compiledTimestamp.toString()
 
-        /** 模块构建版本号获取标签 */
+        /** Tag for requesting the module build version. */
         private const val GET_MODULE_GENERATED_VERSION = "module_generated_version_get"
 
-        /** 模块构建版本号结果标签 */
+        /** Tag for the module build version result. */
         private const val RESULT_MODULE_GENERATED_VERSION = "module_generated_version_result"
 
-        /** 调试日志数据获取标签 */
+        /** Tag for requesting debug log data. */
         private const val GET_YUKI_LOGGER_INMEMORY_DATA = "yuki_logger_inmemory_data_get"
 
-        /** 调试日志数据结果标签 */
+        /** Tag for the debug log data result. */
         private val RESULT_YUKI_LOGGER_INMEMORY_DATA = ChannelData<List<YLogData>>("yuki_logger_inmemory_data_result")
 
-        /** 仅监听结果键值 */
+        /** Value used for listener-only results. */
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
 
         /**
-         * 系统广播允许发送的最大数据字节大小
+         * Maximum data size in bytes allowed for a system broadcast.
          *
-         * 标准为 1 MB - 实测不同系统目前已知能得到的数据分别有 1、2、3 MB
+         * The standard limit is 1 MB. Tests show known limits of 1, 2, or 3 MB across different systems.
          *
-         * 经过测试分段发送 900 KB 数据在 1 台 Android 13 系统的设备上依然会发生异常
+         * Tests also show that sending 900 KB in segments still fails on one Android 13 device.
          *
-         * 综上所述 - 为了防止系统不同限制不同 - 最终决定默认设置为 500 KB - 超出后以此大小分段发送数据
+         * To accommodate system-specific limits, the default is 500 KB. Larger data is sent in segments of this size.
          */
         private var receiverDataMaxByteSize = 500 * 1024
 
         /**
-         * 系统广播允许发送的最大数据字节大小倍数 (分段数据)
+         * Maximum data-size compression factor for system broadcasts using segmented data.
          *
-         * 分段后的数据每次也不能超出 [receiverDataMaxByteSize] 的大小
+         * Each segment must also remain within [receiverDataMaxByteSize].
          *
-         * 此倍数被作用于分配 [receiverDataMaxByteSize] 的大小
+         * This factor is used to divide [receiverDataMaxByteSize].
          *
-         * 倍数计算公式为 [receiverDataMaxByteSize] / [receiverDataMaxByteCompressionFactor] = [receiverDataSegmentMaxByteSize]
+         * The formula is [receiverDataMaxByteSize] / [receiverDataMaxByteCompressionFactor] = [receiverDataSegmentMaxByteSize].
          */
         private var receiverDataMaxByteCompressionFactor = 3
 
         /**
-         * 获取当前系统广播允许的最大单个分段数据字节大小
+         * Gets the maximum size in bytes allowed for one segmented system-broadcast payload.
          * @return [Int]
          */
         private val receiverDataSegmentMaxByteSize get() = receiverDataMaxByteSize / receiverDataMaxByteCompressionFactor
 
-        /** 当前 [YukiHookDataChannel] 单例 */
+        /** The current [YukiHookDataChannel] singleton. */
         private var instance: YukiHookDataChannel? = null
 
         /**
-         * 获取 [YukiHookDataChannel] 单例
+         * Gets the [YukiHookDataChannel] singleton.
          * @return [YukiHookDataChannel]
          */
         internal fun instance() = instance ?: YukiHookDataChannel().apply { instance = this }
     }
 
     /**
-     * 键值回调的监听类型定义
+     * Listener type for key-value callbacks.
      */
     private enum class CallbackKeyType { SINGLE, CDATA, VMFL }
 
-    /** 注册广播回调数组 */
+    /** Registered broadcast callbacks. */
     private var receiverCallbacks = ConcurrentHashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
 
-    /** 当前注册广播的 [Context] */
+    /** The [Context] currently used to register broadcasts. */
     private var receiverContext: Context? = null
 
-    /** 是否允许发送超出 [receiverDataMaxByteSize] 大小的数据 */
+    /** Whether data larger than [receiverDataMaxByteSize] may be sent. */
     private var isAllowSendTooLargeData = false
 
-    /** 广播接收器 */
+    /** The broadcast receiver. */
     private val handlerReceiver = BroadcastReceiver { _, intent ->
         intent.action?.also { action ->
             runCatching {
@@ -158,7 +158,7 @@ class YukiHookDataChannel private constructor() {
         }
     }
 
-    /** 检查 API 装载状态 */
+    /** Checks the API loading state. */
     private fun checkApi() {
         if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookDataChannel not allowed in Custom Hook API")
         if (isXposedEnvironment && YukiXposedModule.modulePackageName.isBlank())
@@ -167,8 +167,8 @@ class YukiHookDataChannel private constructor() {
     }
 
     /**
-     * 是否为当前正在使用的广播回调事件
-     * @param context 当前实例
+     * Checks whether this broadcast callback event is currently active.
+     * @param context the current instance.
      * @return [Boolean]
      */
     private fun isCurrentBroadcast(context: Context?) = runCatching {
@@ -179,24 +179,24 @@ class YukiHookDataChannel private constructor() {
     }.getOrNull() ?: YLog.innerW("Couldn't got current Activity status because a SecurityException blocked it").let { false }
 
     /**
-     * 获取宿主广播 Action 名称
-     * @param packageName 包名
+     * Gets the host broadcast action name.
+     * @param packageName the package name.
      * @return [String]
      */
     private fun hostActionName(packageName: String) = "yuki_hook_host_data_channel_${packageName.trim().hashCode()}"
 
     /**
-     * 获取模块广播 Action 名称
-     * @param context 实例 - 默认空
+     * Gets the module broadcast action name.
+     * @param context the optional context instance, null by default.
      * @return [String]
      */
     private fun moduleActionName(context: Context? = null) =
         "yuki_hook_module_data_channel_${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" }.trim().hashCode()}"
 
     /**
-     * 注册广播
-     * @param context 目标 Hook APP (宿主) 或模块全局上下文实例 - 为空停止注册
-     * @param packageName 包名 - 为空获取 [context] 的 [Context.getPackageName]
+     * Registers broadcasts.
+     * @param context the global context of the target host app or module. Registration stops when null.
+     * @param packageName the package name. When empty, it is obtained from [Context.getPackageName] on [context].
      */
     internal fun register(context: Context?, packageName: String = context?.packageName ?: "") {
         if (YukiHookAPI.Configs.isEnableDataChannel.not() || context == null) return
@@ -205,14 +205,14 @@ class YukiHookDataChannel private constructor() {
             addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
         }
         context.registerReceiver(filter, exported = true, body = handlerReceiver)
-        /** 排除模块环境下模块注册自身广播 */
+        // Prevents the module from registering its own broadcast in the module environment.
         if (isXposedEnvironment.not()) return
         nameSpace(context, packageName).with {
-            /** 注册监听模块与宿主的版本是否匹配 */
+            // Registers a listener that checks whether module and host app versions match.
             wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
                 nameSpace(context, fromPackageName).put(RESULT_MODULE_GENERATED_VERSION, moduleGeneratedVersion)
             }
-            /** 注册监听模块与宿主之间的调试日志数据 */
+            // Registers a listener for debug log data exchanged between the module and host app.
             wait<String>(GET_YUKI_LOGGER_INMEMORY_DATA) { fromPackageName ->
                 nameSpace(context, fromPackageName).put(RESULT_YUKI_LOGGER_INMEMORY_DATA, YLog.inMemoryData)
             }
@@ -220,9 +220,9 @@ class YukiHookDataChannel private constructor() {
     }
 
     /**
-     * 获取命名空间
-     * @param context 上下文实例
-     * @param packageName 目标 Hook APP (宿主) 的包名
+     * Gets a namespace.
+     * @param context the context instance.
+     * @param packageName the target host app package name.
      * @return [NameSpace]
      */
     internal fun nameSpace(context: Context? = null, packageName: String): NameSpace {
@@ -231,11 +231,11 @@ class YukiHookDataChannel private constructor() {
     }
 
     /**
-     * 分段数据临时集合实例
-     * @param listData [List] 数据数组
-     * @param mapData [Map] 数据数组
-     * @param setData [Set] 数据数组
-     * @param stringData [String] 数据数组
+     * Temporary collection for segmented data.
+     * @param listData the [List] data segments.
+     * @param mapData the [Map] data segments.
+     * @param setData the [Set] data segments.
+     * @param stringData the [String] data segments.
      */
     internal inner class SegmentsTempData(
         var listData: MutableList<List<*>> = mutableListOf(),
@@ -245,50 +245,50 @@ class YukiHookDataChannel private constructor() {
     )
 
     /**
-     * [YukiHookDataChannel] 命名空间
+     * [YukiHookDataChannel] namespace.
      *
-     * - 请使用 [nameSpace] 方法来获取 [NameSpace]
-     * @param context 上下文实例
-     * @param packageName 目标 Hook APP (宿主) 的包名
+     * - Use [nameSpace] to obtain [NameSpace].
+     * @param context the context instance.
+     * @param packageName the target host app package name.
      */
     inner class NameSpace internal constructor(private val context: Context?, private val packageName: String) {
 
-        /** 当前分段数据临时集合数据 */
+        /** The current temporary segmented data. */
         private val segmentsTempData = ConcurrentHashMap<String, SegmentsTempData>()
 
         /**
-         * 键值尾部名称
-         * @param type 类型
+         * Gets the key-value suffix.
+         * @param type the callback type.
          * @return [String]
          */
         private fun keyShortName(type: CallbackKeyType) =
             "${keyNonRepeatName}_${if (isXposedEnvironment) "X" else context?.javaClass?.name ?: "M"}_${type.ordinal}"
 
         /**
-         * 键值不重复名称 - 确保每个宿主使用的键值名称互不干扰
+         * Unique key-value name that prevents names used by different host apps from interfering with one another.
          * @return [String]
          */
         private val keyNonRepeatName get() = "_${packageName.hashCode()}"
 
         /**
-         * 创建一个调用空间
-         * @param initiate 方法体
-         * @return [NameSpace] 可继续向下监听
+         * Creates an invocation scope.
+         * @param initiate the invocation block.
+         * @return [NameSpace] this namespace for chaining.
          */
         inline fun with(initiate: NameSpace.() -> Unit) = apply(initiate)
 
         /**
-         * [YukiHookDataChannel] 允许发送的最大数据字节大小
+         * Maximum data size in bytes that [YukiHookDataChannel] may send.
          *
-         * 默认为 500 KB (500 * 1024) - 详情请参考 [receiverDataMaxByteSize] 的注释
+         * The default is 500 KB (500 * 1024). See the documentation for [receiverDataMaxByteSize].
          *
-         * 最小不能低于 100 KB (100 * 1024) - 否则会被重新设置为 100 KB (100 * 1024)
+         * The minimum is 100 KB (100 * 1024). Lower values are reset to 100 KB.
          *
-         * 设置后将在全局生效 - 直到当前进程结束
+         * The value applies globally until the current process ends.
          *
-         * - 超出最大数据字节大小后的数据将被自动分段发送
+         * - Data larger than this maximum is sent in segments automatically.
          *
-         * - 警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
+         * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
         var dataMaxByteSize
@@ -298,17 +298,17 @@ class YukiHookDataChannel private constructor() {
             }
 
         /**
-         * [YukiHookDataChannel] 允许发送的最大数据字节大小倍数 (分段数据)
+         * Maximum data-size compression factor that [YukiHookDataChannel] may use for segmented data.
          *
-         * 默认为 3 - 详情请参考 [receiverDataMaxByteCompressionFactor] 的注释
+         * The default is 3. See the documentation for [receiverDataMaxByteCompressionFactor].
          *
-         * 最小不能低于 2 - 否则会被重新设置为 2
+         * The minimum is 2. Lower values are reset to 2.
          *
-         * 设置后将在全局生效 - 直到当前进程结束
+         * The value applies globally until the current process ends.
          *
-         * - 超出最大数据字节大小后的数据将按照此倍数自动划分 [receiverDataMaxByteSize] 的大小
+         * - Data larger than the maximum is divided automatically by this factor relative to [receiverDataMaxByteSize].
          *
-         * - 警告：请谨慎调整此参数 - 如果超出了系统能够允许的大小会引发 [TransactionTooLargeException] 异常
+         * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
         var dataMaxByteCompressionFactor
@@ -318,13 +318,13 @@ class YukiHookDataChannel private constructor() {
             }
 
         /**
-         * 解除发送数据的大小限制并禁止开启分段发送功能
+         * Removes the outgoing data-size limit and disables segmented sending.
          *
-         * 仅会在每次调用时生效 - 下一次没有调用此方法则此功能将被自动关闭
+         * This applies only to the current invocation. The feature is disabled automatically unless called again next time.
          *
-         * 你还需要在整个调用域中声明注解 [SendTooLargeChannelData] 以消除警告
+         * Declare [SendTooLargeChannelData] across the invocation scope to suppress the warning.
          *
-         * - 若你不知道允许此功能会带来何种后果 - 请勿使用
+         * - Do not use this feature unless you understand its consequences.
          * @return [NameSpace]
          */
         @SendTooLargeChannelData
@@ -334,36 +334,36 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 发送键值数据
-         * @param key 键值名称
-         * @param value 键值数据
+         * Sends key-value data.
+         * @param key the key name.
+         * @param value the value data.
          */
         fun <T> put(key: String, value: T) = parseSendingData(ChannelData(key, value).toWrapper())
 
         /**
-         * 发送键值数据
-         * @param data 键值实例
-         * @param value 键值数据 - 未指定为 [ChannelData.value]
+         * Sends key-value data.
+         * @param data the key-value instance.
+         * @param value the value data, [ChannelData.value] when omitted.
          */
         fun <T> put(data: ChannelData<T>, value: T? = data.value) = parseSendingData(ChannelData(data.key, value).toWrapper())
 
         /**
-         * 发送键值数据
-         * @param data 键值实例
+         * Sends key-value data.
+         * @param data the key-value instances.
          */
         fun put(vararg data: ChannelData<*>) = data.takeIf { it.isNotEmpty() }?.forEach { parseSendingData(it.toWrapper()) }
 
         /**
-         * 仅发送键值监听 - 使用默认值 [VALUE_WAIT_FOR_LISTENER] 发送键值数据
-         * @param key 键值名称
+         * Sends a key-value listener request only, using [VALUE_WAIT_FOR_LISTENER] as the value.
+         * @param key the key name.
          */
         fun put(key: String) = put(key, VALUE_WAIT_FOR_LISTENER)
 
         /**
-         * 获取键值数据
-         * @param key 键值名称
-         * @param priority 响应优先级 - 默认不设置
-         * @param result 回调结果数据
+         * Receives key-value data.
+         * @param key the key name.
+         * @param priority the response priority, unset by default.
+         * @param result the result-data callback.
          */
         fun <T> wait(key: String, priority: ChannelPriority? = null, result: (value: T) -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.SINGLE)] = Pair(context) { action, intent ->
@@ -374,10 +374,10 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 获取键值数据
-         * @param data 键值实例
-         * @param priority 响应优先级 - 默认不设置
-         * @param result 回调结果数据
+         * Receives key-value data.
+         * @param data the key-value instance.
+         * @param priority the response priority, unset by default.
+         * @param result the result-data callback.
          */
         fun <T> wait(data: ChannelData<T>, priority: ChannelPriority? = null, result: (value: T) -> Unit) {
             receiverCallbacks[data.key + keyShortName(CallbackKeyType.CDATA)] = Pair(context) { action, intent ->
@@ -388,12 +388,12 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 仅获取监听结果 - 不获取键值数据
+         * Receives only a listener result without key-value data.
          *
-         * - 仅限使用 [VALUE_WAIT_FOR_LISTENER] 发送的监听才能被接收
-         * @param key 键值名称
-         * @param priority 响应优先级 - 默认不设置
-         * @param callback 回调结果
+         * - Only listeners sent with [VALUE_WAIT_FOR_LISTENER] can be received.
+         * @param key the key name.
+         * @param priority the response priority, unset by default.
+         * @param callback the result callback.
          */
         fun wait(key: String, priority: ChannelPriority? = null, callback: () -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
@@ -404,11 +404,11 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 获取模块与宿主的版本是否匹配
+         * Gets whether the module and host app versions match.
          *
-         * 通过此方法可原生判断 Xposed 模块更新后宿主并未重新装载造成两者不匹配的情况
-         * @param priority 响应优先级 - 默认不设置
-         * @param result 回调是否匹配
+         * This method detects a mismatch caused when the Xposed module is updated but the host app has not reloaded it.
+         * @param priority the response priority, unset by default.
+         * @param result the callback receiving whether the versions match.
          */
         fun checkingVersionEquals(priority: ChannelPriority? = null, result: (Boolean) -> Unit) {
             wait<String>(RESULT_MODULE_GENERATED_VERSION, priority) { result(it == moduleGeneratedVersion) }
@@ -416,15 +416,15 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 获取模块与宿主之间的 [List]<[YLogData]> 数据
+         * Gets [List]<[YLogData]> data exchanged between the module and host app.
          *
-         * 由于模块与宿主处于不同的进程 - 我们可以使用数据通讯桥访问各自的调试日志数据
+         * Because the module and host app run in different processes, this bridge provides access to each process's debug log data.
          *
-         * - 模块与宿主必须启用 [YLog.Configs.isRecord] 才能获取到调试日志数据
+         * - Both the module and host app must enable [YLog.Configs.isRecord] to obtain debug log data.
          *
-         * - 由于 Android 限制了数据传输大小的最大值 - 如果调试日志过多将会自动进行分段发送 - 数据越大速度越慢
-         * @param priority 响应优先级 - 默认不设置
-         * @param result 回调 [List]<[YLogData]>
+         * - Android limits transfer size. Large debug logs are sent in segments automatically, and larger data transfers more slowly.
+         * @param priority the response priority, unset by default.
+         * @param result the [List]<[YLogData]> callback.
          */
         fun obtainLoggerInMemoryData(priority: ChannelPriority? = null, result: (List<YLogData>) -> Unit) {
             wait(RESULT_YUKI_LOGGER_INMEMORY_DATA, priority) { result(it) }
@@ -432,27 +432,27 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 从 [Intent] 获取接收到的任意类型数据转换为 [ChannelDataWrapper]<[T]> 实例
-         * @param key 键值名称
-         * @return [ChannelDataWrapper]<[T]> or null
+         * Converts arbitrary received data from an [Intent] into a [ChannelDataWrapper]<[T]> instance.
+         * @param key the key name.
+         * @return [ChannelDataWrapper]<[T]> or null.
          */
         private fun <T> Intent.getDataWrapper(key: String) = runCatching {
             extras?.getSerializableCompat<ChannelDataWrapper<T>>(key + keyNonRepeatName)
         }.getOrNull()
 
         /**
-         * [ChannelData]<[T]> 转换为 [ChannelDataWrapper]<[T]> 实例
-         * @param id 包装实例 ID - 默认为 [RandomSeed.createString]
-         * @param size 分段数据总大小 (长度) - 默认为 -1
-         * @param index 分段数据当前接收到的下标 - 默认为 -1
+         * Converts [ChannelData]<[T]> into a [ChannelDataWrapper]<[T]> instance.
+         * @param id the wrapper instance ID, [RandomSeed.createString] by default.
+         * @param size the total segmented-data size, -1 by default.
+         * @param index the currently received segment index, -1 by default.
          * @return [ChannelDataWrapper]<[T]>
          */
         private fun <T> ChannelData<T>.toWrapper(id: String = RandomSeed.createString(), size: Int = -1, index: Int = -1) =
             ChannelDataWrapper(id, size > 0, size, index, this)
 
         /**
-         * 计算任意类型所占空间的字节大小
-         * @return [Int] 字节大小
+         * Calculates the size in bytes occupied by any supported type.
+         * @return [Int] the byte size.
          */
         private fun Any.calDataByteSize(): Int {
             val key = if (this is ChannelData<*>) key else "placeholder"
@@ -495,9 +495,9 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 处理收到的广播数据
-         * @param wrapper 键值数据包装类
-         * @param result 回调结果数据
+         * Processes received broadcast data.
+         * @param wrapper the key-value data wrapper.
+         * @param result the result-data callback.
          */
         private fun <T> parseReceivedData(wrapper: ChannelDataWrapper<T>?, result: (value: T) -> Unit) {
             if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
@@ -549,15 +549,15 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 处理需要发送的广播数据
-         * @param wrapper 键值数据包装类
+         * Processes broadcast data to send.
+         * @param wrapper the key-value data wrapper.
          */
         private fun parseSendingData(wrapper: ChannelDataWrapper<*>) {
             if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
-            /** 当前包装实例 ID */
+            /** The current wrapper instance ID. */
             val wrapperId = RandomSeed.createString()
 
-            /** 当前需要发送的数据字节大小 */
+            /** The size in bytes of the data to send. */
             val dataByteSize = wrapper.instance.calDataByteSize()
             if (dataByteSize < 0 && isAllowSendTooLargeData.not()) return YLog.innerE(
                 msg = "YukiHookDataChannel cannot calculate the byte size of the data key of \"${wrapper.instance.key}\" to be sent, " +
@@ -566,9 +566,9 @@ class YukiHookDataChannel private constructor() {
                     "but this may cause the app crash"
             )
             /**
-             * 如果数据过大打印警告信息 - 仅限 [YukiHookAPI.Configs.isDebug] 启用时生效
-             * @param name 数据类型名称
-             * @param size 分段总大小 (长度)
+             * Prints a warning when data is too large. This is effective only when [YukiHookAPI.Configs.isDebug] is enabled.
+             * @param name the data type name.
+             * @param size the total number of segments.
              */
             fun loggerForTooLargeData(name: String, size: Int) {
                 if (YukiHookAPI.Configs.isDebug) YLog.innerW(
@@ -578,8 +578,8 @@ class YukiHookDataChannel private constructor() {
             }
 
             /**
-             * 如果数据过大且无法分段打印错误信息
-             * @param suggestionMessage 建议内容 - 默认空
+             * Prints an error when data is too large and cannot be segmented.
+             * @param suggestionMessage the optional suggestion, empty by default.
              */
             fun loggerForUnprocessableData(suggestionMessage: String = "") = YLog.innerE(
                 msg = "YukiHookDataChannel cannot send this data key of \"${wrapper.instance.key}\" type ${wrapper.instance.value?.javaClass}, " +
@@ -591,8 +591,8 @@ class YukiHookDataChannel private constructor() {
             )
 
             /**
-             * 如果数据过大且无法分段打印错误信息 (首元素超出 - 分段数组内容为空)
-             * @param name 数据类型名称
+             * Prints an error when the first element is too large to segment and the segmented array is empty.
+             * @param name the data type name.
              */
             fun loggerForUnprocessableDataByFirstElement(name: String) = loggerForUnprocessableData(
                 suggestionMessage = "Failed to segment $name type because the size of its first element has exceeded the maximum limit"
@@ -649,7 +649,7 @@ class YukiHookDataChannel private constructor() {
                         } ?: loggerForUnprocessableDataByFirstElement(name = "Set")
                     }
                     is String -> (wrapper.instance.value as String).also { value ->
-                        /** 由于字符会被按照双字节计算 - 所以这里将限制字节大小除以 2 */
+                        /** Characters are counted as two bytes, so divide the byte-size limit by two. */
                         val twoByteMaxSize = receiverDataMaxByteSize / 2
                         val segments = mutableListOf<String>()
                         for (i in 0..value.length step twoByteMaxSize)
@@ -675,14 +675,14 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * 发送广播
-         * @param wrapper 键值数据包装类
+         * Sends a broadcast.
+         * @param wrapper the key-value data wrapper.
          */
         private fun pushReceiver(wrapper: ChannelDataWrapper<*>) {
-            /** 发送广播 */
+            // Sends the broadcast.
             (context ?: AppParasitics.currentApplication)?.sendBroadcast {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
-                /** 由于系统框架的包名可能不唯一 - 为防止发生问题不再对系统框架的广播设置接收者包名 */
+                // The system framework package name may not be unique, so its broadcasts do not set a recipient package.
                 if (packageName != AppParasitics.SYSTEM_FRAMEWORK_NAME)
                     setPackage(if (isXposedEnvironment) YukiXposedModule.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)

@@ -35,31 +35,31 @@ import com.highcapable.yukihookapi.hook.utils.factory.unit
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 
 /**
- * 这是对使用 [YukiHookAPI] Xposed 模块实现中的一个扩展功能
+ * Extends preference support for Xposed modules built with [YukiHookAPI].
  *
- * 此类接管了 [PreferenceFragmentCompat] 并对其实现了 Sp 存储在 Xposed 模块中的全局可读可写
+ * Extends [PreferenceFragmentCompat] and makes the module's SharedPreferences globally readable and writable.
  *
- * 在你使用 [PreferenceFragmentCompat] 的实例中 - 将继承对象换成此类
+ * Extend this class instead of [PreferenceFragmentCompat].
  *
- * 然后请将重写方法由 [onCreatePreferences] 替换为 [onCreatePreferencesInModuleApp] 即可
+ * Override [onCreatePreferencesInModuleApp] instead of [onCreatePreferences].
  */
 abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
-     * 获得 Sp 存储名称
+     * Gets the SharedPreferences name.
      * @return [String]
      */
     private val prefsName get() = "${activity?.packageName}_preferences"
 
     /**
-     * 获取当前 [Fragment] 绑定的 [Activity]
+     * Gets the [Activity] attached to the current [Fragment].
      * @return [Activity]
-     * @throws IllegalStateException 如果 [Fragment] 已被销毁或未正确装载
+     * @throws IllegalStateException if the [Fragment] is destroyed or not attached correctly.
      */
     private val currentActivity get() = requireActivity()
 
     /**
-     * 获取应用默认的 [SharedPreferences]
+     * Gets the app's default [SharedPreferences].
      * @return [SharedPreferences]
      */
     private val currentSharedPrefs get() = runCatching {
@@ -86,15 +86,15 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
     }
 
     /**
-     * 对接原始方法 [onCreatePreferences]
+     * Replaces the original [onCreatePreferences] entry point.
      *
-     * 请重写此方法以实现模块 Sp 存储的自动化设置全局可读可写数据操作
-     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
-     * @param rootKey If non-null, this preference fragment should be rooted at the [PreferenceScreen] with this key.
+     * Override this method to configure preferences while automatically enabling global module access.
+     * @param savedInstanceState if the fragment is being re-created from a previous saved state, this is the state.
+     * @param rootKey if non-null, this preference fragment should be rooted at the [PreferenceScreen] with this key.
      */
     abstract fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?)
 
-    /** 设置自动适配模块 Sp 存储全局可读可写 */
+    /** Makes the module preferences globally readable and writable when possible. */
     private fun makeNewXShareReadableIfPossible() = runCatching {
         @Suppress("DEPRECATION", "WorldReadableFiles")
         currentActivity.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)

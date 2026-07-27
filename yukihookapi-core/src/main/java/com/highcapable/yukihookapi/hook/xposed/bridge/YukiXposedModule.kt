@@ -38,81 +38,81 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import dalvik.system.PathClassLoader
 
 /**
- * Xposed 模块核心功能实现类
+ * Core Xposed module implementation.
  */
 internal object YukiXposedModule : IYukiXposedModuleLifecycle {
 
-    /** Xposed 模块是否已被装载 */
+    /** Whether the Xposed module has been loaded. */
     private var isModuleLoaded = false
 
-    /** Xposed 模块是否装载完成 */
+    /** Whether Xposed module loading has completed. */
     private var isModuleLoadFinished = false
 
-    /** 当前 Hook 进程是否正处于 Zygote */
+    /** Whether the current Hook process is running in Zygote. */
     private var isInitializingZygote = false
 
-    /** 当前 [PackageParam] 实例数组 */
+    /** The current [PackageParam] instances. */
     private val packageParams = mutableMapOf<String, PackageParam>()
 
-    /** 已在 [PackageParam] 中被装载的 APP 包名 */
+    /** App package names already loaded into [PackageParam]. */
     private val loadedPackageNames = mutableSetOf<String>()
 
-    /** 当前 [PackageParamWrapper] 实例数组 */
+    /** The current [PackageParamWrapper] instances. */
     private val packageParamWrappers = mutableMapOf<String, PackageParamWrapper>()
 
-    /** 当前 [PackageParam] 方法体回调 */
+    /** The current [PackageParam] block callback. */
     internal var packageParamCallback: (PackageParam.() -> Unit)? = null
 
-    /** 当前 Hook Framework 是否支持 Resources Hook */
+    /** Whether the current Hook Framework supports Resources Hook. */
     internal var isSupportResourcesHook = false
 
-    /** 预设的 Xposed 模块包名 */
+    /** The predefined Xposed module package name. */
     internal var modulePackageName = ""
 
-    /** 当前 Xposed 模块自身 APK 路径 */
+    /** The APK path of the current Xposed module. */
     internal var moduleAppFilePath = ""
 
-    /** 当前 Xposed 模块自身 [Resources] */
+    /** The current Xposed module's [Resources]. */
     internal var moduleAppResources: YukiModuleResources? = null
 
     /**
-     * 获取当前 Xposed 模块自身动态 [Resources]
-     * @return [YukiModuleResources] or null
+     * Gets the current Xposed module's dynamic [Resources].
+     * @return [YukiModuleResources] or null.
      */
     internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.wrapper(moduleAppFilePath) }.getOrNull()
 
     /**
-     * 模块是否装载了 Xposed 回调方法
+     * Gets whether the module has loaded its Xposed callback.
      * @return [Boolean]
      */
     internal val isXposedCallbackSetUp get() = isModuleLoadFinished.not() && packageParamCallback != null
 
     /**
-     * 当前宿主正在进行的 Hook 进程标识名称
+     * Gets the identifier of the Hook process currently running in the host app.
      * @return [String]
      */
     internal val hostProcessName get() = if (isInitializingZygote) "android-zygote" else AppParasitics.currentPackageName
 
     /**
-     * 获取当前是否为 (Xposed) 宿主环境
+     * Gets whether the current environment is a (Xposed) host environment.
      * @return [Boolean]
      */
     internal val isXposedEnvironment get() = HookApiCategoryHelper.hasAvailableHookApi && isModuleLoaded
 
     /**
-     * 自动忽略 MIUI 系统可能出现的日志收集注入实例
-     * @param packageName 当前包名
-     * @return [Boolean] 是否存在
+     * Automatically ignores log-collection injection instances that may appear on MIUI.
+     * @param packageName the current package name.
+     * @return [Boolean] whether such an instance exists.
      */
     private fun isMiuiCatcherPatch(packageName: String?) =
         (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") &&
             javaClass.classLoader?.hasClass("android.miui.R") == true
 
     /**
-     * 当前包名是否已在指定的 [HookEntryType] 被装载
-     * @param packageName 包名
-     * @param type 当前 Hook 类型
-     * @return [Boolean] 是否已被装载
+     * Checks whether the current package has already been loaded for the specified [HookEntryType].
+     * @param packageName the package name.
+     * @param type the current Hook type.
+     * @return [Boolean] whether the package has already been loaded.
      */
     private fun isPackageLoaded(packageName: String?, type: HookEntryType): Boolean {
         if (packageName == null) return false
@@ -122,24 +122,25 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
     }
 
     /**
-     * 实例化当前 [PackageParamWrapper] 到 [PackageParam]
+     * Instantiates the current [PackageParamWrapper] as [PackageParam].
      *
-     * 如果实例不存在将会自动创建一个新实例
+     * Creates a new instance automatically when none exists.
      * @return [PackageParam]
      */
     private fun PackageParamWrapper.instantiate() = packageParams[wrapperNameId] ?: PackageParam().apply { packageParams[wrapperNameId] = this }
 
     /**
-     * 创建、修改 [PackageParamWrapper]
+     * Creates or updates a [PackageParamWrapper].
      *
-     * 忽略在 [type] 不为 [HookEntryType.ZYGOTE] 时 [appClassLoader] 为空导致首次使用 [ClassLoader.getSystemClassLoader] 装载的问题
-     * @param type 当前正在进行的 Hook 类型
-     * @param packageName 包名
-     * @param processName 当前进程名
-     * @param appClassLoader APP [ClassLoader]
-     * @param appInfo APP [ApplicationInfo]
-     * @param appResources APP [YukiResources]
-     * @return [PackageParamWrapper] or null
+     * Avoids initially loading through [ClassLoader.getSystemClassLoader] when [appClassLoader] is null
+     * and [type] is not [HookEntryType.ZYGOTE].
+     * @param type the current Hook type.
+     * @param packageName the package name.
+     * @param processName the current process name.
+     * @param appClassLoader app [ClassLoader].
+     * @param appInfo app [ApplicationInfo].
+     * @param appResources app [YukiResources].
+     * @return [PackageParamWrapper] or null.
      */
     private fun assignWrapper(
         type: HookEntryType,
@@ -171,7 +172,7 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
         }
     }
 
-    /** 刷新当前 Xposed 模块自身 [Resources] */
+    /** Refreshes the current Xposed module's [Resources]. */
     internal fun refreshModuleAppResources() {
         dynamicModuleAppResources?.let { moduleAppResources = it }
     }
@@ -203,7 +204,8 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
                     assignWrapper(HookEntryType.PACKAGE, packageName, processName, appClassLoader, appInfo)
                 else null
             HookEntryType.RESOURCES ->
-                /** 这里可能会出现 [packageName] 获取到非实际宿主的问题 - 如果包名与 [AppParasitics.currentPackageName] 不相同这里做忽略处理 */
+                // [packageName] may resolve to a package other than the actual host app, so ignore it when it differs from
+                // [AppParasitics.currentPackageName].
                 if (isPackageLoaded(packageName, HookEntryType.RESOURCES).not() && packageName == AppParasitics.currentPackageName)
                     assignWrapper(HookEntryType.RESOURCES, packageName, appResources = appResources)
                 else null

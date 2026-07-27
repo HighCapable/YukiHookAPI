@@ -36,165 +36,165 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
- * [YukiHookAPI] 的 [Resources] 核心 Hook 实现类
+ * Core [Resources] Hook implementation for [YukiHookAPI].
  *
- * @param packageParam 需要传入 [PackageParam] 实现方法调用
- * @param hookResources 要 Hook 的 [HookResources] 实例
+ * @param packageParam the [PackageParam] used to perform method calls.
+ * @param hookResources the [HookResources] instance to hook.
  */
 class YukiResourcesHookCreator internal constructor(internal val packageParam: PackageParam, internal val hookResources: HookResources) {
 
-    /** 设置要 Hook 的 Resources */
+    /** The resources to hook. */
     private var preHookResources = mutableMapOf<String, ResourcesHookCreator>()
 
     /**
-     * 注入要 Hook 的 Resources
-     * @param tag 可设置标签 - 在发生错误时方便进行调试
-     * @param initiate 方法体
+     * Injects a resource to hook.
+     * @param tag the optional label used to simplify debugging when an error occurs.
+     * @param initiate the injection block.
      * @return [ResourcesHookCreator.Result]
      */
     inline fun injectResource(tag: String = "Default", initiate: ResourcesHookCreator.() -> Unit) =
         ResourcesHookCreator(tag).apply(initiate).apply { preHookResources[toString()] = this }.build()
 
-    /** Hook 执行入口 */
+    /** Hook execution entry point. */
     internal fun hook() {
         if (HookApiCategoryHelper.hasAvailableHookApi.not()) return
-        /** 过滤 [HookEntryType.ZYGOTE] 与 [HookEntryType.RESOURCES] */
+        // Filters [HookEntryType.ZYGOTE] and [HookEntryType.RESOURCES].
         if (packageParam.wrapper?.type == HookEntryType.PACKAGE) return
         if (preHookResources.isEmpty()) return YLog.innerW("Hook Resources is empty, hook aborted")
         preHookResources.forEach { (_, r) -> r.hook() }
     }
 
     /**
-     * Hook 核心功能实现类
+     * Core Hook implementation.
      *
-     * 查找和处理需要 Hook 的 Resources
-     * @param tag 当前设置的标签
+     * Finds and processes the resources to hook.
+     * @param tag the current label.
      */
     inner class ResourcesHookCreator internal constructor(private val tag: String) {
 
-        /** 是否已经执行 Hook */
+        /** Whether the Hook has already been executed. */
         private var isHooked = false
 
         /**
-         * 模块 APP Resources 替换实例
-         * @param resId Resources Id
+         * Module app resource replacement.
+         * @param resId resources Id.
          */
         private inner class ModuleResFwd(var resId: Int)
 
-        /** 是否对当前 [ResourcesHookCreator] 禁止执行 Hook 操作 */
+        /** Whether Hook operations are disabled for the current [ResourcesHookCreator]. */
         private var isDisableCreatorRunHook = false
 
-        /** 当前的查找条件 */
+        /** The current finder conditions. */
         private var conditions: ConditionFinder? = null
 
-        /** Hook 出现错误回调 */
+        /** Callback for Hook failures. */
         private var onHookFailureCallback: ((Throwable) -> Unit)? = null
 
-        /** 当前的替换值实例 */
+        /** The current replacement value. */
         private var replaceInstance: Any? = null
 
-        /** 当前的替换值回调 */
+        /** The current replacement-value callback. */
         private var replaceCallback: ((Any) -> Any?)? = null
 
-        /** 当前的替换值回调 */
+        /** The current forwarded replacement-value callback. */
         private var replaceFwdCallback: ((Any) -> Int)? = null
 
-        /** 当前的布局注入实例 */
+        /** The current layout injection block. */
         private var layoutInstance: (YukiResources.LayoutInflatedParam.() -> Unit)? = null
 
-        /** 直接设置需要替换的 Resources Id */
+        /** Directly sets the resource ID to replace. */
         var resourceId = -1
 
         /**
-         * 设置 Resources 查找条件
+         * Sets the resource finder conditions.
          *
-         * 若你设置了 [resourceId] 则此方法将不会被使用
-         * @param initiate 条件方法体
+         * This method is not used when [resourceId] is set.
+         * @param initiate the condition block.
          */
         inline fun conditions(initiate: ConditionFinder.() -> Unit) {
             conditions = ConditionFinder().apply(initiate).build()
         }
 
         /**
-         * 替换指定 Resources 为指定的值
-         * @param any 可以是任何你想替换的类型 - 但要注意若当前类型不支持可能会报错
+         * Replaces the specified resource with the given value.
+         * @param any any replacement type. An unsupported type may cause an error.
          */
         fun replaceTo(any: Any) {
             replaceInstance = any
         }
 
         /**
-         * 替换指定 Resources 为 true
+         * Replaces the specified resource with true.
          *
-         * - 确保目标替换 Resources 的类型为 [Boolean]
+         * - Ensure that the target resource type is [Boolean].
          */
         fun replaceToTrue() = replaceTo(any = true)
 
         /**
-         * 替换指定 Resources 为 false
+         * Replaces the specified resource with false.
          *
-         * - 确保目标替换 Resources 的类型为 [Boolean]
+         * - Ensure that the target resource type is [Boolean].
          */
         fun replaceToFalse() = replaceTo(any = false)
 
         /**
-         * 替换为当前 Xposed 模块的 Resources
+         * Replaces the target with a resource from the current Xposed module.
          *
-         * 你可以直接使用模块的 R.string.xxx、R.mipmap.xxx、R.drawable.xxx 替换 Hook APP 的 Resources
-         * @param resId 当前 Xposed 模块的 Resources Id
+         * Module resources such as `R.string.xxx`, `R.mipmap.xxx`, and `R.drawable.xxx` can directly replace host app resources.
+         * @param resId the current Xposed module's resource ID.
          */
         fun replaceToModuleResource(resId: Int) {
             replaceInstance = ModuleResFwd(resId)
         }
 
         /**
-         * 替换指定 Resources 为指定的值
+         * Replaces the specified resource with the value returned by a callback.
          *
-         * - 此方法只支持部分类型 - 例如 [String]、[Boolean]
+         * - This method supports only certain types, such as [String] and [Boolean].
          *
-         * - 此方法不支持在 [HookEntryType.ZYGOTE] 时使用
-         * @param result 回调原始值、返回需要替换的类型
+         * - This method is not supported for [HookEntryType.ZYGOTE].
+         * @param result the callback receiving the original value and returning the replacement.
          */
         fun replaceTo(result: (original: Any) -> Any?) {
             replaceCallback = result
         }
 
         /**
-         * 替换为当前 Xposed 模块的 Resources
+         * Replaces the target with a resource from the current Xposed module.
          *
-         * 你可以直接使用模块的 R.string.xxx、R.mipmap.xxx、R.drawable.xxx 替换 Hook APP 的 Resources
+         * Module resources such as `R.string.xxx`, `R.mipmap.xxx`, and `R.drawable.xxx` can directly replace host app resources.
          *
-         * - 此方法只支持部分类型 - 例如 [String]、[Boolean]
+         * - This method supports only certain types, such as [String] and [Boolean].
          *
-         * - 此方法不支持在 [HookEntryType.ZYGOTE] 时使用
-         * @param result 回调原始值、返回需要替换的当前 Xposed 模块的 Resources Id
+         * - This method is not supported for [HookEntryType.ZYGOTE].
+         * @param result the callback receiving the original value and returning the current Xposed module's resource ID.
          */
         fun replaceToModuleResource(result: (original: Any) -> Int) {
             replaceFwdCallback = result
         }
 
         /**
-         * 作为装载的布局注入
-         * @param initiate [YukiResources.LayoutInflatedParam] 方法体
+         * Hooks the loaded layout.
+         * @param initiate the [YukiResources.LayoutInflatedParam] block.
          */
         fun injectAsLayout(initiate: YukiResources.LayoutInflatedParam.() -> Unit) {
             layoutInstance = initiate
         }
 
         /**
-         * 自动兼容当前替换的 Resources 类型
-         * @param any 替换的任意类型
+         * Adapts the current replacement resource type for compatibility.
+         * @param any the replacement value of any type.
          * @return [Any]
          */
         private fun compat(any: Any?) = if (any is ModuleResFwd) packageParam.moduleAppResources.fwd(any.resId) else any
 
         /**
-         * Hook 创建入口
+         * Hook creation entry point.
          * @return [Result]
          */
         internal fun build() = Result()
 
-        /** Hook 执行入口 */
+        /** Hook execution entry point. */
         internal fun hook() {
             if (isHooked) return
             isHooked = true
@@ -265,8 +265,8 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
         }
 
         /**
-         * 获得查找条件中的宿主原始 [Resources]
-         * @return [Any] or null
+         * Gets the original host [Resources] value matching the finder conditions.
+         * @return [Any] or null.
          */
         private val conditionsResValue get(): Any? {
             val appResources = packageParam.appResources ?: error("Failed to got Host Resources")
@@ -288,85 +288,85 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
         }
 
         /**
-         * Resources 查找条件实现类
+         * Resource finder condition implementation.
          */
         inner class ConditionFinder internal constructor() {
 
-            /** Resources 类型 */
+            /** The resource type. */
             internal var type = ""
 
-            /** 设置 Resources 名称 */
+            /** Sets the resource name. */
             var name = ""
 
-            /** 设置 Resources 类型为动画 */
+            /** Sets the resource type to animation. */
             fun anim() {
                 type = "anim"
             }
 
-            /** 设置 Resources 类型为属性动画 */
+            /** Sets the resource type to property animation. */
             fun animator() {
                 type = "animator"
             }
 
-            /** 设置 Resources 类型为布朗 (Boolean) */
+            /** Sets the resource type to Boolean. */
             fun bool() {
                 type = "bool"
             }
 
-            /** 设置 Resources 类型为颜色 (Color) */
+            /** Sets the resource type to color. */
             fun color() {
                 type = "color"
             }
 
-            /** 设置 Resources 类型为尺寸 (Dimention) */
+            /** Sets the resource type to dimension. */
             fun dimen() {
                 type = "dimen"
             }
 
-            /** 设置 Resources 类型为 Drawable */
+            /** Sets the resource type to Drawable. */
             fun drawable() {
                 type = "drawable"
             }
 
-            /** 设置 Resources 类型为整型 (Integer) */
+            /** Sets the resource type to integer. */
             fun integer() {
                 type = "integer"
             }
 
-            /** 设置 Resources 类型为布局 (Layout) */
+            /** Sets the resource type to layout. */
             fun layout() {
                 type = "layout"
             }
 
-            /** 设置 Resources 类型为 Plurals */
+            /** Sets the resource type to plurals. */
             fun plurals() {
                 type = "plurals"
             }
 
-            /** 设置 Resources 类型为字符串 (String) */
+            /** Sets the resource type to string. */
             fun string() {
                 type = "string"
             }
 
-            /** 设置 Resources 类型为 Xml */
+            /** Sets the resource type to XML. */
             fun xml() {
                 type = "xml"
             }
 
-            /** 设置 Resources 类型为位图 (Mipmap) */
+            /** Sets the resource type to mipmap. */
             fun mipmap() {
                 type = "mipmap"
             }
 
-            /** 设置 Resources 类型为数组 (Array) */
+            /** Sets the resource type to array. */
             fun array() {
                 type = "array"
             }
 
             /**
-             * 创建查找对象实例
+             * Creates the finder instance.
              * @return [ConditionFinder]
-             * @throws IllegalStateException 如果没有设置 [name] or [type]
+             * @throws IllegalStateException if [name] or [type] is not set.
              */
             internal fun build(): ConditionFinder {
                 when {
@@ -380,25 +380,25 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
         }
 
         /**
-         * 监听全部 Hook 结果实现类
+         * Listener implementation for all Hook results.
          *
-         * 可在这里处理失败事件监听
+         * Failure events can be handled here.
          */
         inner class Result internal constructor() {
 
             /**
-             * 创建监听事件方法体
-             * @param initiate 方法体
-             * @return [Result] 可继续向下监听
+             * Creates the listener event block.
+             * @param initiate the listener block.
+             * @return [Result] this result for chaining.
              */
             inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
             /**
-             * 添加执行 Hook 需要满足的条件
+             * Adds a condition required to execute the Hook.
              *
-             * 不满足条件将直接停止 Hook
-             * @param condition 条件方法体
-             * @return [Result] 可继续向下监听
+             * Hook execution stops immediately when the condition is not satisfied.
+             * @param condition the condition block.
+             * @return [Result] this result for chaining.
              */
             inline fun by(condition: () -> Boolean): Result {
                 isDisableCreatorRunHook = (runCatching { condition() }.getOrNull() ?: false).not()
@@ -406,9 +406,9 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
             }
 
             /**
-             * 监听 Hook 过程发生错误的回调方法
-             * @param result 回调错误
-             * @return [Result] 可继续向下监听
+             * Listens for errors during the Hook process.
+             * @param result the error callback.
+             * @return [Result] this result for chaining.
              */
             fun onHookingFailure(result: (Throwable) -> Unit): Result {
                 onHookFailureCallback = result
@@ -416,8 +416,8 @@ class YukiResourcesHookCreator internal constructor(internal val packageParam: P
             }
 
             /**
-             * 忽略 Hook 过程出现的错误
-             * @return [Result] 可继续向下监听
+             * Ignores errors during the Hook process.
+             * @return [Result] this result for chaining.
              */
             fun ignoredHookingFailure(): Result {
                 onHookingFailure {}

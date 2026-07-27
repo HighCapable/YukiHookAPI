@@ -27,14 +27,14 @@ import android.content.res.XResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 
 /**
- * Xposed 模块资源钩子 (Resources Hook) 调用类
+ * Provides internal calls for Xposed module Resources Hook operations.
  */
 internal object YukiXposedResourcesCaller {
 
     /**
-     * 从 [XResources] 创建 [YukiResources]
-     * @param xResources [XResources] 实例
-     * @return [YukiResources] or null
+     * Creates [YukiResources] from [XResources].
+     * @param xResources the nullable [XResources] instance.
+     * @return [YukiResources] or null.
      */
     internal fun createYukiResourcesFromXResources(xResources: XResources?) = xResources?.let { YukiResources.wrapper(it) }
 }

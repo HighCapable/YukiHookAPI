@@ -27,17 +27,17 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl
 import android.app.ActivityManager
 
 /**
- *  IActivityManagerProxyImpl 注入 Stub
+ * Injection stub for IActivityManagerProxyImpl.
  */
 object IActivityManagerProxyImpl_Impl {
 
     /**
-     * 创建 [ActivityManager] 代理
+     * Creates an [ActivityManager] proxy.
      *
-     * 方法内容将在每次编译时自动生成
-     * @param clazz 代理的目标 [Class]
-     * @param instance 代理的目标实例
-     * @return [Any] 代理包装后的实例
+     * The method body is generated automatically during each compilation.
+     * @param clazz the target [Class] to proxy.
+     * @param instance the target instance to proxy.
+     * @return [Any] the proxy-wrapped instance.
      */
     fun createWrapper(clazz: Class<*>?, instance: Any): Any = error("Stub!")
 }

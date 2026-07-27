@@ -24,13 +24,13 @@
 package com.highcapable.yukihookapi.hook.core.finder.tools
 
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.hasClass
@@ -61,37 +61,37 @@ import java.util.Enumeration
 import kotlin.math.abs
 
 /**
- * 这是一个对 [Class]、[Member] 查找的工具实现类
+ * Utility implementation for finding [Class] and [Member] instances.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal object ReflectionTool {
 
-    /** 当前工具类的标签 */
+    /** The tag for this utility. */
     private const val TAG = "${YukiHookAPI.TAG}#ReflectionTool"
 
     /**
-     * 当前工具类的 [ClassLoader]
+     * The [ClassLoader] used by this utility.
      * @return [ClassLoader]
      */
     private val currentClassLoader get() = AppParasitics.baseClassLoader
 
     /**
-     * 内存缓存实例实现
+     * In-memory cache implementation.
      */
     private object MemoryCache {
 
-        /** 缓存的 [Class] 列表数组 */
+        /** Cached [Class] name lists. */
         val dexClassListData = mutableMapOf<String, List<String>>()
 
-        /** 缓存的 [Class] 对象数组 */
+        /** Cached [Class] instances. */
         val classData = mutableMapOf<String, Class<*>?>()
     }
 
     /**
-     * 写出当前 [ClassLoader] 下所有 [Class] 名称数组
-     * @param loader 当前使用的 [ClassLoader]
+     * Lists all [Class] names under the current [ClassLoader].
+     * @param loader the current [ClassLoader].
      * @return [List]<[String]>
-     * @throws IllegalStateException 如果 [loader] 不是 [BaseDexClassLoader]
+     * @throws IllegalStateException if [loader] is not a [BaseDexClassLoader].
      */
     internal fun findDexClassList(loader: ClassLoader?) = MemoryCache.dexClassListData[loader.toString()]
         ?: DalvikBaseDexClassLoader.field { name = "pathList" }.ignored().get(loader.value().let {
@@ -105,37 +105,37 @@ internal object ReflectionTool {
         }.orEmpty().also { if (it.isNotEmpty()) MemoryCache.dexClassListData[loader.toString()] = it }
 
     /**
-     * 使用字符串类名查找 [Class] 是否存在
-     * @param name [Class] 完整名称
-     * @param loader [Class] 所在的 [ClassLoader]
+     * Checks whether a [Class] exists by its string name.
+     * @param name the fully qualified [Class] name.
+     * @param loader the [ClassLoader] containing the [Class].
      * @return [Boolean]
      */
     internal fun hasClassByName(name: String, loader: ClassLoader?) = runCatching { findClassByName(name, loader); true }.getOrNull() ?: false
 
     /**
-     * 使用字符串类名获取 [Class]
-     * @param name [Class] 完整名称
-     * @param loader [Class] 所在的 [ClassLoader]
-     * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+     * Gets a [Class] by its string name.
+     * @param name the fully qualified [Class] name.
+     * @param loader the [ClassLoader] containing the [Class].
+     * @param initialize whether to initialize the [Class] static block, false by default.
      * @return [Class]
-     * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+     * @throws NoClassDefFoundError if the [Class] cannot be found or the wrong [ClassLoader] is supplied.
      */
     internal fun findClassByName(name: String, loader: ClassLoader?, initialize: Boolean = false): Class<*> {
         val uniqueCode = "[$name][$loader]"
 
         /**
-         * 获取 [Class.forName] 的 [Class] 对象
-         * @param name [Class] 完整名称
-         * @param initialize 是否初始化 [Class] 的静态方法块
-         * @param loader [Class] 所在的 [ClassLoader] - 默认为 [currentClassLoader]
+         * Gets a [Class] through [Class.forName].
+         * @param name the fully qualified [Class] name.
+         * @param initialize whether to initialize the [Class] static block.
+         * @param loader the [ClassLoader] containing the [Class], [currentClassLoader] by default.
          * @return [Class]
          */
         fun classForName(name: String, initialize: Boolean, loader: ClassLoader? = currentClassLoader) =
             Class.forName(name, initialize, loader)
 
         /**
-         * 使用默认方式和 [ClassLoader] 装载 [Class]
-         * @return [Class] or null
+         * Loads a [Class] through the default mechanism and [ClassLoader].
+         * @return [Class] or null.
          */
         fun loadWithDefaultClassLoader() = if (initialize.not()) loader?.loadClass(name) else classForName(name, initialize, loader)
         return MemoryCache.classData[uniqueCode] ?: runCatching {
@@ -144,18 +144,18 @@ internal object ReflectionTool {
     }
 
     /**
-     * 查找任意 [Class] 或一组 [Class]
-     * @param loaderSet 类所在 [ClassLoader]
-     * @param rulesData 规则查找数据
+     * Finds any [Class] or group of [Class] instances.
+     * @param loaderSet the [ClassLoader] containing the classes.
+     * @param rulesData the finder rule data.
      * @return [MutableList]<[Class]>
-     * @throws IllegalStateException 如果 [loaderSet] 为 null 或未设置任何条件
-     * @throws NoClassDefFoundError 如果找不到 [Class]
+     * @throws IllegalStateException if [loaderSet] is null or no conditions are set.
+     * @throws NoClassDefFoundError if no [Class] can be found.
      */
     internal fun findClasses(loaderSet: ClassLoader?, rulesData: ClassRulesData) = rulesData.createResult {
         mutableListOf<Class<*>>().also { classes ->
             /**
-             * 开始查找作业
-             * @param instance 当前 [Class] 实例
+             * Starts the finder operation.
+             * @param instance the current [Class] instance.
              */
             fun startProcess(instance: Class<*>) {
                 conditions {
@@ -176,9 +176,9 @@ internal object ReflectionTool {
                     isNoExtendsClass?.also { and(instance.hasExtends.not() && it) }
                     isNoImplementsClass?.also { and(instance.interfaces.isEmpty() && it) }
                     /**
-                     * 匹配 [MemberRulesData]
-                     * @param size [Member] 个数
-                     * @param result 回调是否匹配
+                     * Matches [MemberRulesData].
+                     * @param size the [Member] count.
+                     * @param result the callback receiving whether the rule matches.
                      */
                     fun MemberRulesData.matchCount(size: Int, result: (Boolean) -> Unit) {
                         takeIf { it.isInitializeOfMatch }?.also { rule ->
@@ -191,8 +191,8 @@ internal object ReflectionTool {
                     }
 
                     /**
-                     * 检查类型中的 [Class] 是否存在 - 即不存在 [UndefinedType]
-                     * @param type 类型
+                     * Checks whether each [Class] in the types exists, meaning no [UndefinedType] is present.
+                     * @param type the types to check.
                      * @return [Boolean]
                      */
                     fun MemberRulesData.exists(vararg type: Any?): Boolean {
@@ -273,7 +273,7 @@ internal object ReflectionTool {
                 }.finally { classes.add(instance) }
             }
             findDexClassList(loaderSet).takeIf { it.isNotEmpty() }?.forEach { className ->
-                /** 分离包名 → com.demo.Test → com.demo (获取最后一个 "." + 简单类名的长度) → 由于末位存在 "." 最后要去掉 1 个长度 */
+                // Separates the package name: `com.demo.Test` to `com.demo` by removing the final dot and simple class name.
                 (if (className.contains("."))
                     className.substring(0, className.length - className.split(".").let { it[it.lastIndex] }.length - 1)
                 else className).also { packageName ->
@@ -287,12 +287,12 @@ internal object ReflectionTool {
     }
 
     /**
-     * 查找任意 [Field] 或一组 [Field]
-     * @param classSet [Field] 所在类
-     * @param rulesData 规则查找数据
+     * Finds any [Field] or group of [Field] instances.
+     * @param classSet the class containing the [Field].
+     * @param rulesData the finder rule data.
      * @return [MutableList]<[Field]>
-     * @throws IllegalStateException 如果未设置任何条件或 [FieldRulesData.type] 目标类不存在
-     * @throws NoSuchFieldError 如果找不到 [Field]
+     * @throws IllegalStateException if no conditions are set or the target class in [FieldRulesData.type] does not exist.
+     * @throws NoSuchFieldError if no [Field] can be found.
      */
     internal fun findFields(classSet: Class<*>?, rulesData: FieldRulesData) = rulesData.createResult { hasCondition ->
         if (type == UndefinedType) error("Field match type class is not found")
@@ -351,12 +351,13 @@ internal object ReflectionTool {
     }
 
     /**
-     * 查找任意 [Method] 或一组 [Method]
-     * @param classSet [Method] 所在类
-     * @param rulesData 规则查找数据
+     * Finds any [Method] or group of [Method] instances.
+     * @param classSet the class containing the [Method].
+     * @param rulesData the finder rule data.
      * @return [MutableList]<[Method]>
-     * @throws IllegalStateException 如果未设置任何条件或 [MethodRulesData.paramTypes] 以及 [MethodRulesData.returnType] 目标类不存在
-     * @throws NoSuchMethodError 如果找不到 [Method]
+     * @throws IllegalStateException if no conditions are set or a target class in [MethodRulesData.paramTypes].
+     * or [MethodRulesData.returnType] does not exist.
+     * @throws NoSuchMethodError if no [Method] can be found.
      */
     internal fun findMethods(classSet: Class<*>?, rulesData: MethodRulesData) = rulesData.createResult { hasCondition ->
         if (returnType == UndefinedType) error("Method match returnType class is not found")
@@ -463,12 +464,12 @@ internal object ReflectionTool {
     }
 
     /**
-     * 查找任意 [Constructor] 或一组 [Constructor]
-     * @param classSet [Constructor] 所在类
-     * @param rulesData 规则查找数据
+     * Finds any [Constructor] or group of [Constructor] instances.
+     * @param classSet the class containing the [Constructor].
+     * @param rulesData the finder rule data.
      * @return [MutableList]<[Constructor]>
-     * @throws IllegalStateException 如果未设置任何条件或 [ConstructorRulesData.paramTypes] 目标类不存在
-     * @throws NoSuchMethodError 如果找不到 [Constructor]
+     * @throws IllegalStateException if no conditions are set or a target class in [ConstructorRulesData.paramTypes] does not exist.
+     * @throws NoSuchMethodError if no [Constructor] can be found.
      */
     internal fun findConstructors(classSet: Class<*>?, rulesData: ConstructorRulesData) = rulesData.createResult { hasCondition ->
         if (classSet == null) return@createResult mutableListOf()
@@ -540,19 +541,19 @@ internal object ReflectionTool {
     }
 
     /**
-     * 比较位置下标的前后顺序
-     * @param need 当前位置
-     * @param last 最后位置
-     * @return [Boolean] 返回是否成立
+     * Compares the relative order of position indices.
+     * @param need the current position.
+     * @param last the last position.
+     * @return [Boolean] whether the comparison succeeds.
      */
     private fun Pair<Int, Boolean>?.compare(need: Int, last: Int) = this == null || ((first >= 0 && first == need && second) ||
         (first < 0 && abs(first) == (last - need) && second) || (last == need && second.not()))
 
     /**
-     * 比较位置下标的前后顺序
-     * @param need 当前位置
-     * @param last 最后位置
-     * @param result 回调是否成立
+     * Compares the relative order of position indices.
+     * @param need the current position.
+     * @param last the last position.
+     * @param result the callback receiving whether the comparison succeeds.
      */
     private fun Pair<Int, Boolean>?.compare(need: Int, last: Int, result: (Boolean) -> Unit) {
         if (this == null) return
@@ -562,10 +563,10 @@ internal object ReflectionTool {
     }
 
     /**
-     * 创建查找结果方法体
-     * @param result 回调方法体
+     * Creates the finder result block.
+     * @param result the callback block.
      * @return [T]
-     * @throws IllegalStateException 如果没有 [BaseRulesData.isInitialize]
+     * @throws IllegalStateException if [BaseRulesData.isInitialize] is false.
      */
     private inline fun <reified T, R : BaseRulesData> R.createResult(result: R.(hasCondition: Boolean) -> T) =
         result(when (this) {
@@ -577,12 +578,12 @@ internal object ReflectionTool {
         })
 
     /**
-     * 在 [Class.getSuperclass] 中查找或抛出异常
-     * @param classSet 所在类
+     * Finds a result through [Class.getSuperclass] or throws an exception.
+     * @param classSet the containing class.
      * @return [T]
-     * @throws NoSuchFieldError 继承于方法 [throwNotFoundError] 的异常
-     * @throws NoSuchMethodError 继承于方法 [throwNotFoundError] 的异常
-     * @throws IllegalStateException 如果 [R] 的类型错误
+     * @throws NoSuchFieldError propagated from [throwNotFoundError].
+     * @throws NoSuchMethodError propagated from [throwNotFoundError].
+     * @throws IllegalStateException if the [R] type is invalid.
      */
     private inline fun <reified T, R : MemberRulesData> R.findSuperOrThrow(classSet: Class<*>): T = when (this) {
         is FieldRulesData ->
@@ -601,12 +602,12 @@ internal object ReflectionTool {
     }
 
     /**
-     * 抛出找不到 [Class]、[Member] 的异常
-     * @param instanceSet 所在 [ClassLoader] or [Class]
-     * @throws NoClassDefFoundError 如果找不到 [Class]
-     * @throws NoSuchFieldError 如果找不到 [Field]
-     * @throws NoSuchMethodError 如果找不到 [Method] or [Constructor]
-     * @throws IllegalStateException 如果 [BaseRulesData] 的类型错误
+     * Throws an exception when a [Class] or [Member] cannot be found.
+     * @param instanceSet the containing [ClassLoader] or [Class].
+     * @throws NoClassDefFoundError if no [Class] can be found.
+     * @throws NoSuchFieldError if no [Field] can be found.
+     * @throws NoSuchMethodError if no [Method] or [Constructor] can be found.
+     * @throws IllegalStateException if the [BaseRulesData] type is invalid.
      */
     private fun BaseRulesData.throwNotFoundError(instanceSet: Any?): Nothing = when (this) {
         is FieldRulesData -> throw createException(instanceSet, objectName, *templates)
@@ -617,15 +618,15 @@ internal object ReflectionTool {
     }
 
     /**
-     * 创建一个异常
-     * @param instanceSet 所在 [ClassLoader] or [Class]
-     * @param name 实例名称
-     * @param content 异常内容
+     * Creates an exception.
+     * @param instanceSet the containing [ClassLoader] or [Class].
+     * @param name the instance name.
+     * @param content the exception content.
      * @return [Throwable]
      */
     private fun createException(instanceSet: Any?, name: String, vararg content: String): Throwable {
         /**
-         * 获取 [Class.getName] 长度的空格数量并使用 "->" 拼接
+         * Creates padding based on the length of [Class.getName] and appends `->`.
          * @return [String]
          */
         fun Class<*>.space(): String {
@@ -652,8 +653,8 @@ internal object ReflectionTool {
     }
 
     /**
-     * 获取当前 [Class] 中存在的 [Member] 数组
-     * @return [Sequence]<[Member]> or null
+     * Gets the [Member] instances declared in the current [Class].
+     * @return [Sequence]<[Member]> or null.
      */
     private val Class<*>.existMembers
         get() = runCatching {
@@ -667,8 +668,8 @@ internal object ReflectionTool {
         }.getOrNull()
 
     /**
-     * 获取当前 [Class] 中存在的 [Field] 数组
-     * @return [Sequence]<[Field]> or null
+     * Gets the [Field] instances declared in the current [Class].
+     * @return [Sequence]<[Field]> or null.
      */
     private val Class<*>.existFields
         get() = runCatching { declaredFields.asSequence() }.onFailure {
@@ -676,8 +677,8 @@ internal object ReflectionTool {
         }.getOrNull()
 
     /**
-     * 获取当前 [Class] 中存在的 [Method] 数组
-     * @return [Sequence]<[Method]> or null
+     * Gets the [Method] instances declared in the current [Class].
+     * @return [Sequence]<[Method]> or null.
      */
     private val Class<*>.existMethods
         get() = runCatching { declaredMethods.asSequence() }.onFailure {
@@ -685,8 +686,8 @@ internal object ReflectionTool {
         }.getOrNull()
 
     /**
-     * 获取当前 [Class] 中存在的 [Constructor] 数组
-     * @return [Sequence]<[Constructor]> or null
+     * Gets the [Constructor] instances declared in the current [Class].
+     * @return [Sequence]<[Constructor]> or null.
      */
     private val Class<*>.existConstructors
         get() = runCatching { declaredConstructors.asSequence() }.onFailure {
@@ -694,7 +695,7 @@ internal object ReflectionTool {
         }.getOrNull()
 
     /**
-     * 批量允许访问内部方法
+     * Makes all members accessible.
      * @return [MutableList]<[T]>
      */
     private inline fun <reified T : AccessibleObject> List<T>.toAccessibleMembers() =
@@ -708,13 +709,13 @@ internal object ReflectionTool {
         }
 
     /**
-     * 判断两个方法、构造方法类型数组是否相等
+     * Checks whether two method or constructor type arrays are equal.
      *
-     * 复制自 [Class] 中的 [Class.arrayContentsEq]
-     * @param compare 用于比较的数组
-     * @param original 方法、构造方法原始数组
-     * @return [Boolean] 是否相等
-     * @throws IllegalStateException 如果 [VagueType] 配置不正确
+     * Adapted from [Class.arrayContentsEq] in [Class].
+     * @param compare the array to compare.
+     * @param original the original method or constructor array.
+     * @return [Boolean] whether the arrays are equal.
+     * @throws IllegalStateException if [VagueType] is configured incorrectly.
      */
     private fun paramTypesEq(compare: Array<out Any>?, original: Array<out Any>?): Boolean {
         return when {

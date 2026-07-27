@@ -23,29 +23,29 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules.result
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
- * 当前 [Member] 查找条件结果实现类
- * @param rulesData 当前查找条件规则数据
+ * Configures match-count constraints for the current [Member] finder rules.
+ * @param rulesData the current finder rule data.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MemberRulesResult internal constructor(private val rulesData: MemberRulesData) {
 
     /**
-     * 设置当前 [Member] 在查找条件中个数为 0
-     * @return [MemberRulesResult] 可继续向下监听
+     * Requires zero matching [Member] instances.
+     * @return [MemberRulesResult] this result for chaining.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun none() = count(num = 0)
 
     /**
-     * 设置当前 [Member] 在查找条件中需要全部匹配的个数
-     * @param num 个数
-     * @return [MemberRulesResult] 可继续向下监听
+     * Requires the specified number of matching [Member] instances.
+     * @param num the required count.
+     * @return [MemberRulesResult] this result for chaining.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun count(num: Int): MemberRulesResult {
@@ -54,15 +54,15 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
     }
 
     /**
-     * 设置当前 [Member] 在查找条件中需要全部匹配的个数范围
+     * Requires a range of matching [Member] instances.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * count(1..5)
      * ```
-     * @param numRange 个数范围
-     * @return [MemberRulesResult] 可继续向下监听
+     * @param numRange the accepted count range.
+     * @return [MemberRulesResult] this result for chaining.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun count(numRange: IntRange): MemberRulesResult {
@@ -71,15 +71,15 @@ class MemberRulesResult internal constructor(private val rulesData: MemberRulesD
     }
 
     /**
-     * 设置当前 [Member] 在查找条件中需要全部匹配的个数条件
+     * Requires the matching [Member] count to satisfy a condition.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * count { it >= 5 || it.isZero() }
      * ```
-     * @param conditions 条件方法体
-     * @return [MemberRulesResult] 可继续向下监听
+     * @param conditions the count condition.
+     * @return [MemberRulesResult] this result for chaining.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun count(conditions: CountConditions): MemberRulesResult {

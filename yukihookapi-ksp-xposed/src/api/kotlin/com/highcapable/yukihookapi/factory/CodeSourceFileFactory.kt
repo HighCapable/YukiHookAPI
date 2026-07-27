@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 /**
- * 包名常量定义类
+ * Package-name constants used by generated sources.
  */
 object PackageName {
     const val YukiHookAPI_Impl = "com.highcapable.yukihookapi"
@@ -43,7 +43,7 @@ object PackageName {
 }
 
 /**
- * 类名常量定义类
+ * Class-name constants used by generated sources.
  */
 object ClassName {
     const val YukiHookAPI_Impl = "YukiHookAPI_Impl"
@@ -59,7 +59,7 @@ object ClassName {
 }
 
 /**
- * 外部调用者包名和类名定义类
+ * Package and class names of external callers used by generated sources.
  */
 object ExternalCallerName {
     val HandlerDelegateCaller = Pair(
@@ -85,7 +85,7 @@ object ExternalCallerName {
 }
 
 /**
- * YukiXposedModuleStatus 方法名称定义类
+ * JVM method names used by generated YukiXposedModuleStatus sources.
  */
 object YukiXposedModuleStatusJvmName {
     const val IS_ACTIVE_METHOD_NAME = "__--"
@@ -97,15 +97,15 @@ object YukiXposedModuleStatusJvmName {
 }
 
 /**
- * 创建尾部包名名称
- * @param name 前置名称
+ * Creates a package-specific generated name.
+ * @param name the base name.
  * @return [String]
  */
 private fun GenerateData.tailPackageName(name: String) = "${name}_${modulePackageName.replace(".", "_")}"
 
 /**
- * 创建文件注释
- * @param currentClassTag 当前注入类标签
+ * Creates the header comment for a generated file.
+ * @param currentClassTag the generated class tag.
  * @return [String]
  */
 private fun createCommentContent(currentClassTag: String) =
@@ -124,7 +124,7 @@ private fun createCommentContent(currentClassTag: String) =
     """.trimIndent()
 
 /**
- * 获得注入文件代码内容
+ * Creates the source contents of all injected files.
  * @return [Map]<[String], [String]>
  */
 fun GenerateData.sources() = mapOf(

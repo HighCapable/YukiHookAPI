@@ -31,52 +31,50 @@ import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 
 /**
- * [YukiHookAPI] 的 Xposed 装载 API 调用接口
+ * Xposed loading entry point for [YukiHookAPI].
  *
- * - 请在此类上添加注解 [InjectYukiHookWithXposed] 标记模块 Hook 入口
+ * - Annotate the implementation with [InjectYukiHookWithXposed] to mark the module Hook entry.
  *
- * [YukiHookAPI] 初始化时将自动调用 [onInit] 方法
+ * [onInit] is called automatically while [YukiHookAPI] initializes.
  *
- * Hook 开始时将自动调用 [onHook] 方法
+ * [onHook] is called automatically when Hook loading starts.
  *
- * 请在 [onInit] 中调用 [YukiHookAPI.configs] 或直接调用 [configs]
+ * Call [YukiHookAPI.configs] or [configs] from [onInit].
  *
- * 请在 [onHook] 中调用 [YukiHookAPI.encase] 或直接调用 [encase]
+ * Call [YukiHookAPI.encase] or [encase] from [onHook].
  *
- * 你还可以实现监听原生 Xposed API 功能 - 重写 [onXposedEvent] 方法即可
+ * Override [onXposedEvent] to listen for native Xposed API events.
  *
- * 详情请参考 [IYukiHookXposedInit 接口](https://highcapable.github.io/YukiHookAPI/zh-cn/config/xposed-using#iyukihookxposedinit-%E6%8E%A5%E5%8F%A3)
- *
- * For English version, see [IYukiHookXposedInit Interface](https://highcapable.github.io/YukiHookAPI/en/config/xposed-using#iyukihookxposedinit-interface)
+ * See [IYukiHookXposedInit Interface](https://highcapable.github.io/YukiHookAPI/en/config/xposed-using#iyukihookxposedinit-interface)
  */
 interface IYukiHookXposedInit {
 
     /**
-     * 配置 [YukiHookAPI.Configs] 的初始化方法
+     * Configures [YukiHookAPI.Configs] during initialization.
      *
-     * - 在这里只能进行初始化配置 - 不能进行 Hook 操作
+     * - Perform initialization only. Do not run Hook operations here.
      *
-     * 此方法可选 - 你也可以选择不对 [YukiHookAPI.Configs] 进行配置
+     * This method is optional when no custom configuration is required.
      */
     fun onInit() {}
 
     /**
-     * 模块装载调用入口方法
+     * Starts module Hook loading.
      *
      * Xposed API
      *
-     * 调用 [YukiHookAPI.encase] 或直接调用 [encase] 开始 Hook
+     * Call [YukiHookAPI.encase] or [encase] to start Hook operations.
      */
     fun onHook()
 
     /**
-     * 监听 Xposed 原生装载事件
+     * Listens for native Xposed loading events.
      *
-     * 若你的 Hook 事件中存在需要兼容的原生 Xposed 功能 - 可在这里实现
+     * Implement native Xposed compatibility here when required by a Hook.
      *
-     * 请在这里使用 [YukiXposedEvent] 创建回调事件监听
+     * Use [YukiXposedEvent] to register event callbacks.
      *
-     * 可监听的事件如下：
+     * Available events:
      *
      * [YukiXposedEvent.onInitZygote]
      *
@@ -84,7 +82,7 @@ interface IYukiHookXposedInit {
      *
      * [YukiXposedEvent.onHandleInitPackageResources]
      *
-     * - 此接口仅供监听和实现原生 Xposed API 的功能 - 请不要在这里操作 [YukiHookAPI]
+     * - Use this callback only for native Xposed APIs. Do not operate [YukiHookAPI] here.
      */
     fun onXposedEvent() {}
 }

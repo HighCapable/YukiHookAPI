@@ -22,15 +22,15 @@
 package com.highcapable.yukihookapi.entity
 
 /**
- * 生成的模板数据实例
- * @param entryPackageName 入口类包名
- * @param modulePackageName 模块包名 (命名空间)
- * @param customMPackageName 自定义模块包名
- * @param entryClassName 入口类名
- * @param xInitClassName xposed_init 入口类名
- * @param isEntryClassKindOfObject 入口类种类 (类型) 是否为 object (单例)
- * @param isUsingXposedModuleStatus 是否启用 Xposed 模块状态检测
- * @param isUsingResourcesHook 是否启用 Resources Hook
+ * Represents data used to generate source templates.
+ * @param entryPackageName the package name of the entry class.
+ * @param modulePackageName the module package name (namespace).
+ * @param customMPackageName the custom module package name.
+ * @param entryClassName the entry class name.
+ * @param xInitClassName the `xposed_init` entry class name.
+ * @param isEntryClassKindOfObject whether the entry class is an `object` singleton.
+ * @param isUsingXposedModuleStatus whether Xposed module status detection is enabled.
+ * @param isUsingResourcesHook whether Resources Hook is enabled.
  */
 data class GenerateData(
     var entryPackageName: String = "",

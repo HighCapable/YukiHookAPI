@@ -24,15 +24,15 @@ package com.highcapable.yukihookapi.hook.xposed.channel.priority
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 
 /**
- * 数据通讯桥响应优先级构造类
+ * Defines a response priority condition for the data channel.
  *
- * 这个类是对 [YukiHookDataChannel] 的一个扩展用法
- * @param conditions 条件方法体
+ * This class provides an extended usage pattern for [YukiHookDataChannel].
+ * @param conditions the condition evaluated for this priority.
  */
 class ChannelPriority(private val conditions: () -> Boolean) {
 
     /**
-     * 获取条件方法体结果
+     * Gets the result of the priority condition.
      * @return [Boolean]
      */
     internal val result get() = conditions()

@@ -26,32 +26,30 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import de.robv.android.xposed.IXposedHookInitPackageResources
 
 /**
- * 标识 [YukiHookAPI] 注入 Xposed 入口的类注解
+ * Marks the [YukiHookAPI] Xposed entry class for code generation.
  *
- * - 你的项目 source 目录默认为 "src/main/" 可在 [sourcePath] 中进行自定义 - 自动处理程序将只检查 ../[sourcePath]/java.. 中间部分
+ * - The project source directory defaults to `src/main` and can be customized through [sourcePath].
  *
- * - 自动处理程序将自动在 ../[sourcePath]/assets/ 下建立 xposed_init 文件
+ * - The processor creates `xposed_init` under `[sourcePath]/assets`.
  *
- * 你的 xposed_init 入口将被自动生成为 --> 你的入口类完整包名/你的入口类名_YukiHookXposedInit 或自定义 [entryClassName]
+ * The generated `xposed_init` entry uses the fully qualified annotated class name plus `_YukiHookXposedInit`, or [entryClassName].
  *
- * - 你可以在 [modulePackageName] 自定义你的模块包名 - 未定义的情况下会使用 AndroidManifest.xml 与 build.gradle/kts 进行分析 - 失败编译会报错
+ * - [modulePackageName] overrides the detected module package. Otherwise AndroidManifest.xml and Gradle metadata are analyzed.
  *
- * - 为了防止模块包名无法正常被识别 - 自定义 [modulePackageName] 会在编译时产生警告
+ * - A custom [modulePackageName] produces a compile-time warning so the value can be verified.
  *
- * - 最后这一点很重要：请不要随意修改项目 ../[sourcePath]/assets/xposed_init 中的内容 - 否则可能会导致模块无法装载
+ * - Do not modify `[sourcePath]/assets/xposed_init` manually. Invalid content may prevent the module from loading.
  *
- * - 你必须将被注解的类继承于 [IYukiHookXposedInit] 接口实现 [IYukiHookXposedInit.onHook] 方法 - 否则编译会报错
+ * - The annotated class must implement [IYukiHookXposedInit] and [IYukiHookXposedInit.onHook].
  *
- * - 只能拥有一个 Hook 入口 - 若存在多个注解编译会报错
+ * - Exactly one Hook entry may be annotated. Multiple entries produce a compile-time error.
  *
- * 详情请参考 [InjectYukiHookWithXposed 注解](https://highcapable.github.io/YukiHookAPI/zh-cn/config/xposed-using#injectyukihookwithxposed-%E6%B3%A8%E8%A7%A3)
- *
- * For English version, see [InjectYukiHookWithXposed Annotation](https://highcapable.github.io/YukiHookAPI/en/config/xposed-using#injectyukihookwithxposed-annotation)
- * @param sourcePath 你的项目 source 相对路径 - 默认为 ..src/main..
- * @param modulePackageName 模块包名 - 不填默认自动生成
- * @param entryClassName 定义 [YukiHookAPI] 自动生成 Xposed 模块入口类的名称 - 不填默认使用 "入口类名_YukiHookXposedInit" 进行生成
- * @param isUsingXposedModuleStatus 是否启用 Xposed 模块激活等状态功能 (自动 Hook 模块自身实现状态检测) - 默认是
- * @param isUsingResourcesHook 是否启用 Resources Hook (资源钩子) - 启用后将自动注入 [IXposedHookInitPackageResources] - 默认否
+ * See [InjectYukiHookWithXposed Annotation](https://highcapable.github.io/YukiHookAPI/en/config/xposed-using#injectyukihookwithxposed-annotation)
+ * @param sourcePath the project-relative source path, defaults to `src/main`.
+ * @param modulePackageName the module package name, or an empty string for automatic detection.
+ * @param entryClassName the generated Xposed entry class name, or an empty string to use `AnnotatedClass_YukiHookXposedInit`.
+ * @param isUsingXposedModuleStatus whether automatic Xposed module status detection is enabled, defaults to true.
+ * @param isUsingResourcesHook whether Resources Hook and [IXposedHookInitPackageResources] generation are enabled, defaults to false.
  */
 @Target(AnnotationTarget.CLASS)
 annotation class InjectYukiHookWithXposed(

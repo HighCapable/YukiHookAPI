@@ -24,14 +24,14 @@
 package com.highcapable.yukihookapi.hook.xposed.application
 
 /**
- * ModuleApplication 注入 Stub
+ * Injection stub for ModuleApplication.
  */
 object ModuleApplication_Impl {
 
     /**
-     * 调用 Hook 入口类的 onInit 方法
+     * Calls the `onInit` method of the Hook entry class.
      *
-     * 方法内容将在每次编译时自动生成
+     * The method body is generated automatically during each compilation.
      */
     fun callHookEntryInit(): Unit = error("Stub!")
 }

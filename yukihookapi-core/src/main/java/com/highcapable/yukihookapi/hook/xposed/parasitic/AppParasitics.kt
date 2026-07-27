@@ -68,28 +68,28 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl.
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl.IActivityManagerProxyImpl
 
 /**
- * 这是一个管理 APP 寄生功能的控制类
+ * Controller for app parasitic features.
  *
- * 通过这些功能即可轻松实现对 (Xposed) 宿主环境的 [Resources] 注入以及 [Activity] 代理
+ * These features provide [Resources] injection and [Activity] proxies for a (Xposed) host environment.
  */
 internal object AppParasitics {
 
-    /** Android 系统框架名称 */
+    /** The Android system framework name. */
     internal const val SYSTEM_FRAMEWORK_NAME = "android"
 
-    /** [YukiHookDataChannel] 是否已经注册 */
+    /** Whether [YukiHookDataChannel] has been registered. */
     private var isDataChannelRegistered = false
 
-    /** [Activity] 代理是否已经注册 */
+    /** Whether the [Activity] proxy has been registered. */
     private var isActivityProxyRegistered = false
 
-    /** [ClassLoader] 是否已被 Hook */
+    /** Whether the [ClassLoader] has been hooked. */
     private var isClassLoaderHooked = false
 
-    /** [ClassLoader] 监听回调数组 */
+    /** The [ClassLoader] listener callbacks. */
     private var classLoaderCallbacks = mutableMapOf<Int, (Class<*>) -> Unit>()
 
-    /** 当前 Hook APP (宿主) 的生命周期演绎者数组 */
+    /** Lifecycle actors for the current host app. */
     private val appLifecycleActors = mutableMapOf<String, AppLifecycleActor>()
 
     private val ActivityThreadClass by lazyClass("android.app.ActivityThread")
@@ -101,24 +101,24 @@ internal object AppParasitics {
     private val IActivityTaskManagerClass by lazyClass("android.app.IActivityTaskManager")
 
     /**
-     * 当前 Hook APP (宿主) 的全局生命周期 [Application]
+     * Global lifecycle [Application] of the current host app.
      *
-     * 需要 [YukiHookAPI.Configs.isEnableDataChannel] or [appLifecycleActors] 不为空才会生效
+     * This is effective only when [YukiHookAPI.Configs.isEnableDataChannel] is enabled or [appLifecycleActors] is not empty.
      */
     internal var hostApplication: Application? = null
 
     /**
-     * 当前环境中使用的 [ClassLoader]
+     * The [ClassLoader] used in the current environment.
      *
-     * 装载位于 (Xposed) 宿主环境与模块环境时均使用当前 DEX 内的 [ClassLoader]
+     * Both the (Xposed) host and module environments use the [ClassLoader] from the current DEX.
      * @return [ClassLoader]
-     * @throws IllegalStateException 如果 [ClassLoader] 为空
+     * @throws IllegalStateException if the [ClassLoader] is null.
      */
     internal val baseClassLoader get() = classOf<YukiHookAPI>().classLoader ?: error("Operating system not supported")
 
     /**
-     * 获取当前系统框架的 [Context]
-     * @return [Context] ContextImpl 实例对象 or null
+     * Gets the current system framework [Context].
+     * @return [Context] a ContextImpl instance or null.
      */
     internal val systemContext get(): Context? {
         val scope = ActivityThreadClass.resolve()
@@ -135,8 +135,8 @@ internal object AppParasitics {
     }
 
     /**
-     * 获取当前宿主的 [Application]
-     * @return [Application] or null
+     * Gets the current host [Application].
+     * @return [Application] or null.
      */
     internal val currentApplication
         get() = runCatching { AndroidAppHelper.currentApplication() }.getOrNull()
@@ -147,8 +147,8 @@ internal object AppParasitics {
                 ?.invoke<Application>()
 
     /**
-     * 获取当前宿主的 [ApplicationInfo]
-     * @return [ApplicationInfo] or null
+     * Gets the current host [ApplicationInfo].
+     * @return [ApplicationInfo] or null.
      */
     internal val currentApplicationInfo
         get() = runCatching { AndroidAppHelper.currentApplicationInfo() }.getOrNull()
@@ -167,13 +167,13 @@ internal object AppParasitics {
             }
 
     /**
-     * 获取当前宿主的包名
+     * Gets the current host package name.
      * @return [String]
      */
     internal val currentPackageName get() = currentApplicationInfo?.packageName ?: SYSTEM_FRAMEWORK_NAME
 
     /**
-     * 获取当前宿主的进程名
+     * Gets the current host process name.
      * @return [String]
      */
     internal val currentProcessName
@@ -187,10 +187,10 @@ internal object AppParasitics {
             ?: SYSTEM_FRAMEWORK_NAME
 
     /**
-     * 获取指定 [packageName] 的用户 ID
+     * Gets the user ID for [packageName].
      *
-     * 机主为 0 - 应用双开 (分身) 或工作资料因系统环境不同 ID 也各不相同
-     * @param packageName 当前包名
+     * The owner is 0. Cloned apps and work profiles have environment-dependent IDs.
+     * @param packageName the current package name.
      * @return [Int]
      */
     internal fun findUserId(packageName: String): Int {
@@ -206,9 +206,9 @@ internal object AppParasitics {
     }
 
     /**
-     * 监听并 Hook 当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法
-     * @param loader 当前 [ClassLoader]
-     * @param result 回调 - ([Class] 实例对象)
+     * Listens to and hooks [ClassLoader.loadClass] on the current [ClassLoader].
+     * @param loader the current [ClassLoader].
+     * @param result the callback receiving a [Class] instance.
      */
     internal fun hookClassLoader(loader: ClassLoader?, result: (Class<*>) -> Unit) {
         if (loader == null) return
@@ -234,9 +234,9 @@ internal object AppParasitics {
     }
 
     /**
-     * Hook 模块 APP 相关功能 - 包括自身激活状态、Resources Hook 支持状态以及 [SharedPreferences]
-     * @param loader 模块的 [ClassLoader]
-     * @param type 当前正在进行的 Hook 类型
+     * Hooks module app features, including its activation status, Resources Hook support status, and [SharedPreferences].
+     * @param loader the module [ClassLoader].
+     * @param type the current Hook type.
      */
     internal fun hookModuleAppRelated(loader: ClassLoader?, type: HookEntryType) {
         if (YukiHookAPI.Configs.isEnableHookSharedPreferences && type == HookEntryType.PACKAGE)
@@ -284,19 +284,19 @@ internal object AppParasitics {
     }
 
     /**
-     * 注入当前 Hook APP (宿主) 全局生命周期
-     * @param packageName 包名
+     * Injects the global lifecycle of the current host app.
+     * @param packageName the package name.
      */
     internal fun registerToAppLifecycle(packageName: String) {
         /**
-         * 向当前 Hook APP (宿主) 抛出异常或打印错误日志
-         * @param throwable 当前异常
+         * Throws an exception to the current host app or prints an error log.
+         * @param throwable the current exception.
          */
         fun YukiHookCallback.Param.throwToAppOrLogger(throwable: Throwable) {
             if (AppLifecycleActor.isOnFailureThrowToApp != false) this.throwable = throwable
             else YLog.innerE("An exception occurred during AppLifecycle event", e = throwable)
         }
-        /** Hook [Application] 装载方法 */
+        // Hooks [Application] loading methods.
         runCatching {
             if (appLifecycleActors.isNotEmpty()) Application::class.resolve().optional(silent = true).apply {
                 YukiHookHelper.hook(firstMethod { name = "attach"; parameters(Context::class) }, object : YukiMemberHook() {
@@ -361,8 +361,8 @@ internal object AppParasitics {
                             runCatching {
                                 (param.args?.get(0) as? Application?)?.also {
                                     /**
-                                     * 注册广播
-                                     * @param result 回调 - ([Context] 当前实例, [Intent] 当前对象)
+                                     * Registers a broadcast receiver.
+                                     * @param result the callback receiving the current [Context] and [Intent].
                                      */
                                     fun IntentFilter.registerReceiver(result: (Context, Intent) -> Unit) {
                                         it.registerReceiver(filter = this, exported = true) { context, intent ->
@@ -381,7 +381,7 @@ internal object AppParasitics {
                                             ?.forEach { (_, e) -> e.first.registerReceiver(e.second) }
                                     }
                                     runCatching {
-                                        /** 过滤系统框架与一系列服务组件包名不唯一的情况 */
+                                        // Filters cases where the system framework and service components do not have unique package names.
                                         if (isDataChannelRegistered ||
                                             (currentPackageName == SYSTEM_FRAMEWORK_NAME && packageName != SYSTEM_FRAMEWORK_NAME)
                                         ) return
@@ -397,8 +397,8 @@ internal object AppParasitics {
     }
 
     /**
-     * 向 Hook APP (宿主) 注入当前 Xposed 模块的资源
-     * @param hostResources 需要注入的宿主 [Resources]
+     * Injects the current Xposed module's resources into the host app.
+     * @param hostResources the host [Resources] to inject.
      */
     internal fun injectModuleAppResources(hostResources: Resources) {
         if (YukiXposedModule.isXposedEnvironment) runCatching {
@@ -417,9 +417,9 @@ internal object AppParasitics {
     }
 
     /**
-     * 向 Hook APP (宿主) 注册当前 Xposed 模块的 [Activity]
-     * @param context 当前 [Context]
-     * @param proxy 代理的 [Activity]
+     * Registers the current Xposed module's [Activity] in the host app.
+     * @param context the current [Context].
+     * @param proxy the proxy [Activity].
      */
     @RequiresApi(AndroidVersion.N)
     internal fun registerModuleAppActivities(context: Context, proxy: Any?) {
@@ -453,7 +453,7 @@ internal object AppParasitics {
                     else error("Could not found \"$proxyClassName\" or Class is not a type of Activity")
                 }
             }
-            /** Patched [Instrumentation] */
+            // Patched [Instrumentation]
             val sCurrentActivityThread = ActivityThreadClass.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
                 .optional(silent = true)
@@ -484,7 +484,7 @@ internal object AppParasitics {
                 if (mCallback.javaClass.name != HandlerDelegateImpl.wrapperClassName)
                     mCallbackResolver.set(HandlerDelegateImpl.createWrapper(mCallback))
             } else mCallbackResolver?.set(HandlerDelegateImpl.createWrapper())
-            /** Patched [ActivityManager] */
+            // Patched [ActivityManager]
             val gDefault = ActivityManagerNativeClass.resolve()
                 .processor(AndroidHiddenApiBypassResolver.get())
                 .optional(silent = true)
@@ -528,46 +528,46 @@ internal object AppParasitics {
     }
 
     /**
-     * 当前 Hook APP (宿主) 的生命周期演绎者
+     * Lifecycle actor for the current host app.
      */
     internal class AppLifecycleActor {
 
         internal companion object {
 
-            /** 是否在发生异常时将异常抛出给宿主 */
+            /** Whether to throw an exception to the host app when a failure occurs. */
             internal var isOnFailureThrowToApp: Boolean? = null
 
             /**
-             * 获取、创建新的 [AppLifecycleActor]
-             * @param instance 实例
+             * Gets or creates a new [AppLifecycleActor].
+             * @param instance the source instance.
              * @return [AppLifecycleActor]
              */
             internal fun get(instance: Any) =
                 appLifecycleActors[instance.toString()] ?: AppLifecycleActor().apply { appLifecycleActors[instance.toString()] = this }
         }
 
-        /** [Application.attachBaseContext] 回调 */
+        /** [Application.attachBaseContext] callback. */
         internal var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null
 
-        /** [Application.onCreate] 回调 */
+        /** [Application.onCreate] callback. */
         internal var onCreateCallback: (Application.() -> Unit)? = null
 
-        /** [Application.onTerminate] 回调 */
+        /** [Application.onTerminate] callback. */
         internal var onTerminateCallback: (Application.() -> Unit)? = null
 
-        /** [Application.onLowMemory] 回调 */
+        /** [Application.onLowMemory] callback. */
         internal var onLowMemoryCallback: (Application.() -> Unit)? = null
 
-        /** [Application.onTrimMemory] 回调 */
+        /** [Application.onTrimMemory] callback. */
         internal var onTrimMemoryCallback: ((Application, Int) -> Unit)? = null
 
-        /** [Application.onConfigurationChanged] 回调 */
+        /** [Application.onConfigurationChanged] callback. */
         internal var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
 
-        /** 系统广播监听回调 */
+        /** System broadcast listener callbacks. */
         internal val onReceiverActionsCallbacks = mutableMapOf<String, Pair<Array<out String>, (Context, Intent) -> Unit>>()
 
-        /** 系统广播监听回调 */
+        /** System broadcast listener callbacks. */
         internal val onReceiverFiltersCallbacks = mutableMapOf<String, Pair<IntentFilter, (Context, Intent) -> Unit>>()
     }
 }

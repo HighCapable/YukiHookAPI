@@ -32,8 +32,8 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources.La
 import de.robv.android.xposed.callbacks.XC_LayoutInflated
 
 /**
- * 对接 [XResources] 的中间层实例
- * @param baseInstance 原始实例
+ * Adapter layer for [XResources].
+ * @param baseInstance the original instance.
  */
 class YukiResources private constructor(private val baseInstance: XResources) :
     Resources(
@@ -42,69 +42,156 @@ class YukiResources private constructor(private val baseInstance: XResources) :
         runCatching { baseInstance.configuration }.getOrNull()
     ) {
 
-    internal companion object {
+        internal companion object {
 
-        /**
-         * 从 [XResources] 创建 [YukiResources] 实例
-         * @param baseInstance [XResources] 实例
-         * @return [YukiResources]
-         */
-        internal fun wrapper(baseInstance: XResources) = YukiResources(baseInstance)
+            /**
+             * Creates a [YukiResources] instance from [XResources].
+             * @param baseInstance the [XResources] instance.
+             * @return [YukiResources]
+             */
+            internal fun wrapper(baseInstance: XResources) = YukiResources(baseInstance)
 
-        /**
-         * 兼容对接替换 Resources
-         * @param replacement 替换 Resources
-         * @return [Any] 兼容后的替换 Resources
-         */
-        private fun compat(replacement: Any?) = when (replacement) {
-            is YukiResForwarder -> replacement.instance
-            is Drawable -> object : XResources.DrawableLoader() {
-                override fun newDrawable(res: XResources?, id: Int): Drawable = replacement
+            /**
+             * Adapts a resource replacement for compatibility.
+             * @param replacement the resource replacement.
+             * @return [Any] the adapted resource replacement.
+             */
+            private fun compat(replacement: Any?) = when (replacement) {
+                is YukiResForwarder -> replacement.instance
+                is Drawable -> object : XResources.DrawableLoader() {
+                    override fun newDrawable(res: XResources?, id: Int): Drawable = replacement
+                }
+                else -> replacement
             }
-            else -> replacement
+
+            /**
+             * Replaces resources in Zygote.
+             *
+             * Adapts [XResources.setSystemWideReplacement].
+             * @param resId resources Id.
+             * @param replacement the resource replacement.
+             * @param callback the callback invoked after successful execution.
+             */
+            internal fun setSystemWideReplacement(resId: Int, replacement: Any?, callback: () -> Unit = {}) =
+                runIfAnyErrors(name = "setSystemWideReplacement") {
+                    XResources.setSystemWideReplacement(resId, compat(replacement))
+                    callback()
+                }
+
+            /**
+             * Replaces resources in Zygote.
+             *
+             * Adapts [XResources.setSystemWideReplacement].
+             * @param packageName the package name.
+             * @param type the resource type.
+             * @param name the resource name.
+             * @param replacement the resource replacement.
+             * @param callback the callback invoked after successful execution.
+             */
+            internal fun setSystemWideReplacement(packageName: String, type: String, name: String, replacement: Any?, callback: () -> Unit = {}) =
+                runIfAnyErrors(name = "setSystemWideReplacement") {
+                    XResources.setSystemWideReplacement(packageName, type, name, compat(replacement))
+                    callback()
+                }
+
+            /**
+             * Hooks a layout resource in Zygote.
+             *
+             * Adapts [XResources.hookSystemWideLayout].
+             * @param resId resources Id.
+             * @param initiate the injection block.
+             * @param callback the callback invoked after successful execution.
+             */
+            internal fun hookSystemWideLayout(resId: Int, initiate: LayoutInflatedParam.() -> Unit, callback: () -> Unit = {}) =
+                runIfAnyErrors(name = "hookSystemWideLayout") {
+                    XResources.hookSystemWideLayout(resId, object : XC_LayoutInflated() {
+                        override fun handleLayoutInflated(liparam: LayoutInflatedParam?) {
+                            if (liparam == null) return
+                            initiate(LayoutInflatedParam(liparam))
+                        }
+                    })
+                    callback()
+                }
+
+            /**
+             * Hooks a layout resource in Zygote.
+             *
+             * Adapts [XResources.hookSystemWideLayout].
+             * @param packageName the package name.
+             * @param type the resource type.
+             * @param name the resource name.
+             * @param initiate the injection block.
+             * @param callback the callback invoked after successful execution.
+             */
+            internal fun hookSystemWideLayout(
+                packageName: String,
+                type: String,
+                name: String,
+                initiate: LayoutInflatedParam.() -> Unit,
+                callback: () -> Unit = {}
+            ) = runIfAnyErrors(name = "hookSystemWideLayout") {
+                XResources.hookSystemWideLayout(packageName, type, name, object : XC_LayoutInflated() {
+                    override fun handleLayoutInflated(liparam: LayoutInflatedParam?) {
+                        if (liparam == null) return
+                        initiate(LayoutInflatedParam(liparam))
+                    }
+                })
+                callback()
+            }
+
+            /**
+             * Executes while handling any exception.
+             * @param name the method name.
+             * @param initiate the block to execute.
+             */
+            private inline fun runIfAnyErrors(name: String, initiate: () -> Unit) {
+                runCatching {
+                    initiate()
+                }.onFailure { YLog.innerE("Failed to execute method \"$name\", maybe your Hook Framework not support Resources Hook", it) }
+            }
         }
 
         /**
-         * 在 Zygote 中替换 Resources
+         * Replaces a resource.
          *
-         * 对接 [XResources.setSystemWideReplacement]
-         * @param resId Resources Id
-         * @param replacement 替换 Resources
-         * @param callback 是否成功执行回调
+         * Adapts [XResources.setReplacement].
+         * @param resId resources Id.
+         * @param replacement the resource replacement.
+         * @param callback the callback invoked after successful execution.
          */
-        internal fun setSystemWideReplacement(resId: Int, replacement: Any?, callback: () -> Unit = {}) =
-            runIfAnyErrors(name = "setSystemWideReplacement") {
-                XResources.setSystemWideReplacement(resId, compat(replacement))
+        internal fun setReplacement(resId: Int, replacement: Any?, callback: () -> Unit = {}) =
+            runIfAnyErrors(name = "setReplacement") {
+                baseInstance.setReplacement(resId, compat(replacement))
                 callback()
             }
 
         /**
-         * 在 Zygote 中替换 Resources
+         * Replaces a resource.
          *
-         * 对接 [XResources.setSystemWideReplacement]
-         * @param packageName 包名
-         * @param type Resources 类型
-         * @param name Resources 名称
-         * @param replacement 替换 Resources
-         * @param callback 是否成功执行回调
+         * Adapts [XResources.setReplacement].
+         * @param packageName the package name.
+         * @param type the resource type.
+         * @param name the resource name.
+         * @param replacement the resource replacement.
+         * @param callback the callback invoked after successful execution.
          */
-        internal fun setSystemWideReplacement(packageName: String, type: String, name: String, replacement: Any?, callback: () -> Unit = {}) =
-            runIfAnyErrors(name = "setSystemWideReplacement") {
-                XResources.setSystemWideReplacement(packageName, type, name, compat(replacement))
+        internal fun setReplacement(packageName: String, type: String, name: String, replacement: Any?, callback: () -> Unit = {}) =
+            runIfAnyErrors(name = "setReplacement") {
+                baseInstance.setReplacement(packageName, type, name, compat(replacement))
                 callback()
             }
 
         /**
-         * 在 Zygote 中注入布局 Resources
+         * Hooks a layout resource.
          *
-         * 对接 [XResources.hookSystemWideLayout]
-         * @param resId Resources Id
-         * @param initiate 注入方法体
-         * @param callback 是否成功执行回调
+         * Adapts [XResources.hookLayout].
+         * @param resId resources Id.
+         * @param initiate the injection block.
+         * @param callback the callback invoked after successful execution.
          */
-        internal fun hookSystemWideLayout(resId: Int, initiate: LayoutInflatedParam.() -> Unit, callback: () -> Unit = {}) =
-            runIfAnyErrors(name = "hookSystemWideLayout") {
-                XResources.hookSystemWideLayout(resId, object : XC_LayoutInflated() {
+        internal fun hookLayout(resId: Int, initiate: LayoutInflatedParam.() -> Unit, callback: () -> Unit = {}) =
+            runIfAnyErrors(name = "hookLayout") {
+                baseInstance.hookLayout(resId, object : XC_LayoutInflated() {
                     override fun handleLayoutInflated(liparam: LayoutInflatedParam?) {
                         if (liparam == null) return
                         initiate(LayoutInflatedParam(liparam))
@@ -114,23 +201,23 @@ class YukiResources private constructor(private val baseInstance: XResources) :
             }
 
         /**
-         * 在 Zygote 中注入布局 Resources
+         * Hooks a layout resource.
          *
-         * 对接 [XResources.hookSystemWideLayout]
-         * @param packageName 包名
-         * @param type Resources 类型
-         * @param name Resources 名称
-         * @param initiate 注入方法体
-         * @param callback 是否成功执行回调
+         * Adapts [XResources.hookLayout].
+         * @param packageName the package name.
+         * @param type the resource type.
+         * @param name the resource name.
+         * @param initiate the injection block.
+         * @param callback the callback invoked after successful execution.
          */
-        internal fun hookSystemWideLayout(
+        internal fun hookLayout(
             packageName: String,
             type: String,
             name: String,
             initiate: LayoutInflatedParam.() -> Unit,
             callback: () -> Unit = {}
-        ) = runIfAnyErrors(name = "hookSystemWideLayout") {
-            XResources.hookSystemWideLayout(packageName, type, name, object : XC_LayoutInflated() {
+        ) = runIfAnyErrors(name = "hookLayout") {
+            baseInstance.hookLayout(packageName, type, name, object : XC_LayoutInflated() {
                 override fun handleLayoutInflated(liparam: LayoutInflatedParam?) {
                     if (liparam == null) return
                     initiate(LayoutInflatedParam(liparam))
@@ -140,129 +227,42 @@ class YukiResources private constructor(private val baseInstance: XResources) :
         }
 
         /**
-         * 忽略异常执行
-         * @param name 方法名称
-         * @param initiate 方法体
+         * Target layout resource implementation for the host app.
+         * @param baseParam the adapted [XC_LayoutInflated.LayoutInflatedParam].
          */
-        private inline fun runIfAnyErrors(name: String, initiate: () -> Unit) {
-            runCatching {
-                initiate()
-            }.onFailure { YLog.innerE("Failed to execute method \"$name\", maybe your Hook Framework not support Resources Hook", it) }
+        class LayoutInflatedParam(private val baseParam: XC_LayoutInflated.LayoutInflatedParam) {
+
+            /**
+             * Gets the resource directory qualifier of the currently hooked layout.
+             *
+             * For example: `layout`, `layout-land`, or `layout-sw600dp`.
+             * @return [String]
+             */
+            val variantName get() = baseParam.variant ?: ""
+
+            /**
+             * Gets the currently hooked layout instance.
+             * @return [View]
+             */
+            val currentView get() = baseParam.view ?: error("LayoutInflatedParam View instance got null")
+
+            /**
+             * Finds a [View] with the specified ID in the host app by identifier.
+             * @param name the ID identifier name.
+             * @return [T] or null.
+             */
+            inline fun <reified T : View> View.findViewByIdentifier(name: String): T? =
+                findViewById(baseParam.res.getIdentifier(name, "id", baseParam.resNames.pkg))
+
+            /**
+             * Finds a [View] with the specified ID in the host app's currently loaded layout by identifier.
+             * @param name the ID identifier name.
+             * @return [T] or null.
+             */
+            inline fun <reified T : View> findViewByIdentifier(name: String) = currentView.findViewByIdentifier<T>(name)
+
+            override fun toString() = "LayoutInflatedParam by $baseParam"
         }
+
+        override fun toString() = "YukiResources by $baseInstance"
     }
-
-    /**
-     * 执行替换 Resources
-     *
-     * 对接 [XResources.setReplacement]
-     * @param resId Resources Id
-     * @param replacement 替换 Resources
-     * @param callback 是否成功执行回调
-     */
-    internal fun setReplacement(resId: Int, replacement: Any?, callback: () -> Unit = {}) =
-        runIfAnyErrors(name = "setReplacement") {
-            baseInstance.setReplacement(resId, compat(replacement))
-            callback()
-        }
-
-    /**
-     * 执行替换 Resources
-     *
-     * 对接 [XResources.setReplacement]
-     * @param packageName 包名
-     * @param type Resources 类型
-     * @param name Resources 名称
-     * @param replacement 替换 Resources
-     * @param callback 是否成功执行回调
-     */
-    internal fun setReplacement(packageName: String, type: String, name: String, replacement: Any?, callback: () -> Unit = {}) =
-        runIfAnyErrors(name = "setReplacement") {
-            baseInstance.setReplacement(packageName, type, name, compat(replacement))
-            callback()
-        }
-
-    /**
-     * 执行注入布局 Resources
-     *
-     * 对接 [XResources.hookLayout]
-     * @param resId Resources Id
-     * @param initiate 注入方法体
-     * @param callback 是否成功执行回调
-     */
-    internal fun hookLayout(resId: Int, initiate: LayoutInflatedParam.() -> Unit, callback: () -> Unit = {}) =
-        runIfAnyErrors(name = "hookLayout") {
-            baseInstance.hookLayout(resId, object : XC_LayoutInflated() {
-                override fun handleLayoutInflated(liparam: LayoutInflatedParam?) {
-                    if (liparam == null) return
-                    initiate(LayoutInflatedParam(liparam))
-                }
-            })
-            callback()
-        }
-
-    /**
-     * 执行注入布局 Resources
-     *
-     * 对接 [XResources.hookLayout]
-     * @param packageName 包名
-     * @param type Resources 类型
-     * @param name Resources 名称
-     * @param initiate 注入方法体
-     * @param callback 是否成功执行回调
-     */
-    internal fun hookLayout(
-        packageName: String,
-        type: String,
-        name: String,
-        initiate: LayoutInflatedParam.() -> Unit,
-        callback: () -> Unit = {}
-    ) = runIfAnyErrors(name = "hookLayout") {
-        baseInstance.hookLayout(packageName, type, name, object : XC_LayoutInflated() {
-            override fun handleLayoutInflated(liparam: LayoutInflatedParam?) {
-                if (liparam == null) return
-                initiate(LayoutInflatedParam(liparam))
-            }
-        })
-        callback()
-    }
-
-    /**
-     * 装载 Hook APP 的目标布局 Resources 实现类
-     * @param baseParam 对接 [XC_LayoutInflated.LayoutInflatedParam]
-     */
-    class LayoutInflatedParam(private val baseParam: XC_LayoutInflated.LayoutInflatedParam) {
-
-        /**
-         * 获取当前被 Hook 的布局装载目录名称
-         *
-         * 例如：layout、layout-land、layout-sw600dp
-         * @return [String]
-         */
-        val variantName get() = baseParam.variant ?: ""
-
-        /**
-         * 获取当前被 Hook 的布局实例
-         * @return [View]
-         */
-        val currentView get() = baseParam.view ?: error("LayoutInflatedParam View instance got null")
-
-        /**
-         * 使用 Identifier 查找 Hook APP 指定 Id 的 [View]
-         * @param name Id 的 Identifier 名称
-         * @return [T] or null
-         */
-        inline fun <reified T : View> View.findViewByIdentifier(name: String): T? =
-            findViewById(baseParam.res.getIdentifier(name, "id", baseParam.resNames.pkg))
-
-        /**
-         * 使用 Identifier 查找 Hook APP 当前装载布局中指定 Id 的 [View]
-         * @param name Id 的 Identifier 名称
-         * @return [T] or null
-         */
-        inline fun <reified T : View> findViewByIdentifier(name: String) = currentView.findViewByIdentifier<T>(name)
-
-        override fun toString() = "LayoutInflatedParam by $baseParam"
-    }
-
-    override fun toString() = "YukiResources by $baseInstance"
-}

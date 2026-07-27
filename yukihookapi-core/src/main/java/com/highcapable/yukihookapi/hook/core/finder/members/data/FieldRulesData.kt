@@ -23,17 +23,17 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Field
 
 /**
- * [Field] 规则查找数据类
- * @param name 名称
- * @param nameConditions 名称规则
- * @param type 类型
- * @param typeConditions 类型条件
+ * Stores rules used to find a [Field].
+ * @param name the field name.
+ * @param nameConditions the field-name conditions.
+ * @param type the field type.
+ * @param typeConditions the field-type conditions.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal class FieldRulesData internal constructor(

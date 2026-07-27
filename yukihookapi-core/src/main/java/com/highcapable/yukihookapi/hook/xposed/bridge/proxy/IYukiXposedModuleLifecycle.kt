@@ -26,28 +26,28 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
- * Xposed 模块生命周期实现接口
+ * Defines the Xposed module loading lifecycle.
  */
 internal interface IYukiXposedModuleLifecycle {
 
     /**
-     * 当 Xposed 模块开始装载
-     * @param packageName 当前 Xposed 模块包名
-     * @param appFilePath 当前 Xposed 模块自身 APK 路径
+     * Called when the Xposed module starts loading.
+     * @param packageName the current Xposed module package name.
+     * @param appFilePath the current Xposed module APK path.
      */
     fun onStartLoadModule(packageName: String, appFilePath: String)
 
-    /** 当 Xposed 模块装载完成 */
+    /** Called when the Xposed module finishes loading. */
     fun onFinishLoadModule()
 
     /**
-     * 当可用的 Hook APP (宿主) 开始装载
-     * @param type 当前正在进行的 Hook 类型
-     * @param packageName 宿主包名
-     * @param processName 宿主进程名
-     * @param appClassLoader 宿主 [ClassLoader]
-     * @param appInfo 宿主 [ApplicationInfo]
-     * @param appResources 宿主 [YukiResources]
+     * Called when an available host app starts loading.
+     * @param type the current Hook entry type.
+     * @param packageName the host package name.
+     * @param processName the host process name.
+     * @param appClassLoader the host [ClassLoader].
+     * @param appInfo the host [ApplicationInfo].
+     * @param appResources the host [YukiResources].
      */
     fun onPackageLoaded(
         type: HookEntryType,

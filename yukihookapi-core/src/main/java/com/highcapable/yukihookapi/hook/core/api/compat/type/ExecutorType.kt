@@ -22,19 +22,19 @@
 package com.highcapable.yukihookapi.hook.core.api.compat.type
 
 /**
- * Hook Framework 类型定义
+ * Identifies a Hook Framework implementation.
  *
- * 定义了目前已知使用频率较高的 Hook Framework
+ * Includes the most widely used Hook Frameworks currently known.
  *
- * 后期根据 Hook Framework 特征和使用情况将会继续添加新的类型
+ * Additional types may be added as new Hook Frameworks become relevant.
  *
- * 无法识别的 Hook Framework 将被定义为 [UNKNOWN]
+ * Unrecognized Hook Frameworks are represented by [UNKNOWN].
  */
 enum class ExecutorType {
-    /** 未知类型 */
+    /** Unknown Hook Framework. */
     UNKNOWN,
 
-    /** 原版、第三方 Xposed */
+    /** Original or third-party Xposed. */
     XPOSED,
 
     /** LSPosed、LSPatch */
@@ -43,9 +43,9 @@ enum class ExecutorType {
     /** EdXposed */
     ED_XPOSED,
 
-    /** TaiChi (太极) */
+    /** TaiChi. */
     TAICHI_XPOSED,
 
-    /** BugXposed (应用转生) */
+    /** BugXposed. */
     BUG_XPOSED
 }

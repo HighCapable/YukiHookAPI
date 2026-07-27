@@ -29,47 +29,47 @@ import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.log.YLog
 
 /**
- * 这是 [Class] 查找类功能的基本类实现
- * @param loaderSet 当前使用的 [ClassLoader] 实例
+ * Base implementation for class finders.
+ * @param loaderSet the current [ClassLoader].
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 abstract class ClassBaseFinder internal constructor(internal open val loaderSet: ClassLoader? = null) : BaseFinder() {
 
     internal companion object {
 
-        /** [loaderSet] 为 null 的提示 */
+        /** Message used when [loaderSet] is null. */
         internal const val LOADERSET_IS_NULL = "loaderSet is null"
     }
 
-    /** 当前找到的 [Class] 数组 */
+    /** Classes found by the current lookup. */
     internal var classInstances = mutableListOf<Class<*>>()
 
-    /** 是否开启忽略错误警告功能 */
+    /** Whether finder error logs are suppressed. */
     internal var isIgnoreErrorLogs = false
 
     /**
-     * 将目标类型转换为可识别的兼容类型
-     * @param any 当前需要转换的实例
-     * @param tag 当前查找类的标识
-     * @return [Class] or null
+     * Converts the target type to a supported compatible type.
+     * @param any the instance to convert.
+     * @param tag the identifier of the class being searched.
+     * @return [Class] or null.
      */
     internal fun compatType(any: Any?, tag: String) = any?.compat(tag, loaderSet)
 
     /**
-     * 在开启 [YukiHookAPI.Configs.isDebug] 且在 [HookApiCategoryHelper.hasAvailableHookApi] 情况下输出调试信息
-     * @param msg 消息内容
+     * Prints debug information when [YukiHookAPI.Configs.isDebug] is enabled and a Hook API is available.
+     * @param msg the message content.
      */
     internal fun debugMsg(msg: String) {
         if (HookApiCategoryHelper.hasAvailableHookApi) YLog.innerD(msg)
     }
 
     /**
-     * 发生错误时输出日志
-     * @param e 异常堆栈 - 默认空
+     * Prints an error log when lookup fails.
+     * @param e the exception stack trace, defaults to null.
      */
     internal fun errorMsg(e: Throwable? = null) {
         if (isIgnoreErrorLogs) return
-        /** 判断是否为 [LOADERSET_IS_NULL] */
+        // Ignores the expected [LOADERSET_IS_NULL] state.
         if (e?.message == LOADERSET_IS_NULL) return
         YLog.innerE("NoClassDefFound happend in [$loaderSet]", e)
     }

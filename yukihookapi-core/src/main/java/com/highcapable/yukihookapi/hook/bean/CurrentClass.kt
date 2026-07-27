@@ -23,135 +23,135 @@
 
 package com.highcapable.yukihookapi.hook.bean
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.generic
 import com.highcapable.yukihookapi.hook.factory.method
 
 /**
- * 当前实例的类操作对象
- * @param classSet 当前实例的 [Class]
- * @param instance 当前实例本身
+ * Class operation object for the current instance.
+ * @param classSet the [Class] of the current instance.
+ * @param instance the current instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class CurrentClass internal constructor(private val classSet: Class<*>, internal val instance: Any) {
 
-    /** 是否开启忽略错误警告功能 */
+    /** Whether error warning suppression is enabled. */
     internal var isIgnoreErrorLogs = false
 
     /**
-     * 获得当前 [classSet] 的 [Class.getName]
+     * Gets [Class.getName] for the current [classSet].
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val name get() = classSet.name ?: instance.javaClass.name ?: ""
 
     /**
-     * 获得当前 [classSet] 的 [Class.getSimpleName]
+     * Gets [Class.getSimpleName] for the current [classSet].
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val simpleName get() = classSet.simpleName ?: instance.javaClass.simpleName ?: ""
 
     /**
-     * 获得当前实例中的泛型父类
+     * Gets the generic superclass of the current instance.
      *
-     * 如果当前实例不存在泛型将返回 null
-     * @return [GenericClass] or null
+     * Returns null when the current instance has no generic superclass.
+     * @return [GenericClass] or null.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun generic() = classSet.generic()
 
     /**
-     * 获得当前实例中的泛型父类
+     * Gets the generic superclass of the current instance.
      *
-     * 如果当前实例不存在泛型将返回 null
-     * @param initiate 实例方法体
-     * @return [GenericClass] or null
+     * Returns null when the current instance has no generic superclass.
+     * @param initiate the instance block.
+     * @return [GenericClass] or null.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun generic(initiate: GenericClass.() -> Unit) = classSet.generic(initiate)
 
     /**
-     * 调用父类实例
+     * Gets the superclass instance.
      * @return [SuperClass]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun superClass() = SuperClass(classSet.superclass)
 
     /**
-     * 调用当前实例中的变量
-     * @param initiate 查找方法体
+     * Gets a field from the current instance.
+     * @param initiate the finder block.
      * @return [FieldFinder.Result.Instance]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun field(initiate: FieldConditions) = classSet.field(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
     /**
-     * 调用当前实例中的方法
-     * @param initiate 查找方法体
+     * Calls a method on the current instance.
+     * @param initiate the finder block.
      * @return [MethodFinder.Result.Instance]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun method(initiate: MethodConditions) = classSet.method(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
     /**
-     * 当前类的父类实例的类操作对象
+     * Class operation object for the superclass instance of the current class.
      *
-     * - 请使用 [superClass] 方法来获取 [SuperClass]
-     * @param superClassSet 父类 [Class] 对象
+     * - Use [superClass] to obtain [SuperClass].
+     * @param superClassSet the superclass [Class].
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class SuperClass internal constructor(private val superClassSet: Class<*>) {
 
         /**
-         * 获得当前 [classSet] 中父类的 [Class.getName]
+         * Gets [Class.getName] for the superclass of the current [classSet].
          * @return [String]
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         val name get() = superClassSet.name ?: ""
 
         /**
-         * 获得当前 [classSet] 中父类的 [Class.getSimpleName]
+         * Gets [Class.getSimpleName] for the superclass of the current [classSet].
          * @return [String]
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         val simpleName get() = superClassSet.simpleName ?: ""
 
         /**
-         * 获得当前实例父类中的泛型父类
+         * Gets the generic superclass of the current instance's superclass.
          *
-         * 如果当前实例不存在泛型将返回 null
-         * @return [GenericClass] or null
+         * Returns null when the current instance has no generic superclass.
+         * @return [GenericClass] or null.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun generic() = superClassSet.generic()
 
         /**
-         * 获得当前实例父类中的泛型父类
+         * Gets the generic superclass of the current instance's superclass.
          *
-         * 如果当前实例不存在泛型将返回 null
-         * @param initiate 实例方法体
-         * @return [GenericClass] or null
+         * Returns null when the current instance has no generic superclass.
+         * @param initiate the instance block.
+         * @return [GenericClass] or null.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun generic(initiate: GenericClass.() -> Unit) = superClassSet.generic(initiate)
 
         /**
-         * 调用父类实例中的变量
-         * @param initiate 查找方法体
+         * Gets a field from the superclass instance.
+         * @param initiate the finder block.
          * @return [FieldFinder.Result.Instance]
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun field(initiate: FieldConditions) = superClassSet.field(initiate).result { if (isIgnoreErrorLogs) ignored() }.get(instance)
 
         /**
-         * 调用父类实例中的方法
-         * @param initiate 查找方法体
+         * Calls a method on the superclass instance.
+         * @param initiate the finder block.
          * @return [MethodFinder.Result.Instance]
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)

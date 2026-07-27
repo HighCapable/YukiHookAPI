@@ -24,7 +24,7 @@
 package com.highcapable.yukihookapi.hook.utils.factory
 
 /**
- * 写出异常堆栈到字符串
+ * Writes this exception stack trace to a string.
  * @return [String]
  */
 internal inline fun Throwable.dumpToString() = stackTraceToString()

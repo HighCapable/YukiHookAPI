@@ -25,19 +25,19 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl
 import android.os.Handler
 
 /**
- * 代理当前 [Handler.Callback] 调用接口实现
+ * Proxy implementation of the current [Handler.Callback] invocation interface.
  */
 internal object HandlerDelegateImpl {
 
     /**
-     * 获取 [Handler.Callback] 实例 [Class] 名称
+     * Gets the [Class] name of the [Handler.Callback] instance.
      * @return [String]
      */
     internal val wrapperClassName get() = HandlerDelegateImpl_Impl.wrapperClassName
 
     /**
-     * 从 [Handler.Callback] 创建实例
-     * @param baseInstance [Handler.Callback] 实例 - 可空
+     * Creates an instance from [Handler.Callback].
+     * @param baseInstance the nullable [Handler.Callback] instance.
      * @return [Handler.Callback]
      */
     internal fun createWrapper(baseInstance: Handler.Callback? = null) = HandlerDelegateImpl_Impl.createWrapper(baseInstance)

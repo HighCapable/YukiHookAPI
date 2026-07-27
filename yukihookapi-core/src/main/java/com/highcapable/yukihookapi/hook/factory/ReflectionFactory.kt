@@ -29,6 +29,7 @@ package com.highcapable.yukihookapi.hook.factory
 import com.highcapable.yukihookapi.hook.bean.CurrentClass
 import com.highcapable.yukihookapi.hook.bean.GenericClass
 import com.highcapable.yukihookapi.hook.bean.VariousClass
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
@@ -41,7 +42,6 @@ import com.highcapable.yukihookapi.hook.core.finder.type.factory.ConstructorCond
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.FieldConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.MethodConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.type.java.AnyClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
@@ -71,24 +71,24 @@ import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KProperty
 
 /**
- * 定义一个 [Class] 中的 [Member] 类型
+ * Defines the [Member] type in a [Class].
  */
 enum class MembersType {
-    /** 全部 [Method] 与 [Constructor] */
+    /** All [Method] and [Constructor] instances. */
     ALL,
 
-    /** 全部 [Method] */
+    /** All [Method] instances. */
     METHOD,
 
-    /** 全部 [Constructor] */
+    /** All [Constructor] instances. */
     CONSTRUCTOR
 }
 
 /**
- * 懒装载 [Class] 实例
- * @param instance 当前实例
- * @param initialize 是否初始化
- * @param loader [ClassLoader] 装载实例
+ * Lazy loading [Class] instance.
+ * @param instance the current instance.
+ * @param initialize whether to initialize the class.
+ * @param loader the [ClassLoader] to load the class.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 open class LazyClass<T> internal constructor(
@@ -97,11 +97,11 @@ open class LazyClass<T> internal constructor(
     private val loader: ClassLoaderInitializer?,
 ) {
 
-    /** 当前实例 */
+    /** The current instance. */
     private var baseInstance: Class<T>? = null
 
     /**
-     * 获取非空实例
+     * Gets a non-null [Class] instance.
      * @return [Class]<[T]>
      */
     internal val nonNull get(): Class<T> {
@@ -114,8 +114,8 @@ open class LazyClass<T> internal constructor(
     }
 
     /**
-     * 获取可空实例
-     * @return [Class]<[T]> or null
+     * Gets a nullable [Class] instance.
+     * @return [Class]<[T]> or null.
      */
     internal val nullable get(): Class<T>? {
         if (baseInstance == null) baseInstance = when (instance) {
@@ -127,10 +127,10 @@ open class LazyClass<T> internal constructor(
     }
 
     /**
-     * 非空实例
-     * @param instance 当前实例
-     * @param initialize 是否初始化
-     * @param loader [ClassLoader] 装载实例
+     * Creates a non-null [Class] instance.
+     * @param instance the current instance.
+     * @param initialize whether to initialize the class.
+     * @param loader the [ClassLoader] to load the class.
      */
     class NonNull<T> internal constructor(
         instance: Any,
@@ -142,10 +142,10 @@ open class LazyClass<T> internal constructor(
     }
 
     /**
-     * 可空实例
-     * @param instance 当前实例
-     * @param initialize 是否初始化
-     * @param loader [ClassLoader] 装载实例
+     * Creates a nullable [Class] instance.
+     * @param instance the current instance.
+     * @param initialize whether to initialize the class.
+     * @param loader the [ClassLoader] to load the class.
      */
     class Nullable<T> internal constructor(
         instance: Any,
@@ -158,28 +158,28 @@ open class LazyClass<T> internal constructor(
 }
 
 /**
- * 写出当前 [ClassLoader] 下所有 [Class] 名称数组
+ * Lists the names of all [Class] instances under the current [ClassLoader].
  *
- * - 此方法在 [Class] 数量过多时会非常耗时
+ * - This function can be very time-consuming when there are too many [Class] instances.
  *
- * - 若要按指定规则查找一个 [Class] - 请使用 [searchClass] 方法
+ * - To find a [Class] by specified rules, use [searchClass].
  * @return [List]<[String]>
- * @throws IllegalStateException 如果当前 [ClassLoader] 不是 [BaseDexClassLoader]
+ * @throws IllegalStateException if the current [ClassLoader] is not a [BaseDexClassLoader].
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun ClassLoader.listOfClasses() = ReflectionTool.findDexClassList(loader = this)
 
 /**
- * 通过当前 [ClassLoader] 按指定条件查找并得到 Dex 中的 [Class]
+ * Finds [Class] instances in the Dex through the current [ClassLoader] using specified conditions.
  *
- * - 此方法在 [Class] 数量过多及查找条件复杂时会非常耗时
+ * - This function can be very time-consuming when there are too many [Class] instances or the lookup conditions are complex.
  *
- * - 建议启用 [async] 或设置 [name] 参数 - [name] 参数将在 Hook APP (宿主) 不同版本中自动进行本地缓存以提升效率
+ * - Enabling [async] or setting [name] is recommended. [name] automatically creates a local cache for different versions of the Hook APP (host) to improve efficiency.
  *
- * - 此功能尚在实验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
- * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存自动启用 [async]
- * @param async 是否启用异步 - 默认否
- * @param initiate 方法体
+ * - This feature is still experimental. Performance and stability issues may remain. Report any issues you encounter and help us improve it.
+ * @param name the name identifying the current [Class] cache. Caching is disabled when omitted. Enabling caching automatically enables [async].
+ * @param async whether asynchronous lookup is enabled, false by default.
+ * @param initiate the finder block.
  * @return [DexClassFinder.Result]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -187,31 +187,31 @@ inline fun ClassLoader.searchClass(name: String = "", async: Boolean = false, in
     DexClassFinder(name, async = async || name.isNotBlank(), loaderSet = this).apply(initiate).build()
 
 /**
- * 监听当前 [ClassLoader] 的 [ClassLoader.loadClass] 方法装载
+ * Listens for loading through [ClassLoader.loadClass] on the current [ClassLoader].
  *
- * - 请注意只有当前 [ClassLoader] 有主动使用 [ClassLoader.loadClass] 事件时才能被捕获
+ * - Events can only be captured when the current [ClassLoader] actively uses [ClassLoader.loadClass].
  *
- * - 这是一个实验性功能 - 一般情况下不会用到此方法 - 不保证不会发生错误
+ * - This is an experimental feature that is generally unnecessary. Errors may occur.
  *
- * - 只能在 (Xposed) 宿主环境使用此功能 - 其它环境下使用将不生效且会打印警告信息
- * @param result 回调 - ([Class] 实例对象)
+ * - This feature is available only in the (Xposed) host environment. It has no effect in other environments and prints a warning.
+ * @param result callback with the [Class] instance.
  */
 fun ClassLoader.onLoadClass(result: (Class<*>) -> Unit) = AppParasitics.hookClassLoader(loader = this, result)
 
 /**
- * 当前 [Class] 是否有继承关系 - 父类是 [Any] 将被认为没有继承关系
+ * Whether the current [Class] has an inheritance relationship. A parent class of [Any] is treated as no inheritance.
  * @return [Boolean]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val Class<*>.hasExtends get() = superclass != null && superclass != AnyClass
 
 /**
- * 当前 [Class] 是否继承于 [other]
+ * Whether the current [Class] inherits from [other].
  *
- * 如果当前 [Class] 就是 [other] 也会返回 true
+ * Returns true when the current [Class] is [other] itself.
  *
- * 如果当前 [Class] 为 null 或 [other] 为 null 会返回 false
- * @param other 需要判断的 [Class]
+ * Returns false when the current [Class] or [other] is null.
+ * @param other the [Class] to check.
  * @return [Boolean]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -220,8 +220,8 @@ infix fun Class<*>?.extends(other: Class<*>?): Boolean {
     var isMatched = false
 
     /**
-     * 查找是否存在父类
-     * @param current 当前 [Class]
+     * Finds whether a parent class exists.
+     * @param current the current [Class].
      */
     fun findSuperClass(current: Class<*>) {
         if (current == other)
@@ -233,27 +233,27 @@ infix fun Class<*>?.extends(other: Class<*>?): Boolean {
 }
 
 /**
- * 当前 [Class] 是否不继承于 [other]
+ * Whether the current [Class] does not inherit from [other].
  *
- * 此方法相当于 [extends] 的反向判断
- * @param other 需要判断的 [Class]
+ * This function is the inverse of [extends].
+ * @param other the [Class] to check.
  * @return [Boolean]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 infix fun Class<*>?.notExtends(other: Class<*>?) = extends(other).not()
 
 /**
- * 当前 [Class] 是否实现了 [other] 接口类
+ * Whether the current [Class] implements the [other] interface.
  *
- * 如果当前 [Class] 为 null 或 [other] 为 null 会返回 false
- * @param other 需要判断的 [Class]
+ * Returns false when the current [Class] or [other] is null.
+ * @param other the [Class] to check.
  * @return [Boolean]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 infix fun Class<*>?.implements(other: Class<*>?): Boolean {
     if (this == null || other == null) return false
     /**
-     * 获取当前 [Class] 实现的所有接口类
+     * Gets all interfaces implemented by the current [Class].
      * @return [Set]<[Class]>
      */
     fun Class<*>.findAllInterfaces(): Set<Class<*>> = mutableSetOf(*interfaces).apply { superclass?.also { addAll(it.findAllInterfaces()) } }
@@ -261,21 +261,21 @@ infix fun Class<*>?.implements(other: Class<*>?): Boolean {
 }
 
 /**
- * 当前 [Class] 是否未实现 [other] 接口类
+ * Whether the current [Class] does not implement the [other] interface.
  *
- * 此方法相当于 [implements] 的反向判断
- * @param other 需要判断的 [Class]
+ * This function is the inverse of [implements].
+ * @param other the [Class] to check.
  * @return [Boolean]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 infix fun Class<*>?.notImplements(other: Class<*>?) = implements(other).not()
 
 /**
- * 自动转换当前 [Class] 为 Java 原始类型 (Primitive Type)
+ * Converts the current [Class] to a Java primitive type automatically.
  *
- * 如果当前 [Class] 为 Java 或 Kotlin 基本类型将自动执行类型转换
+ * Type conversion is performed automatically when the current [Class] is a Java or Kotlin primitive type.
  *
- * 当前能够自动转换的基本类型如下 ↓
+ * The following primitive types can currently be converted automatically:
  *
  * - [kotlin.Unit]
  * - [java.lang.Void]
@@ -304,34 +304,34 @@ fun Class<*>.toJavaPrimitiveType() = when (this) {
 }
 
 /**
- * 通过字符串类名转换为 [loader] 中的实体类
+ * Converts a string class name to a concrete class in [loader].
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [toClass]
+ * - Migrate to [toClass].
  * @return [Class]
- * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+ * @throws NoClassDefFoundError if the [Class] cannot be found or an incorrect [ClassLoader] is set.
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith("name.toClass(loader)"))
+@Deprecated(message = "Use the new naming method", ReplaceWith("name.toClass(loader)"))
 fun classOf(name: String, loader: ClassLoader? = null) = name.toClass(loader)
 
 /**
- * 通过字符串类名转换为 [loader] 中的实体类
- * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * Converts a string class name to a concrete class in [loader].
+ * @param loader the [ClassLoader] containing the [Class]. The default [ClassLoader] is used when omitted.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
  * @return [Class]
- * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+ * @throws NoClassDefFoundError if the [Class] cannot be found or an incorrect [ClassLoader] is set.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun String.toClass(loader: ClassLoader? = null, initialize: Boolean = false) = ReflectionTool.findClassByName(name = this, loader, initialize)
 
 /**
- * 通过字符串类名转换为 [loader] 中的实体类
- * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
+ * Converts a string class name to a concrete class in [loader].
+ * @param loader the [ClassLoader] containing the [Class]. The default [ClassLoader] is used when omitted.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
  * @return [Class]<[T]>
- * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
- * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
+ * @throws NoClassDefFoundError if the [Class] cannot be found or an incorrect [ClassLoader] is set.
+ * @throws IllegalStateException if the [Class] type is not [T].
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName("toClass_Generics")
@@ -339,23 +339,23 @@ inline fun <reified T> String.toClass(loader: ClassLoader? = null, initialize: B
     ReflectionTool.findClassByName(name = this, loader, initialize) as? Class<T>? ?: error("Target Class type cannot cast to ${T::class.java}")
 
 /**
- * 通过字符串类名转换为 [loader] 中的实体类
+ * Converts a string class name to a concrete class in [loader].
  *
- * 找不到 [Class] 会返回 null - 不会抛出异常
- * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @return [Class] or null
+ * Returns null without throwing an exception when the [Class] cannot be found.
+ * @param loader the [ClassLoader] containing the [Class]. The default [ClassLoader] is used when omitted.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @return [Class] or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun String.toClassOrNull(loader: ClassLoader? = null, initialize: Boolean = false) = runCatching { toClass(loader, initialize) }.getOrNull()
 
 /**
- * 通过字符串类名转换为 [loader] 中的实体类
+ * Converts a string class name to a concrete class in [loader].
  *
- * 找不到 [Class] 会返回 null - 不会抛出异常
- * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 不填使用默认 [ClassLoader]
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @return [Class]<[T]> or null
+ * Returns null without throwing an exception when the [Class] cannot be found.
+ * @param loader the [ClassLoader] containing the [Class]. The default [ClassLoader] is used when omitted.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @return [Class]<[T]> or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName("toClassOrNull_Generics")
@@ -363,21 +363,21 @@ inline fun <reified T> String.toClassOrNull(loader: ClassLoader? = null, initial
     runCatching { toClass<T>(loader, initialize) }.getOrNull()
 
 /**
- * 通过 [T] 得到其 [Class] 实例并转换为实体类
- * @param loader [Class] 所在的 [ClassLoader] - 默认空 - 可不填
- * @param initialize 是否初始化 [Class] 的静态方法块 - 如果未设置 [loader] (为 null) 时将不会生效 - 默认否
+ * Gets the [Class] instance of [T] and converts it to a concrete class.
+ * @param loader the [ClassLoader] containing the [Class], optional.
+ * @param initialize whether to initialize the static block of the [Class]. This has no effect when [loader] is null. The default is false.
  * @return [Class]<[T]>
- * @throws NoClassDefFoundError 如果找不到 [Class] 或设置了错误的 [ClassLoader]
+ * @throws NoClassDefFoundError if the [Class] cannot be found or an incorrect [ClassLoader] is set.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun <reified T> classOf(loader: ClassLoader? = null, initialize: Boolean = false) =
     loader?.let { T::class.java.name.toClass(loader, initialize) as Class<T> } ?: T::class.java
 
 /**
- * 懒装载 [Class]
- * @param name 完整类名
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * Creates a lazily loaded non-null [Class] instance.
+ * @param name the fully qualified class name.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @param loader the [ClassLoader] to load the class. The default [ClassLoader] is used when omitted.
  * @return [LazyClass.NonNull]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -385,10 +385,10 @@ fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInit
     lazyClass<Any>(name, initialize, loader)
 
 /**
- * 懒装载 [Class]<[T]>
- * @param name 完整类名
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * Creates a lazily loaded non-null [Class] instance of type [T].
+ * @param name the fully qualified class name.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @param loader the [ClassLoader] to load the class. The default [ClassLoader] is used when omitted.
  * @return [LazyClass.NonNull]<[T]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -397,10 +397,10 @@ inline fun <reified T> lazyClass(name: String, initialize: Boolean = false, noin
     LazyClass.NonNull<T>(name, initialize, loader)
 
 /**
- * 懒装载 [Class]
- * @param variousClass [VariousClass]
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * Creates a lazily loaded non-null [Class] instance.
+ * @param variousClass [VariousClass].
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @param loader the [ClassLoader] to load the class. The default [ClassLoader] is used when omitted.
  * @return [LazyClass.NonNull]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -408,10 +408,10 @@ fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: C
     LazyClass.NonNull<Any>(variousClass, initialize, loader)
 
 /**
- * 懒装载 [Class]
- * @param name 完整类名
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * Creates a lazily loaded nullable [Class] instance.
+ * @param name the fully qualified class name.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @param loader the [ClassLoader] to load the class. The default [ClassLoader] is used when omitted.
  * @return [LazyClass.Nullable]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -419,10 +419,10 @@ fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoad
     lazyClassOrNull<Any>(name, initialize, loader)
 
 /**
- * 懒装载 [Class]<[T]>
- * @param name 完整类名
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * Creates a lazily loaded nullable [Class] instance of type [T].
+ * @param name the fully qualified class name.
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @param loader the [ClassLoader] to load the class. The default [ClassLoader] is used when omitted.
  * @return [LazyClass.Nullable]<[T]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -431,10 +431,10 @@ inline fun <reified T> lazyClassOrNull(name: String, initialize: Boolean = false
     LazyClass.Nullable<T>(name, initialize, loader)
 
 /**
- * 懒装载 [Class]
- * @param variousClass [VariousClass]
- * @param initialize 是否初始化 [Class] 的静态方法块 - 默认否
- * @param loader [ClassLoader] 装载实例 - 默认空 - 不填使用默认 [ClassLoader]
+ * Creates a lazily loaded nullable [Class] instance.
+ * @param variousClass [VariousClass].
+ * @param initialize whether to initialize the static block of the [Class], false by default.
+ * @param loader the [ClassLoader] to load the class. The default [ClassLoader] is used when omitted.
  * @return [LazyClass.Nullable]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -442,99 +442,99 @@ fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loa
     LazyClass.Nullable<Any>(variousClass, initialize, loader)
 
 /**
- * 通过字符串类名使用指定的 [ClassLoader] 查找是否存在
- * @param loader [Class] 所在的 [ClassLoader] - 不填使用默认 [ClassLoader]
- * @return [Boolean] 是否存在
+ * Checks whether a string class name exists using the specified [ClassLoader].
+ * @param loader the [ClassLoader] containing the [Class]. The default [ClassLoader] is used when omitted.
+ * @return [Boolean] whether the class exists.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun String.hasClass(loader: ClassLoader? = null) = ReflectionTool.hasClassByName(name = this, loader)
 
 /**
- * 查找变量是否存在
- * @param initiate 方法体
- * @return [Boolean] 是否存在
+ * Checks whether a field exists.
+ * @param initiate the finder block.
+ * @return [Boolean] whether the field exists.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasField(initiate: FieldConditions) = field(initiate).ignored().isNoSuch.not()
 
 /**
- * 查找方法是否存在
- * @param initiate 方法体
- * @return [Boolean] 是否存在
+ * Checks whether a method exists.
+ * @param initiate the finder block.
+ * @return [Boolean] whether the method exists.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasMethod(initiate: MethodConditions) = method(initiate).ignored().isNoSuch.not()
 
 /**
- * 查找构造方法是否存在
- * @param initiate 方法体
- * @return [Boolean] 是否存在
+ * Checks whether a constructor exists.
+ * @param initiate the finder block.
+ * @return [Boolean] whether the constructor exists.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasConstructor(initiate: ConstructorConditions = { emptyParam() }) = constructor(initiate).ignored().isNoSuch.not()
 
 /**
- * 查找 [Member] 中匹配的描述符
- * @param conditions 条件方法体
- * @return [Boolean] 是否存在
+ * Checks whether a matching modifier exists in the [Member].
+ * @param conditions the condition block.
+ * @return [Boolean] whether a matching modifier exists.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Member.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(instance = this))
 
 /**
- * 查找 [Class] 中匹配的描述符
- * @param conditions 条件方法体
- * @return [Boolean] 是否存在
+ * Checks whether a matching modifier exists in the [Class].
+ * @param conditions the condition block.
+ * @return [Boolean] whether a matching modifier exists.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.hasModifiers(conditions: ModifierConditions) = conditions(ModifierRules.with(instance = this))
 
 /**
- * 查找并得到变量
- * @param initiate 查找方法体
+ * Finds and gets a field.
+ * @param initiate the finder block.
  * @return [FieldFinder.Result]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.field(initiate: FieldConditions = {}) = FieldFinder(classSet = this).apply(initiate).build()
 
 /**
- * 查找并得到方法
- * @param initiate 查找方法体
+ * Finds and gets a method.
+ * @param initiate the finder block.
  * @return [MethodFinder.Result]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.method(initiate: MethodConditions = {}) = MethodFinder(classSet = this).apply(initiate).build()
 
 /**
- * 查找并得到构造方法
- * @param initiate 查找方法体
+ * Finds and gets a constructor.
+ * @param initiate the finder block.
  * @return [ConstructorFinder.Result]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.constructor(initiate: ConstructorConditions = {}) = ConstructorFinder(classSet = this).apply(initiate).build()
 
 /**
- * 获得当前 [Class] 的泛型父类
+ * Gets the generic superclass of the current [Class].
  *
- * 如果当前实例不存在泛型将返回 null
- * @return [GenericClass] or null
+ * Returns null when the current instance has no generic type.
+ * @return [GenericClass] or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun Class<*>.generic() = genericSuperclass?.let { (it as? ParameterizedType?)?.let { e -> GenericClass(e) } }
 
 /**
- * 获得当前 [Class] 的泛型父类
+ * Gets the generic superclass of the current [Class].
  *
- * 如果当前实例不存在泛型将返回 null
- * @param initiate 实例方法体
- * @return [GenericClass] or null
+ * Returns null when the current instance has no generic type.
+ * @param initiate the instance block.
+ * @return [GenericClass] or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.generic(initiate: GenericClass.() -> Unit) = generic()?.apply(initiate)
 
 /**
- * 获得当前实例的类操作对象
- * @param ignored 是否开启忽略错误警告功能 - 默认否
+ * Gets the class operation object for the current instance.
+ * @param ignored whether to suppress error warnings, false by default.
  * @return [CurrentClass]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -542,9 +542,9 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false) =
     CurrentClass(javaClass, instance = this).apply { isIgnoreErrorLogs = ignored }
 
 /**
- * 获得当前实例的类操作对象
- * @param ignored 是否开启忽略错误警告功能 - 默认否
- * @param initiate 方法体
+ * Gets the class operation object for the current instance.
+ * @param ignored whether to suppress error warnings, false by default.
+ * @param initiate the operation block.
  * @return [T]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -554,31 +554,31 @@ inline fun <reified T : Any> T.current(ignored: Boolean = false, initiate: Curre
 }
 
 /**
- * 通过构造方法创建新实例 - 任意类型 [Any]
+ * Creates a new instance of any type [Any] through a constructor.
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [buildOf]
- * @return [Any] or null
+ * - Migrate to [buildOf].
+ * @return [Any] or null.
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith("buildOf(*param, initiate)"))
+@Deprecated(message = "Use the new naming method", ReplaceWith("buildOf(*param, initiate)"))
 fun Class<*>.buildOfAny(vararg args: Any?, initiate: ConstructorConditions = { emptyParam() }) = buildOf(*args, initiate)
 
 /**
- * 通过构造方法创建新实例 - 任意类型 [Any]
- * @param args 方法参数
- * @param initiate 查找方法体
- * @return [Any] or null
+ * Creates a new instance of any type [Any] through a constructor.
+ * @param args the constructor arguments.
+ * @param initiate the finder block.
+ * @return [Any] or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditions = { emptyParam() }) =
     constructor(initiate).get().call(*args)
 
 /**
- * 通过构造方法创建新实例 - 指定类型 [T]
- * @param args 方法参数
- * @param initiate 查找方法体
- * @return [T] or null
+ * Creates a new instance of type [T] through a constructor.
+ * @param args the constructor arguments.
+ * @param initiate the finder block.
+ * @return [T] or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 @JvmName(name = "buildOf_Generics")
@@ -586,27 +586,27 @@ inline fun <T> Class<*>.buildOf(vararg args: Any?, initiate: ConstructorConditio
     constructor(initiate).get().newInstance<T>(*args)
 
 /**
- * 遍历当前类中的所有方法
- * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
- * @param result 回调 - ([Int] 下标,[Method] 实例)
+ * Iterates over all methods in the current class.
+ * @param isAccessible whether to force members to be accessible, true by default.
+ * @param result callback with the [Int] index and [Method] instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.allMethods(isAccessible: Boolean = true, result: (index: Int, method: Method) -> Unit) =
     declaredMethods.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
 
 /**
- * 遍历当前类中的所有构造方法
- * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
- * @param result 回调 - ([Int] 下标,[Constructor] 实例)
+ * Iterates over all constructors in the current class.
+ * @param isAccessible whether to force members to be accessible, true by default.
+ * @param result callback with the [Int] index and [Constructor] instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.allConstructors(isAccessible: Boolean = true, result: (index: Int, constructor: Constructor<*>) -> Unit) =
     declaredConstructors.forEachIndexed { p, it -> result(p, it.also { e -> e.isAccessible = isAccessible }) }
 
 /**
- * 遍历当前类中的所有变量
- * @param isAccessible 是否强制设置成员为可访问类型 - 默认是
- * @param result 回调 - ([Int] 下标,[Field] 实例)
+ * Iterates over all fields in the current class.
+ * @param isAccessible whether to force members to be accessible, true by default.
+ * @param result callback with the [Int] index and [Field] instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 inline fun Class<*>.allFields(isAccessible: Boolean = true, result: (index: Int, field: Field) -> Unit) =

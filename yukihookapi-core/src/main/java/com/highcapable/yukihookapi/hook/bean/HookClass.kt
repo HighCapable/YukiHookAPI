@@ -24,10 +24,10 @@ package com.highcapable.yukihookapi.hook.bean
 import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
 
 /**
- * 创建一个当前 Hook 的 [Class] 接管类
- * @param instance 实例
- * @param name 完整名称
- * @param throwable 异常
+ * Holds the [Class] associated with the current Hook.
+ * @param instance the class instance.
+ * @param name the fully qualified name.
+ * @param throwable the resolution error.
  */
 @LegacyHookApi
 class HookClass internal constructor(
@@ -38,18 +38,18 @@ class HookClass internal constructor(
 
     internal companion object {
 
-        /** 占位符 [Class] 名称 */
+        /** Placeholder [Class] name. */
         private const val PLACEHOLDER_CLASS_NAME = "placeholder_hook_class"
 
         /**
-         * 创建占位符 [HookClass]
+         * Creates a placeholder [HookClass].
          * @return [HookClass]
          */
         internal fun createPlaceholder() = HookClass(name = PLACEHOLDER_CLASS_NAME, throwable = Throwable("There is no hook class instance"))
     }
 
     /**
-     * 是否为占位符 [HookClass]
+     * Gets whether this is a placeholder [HookClass].
      * @return [Boolean]
      */
     internal val isPlaceholder get() = name == PLACEHOLDER_CLASS_NAME

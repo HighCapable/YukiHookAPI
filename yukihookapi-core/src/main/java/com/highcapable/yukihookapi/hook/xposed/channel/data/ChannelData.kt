@@ -25,10 +25,10 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import java.io.Serializable
 
 /**
- * 数据通讯桥键值构造类
+ * Defines a typed key-value entry for the data channel.
  *
- * 这个类是对 [YukiHookDataChannel] 的一个扩展用法
- * @param key 键值
- * @param value 键值数据 - 作为接收数据时可空
+ * This class provides an extended usage pattern for [YukiHookDataChannel].
+ * @param key the channel key.
+ * @param value the channel value, which may be null when receiving data.
  */
 data class ChannelData<T>(var key: String, var value: T? = null) : Serializable

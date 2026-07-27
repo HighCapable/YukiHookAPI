@@ -30,13 +30,13 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import dalvik.system.PathClassLoader
 
 /**
- * 用于包装 [PackageParam]
- * @param type 当前正在进行的 Hook 类型
- * @param packageName 包名
- * @param processName 当前进程名
- * @param appClassLoader APP [ClassLoader]
- * @param appInfo APP [ApplicationInfo]
- * @param appResources APP [YukiResources]
+ * Wraps [PackageParam] state for the current Hook entry.
+ * @param type the current Hook entry type.
+ * @param packageName the package name.
+ * @param processName the current process name.
+ * @param appClassLoader app [ClassLoader].
+ * @param appInfo app [ApplicationInfo].
+ * @param appResources app [YukiResources].
  */
 internal class PackageParamWrapper internal constructor(
     var type: HookEntryType,
@@ -48,18 +48,18 @@ internal class PackageParamWrapper internal constructor(
 ) {
 
     /**
-     * 获取当前包装实例的名称 ID
+     * Gets the name ID of the current wrapper.
      * @return [String]
      */
     internal val wrapperNameId get() = if (type == HookEntryType.ZYGOTE) "android-zygote" else packageName
 
     /**
-     * 获取当前正在进行的 Hook 进程是否正确
+     * Gets whether the current Hook process uses the expected [ClassLoader].
      *
-     * 此功能为修复在 Hook 系统框架、系统 APP 等情况时会出现 [ClassLoader] 不匹配的问题
+     * This prevents [ClassLoader] mismatches while hooking the system framework or system apps.
      *
-     * 如果 [type] 不是 [HookEntryType.ZYGOTE] 那么 [appClassLoader] 就应该得到 [PathClassLoader]
-     * @return [Boolean] 是否正确
+     * When [type] is not [HookEntryType.ZYGOTE], [appClassLoader] must be a [PathClassLoader].
+     * @return [Boolean] whether the process configuration is valid.
      */
     internal val isCorrectProcess get() = type == HookEntryType.ZYGOTE || (type != HookEntryType.ZYGOTE && appClassLoader is PathClassLoader)
 

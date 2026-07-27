@@ -29,46 +29,46 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResou
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 /**
- * 实现对原生 Xposed API 的装载事件监听
+ * Registers listeners for native Xposed API loading events.
  */
 object YukiXposedEvent {
 
-    /** 监听 initZygote 开始的回调方法 */
+    /** Callback invoked when `initZygote` starts. */
     internal var initZygoteCallback: ((StartupParam) -> Unit)? = null
 
-    /** 监听 handleLoadPackage 开始的回调方法 */
+    /** Callback invoked when `handleLoadPackage` starts. */
     internal var handleLoadPackageCallback: ((LoadPackageParam) -> Unit)? = null
 
-    /** 监听 handleInitPackageResources 开始的回调方法 */
+    /** Callback invoked when `handleInitPackageResources` starts. */
     internal var handleInitPackageResourcesCallback: ((InitPackageResourcesParam) -> Unit)? = null
 
     /**
-     * 对 [YukiXposedEvent] 创建一个方法体
-     * @param initiate 方法体
+     * Configures [YukiXposedEvent].
+     * @param initiate the configuration block.
      */
     inline fun events(initiate: YukiXposedEvent.() -> Unit) {
         YukiXposedEvent.apply(initiate)
     }
 
     /**
-     * 设置 initZygote 事件监听
-     * @param result 回调方法体
+     * Sets the `initZygote` event listener.
+     * @param result the event callback.
      */
     fun onInitZygote(result: (StartupParam) -> Unit) {
         initZygoteCallback = result
     }
 
     /**
-     * 设置 handleLoadPackage 事件监听
-     * @param result 回调方法体
+     * Sets the `handleLoadPackage` event listener.
+     * @param result the event callback.
      */
     fun onHandleLoadPackage(result: (LoadPackageParam) -> Unit) {
         handleLoadPackageCallback = result
     }
 
     /**
-     * 设置 handleInitPackageResources 事件监听
-     * @param result 回调方法体
+     * Sets the `handleInitPackageResources` event listener.
+     * @param result the event callback.
      */
     fun onHandleInitPackageResources(result: (InitPackageResourcesParam) -> Unit) {
         handleInitPackageResourcesCallback = result

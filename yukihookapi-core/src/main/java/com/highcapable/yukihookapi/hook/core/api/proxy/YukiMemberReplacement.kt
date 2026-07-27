@@ -25,8 +25,8 @@ package com.highcapable.yukihookapi.hook.core.api.proxy
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 
 /**
- * Hook 替换方法回调接口抽象类
- * @param priority Hook 优先级- 默认 [YukiHookPriority.DEFAULT]
+ * Base callback for replacing the result of a hooked member.
+ * @param priority the Hook priority, defaults to [YukiHookPriority.DEFAULT].
  */
 internal abstract class YukiMemberReplacement(override val priority: YukiHookPriority = YukiHookPriority.DEFAULT) : YukiMemberHook(priority) {
 
@@ -37,9 +37,9 @@ internal abstract class YukiMemberReplacement(override val priority: YukiHookPri
     override fun afterHookedMember(param: Param) {}
 
     /**
-     * 拦截替换为指定结果
-     * @param param Hook 结果回调接口
-     * @return [Any] or null
+     * Replaces the hooked member invocation with a specified result.
+     * @param param the Hook callback parameters.
+     * @return [Any] or null.
      */
     abstract fun replaceHookedMember(param: Param): Any?
 }

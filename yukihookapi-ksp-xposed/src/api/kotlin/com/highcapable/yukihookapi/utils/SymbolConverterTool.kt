@@ -22,11 +22,11 @@
 package com.highcapable.yukihookapi.utils
 
 /**
- * 符号转换工具
+ * Converts symbols into valid Kotlin identifiers.
  */
 object SymbolConverterTool {
 
-    /** Kotlin 关键字列表 */
+    /** Kotlin hard keywords. */
     private val kotlinHardKeywords = listOf(
         "as", "as?", "break", "class", "continue", "do",
         "else", "false", "for", "fun", "if", "in", "!in", "interface",
@@ -36,8 +36,8 @@ object SymbolConverterTool {
     )
 
     /**
-     * 处理需要转换的内容
-     * @param content 内容
+     * Converts the given content when necessary.
+     * @param content the content to convert.
      * @return [String]
      */
     fun process(content: String) = when {
@@ -48,8 +48,8 @@ object SymbolConverterTool {
     }
 
     /**
-     * 是否为 Kotlin 关键字
-     * @param word 关键字
+     * Checks whether the given word is a Kotlin hard keyword.
+     * @param word the word to check.
      * @return [Boolean]
      */
     private fun isKotlinKeyword(word: String) = kotlinHardKeywords.contains(word)

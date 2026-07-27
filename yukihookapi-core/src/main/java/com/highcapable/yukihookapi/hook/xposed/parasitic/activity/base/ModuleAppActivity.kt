@@ -29,13 +29,13 @@ import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
 
 /**
- * 代理 [Activity]
+ * Proxies [Activity] for use in a host app.
  *
- * - 由于超类继承者的不唯一性 - 此类已弃用 - 在之后的版本中将直接被删除
+ * - This class is deprecated because an activity may need a different superclass and will be removed in a future release.
  *
- * - 请现在参考并迁移到 [ModuleActivity]
+ * - Migrate to [ModuleActivity].
  */
-@Deprecated(message = "请使用新方式来实现此功能")
+@Deprecated(message = "Use ModuleActivity to implement this feature")
 open class ModuleAppActivity : Activity(), ModuleActivity {
 
     override fun getClassLoader() = delegate.getClassLoader()

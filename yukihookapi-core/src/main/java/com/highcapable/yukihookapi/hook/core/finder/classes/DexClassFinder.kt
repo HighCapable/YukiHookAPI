@@ -31,6 +31,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import androidx.core.content.pm.PackageInfoCompat
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.base.ClassBaseFinder
 import com.highcapable.yukihookapi.hook.core.finder.classes.data.ClassRulesData
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.ConstructorRules
@@ -42,7 +43,6 @@ import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberR
 import com.highcapable.yukihookapi.hook.core.finder.tools.ReflectionTool
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.hasClass
 import com.highcapable.yukihookapi.hook.factory.searchClass
 import com.highcapable.yukihookapi.hook.factory.toClass
@@ -58,14 +58,14 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * [Class] 查找类
+ * [Class] finder.
  *
- * 可使用 [BaseDexClassLoader] 通过指定条件查找指定 [Class] 或一组 [Class]
+ * Uses [BaseDexClassLoader] to find a specified [Class] or group of [Class] instances by specified conditions.
  *
- * - 此功能尚在实验阶段 - 性能与稳定性可能仍然存在问题 - 使用过程遇到问题请向我们报告并帮助我们改进
- * @param name 标识当前 [Class] 缓存的名称 - 不设置将不启用缓存 - 启用缓存必须启用 [async]
- * @param async 是否启用异步
- * @param loaderSet 当前使用的 [ClassLoader] 实例
+ * - This feature is still experimental. Performance and stability issues may remain. Report any issues you encounter and help us improve it.
+ * @param name the name identifying the current [Class] cache. Caching is disabled when omitted. Enabling caching requires [async].
+ * @param async whether asynchronous lookup is enabled.
+ * @param loaderSet the current [ClassLoader] instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class DexClassFinder internal constructor(
@@ -76,19 +76,19 @@ class DexClassFinder internal constructor(
 
     companion object {
 
-        /** 缓存的存储文件名 */
+        /** Cache storage file name. */
         private const val CACHE_FILE_NAME = "config_yukihook_cache_obfuscate_classes"
 
         /**
-         * 获取当前运行环境的 [Context]
-         * @return [Context] or null
+         * Gets the [Context] of the current runtime environment.
+         * @return [Context] or null.
          */
         private val currentContext get() = AppParasitics.hostApplication ?: AppParasitics.currentApplication
 
         /**
-         * 通过 [Context] 获取当前 [SharedPreferences]
-         * @param versionName 版本名称 - 默认空
-         * @param versionCode 版本号 - 默认空
+         * Gets the current [SharedPreferences] from [Context].
+         * @param versionName the version name. The default is null.
+         * @param versionCode the version code. The default is null.
          * @return [SharedPreferences]
          */
         private fun Context.currentSp(versionName: String? = null, versionCode: Long? = null) =
@@ -99,12 +99,12 @@ class DexClassFinder internal constructor(
                 Context.MODE_PRIVATE)
 
         /**
-         * 清除当前 [DexClassFinder] 的 [Class] 缓存
+         * Clears the [Class] cache of the current [DexClassFinder].
          *
-         * 适用于全部通过 [ClassLoader.searchClass] or [PackageParam.searchClass] 获取的 [DexClassFinder]
-         * @param context 当前 [Context] - 不填默认获取 [currentContext]
-         * @param versionName 版本名称 - 默认空
-         * @param versionCode 版本号 - 默认空
+         * Applies to every [DexClassFinder] obtained through [ClassLoader.searchClass] or [PackageParam.searchClass].
+         * @param context the current [Context]. The default is [currentContext].
+         * @param versionName the version name. The default is null.
+         * @param versionCode the version code. The default is null.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun clearCache(context: Context? = currentContext, versionName: String? = null, versionCode: Long? = null) {
@@ -116,11 +116,11 @@ class DexClassFinder internal constructor(
     override var rulesData = ClassRulesData()
 
     /**
-     * 设置 [Class] 完整名称
+     * Sets the full name of the [Class].
      *
-     * 只会查找匹配到的 [Class.getName]
+     * Only matching [Class.getName] values are found.
      *
-     * 例如 com.demo.Test 需要填写 com.demo.Test
+     * For example, use com.demo.Test for com.demo.Test.
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -131,13 +131,13 @@ class DexClassFinder internal constructor(
         }
 
     /**
-     * 设置 [Class] 简单名称
+     * Sets the simple name of the [Class].
      *
-     * 只会查找匹配到的 [Class.getSimpleName]
+     * Only matching [Class.getSimpleName] values are found.
      *
-     * 例如 com.demo.Test 只需要填写 Test
+     * For example, use Test for com.demo.Test.
      *
-     * 对于匿名类例如 com.demo.Test$InnerTest 会为空 - 此时你可以使用 [singleName]
+     * An anonymous class such as com.demo.Test$InnerTest has an empty simple name. Use [singleName] in this case.
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -148,13 +148,13 @@ class DexClassFinder internal constructor(
         }
 
     /**
-     * 设置 [Class] 独立名称
+     * Sets the standalone name of the [Class].
      *
-     * 设置后将首先使用 [Class.getSimpleName] - 若为空则会使用 [Class.getName] 进行处理
+     * [Class.getSimpleName] is used first. If it is empty, [Class.getName] is used instead.
      *
-     * 例如 com.demo.Test 只需要填写 Test
+     * For example, use Test for com.demo.Test.
      *
-     * 对于匿名类例如 com.demo.Test$InnerTest 只需要填写 Test$InnerTest
+     * For an anonymous class such as com.demo.Test$InnerTest, use Test$InnerTest.
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -165,19 +165,19 @@ class DexClassFinder internal constructor(
         }
 
     /**
-     * 设置在指定包名范围查找当前 [Class]
+     * Limits lookup of the current [Class] to specified package names.
      *
-     * 设置后仅会在当前 [name] 开头匹配的包名路径下进行查找 - 可提升查找速度
+     * After this is set, lookup only occurs under package paths beginning with the current [name], which can improve lookup speed.
      *
-     * 例如 ↓
+     * For example:
      *
      * com.demo.test
      *
      * com.demo.test.demo
      *
-     * - 建议设置此参数指定查找范围 - 否则 [Class] 过多时将会非常慢
-     * @param name 指定包名
-     * @return [FromPackageRules] 可设置 [FromPackageRules.absolute] 标识包名绝对匹配
+     * - Setting this parameter to specify the lookup scope is recommended, otherwise lookup may be very slow when there are too many [Class] instances.
+     * @param name the package names to specify.
+     * @return [FromPackageRules] that can use [FromPackageRules.absolute] to require an exact package name match.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun from(vararg name: String) = FromPackageRules(mutableListOf<ClassRulesData.PackageRulesData>().also {
@@ -186,10 +186,10 @@ class DexClassFinder internal constructor(
     })
 
     /**
-     * 设置 [Class] 标识符筛选条件
+     * Sets the modifier filtering conditions for the [Class].
      *
-     * - 可不设置筛选条件
-     * @param conditions 条件方法体
+     * - The filtering conditions are optional.
+     * @param conditions the condition body.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
@@ -197,13 +197,13 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 完整名称
+     * Sets the full name of the [Class].
      *
-     * 只会查找匹配到的 [Class.getName]
+     * Only matching [Class.getName] values are found.
      *
-     * 例如 com.demo.Test 需要填写 com.demo.Test
-     * @param value 名称
-     * @return [ClassNameRules] 可设置 [ClassNameRules.optional] 标识类名可选
+     * For example, use com.demo.Test for com.demo.Test.
+     * @param value the name.
+     * @return [ClassNameRules] that can use [ClassNameRules.optional] to mark the class name as optional.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun fullName(value: String) = rulesData.createNameRulesData(value).let {
@@ -212,15 +212,15 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 简单名称
+     * Sets the simple name of the [Class].
      *
-     * 只会查找匹配到的 [Class.getSimpleName]
+     * Only matching [Class.getSimpleName] values are found.
      *
-     * 例如 com.demo.Test 只需要填写 Test
+     * For example, use Test for com.demo.Test.
      *
-     * 对于匿名类例如 com.demo.Test$InnerTest 会为空 - 此时你可以使用 [singleName]
-     * @param value 名称
-     * @return [ClassNameRules] 可设置 [ClassNameRules.optional] 标识类名可选
+     * An anonymous class such as com.demo.Test$InnerTest has an empty simple name. Use [singleName] in this case.
+     * @param value the name.
+     * @return [ClassNameRules] that can use [ClassNameRules.optional] to mark the class name as optional.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun simpleName(value: String) = rulesData.createNameRulesData(value).let {
@@ -229,15 +229,15 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 独立名称
+     * Sets the standalone name of the [Class].
      *
-     * 设置后将首先使用 [Class.getSimpleName] - 若为空则会使用 [Class.getName] 进行处理
+     * [Class.getSimpleName] is used first. If it is empty, [Class.getName] is used instead.
      *
-     * 例如 com.demo.Test 只需要填写 Test
+     * For example, use Test for com.demo.Test.
      *
-     * 对于匿名类例如 com.demo.Test$InnerTest 只需要填写 Test$InnerTest
-     * @param value 名称
-     * @return [ClassNameRules] 可设置 [ClassNameRules.optional] 标识类名可选
+     * For an anonymous class such as com.demo.Test$InnerTest, use Test$InnerTest.
+     * @param value the name.
+     * @return [ClassNameRules] that can use [ClassNameRules.optional] to mark the class name as optional.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun singleName(value: String) = rulesData.createNameRulesData(value).let {
@@ -246,10 +246,10 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 完整名称条件
+     * Sets the full-name condition for the [Class].
      *
-     * 只会查找匹配到的 [Class.getName]
-     * @param conditions 条件方法体
+     * Only matching [Class.getName] values are found.
+     * @param conditions the condition body.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun fullName(conditions: NameConditions) {
@@ -257,10 +257,10 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 简单名称条件
+     * Sets the simple-name condition for the [Class].
      *
-     * 只会查找匹配到的 [Class.getSimpleName]
-     * @param conditions 条件方法体
+     * Only matching [Class.getSimpleName] values are found.
+     * @param conditions the condition body.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun simpleName(conditions: NameConditions) {
@@ -268,44 +268,44 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 独立名称条件
+     * Sets the standalone-name condition for the [Class].
      *
-     * 设置后将首先使用 [Class.getSimpleName] - 若为空则会使用 [Class.getName] 进行处理
-     * @param conditions 条件方法体
+     * [Class.getSimpleName] is used first. If it is empty, [Class.getName] is used instead.
+     * @param conditions the condition body.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun singleName(conditions: NameConditions) {
         rulesData.singleNameConditions = conditions
     }
 
-    /** 设置 [Class] 继承的父类 */
+    /** Sets the parent class inherited by the [Class]. */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun <reified T> extends() {
         rulesData.extendsClass.add(T::class.java.name)
     }
 
     /**
-     * 设置 [Class] 继承的父类
+     * Sets the parent classes inherited by the [Class].
      *
-     * 会同时查找 [name] 中所有匹配的父类
-     * @param name [Class] 完整名称
+     * Finds all matching parent classes in [name].
+     * @param name the full [Class] names.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun extends(vararg name: String) {
         rulesData.extendsClass.addAll(name.toList())
     }
 
-    /** 设置 [Class] 实现的接口类 */
+    /** Sets the interface implemented by the [Class]. */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun <reified T> implements() {
         rulesData.implementsClass.add(T::class.java.name)
     }
 
     /**
-     * 设置 [Class] 实现的接口类
+     * Sets the interfaces implemented by the [Class].
      *
-     * 会同时查找 [name] 中所有匹配的接口类
-     * @param name [Class] 完整名称
+     * Finds all matching interfaces in [name].
+     * @param name the full [Class] names.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun implements(vararg name: String) {
@@ -313,11 +313,11 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 标识 [Class] 为匿名类
+     * Marks the [Class] as anonymous.
      *
-     * 例如 com.demo.Test$1 或 com.demo.Test$InnerTest
+     * For example, com.demo.Test$1 or com.demo.Test$InnerTest.
      *
-     * 标识后你可以使用 [enclosing] 来进一步指定匿名类的 (封闭类) 主类
+     * After marking it, use [enclosing] to further specify the enclosing class of the anonymous class.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun anonymous() {
@@ -325,11 +325,11 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 没有任何继承
+     * Sets the [Class] to have no inheritance.
      *
-     * 此时 [Class] 只应该继承于 [Any]
+     * The [Class] should only inherit from [Any] in this case.
      *
-     * - 设置此条件后 [extends] 将失效
+     * - [extends] becomes ineffective after this condition is set.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun noExtends() {
@@ -337,9 +337,9 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 没有任何接口
+     * Sets the [Class] to have no interfaces.
      *
-     * - 设置此条件后 [implements] 将失效
+     * - [implements] becomes ineffective after this condition is set.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun noImplements() {
@@ -347,11 +347,11 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 没有任何继承与接口
+     * Sets the [Class] to have no inheritance or interfaces.
      *
-     * 此时 [Class] 只应该继承于 [Any]
+     * The [Class] should only inherit from [Any] in this case.
      *
-     * - 设置此条件后 [extends] 与 [implements] 将失效
+     * - [extends] and [implements] become ineffective after this condition is set.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun noSuper() {
@@ -359,17 +359,17 @@ class DexClassFinder internal constructor(
         noImplements()
     }
 
-    /** 设置 [Class] 匿名类的 (封闭类) 主类 */
+    /** Sets the enclosing class of the anonymous [Class]. */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun <reified T> enclosing() {
         rulesData.enclosingClass.add(T::class.java.name)
     }
 
     /**
-     * 设置 [Class] 匿名类的 (封闭类) 主类
+     * Sets the enclosing class of the anonymous [Class].
      *
-     * 会同时查找 [name] 中所有匹配的 (封闭类) 主类
-     * @param name [Class] 完整名称
+     * Finds all matching enclosing classes in [name].
+     * @param name the full [Class] names.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun enclosing(vararg name: String) {
@@ -377,16 +377,16 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 包名范围名称过滤匹配条件实现类
-     * @param packages 包名数组
+     * Package name scope filtering condition implementation.
+     * @param packages the package name list.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class FromPackageRules internal constructor(private val packages: MutableList<ClassRulesData.PackageRulesData>) {
 
         /**
-         * 设置包名绝对匹配
+         * Enables exact package name matching.
          *
-         * 例如有如下包名 ↓
+         * For example, given the following package names:
          *
          * com.demo.test.a
          *
@@ -394,35 +394,35 @@ class DexClassFinder internal constructor(
          *
          * com.demo.test.active
          *
-         * 若包名条件为 "com.demo.test.a" 则绝对匹配仅能匹配到第一个
+         * If the package name condition is "com.demo.test.a", exact matching only matches the first one.
          *
-         * 相反地 - 不设置以上示例会全部匹配
+         * Without exact matching, all examples above are matched.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun absolute() = packages.takeIf { it.isNotEmpty() }?.forEach { it.isAbsolute = true }
     }
 
     /**
-     * 类名匹配条件实现类
-     * @param name 类名匹配实例
+     * Class name matching condition implementation.
+     * @param name the class name matching instance.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class ClassNameRules internal constructor(private val name: ClassRulesData.NameRulesData) {
 
         /**
-         * 设置类名可选
+         * Marks the class name as optional.
          *
-         * 例如有如下类名 ↓
+         * For example, given the following class names:
          *
          * com.demo.Test (fullName) / Test (simpleName)
          *
          * defpackage.a (fullName) / a (simpleName)
          *
-         * 这两个类名都是同一个类 - 但是在有些版本中被混淆有些版本没有
+         * These two names refer to the same class, but it is obfuscated in some versions and not in others.
          *
-         * 此时可设置类名为 "com.demo.Test" (fullName) / "Test" (simpleName)
+         * In this case, set the class name to "com.demo.Test" (fullName) or "Test" (simpleName).
          *
-         * 这样就可在完全匹配类名情况下使用类名而忽略其它查找条件 - 否则忽略此条件继续使用其它查找条件
+         * This uses the class name and ignores other lookup conditions when the name matches exactly. Otherwise, this condition is ignored and the other lookup conditions continue to be used.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun optional() {
@@ -431,46 +431,46 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置 [Class] 满足的 [Member] 条件
-     * @param initiate 条件方法体
+     * Sets a [Member] condition that the [Class] must satisfy.
+     * @param initiate the condition body.
      * @return [MemberRulesResult]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun member(initiate: MemberRules.() -> Unit = {}) = BaseRules.createMemberRules(this).apply(initiate).build()
 
     /**
-     * 设置 [Class] 满足的 [Field] 条件
-     * @param initiate 条件方法体
+     * Sets a [Field] condition that the [Class] must satisfy.
+     * @param initiate the condition body.
      * @return [MemberRulesResult]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun field(initiate: FieldRules.() -> Unit = {}) = BaseRules.createFieldRules(this).apply(initiate).build()
 
     /**
-     * 设置 [Class] 满足的 [Method] 条件
-     * @param initiate 条件方法体
+     * Sets a [Method] condition that the [Class] must satisfy.
+     * @param initiate the condition body.
      * @return [MemberRulesResult]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun method(initiate: MethodRules.() -> Unit = {}) = BaseRules.createMethodRules(this).apply(initiate).build()
 
     /**
-     * 设置 [Class] 满足的 [Constructor] 条件
-     * @param initiate 查找方法体
+     * Sets a [Constructor] condition that the [Class] must satisfy.
+     * @param initiate the lookup body.
      * @return [MemberRulesResult]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inline fun constructor(initiate: ConstructorRules.() -> Unit = {}) = BaseRules.createConstructorRules(this).apply(initiate).build()
 
     /**
-     * 得到 [Class] 或一组 [Class]
+     * Gets a [Class] or group of [Class] instances.
      * @return [MutableList]<[Class]>
-     * @throws NoClassDefFoundError 如果找不到 [Class]
+     * @throws NoClassDefFoundError if no [Class] can be found.
      */
     private val result get() = ReflectionTool.findClasses(loaderSet, rulesData)
 
     /**
-     * 从本地缓存读取 [Class] 数据
+     * Reads [Class] data from the local cache.
      * @return [MutableList]<[Class]>
      */
     private fun readFromCache(): MutableList<Class<*>> =
@@ -482,8 +482,8 @@ class DexClassFinder internal constructor(
         } ?: let { SystemClock.sleep(1); readFromCache() } else mutableListOf()
 
     /**
-     * 将当前 [Class] 数组名称保存到本地缓存
-     * @throws IllegalStateException 如果当前包名为 "android"
+     * Saves the names of the current [Class] list to the local cache.
+     * @throws IllegalStateException if the current package name is "android".
      */
     private fun MutableList<Class<*>>.saveToCache() {
         if (name.isNotBlank() && isNotEmpty()) mutableSetOf<String>().also { names ->
@@ -496,8 +496,8 @@ class DexClassFinder internal constructor(
     }
 
     /**
-     * 设置实例
-     * @param classes 当前找到的 [Class] 数组
+     * Sets the instances.
+     * @param classes the currently found [Class] list.
      */
     private fun setInstance(classes: MutableList<Class<*>>) {
         classInstances.clear()
@@ -506,7 +506,7 @@ class DexClassFinder internal constructor(
 
     override fun build() = runCatching {
         if (loaderSet != null) {
-            /** 开始任务 */
+            /** Starts the task. */
             fun startProcess() {
                 runBlocking {
                     setInstance(readFromCache().takeIf { it.isNotEmpty() } ?: result)
@@ -531,9 +531,9 @@ class DexClassFinder internal constructor(
     }.getOrElse { e -> Result(isNotFound = true, e).await { errorMsg(e = e) } }
 
     /**
-     * [Class] 查找结果实现类
-     * @param isNotFound 是否没有找到 [Class] - 默认否
-     * @param throwable 错误信息
+     * [Class] lookup result implementation.
+     * @param isNotFound whether no [Class] was found. The default is false.
+     * @param throwable the error information.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class Result internal constructor(
@@ -541,59 +541,59 @@ class DexClassFinder internal constructor(
         internal var throwable: Throwable? = null
     ) : BaseResult {
 
-        /** 异步方法体回调结果 */
+        /** Asynchronous function body result callback. */
         internal var waitResultCallback: ((Class<*>?) -> Unit)? = null
 
-        /** 异步方法体回调数组结果 */
+        /** Asynchronous function body list result callback. */
         internal var waitAllResultCallback: ((MutableList<Class<*>>) -> Unit)? = null
 
-        /** 异常结果重新回调方法体 */
+        /** Callback body reinvoked for an error result. */
         internal var noClassDefFoundErrorCallback: (() -> Unit)? = null
 
         /**
-         * 创建监听结果事件方法体
-         * @param initiate 方法体
-         * @return [Result] 可继续向下监听
+         * Creates the result event listener body.
+         * @param initiate the function body.
+         * @return [Result] that can continue listening.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inline fun result(initiate: Result.() -> Unit) = apply(initiate)
 
         /**
-         * 得到 [Class] 本身
+         * Gets the [Class] itself.
          *
-         * - 若有多个 [Class] 结果只会返回第一个
+         * - If there are multiple [Class] results, only the first is returned.
          *
-         * - 在查找条件找不到任何结果的时候将返回 null
+         * - Returns null when no result matches the lookup conditions.
          *
-         * - 若你设置了 [async] 请使用 [wait] 方法
-         * @return [Class] or null
+         * - Use [wait] if [async] is enabled.
+         * @return [Class] or null.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun get() = all().takeIf { it.isNotEmpty() }?.first()
 
         /**
-         * 得到 [Class] 本身数组
+         * Gets the [Class] list itself.
          *
-         * - 返回全部查找条件匹配的多个 [Class] 实例
+         * - Returns all [Class] instances that match the lookup conditions.
          *
-         * - 在查找条件找不到任何结果的时候将返回空的 [MutableList]
+         * - Returns an empty [MutableList] when no result matches the lookup conditions.
          *
-         * - 若你设置了 [async] 请使用 [waitAll] 方法
+         * - Use [waitAll] if [async] is enabled.
          * @return [MutableList]<[Class]>
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all() = classInstances
 
         /**
-         * 得到 [Class] 本身数组 (依次遍历)
+         * Gets the [Class] list itself by iterating over it.
          *
-         * - 回调全部查找条件匹配的多个 [Class] 实例
+         * - Invokes the callback for every [Class] instance that matches the lookup conditions.
          *
-         * - 在查找条件找不到任何结果的时候将不会执行
+         * - Does not execute when no result matches the lookup conditions.
          *
-         * - 若你设置了 [async] 请使用 [waitAll] 方法
-         * @param result 回调每个结果
-         * @return [Result] 可继续向下监听
+         * - Use [waitAll] if [async] is enabled.
+         * @param result callback for each result.
+         * @return [Result] that can continue listening.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun all(result: (Class<*>) -> Unit): Result {
@@ -602,15 +602,15 @@ class DexClassFinder internal constructor(
         }
 
         /**
-         * 得到 [Class] 本身 (异步)
+         * Gets the [Class] itself asynchronously.
          *
-         * - 若有多个 [Class] 结果只会回调第一个
+         * - If there are multiple [Class] results, only the first is passed to the callback.
          *
-         * - 在查找条件找不到任何结果的时候将回调 null
+         * - Passes null to the callback when no result matches the lookup conditions.
          *
-         * - 你需要设置 [async] 后此方法才会被回调 - 否则请使用 [get] 方法
-         * @param result 回调 - ([Class] or null)
-         * @return [Result] 可继续向下监听
+         * - This function is only invoked when [async] is enabled. Otherwise, use [get].
+         * @param result callback with a [Class] or null.
+         * @return [Result] that can continue listening.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun wait(result: (Class<*>?) -> Unit): Result {
@@ -619,15 +619,15 @@ class DexClassFinder internal constructor(
         }
 
         /**
-         * 得到 [Class] 本身数组 (异步)
+         * Gets the [Class] list itself asynchronously.
          *
-         * - 回调全部查找条件匹配的多个 [Class] 实例
+         * - Passes every [Class] instance that matches the lookup conditions to the callback.
          *
-         * - 在查找条件找不到任何结果的时候将回调空的 [MutableList]
+         * - Passes an empty [MutableList] to the callback when no result matches the lookup conditions.
          *
-         * - 你需要设置 [async] 后此方法才会被回调 - 否则请使用 [all] 方法
-         * @param result 回调 - ([MutableList]<[Class]>)
-         * @return [Result] 可继续向下监听
+         * - This function is only invoked when [async] is enabled. Otherwise, use [all].
+         * @param result callback with a [MutableList] of [Class] instances.
+         * @return [Result] that can continue listening.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun waitAll(result: (MutableList<Class<*>>) -> Unit): Result {
@@ -636,9 +636,9 @@ class DexClassFinder internal constructor(
         }
 
         /**
-         * 监听找不到 [Class] 时
-         * @param result 回调错误
-         * @return [Result] 可继续向下监听
+         * Listens for a missing [Class].
+         * @param result the error callback.
+         * @return [Result] that can continue listening.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun onNoClassDefFoundError(result: (Throwable) -> Unit): Result {
@@ -648,10 +648,10 @@ class DexClassFinder internal constructor(
         }
 
         /**
-         * 忽略异常并停止打印任何错误日志
+         * Ignores exceptions and stops printing error logs.
          *
-         * - 此时若要监听异常结果 - 你需要手动实现 [onNoClassDefFoundError] 方法
-         * @return [Result] 可继续向下监听
+         * - To listen for error results in this case, implement [onNoClassDefFoundError] manually.
+         * @return [Result] that can continue listening.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun ignored(): Result {

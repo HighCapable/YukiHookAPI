@@ -31,34 +31,34 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 import de.robv.android.xposed.XposedBridge
 
 /**
- * Hook API 相关属性
+ * Resolves properties of the active Hook API.
  */
 internal object HookApiProperty {
 
-    /** Xposed 框架名称 */
+    /** Xposed framework name. */
     internal const val XPOSED_NAME = "Xposed"
 
-    /** LSPosed 框架名称 */
+    /** LSPosed framework name. */
     internal const val LSPOSED_NAME = "LSPosed"
 
-    /** EdXposed 框架名称 */
+    /** EdXposed framework name. */
     internal const val ED_XPOSED_NAME = "EdXposed"
 
-    /** TaiChi (太极) Xposed 框架名称 */
+    /** TaiChi Xposed framework name. */
     internal const val TAICHI_XPOSED_NAME = "TaiChi"
 
-    /** BugXposed (应用转生) Xposed 框架名称 */
+    /** BugXposed framework name. */
     internal const val BUG_XPOSED_NAME = "BugXposed"
 
-    /** TaiChi (太极) ExposedBridge 完整类名 */
+    /** Fully qualified TaiChi ExposedBridge class name. */
     internal const val EXPOSED_BRIDGE_CLASS_NAME = "me.weishu.exposed.ExposedBridge"
 
-    /** BugXposed (应用转生) BugLoad 完整类名 */
+    /** Fully qualified BugXposed BugLoad class name. */
     internal const val BUG_LOAD_CLASS_NAME = "com.bug.load.BugLoad"
 
     /**
-     * 获取当前 Hook Framework 名称
-     * @return [String] 无法获取会返回 unknown - 获取失败会返回 invalid
+     * Gets the current Hook Framework name.
+     * @return [String] `unknown` when unavailable or `invalid` when resolution fails.
      */
     internal val name
         get() = when (HookApiCategoryHelper.currentCategory) {
@@ -79,14 +79,14 @@ internal object HookApiProperty {
         }
 
     /**
-     * 获取当前 Hook Framework 类型
+     * Gets the current Hook Framework type.
      * @return [ExecutorType]
      */
     internal val type get() = type()
 
     /**
-     * 获取当前 Hook Framework 类型
-     * @param executorName Hook Framework 名称 - 默认为 [name]
+     * Resolves a Hook Framework type from its name.
+     * @param executorName the Hook Framework name, defaults to [name].
      * @return [ExecutorType]
      */
     internal fun type(executorName: String = name) = when (executorName) {
@@ -99,8 +99,8 @@ internal object HookApiProperty {
     }
 
     /**
-     * 获取当前 Hook Framework 的 API 版本
-     * @return [Int] 无法获取会返回 -1
+     * Gets the current Hook Framework API version.
+     * @return [Int] the API version, or -1 when unavailable.
      */
     internal val apiLevel
         get() = when (HookApiCategoryHelper.currentCategory) {
@@ -109,8 +109,8 @@ internal object HookApiProperty {
         }
 
     /**
-     * 获取当前 Hook Framework 版本名称
-     * @return [String] 无法获取会返回 unknown - 不支持会返回 unsupported
+     * Gets the current Hook Framework version name.
+     * @return [String] `unknown` when unavailable or `unsupported` when unsupported.
      */
     internal val versionName
         get() = when (HookApiCategoryHelper.currentCategory) {
@@ -119,8 +119,8 @@ internal object HookApiProperty {
         }
 
     /**
-     * 获取当前 Hook Framework 版本号
-     * @return [Int] 无法获取会返回 -1 - 不支持会返回 0
+     * Gets the current Hook Framework version code.
+     * @return [Int] -1 when unavailable or 0 when unsupported.
      */
     internal val versionCode
         get() = when (HookApiCategoryHelper.currentCategory) {

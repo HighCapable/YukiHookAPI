@@ -22,16 +22,14 @@
 package com.highcapable.yukihookapi.hook.core.finder
 
 /**
- * YukiHookAPI 反射 API 迁移指引类
+ * Migration guide for the YukiHookAPI reflection API.
  */
 internal object ReflectionMigration {
 
     /**
-     * [KavaRef](https://github.com/HighCapable/KavaRef) 迁移指引信息
+     * [KavaRef](https://github.com/HighCapable/KavaRef) migration guide.
      */
-    const val KAVAREF_INFO = "YukiHookAPI 会在 2.0.0 版本完全移除自身反射部分的 API，我们推荐你使用 KavaRef 来实现反射功能以获得更好的性能和可维护性。" +
-        "请参阅：https://github.com/HighCapable/KavaRef " +
-        "YukiHookAPI will completely remove the API of its own reflection part in version 2.0.0. " +
+    const val KAVAREF_INFO = "YukiHookAPI will completely remove the API of its own reflection part in version 2.0.0. " +
         "We recommend that you use KavaRef to implement reflection for better performance and maintainability. " +
         "See: https://github.com/HighCapable/KavaRef"
 }

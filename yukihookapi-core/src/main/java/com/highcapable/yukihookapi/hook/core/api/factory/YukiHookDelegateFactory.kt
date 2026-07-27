@@ -27,14 +27,14 @@ import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberReplacement
 import java.lang.reflect.Member
 
 /**
- * Hook API 回调事件代理类
+ * Creates adapters for Hook API callbacks.
  */
 internal object YukiHookCallbackDelegate {
 
     /**
-     * 创建 [YukiMemberHook.HookedMember] 实例
-     * @param member [Member] 实例 (代理回调)
-     * @param onRemove 回调解除 Hook 事件 (代理回调)
+     * Creates a [YukiMemberHook.HookedMember].
+     * @param member the callback that provides the [Member] instance.
+     * @param onRemove the callback that removes the Hook.
      * @return [YukiMemberHook.HookedMember]
      */
     internal fun createHookedMemberCallback(member: () -> Member?, onRemove: () -> Unit) =
@@ -46,13 +46,13 @@ internal object YukiHookCallbackDelegate {
         }
 
     /**
-     * 创建 [YukiHookCallback.Param] 实例
-     * @param member [Member] 实例 (代理回调)
-     * @param instance 当前实例对象 (代理回调)
-     * @param args 方法、构造方法数组 (代理回调)
-     * @param hasThrowable 是否存在设置过的方法调用抛出异常 (代理回调)
-     * @param result 当前 Hook 方法返回值 (结果) (代理回调)
-     * @param throwable 当前 Hook 方法调用抛出的异常 (代理回调)
+     * Creates [YukiHookCallback.Param].
+     * @param member the callback that provides the [Member] instance.
+     * @param instance the callback that provides the current receiver instance.
+     * @param args the callback that provides the method or constructor arguments.
+     * @param hasThrowable the callback that reports whether a throwable is present.
+     * @param result the callback that gets or sets the Hook result.
+     * @param throwable the callback that gets or sets the Hook throwable.
      * @return [YukiHookCallback.Param]
      */
     internal fun createParamCallback(
@@ -81,8 +81,8 @@ internal object YukiHookCallbackDelegate {
 }
 
 /**
- * 调用 [YukiMemberHook.beforeHookedMember] 事件
- * @param param Hook 结果回调接口
+ * Calls [YukiMemberHook.beforeHookedMember].
+ * @param param the Hook callback parameters.
  */
 internal fun YukiHookCallback.callBeforeHookedMember(param: YukiHookCallback.Param) {
     if (this !is YukiMemberHook) error("Invalid YukiHookCallback type")
@@ -92,8 +92,8 @@ internal fun YukiHookCallback.callBeforeHookedMember(param: YukiHookCallback.Par
 }
 
 /**
- * 调用 [YukiMemberHook.afterHookedMember] 事件
- * @param param Hook 结果回调接口
+ * Calls [YukiMemberHook.afterHookedMember].
+ * @param param the Hook callback parameters.
  */
 internal fun YukiHookCallback.callAfterHookedMember(param: YukiHookCallback.Param) {
     if (this !is YukiMemberHook) error("Invalid YukiHookCallback type")

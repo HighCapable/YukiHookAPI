@@ -27,29 +27,29 @@ import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.ParameterizedType
 
 /**
- * 当前 [Class] 的泛型父类操作对象
- * @param type 类型声明实例
+ * Provides access to the generic superclass of the current [Class].
+ * @param type the parameterized type declaration.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class GenericClass internal constructor(private val type: ParameterizedType) {
 
     /**
-     * 获得泛型参数数组下标的 [Class] 实例
+     * Gets the [Class] at the specified generic argument index.
      *
-     * - 在运行时局部变量的泛型会被擦除 - 获取不到时将会返回 null
-     * @param index 数组下标 - 默认 0
-     * @return [Class] or null
+     * - Generic information for local variables is erased at runtime. Returns null when unavailable.
+     * @param index the argument index, defaults to 0.
+     * @return [Class] or null.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun argument(index: Int = 0) = type.actualTypeArguments[index] as? Class<*>?
 
     /**
-     * 获得泛型参数数组下标的 [Class] 实例
+     * Gets the typed [Class] at the specified generic argument index.
      *
-     * - 在运行时局部变量的泛型会被擦除 - 获取不到时将会返回 null
-     * @param index 数组下标 - 默认 0
-     * @return [Class]<[T]> or null
-     * @throws IllegalStateException 如果 [Class] 的类型不为 [T]
+     * - Generic information for local variables is erased at runtime. Returns null when unavailable.
+     * @param index the argument index, defaults to 0.
+     * @return [Class]<[T]> or null.
+     * @throws IllegalStateException if the [Class] type is not [T].
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     @JvmName("argument_Generics")

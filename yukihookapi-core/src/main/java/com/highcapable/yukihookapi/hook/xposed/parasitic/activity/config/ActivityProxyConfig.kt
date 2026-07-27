@@ -25,17 +25,17 @@ import android.app.Activity
 import android.content.Intent
 
 /**
- * 当前代理的 [Activity] 参数配置类
+ * Stores configuration for the current proxied [Activity].
  */
 internal object ActivityProxyConfig {
 
     /**
-     * 用于代理的 [Intent] 名称
+     * Name of the [Intent] used for proxying.
      */
     internal var proxyIntentName = ""
 
     /**
-     * 需要代理的 [Activity] 类名
+     * Class name of the [Activity] to proxy.
      */
     internal var proxyClassName = ""
 }

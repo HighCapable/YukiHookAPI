@@ -35,21 +35,21 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleAc
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
- * 模块 [Activity] 代理接口
+ * Proxy contract for a module [Activity].
  *
- * 实现了此接口的 [Activity] 可以同时在宿主与模块中启动
+ * An [Activity] implementing this interface can launch in both host and module environments.
  *
- * - 在 (Xposed) 宿主环境需要在宿主启动时调用 [Context.registerModuleAppActivities] 进行注册
+ * - In the (Xposed) host environment, call [Context.registerModuleAppActivities] when the host starts.
  *
- * - 在 (Xposed) 宿主环境需要重写 [moduleTheme] 设置 AppCompat 主题 (如果当前是 [AppCompatActivity]) - 否则会无法启动
+ * - In the host environment, an [AppCompatActivity] must override [moduleTheme] with an AppCompat theme.
  *
- * 请参考下方示例手动调用 [delegate] 对 [Activity] 完成必要方法的注册 - 建议在自己的 `BaseActivity` 中实现此接口并重写相关方法 -
- * 然后继承自此 `BaseActivity` 来实现模块 [Activity] 的代理
+ * The example below forwards the required lifecycle methods to [delegate]. Implement this interface in a custom `BaseActivity`,
+ * override the forwarded methods, and extend that `BaseActivity` from module activities.
  *
  * ```kotlin
  * abstract class BaseActivity : AppCompatActivity(), ModuleActivity {
  *
- *     // 设置 AppCompat 主题 (如果当前是 [AppCompatActivity])
+ *     // Sets the AppCompat theme when this is an [AppCompatActivity].
  *     override val moduleTheme get() = R.style.YourAppTheme
  * 
  *     override fun getClassLoader() = delegate.getClassLoader()
@@ -75,7 +75,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
 interface ModuleActivity {
 
     /**
-     * 模块 [Activity] 代理提供者
+     * Provides the module [Activity] proxy implementation.
      */
     class Delegate internal constructor(private val self: ModuleActivity) {
 
@@ -110,23 +110,23 @@ interface ModuleActivity {
     }
 
     /**
-     * 获取当前 [ModuleActivity] 的 [Delegate] 实例
+     * Gets a [Delegate] for the current [ModuleActivity].
      * @return [Delegate]
      */
     val delegate get() = Delegate(self = this)
 
     /**
-     * 设置当前代理的 [Activity] 主题
+     * Defines the theme of the proxied [Activity].
      * @return [Int]
      */
     val moduleTheme get() = -1
 
     /**
-     * 设置当前代理的 [Activity] 类名
+     * Defines the class name of the proxied [Activity].
      *
-     * 留空则使用 [Context.registerModuleAppActivities] 时设置的类名
+     * When empty, uses the class configured by [Context.registerModuleAppActivities].
      *
-     * - 代理的 [Activity] 类名必须存在于宿主的 AndroidManifest 清单中
+     * - The proxied [Activity] class must be declared in the host AndroidManifest.
      * @return [String]
      */
     val proxyClassName get() = ""

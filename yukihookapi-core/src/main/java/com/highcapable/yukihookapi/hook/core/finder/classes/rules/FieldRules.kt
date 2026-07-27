@@ -24,24 +24,24 @@
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules
 
 import com.highcapable.yukihookapi.hook.bean.VariousClass
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.base.BaseRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberRulesResult
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.NameConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Field
 
 /**
- * [Field] 查找条件实现类
- * @param rulesData 当前查找条件规则数据
+ * Defines conditions used to find a [Field].
+ * @param rulesData the current finder rule data.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class FieldRules internal constructor(private val rulesData: FieldRulesData) : BaseRules() {
 
     /**
-     * 设置 [Field] 名称
+     * Sets the [Field] name.
      * @return [String]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
@@ -52,12 +52,12 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
         }
 
     /**
-     * 设置 [Field] 类型
+     * Sets the [Field] type.
      *
-     * - 只能是 [Class]、[String]、[VariousClass]
+     * - Accepts [Class], [String], or [VariousClass].
      *
-     * - 可不填写类型
-     * @return [Any] or null
+     * - The type is optional.
+     * @return [Any] or null.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     var type
@@ -67,10 +67,10 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
         }
 
     /**
-     * 设置 [Field] 标识符筛选条件
+     * Sets the [Field] modifier conditions.
      *
-     * - 可不设置筛选条件
-     * @param conditions 条件方法体
+     * - This condition is optional.
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
@@ -78,8 +78,8 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
     }
 
     /**
-     * 设置 [Field] 名称条件
-     * @param conditions 条件方法体
+     * Sets the [Field] name condition.
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun name(conditions: NameConditions) {
@@ -87,16 +87,16 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
     }
 
     /**
-     * 设置 [Field] 类型条件
+     * Sets the [Field] type condition.
      *
-     * - 可不填写类型
+     * - The type is optional.
      *
-     * 使用示例如下 ↓
+     * Example:
      *
      * ```kotlin
      * type { it == StringClass || it.name == "java.lang.String" }
      * ```
-     * @param conditions 条件方法体
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun type(conditions: ObjectConditions) {
@@ -104,7 +104,7 @@ class FieldRules internal constructor(private val rulesData: FieldRulesData) : B
     }
 
     /**
-     * 返回结果实现类
+     * Builds the rule result.
      * @return [MemberRulesResult]
      */
     internal fun build() = MemberRulesResult(rulesData)

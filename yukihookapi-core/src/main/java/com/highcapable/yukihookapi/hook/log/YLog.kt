@@ -35,19 +35,19 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import java.io.File
 
 /**
- * 全局 Log 管理类
+ * Global log manager.
  */
 object YLog {
 
     /**
-     * 配置 [YLog]
+     * [YLog] configuration.
      */
     object Configs {
 
         /**
-         * 标签
+         * Tag.
          *
-         * 显示效果如下 ↓
+         * Example output:
          *
          * ```
          * [YukiHookAPI][...][...] ...
@@ -56,9 +56,9 @@ object YLog {
         const val TAG = 1000
 
         /**
-         * 优先级
+         * Priority.
          *
-         * 显示效果如下 ↓
+         * Example output:
          *
          * ```
          * [...][E][...] ...
@@ -67,9 +67,9 @@ object YLog {
         const val PRIORITY = 1001
 
         /**
-         * 当前宿主的包名
+         * Current host app package name.
          *
-         * 显示效果如下 ↓
+         * Example output:
          *
          * ```
          * [...][com.demo.test][...] ...
@@ -78,9 +78,9 @@ object YLog {
         const val PACKAGE_NAME = 1002
 
         /**
-         * 当前宿主的用户 ID (主用户不显示)
+         * Current host app user ID, omitted for the owner user.
          *
-         * 显示效果如下 ↓
+         * Example output:
          *
          * ```
          * [...][...][999] ...
@@ -89,24 +89,24 @@ object YLog {
         const val USER_ID = 1003
 
         /**
-         * 这是一个调试日志的全局标识
+         * Global identifier for debug logs.
          *
-         * 默认文案为 [YukiHookAPI.TAG]
+         * The default value is [YukiHookAPI.TAG].
          *
-         * 你可以修改为你自己的文案
+         * You can replace it with your own value.
          */
         var tag = YukiHookAPI.TAG
 
         /**
-         * 是否启用调试日志的输出功能 - 默认启用
+         * Whether debug log output is enabled, true by default.
          *
-         * - 关闭后将会停用 [YukiHookAPI] 对全部日志的输出
+         * - Disabling this stops all log output from [YukiHookAPI].
          *
-         * 但是不影响当你手动调用下面这些方法输出日志
+         * It does not affect logs printed manually through the following methods.
          *
          * [debug]、[info]、[warn]、[error]
          *
-         * 当 [isEnable] 关闭后 [YukiHookAPI.Configs.isDebug] 也将同时关闭
+         * Disabling [isEnable] also disables [YukiHookAPI.Configs.isDebug].
          */
         var isEnable = true
             set(value) {
@@ -115,15 +115,15 @@ object YLog {
             }
 
         /**
-         * 是否启用调试日志的记录功能 - 默认不启用
+         * Whether debug log recording is enabled, false by default.
          *
-         * 开启后将会在内存中记录全部可用的日志和异常堆栈
+         * Enabling this records all available logs and exception stack traces in memory.
          *
-         * 需要同时启用 [isEnable] 才能有效
+         * [isEnable] must also be enabled.
          *
-         * - 过量的日志可能会导致宿主运行缓慢或造成频繁 GC
+         * - Excessive logging may slow down the host app or cause frequent garbage collection.
          *
-         * 开启后你可以调用 [saveToFile] 实时保存日志到文件或使用 [contents] 获取实时日志文件
+         * Once enabled, call [saveToFile] to save logs to a file in real time or use [contents] to obtain the current log contents.
          */
         var isRecord = false
             set(value) {
@@ -131,59 +131,59 @@ object YLog {
                 initKavaRefLoggerIfNot()
             }
 
-        /** 当前已添加的元素顺序列表数组 */
+        /** The current ordered list of elements. */
         internal var elements = arrayOf(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
 
         /**
-         * 自定义调试日志对外显示的元素
+         * Customizes the elements displayed in debug logs.
          *
-         * 只对日志记录和 (Xposed) 宿主环境的日志生效
+         * This applies only to recorded logs and logs in the (Xposed) host environment.
          *
-         * 日志元素的排列将按照你在 [item] 中设置的顺序进行显示
+         * Log elements are displayed in the order specified by [item].
          *
-         * 你还可以留空 [item] 以不显示除日志内容外的全部元素
+         * Leave [item] empty to hide every element except the log message.
          *
-         * 可用的元素有：[TAG]、[PRIORITY]、[PACKAGE_NAME]、[USER_ID]
+         * Available elements are [TAG], [PRIORITY], [PACKAGE_NAME], and [USER_ID].
          *
-         * 默认排列方式如下 ↓
+         * Default order:
          *
          * ```
          * [TAG][PRIORITY][PACKAGE_NAME][USER_ID] Message
          * ```
-         * @param item 自定义的元素数组
+         * @param item the custom element array.
          */
         fun elements(vararg item: Int) {
             elements = arrayOf(*item.toTypedArray())
         }
 
-        /** 结束方法体 */
+        /** Completes the configuration block. */
         internal fun build() = Unit
     }
 
     /**
-     * 当前全部已记录的日志数据
+     * All currently recorded log data.
      *
-     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * - Log data is isolated between host app and module processes.
      */
     val inMemoryData = mutableListOf<YLogData>()
 
     /**
-     * 获取当前日志文件内容
+     * Gets the current log file contents.
      *
-     * 如果当前没有已记录的日志会返回空字符串
+     * Returns an empty string when no logs have been recorded.
      *
-     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * - Log data is isolated between host app and module processes.
      * @return [String]
      */
     val contents get() = contents()
 
     /**
-     * 获取、格式化当前日志文件内容
+     * Gets and formats the current log file contents.
      *
-     * 如果当前没有已记录的日志 ([data] 为空) 会返回空字符串
+     * Returns an empty string when no logs have been recorded and [data] is empty.
      *
-     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
-     * @param data 日志数据 - 默认为 [inMemoryData]
+     * - Log data is isolated between host app and module processes.
+     * @param data the log data, [inMemoryData] by default.
      * @return [String]
      */
     fun contents(data: List<YLogData> = inMemoryData): String {
@@ -198,83 +198,83 @@ object YLog {
     }
 
     /**
-     * 清除全部已记录的日志
+     * Clears all recorded logs.
      *
-     * 你也可以直接获取 [inMemoryData] 来清除
+     * You can also clear [inMemoryData] directly.
      *
-     * - 获取到的日志数据在 Hook APP (宿主) 及模块进程中是相互隔离的
+     * - Log data is isolated between host app and module processes.
      */
     fun clear() = inMemoryData.clear()
 
     /**
-     * 保存当前日志到文件
+     * Saves the current logs to a file.
      *
-     * 若当前未开启 [Configs.isRecord] 或记录为空则不会进行任何操作
+     * Performs no operation when [Configs.isRecord] is disabled or no logs have been recorded.
      *
-     * 日志文件会追加到 [fileName] 的文件结尾 - 若文件不存在会自动创建
+     * Logs are appended to [fileName], which is created automatically when it does not exist.
      *
-     * - 文件读写权限取决于当前宿主、模块已获取的权限
-     * @param fileName 完整文件名 - 例如 /data/data/.../files/xxx.log
-     * @param data 日志数据 - 默认为 [inMemoryData]
-     * @throws ErrnoException 如果目标路径不可写
+     * - File access depends on the permissions granted to the current host app or module.
+     * @param fileName the full file name, for example `/data/data/.../files/xxx.log`.
+     * @param data the log data, [inMemoryData] by default.
+     * @throws ErrnoException if the target path is not writable.
      */
     fun saveToFile(fileName: String, data: List<YLogData> = inMemoryData) {
         if (data.isNotEmpty()) File(fileName).appendText(contents(data))
     }
 
     /**
-     * 打印 Debug 级别 Log
+     * Prints a debug-level log.
      *
-     * 向控制台和 (Xposed) 宿主环境打印日志
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [Configs.tag]
-     * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
+     * Prints to the console and the (Xposed) host environment.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param tag the log tag, preferably the module name. [Configs.tag] by default.
+     * @param env the log environment, [EnvType.BOTH] by default.
      */
     fun debug(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
         log(env, YLogData(priority = "D", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
-     * 打印 Info 级别 Log
+     * Prints an info-level log.
      *
-     * 向控制台和 (Xposed) 宿主环境打印日志
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [Configs.tag]
-     * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
+     * Prints to the console and the (Xposed) host environment.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param tag the log tag, preferably the module name. [Configs.tag] by default.
+     * @param env the log environment, [EnvType.BOTH] by default.
      */
     fun info(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
         log(env, YLogData(priority = "I", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
-     * 打印 Warn 级别 Log
+     * Prints a warn-level log.
      *
-     * 向控制台和 (Xposed) 宿主环境打印日志
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [Configs.tag]
-     * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
+     * Prints to the console and the (Xposed) host environment.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param tag the log tag, preferably the module name. [Configs.tag] by default.
+     * @param env the log environment, [EnvType.BOTH] by default.
      */
     fun warn(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
         log(env, YLogData(priority = "W", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
-     * 打印 Error 级别 Log
+     * Prints an error-level log.
      *
-     * 向控制台和 (Xposed) 宿主环境打印日志
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param tag 日志打印的标签 - 建议和自己的模块名称设置成一样的 - 默认为 [Configs.tag]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param env 日志打印的环境 - 默认为 [EnvType.BOTH]
+     * Prints to the console and the (Xposed) host environment.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param tag the log tag, preferably the module name. [Configs.tag] by default.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param env the log environment, [EnvType.BOTH] by default.
      */
     fun error(msg: Any? = null, e: Throwable? = null, tag: String = Configs.tag, env: EnvType = EnvType.BOTH) =
         log(env, YLogData(priority = "E", tag = tag, msg = msg.toString(), throwable = e))
 
     /**
-     * [YukiHookAPI] (内部) 打印 Debug 级别 Log
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
+     * Prints an internal debug-level [YukiHookAPI] log.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerD(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not() || YukiHookAPI.Configs.isDebug.not()) return initKavaRefLoggerIfNot()
@@ -282,10 +282,10 @@ object YLog {
     }
 
     /**
-     * [YukiHookAPI] (内部) 打印 Info 级别 Log
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
+     * Prints an internal info-level [YukiHookAPI] log.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerI(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
@@ -293,10 +293,10 @@ object YLog {
     }
 
     /**
-     * [YukiHookAPI] (内部) 打印 Warn 级别 Log
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
+     * Prints an internal warn-level [YukiHookAPI] log.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerW(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
@@ -304,10 +304,10 @@ object YLog {
     }
 
     /**
-     * [YukiHookAPI] (内部) 打印 Error 级别 Log
-     * @param msg 日志打印的内容 - 默认空 - 如果你仅想打印异常堆栈可只设置 [e]
-     * @param e 可填入异常堆栈信息 - 将自动完整打印到控制台
-     * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
+     * Prints an internal error-level [YukiHookAPI] log.
+     * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerE(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
         if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
@@ -315,18 +315,18 @@ object YLog {
     }
 
     /**
-     * 向控制台和 (Xposed) 宿主环境打印日志 - 最终实现方法
-     * @param env 日志打印的环境
-     * @param data 日志数据
-     * @param isImplicit 是否隐式打印 - 不会记录 - 也不会显示包名和用户 ID
+     * Final implementation that prints logs to the console and the (Xposed) host environment.
+     * @param env the log environment.
+     * @param data the log data.
+     * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     private fun log(env: EnvType, data: YLogData, isImplicit: Boolean = false) {
         initKavaRefLoggerIfNot()
 
-        /** 是否为有效日志 */
+        /** Whether this is a valid log. */
         val isNotBlankLog = data.msg.isNotBlank() || (data.msg.isBlank() && data.throwable != null)
 
-        /** 打印到 [Log] */
+        /** Prints to [Log]. */
         fun logByLogd() = when (data.priority) {
             "D" -> Log.d(data.tag, data.msg, data.throwable)
             "I" -> Log.i(data.tag, data.msg, data.throwable)
@@ -335,7 +335,7 @@ object YLog {
             else -> Log.wtf(data.tag, data.msg, data.throwable)
         }
 
-        /** 打印到 (Xposed) 宿主环境 */
+        /** Prints to the (Xposed) host environment. */
         fun logByHooker() {
             if (isNotBlankLog) YukiHookHelper.logByHooker(data.also { it.isImplicit = isImplicit }.toString(), data.throwable)
         }
@@ -351,7 +351,7 @@ object YLog {
         if (isImplicit.not() && Configs.isRecord && isNotBlankLog) inMemoryData.add(data)
     }
 
-    /** 定义 [KavaRef] 日志记录器 */
+    /** Defines the [KavaRef] logger. */
     private val kavaRefLogger = object : KavaRefRuntime.Logger {
 
         override val tag get() = Configs.tag
@@ -373,10 +373,10 @@ object YLog {
         }
     }
 
-    /** 是否已初始化 [KavaRef] 日志记录器 */
+    /** Whether the [KavaRef] logger has been initialized. */
     private var isKavaRefLoggerInit = false
 
-    /** 初始化 [KavaRef] 日志记录器 - 仅在第一次调用时进行初始化 */
+    /** Initializes the [KavaRef] logger on the first call only. */
     private fun initKavaRefLoggerIfNot() {
         updateKavaRefLogLevel()
         if (isKavaRefLoggerInit) return
@@ -384,7 +384,7 @@ object YLog {
         isKavaRefLoggerInit = true
     }
 
-    /** 更新 [KavaRef] 日志记录器的日志级别 */
+    /** Updates the [KavaRef] logger level. */
     private fun updateKavaRefLogLevel() {
         KavaRef.logLevel = when {
             !Configs.isEnable -> KavaRefRuntime.LogLevel.OFF
@@ -394,36 +394,36 @@ object YLog {
     }
 
     /**
-     * 需要打印的日志环境类型
+     * Log output environment type.
      *
-     * 决定于模块与 (Xposed) 宿主环境使用的打印方式
+     * Determines how logs are printed in module and (Xposed) host environments.
      */
     enum class EnvType {
-        /** 仅使用 [Log] */
+        /** Uses only [Log]. */
         LOGD,
 
         /**
-         * 仅在 (Xposed) 宿主环境使用
+         * Uses only the (Xposed) host environment.
          *
-         * - 只能在 (Xposed) 宿主环境中使用 - 模块环境将不生效
+         * - Available only in the (Xposed) host environment and has no effect in the module environment.
          */
         XPOSED_ENVIRONMENT,
 
         /**
-         * 分区使用
+         * Uses environment-specific output.
          *
-         * (Xposed) 宿主环境仅使用 [XPOSED_ENVIRONMENT]
+         * The (Xposed) host environment uses only [XPOSED_ENVIRONMENT].
          *
-         * 模块环境仅使用 [LOGD]
+         * The module environment uses only [LOGD].
          */
         SCOPE,
 
         /**
-         * 同时使用
+         * Uses both outputs.
          *
-         * (Xposed) 宿主环境使用 [LOGD] 与 [XPOSED_ENVIRONMENT]
+         * The (Xposed) host environment uses [LOGD] and [XPOSED_ENVIRONMENT].
          *
-         * 模块环境仅使用 [LOGD]
+         * The module environment uses only [LOGD].
          */
         BOTH
     }

@@ -26,35 +26,35 @@ import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import java.lang.reflect.Member
 
 /**
- * Hook 方法回调接口抽象类
- * @param priority Hook 优先级 - 默认 [YukiHookPriority.DEFAULT]
+ * Base callback for a hooked member.
+ * @param priority the Hook priority, defaults to [YukiHookPriority.DEFAULT].
  */
 internal abstract class YukiMemberHook(override val priority: YukiHookPriority = YukiHookPriority.DEFAULT) : YukiHookCallback(priority) {
 
     /**
-     * 在方法执行之前注入
-     * @param param Hook 结果回调接口
+     * Invoked before the hooked member executes.
+     * @param param the Hook callback parameters.
      */
     internal open fun beforeHookedMember(param: Param) {}
 
     /**
-     * 在方法执行之后注入
-     * @param param Hook 结果回调接口
+     * Invoked after the hooked member executes.
+     * @param param the Hook callback parameters.
      */
     internal open fun afterHookedMember(param: Param) {}
 
     /**
-     * 已经 Hook 且可被解除 Hook 的 [Member] 实现接口抽象类
+     * Represents a hooked [Member] that can be unhooked.
      */
     internal abstract class HookedMember internal constructor() {
 
         /**
-         * 当前被 Hook 的 [Member]
-         * @return [Member] or null
+         * Gets the currently hooked [Member].
+         * @return [Member] or null.
          */
         internal abstract val member: Member?
 
-        /** 解除 Hook */
+        /** Removes the Hook. */
         internal abstract fun remove()
     }
 }

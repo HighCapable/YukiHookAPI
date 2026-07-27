@@ -25,12 +25,12 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.status
 
 /**
- * YukiXposedModuleStatus 注入 Stub
+ * Injection stub for YukiXposedModuleStatus.
  */
 object YukiXposedModuleStatus_Impl {
 
     /**
-     * 获取 YukiXposedModuleStatus 完整类名
+     * Gets the fully qualified name of YukiXposedModuleStatus.
      * @return [String]
      */
     val className: String = error("Stub!")

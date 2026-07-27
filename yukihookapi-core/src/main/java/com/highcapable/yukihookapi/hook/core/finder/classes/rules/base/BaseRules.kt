@@ -23,6 +23,7 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules.base
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.ConstructorRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.FieldRules
@@ -32,12 +33,11 @@ import com.highcapable.yukihookapi.hook.core.finder.members.data.ConstructorRule
 import com.highcapable.yukihookapi.hook.core.finder.members.data.FieldRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MethodRulesData
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
- * [Member] 查找条件实现父类
- * @param instance 当前查找类实例
+ * Base implementation for [Member] finder conditions.
+ * @param instance the current class finder.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 open class BaseRules internal constructor(internal var instance: DexClassFinder? = null) {
@@ -45,29 +45,29 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
     internal companion object {
 
         /**
-         * 创建查找条件规则数据
-         * @param instance 当前查找类实例
+         * Creates member finder rule data.
+         * @param instance the current class finder.
          * @return [MemberRulesData]
          */
         internal fun createMemberRules(instance: DexClassFinder) =
             MemberRules(MemberRulesData().apply { instance.rulesData.memberRules.add(this) }).apply { this.instance = instance }
 
         /**
-         * 创建查找条件规则数据
+         * Creates field finder rule data.
          * @return [FieldRulesData]
          */
         internal fun createFieldRules(instance: DexClassFinder) =
             FieldRules(FieldRulesData().apply { instance.rulesData.fieldRules.add(this) }).apply { this.instance = instance }
 
         /**
-         * 创建查找条件规则数据
+         * Creates method finder rule data.
          * @return [MethodRulesData]
          */
         internal fun createMethodRules(instance: DexClassFinder) =
             MethodRules(MethodRulesData().apply { instance.rulesData.methodRules.add(this) }).apply { this.instance = instance }
 
         /**
-         * 创建查找条件规则数据
+         * Creates constructor finder rule data.
          * @return [ConstructorRulesData]
          */
         internal fun createConstructorRules(instance: DexClassFinder) =
@@ -75,9 +75,9 @@ open class BaseRules internal constructor(internal var instance: DexClassFinder?
     }
 
     /**
-     * 将目标类型转换为可识别的兼容类型
-     * @param tag 当前查找类的标识
-     * @return [Class] or null
+     * Converts the target type to a supported compatible type.
+     * @param tag the identifier of the class being searched.
+     * @return [Class] or null.
      */
     internal fun Any?.compat(tag: String) = instance?.compatType(any = this, tag)
 }

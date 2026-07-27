@@ -32,14 +32,14 @@ import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Member
 
 /**
- * Hook API 兼容层处理工具类
+ * Adapts core Hook operations to the active Hook API.
  */
 internal object HookCompatHelper {
 
     /**
      * [HookApiCategory.ROVO89_XPOSED]
      *
-     * 兼容对接已 Hook 的 [Member] 接口
+     * Adapts an unhook handle for a hooked [Member].
      * @return [YukiMemberHook.HookedMember]
      */
     private fun XC_MethodHook.Unhook.compat() =
@@ -51,7 +51,7 @@ internal object HookCompatHelper {
     /**
      * [HookApiCategory.ROVO89_XPOSED]
      *
-     * 兼容对接 Hook 结果回调接口
+     * Adapts native Hook callback parameters.
      * @return [YukiHookCallback.Param]
      */
     private fun XC_MethodHook.MethodHookParam.compat() =
@@ -65,8 +65,8 @@ internal object HookCompatHelper {
         )
 
     /**
-     * 兼容对接 Hook 回调接口
-     * @return [Any] 原始接口
+     * Adapts a [YukiHookCallback] to the native Hook API callback.
+     * @return [Any] the native callback.
      */
     private fun YukiHookCallback.compat() = when (HookApiCategoryHelper.currentCategory) {
         HookApiCategory.ROVO89_XPOSED -> object : XC_MethodHook(
@@ -91,9 +91,9 @@ internal object HookCompatHelper {
 
     /**
      * Hook [Member]
-     * @param member 需要 Hook 的方法、构造方法
-     * @param callback 回调
-     * @return [YukiMemberHook.HookedMember] or null
+     * @param member the method or constructor to Hook.
+     * @param callback the Hook callback.
+     * @return [YukiMemberHook.HookedMember] or null.
      */
     internal fun hookMember(member: Member?, callback: YukiHookCallback): YukiMemberHook.HookedMember? {
         if (member == null) return null
@@ -104,10 +104,10 @@ internal object HookCompatHelper {
     }
 
     /**
-     * 执行未进行 Hook 的原始 [Member]
-     * @param member 实例
-     * @param args 参数实例
-     * @return [Any] or null
+     * Invokes the original unhooked [Member].
+     * @param member the member instance.
+     * @param args the argument array.
+     * @return [Any] or null.
      */
     internal fun invokeOriginalMember(member: Member?, instance: Any?, args: Array<out Any?>?): Any? {
         if (member == null) return null
@@ -118,9 +118,9 @@ internal object HookCompatHelper {
     }
 
     /**
-     * 使用当前 Hook API 自带的日志功能打印日志
-     * @param msg 日志打印的内容
-     * @param e 异常堆栈信息 - 默认空
+     * Prints through the active Hook API logger.
+     * @param msg the log message.
+     * @param e the exception stack trace, defaults to null.
      */
     internal fun logByHooker(msg: String, e: Throwable? = null) {
         when (HookApiCategoryHelper.currentCategory) {
@@ -132,7 +132,7 @@ internal object HookCompatHelper {
         }
     }
 
-    /** 抛出不支持的 API 类型异常 */
+    /** Throws an error for an unsupported Hook API. */
     private fun throwUnsupportedHookApiError(): Nothing =
         error("YukiHookAPI cannot support current Hook API or cannot found any available Hook APIs in current environment")
 }

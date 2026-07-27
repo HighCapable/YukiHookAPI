@@ -27,10 +27,10 @@ import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
- * 这是一个任意对象条件实现类
+ * Defines matching conditions for an arbitrary object.
  *
- * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
- * @param instance 当前实例对象
+ * Allows more precise matching of [Class] and [Member] objects obfuscated by R8.
+ * @param instance the current object instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class ObjectRules private constructor(private val instance: Any) {
@@ -38,8 +38,8 @@ class ObjectRules private constructor(private val instance: Any) {
     internal companion object {
 
         /**
-         * 创建实例
-         * @param instance 实例对象
+         * Creates an [ObjectRules] instance.
+         * @param instance the object instance.
          * @return [ObjectRules]
          */
         internal fun with(instance: Any) = ObjectRules(instance)

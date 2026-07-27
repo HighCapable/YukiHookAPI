@@ -24,8 +24,8 @@ package com.highcapable.yukihookapi.hook.bean
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 
 /**
- * 创建一个当前 Hook 的 [YukiResources] 接管类
- * @param instance 实例
+ * Holds the [YukiResources] instance for the current Hook.
+ * @param instance the resources instance.
  */
 class HookResources internal constructor(var instance: YukiResources? = null) {
 

@@ -25,12 +25,12 @@ import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import java.io.Serializable
 
 /**
- * 数据通讯桥键值数据包装类
- * @param wrapperId 包装实例 ID
- * @param isSegmentsType 是否为分段数据
- * @param segmentsSize 分段数据总大小 (长度)
- * @param segmentsIndex 分段数据当前接收到的下标
- * @param instance 原始数据实例
+ * Wraps key-value data sent through the data channel.
+ * @param wrapperId the wrapper instance ID.
+ * @param isSegmentsType whether the payload is segmented.
+ * @param segmentsSize the total number of payload segments.
+ * @param segmentsIndex the index of the currently received segment.
+ * @param instance the original data instance.
  */
 internal data class ChannelDataWrapper<T>(
     val wrapperId: String,

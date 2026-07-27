@@ -28,46 +28,46 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
 
 /**
- * 自动处理 (Xposed) 宿主环境与模块环境的 [ClassLoader]
+ * Resolves classes across the (Xposed) host and module [ClassLoader] environments.
  */
 class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseClassLoader) {
 
     companion object {
 
-        /** 当前 [ModuleClassLoader] 单例 */
+        /** Current [ModuleClassLoader] singleton. */
         private var instance: ModuleClassLoader? = null
 
-        /** 排除的 Hook APP (宿主) [Class] 类名数组 */
+        /** Host [Class] names that must bypass the module-first lookup. */
         private val excludeHostClasses = mutableSetOf<String>()
 
-        /** 排除的模块 [Class] 类名数组 */
+        /** Module [Class] names that must bypass the host lookup. */
         private val excludeModuleClasses = mutableSetOf<String>()
 
         /**
-         * 获取 [ModuleClassLoader] 单例
+         * Gets the [ModuleClassLoader] singleton.
          * @return [ModuleClassLoader]
          */
         internal fun instance() = instance ?: ModuleClassLoader().apply { instance = this }
 
         /**
-         * 添加到 Hook APP (宿主) [Class] 排除列表
+         * Adds classes to the host exclusion list.
          *
-         * 排除列表中的 [Class] 将会使用宿主的 [ClassLoader] 进行装载
+         * Excluded [Class] objects are loaded with the host [ClassLoader].
          *
-         * - 排除列表仅会在 (Xposed) 宿主环境生效
-         * @param name 需要添加的 [Class] 完整类名
+         * - This list is effective only in the (Xposed) host environment.
+         * @param name the fully qualified [Class] names to add.
          */
         fun excludeHostClasses(vararg name: String) {
             excludeHostClasses.addAll(name.toList())
         }
 
         /**
-         * 添加到模块 [Class] 排除列表
+         * Adds classes to the module exclusion list.
          *
-         * 排除列表中的 [Class] 将会使用模块 (当前宿主环境的模块注入进程) 的 [ClassLoader] 进行装载
+         * Excluded [Class] objects are loaded with the module [ClassLoader] injected into the current host process.
          *
-         * - 排除列表仅会在 (Xposed) 宿主环境生效
-         * @param name 需要添加的 [Class] 完整类名
+         * - This list is effective only in the (Xposed) host environment.
+         * @param name the fully qualified [Class] names to add.
          */
         fun excludeModuleClasses(vararg name: String) {
             excludeModuleClasses.addAll(name.toList())
@@ -78,7 +78,7 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
         }
     }
 
-    /** 默认 [ClassLoader] */
+    /** Default module [ClassLoader]. */
     private val baseLoader get() = AppParasitics.baseClassLoader
 
     override fun loadClass(name: String, resolve: Boolean): Class<*> {

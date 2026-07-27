@@ -24,15 +24,15 @@ package com.highcapable.yukihookapi.hook.core.api.compat
 import de.robv.android.xposed.XposedBridge
 
 /**
- * Hook API 类型工具类
+ * Resolves the Hook API available in the current environment.
  */
 internal object HookApiCategoryHelper {
 
-    /** 目前支持的 API 类型定义 - 按优先级正序排列 */
+    /** Supported API implementations in descending selection priority. */
     private val supportedCategories = arrayOf(HookApiCategory.ROVO89_XPOSED)
 
     /**
-     * 获取当前支持的 API 类型
+     * Gets the currently available API implementation.
      * @return [HookApiCategory]
      */
     internal val currentCategory
@@ -42,13 +42,13 @@ internal object HookApiCategoryHelper {
         }
 
     /**
-     * 获取当前环境是否存在可用的 Hook API
+     * Gets whether a supported Hook API is available in the current environment.
      * @return [Boolean]
      */
     internal val hasAvailableHookApi get() = currentCategory != HookApiCategory.UNKNOWN
 
     /**
-     * 判断当前运行环境是否存在当前 Hook API 类型
+     * Checks whether the given Hook API implementation exists in the current environment.
      * @return [Boolean]
      */
     private fun hasCategory(category: HookApiCategory) = when (category) {

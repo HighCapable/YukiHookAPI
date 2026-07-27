@@ -58,919 +58,919 @@ import java.lang.reflect.Array as JavaArray
 import java.util.function.Function as JavaFunction
 
 /**
- * 获得任意类型的数组
+ * Gets an array of any type.
  *
- * 它在 Java 中表示为：([type])[]
- * @param type 类型
+ * It is represented as `([type])[]` in Java.
+ * @param type the component type.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 fun ArrayClass(type: Class<*>) = JavaArray.newInstance(type, 0).javaClass as Class<JavaArray>
 
 /**
- * 获得 [Any] 类型
+ * Gets the [Any] type.
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [AnyClass]
+ * - Migrate to [AnyClass].
  * @return [Class]<[Any]>
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith("AnyClass"))
+@Deprecated(message = "Use the new naming method", ReplaceWith("AnyClass"))
 val AnyType get() = AnyClass
 
 /**
- * 获得 [Boolean] 类型
+ * Gets the [Boolean] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "boolean"
+ * This is a Java primitive type. Its bytecode keyword is `boolean`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val BooleanType get() = Boolean::class.javaPrimitiveType ?: "boolean".toClass()
 
 /**
- * 获得 [Char] 类型
+ * Gets the [Char] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "char"
+ * This is a Java primitive type. Its bytecode keyword is `char`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val CharType get() = Char::class.javaPrimitiveType ?: "char".toClass()
 
 /**
- * 获得 [Byte] 类型
+ * Gets the [Byte] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "byte"
+ * This is a Java primitive type. Its bytecode keyword is `byte`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ByteType get() = Byte::class.javaPrimitiveType ?: "byte".toClass()
 
 /**
- * 获得 [Short] 类型
+ * Gets the [Short] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "short"
+ * This is a Java primitive type. Its bytecode keyword is `short`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ShortType get() = Short::class.javaPrimitiveType ?: "short".toClass()
 
 /**
- * 获得 [Int] 类型
+ * Gets the [Int] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "int"
+ * This is a Java primitive type. Its bytecode keyword is `int`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val IntType get() = Int::class.javaPrimitiveType ?: "int".toClass()
 
 /**
- * 获得 [Float] 类型
+ * Gets the [Float] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "float"
+ * This is a Java primitive type. Its bytecode keyword is `float`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val FloatType get() = Float::class.javaPrimitiveType ?: "float".toClass()
 
 /**
- * 获得 [Long] 类型
+ * Gets the [Long] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "long"
+ * This is a Java primitive type. Its bytecode keyword is `long`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val LongType get() = Long::class.javaPrimitiveType ?: "long".toClass()
 
 /**
- * 获得 [Double] 类型
+ * Gets the [Double] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "double"
+ * This is a Java primitive type. Its bytecode keyword is `double`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DoubleType get() = Double::class.javaPrimitiveType ?: "double".toClass()
 
 /**
- * 获得 [Unit] 类型
+ * Gets the [Unit] type.
  *
- * 这是 Java 原始类型 (Primitive Type) - 它在字节码中的关键字为 "void"
+ * This is a Java primitive type. Its bytecode keyword is `void`.
  * @return [Class]
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val UnitType get() = Void.TYPE ?: "void".toClass()
 
 /**
- * 获得 [Any] 类型
+ * Gets the [Any] type.
  *
- * 它等价于 Java 中的 [java.lang.Object]
+ * It is equivalent to [java.lang.Object] in Java.
  * @return [Class]<[Any]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val AnyClass get() = classOf<Any>()
 
 /**
- * 获得 [Boolean] 类型
+ * Gets the [Boolean] type.
  *
- * 它等价于 Java 中的 [java.lang.Boolean]
+ * It is equivalent to [java.lang.Boolean] in Java.
  * @return [Class]<[Boolean]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val BooleanClass get() = classOf<Boolean>()
 
 /**
- * 获得 [Char] 类型
+ * Gets the [Char] type.
  *
- * 它等价于 Java 中的 [java.lang.Character]
+ * It is equivalent to [java.lang.Character] in Java.
  * @return [Class]<[Char]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val CharClass get() = classOf<Char>()
 
 /**
- * 获得 [Byte] 类型
+ * Gets the [Byte] type.
  *
- * 它等价于 Java 中的 [java.lang.Byte]
+ * It is equivalent to [java.lang.Byte] in Java.
  * @return [Class]<[Byte]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ByteClass get() = classOf<Byte>()
 
 /**
- * 获得 [Short] 类型
+ * Gets the [Short] type.
  *
- * 它等价于 Java 中的 [java.lang.Short]
+ * It is equivalent to [java.lang.Short] in Java.
  * @return [Class]<[Short]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ShortClass get() = classOf<Short>()
 
 /**
- * 获得 [Int] 类型
+ * Gets the [Int] type.
  *
- * 它等价于 Java 中的 [java.lang.Integer]
+ * It is equivalent to [java.lang.Integer] in Java.
  * @return [Class]<[Int]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val IntClass get() = classOf<Int>()
 
 /**
- * 获得 [Float] 类型
+ * Gets the [Float] type.
  *
- * 它等价于 Java 中的 [java.lang.Float]
+ * It is equivalent to [java.lang.Float] in Java.
  * @return [Class]<[Float]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val FloatClass get() = classOf<Float>()
 
 /**
- * 获得 [Long] 类型
+ * Gets the [Long] type.
  *
- * 它等价于 Java 中的 [java.lang.Long]
+ * It is equivalent to [java.lang.Long] in Java.
  * @return [Class]<[Long]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val LongClass get() = classOf<Long>()
 
 /**
- * 获得 [Double] 类型
+ * Gets the [Double] type.
  *
- * 它等价于 Java 中的 [java.lang.Double]
+ * It is equivalent to [java.lang.Double] in Java.
  * @return [Class]<[Double]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DoubleClass get() = classOf<Double>()
 
 /**
- * 获得 [Number] 类型
+ * Gets the [Number] type.
  *
- * 它等价于 Java 中的 [java.lang.Number]
+ * It is equivalent to [java.lang.Number] in Java.
  * @return [Class]<[Number]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val NumberClass get() = classOf<Number>()
 
 /**
- * 获得 [Unit] 类型
+ * Gets the [Unit] type.
  *
- * 它等价于 Java 中的 [java.lang.Void]
+ * It is equivalent to [java.lang.Void] in Java.
  * @return [Class]<[Void]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val UnitClass get() = classOf<Void>()
 
 /**
- * 获得 [String] 类型
+ * Gets the [String] type.
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [StringClass]
+ * - Migrate to [StringClass].
  * @return [Class]<[String]>
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith("StringClass"))
+@Deprecated(message = "Use the new naming method", ReplaceWith("StringClass"))
 val StringType get() = StringClass
 
 /**
- * 获得 [CharSequence] 类型
+ * Gets the [CharSequence] type.
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [CharSequenceClass]
+ * - Migrate to [CharSequenceClass].
  * @return [Class]<[CharSequence]>
  */
-@Deprecated(message = "请使用新的命名方法", ReplaceWith("CharSequenceClass"))
+@Deprecated(message = "Use the new naming method", ReplaceWith("CharSequenceClass"))
 val CharSequenceType get() = CharSequenceClass
 
 /**
- * 获得 [String] 类型
+ * Gets the [String] type.
  *
- * 它等价于 Java 中的 [java.lang.String]
+ * It is equivalent to [java.lang.String] in Java.
  * @return [Class]<[String]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val StringClass get() = classOf<String>()
 
 /**
- * 获得 [CharSequence] 类型
+ * Gets the [CharSequence] type.
  *
- * 它等价于 Java 中的 [java.lang.CharSequence]
+ * It is equivalent to [java.lang.CharSequence] in Java.
  * @return [Class]<[CharSequence]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val CharSequenceClass get() = classOf<CharSequence>()
 
 /**
- * 获得 [Serializable] 类型
+ * Gets the [Serializable] type.
  * @return [Class]<[Serializable]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val SerializableClass get() = classOf<Serializable>()
 
 /**
- * 获得 [Array] 类型
+ * Gets the [Array] type.
  *
- * 它等价于 Java 中的 [java.lang.reflect.Array]
+ * It is equivalent to [java.lang.reflect.Array] in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ArrayClass get() = classOf<JavaArray>()
 
 /**
- * 获得 [Boolean] - [Array] 类型
+ * Gets the [Boolean] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "boolean[]"
+ * This is a Java primitive type array. Its bytecode keyword is `boolean[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val BooleanArrayType get() = ArrayClass(BooleanType)
 
 /**
- * 获得 [Char] - [Array] 类型
+ * Gets the [Char] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "char[]"
+ * This is a Java primitive type array. Its bytecode keyword is `char[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val CharArrayType get() = ArrayClass(CharType)
 
 /**
- * 获得 [Byte] - [Array] 类型
+ * Gets the [Byte] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "byte[]"
+ * This is a Java primitive type array. Its bytecode keyword is `byte[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ByteArrayType get() = ArrayClass(ByteType)
 
 /**
- * 获得 [Short] - [Array] 类型
+ * Gets the [Short] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "short[]"
+ * This is a Java primitive type array. Its bytecode keyword is `short[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ShortArrayType get() = ArrayClass(ShortType)
 
 /**
- * 获得 [Short] - [Array] 类型
+ * Gets the [Short] - [Array] type.
  *
- * - 此方法已弃用 - 在之后的版本中将直接被删除
+ * - This API is deprecated and will be removed in a future version.
  *
- * - 请现在迁移到 [ShortArrayType]
+ * - Migrate to [ShortArrayType].
  * @return [Class]<[JavaArray]>
  */
-@Deprecated(message = "请使用修复后的命名方法", ReplaceWith("ShortArrayType"))
+@Deprecated(message = "Use the corrected naming method", ReplaceWith("ShortArrayType"))
 val ShortArraytType get() = ShortArrayType
 
 /**
- * 获得 [Int] - [Array] 类型
+ * Gets the [Int] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "int[]"
+ * This is a Java primitive type array. Its bytecode keyword is `int[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val IntArrayType get() = ArrayClass(IntType)
 
 /**
- * 获得 [Float] - [Array] 类型
+ * Gets the [Float] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "float[]"
+ * This is a Java primitive type array. Its bytecode keyword is `float[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val FloatArrayType get() = ArrayClass(FloatType)
 
 /**
- * 获得 [Long] - [Array] 类型
+ * Gets the [Long] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "long[]"
+ * This is a Java primitive type array. Its bytecode keyword is `long[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val LongArrayType get() = ArrayClass(LongType)
 
 /**
- * 获得 [Double] - [Array] 类型
+ * Gets the [Double] - [Array] type.
  *
- * 这是 Java 原始类型 (Primitive Type) 数组 - 它在字节码中的关键字为 "double[]"
+ * This is a Java primitive type array. Its bytecode keyword is `double[]`.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DoubleArrayType get() = ArrayClass(DoubleType)
 
 /**
- * 获得 [Any] - [Array] 类型
+ * Gets the [Any] - [Array] type.
  *
- * 它在 Java 中表示为：Object[]
+ * It is represented as `Object[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val AnyArrayClass get() = ArrayClass(AnyClass)
 
 /**
- * 获得 [Boolean] - [Array] 类型
+ * Gets the [Boolean] - [Array] type.
  *
- * 它在 Java 中表示为：Boolean[]
+ * It is represented as `Boolean[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val BooleanArrayClass get() = ArrayClass(BooleanClass)
 
 /**
- * 获得 [Char] - [Array] 类型
+ * Gets the [Char] - [Array] type.
  *
- * 它在 Java 中表示为：Character[]
+ * It is represented as `Character[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val CharArrayClass get() = ArrayClass(CharClass)
 
 /**
- * 获得 [Byte] - [Array] 类型
+ * Gets the [Byte] - [Array] type.
  *
- * 它在 Java 中表示为：Byte[]
+ * It is represented as `Byte[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ByteArrayClass get() = ArrayClass(ByteClass)
 
 /**
- * 获得 [Short] - [Array] 类型
+ * Gets the [Short] - [Array] type.
  *
- * 它在 Java 中表示为：Short[]
+ * It is represented as `Short[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ShortArrayClass get() = ArrayClass(ShortClass)
 
 /**
- * 获得 [Int] - [Array] 类型
+ * Gets the [Int] - [Array] type.
  *
- * 它在 Java 中表示为：Integer[]
+ * It is represented as `Integer[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val IntArrayClass get() = ArrayClass(IntClass)
 
 /**
- * 获得 [Float] - [Array] 类型
+ * Gets the [Float] - [Array] type.
  *
- * 它在 Java 中表示为：Float[]
+ * It is represented as `Float[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val FloatArrayClass get() = ArrayClass(FloatClass)
 
 /**
- * 获得 [Long] - [Array] 类型
+ * Gets the [Long] - [Array] type.
  *
- * 它在 Java 中表示为：Long[]
+ * It is represented as `Long[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val LongArrayClass get() = ArrayClass(LongClass)
 
 /**
- * 获得 [Double] - [Array] 类型
+ * Gets the [Double] - [Array] type.
  *
- * 它在 Java 中表示为：Double[]
+ * It is represented as `Double[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DoubleArrayClass get() = ArrayClass(DoubleClass)
 
 /**
- * 获得 [Number] - [Array] 类型
+ * Gets the [Number] - [Array] type.
  *
- * 它在 Java 中表示为：Number[]
+ * It is represented as `Number[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val NumberArrayClass get() = ArrayClass(NumberClass)
 
 /**
- * 获得 [String] - [Array] 类型
+ * Gets the [String] - [Array] type.
  *
- * 它在 Java 中表示为：String[]
+ * It is represented as `String[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val StringArrayClass get() = ArrayClass(StringClass)
 
 /**
- * 获得 [CharSequence] - [Array] 类型
+ * Gets the [CharSequence] - [Array] type.
  *
- * 它在 Java 中表示为：CharSequence[]
+ * It is represented as `CharSequence[]` in Java.
  * @return [Class]<[JavaArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val CharSequenceArrayClass get() = ArrayClass(CharSequenceClass)
 
 /**
- * 获得 [Cloneable] 类型
+ * Gets the [Cloneable] type.
  * @return [Class]<[Cloneable]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val CloneableClass get() = classOf<Cloneable>()
 
 /**
- * 获得 [List] 类型
+ * Gets the [List] type.
  * @return [Class]<[List]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ListClass get() = classOf<List<*>>()
 
 /**
- * 获得 [ArrayList] 类型
+ * Gets the [ArrayList] type.
  * @return [Class]<[ArrayList]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ArrayListClass get() = classOf<ArrayList<*>>()
 
 /**
- * 获得 [HashMap] 类型
+ * Gets the [HashMap] type.
  * @return [Class]<[HashMap]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val HashMapClass get() = classOf<HashMap<*, *>>()
 
 /**
- * 获得 [HashSet] 类型
+ * Gets the [HashSet] type.
  * @return [Class]<[HashSet]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val HashSetClass get() = classOf<HashSet<*>>()
 
 /**
- * 获得 [WeakHashMap] 类型
+ * Gets the [WeakHashMap] type.
  * @return [Class]<[WeakHashMap]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val WeakHashMapClass get() = classOf<WeakHashMap<*, *>>()
 
 /**
- * 获得 [WeakReference] 类型
+ * Gets the [WeakReference] type.
  * @return [Class]<[WeakReference]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val WeakReferenceClass get() = classOf<WeakReference<*>>()
 
 /**
- * 获得 [Enum] 类型
+ * Gets the [Enum] type.
  * @return [Class]<[Enum]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val EnumClass get() = classOf<Enum<*>>()
 
 /**
- * 获得 [Map] 类型
+ * Gets the [Map] type.
  * @return [Class]<[Map]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val MapClass get() = classOf<Map<*, *>>()
 
 /**
- * 获得 [Map.Entry] 类型
+ * Gets the [Map.Entry] type.
  * @return [Class]<[Map.Entry]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val Map_EntryClass get() = classOf<Map.Entry<*, *>>()
 
 /**
- * 获得 [Reference] 类型
+ * Gets the [Reference] type.
  * @return [Class]<[Reference]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ReferenceClass get() = classOf<Reference<*>>()
 
 /**
- * 获得 [Vector] 类型
+ * Gets the [Vector] type.
  * @return [Class]<[Vector]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val VectorClass get() = classOf<Vector<*>>()
 
 /**
- * 获得 [File] 类型
+ * Gets the [File] type.
  * @return [Class]<[File]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val FileClass get() = classOf<File>()
 
 /**
- * 获得 [InputStream] 类型
+ * Gets the [InputStream] type.
  * @return [Class]<[InputStream]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val InputStreamClass get() = classOf<InputStream>()
 
 /**
- * 获得 [OutputStream] 类型
+ * Gets the [OutputStream] type.
  * @return [Class]<[OutputStream]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val OutputStreamClass get() = classOf<OutputStream>()
 
 /**
- * 获得 [BufferedReader] 类型
+ * Gets the [BufferedReader] type.
  * @return [Class]<[BufferedReader]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val BufferedReaderClass get() = classOf<BufferedReader>()
 
 /**
- * 获得 [Date] 类型
+ * Gets the [Date] type.
  * @return [Class]<[Date]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DateClass get() = classOf<Date>()
 
 /**
- * 获得 [TimeZone] 类型
+ * Gets the [TimeZone] type.
  * @return [Class]<[TimeZone]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val TimeZoneClass get() = classOf<TimeZone>()
 
 /**
- * 获得 [SimpleDateFormat] 类型
+ * Gets the [SimpleDateFormat] type.
  * @return [Class]<[SimpleDateFormat]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val SimpleDateFormatClass_Java get() = classOf<SimpleDateFormat>()
 
 /**
- * 获得 [Timer] 类型
+ * Gets the [Timer] type.
  * @return [Class]<[Timer]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val TimerClass get() = classOf<Timer>()
 
 /**
- * 获得 [TimerTask] 类型
+ * Gets the [TimerTask] type.
  * @return [Class]<[TimerTask]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val TimerTaskClass get() = classOf<TimerTask>()
 
 /**
- * 获得 [Thread] 类型
+ * Gets the [Thread] type.
  * @return [Class]<[Thread]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ThreadClass get() = classOf<Thread>()
 
 /**
- * 获得 [Base64] 类型
+ * Gets the [Base64] type.
  *
- * - 在 Android O (26) 及以上系统加入
- * @return [Class]<[Base64]> or null
+ * - Available on Android O (26) and later.
+ * @return [Class]<[Base64]> or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val Base64Class_Java get() = if (Build.VERSION.SDK_INT >= 26) classOf<Base64>() else null
 
 /**
- * 获得 [Observer] 类型
+ * Gets the [Observer] type.
  * @return [Class]<[Observer]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ObserverClass get() = classOf<Observer>()
 
 /**
- * 获得 [Set] 类型
+ * Gets the [Set] type.
  * @return [Class]<[Set]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val SetClass get() = classOf<Set<*>>()
 
 /**
- * 获得 [JSONObject] 类型
+ * Gets the [JSONObject] type.
  * @return [Class]<[JSONObject]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JSONObjectClass get() = classOf<JSONObject>()
 
 /**
- * 获得 [JSONArray] 类型
+ * Gets the [JSONArray] type.
  * @return [Class]<[JSONArray]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JSONArrayClass get() = classOf<JSONArray>()
 
 /**
- * 获得 [StringBuilder] 类型
+ * Gets the [StringBuilder] type.
  * @return [Class]<[StringBuilder]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val StringBuilderClass get() = classOf<StringBuilder>()
 
 /**
- * 获得 [StringBuffer] 类型
+ * Gets the [StringBuffer] type.
  * @return [Class]<[StringBuffer]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val StringBufferClass get() = classOf<StringBuffer>()
 
 /**
- * 获得 [ZipEntry] 类型
+ * Gets the [ZipEntry] type.
  * @return [Class]<[ZipEntry]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ZipEntryClass get() = classOf<ZipEntry>()
 
 /**
- * 获得 [ZipFile] 类型
+ * Gets the [ZipFile] type.
  * @return [Class]<[ZipFile]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ZipFileClass get() = classOf<ZipFile>()
 
 /**
- * 获得 [ZipInputStream] 类型
+ * Gets the [ZipInputStream] type.
  * @return [Class]<[ZipInputStream]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ZipInputStreamClass get() = classOf<ZipInputStream>()
 
 /**
- * 获得 [ZipOutputStream] 类型
+ * Gets the [ZipOutputStream] type.
  * @return [Class]<[ZipOutputStream]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ZipOutputStreamClass get() = classOf<ZipOutputStream>()
 
 /**
- * 获得 [HttpURLConnection] 类型
+ * Gets the [HttpURLConnection] type.
  * @return [Class]<[HttpURLConnection]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val HttpURLConnectionClass get() = classOf<HttpURLConnection>()
 
 /**
- * 获得 [HttpCookie] 类型
+ * Gets the [HttpCookie] type.
  * @return [Class]<[HttpCookie]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val HttpCookieClass get() = classOf<HttpCookie>()
 
 /**
- * 获得 [HttpClient] 类型
- * @return [Class] or null
+ * Gets the [HttpClient] type.
+ * @return [Class] or null.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val HttpClientClass get() = "java.net.http.HttpClient".toClassOrNull()
 
 /**
- * 获得 [AtomicBoolean] 类型
+ * Gets the [AtomicBoolean] type.
  * @return [Class]<[AtomicBoolean]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val AtomicBooleanClass get() = classOf<AtomicBoolean>()
 
 /**
- * 获得 [Supplier] 类型
+ * Gets the [Supplier] type.
  * @return [Class]<[Supplier]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val SupplierClass get() = classOf<Supplier<*>>()
 
 /**
- * 获得 [Class] 类型
+ * Gets the [Class] type.
  * @return [Class]<[Class]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JavaClass get() = classOf<Class<*>>()
 
 /**
- * 获得 [ClassLoader] 类型
+ * Gets the [ClassLoader] type.
  * @return [Class]<[ClassLoader]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JavaClassLoader get() = classOf<ClassLoader>()
 
 /**
- * 获得 [BaseDexClassLoader] 类型
+ * Gets the [BaseDexClassLoader] type.
  * @return [Class]<[BaseDexClassLoader]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DalvikBaseDexClassLoader get() = classOf<BaseDexClassLoader>()
 
 /**
- * 获得 [DexClassLoader] 类型
+ * Gets the [DexClassLoader] type.
  * @return [Class]<[DexClassLoader]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DalvikDexClassLoader get() = classOf<DexClassLoader>()
 
 /**
- * 获得 [PathClassLoader] 类型
+ * Gets the [PathClassLoader] type.
  * @return [Class]<[PathClassLoader]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DalvikPathClassLoader get() = classOf<PathClassLoader>()
 
 /**
- * 获得 [InMemoryDexClassLoader] 类型
+ * Gets the [InMemoryDexClassLoader] type.
  * @return [Class]<[InMemoryDexClassLoader]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val DalvikInMemoryDexClassLoader get() = classOf<InMemoryDexClassLoader>()
 
 /**
- * 获得 [Method] 类型
+ * Gets the [Method] type.
  * @return [Class]<[Method]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JavaMethodClass get() = classOf<Method>()
 
 /**
- * 获得 [Field] 类型
+ * Gets the [Field] type.
  * @return [Class]<[Field]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JavaFieldClass get() = classOf<Field>()
 
 /**
- * 获得 [Constructor] 类型
+ * Gets the [Constructor] type.
  * @return [Class]<[Constructor]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JavaConstructorClass get() = classOf<Constructor<*>>()
 
 /**
- * 获得 [Member] 类型
+ * Gets the [Member] type.
  * @return [Class]<[Member]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JavaMemberClass get() = classOf<Member>()
 
 /**
- * 获得 [Annotation] 类型
+ * Gets the [Annotation] type.
  * @return [Class]<[Annotation]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val JavaAnnotationClass get() = classOf<Annotation>()
 
 /**
- * 获得 [java.util.function.Function] 类型
+ * Gets the [java.util.function.Function] type.
  * @return [Class]<[JavaFunction]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val FunctionClass get() = classOf<JavaFunction<*, *>>()
 
 /**
- * 获得 [Optional] 类型
+ * Gets the [Optional] type.
  * @return [Class]<[Optional]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val OptionalClass get() = classOf<Optional<*>>()
 
 /**
- * 获得 [OptionalInt] 类型
+ * Gets the [OptionalInt] type.
  * @return [Class]<[OptionalInt]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val OptionalIntClass get() = classOf<OptionalInt>()
 
 /**
- * 获得 [OptionalLong] 类型
+ * Gets the [OptionalLong] type.
  * @return [Class]<[OptionalLong]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val OptionalLongClass get() = classOf<OptionalLong>()
 
 /**
- * 获得 [OptionalDouble] 类型
+ * Gets the [OptionalDouble] type.
  * @return [Class]<[OptionalDouble]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val OptionalDoubleClass get() = classOf<OptionalDouble>()
 
 /**
- * 获得 [Objects] 类型
+ * Gets the [Objects] type.
  * @return [Class]<[Objects]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ObjectsClass get() = classOf<Objects>()
 
 /**
- * 获得 [Runtime] 类型
+ * Gets the [Runtime] type.
  * @return [Class]<[Runtime]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val RuntimeClass get() = classOf<Runtime>()
 
 /**
- * 获得 [NullPointerException] 类型
+ * Gets the [NullPointerException] type.
  * @return [Class]<[NullPointerException]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val NullPointerExceptionClass get() = classOf<NullPointerException>()
 
 /**
- * 获得 [NumberFormatException] 类型
+ * Gets the [NumberFormatException] type.
  * @return [Class]<[NumberFormatException]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val NumberFormatExceptionClass get() = classOf<NumberFormatException>()
 
 /**
- * 获得 [IllegalStateException] 类型
+ * Gets the [IllegalStateException] type.
  * @return [Class]<[IllegalStateException]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val IllegalStateExceptionClass get() = classOf<IllegalStateException>()
 
 /**
- * 获得 [RuntimeException] 类型
+ * Gets the [RuntimeException] type.
  * @return [Class]<[RuntimeException]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val RuntimeExceptionClass get() = classOf<RuntimeException>()
 
 /**
- * 获得 [ClassNotFoundException] 类型
+ * Gets the [ClassNotFoundException] type.
  * @return [Class]<[ClassNotFoundException]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ClassNotFoundExceptionClass get() = classOf<ClassNotFoundException>()
 
 /**
- * 获得 [NoClassDefFoundError] 类型
+ * Gets the [NoClassDefFoundError] type.
  * @return [Class]<[NoClassDefFoundError]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val NoClassDefFoundErrorClass get() = classOf<NoClassDefFoundError>()
 
 /**
- * 获得 [NoSuchMethodError] 类型
+ * Gets the [NoSuchMethodError] type.
  * @return [Class]<[NoSuchMethodError]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val NoSuchMethodErrorClass get() = classOf<NoSuchMethodError>()
 
 /**
- * 获得 [NoSuchFieldError] 类型
+ * Gets the [NoSuchFieldError] type.
  * @return [Class]<[NoSuchFieldError]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val NoSuchFieldErrorClass get() = classOf<NoSuchFieldError>()
 
 /**
- * 获得 [Error] 类型
+ * Gets the [Error] type.
  * @return [Class]<[Error]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ErrorClass get() = classOf<Error>()
 
 /**
- * 获得 [Exception] 类型
+ * Gets the [Exception] type.
  * @return [Class]<[Exception]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 val ExceptionClass get() = classOf<Exception>()
 
 /**
- * 获得 [Throwable] 类型
+ * Gets the [Throwable] type.
  * @return [Class]<[Throwable]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)

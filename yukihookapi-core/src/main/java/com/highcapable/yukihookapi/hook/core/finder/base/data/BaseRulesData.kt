@@ -23,12 +23,12 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.base.data
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.CountRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ModifierRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.NameRules
 import com.highcapable.yukihookapi.hook.core.finder.base.rules.ObjectRules
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.type.defined.VagueType
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -36,10 +36,10 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * 这是 [Class] 与 [Member] 规则查找数据基本类实现
- * @param modifiers 描述符条件
- * @param orderIndex 字节码、数组顺序下标
- * @param matchIndex 字节码、数组筛选下标
+ * Base data model for [Class] and [Member] finder rules.
+ * @param modifiers the modifier conditions.
+ * @param orderIndex the bytecode or collection order index.
+ * @param matchIndex the bytecode or collection match index.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal abstract class BaseRulesData internal constructor(
@@ -48,7 +48,7 @@ internal abstract class BaseRulesData internal constructor(
     var matchIndex: Pair<Int, Boolean>? = null
 ) {
 
-    /** 当前类唯一标识值 */
+    /** Unique identifier for this rule instance. */
     internal var uniqueValue = 0L
 
     init {
@@ -56,55 +56,55 @@ internal abstract class BaseRulesData internal constructor(
     }
 
     /**
-     * [String] 转换为 [NameRules]
+     * Converts [String] to [NameRules].
      * @return [NameRules]
      */
     internal fun String.cast() = NameRules.with(this)
 
     /**
-     * [Int] 转换为 [CountRules]
+     * Converts [Int] to [CountRules].
      * @return [CountRules]
      */
     internal fun Int.cast() = CountRules.with(this)
 
     /**
-     * [Class] 转换为 [ModifierRules]
+     * Converts [Class] to [ModifierRules].
      * @return [ModifierRules]
      */
     internal fun Class<*>.cast() = ModifierRules.with(instance = this, uniqueValue)
 
     /**
-     * [Member] 转换为 [ModifierRules]
+     * Converts [Member] to [ModifierRules].
      * @return [ModifierRules]
      */
     internal fun Member.cast() = ModifierRules.with(instance = this, uniqueValue)
 
     /**
-     * [Field.getType] 转换为 [ObjectRules]
+     * Converts [Field.getType] to [ObjectRules].
      * @return [ObjectRules]
      */
     internal fun Field.type() = ObjectRules.with(type)
 
     /**
-     * [Method.getParameterTypes] 转换为 [ObjectRules]
+     * Converts [Method.getParameterTypes] to [ObjectRules].
      * @return [ObjectRules]
      */
     internal fun Method.paramTypes() = ObjectRules.with(parameterTypes)
 
     /**
-     * [Method.getReturnType] 转换为 [ObjectRules]
+     * Converts [Method.getReturnType] to [ObjectRules].
      * @return [ObjectRules]
      */
     internal fun Method.returnType() = ObjectRules.with(returnType)
 
     /**
-     * [Constructor.getParameterTypes] 转换为 [ObjectRules]
+     * Converts [Constructor.getParameterTypes] to [ObjectRules].
      * @return [ObjectRules]
      */
     internal fun Constructor<*>.paramTypes() = ObjectRules.with(parameterTypes)
 
     /**
-     * 获取参数数组文本化内容
+     * Formats parameter types as text.
      * @return [String]
      */
     internal fun Array<out Class<*>>?.typeOfString() =
@@ -119,19 +119,19 @@ internal abstract class BaseRulesData internal constructor(
         }.toString()
 
     /**
-     * 获取规则对象模板字符串数组
+     * Gets the rule template strings.
      * @return [Array]<[String]>
      */
     internal abstract val templates: Array<String>
 
     /**
-     * 获取规则对象名称
+     * Gets the rule object name.
      * @return [String]
      */
     internal abstract val objectName: String
 
     /**
-     * 判断规则是否已经初始化 (设置了任意一个参数)
+     * Gets whether any rule parameter has been initialized.
      * @return [Boolean]
      */
     internal open val isInitialize get() = modifiers != null || orderIndex != null || matchIndex != null

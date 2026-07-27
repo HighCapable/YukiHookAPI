@@ -26,28 +26,28 @@ package com.highcapable.yukihookapi.hook.xposed.proxy
 import com.highcapable.yukihookapi.YukiHookAPI
 
 /**
- * [YukiHookAPI] 的 Xposed 装载 API 调用接口
+ * Legacy Xposed loading API for [YukiHookAPI].
  *
- * - 此接口已弃用 - 在之后的版本中将直接被删除
+ * - This interface is deprecated and will be removed in a future release.
  *
- * - 请现在迁移到 [IYukiHookXposedInit] 否则此接口的声明将在自动处理程序中被拦截
+ * - Migrate to [IYukiHookXposedInit]. The processor rejects declarations that still use this interface.
  */
-@Deprecated(message = "此接口的命名和功能已被弃用", ReplaceWith("IYukiHookXposedInit"), level = DeprecationLevel.ERROR)
+@Deprecated(message = "This interface name and behavior are deprecated", ReplaceWith("IYukiHookXposedInit"), level = DeprecationLevel.ERROR)
 interface YukiHookXposedInitProxy {
 
     /**
-     * - 此方法已过时
+     * - This method is obsolete.
      *
-     * - 请将接口迁移到 [IYukiHookXposedInit]
+     * - Migrate the interface to [IYukiHookXposedInit].
      */
-    @Deprecated(message = "请将接口迁移到 IYukiHookXposedInit", level = DeprecationLevel.ERROR)
+    @Deprecated(message = "Migrate the interface to IYukiHookXposedInit", level = DeprecationLevel.ERROR)
     fun onInit() = Unit
 
     /**
-     * - 此方法已过时
+     * - This method is obsolete.
      *
-     * - 请将接口迁移到 [IYukiHookXposedInit]
+     * - Migrate the interface to [IYukiHookXposedInit].
      */
-    @Deprecated(message = "请将接口迁移到 IYukiHookXposedInit", level = DeprecationLevel.ERROR)
+    @Deprecated(message = "Migrate the interface to IYukiHookXposedInit", level = DeprecationLevel.ERROR)
     fun onHook() = Unit
 }

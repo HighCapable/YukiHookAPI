@@ -29,13 +29,13 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
- * 实现对原生 Xposed API 装载事件监听的回调监听事件处理类
+ * Dispatches native Xposed API loading events to registered callbacks.
  */
 internal object YukiXposedEventCaller {
 
     /**
-     * 回调 initZygote 事件监听
-     * @param sparam Xposed API 实例
+     * Dispatches the `initZygote` event.
+     * @param sparam the Xposed API parameters.
      */
     internal fun callInitZygote(sparam: IXposedHookZygoteInit.StartupParam?) {
         if (sparam == null) return
@@ -43,8 +43,8 @@ internal object YukiXposedEventCaller {
     }
 
     /**
-     * 回调 handleLoadPackage 事件监听
-     * @param lpparam Xposed API 实例
+     * Dispatches the `handleLoadPackage` event.
+     * @param lpparam the Xposed API parameters.
      */
     internal fun callHandleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
         if (lpparam == null) return
@@ -52,8 +52,8 @@ internal object YukiXposedEventCaller {
     }
 
     /**
-     * 回调 handleInitPackageResources 事件监听
-     * @param resparam Xposed API 实例
+     * Dispatches the `handleInitPackageResources` event.
+     * @param resparam the Xposed API parameters.
      */
     internal fun callHandleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam?) {
         if (resparam == null) return

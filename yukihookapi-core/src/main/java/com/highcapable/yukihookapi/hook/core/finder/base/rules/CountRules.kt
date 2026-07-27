@@ -27,10 +27,10 @@ import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
- * 这是一个模糊 [Class]、[Member] 数组 (下标) 个数条件实现类
+ * Defines count and index conditions for matching [Class] and [Member] collections.
  *
- * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
- * @param instance 当前实例对象
+ * Allows more precise matching of [Class] and [Member] objects obfuscated by R8.
+ * @param instance the current count value.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class CountRules private constructor(private val instance: Int) {
@@ -38,39 +38,39 @@ class CountRules private constructor(private val instance: Int) {
     internal companion object {
 
         /**
-         * 创建实例
-         * @param instance 实例对象
+         * Creates a [CountRules] instance.
+         * @param instance the count value.
          * @return [CountRules]
          */
         internal fun with(instance: Int) = CountRules(instance)
     }
 
     /**
-     * 是否为 0
+     * Checks whether the value is zero.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun Int.isZero() = this == 0
 
     /**
-     * 大于 [count]
-     * @param count 目标对象
+     * Checks whether the value is greater than [count].
+     * @param count the target count.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun Int.moreThan(count: Int) = this > count
 
     /**
-     * 小于 [count]
-     * @param count 目标对象
+     * Checks whether the value is less than [count].
+     * @param count the target count.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun Int.lessThan(count: Int) = this < count
 
     /**
-     * 在 [countRange] 区间 A ≤ this ≤ B
-     * @param countRange 区间
+     * Checks whether the value is within [countRange], where A ≤ this ≤ B.
+     * @param countRange the accepted range.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)

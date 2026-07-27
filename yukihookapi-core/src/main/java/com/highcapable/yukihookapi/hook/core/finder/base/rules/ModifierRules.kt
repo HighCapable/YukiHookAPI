@@ -31,42 +31,42 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
- * 这是一个 [Class]、[Member] 描述符条件实现类
+ * Modifier condition implementation for [Class] and [Member].
  *
- * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
- * @param instance 当前实例对象
+ * Provides more precise matching for [Class] and [Member] instances obfuscated by R8.
+ * @param instance the current instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class ModifierRules private constructor(private val instance: Any) {
 
     internal companion object {
 
-        /** 当前实例数组 */
+        /** The current instances. */
         private val instances = mutableMapOf<Long, ModifierRules>()
 
         /**
-         * 获取模板字符串数组
-         * @param value 唯一标识值
+         * Gets the template strings.
+         * @param value the unique identifier.
          * @return [MutableList]<[String]>
          */
         internal fun templates(value: Long) = instances[value]?.templates ?: mutableListOf()
 
         /**
-         * 创建实例
-         * @param instance 实例对象
-         * @param value 唯一标识值 - 默认 0
+         * Creates an instance.
+         * @param instance the source instance.
+         * @param value the unique identifier, 0 by default.
          * @return [ModifierRules]
          */
         internal fun with(instance: Any, value: Long = 0) = ModifierRules(instance).apply { instances[value] = this }
     }
 
-    /** 当前模板字符串数组 */
+    /** The current template strings. */
     private val templates = mutableListOf<String>()
 
     /**
-     * [Class]、[Member] 类型是否包含 public
+     * Checks whether the [Class] or [Member] modifiers include `public`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * public class/void/int/String...
      *
@@ -77,9 +77,9 @@ class ModifierRules private constructor(private val instance: Any) {
     val isPublic get() = Modifier.isPublic(modifiers).also { templates.add("<isPublic> ($it)") }
 
     /**
-     * [Class]、[Member] 类型是否包含 private
+     * Checks whether the [Class] or [Member] modifiers include `private`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * private class/void/int/String...
      *
@@ -90,9 +90,9 @@ class ModifierRules private constructor(private val instance: Any) {
     val isPrivate get() = Modifier.isPrivate(modifiers).also { templates.add("<isPrivate> ($it)") }
 
     /**
-     * [Class]、[Member] 类型是否包含 protected
+     * Checks whether the [Class] or [Member] modifiers include `protected`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * protected class/void/int/String...
      *
@@ -103,41 +103,41 @@ class ModifierRules private constructor(private val instance: Any) {
     val isProtected get() = Modifier.isProtected(modifiers).also { templates.add("<isProtected> ($it)") }
 
     /**
-     * [Class]、[Member] 类型是否包含 static
+     * Checks whether the [Class] or [Member] modifiers include `static`.
      *
-     * 对于任意的静态 [Class]、[Member] 可添加此描述进行确定
+     * Use this condition to identify any static [Class] or [Member].
      *
-     * 如下所示 ↓
+     * Example:
      *
      * static class/void/int/String...
      *
      * ^^^
      *
-     * - 注意 Kotlin → Jvm 后的 object 类中的方法并不是静态的
+     * - Note that methods in a Kotlin `object` are not static on the JVM.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isStatic get() = Modifier.isStatic(modifiers).also { templates.add("<isStatic> ($it)") }
 
     /**
-     * [Class]、[Member] 类型是否包含 final
+     * Checks whether the [Class] or [Member] modifiers include `final`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * final class/void/int/String...
      *
      * ^^^
      *
-     * - 注意 Kotlin → Jvm 后没有 open 标识的 [Class]、[Member] 和没有任何关联的 [Class]、[Member] 都将为 final
+     * - Note that on the JVM, Kotlin [Class] and [Member] declarations without `open`, as well as unrelated declarations, are `final`.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     val isFinal get() = Modifier.isFinal(modifiers).also { templates.add("<isFinal> ($it)") }
 
     /**
-     * [Class]、[Member] 类型是否包含 synchronized
+     * Checks whether the [Class] or [Member] modifiers include `synchronized`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * synchronized class/void/int/String...
      *
@@ -148,9 +148,9 @@ class ModifierRules private constructor(private val instance: Any) {
     val isSynchronized get() = Modifier.isSynchronized(modifiers).also { templates.add("<isSynchronized> ($it)") }
 
     /**
-     * [Field] 类型是否包含 volatile
+     * Checks whether the [Field] modifiers include `volatile`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * volatile int/String...
      *
@@ -161,9 +161,9 @@ class ModifierRules private constructor(private val instance: Any) {
     val isVolatile get() = Modifier.isVolatile(modifiers).also { templates.add("<isVolatile> ($it)") }
 
     /**
-     * [Field] 类型是否包含 transient
+     * Checks whether the [Field] modifiers include `transient`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * transient int/String...
      *
@@ -174,11 +174,11 @@ class ModifierRules private constructor(private val instance: Any) {
     val isTransient get() = Modifier.isTransient(modifiers).also { templates.add("<isTransient> ($it)") }
 
     /**
-     * [Method] 类型是否包含 native
+     * Checks whether the [Method] modifiers include `native`.
      *
-     * 对于任意 JNI 对接的 [Method] 可添加此描述进行确定
+     * Use this condition to identify any JNI-backed [Method].
      *
-     * 如下所示 ↓
+     * Example:
      *
      * native void/int/String...
      *
@@ -189,9 +189,9 @@ class ModifierRules private constructor(private val instance: Any) {
     val isNative get() = Modifier.isNative(modifiers).also { templates.add("<isNative> ($it)") }
 
     /**
-     * [Class] 类型是否包含 interface
+     * Checks whether the [Class] modifiers include `interface`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * interface ...
      *
@@ -202,11 +202,11 @@ class ModifierRules private constructor(private val instance: Any) {
     val isInterface get() = Modifier.isInterface(modifiers).also { templates.add("<isInterface> ($it)") }
 
     /**
-     * [Class]、[Member] 类型是否包含 abstract
+     * Checks whether the [Class] or [Member] modifiers include `abstract`.
      *
-     * 对于任意的抽象 [Class]、[Member] 可添加此描述进行确定
+     * Use this condition to identify any abstract [Class] or [Member].
      *
-     * 如下所示 ↓
+     * Example:
      *
      * abstract class/void/int/String...
      *
@@ -217,9 +217,9 @@ class ModifierRules private constructor(private val instance: Any) {
     val isAbstract get() = Modifier.isAbstract(modifiers).also { templates.add("<isAbstract> ($it)") }
 
     /**
-     * [Class]、[Member] 类型是否包含 strictfp
+     * Checks whether the [Class] or [Member] modifiers include `strictfp`.
      *
-     * 如下所示 ↓
+     * Example:
      *
      * strictfp class/void/int/String...
      *
@@ -230,7 +230,7 @@ class ModifierRules private constructor(private val instance: Any) {
     val isStrict get() = Modifier.isStrict(modifiers).also { templates.add("<isStrict> ($it)") }
 
     /**
-     * 获取当前对象的类型描述符
+     * Gets the modifiers of the current object.
      * @return [Int]
      */
     private val modifiers

@@ -24,7 +24,7 @@ package com.highcapable.yukihookapi.hook.core.api.result
 import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
 
 /**
- * Hook 结果实现类
- * @param hookedMember 当前 Hook 的实例对象 - 默认空
+ * Holds the result of a Hook operation.
+ * @param hookedMember the hooked member instance, defaults to null.
  */
 internal data class YukiHookResult(val hookedMember: YukiMemberHook.HookedMember? = null)

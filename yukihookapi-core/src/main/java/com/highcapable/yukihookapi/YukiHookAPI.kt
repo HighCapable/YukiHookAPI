@@ -50,148 +50,148 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import java.lang.reflect.Member
 
 /**
- * [YukiHookAPI] 的装载调用类
+ * [YukiHookAPI] loading entry point.
  *
- * 可以实现作为模块装载和自定义 Hook 装载两种方式
+ * Supports both module loading and custom Hook loading.
  *
- * Xposed 模块装载方式已经自动对接相关 API - 可直接调用 [encase] 完成操作
+ * Xposed module loading automatically adapts the relevant APIs. Call [encase] directly to complete the operation.
  *
- * 你可以调用 [configs] 对 [YukiHookAPI] 进行配置
+ * Call [configs] to configure [YukiHookAPI].
  */
 object YukiHookAPI {
 
-    /** 是否还未输出欢迎信息 */
+    /** Whether the welcome message has not yet been printed. */
     private var isShowSplashLogOnceTime = true
 
-    /** 标识是否从自定义 Hook API 装载 */
+    /** Whether loading originated from a custom Hook API. */
     internal var isLoadedFromBaseContext = false
 
-    /** 标签名称 */
+    /** The tag name. */
     const val TAG = YukiHookAPIProperties.PROJECT_NAME
 
-    /** 当前版本 */
+    /** The current version. */
     const val VERSION = YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_CORE_VERSION
 
     /**
-     * 版本名称
+     * Version name.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [VERSION]
+     * - Migrate to [VERSION].
      */
-    @Deprecated(message = "不再区分版本名称和版本号", ReplaceWith("VERSION"))
+    @Deprecated(message = "Version names and version codes are no longer distinguished", ReplaceWith("VERSION"))
     const val API_VERSION_NAME = VERSION
 
     /**
-     * 版本号
+     * Version code.
      *
-     * - 此方法已弃用 - 在之后的版本中将直接被删除
+     * - This API is deprecated and will be removed in a future version.
      *
-     * - 请现在迁移到 [VERSION]
+     * - Migrate to [VERSION].
      */
-    @Deprecated(message = "不再区分版本名称和版本号", ReplaceWith("VERSION"))
+    @Deprecated(message = "Version names and version codes are no longer distinguished", ReplaceWith("VERSION"))
     const val API_VERSION_CODE = -1
 
     /**
-     * 当前 [YukiHookAPI] 的状态
+     * Current [YukiHookAPI] status.
      */
     object Status {
 
         /**
-         * 获取项目编译完成的时间戳 (当前本地时间)
+         * Gets the project compilation timestamp in local time.
          * @return [Long]
          */
         val compiledTimestamp get() = runCatching { YukiHookAPI_Impl.compiledTimestamp }.getOrNull() ?: 0L
 
         /**
-         * 获取当前是否为 (Xposed) 宿主环境
+         * Gets whether the current environment is a (Xposed) host environment.
          * @return [Boolean]
          */
         val isXposedEnvironment get() = YukiXposedModule.isXposedEnvironment
 
         /**
-         * 获取当前 Hook Framework 名称
+         * Gets the current Hook Framework name.
          *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         * - This API is deprecated and will be removed in a future version.
          *
-         * - 请现在迁移到 [Executor.name]
+         * - Migrate to [Executor.name].
          * @return [String]
          */
         @Deprecated(
-            message = "请使用新方式来实现此功能",
+            message = "Use the new API to implement this feature",
             ReplaceWith("Executor.name", "com.highcapable.yukihookapi.YukiHookAPI.Status.Executor")
         )
         val executorName get() = Executor.name
 
         /**
-         * 获取当前 Hook Framework 版本
+         * Gets the current Hook Framework version.
          *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         * - This API is deprecated and will be removed in a future version.
          *
-         * - 请现在迁移到 [Executor.apiLevel]、[Executor.versionName]、[Executor.versionCode]
+         * - Migrate to [Executor.apiLevel], [Executor.versionName], and [Executor.versionCode].
          * @return [Int]
          */
         @Deprecated(
-            message = "请使用新方式来实现此功能",
+            message = "Use the new API to implement this feature",
             ReplaceWith("Executor.apiLevel", "com.highcapable.yukihookapi.YukiHookAPI.Status.Executor")
         )
         val executorVersion get() = Executor.apiLevel
 
         /**
-         * 判断模块是否在 Xposed 或太极、无极中激活
+         * Checks whether the module is active in Xposed, TaiChi, or Wuji.
          *
-         * - 在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
+         * - In the module environment, [Application] must extend [ModuleApplication].
          *
-         * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
+         * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
          *
-         * - 在 (Xposed) 宿主环境中仅返回非 [isTaiChiModuleActive] 的激活状态
-         * @return [Boolean] 是否激活
+         * - In a (Xposed) host environment, only the activation state excluding [isTaiChiModuleActive] is returned.
+         * @return [Boolean] whether the module is active.
          */
         val isModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive || isTaiChiModuleActive
 
         /**
-         * 仅判断模块是否在 Xposed 中激活
+         * Checks only whether the module is active in Xposed.
          *
-         * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
+         * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
          *
-         * - 在 (Xposed) 宿主环境中始终返回 true
-         * @return [Boolean] 是否激活
+         * - Always returns true in a (Xposed) host environment.
+         * @return [Boolean] whether the module is active.
          */
         val isXposedModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive
 
         /**
-         * 仅判断模块是否在太极、无极中激活
+         * Checks only whether the module is active in TaiChi or Wuji.
          *
-         * - 在模块环境中你需要将 [Application] 继承于 [ModuleApplication]
+         * - In the module environment, [Application] must extend [ModuleApplication].
          *
-         * - 在 (Xposed) 宿主环境中始终返回 false
-         * @return [Boolean] 是否激活
+         * - Always returns false in a (Xposed) host environment.
+         * @return [Boolean] whether the module is active.
          */
         val isTaiChiModuleActive get() = isXposedEnvironment.not() && (ModuleApplication.currentContext?.isTaiChiModuleActive ?: false)
 
         /**
-         * 判断当前 Hook Framework 是否支持资源钩子(Resources Hook)
+         * Checks whether the current Hook Framework supports Resources Hook.
          *
-         * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
+         * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
          *
-         * - 在 (Xposed) 宿主环境中可能会延迟等待事件回调后才会返回 true
+         * - In a (Xposed) host environment, true may be returned only after a delayed event callback.
          *
-         * - 请注意你需要确保 [InjectYukiHookWithXposed.isUsingResourcesHook] 已启用 - 否则始终返回 false
-         * @return [Boolean] 是否支持
+         * - Ensure that [InjectYukiHookWithXposed.isUsingResourcesHook] is enabled. Otherwise this always returns false.
+         * @return [Boolean] whether Resources Hook is supported.
          */
         val isSupportResourcesHook
             get() = YukiXposedModule.isSupportResourcesHook.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.isSupportResourcesHook
 
         /**
-         * 当前 [YukiHookAPI] 使用的 Hook Framework 相关信息
+         * Information about the Hook Framework used by the current [YukiHookAPI].
          */
         object Executor {
 
             /**
-             * 获取当前 Hook Framework 名称
+             * Gets the current Hook Framework name.
              *
-             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
-             * @return [String] 无法获取会返回 unknown - 获取失败会返回 invalid
+             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * @return [String] `unknown` when unavailable or `invalid` when resolution fails.
              */
             val name
                 get() = HookApiProperty.name.takeIf { isXposedEnvironment } ?: when {
@@ -201,58 +201,58 @@ object YukiHookAPI {
                 }
 
             /**
-             * 获取当前 Hook Framework 类型
+             * Gets the current Hook Framework type.
              *
-             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
+             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
              * @return [ExecutorType]
              */
             val type get() = HookApiProperty.type.takeIf { isXposedEnvironment } ?: HookApiProperty.type(YukiXposedModuleStatus.executorName)
 
             /**
-             * 获取当前 Hook Framework 的 API 版本
+             * Gets the current Hook Framework API version.
              *
-             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
-             * @return [Int] 无法获取会返回 -1
+             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * @return [Int] -1 when unavailable.
              */
             val apiLevel get() = HookApiProperty.apiLevel.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorApiLevel
 
             /**
-             * 获取当前 Hook Framework 版本名称
+             * Gets the current Hook Framework version name.
              *
-             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
-             * @return [String] 无法获取会返回 unknown - 不支持会返回 unsupported
+             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * @return [String] `unknown` when unavailable or `unsupported` when unsupported.
              */
             val versionName get() = HookApiProperty.versionName.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionName
 
             /**
-             * 获取当前 Hook Framework 版本号
+             * Gets the current Hook Framework version code.
              *
-             * - 在模块环境中需要启用 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
-             * @return [Int] 无法获取会返回 -1 - 不支持会返回 0
+             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * @return [Int] -1 when unavailable or 0 when unsupported.
              */
             val versionCode get() = HookApiProperty.versionCode.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionCode
         }
     }
 
     /**
-     * 配置 [YukiHookAPI]
+     * [YukiHookAPI] configuration.
      */
     object Configs {
 
         /**
-         * 配置 [YLog.Configs] 相关参数
-         * @param initiate 方法体
+         * Configures [YLog.Configs].
+         * @param initiate the configuration block.
          */
         inline fun debugLog(initiate: YLog.Configs.() -> Unit) = YLog.Configs.apply(initiate).build()
 
         /**
-         * 这是一个调试日志的全局标识
+         * Global identifier for debug logs.
          *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         * - This API is deprecated and will be removed in a future version.
          *
-         * - 请现在迁移到 [debugLog] 并使用 [YLog.Configs.tag]
+         * - Migrate to [debugLog] and use [YLog.Configs.tag].
          */
-        @Deprecated(message = "请使用新方式来实现此功能")
+        @Deprecated(message = "Use the new API to implement this feature")
         var debugTag
             get() = YLog.Configs.tag
             set(value) {
@@ -260,22 +260,22 @@ object YukiHookAPI {
             }
 
         /**
-         * 是否启用调试模式 - 默认不启用
+         * Whether debug mode is enabled, false by default.
          *
-         * 启用后将交由日志输出管理器打印详细 Hook 日志到控制台
+         * Once enabled, the log manager prints detailed Hook logs to the console.
          *
-         * 当 [YLog.Configs.isEnable] 关闭后 [isDebug] 也将同时关闭
+         * Disabling [YLog.Configs.isEnable] also disables [isDebug].
          */
         var isDebug = false
 
         /**
-         * 是否启用调试日志的输出功能
+         * Whether debug log output is enabled.
          *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         * - This API is deprecated and will be removed in a future version.
          *
-         * - 请现在迁移到 [debugLog] 并使用 [YLog.Configs.isEnable]
+         * - Migrate to [debugLog] and use [YLog.Configs.isEnable].
          */
-        @Deprecated(message = "请使用新方式来实现此功能")
+        @Deprecated(message = "Use the new API to implement this feature")
         var isAllowPrintingLogs
             get() = YLog.Configs.isEnable
             set(value) {
@@ -283,97 +283,94 @@ object YukiHookAPI {
             }
 
         /**
-         * 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
+         * Whether [YukiHookPrefsBridge] key-value caching is enabled.
          *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         * - This API is deprecated and will be removed in a future version.
          *
-         * - 请现在迁移到 [isEnablePrefsBridgeCache]
+         * - Migrate to [isEnablePrefsBridgeCache].
          */
-        @Deprecated(message = "请使用新的命名方法来实现此功能", ReplaceWith("isEnablePrefsBridgeCache"))
+        @Deprecated(message = "Use the renamed API to implement this feature", ReplaceWith("isEnablePrefsBridgeCache"))
         var isEnableModulePrefsCache = false
 
         /**
-         * 是否启用 [YukiHookPrefsBridge] 的键值缓存功能
+         * Whether [YukiHookPrefsBridge] key-value caching is enabled.
          *
-         * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
+         * - This API and feature have been removed and will be deleted in a future version.
          *
-         * - 键值的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+         * - Direct key-value caching was removed because it can cause out-of-memory errors.
          */
-        @Deprecated(message = "此方法及功能已被移除，请删除此方法")
+        @Deprecated(message = "This API and feature have been removed. Delete this call")
         var isEnablePrefsBridgeCache = false
 
         /**
-         * 是否启用当前 Xposed 模块自身 [Resources] 缓存功能
+         * Whether caching the current Xposed module's [Resources] is enabled.
          *
-         * - 为防止内存复用过高问题 - 此功能默认启用
+         * - This feature is enabled by default to prevent excessive memory reuse.
          *
-         * - 关闭后每次使用 [PackageParam.moduleAppResources] 都会重新创建 - 可能会造成运行缓慢
+         * - When disabled, every use of [PackageParam.moduleAppResources] creates a new instance and may reduce performance.
          *
-         * 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
+         * Call [PackageParam.refreshModuleAppResources] to refresh the cache manually.
          */
         var isEnableModuleAppResourcesCache = true
 
         /**
-         * 是否启用 Hook Xposed 模块激活等状态功能
+         * Whether Hook support for Xposed module activation and related states is enabled.
          *
-         * - 此方法已弃用 - 在之后的版本中将直接被删除
+         * - This API is deprecated and will be removed in a future version.
          *
-         * - 请现在迁移到 [InjectYukiHookWithXposed.isUsingXposedModuleStatus]
+         * - Migrate to [InjectYukiHookWithXposed.isUsingXposedModuleStatus].
          */
-        @Deprecated(message = "请手动迁移到新用法")
+        @Deprecated(message = "Migrate manually to the new API")
         var isEnableHookModuleStatus = true
 
         /**
-         * 是否启用 Hook [SharedPreferences]
+         * Whether Hook support for [SharedPreferences] is enabled.
          *
-         * 启用后将在模块启动时强制将 [SharedPreferences] 文件权限调整为 [Context.MODE_WORLD_READABLE] (0664)
+         * Once enabled, module startup forces [SharedPreferences] file permissions to [Context.MODE_WORLD_READABLE] (0664).
          *
-         * - 这是一个可选的实验性功能 - 此功能默认不启用
+         * - This optional experimental feature is disabled by default.
          *
-         * - 仅用于修复某些系统可能会出现在启用了 New XSharedPreferences 后依然出现文件权限错误问题 - 若你能正常使用 [YukiHookPrefsBridge] 就不建议启用此功能
+         * - Use this only to fix file-permission errors that may remain on some systems after enabling New XSharedPreferences.
+         * Do not enable it when [YukiHookPrefsBridge] already works correctly.
          */
         var isEnableHookSharedPreferences = false
 
         /**
-         * 是否启用当前 Xposed 模块与宿主交互的 [YukiHookDataChannel] 功能
+         * Whether [YukiHookDataChannel] communication between the current Xposed module and host app is enabled.
          *
-         * 请确保 Xposed 模块的 [Application] 继承于 [ModuleApplication] 才能有效
+         * The Xposed module's [Application] must extend [ModuleApplication].
          *
-         * - 此功能默认启用 - 关闭后将不会在功能初始化的时候装载 [YukiHookDataChannel]
+         * - This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
          */
         var isEnableDataChannel = true
 
         /**
-         * 是否启用 [Member] 缓存功能
+         * Whether [Member] caching is enabled.
          *
-         * - 此方法及功能已被移除 - 在之后的版本中将直接被删除
+         * - This API and feature have been removed and will be deleted in a future version.
          *
-         * - [Member] 的直接缓存功能已被移除 - 因为其存在内存溢出 (OOM) 问题
+         * - Direct [Member] caching was removed because it can cause out-of-memory errors.
          */
-        @Deprecated(message = "此方法及功能已被移除，请删除此方法")
+        @Deprecated(message = "This API and feature have been removed. Delete this call")
         var isEnableMemberCache = false
 
-        /** 结束方法体 */
+        /** Completes the configuration block. */
         internal fun build() = Unit
     }
 
     /**
-     * 配置 [YukiHookAPI] 相关参数
+     * Configures [YukiHookAPI].
      *
-     * 详情请参考 [configs 方法](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#configs-%E6%96%B9%E6%B3%95)
-     *
-     * For English version, see [configs Method](https://highcapable.github.io/YukiHookAPI/en/config/api-example#configs-method)
-     * @param initiate 方法体
+     * See [configs Method](https://highcapable.github.io/YukiHookAPI/en/config/api-example#configs-method)
+     * @param initiate the configuration block.
      */
     inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
 
     /**
-     * 作为 Xposed 模块装载调用入口方法
+     * Loading entry point for a Xposed module.
      *
-     * 配置请参考 [通过 lambda 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
-     *
-     * For English version, see [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
-     * @param initiate Hook 方法体
+     * See [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
+     * @param initiate the Hook block.
      */
     fun encase(initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = false
@@ -383,13 +380,11 @@ object YukiHookAPI {
     }
 
     /**
-     * 作为 Xposed 模块装载调用入口方法
+     * Loading entry point for a Xposed module.
      *
-     * 配置请参考 [通过自定义 Hooker 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
-     *
-     * For English version, see [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
-     * @param hooker Hook 子类数组 - 必填不能为空
-     * @throws IllegalStateException 如果 [hooker] 是空的
+     * See [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
+     * @param hooker the required, non-empty Hooker array.
+     * @throws IllegalStateException if [hooker] is empty.
      */
     fun encase(vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = false
@@ -403,19 +398,15 @@ object YukiHookAPI {
     }
 
     /**
-     * 作为 [Application] 装载调用入口方法
+     * Loading entry point for an [Application].
      *
-     * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
+     * Load [YukiHookAPI] from [Application.attachBaseContext].
      *
-     * 详情请参考 [作为 Hook API 使用](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
+     * See [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
      *
-     * For English version, see [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
-     *
-     * 配置请参考 [通过 lambda 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
-     *
-     * For English version, see [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
-     * @param baseContext attachBaseContext
-     * @param initiate Hook 方法体
+     * See [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
+     * @param baseContext attachBaseContext.
+     * @param initiate the Hook block.
      */
     fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = true
@@ -427,20 +418,16 @@ object YukiHookAPI {
     }
 
     /**
-     * 作为 [Application] 装载调用入口方法
+     * Loading entry point for an [Application].
      *
-     * 请在 [Application.attachBaseContext] 中实现 [YukiHookAPI] 的装载
+     * Load [YukiHookAPI] from [Application.attachBaseContext].
      *
-     * 详情请参考 [作为 Hook API 使用](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
+     * See [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
      *
-     * For English version, see [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
-     *
-     * 配置请参考 [通过自定义 Hooker 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
-     *
-     * For English version, see [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
-     * @param baseContext attachBaseContext
-     * @param hooker Hook 子类数组 - 必填不能为空
-     * @throws IllegalStateException 如果 [hooker] 是空的
+     * See [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
+     * @param baseContext attachBaseContext.
+     * @param hooker the required, non-empty Hooker array.
+     * @throws IllegalStateException if [hooker] is empty.
      */
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
         isLoadedFromBaseContext = true
@@ -453,19 +440,19 @@ object YukiHookAPI {
         } else printNotFoundHookApiError()
     }
 
-    /** 输出欢迎信息调试日志 */
+    /** Prints the welcome debug log. */
     internal fun printSplashInfo() {
         if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
         isShowSplashLogOnceTime = false
         YLog.innerD("Welcome to YukiHookAPI $VERSION! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}", isImplicit = true)
     }
 
-    /** 输出找不到 Hook API 的错误日志 */
+    /** Prints an error when no Hook API can be found. */
     private fun printNotFoundHookApiError() =
         YLog.innerE("Could not found any available Hook APIs in current environment! Aborted", isImplicit = true)
 
     /**
-     * 通过 baseContext 创建 Hook 入口类
+     * Creates the Hook entry object from the base context.
      * @return [PackageParam]
      */
     private fun Context.createPackageParam() =

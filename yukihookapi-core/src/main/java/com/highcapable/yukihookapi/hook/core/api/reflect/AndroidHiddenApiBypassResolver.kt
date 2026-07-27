@@ -28,13 +28,13 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 
 /**
- * 这是一个为 KavaRef 提供的 [HiddenApiBypass].
+ * Provides [HiddenApiBypass] integration for KavaRef.
  *
- * 使用 [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass) 实现
+ * Implemented with [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass).
  *
- * 你可以调用 [AndroidHiddenApiBypassResolver.get] 来在想要调用系统隐藏 API 的地方使用它
+ * Call [AndroidHiddenApiBypassResolver.get] wherever access to Android hidden APIs is required.
  *
- * - 此功能尚在实验阶段 - 在 1.x.x 版本将暂定于此 - 在 2.0.0 版本可能将合并到新的模块
+ * - This feature is experimental in 1.x.x and may move to a new module in 2.0.0.
  */
 class AndroidHiddenApiBypassResolver private constructor() : MemberProcessor.Resolver() {
 
@@ -43,7 +43,7 @@ class AndroidHiddenApiBypassResolver private constructor() : MemberProcessor.Res
         private val self by lazy { AndroidHiddenApiBypassResolver() }
 
         /**
-         * 获得 [AndroidHiddenApiBypassResolver] 实例
+         * Gets the [AndroidHiddenApiBypassResolver] instance.
          * @return [AndroidHiddenApiBypassResolver]
          */
         fun get() = self

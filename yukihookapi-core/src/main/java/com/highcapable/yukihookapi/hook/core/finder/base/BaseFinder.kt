@@ -24,41 +24,41 @@
 package com.highcapable.yukihookapi.hook.core.finder.base
 
 import com.highcapable.yukihookapi.hook.bean.VariousClass
-import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
+import com.highcapable.yukihookapi.hook.core.finder.base.data.BaseRulesData
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.type.defined.UndefinedType
 import java.lang.reflect.Member
 import kotlin.math.abs
 
 /**
- * 这是 [Class] 与 [Member] 查找类功能的基本类实现
+ * Base implementation for [Class] and [Member] finders.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 abstract class BaseFinder {
 
-    /** 当前查找条件规则数据 */
+    /** The current finder rule data. */
     internal abstract val rulesData: BaseRulesData
 
     /**
-     * 字节码、数组下标筛选数据类型
+     * Bytecode and array index filter type.
      */
     internal enum class IndexConfigType { ORDER, MATCH }
 
     /**
-     * 字节码、数组下标筛选实现类
-     * @param type 类型
+     * Bytecode and array index filter implementation.
+     * @param type the filter type.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     inner class IndexTypeCondition internal constructor(private val type: IndexConfigType) {
 
         /**
-         * 设置下标
+         * Sets the index.
          *
-         * 若 index 小于零则为倒序 - 此时可以使用 [IndexTypeConditionSort.reverse] 方法实现
+         * A negative index uses reverse order. This can be configured through [IndexTypeConditionSort.reverse].
          *
-         * 可使用 [IndexTypeConditionSort.first] 和 [IndexTypeConditionSort.last] 设置首位和末位筛选条件
-         * @param num 下标
+         * Use [IndexTypeConditionSort.first] and [IndexTypeConditionSort.last] to select the first or last match.
+         * @param num the index.
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun index(num: Int) = when (type) {
@@ -67,25 +67,25 @@ abstract class BaseFinder {
         }
 
         /**
-         * 得到下标
+         * Gets the index configuration.
          * @return [IndexTypeConditionSort]
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         fun index() = IndexTypeConditionSort()
 
         /**
-         * 字节码、数组下标排序实现类
+         * Bytecode and array index ordering implementation.
          *
-         * - 请使用 [index] 方法来获取 [IndexTypeConditionSort]
+         * - Use [index] to obtain [IndexTypeConditionSort].
          */
         @Deprecated(ReflectionMigration.KAVAREF_INFO)
         inner class IndexTypeConditionSort internal constructor() {
 
-            /** 设置满足条件的第一个*/
+            /** Selects the first matching item. */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun first() = index(num = 0)
 
-            /** 设置满足条件的最后一个*/
+            /** Selects the last matching item. */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun last() = when (type) {
                 IndexConfigType.ORDER -> rulesData.orderIndex = Pair(0, false)
@@ -93,8 +93,8 @@ abstract class BaseFinder {
             }
 
             /**
-             * 设置倒序下标
-             * @param num 下标
+             * Sets an index in reverse order.
+             * @param num the index.
              */
             @Deprecated(ReflectionMigration.KAVAREF_INFO)
             fun reverse(num: Int) = when {
@@ -106,10 +106,10 @@ abstract class BaseFinder {
     }
 
     /**
-     * 将目标类型转换为可识别的兼容类型
-     * @param tag 当前查找类的标识
-     * @param loader 使用的 [ClassLoader]
-     * @return [Class] or null
+     * Converts the target type to a supported compatible type.
+     * @param tag the current finder identifier.
+     * @param loader the [ClassLoader] to use.
+     * @return [Class] or null.
      */
     internal fun Any?.compat(tag: String, loader: ClassLoader?) = when (this) {
         null -> null
@@ -120,26 +120,26 @@ abstract class BaseFinder {
     }
 
     /**
-     * 返回结果实现类
+     * Builds the result implementation.
      *
-     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
+     * - This operation is performed automatically by the block and should not be called manually.
      * @return [BaseResult]
      */
     internal abstract fun build(): BaseResult
 
     /**
-     * 返回只有异常的结果实现类
+     * Builds a result implementation that contains only an exception.
      *
-     * - 此功能交由方法体自动完成 - 你不应该手动调用此方法
-     * @param throwable 异常
+     * - This operation is performed automatically by the block and should not be called manually.
+     * @param throwable the exception.
      * @return [BaseResult]
      */
     internal abstract fun failure(throwable: Throwable?): BaseResult
 
     /**
-     * 查找结果实现、处理类接口
+     * Finder result implementation and processing interface.
      *
-     * - 此功能交由方法体自动完成 - 你不应该手动继承此接口
+     * - This interface is implemented automatically by the block and should not be implemented manually.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     interface BaseResult

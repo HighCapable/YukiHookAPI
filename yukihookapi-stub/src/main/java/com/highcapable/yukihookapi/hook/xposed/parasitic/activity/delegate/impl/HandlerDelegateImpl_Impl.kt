@@ -27,23 +27,23 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic.activity.delegate.impl
 import android.os.Handler
 
 /**
- *  HandlerDelegateImpl 注入 Stub
+ * Injection stub for HandlerDelegateImpl.
  */
 object HandlerDelegateImpl_Impl {
 
     /**
-     * 获取 [Handler.Callback] 实例 [Class] 名称
+     * Gets the [Class] name of the [Handler.Callback] implementation.
      *
-     * 返回值将在每次编译时自动生成
+     * The return value is generated automatically during each compilation.
      * @return [String]
      */
     val wrapperClassName get(): String = error("Stub!")
 
     /**
-     * 从 [Handler.Callback] 创建实例
+     * Creates an instance from [Handler.Callback].
      *
-     * 方法内容将在每次编译时自动生成
-     * @param baseInstance [Handler.Callback] 实例 - 可空
+     * The method body is generated automatically during each compilation.
+     * @param baseInstance the nullable [Handler.Callback] instance.
      * @return [Handler.Callback]
      */
     fun createWrapper(baseInstance: Handler.Callback? = null): Handler.Callback = error("Stub!")

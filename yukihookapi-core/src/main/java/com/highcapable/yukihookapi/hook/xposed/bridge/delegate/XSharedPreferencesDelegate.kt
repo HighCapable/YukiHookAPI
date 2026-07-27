@@ -24,25 +24,25 @@ package com.highcapable.yukihookapi.hook.xposed.bridge.delegate
 import de.robv.android.xposed.XSharedPreferences
 
 /**
- * [XSharedPreferences] 代理类
- * @param packageName APP 包名
- * @param prefFileName 存储文件名
+ * Proxies [XSharedPreferences].
+ * @param packageName the app package name.
+ * @param prefFileName the preferences file name.
  */
 internal class XSharedPreferencesDelegate private constructor(private val packageName: String, private val prefFileName: String) {
 
     internal companion object {
 
         /**
-         * 创建代理类
-         * @param packageName APP 包名
-         * @param prefFileName 存储文件名
+         * Creates the proxy.
+         * @param packageName the app package name.
+         * @param prefFileName the preferences file name.
          * @return [XSharedPreferencesDelegate]
          */
         fun from(packageName: String, prefFileName: String) = XSharedPreferencesDelegate(packageName, prefFileName)
     }
 
     /**
-     * 获取实例
+     * Gets the proxied instance.
      * @return [XSharedPreferences]
      */
     internal val instance by lazy { XSharedPreferences(packageName, prefFileName) }

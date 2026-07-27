@@ -23,25 +23,25 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.classes.rules
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.base.BaseRules
 import com.highcapable.yukihookapi.hook.core.finder.classes.rules.result.MemberRulesResult
 import com.highcapable.yukihookapi.hook.core.finder.members.data.MemberRulesData
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ModifierConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
- * [Member] 查找条件实现类
- * @param rulesData 当前查找条件规则数据
+ * Defines conditions used to find a [Member].
+ * @param rulesData the current finder rule data.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class MemberRules internal constructor(private val rulesData: MemberRulesData) : BaseRules() {
 
     /**
-     * 设置 [Member] 标识符筛选条件
+     * Sets the [Member] modifier conditions.
      *
-     * - 可不设置筛选条件
-     * @param conditions 条件方法体
+     * - This condition is optional.
+     * @param conditions the condition block.
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun modifiers(conditions: ModifierConditions) {
@@ -49,7 +49,7 @@ class MemberRules internal constructor(private val rulesData: MemberRulesData) :
     }
 
     /**
-     * 返回结果实现类
+     * Builds the rule result.
      * @return [MemberRulesResult]
      */
     internal fun build() = MemberRulesResult(rulesData)

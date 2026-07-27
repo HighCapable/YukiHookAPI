@@ -27,30 +27,30 @@ import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.factory.classOf
 
 /**
- * 未定义类型实例
+ * Represents an undefined type.
  *
- * 请使用 [UndefinedType] 来调用它
+ * Use [UndefinedType] to access it.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal class UndefinedClass private constructor()
 
 /**
- * 模糊类型实例
+ * Represents a wildcard type.
  *
- * 请使用 [VagueType] 来调用它
+ * Use [VagueType] to access it.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class VagueClass private constructor()
 
 /**
- * 得到未定义类型
+ * Gets the undefined type marker.
  * @return [Class]<[UndefinedClass]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal val UndefinedType get() = classOf<UndefinedClass>()
 
 /**
- * 得到模糊类型
+ * Gets the wildcard type marker.
  * @return [Class]<[VagueClass]>
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)

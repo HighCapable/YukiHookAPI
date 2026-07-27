@@ -23,18 +23,18 @@
 
 package com.highcapable.yukihookapi.hook.core.finder.members.data
 
+import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.CountConditions
 import com.highcapable.yukihookapi.hook.core.finder.type.factory.ObjectsConditions
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Constructor
 
 /**
- * [Constructor] 规则查找数据类
- * @param paramTypes 参数类型数组
- * @param paramTypesConditions 参数类型条件
- * @param paramCount 参数个数
- * @param paramCountRange 参数个数范围
- * @param paramCountConditions 参数个数条件
+ * Stores rules used to find a [Constructor].
+ * @param paramTypes the parameter types.
+ * @param paramTypesConditions the parameter-type conditions.
+ * @param paramCount the parameter count.
+ * @param paramCountRange the accepted parameter-count range.
+ * @param paramCountConditions the parameter-count conditions.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 internal class ConstructorRulesData internal constructor(

@@ -28,10 +28,10 @@ import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
 import java.lang.reflect.Member
 
 /**
- * 这是一个模糊 [Class]、[Member] 名称条件实现类
+ * Fuzzy name condition implementation for [Class] and [Member].
  *
- * 可对 R8 混淆后的 [Class]、[Member] 进行更加详细的定位
- * @param instance 当前实例对象
+ * Provides more precise matching for [Class] and [Member] names obfuscated by R8.
+ * @param instance the current instance.
  */
 @Deprecated(ReflectionMigration.KAVAREF_INFO)
 class NameRules private constructor(private val instance: String) {
@@ -39,84 +39,84 @@ class NameRules private constructor(private val instance: String) {
     internal companion object {
 
         /**
-         * 创建实例
-         * @param instance 实例对象
+         * Creates an instance.
+         * @param instance the source instance.
          * @return [NameRules]
          */
         internal fun with(instance: String) = NameRules(instance)
     }
 
     /**
-     * 是否为匿名类的主类调用对象名称
+     * Checks whether this is the enclosing-instance field name of an anonymous class.
      *
-     * 它的名称形态通常为：this$[index]
-     * @param index 下标 - 默认 0
+     * Its name usually has the form `this$[index]`.
+     * @param index the index, 0 by default.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isSynthetic(index: Int = 0) = this == "this$$index"
 
     /**
-     * 是否只有符号
+     * Checks whether this string contains only symbols.
      *
-     * 筛选仅包含 _、-、?、!、,、.、<、> 等符号以及特殊符号
+     * Matches strings containing only symbols such as `_`, `-`, `?`, `!`, `,`, `.`, `<`, and `>`.
      *
-     * 你可以使用 [matches] 方法进行更详细的正则匹配
+     * Use [matches] for more specific regular-expression matching.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlySymbols() = matches("[*,.:~`'\"|/\\\\?!^()\\[\\]{}%@#$&\\-_+=<>]+".toRegex())
 
     /**
-     * 是否只有字母
+     * Checks whether this string contains only letters.
      *
-     * 在没有 [isOnlyLowercase] 以及 [isOnlyUppercase] 的条件下筛选仅包含 26 个大小写英文字母
+     * Without [isOnlyLowercase] or [isOnlyUppercase], matches only the 26 uppercase and lowercase English letters.
      *
-     * 你可以使用 [matches] 方法进行更详细的正则匹配
+     * Use [matches] for more specific regular-expression matching.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyLetters() = matches("[a-zA-Z]+".toRegex())
 
     /**
-     * 是否只有数字
+     * Checks whether this string contains only digits.
      *
-     * 筛选仅包含 0-9 阿拉伯数字
+     * Matches strings containing only the Arabic digits 0 through 9.
      *
-     * 你可以使用 [matches] 方法进行更详细的正则匹配
+     * Use [matches] for more specific regular-expression matching.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyNumbers() = matches("\\d+".toRegex())
 
     /**
-     * 是否只有字母或数字
+     * Checks whether this string contains only letters or digits.
      *
-     * 融合条件 [isOnlyLetters] 和 [isOnlyNumbers]
+     * Combines the conditions of [isOnlyLetters] and [isOnlyNumbers].
      *
-     * 你可以使用 [matches] 方法进行更详细的正则匹配
+     * Use [matches] for more specific regular-expression matching.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyLettersNumbers() = matches("[a-zA-Z\\d]+".toRegex())
 
     /**
-     * 是否只有小写字母
+     * Checks whether this string contains only lowercase letters.
      *
-     * 在没有其它条件的情况下设置此条件允许判断对象存在字母以外的字符
+     * When used alone, this condition also rejects any non-letter characters.
      *
-     * 你可以使用 [matches] 方法进行更详细的正则匹配
+     * Use [matches] for more specific regular-expression matching.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)
     fun String.isOnlyLowercase() = matches("[a-z]+".toRegex())
 
     /**
-     * 是否只有大写字母
+     * Checks whether this string contains only uppercase letters.
      *
-     * 在没有其它条件的情况下设置此条件允许判断对象存在字母以外的字符
+     * When used alone, this condition also rejects any non-letter characters.
      *
-     * 你可以使用 [matches] 方法进行更详细的正则匹配
+     * Use [matches] for more specific regular-expression matching.
      * @return [Boolean]
      */
     @Deprecated(ReflectionMigration.KAVAREF_INFO)

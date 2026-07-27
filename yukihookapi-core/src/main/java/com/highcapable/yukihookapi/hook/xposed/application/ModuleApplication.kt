@@ -28,33 +28,33 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 /**
- * 这是对使用 [YukiHookAPI] Xposed 模块实现中的一个扩展功能
+ * Provides an [Application] base class for Xposed modules built with [YukiHookAPI].
  *
- * 在你的 Xposed 模块的 [Application] 中继承此类
+ * Extend this class from the Xposed module's [Application].
  *
- * 或在 AndroidManifest.xml 的 application 标签中指定此类
+ * Or declare it directly in the `application` tag of AndroidManifest.xml.
  *
- * 目前可实现功能如下
+ * This provides the following features:
  *
- * - 全局共享模块中静态的 [appContext]
+ * - Exposes the module-wide static [appContext].
  *
- * - 在模块与宿主中装载 [YukiHookAPI.Configs] 以确保 [YukiHookAPI.Configs.debugTag] 不需要重复定义
+ * - Loads [YukiHookAPI.Configs] in both module and host environments to avoid duplicate configuration.
  *
- * - 在模块与宿主中使用 [YukiHookDataChannel] 进行通讯
+ * - Enables [YukiHookDataChannel] communication between the module and host.
  *
- * - 在模块中使用 [YukiHookAPI.Status.isTaiChiModuleActive] 判断太极、无极激活状态
+ * - Exposes [YukiHookAPI.Status.isTaiChiModuleActive] for TaiChi and Wuji activation checks.
  */
 open class ModuleApplication : Application() {
 
     companion object {
 
-        /** 全局静态 [Application] 实例 */
+        /** Module-wide static [Application] instance. */
         internal var currentContext: ModuleApplication? = null
 
         /**
-         * 获取全局静态 [Application] 实例
+         * Gets the module-wide static [Application] instance.
          * @return [ModuleApplication]
-         * @throws IllegalStateException 如果 [Application] 没有正确装载完成
+         * @throws IllegalStateException if the [Application] has not finished loading correctly.
          */
         val appContext get() = currentContext ?: error("App is dead, You cannot call to appContext")
     }
@@ -62,7 +62,7 @@ open class ModuleApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         currentContext = this
-        /** 调用 Hook 入口类的 [IYukiHookXposedInit.onInit] 方法 */
+        // Calls [IYukiHookXposedInit.onInit] on the Hook entry class.
         runCatching { ModuleApplication_Impl.callHookEntryInit() }
         YukiHookDataChannel.instance().register(context = this)
     }
