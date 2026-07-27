@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>SuperClass</title>
+    <link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">
+        <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../../ui-kit/ui-kit.min.js" defer="defer"></script>
+</head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../../../index.html" tabindex="1">
+                    yukihookapi-core
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+1.3.2        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
+                        data-filter=":yukihookapi-core/release">release</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":yukihookapi-core/release"
+                                       data-filter=":yukihookapi-core/release"/>
+                                <span class="checkbox--icon"></span>
+                                release
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    yukihookapi-core
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="yukihookapi-core::com.highcapable.yukihookapi.hook.bean/CurrentClass.SuperClass///PointingToDeclaration//1050610057">
+  <div class="breadcrumbs"><a href="../../../../index.html">yukihookapi-core</a><span class="delimiter">/</span><a href="../../index.html">com.highcapable.yukihookapi.hook.bean</a><span class="delimiter">/</span><a href="../index.html">CurrentClass</a><span class="delimiter">/</span><span class="current">SuperClass</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Super</span><wbr></wbr><span><span>Class</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inner </span><span class="token keyword">class </span><a href="index.html"><strike>SuperClass</strike></a></div><div class="deprecation-content"><h3 class="">Deprecated</h3><p class="paragraph">YukiHookAPI will completely remove the API of its own reflection part in version 2.0.0. We recommend that you use KavaRef to implement reflection for better performance and maintainability. See: https://github.com/HighCapable/KavaRef</p></div><p class="paragraph">Class operation object for the superclass instance of the current class.</p><ul><li><p class="paragraph">Use <a href="../super-class.html">superClass</a> to obtain <a href="index.html">SuperClass</a>.</p></li></ul><h4 class="tableheader">Parameters</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>super</span><wbr></wbr><span>Class</span><wbr></wbr><span><span>Set</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the superclass <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a>.</p></div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="241267769%2FProperties%2F1050610057" anchor-label="name" id="241267769%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="name.html"><span><span>name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="241267769%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="name.html"><strike>name</strike></a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Gets <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html#getname">Class.getName</a> for the superclass of the current <span data-unresolved-link="com.highcapable.yukihookapi.hook.bean/CurrentClass//#java.lang.Class[*]#kotlin.Any/PointingToCallableParameters(0)/">classSet</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1186483815%2FProperties%2F1050610057" anchor-label="simpleName" id="1186483815%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="simple-name.html"><span>simple</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1186483815%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="simple-name.html"><strike>simpleName</strike></a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Gets <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html#getsimplename">Class.getSimpleName</a> for the superclass of the current <span data-unresolved-link="com.highcapable.yukihookapi.hook.bean/CurrentClass//#java.lang.Class[*]#kotlin.Any/PointingToCallableParameters(0)/">classSet</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="762195164%2FFunctions%2F1050610057" anchor-label="field" id="762195164%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="field.html"><span><span>field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="762195164%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="field.html"><span class="token function"><strike>field</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/FieldConditions///PointingToDeclaration/">FieldConditions</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/-result/-instance/index.html">FieldFinder.Result.Instance</a></div><div class="brief "><p class="paragraph">Gets a field from the superclass instance.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1261088543%2FFunctions%2F1050610057" anchor-label="generic" id="1261088543%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generic.html"><span><span>generic</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1261088543%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="generic.html"><span class="token function"><strike>generic</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../-generic-class/index.html">GenericClass</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="generic.html"><span class="token function"><strike>generic</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><a href="../../-generic-class/index.html">GenericClass</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../-generic-class/index.html">GenericClass</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Gets the generic superclass of the current instance's superclass.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="979478102%2FFunctions%2F1050610057" anchor-label="method" id="979478102%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="method.html"><span><span>method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="979478102%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="method.html"><span class="token function"><strike>method</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/MethodConditions///PointingToDeclaration/">MethodConditions</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-result/-instance/index.html">MethodFinder.Result.Instance</a></div><div class="brief "><p class="paragraph">Calls a method on the superclass instance.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-158474248%2FFunctions%2F1050610057" anchor-label="toString" id="-158474248%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-string.html"><span>to</span><wbr></wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-158474248%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>YukiHookAPI | Apache-2.0 License | Copyright (C) 2019 HighCapable</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
