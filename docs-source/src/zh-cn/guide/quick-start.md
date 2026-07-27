@@ -14,7 +14,7 @@
 
 ## 自动构建项目
 
-`YukiHookAPI` 提供了一个自动化构建工具，它可以帮助你快速构建一个拥有 Xposed 模块依赖的 Android 标准项目模板，使用构建好的模板即可直接开始下一步工作。
+YukiHookAPI 提供了一个自动化构建工具，它可以帮助你快速构建一个拥有 Xposed 模块依赖的 Android 标准项目模板，使用构建好的模板即可直接开始下一步工作。
 
 你可以 [点击这里](../tools/yukihookapi-projectbuilder) 进行查看。
 
@@ -239,7 +239,7 @@ override fun onInit() = configs {
 
 你还可以将你的模块 APP 的 **Application** 继承于 **ModuleApplication** 以实现完整使用体验。
 
-更多功能请参考 [ModuleApplication](../api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication)。
+更多功能请参考 [ModuleApplication](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.application/-module-application)。
 
 :::
 

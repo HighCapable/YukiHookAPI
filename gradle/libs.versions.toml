@@ -2,6 +2,7 @@
 agp = "9.2.1"
 kotlin = "2.4.0"
 ksp = "2.3.9"
+dokka = "2.2.0"
 maven-publish = "0.37.0"
 rovo89-xposed-api = "82"
 hiddenapibypass = "6.1"
@@ -32,6 +33,7 @@ androidx-test-espresso-core = "3.7.0"
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 hikage = { id = "com.highcapable.hikage", version.ref = "hikage-plugin" }

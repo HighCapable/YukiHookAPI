@@ -39,7 +39,7 @@ directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/support
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
-🚀 `YukiHookAPI` is using `KavaRef` as a powerful driver for the reflection API.
+🚀 YukiHookAPI is using KavaRef as a powerful driver for the reflection API.
 **Click on the link above star project**, and you can also use it gracefully!
 
 ## Explore New Version
@@ -52,7 +52,7 @@ development progress.
 
 ## Cooperation
 
-The following are projects that have collaborated and are using `YukiHookAPI`.
+The following are projects that have collaborated and are using YukiHookAPI.
 
 | Repository                                                                      | Developer                                       |
 |---------------------------------------------------------------------------------|-------------------------------------------------|
@@ -82,7 +82,7 @@ The following are projects that have collaborated and are using `YukiHookAPI`.
 | [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 | [Lyricon](https://github.com/proify/lyricon)                                    | [Tomakino](https://github.com/proify)           |
 
-Are you also using `YukiHookAPI`? Come and **PR** to add your repository to the list above (private
+Are you also using YukiHookAPI? Come and **PR** to add your repository to the list above (private
 repositories do not need to indicate web
 links).
 

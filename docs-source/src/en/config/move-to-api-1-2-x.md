@@ -1,12 +1,12 @@
 # Migrate to YukiHookAPI 1.2.x
 
-`YukiHookAPI` has undergone a lot of adjustments since version `1.2.0`, you can read on to see what are the notes and new features.
+YukiHookAPI has undergone a lot of adjustments since version `1.2.0`, you can read on to see what are the notes and new features.
 
 ::: warning
 
 If you are using the YukiHookAPI previous version of `1.2.x`, it is recommended to refer to this document to migrate to the `1.2.x` version first.
 
-If you are using the `1.2.x` version of `YukiHookAPI`, please read directly [Migrate to YukiHookAPI 1.3.x](move-to-api-1-3-x) instead of this document.
+If you are using the `1.2.x` version of YukiHookAPI, please read directly [Migrate to YukiHookAPI 1.3.x](move-to-api-1-3-x) instead of this document.
 
 :::
 
@@ -24,7 +24,7 @@ You can use **@OptIn(LegacyResourcesHook::class)** to eliminate the warning, con
 
 ## New API
 
-`YukiHookAPI` introduced the [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33) (New API) of `2.0.0` in the `1.2.0` version, it is now in the experimental stage.
+YukiHookAPI introduced the [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33) (New API) of `2.0.0` in the `1.2.0` version, it is now in the experimental stage.
 
 You can before the `2.0.0` version is officially released, start migrating and experience the New API.
 

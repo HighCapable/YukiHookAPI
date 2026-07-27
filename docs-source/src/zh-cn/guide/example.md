@@ -6,7 +6,7 @@
 
 > 下方的结构描述了 `YukiHookAPI` 的基本工作方式和原理。
 
-```:no-line-numbers
+```text:no-line-numbers
 Host Environment
 └─ YukiMemberHookCreator
    └─ Class
@@ -108,8 +108,8 @@ resources().hook {
 
 ::: tip
 
-从 `1.3.0` 版本开始，`YukiHookAPI` 已将自身的反射 API 部分迁移至
-[KavaRef](https://github.com/HighCapable/KavaRef)，下方演示部分的反射 API 均使用了 `KavaRef` 的写法，我们不再推荐使用 `YukiHookAPI` 自身的反射 API。
+从 `1.3.0` 版本开始，YukiHookAPI 已将自身的反射 API 部分迁移至
+[KavaRef](https://github.com/HighCapable/KavaRef)，下方演示部分的反射 API 均使用了 KavaRef 的写法，我们不再推荐使用 YukiHookAPI 自身的反射 API。
 
 :::
 
@@ -225,7 +225,7 @@ TestClass.resolve().firstMethod {
 
 ::: tip
 
-更多功能请参考 [MemberHookCreator](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#memberhookcreator-class)。
+更多功能请参考 [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator)。
 
 :::
 
@@ -260,7 +260,7 @@ loadZygote {
 
 ### Hook 系统框架
 
-在 `YukiHookAPI` 中，Hook 系统框架的实现非常简单。
+在 YukiHookAPI 中，Hook 系统框架的实现非常简单。
 
 假设，你要得到 `ApplicationInfo` 与 `PackageInfo` 并对它们进行一些操作。
 
@@ -354,13 +354,13 @@ loadZygote {
 ```
 ::: tip
 
-更多功能请参考 [ResourcesHookCreator](../api/public/com/highcapable/yukihookapi/hook/core/YukiResourcesHookCreator#resourceshookcreator-class)。
+更多功能请参考 [ResourcesHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator)。
 
 :::
 
 ### 解除 Hook
 
-原生的 Xposed 为我们提供了一个 `XC_MethodHook.Unhook` 功能，可以从 Hook 队列中将当前 Hook 移除，`YukiHookAPI` 同样可以实现此功能。
+原生的 Xposed 为我们提供了一个 `XC_MethodHook.Unhook` 功能，可以从 Hook 队列中将当前 Hook 移除，YukiHookAPI 同样可以实现此功能。
 
 第一种方法，保存当前注入对象的 `Result` 实例，在适当的时候和地方调用 `remove` 即可解除该注入对象。
 
@@ -399,7 +399,7 @@ resolve().firstMethod {
 
 ::: tip
 
-更多功能请参考 [MemberHookCreator](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#memberhookcreator-class)。
+更多功能请参考 [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator)。
 
 :::
 
@@ -469,7 +469,7 @@ method {
 
 ::: tip
 
-更多功能请参考 [MemberHookCreator.Result](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#result-class)、[ResourcesHookCreator.Result](../api/public/com/highcapable/yukihookapi/hook/core/YukiResourcesHookCreator#result-class)。
+更多功能请参考 [MemberHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-result)、[ResourcesHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator/-result)。
 
 :::
 
@@ -477,7 +477,7 @@ method {
 
 ::: warning
 
-`KavaRef` 的异常将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 `KavaRef` 的文档。
+KavaRef 的异常将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 KavaRef 的文档。
 
 :::
 
@@ -485,9 +485,9 @@ method {
 
 在某些情况下，你可以**手动抛出异常**来达到提醒某些功能存在问题的目的。
 
-上面已经介绍过，在 `hook` 方法体内抛出的异常会被 `YukiHookAPI` 接管，避免打断下一个 Hook 流程导致 Hook 进程“死掉”。
+上面已经介绍过，在 `hook` 方法体内抛出的异常会被 YukiHookAPI 接管，避免打断下一个 Hook 流程导致 Hook 进程“死掉”。
 
-以下是 `YukiHookAPI` 接管时这些异常的运作方式。
+以下是 YukiHookAPI 接管时这些异常的运作方式。
 
 > 示例如下
 
@@ -520,7 +520,7 @@ injectMember {
 
 以上情景只会在 (Xposed) 宿主环境被处理，不会对宿主自身造成任何影响。
 
-若我们想将这些异常直接抛给宿主，原生的 Xposed 为我们提供了 `param.throwable` 方法，`YukiHookAPI` 同样可以实现此功能。
+若我们想将这些异常直接抛给宿主，原生的 Xposed 为我们提供了 `param.throwable` 方法，YukiHookAPI 同样可以实现此功能。
 
 若想在 Hook 回调方法体中将一个异常直接抛给宿主，可以有如下实现方法。
 
@@ -560,7 +560,7 @@ method {
 
 ::: tip
 
-更多功能请参考 [Throwable.throwToApp](../api/public/com/highcapable/yukihookapi/hook/param/HookParam#throwable-throwtoapp-i-ext-method)、[YukiMemberHookCreator.MemberMookCreator.HookCallback](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#hookcallback-class)。
+更多功能请参考 [Throwable.throwToApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-hook-param/throw-to-app)、[YukiMemberHookCreator.MemberMookCreator.HookCallback](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-hook-callback)。
 
 :::
 
@@ -585,7 +585,7 @@ loadApp(name = "com.android.phone") {
 
 ::: tip
 
-更多功能请参考 [PackageParam.loadApp](../api/public/com/highcapable/yukihookapi/hook/param/PackageParam#loadapp-method)。
+更多功能请参考 [PackageParam.loadApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/load-app)。
 
 :::
 
@@ -606,13 +606,13 @@ withProcess(name = "$packageName:tool") {
 
 ::: tip
 
-更多功能请参考 [PackageParam.withProcess](../api/public/com/highcapable/yukihookapi/hook/param/PackageParam#withprocess-method)。
+更多功能请参考 [PackageParam.withProcess](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/with-process)。
 
 :::
 
 ## 写法优化
 
-为了使代码更加简洁，你可以删去 `YukiHookAPI` 的名称，将你的 `onHook` 入口写作 **lambda** 形式。
+为了使代码更加简洁，你可以删去 YukiHookAPI 的名称，将你的 `onHook` 入口写作 **lambda** 形式。
 
 > 示例如下
 
@@ -638,13 +638,13 @@ Activity::class.resolve().firstMethod {
 
 通常情况下，Xposed 模块的开发者都会去选择读取当前 Xposed 模块的激活信息以更好地向用户展示当前功能的生效状态。
 
-除了基本的 Hook 功能，`YukiHookAPI` 还为开发者设计了一套 Xposed 模块状态判断的功能，如激活状态、Hook Framework 信息。
+除了基本的 Hook 功能，YukiHookAPI 还为开发者设计了一套 Xposed 模块状态判断的功能，如激活状态、Hook Framework 信息。
 
 ### 判断自身激活状态
 
 通常情况下，我们会选择写一个方法，使其返回 `false`，然后 Hook 掉这个方法使其返回 `true` 来证明 Hook 已经生效。
 
-在 `YukiHookAPI` 中你完全不需要再这么做了，`YukiHookAPI` 已经帮你封装好了这个操作，你可以直接进行使用。
+在 YukiHookAPI 中你完全不需要再这么做了，YukiHookAPI 已经帮你封装好了这个操作，你可以直接进行使用。
 
 现在，你可以直接使用 `YukiHookAPI.Status.isXposedModuleActive` 在模块中判断自身是否被激活。
 
@@ -668,7 +668,7 @@ if(YukiHookAPI.Status.isTaiChiModuleActive) {
 }
 ```
 
-若你想使用两者得兼的判断方案，`YukiHookAPI` 同样为你封装了便捷的方式。
+若你想使用两者得兼的判断方案，YukiHookAPI 同样为你封装了便捷的方式。
 
 此时你可以使用 `YukiHookAPI.Status.isModuleActive` 判断自身是否在 Xposed 或太极、无极中被激活。
 
@@ -682,7 +682,7 @@ if(YukiHookAPI.Status.isModuleActive) {
 
 ::: tip
 
-更多功能请参考 [YukiHookAPI.Status](../api/public/com/highcapable/yukihookapi/YukiHookAPI#status-object)。
+更多功能请参考 [YukiHookAPI.Status](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status)。
 
 :::
 
@@ -734,7 +734,7 @@ val frameworkApiLevel = YukiHookAPI.Status.Executor.apiLevel
 
 ::: tip
 
-更多功能请参考 [YukiHookAPI.Status.Executor](../api/public/com/highcapable/yukihookapi/YukiHookAPI#executor-object)。
+更多功能请参考 [YukiHookAPI.Status.Executor](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status/-executor)。
 
 :::
 

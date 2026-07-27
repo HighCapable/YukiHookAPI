@@ -14,7 +14,7 @@ The original version may have imperfections or bugs. We welcome to your feedback
 
 ::: warning
 
-The project builder will be maintained before the release of the first `2.0.0` version of `YukiHookAPI`. This project will be officially deprecated after the new version is released.
+The project builder will be maintained before the release of the first `2.0.0` version of YukiHookAPI. This project will be officially deprecated after the new version is released.
 
 :::
 

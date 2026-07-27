@@ -35,7 +35,7 @@
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
-🚀 `YukiHookAPI` 正使用 `KavaRef` 作为反射 API 强力驱动，**点击上方链接 star 这个项目**，你也可以优雅地使用它！
+🚀 YukiHookAPI 正使用 KavaRef 作为反射 API 强力驱动，**点击上方链接 star 这个项目**，你也可以优雅地使用它！
 
 ## 探索新版本
 
@@ -46,7 +46,7 @@
 
 ## 合作项目
 
-以下是经过合作并稳定使用 `YukiHookAPI` 的项目。
+以下是经过合作并稳定使用 YukiHookAPI 的项目。
 
 | Repository                                                                      | Developer                                       |
 |---------------------------------------------------------------------------------|-------------------------------------------------|
@@ -76,8 +76,7 @@
 | [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 | [词幕](https://github.com/proify/lyricon)                                         | [Tomakino](https://github.com/proify)           |
 
-你也在使用 `YukiHookAPI` 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (
-私有仓库可以不需要注明网页链接)。
+你也在使用 YukiHookAPI 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
 
 ## 更多项目
 

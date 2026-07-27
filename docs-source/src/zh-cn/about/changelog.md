@@ -8,7 +8,7 @@
 
 :::
 
-### 1.3.2 | 2026.05.30 &ensp;<Badge type="tip" text="最新" vertical="middle" />
+### 1.3.2 | 2026.05.30 &ensp;<Badge type="latest" text="最新" vertical="middle" />
 
 - 更新目标 SDK 版本到 37
 - 更新依赖以解决与 `BetterAndroid` 冲突的问题
@@ -23,7 +23,7 @@
 ### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-3-x)
-- 弃用了 `YukiHookAPI` 自身的反射 API，现在请迁移到全新的 [KavaRef](https://github.com/HighCapable/KavaRef)
+- 弃用了 YukiHookAPI 自身的反射 API，现在请迁移到全新的 [KavaRef](https://github.com/HighCapable/KavaRef)
 - 弃用了重复 Hook 的限制，现在你可以重复 Hook 同一个方法
 - 弃用了 ~~`ModuleAppActivity`~~、~~`ModuleAppCompatActivity`~~，现在请使用 `ModuleActivity` 创建自己的代理 `Activity`
 - `YLog` 现已允许 `msg` 传入任意对象，将自动转换为字符串进行打印
@@ -108,7 +108,7 @@
 ### 1.1.8 | 2023.02.01 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/23)
-- 移动 `YukiHookAPI` 自动生成的入口类名称文件 `assets/yukihookapi_init` 到 `resources/META-INF/yukihookapi_init`
+- 移动 YukiHookAPI 自动生成的入口类名称文件 `assets/yukihookapi_init` 到 `resources/META-INF/yukihookapi_init`
 - 允许在仅打印异常堆栈时 `msg` 参数为空并可以不设置 `msg` 参数，留空 `msg` 参数的日志除非异常堆栈不为空否则将不会被记录
 - 修复 Hook 回调方法体内发生的异常打印的日志无具体方法信息的 BUG
 - `HookParam` 新增 `instanceOrNull` 变量与方法，可以在不确定 Hook 实例是否为空的前提下使用以防止 Hook 实例为空抛出异常
@@ -202,7 +202,7 @@
 
 ### 1.1.0 | 2022.09.28 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
-- 这是一次大版本更新，有关更新日志中提到的变化及用法请参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection)
+- 这是一次大版本更新，有关更新日志中提到的变化及用法请参考 [KDoc](kdoc://yukihookapi-core) 以及 [特色功能](../special-features/reflection)
 - 更换帮助文档框架到 [VuePress](https://v2.vuepress.vuejs.org)
 - 统一并规范文档中的术语名词，例如“查询”一律更改为了“查找”，`XposedHelper` 拼写错误修改为了 `XposedHelpers`
 - 文档 [基础知识](../guide/knowledge) 页面加入友情链接，仅限简体中文
@@ -365,7 +365,7 @@
 - 增加 `isSupportResourcesHook` 功能，判断当前是否支持资源钩子(Resources Hook)
 - `current` 功能新增 `superClass` 方法调用父类
 - 查找方法、构造方法、变量新增 `superClass` 查找条件，可继续在父类中查找
-- `YukiHookAPI` 大量方法与 Xposed API 解耦合
+- YukiHookAPI 大量方法与 Xposed API 解耦合
 - 新增 Xposed API 的原生 Hook 优先级功能
 - 修复 `isFirstApplication` 可能判断不准确的问题
 - 屏蔽 MIUI 系统上 MiuiCatcherPatch 重复调用 Hook 入口方法的问题
@@ -495,7 +495,7 @@
 ### 1.0.5 | 2022.03.18 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复旧版本 LSPosed 框架情况下欢迎信息多次打印的问题
-- 添加 `onInit` 方法来配置 `YukiHookAPI`
+- 添加 `onInit` 方法来配置 YukiHookAPI
 - 新增 `executorName` 和 `executorVersion` 来获取当前 Hook Framework 的名称和版本号
 - 新增 `by` 方法来设置 Hook 的时机和条件
 - `YukiHookModulePrefs` 新增可控制的键值缓存，可在宿主运行时模块动态更新数据
@@ -504,7 +504,7 @@
 ### 1.0.4 | 2022.03.06 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
 - 修复 LSPosed 在最新版本中启用“只有模块classloader可以使用Xposed API”选项后找不到 `XposedBridge` 的问题
-- 添加 `YukiHookAPI` 的常量版本名称和版本号
+- 添加 YukiHookAPI 的常量版本名称和版本号
 - 新增 `hasField` 方法以及 `isAllowPrintingLogs` 配置参数
 - 新增 `isDebug` 开启的情况下 API 将自动打印欢迎信息测试模块是否生效
 

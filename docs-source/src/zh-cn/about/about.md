@@ -1,12 +1,12 @@
 # 关于此文档
 
-> 此文档由 [VuePress](https://v2.vuepress.vuejs.org/zh) 强力驱动。
+> 此文档由 [VitePress](https://vitepress.dev/) 强力驱动。
 
 ## 许可证
 
 [Apache-2.0](https://github.com/HighCapable/YukiHookAPI/blob/master/LICENSE)
 
-```:no-line-numbers
+```text:no-line-numbers
 Apache License Version 2.0
 
 Copyright (C) 2019 HighCapable

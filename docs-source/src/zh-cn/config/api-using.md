@@ -6,7 +6,7 @@
 
 你只需要集成 `com.highcapable.yukihookapi:api` 依赖即可。
 
-然后请集成你目标使用的 `Hook Framework` 依赖。
+然后请集成你目标使用的 Hook Framework 依赖。
 
 ## 入口配置
 
@@ -49,7 +49,7 @@ class MyApplication : Application() {
 
 ## Hook Framework
 
-> 这里给出了一些较高使用率的 `Hook Framework` 如何对接 `YukiHookAPI` 的相关方式。
+> 这里给出了一些较高使用率的 Hook Framework 如何对接 `YukiHookAPI` 的相关方式。
 
 ### [Pine](https://github.com/canyie/pine)
 

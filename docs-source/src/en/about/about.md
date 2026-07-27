@@ -1,12 +1,12 @@
 # About This Document
 
-> This document is powered by [VuePress](https://v2.vuepress.vuejs.org/en).
+> This document is powered by [VitePress](https://vitepress.dev/).
 
 ## License
 
 [Apache-2.0](https://github.com/HighCapable/YukiHookAPI/blob/master/LICENSE)
 
-```:no-line-numbers
+```text:no-line-numbers
 Apache License Version 2.0
 
 Copyright (C) 2019 HighCapable

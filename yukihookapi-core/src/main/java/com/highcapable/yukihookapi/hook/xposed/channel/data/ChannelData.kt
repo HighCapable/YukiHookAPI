@@ -28,10 +28,6 @@ import java.io.Serializable
  * 数据通讯桥键值构造类
  *
  * 这个类是对 [YukiHookDataChannel] 的一个扩展用法
- *
- * 详情请参考 [API 文档 - ChannelData](https://highcapable.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/channel/data/ChannelData)
- *
- * For English version, see [API Document - ChannelData](https://highcapable.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/channel/data/ChannelData)
  * @param key 键值
  * @param value 键值数据 - 作为接收数据时可空
  */

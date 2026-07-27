@@ -1,0 +1,299 @@
+$primary-color: rgb(237, 150, 73);
+$accent-color: rgb(244, 200, 161);
+$latest-badge-primary-color: rgb(99, 159, 112);
+$latest-badge-accent-color: rgb(130, 180, 140);
+$content-width: 965px;
+$document-layout-reserved-width: 384px;
+$scroll-bar-width: 8px;
+$scroll-bar-height: 6.5px;
+$scroll-bar-border-radius: 50px;
+
+:root {
+    --c-brand: #{$primary-color};
+    --c-brand-light: #{$accent-color};
+    --content-width: #{$content-width};
+    // VitePress reserves 384px for the right outline and document gutters in addition to the sidebar.
+    --vp-layout-max-width: min(100vw, calc(#{$content-width} + var(--vp-sidebar-width) + #{$document-layout-reserved-width + $scroll-bar-width}));
+    --vp-c-brand-1: #{$primary-color};
+    --vp-c-brand-2: #{$accent-color};
+    --vp-c-brand-3: #{$primary-color};
+    --vp-c-brand-soft: #{rgba($accent-color, 0.14)};
+}
+
+.VPDoc .content-container {
+    max-width: #{$content-width};
+}
+
+// Keep the migrated 965px baseline for the original and sidebar-only layouts.
+// Full-width and content-adjustable layouts continue to use Nólëbase's width controls.
+body:not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchFullWidth):not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchBothWidthAdjustable) .VPDoc.has-aside .content-container {
+    max-width: #{$content-width};
+}
+
+@media (min-width: 1280px) {
+    // VitePress's scoped 688px rule ties Nólëbase's selector specificity and otherwise wins by order.
+    body.VPNolebaseEnhancedReadabilitiesLayoutSwitchBothWidthAdjustable .VPDoc.has-aside div.content-container {
+        max-width: var(--vp-nolebase-enhanced-readabilities-content-max-width);
+    }
+}
+
+.VPDoc h1 {
+    background: linear-gradient(120deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+// VitePress only defines heading margins through h4, so adjacent h5/h6 anchors collapse after its reset.
+.vp-doc :is(h1, h2, h3, h4, h5, h6) + :is(h5, h6) {
+    margin-top: 16px;
+}
+
+.vp-doc .vp-nolebase-git-changelog-history-container {
+    position: relative;
+    margin-top: 73px;
+
+    &::before {
+        position: absolute;
+        top: -25px;
+        right: 0;
+        left: 0;
+        height: 1px;
+        background: var(--vp-c-divider);
+        content: '';
+        pointer-events: none;
+    }
+}
+
+.VPDoc .content-container:has(.vp-nolebase-git-changelog-history-container) > .VPDocFooter {
+    margin-top: 24px;
+}
+
+.vp-doc p:has(> img[src*='img.shields.io/']) {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+
+    > img {
+        flex: 0 0 auto;
+    }
+}
+
+// Markdown content supplies the homepage's final spacing, so remove VitePress's additional
+// 96/128px margin only from homepages that actually contain Markdown below the feature cards.
+.VPHome:has(> .vp-doc.container) {
+    margin-bottom: 0;
+}
+
+@media (min-width: 960px) {
+    .DocSearch-Button {
+        border: 1px solid var(--vp-c-divider);
+    }
+
+    .VPNavBar:not(.has-sidebar) {
+        --vp-layout-max-width: 1440px;
+    }
+
+    .VPHome {
+        // Shrink VitePress's matching 1152px hero and feature containers as one homepage layout.
+        --home-side-margin: clamp(16px, calc(25vw - 244px), 76px);
+    }
+
+    .VPHomeHero.has-image {
+        padding-top: calc(var(--vp-nav-height) + var(--vp-layout-top-height, 0px) + 100px);
+        padding-bottom: 144px;
+    }
+
+    .VPHomeHero.has-image .container,
+    .VPHomeFeatures .container {
+        width: calc(100% - var(--home-side-margin) - var(--home-side-margin));
+        max-width: calc(1152px - var(--home-side-margin) - var(--home-side-margin));
+    }
+
+    // VPHomeContent's 1280px box includes 64px padding on each side. Narrow the outer box by the
+    // same margin as the 1152px feature container so the Markdown and feature-card edges align.
+    .VPHome > .vp-doc.container {
+        width: calc(100% - var(--home-side-margin) - var(--home-side-margin));
+        max-width: calc(1280px - var(--home-side-margin) - var(--home-side-margin));
+    }
+
+    .VPHomeHero .main {
+        transform: translateY(22px);
+    }
+
+    .VPHomeHero .image-container {
+        margin: 0 0 0 auto;
+        width: min(320px, 100%);
+        transform: translateY(32px);
+    }
+}
+
+.VPBadge.latest {
+    color: $latest-badge-primary-color;
+    background-color: rgba($latest-badge-accent-color, 0.14);
+}
+
+.custom-block {
+    border-radius: 5px;
+}
+
+// VitePress's generic -8px adjacent-code offset cancels the custom block's own 8px spacing.
+.vp-doc .custom-block div[class*='language-'] + div[class*='language-'] {
+    margin-top: 8px;
+}
+
+// Transparent code backgrounds wash out over light custom blocks. Mix each semantic color
+// into VitePress's current light/dark code background to keep the result opaque in both modes.
+.vp-doc .custom-block.tip div[class*='language-'] {
+    background-color: color-mix(in srgb, var(--vp-code-block-bg) 88%, var(--vp-c-tip-3) 12%);
+}
+
+.vp-doc .custom-block.warning div[class*='language-'] {
+    background-color: color-mix(in srgb, var(--vp-code-block-bg) 88%, var(--vp-c-warning-3) 12%);
+}
+
+.vp-doc .custom-block.danger div[class*='language-'] {
+    background-color: color-mix(in srgb, var(--vp-code-block-bg) 88%, var(--vp-c-danger-3) 12%);
+}
+
+.VPSidebarItem .text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hidden-anchor-page {
+    h6 {
+        color: transparent;
+        margin-bottom: -35px;
+        padding-top: 50px;
+    }
+}
+
+.code-page {
+    h1 {
+        font-size: 24pt;
+    }
+
+    h2 {
+        font-size: 18pt;
+    }
+
+    h3 {
+        font-size: 15pt;
+    }
+
+    h4 {
+        font-size: 12pt;
+    }
+
+    h5 {
+        font-size: 9.6pt;
+    }
+
+    h6 {
+        font-size: 8.4pt;
+    }
+
+    .symbol {
+        color: rgb(142, 155, 168);
+    }
+
+    .deprecated {
+        color: rgb(142, 155, 168);
+        text-decoration: line-through;
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+
+    ::-webkit-scrollbar {
+        width: #{$scroll-bar-width};
+        height: #{$scroll-bar-height};
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgb(234, 236, 239);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgb(189, 189, 189);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgb(133, 133, 133);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+}
+
+html.dark {
+    --c-brand: #{$primary-color};
+    --c-brand-light: #{$accent-color};
+    --content-width: #{$content-width};
+    --vp-c-brand-1: #{$primary-color};
+    --vp-c-brand-2: #{$accent-color};
+    --vp-c-brand-3: #{$primary-color};
+    --vp-c-brand-soft: #{rgba($accent-color, 0.16)};
+
+    .VPBadge.latest {
+        background-color: rgba($latest-badge-accent-color, 0.16);
+    }
+
+    ::-webkit-scrollbar {
+        width: #{$scroll-bar-width};
+        height: #{$scroll-bar-height};
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgb(41, 46, 53);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgb(65, 72, 83);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgb(56, 62, 72);
+        border-radius: #{$scroll-bar-border-radius};
+    }
+}
+
+html .VPSidebar {
+    --sidebar-scrollbar-track-color: transparent;
+    --sidebar-scrollbar-thumb-color: transparent;
+    --sidebar-scrollbar-thumb-hover-color: rgb(133, 133, 133);
+
+    scrollbar-color: var(--sidebar-scrollbar-thumb-color) var(--sidebar-scrollbar-track-color);
+
+    &::-webkit-scrollbar-track {
+        background: var(--sidebar-scrollbar-track-color);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--sidebar-scrollbar-thumb-color);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--sidebar-scrollbar-thumb-hover-color);
+    }
+
+    &.is-scrolling {
+        --sidebar-scrollbar-track-color: rgb(234, 236, 239);
+        --sidebar-scrollbar-thumb-color: rgb(189, 189, 189);
+        --sidebar-scrollbar-thumb-hover-color: rgb(133, 133, 133);
+    }
+}
+
+html.dark .VPSidebar {
+    --sidebar-scrollbar-thumb-hover-color: rgb(56, 62, 72);
+}
+
+html.dark .VPSidebar.is-scrolling {
+    --sidebar-scrollbar-track-color: rgb(41, 46, 53);
+    --sidebar-scrollbar-thumb-color: rgb(65, 72, 83);
+    --sidebar-scrollbar-thumb-hover-color: rgb(56, 62, 72);
+}

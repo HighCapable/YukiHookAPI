@@ -1,6 +1,6 @@
 # Migrate from Other Hook APIs
 
-This document can help you quickly migrate from the Hook APIs you are familiar with to `YukiHookAPI` to become familiar with the related writing methods of `YukiHookAPI`.
+This document can help you quickly migrate from the Hook APIs you are familiar with to YukiHookAPI to become familiar with the related writing methods of YukiHookAPI.
 
 ## Rovo89 Xposed API
 
@@ -10,14 +10,13 @@ This document can help you quickly migrate from the Hook APIs you are familiar w
 
 > Migrated from `XC_LoadPackage.LoadPackageParam` to `PackageParam`.
 
-`YukiHookAPI` implements the **lambda** method body `this` usage for `PackageParam`, and the `PackageParam` object can be obtained globally in the `encase` method body.
+YukiHookAPI implements the **lambda** method body `this` usage for `PackageParam`, and the `PackageParam` object can be obtained globally in the `encase` method body.
 
 > The API function differences are compared as follows
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 override fun onHook() = encase {
     // Get the package name of the current Hook
     packageName
@@ -54,10 +53,7 @@ override fun onHook() = encase {
 }
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 private lateinit var moduleResources: XModuleResources
 
 override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam) {
@@ -98,7 +94,6 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 ```
 
 :::
-::::
 
 ### Migrate Hook Method Body
 
@@ -106,14 +101,13 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 
 #### Before/After Hook
 
-`YukiHookAPI` also implements the **lambda** method body `this` usage for `HookParam`, and the `HookParam` object can be obtained globally in the method bodies such as `before` and `after`.
+YukiHookAPI also implements the **lambda** method body `this` usage for `HookParam`, and the `HookParam` object can be obtained globally in the method bodies such as `before` and `after`.
 
 > The API function differences are compared as follows
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 after {
     // Get the current Hook instance
     instance
@@ -150,10 +144,7 @@ after {
 }
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 override fun afterHookedMethod(param: MethodHookParam) {
     // Get the current Hook instance
     param.thisObject
@@ -189,18 +180,16 @@ override fun afterHookedMethod(param: MethodHookParam) {
 ```
 
 :::
-::::
 
 #### Replace Hook
 
-The `replaceHook` method is special, and the `YukiHookAPI` makes a variety of forms for it to choose from.
+The `replaceHook` method is special, and the YukiHookAPI makes a variety of forms for it to choose from.
 
 > The API function differences are compared as follows
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 /// A method with no return value void
 
 replaceUnit {
@@ -228,10 +217,7 @@ replaceToTrue()
 intercept()
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 /// A method with no return value void
 
 override fun replaceHookedMethod(param: MethodHookParam): Any? {
@@ -259,22 +245,21 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 ```
 
 :::
-::::
 
 ### Notes on Migrating XposedHelpers
 
-The reflection functionality provided in `YukiHookAPI` differs from the reflection functionality of `XposedHelpers`.
+The reflection functionality provided in YukiHookAPI differs from the reflection functionality of `XposedHelpers`.
 
 Here is a guide to avoid common pitfalls.
 
-Methods like `XposedHelpers.callMethod` and `XposedHelpers.callStaticMethod` automatically search and invoke all public methods (including those in superclasses), which is a feature of native Java reflection. In contrast, the reflection solution provided by `YukiHookAPI` first searches and then calls, and by default, the search process does not automatically look for methods in superclasses.
+Methods like `XposedHelpers.callMethod` and `XposedHelpers.callStaticMethod` automatically search and invoke all public methods (including those in superclasses), which is a feature of native Java reflection. In contrast, the reflection solution provided by YukiHookAPI first searches and then calls, and by default, the search process does not automatically look for methods in superclasses.
 
 ::: warning
 
-The reflection API of `YukiHookAPI` itself has been deprecated in `1.3.0` version.
+The reflection API of YukiHookAPI itself has been deprecated in `1.3.0` version.
 The following content is only used as migration guidelines before `1.3.0` version, we will retain it but will not update the content again.
 
-You can migrate to [KavaRef](https://github.com/HighCapable/KavaRef), and this feature is also applicable to `KavaRef`.
+You can migrate to [KavaRef](https://github.com/HighCapable/KavaRef), and this feature is also applicable to KavaRef.
 
 :::
 
@@ -300,7 +285,7 @@ val instance: A = ...
 XposedHelpers.callMethod(instance, "test", "some string")
 ```
 
-Usage with `YukiHookAPI`.
+Usage with YukiHookAPI.
 
 ```kotlin
 val instance: A = ...
@@ -317,4 +302,4 @@ instance.current().superClass()?.method {
 
 ## Migrate More Functions Related to Hook API
 
-`YukiHookAPI` is a brand new Hook API, which is fundamentally different from other Hook APIs, you can refer to [API Document](../api/home) and [Special Features](../api/special-features/reflection) to determine some functional Migration and use.
+YukiHookAPI is a brand new Hook API, which is fundamentally different from other Hook APIs, you can refer to [KDoc](kdoc://yukihookapi-core) and [Special Features](../special-features/reflection) to determine some functional Migration and use.

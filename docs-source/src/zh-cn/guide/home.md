@@ -12,7 +12,7 @@
 
 ## 用途
 
-`YukiHookAPI` 完全采用 Kotlin **lambda** 语法构建。
+YukiHookAPI 完全采用 Kotlin **lambda** 语法构建。
 
 抛弃原始不太友好的 `XposedHelpers`，你可以使用它来轻松创建 Xposed 模块以及轻松实现自定义 Hook API。
 
@@ -20,7 +20,7 @@
 
 请使用 Kotlin，框架部分代码构成同样兼容 Java 但基础 Hook 场景的实现**可能完全无法使用**。
 
-文档全部的 Demo 示例代码都将使用 Kotlin 进行描述，如果你完全不会使用 Kotlin 那你将有可能无法使用 `YukiHookAPI`。
+文档全部的 Demo 示例代码都将使用 Kotlin 进行描述，如果你完全不会使用 Kotlin 那你将有可能无法使用 YukiHookAPI。
 
 ## 灵感来源
 
@@ -32,18 +32,17 @@
 
 有没有什么 **好用、轻量、优雅** 的解决办法呢？
 
-本着这样的想法，`YukiHookAPI` 诞生了。
+本着这样的想法，YukiHookAPI 诞生了。
 
 现在，我们只需要编写少量的代码，一切时间开销和花费交给自动化处理。
 
-借助 Kotlin 优雅的 **lambda** 写法以及 `YukiHookAPI`，可以让你的 Hook 逻辑更加美观清晰。
+借助 Kotlin 优雅的 **lambda** 写法以及 YukiHookAPI，可以让你的 Hook 逻辑更加美观清晰。
 
 > 示例如下
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 @InjectYukiHookWithXposed
 object HookEntry : IYukiHookXposedInit {
 
@@ -78,10 +77,7 @@ object HookEntry : IYukiHookXposedInit {
 }
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
     private lateinit var moduleResources: XModuleResources
@@ -123,16 +119,15 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 ```
 
 :::
-::::
 
 是的，你没有看错，仅仅就需要这些代码，就能完全取代传统的 Xposed API 实现同样的功能。
 
-现在，借助高效强大的 `YukiHookAPI`，你就可以实现一个非常简单的 Xposed 模块。
+现在，借助高效强大的 YukiHookAPI，你就可以实现一个非常简单的 Xposed 模块。
 
 ::: tip
 
-从 `1.3.0` 版本开始，`YukiHookAPI` 已将自身的反射 API 部分迁移至 [KavaRef](https://github.com/HighCapable/KavaRef) (包括上方演示的反射 API 部分)。
+从 `1.3.0` 版本开始，YukiHookAPI 已将自身的反射 API 部分迁移至 [KavaRef](https://github.com/HighCapable/KavaRef) (包括上方演示的反射 API 部分)。
 
-现在，你可以借助 `KavaRef` 的强大反射能力让 `YukiHookAPI` 更加易用。
+现在，你可以借助 KavaRef 的强大反射能力让 YukiHookAPI 更加易用。
 
 :::

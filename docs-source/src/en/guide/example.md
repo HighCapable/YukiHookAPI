@@ -6,7 +6,7 @@
 
 > The structure below describes the basic working and principle of `YukiHookAPI`.
 
-```:no-line-numbers
+```text:no-line-numbers
 Host Environment
 └─ YukiMemberHookCreator
    └─ Class
@@ -109,8 +109,8 @@ Install the Host App and Module App Demo at the same time, and test the hooked f
 ::: tip
 
 Starting with version `1.3.0`, YukiHookAPI has moved its own reflection API partially to
-[KavaRef](https://github.com/HighCapable/KavaRef), the reflection APIs in the demonstration section below use the `KavaRef` writing method.
-We no longer recommend using the `YukiHookAPI`'s own reflection API.
+[KavaRef](https://github.com/HighCapable/KavaRef), the reflection APIs in the demonstration section below use the KavaRef writing method.
+We no longer recommend using the YukiHookAPI's own reflection API.
 
 :::
 
@@ -226,7 +226,7 @@ TestClass.resolve().firstMethod {
 
 ::: tip
 
-For more functions, please refer to [MemberHookCreator](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#memberhookcreator-class).
+For more functions, please refer to [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator).
 
 :::
 
@@ -261,7 +261,7 @@ The functionality performed in **loadZygote** is very limited, and the **loadZyg
 
 ### Hook System Framework
 
-In `YukiHookAPI`, the implementation of the Hook System Framework is very simple.
+In YukiHookAPI, the implementation of the Hook System Framework is very simple.
 
 Suppose, you want to get `ApplicationInfo` and `PackageInfo` and do something with them.
 
@@ -355,13 +355,13 @@ loadZygote {
 ```
 ::: tip
 
-For more functions, please refer to [ResourcesHookCreator](../api/public/com/highcapable/yukihookapi/hook/core/YukiResourcesHookCreator#resourceshookcreator-class).
+For more functions, please refer to [ResourcesHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator).
 
 :::
 
 ### Remove Hook
 
-The native Xposed provides us with a `XC_MethodHook.Unhook` function, which can remove the current Hook from the Hook queue, and `YukiHookAPI` can also implement this function.
+The native Xposed provides us with a `XC_MethodHook.Unhook` function, which can remove the current Hook from the Hook queue, and YukiHookAPI can also implement this function.
 
 The first way, save the `Result` instance of the current injected object, and call `remove` at the appropriate time and place to remove the injected object.
 
@@ -400,7 +400,7 @@ resolve().firstMethod {
 
 ::: tip
 
-For more functions, please refer to [MemberHookCreator](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#memberhookcreator-class).
+For more functions, please refer to [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator).
 
 :::
 
@@ -470,7 +470,7 @@ method {
 
 ::: tip
 
-For more functions, please refer to [MemberHookCreator.Result](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#result-class), [ResourcesHookCreator.Result](../api/public/com/highcapable/yukihookapi/hook/core/YukiResourcesHookCreator#result-class).
+For more functions, please refer to [MemberHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-result), [ResourcesHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator/-result).
 
 :::
 
@@ -478,9 +478,9 @@ Common exceptions that may occur are described here. For more information, pleas
 
 ::: warning
 
-The exception of `KavaRef` will be managed separately by itself.
+The exception of KavaRef will be managed separately by itself.
 For detailed configuration plans, you can refer to [here](https://highcapable.github.io/KavaRef/en/library/kavaref-core#exception-handling),
-which will jump to the `KavaRef` document.
+which will jump to the KavaRef document.
 
 :::
 
@@ -488,9 +488,9 @@ which will jump to the `KavaRef` document.
 
 In some cases, you can **manually throw exceptions** to alert some functionality that there is a problem.
 
-As mentioned above, the exception thrown in the `hook` method body will be taken over by the `YukiHookAPI` to avoid interrupting the next Hook process and causing the Hook process to "die".
+As mentioned above, the exception thrown in the `hook` method body will be taken over by the YukiHookAPI to avoid interrupting the next Hook process and causing the Hook process to "die".
 
-Here's how these exceptions work when `YukiHookAPI` takes over.
+Here's how these exceptions work when YukiHookAPI takes over.
 
 > The following example
 
@@ -523,7 +523,7 @@ injectMember {
 
 The above scenarios will only be processed in the (Xposed) Host App environment and will not have any impact on the host itself.
 
-If we want to throw these exceptions directly to the Host App, the native Xposed provides us with the `param.throwable` method, and `YukiHookAPI` can also implement this function.
+If we want to throw these exceptions directly to the Host App, the native Xposed provides us with the `param.throwable` method, and YukiHookAPI can also implement this function.
 
 If you want to throw an exception directly to the Host App in the Hook callback method body, you can implement the following methods.
 
@@ -563,7 +563,7 @@ In order to ensure that the Hook calling domain and the calling domain within th
 
 ::: tip
 
-For more functions, please refer to [Throwable.throwToApp](../api/public/com/highcapable/yukihookapi/hook/param/HookParam#throwable-throwtoapp-i-ext-method), [YukiMemberHookCreator.MemberMookCreator.HookCallback](../api/public/com/highcapable/yukihookapi/hook/core/YukiMemberHookCreator#hookcallback-class).
+For more functions, please refer to [Throwable.throwToApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-hook-param/throw-to-app), [YukiMemberHookCreator.MemberMookCreator.HookCallback](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-hook-callback).
 
 :::
 
@@ -588,7 +588,7 @@ loadApp(name = "com.android.phone") {
 
 ::: tip
 
-For more functions, please refer to [PackageParam.loadApp](../api/public/com/highcapable/yukihookapi/hook/param/PackageParam#loadapp-method).
+For more functions, please refer to [PackageParam.loadApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/load-app).
 
 :::
 
@@ -609,13 +609,13 @@ withProcess(name = "$packageName:tool") {
 
 ::: tip
 
-For more functions, please refer to [PackageParam.withProcess](../api/public/com/highcapable/yukihookapi/hook/param/PackageParam#withprocess-method).
+For more functions, please refer to [PackageParam.withProcess](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/with-process).
 
 :::
 
 ## Writing Optimization
 
-To make the code more concise, you can omit the name of `YukiHookAPI` and write your `onHook` entry as **lambda**.
+To make the code more concise, you can omit the name of YukiHookAPI and write your `onHook` entry as **lambda**.
 
 > The following example
 
@@ -641,13 +641,13 @@ Activity::class.resolve().firstMethod {
 
 Usually, the developer of the Xposed Module will choose to read the activation information of the current Xposed Module to better show the user the effective status of the current function.
 
-In addition to the basic Hook functions, `YukiHookAPI` also designed a set of Xposed Module status judgment functions for developers, such as activation status and Hook Framework information.
+In addition to the basic Hook functions, YukiHookAPI also designed a set of Xposed Module status judgment functions for developers, such as activation status and Hook Framework information.
 
 ### Determine Self-activation Status
 
 Usually, we will choose to write a method to make it return `false`, and then hook this method to make it return `true` to prove that the Hook has taken effect.
 
-In `YukiHookAPI`, you don’t need to do this at all, `YukiHookAPI` has already encapsulated this operation for you, and you can use it directly.
+In YukiHookAPI, you don’t need to do this at all, YukiHookAPI has already encapsulated this operation for you, and you can use it directly.
 
 Now, you can directly use `YukiHookAPI.Status.isXposedModuleActive` to determine whether it is activated in the Module App.
 
@@ -671,7 +671,7 @@ if(YukiHookAPI.Status.isTaiChiModuleActive) {
 }
 ```
 
-If you want to use both judgment schemes, `YukiHookAPI` also encapsulates a convenient way for you.
+If you want to use both judgment schemes, YukiHookAPI also encapsulates a convenient way for you.
 
 At this point, you can use `YukiHookAPI.Status.isModuleActive` to determine whether you are activated in Xposed or TaiChi and Wuji.
 
@@ -685,7 +685,7 @@ if(YukiHookAPI.Status.isModuleActive) {
 
 ::: tip
 
-For more functions, please refer to [YukiHookAPI.Status](../api/public/com/highcapable/yukihookapi/YukiHookAPI#status-object).
+For more functions, please refer to [YukiHookAPI.Status](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status).
 
 :::
 
@@ -737,7 +737,7 @@ val frameworkApiLevel = YukiHookAPI.Status.Executor.apiLevel
 
 ::: tip
 
-For more functions, please refer to [YukiHookAPI.Status.Executor](../api/public/com/highcapable/yukihookapi/YukiHookAPI#executor-object).
+For more functions, please refer to [YukiHookAPI.Status.Executor](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status/-executor).
 
 :::
 

@@ -11,6 +11,6 @@ Find me on **Twitter** [@fankesyooni](https://twitter.com/fankesyooni).
 
 ## Help with Maintenance
 
-Thank you for choosing and using `YukiHookAPI`.
+Thank you for choosing and using YukiHookAPI.
 
 If you have code-related suggestions and requests, you can submit a Pull Request on GitHub.

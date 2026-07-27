@@ -16,7 +16,7 @@ The `configs` method implements a **lambda** method body on the `Configs` class,
 
 ::: tip
 
-For more functions, please refer to the [YukiHookAPI.configs](../api/public/com/highcapable/yukihookapi/YukiHookAPI#configs-method) method.
+For more functions, please refer to the [YukiHookAPI.configs](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/configs) method.
 
 :::
 
@@ -40,7 +40,7 @@ The `encase` method is the beginning of all Hook life. In a Module App or a Hook
 
 ::: tip
 
-For more functions, please refer to [PackageParam](../api/public/com/highcapable/yukihookapi/hook/param/PackageParam).
+For more functions, please refer to [PackageParam](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param).
 
 :::
 
@@ -98,7 +98,7 @@ Also for the `encase` method, the variable array parameter `hooker` of the metho
 
 ::: tip
 
-For more functions, please refer to [YukiBaseHooker](../api/public/com/highcapable/yukihookapi/hook/entity/YukiBaseHooker).
+For more functions, please refer to [YukiBaseHooker](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.entity/-yuki-base-hooker).
 
 :::
 
@@ -225,9 +225,9 @@ As we mentioned above, it is generally not recommended to use `class` to create 
 
 There is a rare possibility that there are multiple package names in a process.
 
-In this case, when `YukiHookAPI` finds that the child Hooker is a singleton, it will ignore it and print a warning message.
+In this case, when YukiHookAPI finds that the child Hooker is a singleton, it will ignore it and print a warning message.
 
-```: no-line-numbers
+```text:no-line-numbers
 This Hooker "HOOKER" is singleton or reused, but the current process has multiple package name "NAME", the original is "NAME"
 Make sure your Hooker supports multiple instances for this situation
 The process with package name "NAME" will be ignored
@@ -252,7 +252,7 @@ If your current Hook Framework supports and enables the Resources Hook feature, 
 
 You don't need to separate the `initZygote`, `handleLoadPackage`, `handleInitPackageResources` methods to perform different functions as before using the Xposed API.
 
-In `YukiHookAPI`, these functions **are seamless**.
+In YukiHookAPI, these functions **are seamless**.
 
 > The following example
 

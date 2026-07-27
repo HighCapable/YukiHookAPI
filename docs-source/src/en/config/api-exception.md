@@ -10,12 +10,12 @@ The exception description here will only synchronize the latest API version, and
 
 ::: warning
 
-Due to maintenance costs, `YukiHookAPI` will no longer update this document from the `1.3.0` version and there will be no new unspecified exceptions added here.
+Due to maintenance costs, YukiHookAPI will no longer update this document from the `1.3.0` version and there will be no new unspecified exceptions added here.
 If you encounter unsolvable problems, you can contact us via [Contact Us](../about/contacts).
 
-The exception of `KavaRef` will be managed separately by itself.
+The exception of KavaRef will be managed separately by itself.
 For detailed configuration plans, you can refer to [here](https://highcapable.github.io/KavaRef/en/library/kavaref-core#exception-handling),
-which will jump to the `KavaRef` document.
+which will jump to the KavaRef document.
 
 :::
 
@@ -37,7 +37,7 @@ Your Hook Framework is not working or did not successfully load the current Hook
 
 **Solution**
 
-Please make sure you have loaded the `encase` method of `YukiHookAPI` in the correct place. For details, please refer to [Use as Xposed Module Configs](../config/xposed-using) and [Use as Hook API Configs](../config/api-using).
+Please make sure you have loaded the `encase` method of YukiHookAPI in the correct place. For details, please refer to [Use as Xposed Module Configs](../config/xposed-using) and [Use as Hook API Configs](../config/api-using).
 
 ###### exception
 
@@ -111,7 +111,7 @@ An exception occurred in the Hooking Process of YukiHookAPI
 
 **Abnormal**
 
-`YukiHookAPI` exception occurred while loading Xposed entry method.
+YukiHookAPI exception occurred while loading Xposed entry method.
 
 **Solution**
 
@@ -131,7 +131,7 @@ An exception occurred when hooking internal function
 
 **Abnormal**
 
-`YukiHookAPI` throws an exception during its own initialization hook.
+YukiHookAPI throws an exception during its own initialization hook.
 
 **Solution**
 
@@ -147,7 +147,7 @@ YukiHookAPI try to load hook entry class failed
 
 **Abnormal**
 
-`YukiHookAPI` encountered an unhandled exception or the entry class could not be found when trying to load the hook entry class `onInit` or `onHook` method.
+YukiHookAPI encountered an unhandled exception or the entry class could not be found when trying to load the hook entry class `onInit` or `onHook` method.
 
 **Solution**
 
@@ -167,7 +167,7 @@ An exception occurred when YukiHookAPI loading Xposed Module
 
 **Abnormal**
 
-`YukiHookAPI` encountered an unhandled exception when trying to load a Xposed Module using the Xposed native interface.
+YukiHookAPI encountered an unhandled exception when trying to load a Xposed Module using the Xposed native interface.
 
 **Solution**
 
@@ -187,7 +187,7 @@ Failed to execute method "**NAME**", maybe your Hook Framework not support Resou
 
 **Abnormal**
 
-`YukiHookAPI` An error occurred while trying to do a Resources Hook.
+YukiHookAPI An error occurred while trying to do a Resources Hook.
 
 **Solution**
 
@@ -710,7 +710,7 @@ An exception of the wrong type occurred while Hooking Resources.
 
 **Solution**
 
-`YukiHookAPI` will try to load Resources Hook in `initZygote` and `handleInitPackageResources`.
+YukiHookAPI will try to load Resources Hook in `initZygote` and `handleInitPackageResources`.
 
 If all loading fails, this exception may occur.
 
@@ -844,7 +844,7 @@ When the data you send exceeds the upper limit of the system broadcast, `YukiHoo
 
 ::: tip
 
-If you still want to use this feature, please refer to [YukiHookDataChannel.NameSpace.allowSendTooLargeData](../api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel#allowsendtoolargedata-method) method.
+If you still want to use this feature, please refer to [YukiHookDataChannel.NameSpace.allowSendTooLargeData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/allow-send-too-large-data) method.
 
 But <u>**it is strongly recommended not to do this**</u>, <u>**this may cause the system to not allow too large data to be sent and cause the app crash**</u>.
 
@@ -1083,11 +1083,11 @@ YukiHookAPI cannot support current Hook API or cannot find any available Hook AP
 
 **Abnormal**
 
-`YukiHookAPI` does not support the Hook API used by the current environment or there is no Hook API that can be called.
+YukiHookAPI does not support the Hook API used by the current environment or there is no Hook API that can be called.
 
 **Solution**
 
-Please make sure you have loaded the `encase` method of `YukiHookAPI` in the correct place. For details, please refer to [Use as Xposed Module Configs](../config/xposed-using) and [Use as Hook API Configs](../config/api-using).
+Please make sure you have loaded the `encase` method of YukiHookAPI in the correct place. For details, please refer to [Use as Xposed Module Configs](../config/xposed-using) and [Use as Hook API Configs](../config/api-using).
 
 ###### exception
 
@@ -1956,7 +1956,7 @@ Invalid YukiHookCallback type
 
 **Abnormal**
 
-The core Hook functionality of `YukiHookAPI` is broken.
+The core Hook functionality of YukiHookAPI is broken.
 
 **Solution**
 

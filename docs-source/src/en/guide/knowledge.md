@@ -22,7 +22,7 @@ The above content is copied from Baidu Encyclopedia.
 
 > The structure below describes the basic workings and principles of Xposed.
 
-```:no-line-numbers
+```text:no-line-numbers
 Xposed Framework
 └── App's Environment
     └── Hooker (Hooked)
@@ -49,7 +49,7 @@ Today's Xposed Manager has been completely replaced by its derivative works, and
 
 > The structure below describes how and how the Xposed-like Hook Framework works.
 
-```:no-line-numbers
+```text:no-line-numbers
 App's Environment
 └── Hook Framework
     └── Hooker (Hooked)
@@ -70,11 +70,11 @@ Since Xposed appeared until now, apart from `XposedHelpers`, which is well known
 
 The birth of this API framework is to hope that in the current era of Xposed, more capable Xposed Module developers can avoid detours and complete the entire development process more easily and simply.
 
-In the future, `YukiHookAPI` will adapt to more third-party Hook Frameworks based on the goal of using the Xposed API, so as to improve the entire ecosystem and help more developers make Xposed Module development simpler and easier to understand.
+In the future, YukiHookAPI will adapt to more third-party Hook Frameworks based on the goal of using the Xposed API, so as to improve the entire ecosystem and help more developers make Xposed Module development simpler and easier to understand.
 
 ## Let's Started
 
-Before starting, you need to have the following basics to better use `YukiHookAPI`.
+Before starting, you need to have the following basics to better use YukiHookAPI.
 
 - Grasp and understand Android development and simple system operation principles
 

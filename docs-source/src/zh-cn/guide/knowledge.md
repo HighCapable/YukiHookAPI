@@ -18,7 +18,7 @@
 
 > 下方的结构描述了 Xposed 的基本工作方式和原理。
 
-```:no-line-numbers
+```text:no-line-numbers
 Xposed Framework
 └── App's Environment
     └── Hooker (Hooked)
@@ -45,7 +45,7 @@ Xposed 的这种运行方式被称为**寄生**，Xposed 模块跟随宿主的�
 
 > 下方的结构描述了类似 Xposed 的 Hook Framework 的工作方式和原理。
 
-```:no-line-numbers
+```text:no-line-numbers
 App's Environment
 └── Hook Framework
     └── Hooker (Hooked)
@@ -66,11 +66,11 @@ App's Environment
 
 本 API 框架的诞生就是希望在 Xposed 的如今时代，能让更多有动手能力的 Xposed 模块开发者少走弯路，更容易、更简单地完成整个开发流程。
 
-未来，`YukiHookAPI` 将在使用 Xposed API 的目标基础上适配更多第三方 Hook Framework，使得整个生态得到完善，并帮助更多开发者让 Xposed 模块开发变得更加简单和易懂。
+未来，YukiHookAPI 将在使用 Xposed API 的目标基础上适配更多第三方 Hook Framework，使得整个生态得到完善，并帮助更多开发者让 Xposed 模块开发变得更加简单和易懂。
 
 ## 让我们开始吧
 
-在开始之前，你需要拥有以下基础才能更好地使用 `YukiHookAPI`。
+在开始之前，你需要拥有以下基础才能更好地使用 YukiHookAPI。
 
 - 掌握并了解 Android 开发及简单的系统运行原理
 

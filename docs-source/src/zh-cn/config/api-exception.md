@@ -10,9 +10,9 @@ pageClass: hidden-anchor-page
 
 ::: warning
 
-由于维护成本，`YukiHookAPI` 从 `1.3.0` 版本开始将不再会对此文档进行更新且也不会有新的未说明异常在这里添加，如遇到无法解决的问题，你可以通过 [联系我们](../about/contacts) 与我们联系。
+由于维护成本，YukiHookAPI 从 `1.3.0` 版本开始将不再会对此文档进行更新且也不会有新的未说明异常在这里添加，如遇到无法解决的问题，你可以通过 [联系我们](../about/contacts) 与我们联系。
 
-`KavaRef` 的异常将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 `KavaRef` 的文档。
+KavaRef 的异常将由其自身单独管理，详细的配置方案你可以参考 [这里](https://highcapable.github.io/KavaRef/zh-cn/library/kavaref-core#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)，这将跳转到 KavaRef 的文档。
 
 :::
 
@@ -34,7 +34,7 @@ Could not found any available Hook APIs in current environment! Aborted
 
 **解决方案**
 
-请确认你在正确的地方装载了 `YukiHookAPI` 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](../config/xposed-using) 以及 [作为 Hook API 使用的相关配置](../config/api-using)。
+请确认你在正确的地方装载了 YukiHookAPI 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](../config/xposed-using) 以及 [作为 Hook API 使用的相关配置](../config/api-using)。
 
 ###### exception
 
@@ -108,7 +108,7 @@ An exception occurred in the Hooking Process of YukiHookAPI
 
 **异常原因**
 
-`YukiHookAPI` 在装载 Xposed 入口方法时发生异常。
+YukiHookAPI 在装载 Xposed 入口方法时发生异常。
 
 **解决方案**
 
@@ -124,7 +124,7 @@ An exception occurred when hooking internal function
 
 **异常原因**
 
-`YukiHookAPI` 在进行自身初始化 Hook 过程中发生异常。
+YukiHookAPI 在进行自身初始化 Hook 过程中发生异常。
 
 **解决方案**
 
@@ -140,7 +140,7 @@ YukiHookAPI try to load hook entry class failed
 
 **异常原因**
 
-`YukiHookAPI` 在尝试装载 Hook 入口类 `onInit` 或 `onHook` 方法时发生了不能处理的异常或找不到入口类。
+YukiHookAPI 在尝试装载 Hook 入口类 `onInit` 或 `onHook` 方法时发生了不能处理的异常或找不到入口类。
 
 **解决方案**
 
@@ -156,7 +156,7 @@ An exception occurred when YukiHookAPI loading Xposed Module
 
 **异常原因**
 
-`YukiHookAPI` 在尝试使用 Xposed 原生接口装载 Xposed 模块时发生了不能处理的异常。
+YukiHookAPI 在尝试使用 Xposed 原生接口装载 Xposed 模块时发生了不能处理的异常。
 
 **解决方案**
 
@@ -172,7 +172,7 @@ Failed to execute method "**NAME**", maybe your Hook Framework not support Resou
 
 **异常原因**
 
-`YukiHookAPI` 在尝试进行 Resources Hook 时发生错误。
+YukiHookAPI 在尝试进行 Resources Hook 时发生错误。
 
 **解决方案**
 
@@ -679,7 +679,7 @@ Resources Hook type is invalid \[**TAG**\]
 
 **解决方案**
 
-`YukiHookAPI` 会尝试在 `initZygote` 与 `handleInitPackageResources` 中装载 Resources Hook，若全部装载失败可能会发生此异常，当前 Hook Framework 需要支持并启用资源钩子 (Resources Hook) 功能，请检查后再试一次。
+YukiHookAPI 会尝试在 `initZygote` 与 `handleInitPackageResources` 中装载 Resources Hook，若全部装载失败可能会发生此异常，当前 Hook Framework 需要支持并启用资源钩子 (Resources Hook) 功能，请检查后再试一次。
 
 ###### exception
 
@@ -801,7 +801,7 @@ If you want to lift this restriction, use the allowSendTooLargeData function whe
 
 ::: tip
 
-若你仍要使用此功能，请参考 [YukiHookDataChannel.NameSpace.allowSendTooLargeData](../api/public/com/highcapable/yukihookapi/hook/xposed/channel/YukiHookDataChannel#allowsendtoolargedata-method) 方法。
+若你仍要使用此功能，请参考 [YukiHookDataChannel.NameSpace.allowSendTooLargeData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/allow-send-too-large-data) 方法。
 
 但是<u>**强烈建议不要这样做**</u>，<u>**这有可能会导致系统不允许过大的数据发送而造成应用崩溃**</u>。
 
@@ -1017,11 +1017,11 @@ YukiHookAPI cannot support current Hook API or cannot found any available Hook A
 
 **异常原因**
 
-`YukiHookAPI` 不支持当前环境使用的 Hook API 或不存在 Hook API 可被调用。
+YukiHookAPI 不支持当前环境使用的 Hook API 或不存在 Hook API 可被调用。
 
 **解决方案**
 
-请确认你在正确的地方装载了 `YukiHookAPI` 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](../config/xposed-using) 以及 [作为 Hook API 使用的相关配置](../config/api-using)。
+请确认你在正确的地方装载了 YukiHookAPI 的 `encase` 方法，详情请参考 [作为 Xposed 模块使用的相关配置](../config/xposed-using) 以及 [作为 Hook API 使用的相关配置](../config/api-using)。
 
 ###### exception
 
@@ -1871,7 +1871,7 @@ Invalid YukiHookCallback type
 
 **异常原因**
 
-`YukiHookAPI` 的核心 Hook 功能发生故障。
+YukiHookAPI 的核心 Hook 功能发生故障。
 
 **解决方案**
 

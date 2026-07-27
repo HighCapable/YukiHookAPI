@@ -1,6 +1,6 @@
 # 从其它 Hook API 迁移
 
-此文档可以帮助你快速从你熟悉的 Hook API 迁移至 `YukiHookAPI` 来熟悉对 `YukiHookAPI` 的相关写法。
+此文档可以帮助你快速从你熟悉的 Hook API 迁移至 YukiHookAPI 来熟悉对 YukiHookAPI 的相关写法。
 
 ## Rovo89 Xposed API
 
@@ -10,14 +10,13 @@
 
 > 从 `XC_LoadPackage.LoadPackageParam` 迁移至 `PackageParam`。
 
-`YukiHookAPI` 对 `PackageParam` 实现了 **lambda** 方法体 `this` 用法，在 `encase` 方法体内即可全局得到 `PackageParam` 对象。
+YukiHookAPI 对 `PackageParam` 实现了 **lambda** 方法体 `this` 用法，在 `encase` 方法体内即可全局得到 `PackageParam` 对象。
 
 > API 功能差异对比如下
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 override fun onHook() = encase {
     // 得到当前 Hook 的包名
     packageName
@@ -54,10 +53,7 @@ override fun onHook() = encase {
 }
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 private lateinit var moduleResources: XModuleResources
 
 override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam) {
@@ -98,7 +94,6 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 ```
 
 :::
-::::
 
 ### 迁移 Hook 方法体
 
@@ -106,14 +101,13 @@ override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPa
 
 #### Before/After Hook
 
-`YukiHookAPI` 同样对 `HookParam` 实现了 **lambda** 方法体 `this` 用法，在 `before`、`after` 等方法体内即可全局得到 `HookParam` 对象。
+YukiHookAPI 同样对 `HookParam` 实现了 **lambda** 方法体 `this` 用法，在 `before`、`after` 等方法体内即可全局得到 `HookParam` 对象。
 
 > API 功能差异对比如下
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 after {
     // 得到当前 Hook 的实例
     instance
@@ -150,10 +144,7 @@ after {
 }
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 override fun afterHookedMethod(param: MethodHookParam) {
     // 得到当前 Hook 的实例
     param.thisObject
@@ -189,18 +180,16 @@ override fun afterHookedMethod(param: MethodHookParam) {
 ```
 
 :::
-::::
 
 #### Replace Hook
 
-`replaceHook` 方法比较特殊，`YukiHookAPI` 为它做出了多种形式以供选择。
+`replaceHook` 方法比较特殊，YukiHookAPI 为它做出了多种形式以供选择。
 
 > API 功能差异对比如下
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 /// 无返回值的方法 void
 
 replaceUnit {
@@ -228,10 +217,7 @@ replaceToTrue()
 intercept()
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 /// 无返回值的方法 void
 
 override fun replaceHookedMethod(param: MethodHookParam): Any? {
@@ -259,20 +245,19 @@ override fun replaceHookedMethod(param: MethodHookParam) = null
 ```
 
 :::
-::::
 
 ### 迁移 XposedHelpers 注意事项
 
-`YukiHookAPI` 中提供的反射功能与 `XposedHelpers` 的反射功能有所不同，这里提供一个误区指引。
+YukiHookAPI 中提供的反射功能与 `XposedHelpers` 的反射功能有所不同，这里提供一个误区指引。
 
 `XposedHelpers.callMethod`、`XposedHelpers.callStaticMethod` 等方法自动查找的方法会自动调用所有公开的方法 (包括 `super` 超类)，这是 Java 原生反射的特性，
-而 `YukiHookAPI` 提供的反射方案为先反射查找再调用，而查找过程默认不会自动查找 `super` 超类的方法。
+而 YukiHookAPI 提供的反射方案为先反射查找再调用，而查找过程默认不会自动查找 `super` 超类的方法。
 
 ::: warning
 
-`YukiHookAPI` 自身的反射 API 在 `1.3.0` 版本已被弃用，以下内容仅作为 `1.3.0` 版本之前的迁移指引，我们会对其进行保留但不会再进行内容的更新。
+YukiHookAPI 自身的反射 API 在 `1.3.0` 版本已被弃用，以下内容仅作为 `1.3.0` 版本之前的迁移指引，我们会对其进行保留但不会再进行内容的更新。
 
-你可以迁移至 [KavaRef](https://github.com/HighCapable/KavaRef)，`KavaRef` 同样适用此特性。
+你可以迁移至 [KavaRef](https://github.com/HighCapable/KavaRef)，KavaRef 同样适用此特性。
 
 :::
 
@@ -297,7 +282,7 @@ val instance: A = ...
 XposedHelpers.callMethod(instance, "test", "some string")
 ```
 
-`YukiHookAPI` 的用法。
+YukiHookAPI 的用法。
 
 ```kotlin
 val instance: A = ...
@@ -314,4 +299,4 @@ instance.current().superClass()?.method {
 
 ## 迁移更多有关 Hook API 的功能
 
-`YukiHookAPI` 是一套全新的 Hook API，与其它 Hook API 存在着本质区别，你可以参考 [API 文档](../api/home) 以及 [特色功能](../api/special-features/reflection) 来决定一些功能性的迁移和使用。
+YukiHookAPI 是一套全新的 Hook API，与其它 Hook API 存在着本质区别，你可以参考 [KDoc](kdoc://yukihookapi-core) 以及 [特色功能](../special-features/reflection) 来决定一些功能性的迁移和使用。

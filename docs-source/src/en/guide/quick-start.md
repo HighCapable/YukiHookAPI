@@ -14,7 +14,7 @@ The project needs to be created using `Android Studio` or `IntelliJ IDEA` and be
 
 ## Automatically Build Project
 
-`YukiHookAPI` provides an automated build tool that can help you quickly build an Android standard project template with Xposed Module dependencies, and use the built template to start the next step directly.
+YukiHookAPI provides an automated build tool that can help you quickly build an Android standard project template with Xposed Module dependencies, and use the built template to start the next step directly.
 
 You can [click here](../tools/yukihookapi-projectbuilder) to check it out.
 
@@ -254,7 +254,7 @@ override fun onInit() = configs {
 
 You can also extends **Application** of your Module App from **ModuleApplication** to achieve a complete user experience.
 
-For more functions, please refer to [ModuleApplication](../api/public/com/highcapable/yukihookapi/hook/xposed/application/ModuleApplication).
+For more functions, please refer to [ModuleApplication](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.application/-module-application).
 
 :::
 

@@ -4,6 +4,7 @@ import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.dokka)
     alias(libs.plugins.maven.publish)
 }
 

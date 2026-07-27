@@ -370,10 +370,6 @@ object YukiHookAPI {
     /**
      * 作为 Xposed 模块装载调用入口方法
      *
-     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
-     *
-     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
-     *
      * 配置请参考 [通过 lambda 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
      *
      * For English version, see [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
@@ -388,10 +384,6 @@ object YukiHookAPI {
 
     /**
      * 作为 Xposed 模块装载调用入口方法
-     *
-     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
-     *
-     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
      *
      * 配置请参考 [通过自定义 Hooker 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      *
@@ -419,10 +411,6 @@ object YukiHookAPI {
      *
      * For English version, see [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
      *
-     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
-     *
-     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
-     *
      * 配置请参考 [通过 lambda 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87-lambda-%E5%88%9B%E5%BB%BA)
      *
      * For English version, see [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
@@ -446,10 +434,6 @@ object YukiHookAPI {
      * 详情请参考 [作为 Hook API 使用](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/quick-start#%E4%BD%9C%E4%B8%BA-hook-api-%E4%BD%BF%E7%94%A8)
      *
      * For English version, see [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
-     *
-     * 用法请参考 [API 文档](https://highcapable.github.io/YukiHookAPI/zh-cn/api/home)
-     *
-     * For English version, see [API Document](https://highcapable.github.io/YukiHookAPI/en/api/home)
      *
      * 配置请参考 [通过自定义 Hooker 创建](https://highcapable.github.io/YukiHookAPI/zh-cn/config/api-example#%E9%80%9A%E8%BF%87%E8%87%AA%E5%AE%9A%E4%B9%89-hooker-%E5%88%9B%E5%BB%BA)
      *

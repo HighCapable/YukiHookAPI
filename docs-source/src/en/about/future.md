@@ -30,13 +30,13 @@ In order to ensure the compatibility of most modules, **YukiHookAPI** plans to u
 
 ### Lite Version Supported for Standalone Use
 
-If you like the Reflection API of `YukiHookAPI`, but your project may not need related Hook functions.
+If you like the Reflection API of YukiHookAPI, but your project may not need related Hook functions.
 
 Well here is some good news for you:
 
-~~The core Reflection API of `YukiHookAPI` has been decoupled into [YukiReflection](https://github.com/HighCapable/YukiReflection) project, which can now be used in any Android project.~~
+~~The core Reflection API of YukiHookAPI has been decoupled into [YukiReflection](https://github.com/HighCapable/YukiReflection) project, which can now be used in any Android project.~~
 
-The `YukiReflection` project has been deprecated due to many unsolved black box issues, so we no longer recommend anyone to use it.
+The YukiReflection project has been deprecated due to many unsolved black box issues, so we no longer recommend anyone to use it.
 Please now migrate to the brand new design [KavaRef](https://github.com/HighCapable/KavaRef).
 
 ::: tip To be Discussed

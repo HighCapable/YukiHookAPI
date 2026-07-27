@@ -133,7 +133,7 @@ android {
 
 > 示例如下
 
-```:no-line-numbers
+```text:no-line-numbers
 You set the customize module package name to "com.example.demo", please check for yourself if it is correct
 ```
 
@@ -168,7 +168,7 @@ class HookEntry_YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPacka
 
 > 示例如下
 
-```:no-line-numbers
+```text:no-line-numbers
 ...hook.HookEntry ← 你的入口类
 ...hook.HookEntry_Impl ← 自动生成的 Impl 类
 ...hook.HookEntry_YukiHookXposedInit ← 自动生成的 Xposed 入口类
@@ -195,7 +195,7 @@ class HookXposedEntry : IXposedHookZygoteInit, IXposedHookLoadPackage, ...
 
 > 示例如下
 
-```:no-line-numbers
+```text:no-line-numbers
 ...hook.HookEntry ← 你的入口类
 ...hook.HookEntry_Impl ← 自动生成的 Impl 类
 ...hook.HookXposedEntry ← 自动生成的 Xposed 入口类
@@ -295,11 +295,11 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXpos
 
 ::: tip
 
-更多功能请参考 [IYukiHookXposedInit](../api/public/com/highcapable/yukihookapi/hook/xposed/proxy/IYukiHookXposedInit)。
+更多功能请参考 [IYukiHookXposedInit](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init)。
 
 :::
 
-当你的模块被 Xposed 装载后，`onHook` 方法将会被回调，你需要在此方法中开始使用 `YukiHookAPI`。
+当你的模块被 Xposed 装载后，`onHook` 方法将会被回调，你需要在此方法中开始使用 YukiHookAPI。
 
 > 基本的调用流程为 `_YukiHookXposedInit` → `IYukiHookXposedInit.onXposedEvent` → `IYukiHookXposedInit.onInit` → `IYukiHookXposedInit.onHook`
 
@@ -336,10 +336,10 @@ object HookEntry : IYukiHookXposedInit {
 }
 ```
 
-`onXposedEvent` 与 `onHook` 方法完全独立存在，互不影响，你可以继续在 `onHook` 方法中使用 `YukiHookAPI`。
+`onXposedEvent` 与 `onHook` 方法完全独立存在，互不影响，你可以继续在 `onHook` 方法中使用 YukiHookAPI。
 
 ::: tip
 
-更多功能请参考 [IYukiHookXposedInit.onXposedEvent](../api/public/com/highcapable/yukihookapi/hook/xposed/proxy/IYukiHookXposedInit#onxposedevent-method) 方法。
+更多功能请参考 [IYukiHookXposedInit.onXposedEvent](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/on-xposed-event) 方法。
 
 :::

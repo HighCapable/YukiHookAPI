@@ -12,7 +12,7 @@ Formerly the Innocent Xposed API used in [Development Learning Project](https://
 
 ## Usage
 
-`YukiHookAPI` is built entirely with Kotlin **lambda** syntax.
+YukiHookAPI is built entirely with Kotlin **lambda** syntax.
 
 Abandoning the original less friendly `XposedHelpers`, you can use it to easily create Xposed Modules and easily implement custom Hook API.
 
@@ -20,7 +20,7 @@ Abandoning the original less friendly `XposedHelpers`, you can use it to easily 
 
 Please use Kotlin, the framework part of the code composition is also compatible with Java but the implementation of the basic Hook scene **may not work at all**.
 
-All demo code in this document will be described using Kotlin, if you don't know how to use Kotlin then you may not be able to use `YukiHookAPI`.
+All demo code in this document will be described using Kotlin, if you don't know how to use Kotlin then you may not be able to use YukiHookAPI.
 
 ## Source of Inspiration
 
@@ -32,18 +32,17 @@ Since Kotlin is the main Android development language, this API is really not ve
 
 Is there any **easy to use, light, elegant** solution?
 
-With this idea, `YukiHookAPI` was born.
+With this idea, YukiHookAPI was born.
 
 Now, we only need to write a small amount of code, and all the time and expense are handed over to automation.
 
-With Kotlin's elegant **lambda** writing and `YukiHookAPI`, you can make your Hook logic more beautiful and clear.
+With Kotlin's elegant **lambda** writing and YukiHookAPI, you can make your Hook logic more beautiful and clear.
 
 > The following example
 
-:::: code-group
-::: code-group-item Yuki Hook API
+::: code-group
 
-```kotlin
+```kotlin [Yuki Hook API]
 @InjectYukiHookWithXposed
 object HookEntry : IYukiHookXposedInit {
 
@@ -78,10 +77,7 @@ object HookEntry : IYukiHookXposedInit {
 }
 ```
 
-:::
-::: code-group-item Rovo89 Xposed API
-
-```kotlin
+```kotlin [Rovo89 Xposed API]
 class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
     private lateinit var moduleResources: XModuleResources
@@ -123,16 +119,15 @@ class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 ```
 
 :::
-::::
 
 Yes, you read that right, just needing these codes can completely replace the traditional Xposed API to achieve the same function.
 
-Now, with the help of the efficient and powerful `YukiHookAPI`, you can implement a very simple Xposed Module.
+Now, with the help of the efficient and powerful YukiHookAPI, you can implement a very simple Xposed Module.
 
 ::: tip
 
-Starting with version `1.3.0`, `YukiHookAPI` has migrated its own reflection API part to [KavaRef](https://github.com/HighCapable/KavaRef) (including the reflection API part demonstrated above).
+Starting with version `1.3.0`, YukiHookAPI has migrated its own reflection API part to [KavaRef](https://github.com/HighCapable/KavaRef) (including the reflection API part demonstrated above).
 
-Now, you can make the `YukiHookAPI` more easy to use with the powerful reflection ability of `KavaRef`.
+Now, you can make the YukiHookAPI more easy to use with the powerful reflection ability of KavaRef.
 
 :::

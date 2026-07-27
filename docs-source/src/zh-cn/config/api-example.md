@@ -16,7 +16,7 @@ fun configs(initiate: Configs.() -> Unit)
 
 ::: tip
 
-更多功能请参考 [YukiHookAPI.configs](../api/public/com/highcapable/yukihookapi/YukiHookAPI#configs-method) 方法。
+更多功能请参考 [YukiHookAPI.configs](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/configs) 方法。
 
 :::
 
@@ -40,7 +40,7 @@ fun encase(initiate: PackageParam.() -> Unit)
 
 ::: tip
 
-更多功能请参考 [PackageParam](../api/public/com/highcapable/yukihookapi/hook/param/PackageParam)。
+更多功能请参考 [PackageParam](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param)。
 
 :::
 
@@ -98,7 +98,7 @@ fun encase(vararg hooker: YukiBaseHooker)
 
 ::: tip
 
-更多功能请参考 [YukiBaseHooker](../api/public/com/highcapable/yukihookapi/hook/entity/YukiBaseHooker)。
+更多功能请参考 [YukiBaseHooker](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.entity/-yuki-base-hooker)。
 
 :::
 
@@ -223,9 +223,9 @@ object HookEntry : IYukiHookXposedInit {
 
 上面我们说到，在一般情况下不推荐使用 `class` 创建子 Hooker，但是有一种特殊情况，它可能依然需要保持你的 Hooker 支持多例。
 
-有极少的可能性会出现在一个进程中存在多个包名的情况，这种情况下，`YukiHookAPI` 发现子 Hooker 为单例时，将会忽略并打印一条警告信息。
+有极少的可能性会出现在一个进程中存在多个包名的情况，这种情况下，YukiHookAPI 发现子 Hooker 为单例时，将会忽略并打印一条警告信息。
 
-```:no-line-numbers
+```text:no-line-numbers
 This Hooker "HOOKER" is singleton or reused, but the current process has multiple package name "NAME", the original is "NAME"
 Make sure your Hooker supports multiple instances for this situation
 The process with package name "NAME" will be ignored
@@ -250,7 +250,7 @@ encase {
 
 你完全不需要与之前在使用 Xposed API 那样区分 `initZygote`、`handleLoadPackage`、`handleInitPackageResources` 方法来执行不同的功能。
 
-在 `YukiHookAPI` 中，这些功能**是无缝的**。
+在 YukiHookAPI 中，这些功能**是无缝的**。
 
 > 示例如下
 

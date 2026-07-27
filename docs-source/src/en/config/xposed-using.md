@@ -137,7 +137,7 @@ As long as you customize the `modulePackageName` parameter, you will get a warni
 
 > The following example
 
-```:no-line-numbers
+```text:no-line-numbers
 You set the customize module package name to "com.example.demo", please check for yourself if it is correct
 ```
 
@@ -174,7 +174,7 @@ The compiled class name structure is as follows.
 
 > The following example
 
-```:no-line-numbers
+```text:no-line-numbers
 ...hook.HookEntry ← Your entry class
 ...hook.HookEntry_Impl ← Auto-generated Impl class
 ...hook.HookEntry_YukiHookXposedInit ← Automatically generated Xposed entry class
@@ -201,7 +201,7 @@ The compiled class name structure is as follows.
 
 > The following example
 
-```:no-line-numbers
+```text:no-line-numbers
 ...hook.HookEntry ← Your entry class
 ...hook.HookEntry_Impl ← Auto-generated Impl class
 ...hook.HookXposedEntry ← Automatically generated Xposed entry class
@@ -301,11 +301,11 @@ The `IYukiHookXposedInit` interface that your Hook entry class must implements i
 
 ::: tip
 
-For more functions, please refer to [IYukiHookXposedInit](../api/public/com/highcapable/yukihookapi/hook/xposed/proxy/IYukiHookXposedInit).
+For more functions, please refer to [IYukiHookXposedInit](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init).
 
 :::
 
-When your Module App is loaded by Xposed, the `onHook` method will be called back, you need to start using `YukiHookAPI` in this method.
+When your Module App is loaded by Xposed, the `onHook` method will be called back, you need to start using YukiHookAPI in this method.
 
 > The basic calling process is `_YukiHookXposedInit` → `IYukiHookXposedInit.onXposedEvent` → `IYukiHookXposedInit.onInit` → `IYukiHookXposedInit.onHook`
 
@@ -342,10 +342,10 @@ object HookEntry : IYukiHookXposedInit {
 }
 ```
 
-`onXposedEvent` and `onHook` methods exist completely independently and do not affect each other. You can continue to use `YukiHookAPI` in the `onHook` method.
+`onXposedEvent` and `onHook` methods exist completely independently and do not affect each other. You can continue to use YukiHookAPI in the `onHook` method.
 
 ::: tip
 
-For more functions, please refer to the [IYukiHookXposedInit.onXposedEvent](../api/public/com/highcapable/yukihookapi/hook/xposed/proxy/IYukiHookXposedInit#onxposedevent-method) method.
+For more functions, please refer to the [IYukiHookXposedInit.onXposedEvent](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/on-xposed-event) method.
 
 :::

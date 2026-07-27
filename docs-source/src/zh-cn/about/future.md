@@ -30,13 +30,13 @@ LSPosed 现已实验性推出了 [Modern Xposed API](https://github.com/libxpose
 
 ### 支持独立使用的 Lite 版本
 
-如果你喜欢 `YukiHookAPI` 的反射 API，但你的项目可能并不需要相关 Hook 功能。
+如果你喜欢 YukiHookAPI 的反射 API，但你的项目可能并不需要相关 Hook 功能。
 
 那么这里有一个好消息要告诉你：
 
-~~`YukiHookAPI` 的核心反射 API 已被解耦合为 [YukiReflection](https://github.com/HighCapable/YukiReflection) 项目，它现在能在任何 Android 项目中使用。~~
+~~YukiHookAPI 的核心反射 API 已被解耦合为 [YukiReflection](https://github.com/HighCapable/YukiReflection) 项目，它现在能在任何 Android 项目中使用。~~
 
-`YukiReflection` 项目由于很多未能解决的黑盒问题已被弃用，我们不再推荐任何人使用它，现在请迁移到全新设计的 [KavaRef](https://github.com/HighCapable/KavaRef)。
+YukiReflection 项目由于很多未能解决的黑盒问题已被弃用，我们不再推荐任何人使用它，现在请迁移到全新设计的 [KavaRef](https://github.com/HighCapable/KavaRef)。
 
 ::: tip 待讨论
 

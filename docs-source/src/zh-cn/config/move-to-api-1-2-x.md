@@ -1,12 +1,12 @@
 # 迁移至 YukiHookAPI 1.2.x
 
-`YukiHookAPI` 从 `1.2.0` 版本开始进行了大量调整，你可以继续向下阅读以查看有哪些注意事项和新功能。
+YukiHookAPI 从 `1.2.0` 版本开始进行了大量调整，你可以继续向下阅读以查看有哪些注意事项和新功能。
 
 ::: warning
 
-如果你正在使用 `1.2.x` 之前版本的 `YukiHookAPI`，建议先参考此文档迁移至 `1.2.x` 版本。
+如果你正在使用 `1.2.x` 之前版本的 YukiHookAPI，建议先参考此文档迁移至 `1.2.x` 版本。
 
-如果你正在使用 `1.2.x` 版本的 `YukiHookAPI`，请直接阅读 [迁移至 YukiHookAPI 1.3.x](move-to-api-1-3-x) 而不是此文档。
+如果你正在使用 `1.2.x` 版本的 YukiHookAPI，请直接阅读 [迁移至 YukiHookAPI 1.3.x](move-to-api-1-3-x) 而不是此文档。
 
 :::
 
@@ -22,7 +22,7 @@ Resources Hook (资源钩子) 将在 **2.0.0** 版本被移除，现已被标记
 
 ## 新版 API
 
-`YukiHookAPI` 在 `1.2.0` 版本引入了 `2.0.0` 准备实现的 [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33) (新版 API)，现处于实验性阶段，你可以在 `2.0.0` 版本正式发布前，开始迁移并体验新版 API。
+YukiHookAPI 在 `1.2.0` 版本引入了 `2.0.0` 准备实现的 [New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33) (新版 API)，现处于实验性阶段，你可以在 `2.0.0` 版本正式发布前，开始迁移并体验新版 API。
 
 ::: warning
 

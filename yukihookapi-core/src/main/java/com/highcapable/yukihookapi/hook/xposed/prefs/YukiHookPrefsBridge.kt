@@ -47,10 +47,6 @@ import java.io.File
  * - 模块与宿主之前共享数据存储为实验性功能 - 仅在 LSPosed 环境测试通过 - EdXposed 理论也可以使用但不再推荐
  *
  * 对于在模块环境中使用 [PreferenceFragmentCompat] - [YukiHookAPI] 提供了 [ModulePreferenceFragment] 来实现同样的功能
- *
- * 详情请参考 [API 文档 - YukiHookPrefsBridge](https://highcapable.github.io/YukiHookAPI/zh-cn/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookPrefsBridge)
- *
- * For English version, see [API Document - YukiHookPrefsBridge](https://highcapable.github.io/YukiHookAPI/en/api/public/com/highcapable/yukihookapi/hook/xposed/prefs/YukiHookPrefsBridge)
  * @param context 上下文实例 - 默认空
  */
 class YukiHookPrefsBridge private constructor(private var context: Context? = null) {

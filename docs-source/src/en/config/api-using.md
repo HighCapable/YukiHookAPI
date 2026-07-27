@@ -6,7 +6,7 @@
 
 You just need to integrate the `com.highcapable.yukihookapi:api` dependency.
 
-Then please integrate the `Hook Framework` dependencies used by your target.
+Then please integrate the Hook Framework dependencies used by your target.
 
 ## Entry Configs
 
@@ -49,7 +49,7 @@ You can no longer wrap with **loadApp** and start writing your Hook code directl
 
 ## Hook Framework
 
-> Here are some related ways of how to connect the `Hook Framework` with the `YukiHookAPI`, which is widely used.
+> Here are some related ways of how to connect the Hook Framework with the `YukiHookAPI`, which is widely used.
 
 ### [Pine](https://github.com/canyie/pine)
 

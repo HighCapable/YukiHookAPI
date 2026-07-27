@@ -1,28 +1,37 @@
 ---
-home: true
-title: Home
-heroImage: /images/logo.png
-actions:
-  - text: Get Started
-    link: /en/guide/home
-    type: primary
-  - text: Changelog
-    link: /en/about/changelog
-    type: secondary
+layout: home
+hero:
+  name: Yuki Hook API
+  tagline: An efficient Hook API and Xposed Module solution built in Kotlin
+  image:
+    src: /images/logo.png
+    alt: Yuki Hook API
+  actions:
+    - text: Get Started
+      link: /en/guide/home
+      theme: brand
+    - text: Changelog
+      link: /en/about/changelog
+      theme: alt
 features:
-  - title: Xposed Module Develop
+  - icon: 🧩
+    title: Xposed Module Develop
     details: The automatic builder can help you quickly create an Xposed Module, automatic configure the entry class and xposed_init files.
-  - title: Light and Elegant
+  - icon: 🪶
+    title: Light and Elegant
     details: A powerful, elegant, beautiful API built with Kotlin lambda can help you quickly implement method Hook and more convenient functions.
-  - title: Debugging Efficient
+  - icon: 🐞
+    title: Debugging Efficient
     details: A rich debug log function, detailing the name of each hooked method, time-consuming to find the class can quickly debug and find errors.
-  - title: Easy to Transplant
+  - icon: 🔄
+    title: Easy to Transplant
     details: Natively supports multiple Xposed API usages and natively connects to multiple Xposed APIs, Hook Frameworks within the supported range can be quickly integrated.
-  - title: Obfuscate Support
+  - icon: 🛡️
+    title: Obfuscate Support
     details: The built Xposed Module simply supports R8, obfuscate will not destroy the hook entry point, and no other configuration is required under R8.
-  - title: Quick to Start
+  - icon: ⚡
+    title: Quick to Start
     details: Simple and easy to use it now! Do not need complex configuration and full development experience, Integrate dependencies and enjoy yourself.
-footer: Apache-2.0 License | Copyright (C) 2019 HighCapable
 ---
 
 ### All Hook process in one step, everything is simplified
