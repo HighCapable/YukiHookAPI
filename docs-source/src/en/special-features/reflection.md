@@ -16,7 +16,7 @@ Starting with version `1.3.0`, YukiHookAPI has moved its own reflection API part
 The YukiReflection project has been deprecated due to many unsolved black box issues, and we no longer recommend anyone to use it.
 
 If you are still using the reflection API section of YukiHookAPI,
-please refer to the migration document [here](https://highcapable.github.io/KavaRef/zh-cn/config/migration) which will jump to the KavaRef document.
+please refer to the migration document [here](https://highcapable.github.io/KavaRef/en/config/migration) which will jump to the KavaRef document.
 
 :::
 

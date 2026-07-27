@@ -28,7 +28,7 @@ Time zone of version release date: **UTC+8**
 
 ### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
-- This is a major update, please refer to [Migrate to YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-3-x)
+- This is a major update, please refer to [Migrate to YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHookAPI/en/config/move-to-api-1-3-x)
 - The reflection API of YukiHookAPI is deprecated, please move to the brand new [KavaRef](https://github.com/HighCapable/KavaRef)
 - The limitation of duplicate Hooks has been deprecated, now you can repeat the same method of the Hook
 - Deprecated ~~`ModuleAppActivity`~~, ~~`ModuleAppCompatActivity`~~, please use `ModuleActivity` to create your own proxy `Activity`
