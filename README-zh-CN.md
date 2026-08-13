@@ -90,7 +90,7 @@
 
 ## Star History
 
-![Star History Chart](https://api.star-history.com/svg?repos=HighCapable/YukiHookAPI&type=Date)
+![Star History Chart](https://star-history.dera.page/svg?repos=HighCapable/YukiHookAPI&type=Date)
 
 ## 第三方开源使用声明
 
