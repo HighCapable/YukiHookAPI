@@ -98,7 +98,7 @@ links).
 
 ## Star History
 
-![Star History Chart](https://api.star-history.com/svg?repos=HighCapable/YukiHookAPI&type=Date)
+[![Star History Chart](https://api.star-history.com/chart?repos=HighCapable/YukiHookAPI&type=date&legend=top-left&sealed_token=cH7W7hRbOUCtuZy08alMZDm3XT4rAGJk-gWnsAEiainLb9d0pvJTYIUCLnhkVyVHMbE0RweCCTM_gn0Mr2UBwjhmbisZCRRxaF_NprdiB44vhtI-5bjaug)](https://www.star-history.com/?repos=HighCapable%2FYukiHookAPI&type=date&legend=top-left)
 
 ## Third-Party Open Source Usage Statement
 
