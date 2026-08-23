@@ -81,6 +81,7 @@ The following are projects that have collaborated and are using YukiHookAPI.
 | [HookGG](https://github.com/HdShare/HookGG)                                     | [HdShare](https://github.com/HdShare)           |
 | [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)           | [wizpizz](https://github.com/wizpizz)           |
 | [Lyricon](https://github.com/proify/lyricon)                                    | [Tomakino](https://github.com/proify)           |
+| [jichuo1](https://github.com/jichuo1/Bilibili_Innocent_Lab)                     | [jichuo1](https://github.com/jichuo1)           |
 
 Are you also using YukiHookAPI? Come and **PR** to add your repository to the list above (private
 repositories do not need to indicate web
