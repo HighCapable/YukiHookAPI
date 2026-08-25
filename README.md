@@ -50,9 +50,9 @@ development progress.
 | <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHookAPI/tree/2.x) |
 |---------------------------------------------------------------------|---------------------------------------------------------------------|
 
-## Cooperation
+## Adopters
 
-The following are projects that have collaborated and are using YukiHookAPI.
+The following are projects that using YukiHookAPI.
 
 | Repository                                                                      | Developer                                       |
 |---------------------------------------------------------------------------------|-------------------------------------------------|
