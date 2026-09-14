@@ -31,7 +31,7 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import android.R as Android_R
 
 /**
- * Fixed [AlertDialog] dialog button issue after injecting module app's Resources in some host apps.
+ * Fixed [AlertDialog] dialog button issue after injecting module's resources in some hosts.
  *
  * Reset button text color and background by reflection [Drawable].
  * @receiver [AlertDialog]

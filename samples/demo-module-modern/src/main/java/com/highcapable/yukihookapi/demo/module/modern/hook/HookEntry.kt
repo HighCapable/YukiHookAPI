@@ -37,7 +37,7 @@ import com.highcapable.yukihookapi.demo.module.modern.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.modern.ui.MainActivity
 import com.highcapable.yukihookapi.demo.module.modern.ui.component.compatStyle
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
-import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
+import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 /**
@@ -76,7 +76,7 @@ object HookEntry : IYukiHookXposedInit {
                 isEnable = true
                 // Whether to enable the logging function of debug log, not enabled by default
                 // When enabled, all available logs and exception stacks will be recorded in memory
-                // Please note, excessive logging may slow down the host app or cause frequent GCs
+                // Please note, excessive logging may slow down the host or cause frequent GCs
                 // After enabling, you can call [YukiHookLogger.saveToFile] to save the log to file in real-time
                 // Or use [YukiHookLogger.contents] to get the real-time log file contents
                 // 是否启用调试日志的记录功能 - 默认不启用
@@ -106,19 +106,19 @@ object HookEntry : IYukiHookXposedInit {
             // 为方便测试模块是否激活 - Demo 默认启用此功能
             isDebug = true
             // Whether to enable the current Xposed module's own [Resources] cache function
-            // Under normal circumstances, the resources of the module app will not change
+            // Under normal circumstances, the resources of the module will not change
             // But in the case of locale changes, screen size changes. Etc. you need to refresh the cache
-            // If none of the above requirements, it is recommended to enable it before the host app restarts
-            // You can manually call [PackageParam.refreshModuleAppResources] to refresh the cache
+            // If none of the above requirements, it is recommended to enable it before the host restarts
+            // You can manually call [PackageParam.refreshModuleResources] to refresh the cache
             // 是否启用当前 Xposed 模块自身 [Resources] 缓存功能
             // 一般情况下模块的 Resources 是不会改变的 - 但是在语言区域更改、分辨率更改等情况下 - 就需要刷新缓存
             // 若无上述需求 - 在宿主重新启动之前建议开启
-            // 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
-            isEnableModuleAppResourcesCache = true
-            // Whether to enable the [YukiHookDataChannel] function of the current Xposed module interacting with the host app
+            // 你可以手动调用 [PackageParam.refreshModuleResources] 来刷新缓存
+            isEnableModuleResourcesCache = true
+            // Whether to enable the [YukiHookDataChannel] function of the current Xposed module interacting with the host
             // Please make sure the Xposed module's [Application] extends [ModuleApplication] to be valid
             // This feature is enabled by default, when disabled it will not load [YukiHookDataChannel] when the feature is initialized
-            // When the feature is enabled, it will automatically register the Hook [Application] lifecycle method when the host app starts
+            // When the feature is enabled, it will automatically register the Hook [Application] lifecycle method when the host starts
             // 是否启用当前 Xposed 模块与宿主交互的 [YukiHookDataChannel] 功能
             // 请确保 Xposed 模块的 [Application] 继承于 [ModuleApplication] 才能有效
             // 此功能默认启用 - 关闭后将不会在功能初始化的时候装载 [YukiHookDataChannel]
@@ -140,7 +140,7 @@ object HookEntry : IYukiHookXposedInit {
                 // 注册模块 Activity 代理
                 registerAppLifecycle {
                     onCreate {
-                        if (AndroidVersion.isAtLeast(AndroidVersion.N)) registerModuleAppActivities()
+                        if (AndroidVersion.isAtLeast(AndroidVersion.N)) registerModuleActivities()
                     }
                 }
                 // Find Class to hook
@@ -258,7 +258,7 @@ object HookEntry : IYukiHookXposedInit {
                                             setPositiveButton("START PARASITIC") { _, _ ->
                                                 MaterialAlertDialogBuilder(context)
                                                     .setTitle("Start Parasitic")
-                                                    .setMessage("This function will start MainActivity that exists in the module app.")
+                                                    .setMessage("This function will start MainActivity that exists in the module.")
                                                     .setPositiveButton("YES") { _, _ ->
                                                         context.startActivity<MainActivity>()
                                                     }.setNegativeButton("NO", null).show().compatStyle()
