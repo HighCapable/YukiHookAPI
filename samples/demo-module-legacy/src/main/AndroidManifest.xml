@@ -33,7 +33,6 @@
         <!-- LSPosed scope declaration. -->
         <meta-data
             android:name="xposedscope"
-
             android:resource="@array/module_scope" />
 
         <activity
