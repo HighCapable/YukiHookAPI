@@ -19,8 +19,6 @@
  *
  * This file is created by fankes on 2022/1/29.
  */
-@file:Suppress("SetTextI18n")
-
 package com.highcapable.yukihookapi.demo.module.legacy.ui
 
 import android.os.Bundle
@@ -48,7 +46,9 @@ import com.highcapable.hikage.widget.com.google.android.material.appbar.Material
 import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputEditText
 import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputLayout
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.demo.module.legacy.R
 import com.highcapable.yukihookapi.demo.module.legacy.data.DataConst
+import com.highcapable.yukihookapi.demo.module.legacy.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.legacy.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.prefs
@@ -61,7 +61,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         moduleEnvironment {
-            dataChannel(packageName = "com.highcapable.yukihookapi.demo.app").with {
+            dataChannel(DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME).with {
                 wait(DataConst.TEST_CN_DATA) {
                     toast(it)
                 }
@@ -69,7 +69,7 @@ class MainActivity : BaseActivity() {
         }
         hostEnvironment {
             AttributeSetResolver.defaultResolverParams = AttributeResolverParams(
-                resourcePackageName = "com.highcapable.yukihookapi.demo.module.legacy"
+                resourcePackageName = DemoProperties.PROJECT_SAMPLES_DEMO_MODULE_LEGACY_PACKAGE_NAME
             )
         }
 
@@ -154,7 +154,7 @@ class MainActivity : BaseActivity() {
                                 isSingleLine = true
                                 ellipsize = TextUtils.TruncateAt.END
                                 gravity = Gravity.CENTER or Gravity.START
-                                text = "Leave something in there"
+                                text = stringResource(R.string.demo_saved_text_hint)
                             }
                             TextInputLayout(
                                 lparams = LayoutParams(widthMatchParent = true)
@@ -162,7 +162,7 @@ class MainActivity : BaseActivity() {
                                 editText = TextInputEditText(
                                     lparams = LayoutParams(widthMatchParent = true)
                                 ) {
-                                    hint = "Please enter the text"
+                                    hint = stringResource(R.string.demo_enter_text)
                                     isSingleLine = true
                                     textSize = 18f
                                     hostEnvironment { isEnabled = false }
@@ -175,19 +175,19 @@ class MainActivity : BaseActivity() {
                                 bottomMargin = 15.dp
                             }
                         ) {
-                            text = "Save Test Data"
+                            text = stringResource(R.string.demo_save_test_data)
                             hostEnvironment { isEnabled = false }
                             setOnClickListener { _ ->
                                 moduleEnvironment {
                                     if (editText.textToString().isNotEmpty()) {
                                         prefs().edit { put(DataConst.TEST_KV_DATA, editText.textToString()) }
-                                        toast("Saved")
-                                    } else toast("Please enter the text")
+                                        toast(stringResource(R.string.demo_saved))
+                                    } else toast(stringResource(R.string.demo_enter_text))
                                 }
                             }
                         }
                         Button {
-                            text = "Open PreferenceFragment"
+                            text = stringResource(R.string.demo_open_preferences)
                             setOnClickListener { startActivity<PreferenceActivity>() }
                         }
                         TextView(
@@ -200,7 +200,10 @@ class MainActivity : BaseActivity() {
                             isSingleLine = true
                             ellipsize = TextUtils.TruncateAt.END
                             gravity = Gravity.CENTER or Gravity.START
-                            text = "Compiled Time：${SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))}"
+                            text = stringResource(
+                                R.string.demo_compiled_time,
+                                SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))
+                            )
                         }
                     }
                 }
@@ -208,39 +211,27 @@ class MainActivity : BaseActivity() {
         }
 
         fun refreshStatus() {
-            hikage.get<TextView>("sample_title_text_0").text = "Module is Active: ${YukiHookAPI.Status.isModuleActive}"
-            hikage.get<TextView>("sample_subtitle_text_0").text = "Xposed 模块激活状态"
-            hikage.get<TextView>("sample_title_text_1").text = "Hook Framework: ${YukiHookAPI.Status.Executor.name}"
-            hikage.get<TextView>("sample_subtitle_text_1").text = "当前的 Hook 框架"
-            hikage.get<TextView>("sample_title_text_2").text = "Xposed API Version: ${YukiHookAPI.Status.Executor.apiLevel}"
-            hikage.get<TextView>("sample_subtitle_text_2").text = "Xposed API 版本"
-            hikage.get<TextView>("sample_title_text_3").text = "${YukiHookAPI.TAG} Version: ${YukiHookAPI.VERSION}"
-            hikage.get<TextView>("sample_subtitle_text_3").text = "${YukiHookAPI.TAG} 版本"
-            hikage.get<TextView>("sample_title_text_4").text = "YukiHookAPI Runtime: ${YukiHookAPI.Status.runtime.explicitName}"
-            hikage.get<TextView>("sample_subtitle_text_4").text = "YukiHookAPI 运行时环境"
-            hikage.get<TextView>("sample_title_text_5").text = "YukiHookPrefsBridge: ${prefs().isWritable}"
-            hikage.get<TextView>("sample_subtitle_text_5").text = "YukiHookPrefsBridge 可写状态"
+            hikage.get<TextView>("sample_title_text_0").text = getString(R.string.demo_status_module_active, YukiHookAPI.Status.isModuleActive)
+            hikage.get<TextView>("sample_subtitle_text_0").text = getString(R.string.demo_status_module_active_summary)
+            hikage.get<TextView>("sample_title_text_1").text = getString(R.string.demo_status_hook_framework, YukiHookAPI.Status.Executor.name)
+            hikage.get<TextView>("sample_subtitle_text_1").text = getString(R.string.demo_status_hook_framework_summary)
+            hikage.get<TextView>("sample_title_text_2").text = getString(R.string.demo_status_xposed_api_version, YukiHookAPI.Status.Executor.apiLevel)
+            hikage.get<TextView>("sample_subtitle_text_2").text = getString(R.string.demo_status_xposed_api_version_summary)
+            hikage.get<TextView>("sample_title_text_3").text = getString(R.string.demo_status_yukihookapi_version, YukiHookAPI.TAG, YukiHookAPI.VERSION)
+            hikage.get<TextView>("sample_subtitle_text_3").text = getString(R.string.demo_status_yukihookapi_version_summary)
+            hikage.get<TextView>("sample_title_text_4").text = getString(R.string.demo_status_runtime, YukiHookAPI.Status.runtime.explicitName)
+            hikage.get<TextView>("sample_subtitle_text_4").text = getString(R.string.demo_status_runtime_summary)
+            hikage.get<TextView>("sample_title_text_5").text = getString(R.string.demo_status_prefs_writable, prefs().isWritable)
+            hikage.get<TextView>("sample_subtitle_text_5").text = getString(R.string.demo_status_prefs_writable_summary)
         }
 
         refreshStatus()
     }
 
-    /**
-     * Running only in (Xposed) host environment
-     *
-     * 仅在 (Xposed) 宿主环境执行
-     * @param callback Running in the (Xposed) host environment / 在宿主环境执行
-     */
     private inline fun hostEnvironment(callback: () -> Unit) {
         if (YukiHookAPI.Status.isXposedEnvironment) callback()
     }
 
-    /**
-     * Running only in module environment
-     *
-     * 仅在模块环境执行
-     * @param callback Running in the module environment / 在模块环境执行
-     */
     private inline fun moduleEnvironment(callback: () -> Unit) {
         if (!YukiHookAPI.Status.isXposedEnvironment) callback()
     }

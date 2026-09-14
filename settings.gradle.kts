@@ -53,7 +53,7 @@ gropify {
         ":samples:demo-module-modern"
     ) {
         android {
-            isEnabled = false
+            className = "Demo"
         }
     }
 

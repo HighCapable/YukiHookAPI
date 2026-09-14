@@ -19,8 +19,6 @@
  *
  * This file is created by fankes on 2022/2/9.
  */
-@file:Suppress("SetTextI18n")
-
 package com.highcapable.yukihookapi.demo.module.legacy.hook
 
 import android.app.Activity
@@ -35,8 +33,9 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.demo.module.legacy.R
 import com.highcapable.yukihookapi.demo.module.legacy.data.DataConst
-import com.highcapable.yukihookapi.demo.module.legacy.hook.factory.compatStyle
+import com.highcapable.yukihookapi.demo.module.legacy.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.legacy.ui.MainActivity
+import com.highcapable.yukihookapi.demo.module.legacy.ui.component.compatStyle
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
@@ -133,7 +132,7 @@ object HookEntry : IYukiHookXposedInit {
         YukiHookAPI.encase {
             // Load the app to be hooked
             // 装载需要 Hook 的 app
-            loadApp(name = "com.highcapable.yukihookapi.demo.app") {
+            loadApp(DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME) {
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
                 Activity::class.resolve()
@@ -192,7 +191,7 @@ object HookEntry : IYukiHookXposedInit {
                         // After hook the method
                         // 在执行方法之后拦截
                         after {
-                            if (prefs.getBoolean("show_dialog_when_demo_app_opend"))
+                            if (prefs.getBoolean("show_dialog_when_demo_app_opened"))
                                 MaterialAlertDialogBuilder(instance<Activity>().applyModuleTheme(R.style.Theme_Default))
                                     .setTitle("Hooked")
                                     .setMessage(

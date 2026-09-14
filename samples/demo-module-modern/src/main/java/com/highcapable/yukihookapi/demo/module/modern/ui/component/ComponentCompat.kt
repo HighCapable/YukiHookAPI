@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/8/16.
  */
-package com.highcapable.yukihookapi.demo.module.modern.hook.factory
+package com.highcapable.yukihookapi.demo.module.modern.ui.component
 
 import android.graphics.drawable.Drawable
 import android.widget.Button

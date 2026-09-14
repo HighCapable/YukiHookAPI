@@ -1,10 +1,9 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <PreferenceCategory app:title="Normal Preference">
+    <PreferenceCategory app:title="@string/demo_preference_category">
         <SwitchPreference
             app:defaultValue="false"
-            app:key="show_dialog_when_demo_app_opend"
-            app:summary="Open a dialog on start Demo App"
-            app:title="Show Dialog" />
+            app:key="show_dialog_when_demo_app_opened"
+            app:summary="@string/demo_preference_show_dialog_summary"
+            app:title="@string/demo_preference_show_dialog_title" />
     </PreferenceCategory>
 </PreferenceScreen>

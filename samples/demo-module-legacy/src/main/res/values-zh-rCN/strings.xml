@@ -1,0 +1,24 @@
+<resources>
+    <string name="demo_saved_text_hint">保存的文本会显示在这里。</string>
+    <string name="demo_enter_text">请输入文本</string>
+    <string name="demo_save_test_data">保存测试数据</string>
+    <string name="demo_saved">已保存</string>
+    <string name="demo_open_preferences">打开偏好设置</string>
+    <string name="demo_compiled_time">编译时间：%1$s</string>
+    <string name="demo_status_module_active">模块已激活：%1$b</string>
+    <string name="demo_status_module_active_summary">Xposed 模块激活状态</string>
+    <string name="demo_status_hook_framework">Hook 框架：%1$s</string>
+    <string name="demo_status_hook_framework_summary">当前 Hook 框架</string>
+    <string name="demo_status_xposed_api_version">Xposed API 版本：%1$d</string>
+    <string name="demo_status_xposed_api_version_summary">Xposed API 版本</string>
+    <string name="demo_status_yukihookapi_version">%1$s 版本：%2$s</string>
+    <string name="demo_status_yukihookapi_version_summary">YukiHookAPI 版本</string>
+    <string name="demo_status_runtime">YukiHookAPI 运行时：%1$s</string>
+    <string name="demo_status_runtime_summary">YukiHookAPI 运行时环境</string>
+    <string name="demo_status_prefs_writable">YukiHookPrefsBridge 可写：%1$b</string>
+    <string name="demo_status_prefs_writable_summary">YukiHookPrefsBridge 可写状态</string>
+    <string name="demo_preferences_title">偏好设置</string>
+    <string name="demo_preference_category">Demo 偏好设置</string>
+    <string name="demo_preference_show_dialog_title">显示对话框</string>
+    <string name="demo_preference_show_dialog_summary">Demo 启动时显示对话框</string>
+</resources>

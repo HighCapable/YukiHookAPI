@@ -25,11 +25,14 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.widget.FrameLayout
+import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
 import androidx.preference.SwitchPreference
-import com.highcapable.betterandroid.ui.extension.component.base.toPx
 import com.highcapable.betterandroid.ui.extension.component.fragmentManager
+import com.highcapable.hikage.core.layout.LayoutParams
+import com.highcapable.hikage.extension.addView
+import com.highcapable.hikage.widget.android.widget.FrameLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo.module.modern.R
 import com.highcapable.yukihookapi.demo.module.modern.ui.base.BaseActivity
@@ -42,16 +45,25 @@ class PreferenceActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = "PreferenceFragment"
+        title = getString(R.string.demo_preferences_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         if (savedInstanceState == null) findViewById<FrameLayout>(Window.ID_ANDROID_CONTENT).apply {
-            this.addView(FrameLayout(this@PreferenceActivity).apply {
-                id = View.generateViewId()
-                updatePadding(top = 100.toPx(this@PreferenceActivity))
-                fragmentManager().commit(allowStateLoss = true) {
-                    replace(id, SettingsFragment())
-                }
-            })
+            addView {
+                FrameLayout(
+                    lparams = LayoutParams(matchParent = true),
+                    init = {
+                        id = View.generateViewId()
+                        updatePadding(top = 100.dp)
+
+                        doOnLayout {
+                            fragmentManager().commit(allowStateLoss = true) {
+                                replace(id, SettingsFragment())
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -66,7 +78,7 @@ class PreferenceActivity : BaseActivity() {
             super.onCreatePreferences(savedInstanceState, rootKey)
 
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
-            findPreference<SwitchPreference>("show_dialog_when_demo_app_opend")?.isEnabled = !YukiHookAPI.Status.isXposedEnvironment
+            findPreference<SwitchPreference>("show_dialog_when_demo_app_opened")?.isEnabled = !YukiHookAPI.Status.isXposedEnvironment
         }
     }
 }
