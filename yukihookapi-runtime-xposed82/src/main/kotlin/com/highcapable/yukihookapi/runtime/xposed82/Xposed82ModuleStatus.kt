@@ -29,7 +29,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 
 /**
- * Transports legacy module-app status through the generated self-hook target.
+ * Transports legacy module status through the generated self-hook target.
  */
 internal object Xposed82ModuleStatus {
 

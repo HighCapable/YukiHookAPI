@@ -35,7 +35,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookBridge
  *
  * This provides the following features:
  *
- * - Initializes [YukiHookBridge] for module app runtime services.
+ * - Initializes [YukiHookBridge] for module runtime services.
  * - Exposes the module-wide static [appContext].
  * - Loads [YukiHookAPI.Configs] in both module and host environments to avoid duplicate configuration.
  * - Enables [YukiHookDataChannel] communication between the module and host.
@@ -61,7 +61,7 @@ open class ModuleApplication : Application() {
         super.onCreate()
         current = this
 
-        YukiHookBridge.initializeModuleApp()
+        YukiHookBridge.initializeModuleServices()
         // Calls [IYukiHookXposedInit.onInit] on the Hook entry class.
         runCatching { ModuleApplication_Impl.callHookEntryInit() }
         YukiHookDataChannel.get().register(context = this)

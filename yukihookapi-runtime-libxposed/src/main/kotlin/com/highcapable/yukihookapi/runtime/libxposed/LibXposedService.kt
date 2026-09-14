@@ -33,7 +33,7 @@ import io.github.libxposed.service.XposedServiceHelper
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
- * Owns the asynchronous module-app service connection independently of the host hook API.
+ * Owns the asynchronous module service connection independently of the host hook API.
  */
 internal object LibXposedService {
 

@@ -72,21 +72,11 @@ fun IYukiHookXposedInit.encase(block: PackageParam.() -> Unit) = YukiHookAPI.enc
 fun IYukiHookXposedInit.encase(vararg hookers: YukiBaseHooker) = YukiHookAPI.encase(hookers = hookers)
 
 /**
- * This function does nothing and does not invoke [block].
- *
- * - Use the selected runtime's `registerFrameworkEvents` extension from [IYukiHookXposedInit.onInit] instead.
- * @receiver [IYukiHookXposedInit]
- * @param block the unused event configuration block.
- */
-@Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
-inline fun IYukiHookXposedInit.events(block: YukiXposedEvent.() -> Unit) = Unit
-
-/**
  * Creates a [YukiHookPrefsBridge] object.
  *
  * - This API is available in both module and host environments.
  *
- * To store data in the current host app's private storage from a host environment, use [YukiHookPrefsBridge.native].
+ * To store data in the current host's private storage from a host environment, use [YukiHookPrefsBridge.native].
  * Without any explicit conditions, the host environment reads module data by default.
  * @receiver the current context.
  * @param name the custom shared preferences storage name, empty by default.
@@ -99,7 +89,7 @@ fun Context.prefs(name: String = "") = YukiHookPrefsBridge.from(this).let { if (
  *
  * - This API is available only in the module environment and has no effect elsewhere.
  * @receiver the current context.
- * @param packageName the target host app package name.
+ * @param packageName the target host package name.
  * @return [YukiHookDataChannel.Namespace]
  */
 fun Context.dataChannel(packageName: String) = YukiHookDataChannel.get().namespace(this, packageName)
@@ -122,7 +112,7 @@ val Context.processName
         ?: packageName ?: ""
 
 /**
- * Injects the current Xposed module's resources into the host app [Context].
+ * Injects the current Xposed module's resources into the host [Context].
  *
  * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString]
  * can load the current module's resource IDs directly.
@@ -131,13 +121,14 @@ val Context.processName
  *
  * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
  * - On Android 11 (API 30) or later, call this function on the main thread.
+ * @see Resources.injectModuleResources
  * @receiver the current context.
  */
 @MainThread
-fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
+fun Context.injectModuleResources() = resources?.injectModuleResources()
 
 /**
- * Injects the current Xposed module's resources directly into the specified host app [Resources].
+ * Injects the current Xposed module's resources directly into the specified host [Resources].
  *
  * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString]
  * can load the current module's resource IDs directly.
@@ -146,32 +137,33 @@ fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
  *
  * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
  * - On Android 11 (API 30) or later, call this function on the main thread.
+ * @see Context.injectModuleResources
  * @receiver the current resources.
  */
 @MainThread
-fun Resources.injectModuleAppResources() = AppParasitism.injectModuleAppResources(this)
+fun Resources.injectModuleResources() = AppParasitism.injectModuleResources(this)
 
 /**
- * Registers the current Xposed module's [Activity] in the host app.
+ * Registers the current Xposed module's [Activity] in the host.
  *
- * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host app.
- * When an unregistered [Activity] starts in the host app, this API automatically calls [injectModuleAppResources] to inject module resources.
+ * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host.
+ * When an unregistered [Activity] starts in the host, this API automatically calls [injectModuleResources] to inject module resources.
  *
- * - Each [Activity] that starts in the host app must implement [ModuleActivity].
+ * - Each [Activity] that starts in the host must implement [ModuleActivity].
  * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
  * - Requires Android 7.0 (API 24) or later.
  * @receiver the current context.
  * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
  */
 @RequiresApi(AndroidVersion.N)
-fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitism.registerModuleAppActivities(this, proxy)
+fun Context.registerModuleActivities(proxy: Any? = null) = AppParasitism.registerModuleActivities(this, proxy)
 
 /**
  * Creates a [ContextThemeWrapper] proxy that applies the current Xposed module's theme resources.
  *
- * In a host app, this API automatically calls [injectModuleAppResources] to inject the current module's resources.
+ * In a host, this API automatically calls [injectModuleResources] to inject the current module's resources.
  *
- * - If this API throws [ClassCastException] in a host app, set a new [configuration] manually.
+ * - If this API throws [ClassCastException] in a host, set a new [configuration] manually.
  * @receiver the current context.
  * @param theme the theme resource ID.
  * @param configuration the [Configuration] to use, null by default.
@@ -179,6 +171,35 @@ fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitism.regi
  */
 fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration? = null) =
     ModuleContextThemeWrapper.from(this, theme, configuration)
+
+// region Deprecated functions for backward compatibility
+
+/**
+ * This function does nothing and does not invoke [block].
+ *
+ * - Use the selected runtime's `registerFrameworkEvents` extension from [IYukiHookXposedInit.onInit] instead.
+ * @receiver [IYukiHookXposedInit]
+ * @param block the unused event configuration block.
+ */
+@Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
+inline fun IYukiHookXposedInit.events(block: YukiXposedEvent.() -> Unit) = Unit
+
+/** Registers the current Xposed module's [Activity] in the host. */
+@Deprecated(message = "Use registerModuleActivities instead.", replaceWith = ReplaceWith("registerModuleActivities(proxy)"))
+@RequiresApi(AndroidVersion.N)
+fun Context.registerModuleAppActivities(proxy: Any? = null) = registerModuleActivities(proxy)
+
+/** Injects the current Xposed module's resources into the host [Context]. */
+@Deprecated(message = "Use injectModuleResources instead.", replaceWith = ReplaceWith("injectModuleResources()"))
+@MainThread
+fun Context.injectModuleAppResources() = injectModuleResources()
+
+/** Injects the current Xposed module's resources directly into the specified host [Resources]. */
+@Deprecated(message = "Use injectModuleResources instead.", replaceWith = ReplaceWith("injectModuleResources()"))
+@MainThread
+fun Resources.injectModuleAppResources() = injectModuleResources()
+
+// endregion
 
 /**
  * Checks only whether the module is active in TaiChi/Wuji.

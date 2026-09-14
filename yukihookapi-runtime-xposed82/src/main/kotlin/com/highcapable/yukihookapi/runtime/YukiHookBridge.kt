@@ -62,7 +62,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
         attached = true
     }
 
-    override fun initializeModuleApp() = Unit
+    override fun initializeModuleServices() = Unit
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Xposed82ModuleStatus.install(loader)
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? =

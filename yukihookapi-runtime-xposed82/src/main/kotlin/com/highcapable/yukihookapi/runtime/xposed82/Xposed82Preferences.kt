@@ -58,7 +58,7 @@ internal object Xposed82Preferences {
     }
 
     /**
-     * Isolated because [XSharedPreferences] is not present in an ordinary module-app process.
+     * Isolated because [XSharedPreferences] is not present in an ordinary module process.
      */
     private object Host {
 

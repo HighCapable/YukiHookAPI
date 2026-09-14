@@ -136,7 +136,7 @@ class RuntimeIsolationTest {
     @Test
     fun moduleStatusLoadsWithoutInjectedXposedBridge() {
         Assert.assertNull("de.robv.android.xposed.XposedBridge".toClassOrNull())
-        YukiHookBridge.initializeModuleApp()
+        YukiHookBridge.initializeModuleServices()
         Assert.assertEquals(YukiHookRuntime.XPOSED_82, YukiHookAPI.Status.runtime)
         Assert.assertFalse(YukiHookAPI.Status.isXposedEnvironment)
         Assert.assertFalse(YukiHookAPI.Status.isXposedModuleActive)

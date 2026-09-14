@@ -67,9 +67,13 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
         super.onDestroy()
     }
 
+    // region Deprecated functions for backward compatibility
+
     /** This function was deprecated, please use [onCreatePreferences] directly. */
     @Deprecated(message = "Use onCreatePreferences directly.")
     open fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?) = Unit
+
+    // endregion
 
     private fun createDataStore() = object : PreferenceDataStore() {
         override fun getString(key: String, defValue: String?) = bridge.current.getString(key, defValue)

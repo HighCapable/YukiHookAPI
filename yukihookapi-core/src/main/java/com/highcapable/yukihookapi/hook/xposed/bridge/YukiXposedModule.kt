@@ -61,16 +61,16 @@ internal object YukiXposedModule : YukiXposedModuleLifecycle {
     var modulePackageName = ""
 
     /** The APK path of the current Xposed module. */
-    var moduleAppFilePath = ""
+    var moduleFilePath = ""
 
     /** The current Xposed module's [Resources]. */
-    var moduleAppResources: YukiXposedModuleResources? = null
+    var moduleResources: YukiXposedModuleResources? = null
 
     /**
      * Gets the current Xposed module's dynamic [Resources].
      * @return [YukiXposedModuleResources] or null.
      */
-    val dynamicModuleAppResources get() = YukiXposedModuleResources.from(moduleAppFilePath)
+    val dynamicModuleResources get() = YukiXposedModuleResources.from(moduleFilePath)
 
     /**
      * Gets whether the module has loaded its Xposed callback.
@@ -100,16 +100,16 @@ internal object YukiXposedModule : YukiXposedModuleLifecycle {
             javaClass.classLoader?.hasClass("android.miui.R") == true
 
     /** Refreshes the current Xposed module's [Resources]. */
-    fun refreshModuleAppResources() {
-        dynamicModuleAppResources?.let { moduleAppResources = it }
+    fun refreshModuleResources() {
+        dynamicModuleResources?.let { moduleResources = it }
     }
 
     override fun onStartLoadModule(packageName: String, appFilePath: String) {
         isModuleLoaded = true
 
         modulePackageName = packageName
-        moduleAppFilePath = appFilePath
-        refreshModuleAppResources()
+        moduleFilePath = appFilePath
+        refreshModuleResources()
     }
 
     override fun onFinishLoadModule() {
@@ -144,7 +144,7 @@ internal object YukiXposedModule : YukiXposedModuleLifecycle {
             packageParamCallback?.invoke(PackageParam(wrapper).apply { YukiHookAPI.sayHello() })
 
             if (wrapper.type != HookEntryType.ZYGOTE && wrapper.packageName == modulePackageName)
-                AppParasitism.hookLegacyModuleAppRelated(wrapper.appClassLoader)
+                AppParasitism.hookLegacyModuleRelated(wrapper.appClassLoader)
             if (wrapper.isFirstApplication) AppParasitism.prepareHostApplication(wrapper.packageName)
         }.onFailure { YLog.innerE("An exception occurred in the hooking process of YukiHookAPI", it) }
     }

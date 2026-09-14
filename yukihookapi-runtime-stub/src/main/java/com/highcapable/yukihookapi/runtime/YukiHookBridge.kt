@@ -46,7 +46,7 @@ object YukiHookBridge : FrameworkHookBridge {
     override val frameworkVersion: String get() = error("Stub!")
     override val frameworkVersionCode: Int get() = error("Stub!")
 
-    override fun initializeModuleApp(): Unit = error("Stub!")
+    override fun initializeModuleServices(): Unit = error("Stub!")
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?): Unit = error("Stub!")
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? = error("Stub!")
     override fun hookMember(member: Member, priority: Int, hooker: HookerBridge): HookerBridge = error("Stub!")

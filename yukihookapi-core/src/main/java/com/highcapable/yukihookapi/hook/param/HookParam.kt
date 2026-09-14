@@ -215,6 +215,8 @@ class HookParam private constructor(
             param.args[index] = any
         }
 
+        // region Deprecated functions for backward compatibility
+
         /**
          * Gets the argument instance as [T].
          * @return [T] or null.
@@ -318,8 +320,12 @@ class HookParam private constructor(
         @Deprecated(message = "Use set instead.", replaceWith = ReplaceWith("set(false)"))
         fun setFalse() = set(false)
 
+        // endregion
+
         override fun toString() = "ArgsEditor(index=$index, value=${args.getOrNull(index)}) by ${this@HookParam}"
     }
+
+    // region Deprecated functions and classes for backward compatibility
 
     /**
      * Gets the class of the current hooked receiver instance.
@@ -387,6 +393,8 @@ class HookParam private constructor(
         @Deprecated(message = "Use lastArg instead.")
         fun last() = lastArg()
     }
+
+    // endregion
 
     override fun toString() = "HookParam(${super.toString()}) by $param"
 }

@@ -156,7 +156,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - This is unavailable when loaded as a custom hook API and returns an empty string.
      * @return [String]
      */
-    val moduleAppFilePath get() = YukiXposedModule.moduleAppFilePath
+    val moduleFilePath get() = YukiXposedModule.moduleFilePath
 
     /**
      * Gets the [Resources] of the current Xposed module.
@@ -165,9 +165,9 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [YukiXposedModuleResources]
      * @throws IllegalStateException if the current hook framework does not support this feature.
      */
-    val moduleAppResources
-        get() = (if (YukiHookAPI.Configs.isEnableModuleAppResourcesCache) YukiXposedModule.moduleAppResources
-        else YukiXposedModule.dynamicModuleAppResources) ?: error("Current hook framework not support module app resources.")
+    val moduleResources
+        get() = (if (YukiHookAPI.Configs.isEnableModuleResourcesCache) YukiXposedModule.moduleResources
+        else YukiXposedModule.dynamicModuleResources) ?: error("Current hook framework not support module resources.")
 
     /**
      * Creates a [YukiHookPrefsBridge] object.
@@ -209,7 +209,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     }
 
     /** Refreshes the [Resources] of the current Xposed module. */
-    fun refreshModuleAppResources() = YukiXposedModule.refreshModuleAppResources()
+    fun refreshModuleResources() = YukiXposedModule.refreshModuleResources()
 
     /**
      * Registers a lifecycle listener for the current host [Application].
@@ -222,14 +222,6 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun registerAppLifecycle(onFailureThrowToHost: Boolean = true, block: AppLifecycle.() -> Unit) {
         if (isFirstApplication) AppLifecycle.register(packageName, onFailureThrowToHost, block)
     }
-
-    /** Listens for lifecycle loading events of the current host. */
-    @Deprecated(
-        message = "Use registerAppLifecycle instead.",
-        replaceWith = ReplaceWith("registerAppLifecycle(isOnFailureThrowToApp, block)")
-    )
-    fun onAppLifecycle(isOnFailureThrowToApp: Boolean = true, block: AppLifecycle.() -> Unit) =
-        registerAppLifecycle(isOnFailureThrowToApp, block)
 
     /**
      * Loads and hooks apps with the specified package name.
@@ -712,6 +704,30 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         YukiHookCreator.createClassicHooker(onEach {
             require(it is Constructor<*> || it is Method) { "This type $it not support to hook, supported are constructor and method." }
         }, priority, isLazyMode)
+
+    // region Deprecated properties and functions for backward compatibility
+
+    /** Gets the APK file path of the current Xposed module. */
+    @Deprecated(message = "Use moduleFilePath instead.", replaceWith = ReplaceWith("moduleFilePath"))
+    val moduleAppFilePath get() = moduleFilePath
+
+    /** Gets the [Resources] of the current Xposed module. */
+    @Deprecated(message = "Use moduleResources instead.", replaceWith = ReplaceWith("moduleResources"))
+    val moduleAppResources get() = moduleResources
+
+    /** Refreshes the [Resources] of the current Xposed module. */
+    @Deprecated(message = "Use refreshModuleResources instead.", replaceWith = ReplaceWith("refreshModuleResources()"))
+    fun refreshModuleAppResources() = refreshModuleResources()
+
+    /** Listens for lifecycle loading events of the current host. */
+    @Deprecated(
+        message = "Use registerAppLifecycle instead.",
+        replaceWith = ReplaceWith("registerAppLifecycle(isOnFailureThrowToApp, block)")
+    )
+    fun onAppLifecycle(isOnFailureThrowToApp: Boolean = true, block: AppLifecycle.() -> Unit) =
+        registerAppLifecycle(isOnFailureThrowToApp, block)
+
+    // endregion
 
     /**
      * Lifecycle instance handler for the current host.

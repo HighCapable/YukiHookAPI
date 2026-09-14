@@ -58,7 +58,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val frameworkVersion get() = if (isHookAvailable) hostVersion else LibXposedService.frameworkVersion
     override val frameworkVersionCode get() = if (isHookAvailable) hostVersionCode else LibXposedService.frameworkVersionCode
 
-    override fun initializeModuleApp() = LibXposedService.initialize()
+    override fun initializeModuleServices() = LibXposedService.initialize()
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Unit
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge) = LibXposedService.observe(lifecycle, listener)

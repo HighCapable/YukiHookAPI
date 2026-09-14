@@ -232,7 +232,7 @@ class YukiHookDataChannel private constructor() {
     /**
      * Gets a namespace.
      * @param context the context instance.
-     * @param packageName the target host app package name.
+     * @param packageName the target host package name.
      * @return [Namespace]
      */
     internal fun namespace(context: Context? = null, packageName: String): Namespace {
@@ -259,7 +259,7 @@ class YukiHookDataChannel private constructor() {
      *
      * - Use [namespace] to obtain [Namespace].
      * @param context the context instance.
-     * @param packageName the target host app package name.
+     * @param packageName the target host package name.
      */
     inner class Namespace internal constructor(private val context: Context?, private val packageName: String) {
 
@@ -276,7 +276,7 @@ class YukiHookDataChannel private constructor() {
         }_${type.ordinal}"
 
         /**
-         * Unique key-value name that prevents names used by different host apps from interfering with one another.
+         * Unique key-value name that prevents names used by different hosts from interfering with one another.
          * @return [String]
          */
         private val keyNonRepeatName get() = "_${packageName.hashCode()}"

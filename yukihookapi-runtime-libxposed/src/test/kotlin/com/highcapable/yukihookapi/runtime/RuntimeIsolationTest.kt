@@ -110,7 +110,7 @@ class RuntimeIsolationTest {
     @Test
     fun moduleStatusLoadsWithoutNativeHookApi() {
         Assert.assertNull("io.github.libxposed.api.XposedModule".toClassOrNull())
-        YukiHookBridge.initializeModuleApp()
+        YukiHookBridge.initializeModuleServices()
         Assert.assertEquals(YukiHookRuntime.LIBXPOSED, YukiHookAPI.Status.runtime)
         Assert.assertFalse(YukiHookAPI.Status.isXposedEnvironment)
         Assert.assertFalse(YukiHookAPI.Status.isXposedModuleActive)

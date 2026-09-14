@@ -208,7 +208,7 @@ internal object AppParasitism {
      * Hooks legacy module activation status and [SharedPreferences].
      * @param loader the module [ClassLoader].
      */
-    fun hookLegacyModuleAppRelated(loader: ClassLoader?) {
+    fun hookLegacyModuleRelated(loader: ClassLoader?) {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
 
         @Suppress("DEPRECATION")
@@ -382,24 +382,24 @@ internal object AppParasitism {
      * Injects the current Xposed module's resources into the host.
      * @param hostResources the host [Resources] to inject.
      */
-    fun injectModuleAppResources(hostResources: Resources) {
+    fun injectModuleResources(hostResources: Resources) {
         if (!YukiXposedModule.isXposedEnvironment)
             return YLog.innerW("You can only inject module resources in host environment")
         if (currentPackageName == YukiXposedModule.modulePackageName)
             return YLog.innerE("You cannot inject module resources into yourself")
 
-        YukiXposedModuleResources.injectModuleResources(hostResources, YukiXposedModule.moduleAppFilePath).onFailure {
+        YukiXposedModuleResources.injectModuleResources(hostResources, YukiXposedModule.moduleFilePath).onFailure {
             YLog.innerE("Failed to inject module resources into $hostResources", it)
         }
     }
 
     /**
-     * Registers the current Xposed module's [Activity] in the host app.
+     * Registers the current Xposed module's [Activity] in the host.
      * @param context the current [Context].
      * @param proxy the proxy [Activity].
      */
     @RequiresApi(AndroidVersion.N)
-    fun registerModuleAppActivities(context: Context, proxy: Any?) {
+    fun registerModuleActivities(context: Context, proxy: Any?) {
         fun Intent.wrap(): Intent {
             val component = this.component ?: return this
             if (component.packageName != currentPackageName || !baseClassLoader.hasClass(component.className)) return this
@@ -526,7 +526,7 @@ internal object AppParasitism {
                         if (!activity.javaClass.name.startsWith(YukiXposedModule.modulePackageName)) return
 
                         (param.args[1] as? Bundle)?.classLoader = baseClassLoader
-                        injectModuleAppResources(activity.resources)
+                        injectModuleResources(activity.resources)
                     }
                 })?.let(hooked::add)
             }

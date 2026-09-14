@@ -66,7 +66,7 @@ object YLog {
         const val PRIORITY = 1001
 
         /**
-         * Current host app package name.
+         * Current host package name.
          *
          * Example output:
          *
@@ -77,7 +77,7 @@ object YLog {
         const val PACKAGE_NAME = 1002
 
         /**
-         * Current host app user ID, omitted for the owner user.
+         * Current host user ID, omitted for the owner user.
          *
          * Example output:
          *
@@ -120,7 +120,7 @@ object YLog {
          *
          * [isEnable] must also be enabled.
          *
-         * - Excessive logging may slow down the host app or cause frequent garbage collection.
+         * - Excessive logging may slow down the host or cause frequent garbage collection.
          *
          * Once enabled, call [saveToFile] to save logs to a file in real time or use [contents] to obtain the current log contents.
          */
@@ -156,7 +156,7 @@ object YLog {
     /**
      * All currently recorded log data.
      *
-     * - Log data is isolated between host app and module processes.
+     * - Log data is isolated between host and module processes.
      */
     val inMemoryData = mutableListOf<YLogData>()
 
@@ -165,7 +165,7 @@ object YLog {
      *
      * Returns an empty string when no logs have been recorded.
      *
-     * - Log data is isolated between host app and module processes.
+     * - Log data is isolated between host and module processes.
      * @return [String]
      */
     val contents get() = contents()
@@ -175,7 +175,7 @@ object YLog {
      *
      * Returns an empty string when no logs have been recorded and [data] is empty.
      *
-     * - Log data is isolated between host app and module processes.
+     * - Log data is isolated between host and module processes.
      * @param data the log data, [inMemoryData] by default.
      * @return [String]
      */
@@ -197,7 +197,7 @@ object YLog {
      *
      * You can also clear [inMemoryData] directly.
      *
-     * - Log data is isolated between host app and module processes.
+     * - Log data is isolated between host and module processes.
      */
     fun clear() = inMemoryData.clear()
 
@@ -207,7 +207,7 @@ object YLog {
      * Performs no operation when [Configs.isRecord] is disabled or no logs have been recorded.
      * Logs are appended to [fileName], which is created automatically when it does not exist.
      *
-     * - File access depends on the permissions granted to the current host app or module.
+     * - File access depends on the permissions granted to the current host or module.
      * @param fileName the full file name, for example `/data/data/.../files/xxx.log`.
      * @param data the log data, [inMemoryData] by default.
      * @throws ErrnoException if the target path is not writable.

@@ -26,7 +26,7 @@ import android.content.SharedPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 
 /**
- * Remote preferences with private module-app storage as the inactive fallback.
+ * Remote preferences with private module storage as the inactive fallback.
  */
 internal object LibXposedPreferences {
 

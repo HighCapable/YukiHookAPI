@@ -62,8 +62,8 @@ interface FrameworkHookBridge {
     /** Framework version code, constrained by the existing [Int] API. */
     val frameworkVersionCode: Int
 
-    /** Initializes module-app runtime services without loading host-only API classes. */
-    fun initializeModuleApp()
+    /** Initializes module runtime services without loading host-only API classes. */
+    fun initializeModuleServices()
 
     /**
      * Installs the generated legacy module-status hooks when supported by the selected runtime.

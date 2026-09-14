@@ -28,8 +28,8 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
-import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
+import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
@@ -38,7 +38,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  *
  * An [Activity] implementing this interface can launch in both host and module environments.
  *
- * - In the host environment, call [Context.registerModuleAppActivities] when the host starts,
+ * - In the host environment, call [Context.registerModuleActivities] when the host starts,
  *   an [AppCompatActivity] must override [moduleTheme] with an AppCompat theme.
  *
  * The example below forwards the required lifecycle methods to [delegate]. Implement this interface in a custom `BaseActivity`,
@@ -90,7 +90,7 @@ interface ModuleActivity {
 
         /** @see Activity.onConfigurationChanged */
         fun onConfigurationChanged(newConfig: Configuration) {
-            if (YukiXposedModule.isXposedEnvironment) selfActivity.injectModuleAppResources()
+            if (YukiXposedModule.isXposedEnvironment) selfActivity.injectModuleResources()
         }
 
         /** @see Activity.onRestoreInstanceState */
@@ -114,7 +114,7 @@ interface ModuleActivity {
     /**
      * Defines the class name of the proxied [Activity].
      *
-     * When empty, uses the class configured by [Context.registerModuleAppActivities].
+     * When empty, uses the class configured by [Context.registerModuleActivities].
      *
      * - The proxied [Activity] class must be declared in the host's AndroidManifest.
      * @return [String]

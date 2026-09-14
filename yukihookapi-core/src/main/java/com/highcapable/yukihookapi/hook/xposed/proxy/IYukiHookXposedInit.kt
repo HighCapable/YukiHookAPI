@@ -63,6 +63,8 @@ interface IYukiHookXposedInit {
      */
     fun onHook()
 
+    // region Deprecated functions for backward compatibility
+
     /**
      * This callback is no longer invoked and has no effect.
      *
@@ -73,4 +75,6 @@ interface IYukiHookXposedInit {
             "Use the runtime's registerFrameworkEvents { ... } extension in onInit instead."
     )
     fun onXposedEvent() = Unit
+
+    // endregion
 }

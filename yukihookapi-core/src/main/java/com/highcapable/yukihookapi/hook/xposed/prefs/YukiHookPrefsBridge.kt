@@ -102,6 +102,8 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         )
     }
 
+    // region Deprecated properties for backward compatibility
+
     /**
      * Gets the availability state of the current [YukiHookPrefsBridge].
      *
@@ -110,6 +112,8 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      */
     @Deprecated(message = "Use isAvailable or isWritable instead.")
     val isPreferencesAvailable get() = false
+
+    // endregion
 
     /**
      * Gets whether the current preferences are available.

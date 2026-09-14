@@ -20,7 +20,7 @@
  * This file is created by fankes on 2022/8/15.
  * Thanks for providing https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/ui/CommonContextWrapper.java
  */
-@file:Suppress("unused", "DEPRECATION")
+@file:Suppress("unused")
 
 package com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper
 
@@ -29,7 +29,7 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.view.ContextThemeWrapper
 import androidx.annotation.CallSuper
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
@@ -66,10 +66,11 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
     init {
         configuration?.also {
             baseResources = baseContext.createConfigurationContext(it)?.resources
+            @Suppress("DEPRECATION")
             baseResources?.updateConfiguration(it, baseContext.resources.displayMetrics)
         }
 
-        if (YukiXposedModule.isXposedEnvironment) resources?.injectModuleAppResources()
+        if (YukiXposedModule.isXposedEnvironment) resources?.injectModuleResources()
     }
 
     /**
@@ -81,6 +82,7 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
      */
     fun applyConfiguration(block: Configuration.() -> Unit): ModuleContextThemeWrapper {
         resources?.configuration?.apply(block)
+        @Suppress("DEPRECATION")
         resources?.updateConfiguration(resources?.configuration, resources?.displayMetrics)
 
         return this

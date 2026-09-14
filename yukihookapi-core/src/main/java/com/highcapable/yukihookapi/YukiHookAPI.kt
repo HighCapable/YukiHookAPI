@@ -115,11 +115,11 @@ object YukiHookAPI {
         /**
          * Checks whether module activation is detected through the selected Xposed runtime.
          *
-         * - Returns true when [isXposedEnvironment] is true, independently of module-app services.
+         * - Returns true when [isXposedEnvironment] is true, independently of module services.
          *
-         * - With [YukiHookRuntime.XPOSED_82], module-app detection uses self-hook status. It requires
+         * - With [YukiHookRuntime.XPOSED_82], module detection uses self-hook status. It requires
          *   [InjectYukiHookWithXposed.isUsingXposedModuleStatus] and framework injection into the module's own process.
-         * - With [YukiHookRuntime.LIBXPOSED], module-app detection requires a single compatible framework service connection.
+         * - With [YukiHookRuntime.LIBXPOSED], module detection requires a single compatible framework service connection.
          *   [ModuleApplication] initializes it automatically. [observeFrameworkService] can also initialize it and observe changes.
          *   Binding is asynchronous: false before connection or after disconnection does not necessarily mean the module is disabled.
          *   The framework may keep the service connected after the module is disabled, so true does not guarantee
@@ -205,11 +205,11 @@ object YukiHookAPI {
          * Whether caching the current Xposed module's [Resources] is enabled.
          *
          * - This feature is enabled by default to prevent excessive memory reuse.
-         * - When disabled, every use of [PackageParam.moduleAppResources] creates a new instance and may reduce performance.
+         * - When disabled, every use of [PackageParam.moduleResources] creates a new instance and may reduce performance.
          *
-         * Call [PackageParam.refreshModuleAppResources] to refresh the cache manually.
+         * Call [PackageParam.refreshModuleResources] to refresh the cache manually.
          */
-        var isEnableModuleAppResourcesCache = true
+        var isEnableModuleResourcesCache = true
 
         /**
          * Whether hook support for [SharedPreferences] is enabled.
@@ -234,6 +234,14 @@ object YukiHookAPI {
          * - This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
          */
         var isEnableDataChannel = true
+
+        // region Deprecated properties for backward compatibility
+
+        /** Whether caching the current Xposed module's [Resources] is enabled. */
+        @Deprecated(message = "Use isEnableModuleResourcesCache instead.", replaceWith = ReplaceWith("isEnableModuleResourcesCache"))
+        var isEnableModuleAppResourcesCache = true
+
+        // endregion
     }
 
     /**

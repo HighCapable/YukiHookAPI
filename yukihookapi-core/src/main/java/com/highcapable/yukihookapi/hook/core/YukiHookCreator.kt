@@ -202,6 +202,8 @@ class YukiHookCreator private constructor() {
                 } ?: callback(false)
             }
 
+            // region Deprecated functions for backward compatibility
+
             /**
              * Listens for invocation failures through [onInvocationFailure].
              * @param callback the listener receiving the invocation failure.
@@ -263,6 +265,8 @@ class YukiHookCreator private constructor() {
              */
             @Deprecated(message = "This API has no effect. Remove this call.")
             fun ignoredHookingFailure() = this
+
+            // endregion
         }
     }
 
@@ -376,6 +380,8 @@ class YukiHookCreator private constructor() {
          */
         fun intercept(value: Any? = null) = intercept { value }
 
+        // region Deprecated functions for backward compatibility
+
         /** Intercepts and replaces this [Member] with a return value. */
         @Deprecated(message = "Use intercept instead.", replaceWith = ReplaceWith("intercept(callback)"))
         fun replaceAny(callback: HookParam.() -> Any?) = intercept(callback)
@@ -395,6 +401,8 @@ class YukiHookCreator private constructor() {
         /** Intercepts and replaces the [Member] return value with false. */
         @Deprecated(message = "Use intercept instead.", replaceWith = ReplaceWith("intercept(false)"))
         fun replaceToFalse() = intercept(false)
+
+        // endregion
 
         private fun immediateHook() {
             if (hookMode == HookMode.IMMEDIATE) hook()
