@@ -32,10 +32,10 @@ internal object ActivityProxyConfig {
     /**
      * Name of the [Intent] used for proxying.
      */
-    internal var proxyIntentName = ""
+    var proxyIntentName = ""
 
     /**
      * Class name of the [Activity] to proxy.
      */
-    internal var proxyClassName = ""
+    var proxyClassName = ""
 }

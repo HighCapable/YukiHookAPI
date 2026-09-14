@@ -34,7 +34,7 @@ import java.lang.reflect.Method
  *
  * Call [AndroidHiddenApiBypassResolver.get] wherever access to Android hidden APIs is required.
  *
- * - This feature is experimental in 1.x.x and may move to a new module in 2.0.0.
+ * - This feature is experimental in 1.x and will move to a new module in 2.x.
  */
 class AndroidHiddenApiBypassResolver private constructor() : MemberProcessor.Resolver() {
 

@@ -31,7 +31,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
-import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity.Delegate
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
@@ -39,12 +38,11 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  *
  * An [Activity] implementing this interface can launch in both host and module environments.
  *
- * - In the (Xposed) host environment, call [Context.registerModuleAppActivities] when the host starts.
- *
- * - In the host environment, an [AppCompatActivity] must override [moduleTheme] with an AppCompat theme.
+ * - In the host environment, call [Context.registerModuleAppActivities] when the host starts,
+ *   an [AppCompatActivity] must override [moduleTheme] with an AppCompat theme.
  *
  * The example below forwards the required lifecycle methods to [delegate]. Implement this interface in a custom `BaseActivity`,
- * override the forwarded methods, and extend that `BaseActivity` from module activities.
+ * override the forwarded methods, and inherit that `BaseActivity` from module activities.
  *
  * ```kotlin
  * abstract class BaseActivity : AppCompatActivity(), ModuleActivity {
@@ -79,31 +77,23 @@ interface ModuleActivity {
      */
     class Delegate internal constructor(private val self: ModuleActivity) {
 
-        private val selfActivity get() = self as? Activity ?: error("ModuleActivity must be implemented an Activity")
+        private val selfActivity get() = self as? Activity ?: error("ModuleActivity must be implemented an Activity.")
 
-        /**
-         * @see Activity.getClassLoader
-         */
-        fun getClassLoader() = ModuleClassLoader.instance()
+        /** @see Activity.getClassLoader */
+        fun getClassLoader() = ModuleClassLoader.get()
 
-        /**
-         * @see Activity.onCreate
-         */
+        /**  @see Activity.onCreate */
         fun onCreate(savedInstanceState: Bundle?) {
             if (YukiXposedModule.isXposedEnvironment && self.moduleTheme != -1)
                 selfActivity.setTheme(self.moduleTheme)
         }
 
-        /**
-         * @see Activity.onConfigurationChanged
-         */
+        /** @see Activity.onConfigurationChanged */
         fun onConfigurationChanged(newConfig: Configuration) {
             if (YukiXposedModule.isXposedEnvironment) selfActivity.injectModuleAppResources()
         }
 
-        /**
-         * @see Activity.onRestoreInstanceState
-         */
+        /** @see Activity.onRestoreInstanceState */
         fun onRestoreInstanceState(savedInstanceState: Bundle) {
             savedInstanceState.getBundle("android:viewHierarchyState")?.classLoader = selfActivity.classLoader
         }
@@ -113,7 +103,7 @@ interface ModuleActivity {
      * Gets a [Delegate] for the current [ModuleActivity].
      * @return [Delegate]
      */
-    val delegate get() = Delegate(self = this)
+    val delegate get() = Delegate(this)
 
     /**
      * Defines the theme of the proxied [Activity].
@@ -126,7 +116,7 @@ interface ModuleActivity {
      *
      * When empty, uses the class configured by [Context.registerModuleAppActivities].
      *
-     * - The proxied [Activity] class must be declared in the host AndroidManifest.
+     * - The proxied [Activity] class must be declared in the host's AndroidManifest.
      * @return [String]
      */
     val proxyClassName get() = ""

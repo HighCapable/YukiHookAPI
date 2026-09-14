@@ -20,57 +20,43 @@
  * This file is created by fankes on 2022/4/30.
  * This file is modified by fankes on 2022/1/10.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "UNUSED_PARAMETER", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event
 
-import de.robv.android.xposed.IXposedHookZygoteInit.StartupParam
-import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
-
 /**
  * Registers listeners for native Xposed API loading events.
+ *
+ * All functions are deprecated no-ops. Callback parameters use [Any] and expose no native framework types.
  */
+@Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
 object YukiXposedEvent {
-
-    /** Callback invoked when `initZygote` starts. */
-    internal var initZygoteCallback: ((StartupParam) -> Unit)? = null
-
-    /** Callback invoked when `handleLoadPackage` starts. */
-    internal var handleLoadPackageCallback: ((LoadPackageParam) -> Unit)? = null
-
-    /** Callback invoked when `handleInitPackageResources` starts. */
-    internal var handleInitPackageResourcesCallback: ((InitPackageResourcesParam) -> Unit)? = null
 
     /**
      * Configures [YukiXposedEvent].
-     * @param initiate the configuration block.
+     * @param block the configuration block.
      */
-    inline fun events(initiate: YukiXposedEvent.() -> Unit) {
-        YukiXposedEvent.apply(initiate)
-    }
+    @Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
+    inline fun events(block: YukiXposedEvent.() -> Unit) = Unit
 
     /**
      * Sets the `initZygote` event listener.
-     * @param result the event callback.
+     * @param callback the event callback.
      */
-    fun onInitZygote(result: (StartupParam) -> Unit) {
-        initZygoteCallback = result
-    }
+    @Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
+    fun onInitZygote(callback: (Any) -> Unit) = Unit
 
     /**
      * Sets the `handleLoadPackage` event listener.
-     * @param result the event callback.
+     * @param callback the event callback.
      */
-    fun onHandleLoadPackage(result: (LoadPackageParam) -> Unit) {
-        handleLoadPackageCallback = result
-    }
+    @Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
+    fun onHandleLoadPackage(callback: (Any) -> Unit) = Unit
 
     /**
      * Sets the `handleInitPackageResources` event listener.
-     * @param result the event callback.
+     * @param callback the event callback.
      */
-    fun onHandleInitPackageResources(result: (InitPackageResourcesParam) -> Unit) {
-        handleInitPackageResourcesCallback = result
-    }
+    @Deprecated(message = "This API has no effect. Resource hooks are no longer supported.")
+    fun onHandleInitPackageResources(callback: (Any) -> Unit) = Unit
 }

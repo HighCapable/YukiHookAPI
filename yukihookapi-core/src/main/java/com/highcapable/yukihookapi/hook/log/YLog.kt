@@ -30,7 +30,6 @@ import com.highcapable.kavaref.runtime.KavaRefRuntime
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.log.data.YLogData
-import com.highcapable.yukihookapi.hook.utils.factory.dumpToString
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import java.io.File
 
@@ -138,15 +137,12 @@ object YLog {
          * Customizes the elements displayed in debug logs.
          *
          * This applies only to recorded logs and logs in the (Xposed) host environment.
-         *
          * Log elements are displayed in the order specified by [item].
-         *
          * Leave [item] empty to hide every element except the log message.
          *
          * Available elements are [TAG], [PRIORITY], [PACKAGE_NAME], and [USER_ID].
          *
          * Default order:
-         *
          * ```
          * [TAG][PRIORITY][PACKAGE_NAME][USER_ID] Message
          * ```
@@ -155,9 +151,6 @@ object YLog {
         fun elements(vararg item: Int) {
             elements = arrayOf(*item.toTypedArray())
         }
-
-        /** Completes the configuration block. */
-        internal fun build() = Unit
     }
 
     /**
@@ -192,9 +185,11 @@ object YLog {
             content += "${it.head}$it\n"
             it.throwable?.also { e ->
                 content += "${it.head}Dump stack trace for \"${e.javaClass.name}\":\n"
-                content += e.dumpToString()
+                content += e.stackTraceToString()
             }
-        }; return content
+        }
+
+        return content
     }
 
     /**
@@ -210,7 +205,6 @@ object YLog {
      * Saves the current logs to a file.
      *
      * Performs no operation when [Configs.isRecord] is disabled or no logs have been recorded.
-     *
      * Logs are appended to [fileName], which is created automatically when it does not exist.
      *
      * - File access depends on the permissions granted to the current host app or module.
@@ -225,7 +219,7 @@ object YLog {
     /**
      * Prints a debug-level log.
      *
-     * Prints to the console and the (Xposed) host environment.
+     * Prints to the console and the host environment.
      * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
      * @param e the optional exception stack trace, printed in full automatically.
      * @param tag the log tag, preferably the module name. [Configs.tag] by default.
@@ -237,7 +231,7 @@ object YLog {
     /**
      * Prints an info-level log.
      *
-     * Prints to the console and the (Xposed) host environment.
+     * Prints to the console and the host environment.
      * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
      * @param e the optional exception stack trace, printed in full automatically.
      * @param tag the log tag, preferably the module name. [Configs.tag] by default.
@@ -249,7 +243,7 @@ object YLog {
     /**
      * Prints a warn-level log.
      *
-     * Prints to the console and the (Xposed) host environment.
+     * Prints to the console and the host environment.
      * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
      * @param e the optional exception stack trace, printed in full automatically.
      * @param tag the log tag, preferably the module name. [Configs.tag] by default.
@@ -261,7 +255,7 @@ object YLog {
     /**
      * Prints an error-level log.
      *
-     * Prints to the console and the (Xposed) host environment.
+     * Prints to the console and the host environment.
      * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
      * @param tag the log tag, preferably the module name. [Configs.tag] by default.
      * @param e the optional exception stack trace, printed in full automatically.
@@ -277,7 +271,7 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerD(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not() || YukiHookAPI.Configs.isDebug.not()) return initKavaRefLoggerIfNot()
+        if (!Configs.isEnable || !YukiHookAPI.Configs.isDebug) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "D", msg = msg.toString(), throwable = e), isImplicit)
     }
 
@@ -288,7 +282,7 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerI(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
+        if (!Configs.isEnable) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "I", msg = msg.toString(), throwable = e), isImplicit)
     }
 
@@ -299,7 +293,7 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerW(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
+        if (!Configs.isEnable) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "W", msg = msg.toString(), throwable = e), isImplicit)
     }
 
@@ -310,12 +304,12 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerE(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (Configs.isEnable.not()) return initKavaRefLoggerIfNot()
+        if (!Configs.isEnable) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "E", msg = msg.toString(), throwable = e), isImplicit)
     }
 
     /**
-     * Final implementation that prints logs to the console and the (Xposed) host environment.
+     * Final implementation that prints logs to the console and the host environment.
      * @param env the log environment.
      * @param data the log data.
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
@@ -323,22 +317,37 @@ object YLog {
     private fun log(env: EnvType, data: YLogData, isImplicit: Boolean = false) {
         initKavaRefLoggerIfNot()
 
-        /** Whether this is a valid log. */
+        // Whether this is a valid log.
         val isNotBlankLog = data.msg.isNotBlank() || (data.msg.isBlank() && data.throwable != null)
 
+        // Android-compatible log priority.
+        val priority = when (data.priority) {
+            "D" -> Log.DEBUG
+            "I" -> Log.INFO
+            "W" -> Log.WARN
+            "E" -> Log.ERROR
+            else -> Log.ASSERT
+        }
+
         /** Prints to [Log]. */
-        fun logByLogd() = when (data.priority) {
-            "D" -> Log.d(data.tag, data.msg, data.throwable)
-            "I" -> Log.i(data.tag, data.msg, data.throwable)
-            "W" -> Log.w(data.tag, data.msg, data.throwable)
-            "E" -> Log.e(data.tag, data.msg, data.throwable)
+        fun logByLogd() = when (priority) {
+            Log.DEBUG -> Log.d(data.tag, data.msg, data.throwable)
+            Log.INFO -> Log.i(data.tag, data.msg, data.throwable)
+            Log.WARN -> Log.w(data.tag, data.msg, data.throwable)
+            Log.ERROR -> Log.e(data.tag, data.msg, data.throwable)
             else -> Log.wtf(data.tag, data.msg, data.throwable)
         }
 
-        /** Prints to the (Xposed) host environment. */
+        /** Prints to the host environment. */
         fun logByHooker() {
-            if (isNotBlankLog) YukiHookHelper.logByHooker(data.also { it.isImplicit = isImplicit }.toString(), data.throwable)
+            if (isNotBlankLog) YukiHookHelper.log(
+                priority = priority,
+                tag = data.tag,
+                msg = data.also { it.isImplicit = isImplicit }.toString(),
+                e = data.throwable
+            )
         }
+
         when (env) {
             EnvType.LOGD -> logByLogd()
             EnvType.XPOSED_ENVIRONMENT -> logByHooker()
@@ -348,7 +357,7 @@ object YLog {
                 if (YukiXposedModule.isXposedEnvironment) logByHooker()
             }
         }
-        if (isImplicit.not() && Configs.isRecord && isNotBlankLog) inMemoryData.add(data)
+        if (!isImplicit && Configs.isRecord && isNotBlankLog) inMemoryData.add(data)
     }
 
     /** Defines the [KavaRef] logger. */
@@ -380,6 +389,7 @@ object YLog {
     private fun initKavaRefLoggerIfNot() {
         updateKavaRefLogLevel()
         if (isKavaRefLoggerInit) return
+
         KavaRef.setLogger(kavaRefLogger)
         isKavaRefLoggerInit = true
     }
@@ -396,23 +406,23 @@ object YLog {
     /**
      * Log output environment type.
      *
-     * Determines how logs are printed in module and (Xposed) host environments.
+     * Determines how logs are printed in module and host environments.
      */
     enum class EnvType {
         /** Uses only [Log]. */
         LOGD,
 
         /**
-         * Uses only the (Xposed) host environment.
+         * Uses only the host environment.
          *
-         * - Available only in the (Xposed) host environment and has no effect in the module environment.
+         * - Available only in the host environment and has no effect in the module environment.
          */
         XPOSED_ENVIRONMENT,
 
         /**
          * Uses environment-specific output.
          *
-         * The (Xposed) host environment uses only [XPOSED_ENVIRONMENT].
+         * The host environment uses only [XPOSED_ENVIRONMENT].
          *
          * The module environment uses only [LOGD].
          */
@@ -421,7 +431,7 @@ object YLog {
         /**
          * Uses both outputs.
          *
-         * The (Xposed) host environment uses [LOGD] and [XPOSED_ENVIRONMENT].
+         * The host environment uses [LOGD] and [XPOSED_ENVIRONMENT].
          *
          * The module environment uses only [LOGD].
          */

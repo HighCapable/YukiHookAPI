@@ -23,7 +23,7 @@ package com.highcapable.yukihookapi.hook.log.data
 
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
-import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -40,6 +40,7 @@ import java.util.Locale
  * @param msg the current log message.
  * @param throwable the current exception stack trace.
  */
+@ConsistentCopyVisibility
 data class YLogData internal constructor(
     var timestamp: Long = 0L,
     var time: String = "",
@@ -57,8 +58,8 @@ data class YLogData internal constructor(
     init {
         timestamp = System.currentTimeMillis()
         time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT).format(Date(timestamp))
-        packageName = if (YukiXposedModule.isXposedEnvironment) YukiXposedModule.hostProcessName else AppParasitics.currentPackageName
-        userId = AppParasitics.findUserId(AppParasitics.currentPackageName)
+        packageName = if (YukiXposedModule.isXposedEnvironment) YukiXposedModule.hostProcessName else AppParasitism.currentPackageName
+        userId = AppParasitism.findUserId(AppParasitism.currentPackageName)
     }
 
     /**
@@ -72,8 +73,10 @@ data class YLogData internal constructor(
         YLog.Configs.elements.takeIf { it.isNotEmpty() }?.forEach {
             if (it == YLog.Configs.TAG) content += "[$tag]"
             if (it == YLog.Configs.PRIORITY) content += "[$priority]"
-            if (it == YLog.Configs.PACKAGE_NAME && isImplicit.not() && packageName.isNotBlank()) content += "[$packageName]"
-            if (it == YLog.Configs.USER_ID && isImplicit.not() && userId != 0) content += "[$userId]"
-        }; return content.takeIf { it.isNotBlank() }?.let { "$content $msg" } ?: msg
+            if (it == YLog.Configs.PACKAGE_NAME && !isImplicit && packageName.isNotBlank()) content += "[$packageName]"
+            if (it == YLog.Configs.USER_ID && !isImplicit && userId != 0) content += "[$userId]"
+        }
+
+        return content.takeIf { it.isNotBlank() }?.let { "$content $msg" } ?: msg
     }
 }

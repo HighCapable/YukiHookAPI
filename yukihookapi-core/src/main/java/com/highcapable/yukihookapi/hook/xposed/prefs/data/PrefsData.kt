@@ -31,4 +31,7 @@ import java.io.Serializable
  * @param key the preference key.
  * @param value the default value.
  */
-data class PrefsData<T>(var key: String, var value: T) : Serializable
+data class PrefsData<T>(
+    var key: String,
+    var value: T
+) : Serializable

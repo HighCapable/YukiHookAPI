@@ -19,10 +19,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress(
-    "unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "DeprecatedCallableAddReplaceWith", "DEPRECATION",
-    "TYPEALIAS_EXPANSION_DEPRECATION"
-)
+@file:Suppress("unused")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -38,33 +35,19 @@ import com.highcapable.kavaref.resolver.ConstructorResolver
 import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.bean.HookClass
-import com.highcapable.yukihookapi.hook.bean.HookResources
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
-import com.highcapable.yukihookapi.hook.core.YukiResourcesHookCreator
-import com.highcapable.yukihookapi.hook.core.annotation.LegacyHookApi
-import com.highcapable.yukihookapi.hook.core.annotation.LegacyResourcesHook
+import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
-import com.highcapable.yukihookapi.hook.core.finder.ReflectionMigration
-import com.highcapable.yukihookapi.hook.core.finder.base.BaseFinder
-import com.highcapable.yukihookapi.hook.core.finder.classes.DexClassFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.ConstructorFinder
-import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassConditions
-import com.highcapable.yukihookapi.hook.core.finder.type.factory.ClassLoaderInitializer
+import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.LazyClass
-import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.utils.factory.value
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiModuleResources
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiXposedModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
-import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -72,13 +55,9 @@ import com.highcapable.kavaref.extension.lazyClass as lazyClassGlobal
 import com.highcapable.kavaref.extension.lazyClassOrNull as lazyClassOrNullGlobal
 import com.highcapable.kavaref.extension.toClass as toClassGlobal
 import com.highcapable.kavaref.extension.toClassOrNull as toClassOrNullGlobal
-import com.highcapable.yukihookapi.hook.bean.VariousClass as LegacyVariousClass
-import com.highcapable.yukihookapi.hook.factory.hasClass as hasClassLegacy
-import com.highcapable.yukihookapi.hook.factory.lazyClass as lazyClassGlobalLegacy
-import com.highcapable.yukihookapi.hook.factory.lazyClassOrNull as lazyClassOrNullGlobalLegacy
 
 /**
- * Target APP entry object implementation for Hooking.
+ * Target app entry object implementation for hooking.
  * @param wrapper the parameter wrapper instance for [PackageParam], null by default.
  */
 open class PackageParam internal constructor(internal var wrapper: PackageParamWrapper? = null) {
@@ -93,88 +72,88 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     private val appLoaderInit get(): ClassLoaderInitializer = { appClassLoader }
 
     /**
-     * Gets or sets the [ClassLoader] of the current Hook APP.
+     * Gets or sets the [ClassLoader] of the current host.
      *
-     * You can manually set the [ClassLoader] of the current Hook APP here. It is obtained automatically by default.
+     * You can manually set the [ClassLoader] of the current host here. It is obtained automatically by default.
      *
      * - Setting an incorrect or invalid [ClassLoader] causes feature failures. Use this carefully.
      * @return [ClassLoader] or null.
      */
     var appClassLoader
-        get() = currentClassLoader ?: wrapper?.appClassLoader ?: AppParasitics.currentApplication?.classLoader
+        get() = currentClassLoader ?: wrapper?.appClassLoader ?: AppParasitism.currentApplication?.classLoader
         set(value) {
             currentClassLoader = value
         }
 
     /**
-     * Gets the [ApplicationInfo] of the current Hook APP.
+     * Gets the [ApplicationInfo] of the current host.
      * @return [ApplicationInfo]
      */
-    val appInfo get() = wrapper?.appInfo ?: AppParasitics.currentApplicationInfo ?: ApplicationInfo()
+    val appInfo get() = wrapper?.appInfo ?: AppParasitism.currentApplicationInfo ?: ApplicationInfo()
 
     /**
-     * Gets the user ID of the current Hook APP.
+     * Gets the user ID of the current host.
      *
      * The owner is 0. Cloned apps and work profiles have different IDs depending on the system environment.
      * @return [Int]
      */
-    val appUserId get() = AppParasitics.findUserId(packageName)
+    val appUserId get() = AppParasitism.findUserId(packageName)
 
     /**
-     * Gets the [Application] instance of the current Hook APP.
+     * Gets the [Application] instance of the current host.
      *
-     * - It may be null during initial loading. Retrieve it later or configure an [onAppLifecycle] listener.
+     * - It may be null during initial loading. Retrieve it later or configure a [registerAppLifecycle] listener.
      * @return [Application] or null.
      */
-    val appContext get() = AppParasitics.hostApplication ?: AppParasitics.currentApplication
+    val appContext get() = AppParasitism.hostApplication ?: AppParasitism.currentApplication
 
     /**
-     * Gets the [Resources] of the current Hook APP.
+     * Gets the [Resources] of the current host.
      *
-     * - This can only be called inside [HookResources.hook] or after [appContext] finishes loading.
+     * - This is available after [appContext] finishes loading.
      * @return [Resources] or null.
      */
-    val appResources get() = wrapper?.appResources ?: appContext?.resources
+    val appResources get() = appContext?.resources
 
     /**
-     * Gets the [Context] of the current system framework.
-     * @return [Context] the ContextImpl instance.
-     * @throws IllegalStateException if the [Context] of the system framework cannot be obtained.
+     * Gets the [Context] of the current system server.
+     * @return [Context] the `ContextImpl` instance.
+     * @throws IllegalStateException if the [Context] of the system server cannot be obtained.
      */
-    val systemContext get() = AppParasitics.systemContext ?: error("Failed to got SystemContext")
+    val systemContext get() = AppParasitism.systemContext ?: error("Failed to got system context.")
 
     /**
-     * Gets the process name of the current Hook APP.
+     * Gets the process name of the current host.
      *
      * The default process name is [packageName].
      * @return [String]
      */
-    val processName get() = wrapper?.processName ?: AppParasitics.currentProcessName
+    val processName get() = wrapper?.processName ?: AppParasitism.currentProcessName
 
     /**
-     * Gets the package name of the current Hook APP.
+     * Gets the package name of the current host.
      * @return [String]
      */
-    val packageName get() = wrapper?.packageName ?: AppParasitics.currentPackageName
+    val packageName get() = wrapper?.packageName ?: AppParasitism.currentPackageName
 
     /**
-     * Whether the current Hook APP is the first [Application].
+     * Whether the current host is the first [Application].
      * @return [Boolean]
      */
-    val isFirstApplication get() = packageName.trim() == processName.trim()
+    val isFirstApplication get() = wrapper?.isFirstApplication ?: false
 
     /**
-     * Gets the main process name of the current Hook APP.
+     * Gets the main process name of the current host.
      *
-     * This corresponds to [packageName].
+     * The runtime supplies the system process identity during [loadSystem]; otherwise this corresponds to [packageName].
      * @return [String]
      */
-    val mainProcessName get() = packageName.trim()
+    val mainProcessName get() = wrapper?.mainProcessName ?: packageName.trim()
 
     /**
      * Gets the APK file path of the current Xposed module.
      *
-     * - This is unavailable when loaded as a Hook API and returns an empty string.
+     * - This is unavailable when loaded as a custom hook API and returns an empty string.
      * @return [String]
      */
     val moduleAppFilePath get() = YukiXposedModule.moduleAppFilePath
@@ -182,18 +161,18 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Gets the [Resources] of the current Xposed module.
      *
-     * - This is unavailable when loaded as a Hook API or under an unsupported Hook Framework and throws an exception.
-     * @return [YukiModuleResources]
-     * @throws IllegalStateException if the current Hook Framework does not support this feature.
+     * - This is unavailable when loaded as a custom hook API or under an unsupported hook framework and throws an exception.
+     * @return [YukiXposedModuleResources]
+     * @throws IllegalStateException if the current hook framework does not support this feature.
      */
     val moduleAppResources
         get() = (if (YukiHookAPI.Configs.isEnableModuleAppResourcesCache) YukiXposedModule.moduleAppResources
-        else YukiXposedModule.dynamicModuleAppResources) ?: error("Current Hook Framework not support moduleAppResources")
+        else YukiXposedModule.dynamicModuleAppResources) ?: error("Current hook framework not support module app resources.")
 
     /**
      * Creates a [YukiHookPrefsBridge] object.
      *
-     * - This is unavailable when loaded as a Hook API and throws an exception.
+     * - This is unavailable when loaded as a custom hook API and throws an exception.
      * @return [YukiHookPrefsBridge]
      */
     val prefs get() = YukiHookPrefsBridge.from()
@@ -201,7 +180,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates a [YukiHookPrefsBridge] object.
      *
-     * - This is unavailable when loaded as a Hook API and throws an exception.
+     * - This is unavailable when loaded as a custom hook API and throws an exception.
      * @param name the custom SharedPreferences storage name.
      * @return [YukiHookPrefsBridge]
      */
@@ -210,912 +189,659 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Gets the [YukiHookDataChannel] object.
      *
-     * - This is unavailable when loaded as a Hook API and throws an exception.
-     * @return [YukiHookDataChannel.NameSpace]
+     * - This is unavailable when loaded as a custom hook API and throws an exception.
+     * @return [YukiHookDataChannel.Namespace]
      * @throws IllegalStateException if loaded in [HookEntryType.ZYGOTE].
      */
-    val dataChannel
-        get() = if (wrapper?.type != HookEntryType.ZYGOTE)
-            YukiHookDataChannel.instance().nameSpace(packageName = packageName)
-        else error("YukiHookDataChannel cannot used in zygote")
+    val dataChannel get() = if (wrapper?.type != HookEntryType.ZYGOTE)
+        YukiHookDataChannel.get().namespace(packageName = packageName)
+    else error("YukiHookDataChannel cannot used in zygote events, please use it in loadApp or loadSystem.")
 
     /**
-     * Sets the [PackageParamWrapper] used by [PackageParam].
+     * Binds the [PackageParamWrapper] to the current [PackageParam].
      * @param wrapper the parameter wrapper instance for [PackageParam].
      * @return [PackageParam]
      */
-    internal fun assign(wrapper: PackageParamWrapper?): PackageParam {
+    internal fun bind(wrapper: PackageParamWrapper?): PackageParam {
+        currentClassLoader = null
         this.wrapper = wrapper
         return this
     }
-
-    /**
-     * Gets the [YukiResources] object of the current Hook APP.
-     *
-     * Call [HookResources.hook] to start Hooking.
-     * @return [HookResources]
-     */
-    @LegacyResourcesHook
-    fun resources() = HookResources(wrapper?.appResources)
 
     /** Refreshes the [Resources] of the current Xposed module. */
     fun refreshModuleAppResources() = YukiXposedModule.refreshModuleAppResources()
 
     /**
-     * Listens for lifecycle loading events of the current Hook APP.
+     * Registers a lifecycle listener for the current host [Application].
      *
-     * - This is not loaded in [loadZygote] and is loaded only in [loadSystem] and [loadApp].
-     *
-     * - When loaded as a Hook API, use the native [Application] to implement lifecycle listeners.
-     * @param isOnFailureThrowToApp whether to throw exceptions to the host when they occur, true by default. This setting is effective only for the first Hooker.
-     * @param initiate the lifecycle block.
+     * This is loaded only for the package that owns the first [Application] in the current process.
+     * A standalone custom hook API can observe only lifecycle events that occur after registration.
+     * @param onFailureThrowToHost whether to throw exceptions to the host when they occur, true by default.
+     * @param block the lifecycle block.
      */
-    inline fun onAppLifecycle(isOnFailureThrowToApp: Boolean = true, initiate: AppLifecycle.() -> Unit) =
-        AppLifecycle(isOnFailureThrowToApp).apply(initiate).build()
+    fun registerAppLifecycle(onFailureThrowToHost: Boolean = true, block: AppLifecycle.() -> Unit) {
+        if (isFirstApplication) AppLifecycle.register(packageName, onFailureThrowToHost, block)
+    }
+
+    /** Listens for lifecycle loading events of the current host. */
+    @Deprecated(
+        message = "Use registerAppLifecycle instead.",
+        replaceWith = ReplaceWith("registerAppLifecycle(isOnFailureThrowToApp, block)")
+    )
+    fun onAppLifecycle(isOnFailureThrowToApp: Boolean = true, block: AppLifecycle.() -> Unit) =
+        registerAppLifecycle(isOnFailureThrowToApp, block)
 
     /**
-     * Loads and hooks the APP with the specified package name.
-     *
-     * Use [loadZygote] to load APP Zygote events.
-     *
-     * Use [loadSystem] to hook the system framework.
+     * Loads and hooks apps with the specified package name.
+     * @see loadSystem
      * @param name the package name.
-     * @param initiate the Hook block.
+     * @param block the param block.
      */
-    inline fun loadApp(name: String, initiate: PackageParam.() -> Unit) {
-        if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) initiate(this)
+    fun loadApp(name: String, block: PackageParam.() -> Unit) {
+        if (wrapper?.type != HookEntryType.ZYGOTE && (wrapper?.matchesPackage(name) == true || name.isBlank())) block(this)
     }
 
     /**
-     * Loads and hooks APPs with the specified package names.
-     *
-     * Use [loadZygote] to load APP Zygote events.
-     *
-     * Use [loadSystem] to hook the system framework.
+     * Loads and hooks apps with the specified package names.
+     * @see loadSystem
      * @param name the package names.
-     * @param initiate the Hook block.
+     * @param block the param block.
      */
-    inline fun loadApp(vararg name: String, initiate: PackageParam.() -> Unit) {
-        if (name.isEmpty()) return loadApp(initiate = initiate)
-        if (wrapper?.type != HookEntryType.ZYGOTE && name.any { it == packageName }) initiate(this)
+    fun loadApp(vararg name: String, block: PackageParam.() -> Unit) {
+        if (name.isEmpty()) return loadApp(block = block)
+        if (wrapper?.type != HookEntryType.ZYGOTE && name.any { wrapper?.matchesPackage(it) == true }) block(this)
     }
 
     /**
-     * Loads and hooks the APP with the specified package name.
-     *
-     * Use [loadZygote] to load APP Zygote events.
-     *
-     * Use [loadSystem] to hook the system framework.
+     * Loads and hooks apps with the specified package name.
+     * @see loadSystem
      * @param name the package name.
-     * @param hooker the Hook subclass.
+     * @param hookers the hookers.
      */
-    fun loadApp(name: String, hooker: YukiBaseHooker) {
-        if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) loadHooker(hooker)
+    fun loadApp(name: String, hookers: YukiBaseHooker) {
+        if (wrapper?.type != HookEntryType.ZYGOTE && (wrapper?.matchesPackage(name) == true || name.isBlank())) loadHooker(hookers)
     }
 
     /**
-     * Loads and hooks the APP with the specified package name.
-     *
-     * Use [loadZygote] to load APP Zygote events.
-     *
-     * Use [loadSystem] to hook the system framework.
-     * @param name the package name. An empty name matches all APPs except [loadZygote] events.
-     * @param hooker the Hook subclasses.
+     * Loads and hooks apps with the specified package name.
+     * @see loadSystem
+     * @param name the package name. An empty name matches all apps except [loadZygote] events.
+     * @param hookers the hookers.
      */
-    fun loadApp(name: String, vararg hooker: YukiBaseHooker) {
-        if (hooker.isEmpty()) error("loadApp method need a \"hooker\" param")
-        if (wrapper?.type != HookEntryType.ZYGOTE && (packageName == name || name.isBlank())) hooker.forEach { loadHooker(it) }
-    }
+    fun loadApp(name: String, vararg hookers: YukiBaseHooker) {
+        require(hookers.isNotEmpty()) {
+            "loadApp function required \"hookers\" param."
+        }
 
-    /**
-     * Loads and hooks all APPs.
-     *
-     * Use [loadZygote] to load APP Zygote events.
-     *
-     * Use [loadSystem] to hook the system framework.
-     * @param isExcludeSelf whether to exclude the module itself, false by default. When enabled, the hooked APPs do not include the current module.
-     * @param initiate the Hook block.
-     */
-    inline fun loadApp(isExcludeSelf: Boolean = false, initiate: PackageParam.() -> Unit) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiXposedModule.modulePackageName)
-        ) initiate(this)
+            (wrapper?.matchesPackage(name) == true || name.isBlank())
+        ) hookers.forEach { loadHooker(it) }
     }
 
     /**
-     * Loads and hooks all APPs.
-     *
-     * Use [loadZygote] to load APP Zygote events.
-     *
-     * Use [loadSystem] to hook the system framework.
-     * @param isExcludeSelf whether to exclude the module itself, false by default. When enabled, the hooked APPs do not include the current module.
-     * @param hooker the Hook subclass.
+     * Loads and hooks all apps.
+     * @see loadSystem
+     * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
+     * @param block the param block.
      */
-    fun loadApp(isExcludeSelf: Boolean = false, hooker: YukiBaseHooker) {
+    fun loadApp(excludeSelf: Boolean = false, block: PackageParam.() -> Unit) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiXposedModule.modulePackageName)
+            (!excludeSelf || wrapper?.matchesPackage(YukiXposedModule.modulePackageName) != true)
+        ) block(this)
+    }
+
+    /**
+     * Loads and hooks all apps.
+     * @see loadSystem
+     * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
+     * @param hooker the hooker.
+     */
+    fun loadApp(excludeSelf: Boolean = false, hooker: YukiBaseHooker) {
+        if (wrapper?.type != HookEntryType.ZYGOTE &&
+            (!excludeSelf || wrapper?.matchesPackage(YukiXposedModule.modulePackageName) != true)
         ) loadHooker(hooker)
     }
 
     /**
-     * Loads and hooks all APPs.
-     *
-     * Use [loadZygote] to load APP Zygote events.
-     *
-     * Use [loadSystem] to hook the system framework.
-     * @param isExcludeSelf whether to exclude the module itself, false by default. When enabled, the hooked APPs do not include the current module.
-     * @param hooker the Hook subclasses.
+     * Loads and hooks all apps.
+     * @see loadSystem
+     * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
+     * @param hookers the hookers.
      */
-    fun loadApp(isExcludeSelf: Boolean = false, vararg hooker: YukiBaseHooker) {
-        if (hooker.isEmpty()) error("loadApp method need a \"hooker\" param")
+    fun loadApp(excludeSelf: Boolean = false, vararg hookers: YukiBaseHooker) {
+        require(hookers.isNotEmpty()) {
+            "loadApp function required \"hookers\" param."
+        }
+
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (isExcludeSelf.not() || isExcludeSelf && packageName != YukiXposedModule.modulePackageName)
-        ) hooker.forEach { loadHooker(it) }
+            (!excludeSelf || wrapper?.matchesPackage(YukiXposedModule.modulePackageName) != true)
+        ) hookers.forEach { loadHooker(it) }
     }
 
     /**
-     * Loads and hooks the system framework.
-     * @param initiate the Hook block.
+     * Loads and hooks the system server.
+     * @see loadApp
+     * @param block the param block.
      */
-    inline fun loadSystem(initiate: PackageParam.() -> Unit) = loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, initiate)
-
-    /**
-     * Loads and hooks the system framework.
-     * @param hooker the Hook subclass.
-     */
-    fun loadSystem(hooker: YukiBaseHooker) = loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, hooker)
-
-    /**
-     * Loads and hooks the system framework.
-     * @param hooker the Hook subclasses.
-     */
-    fun loadSystem(vararg hooker: YukiBaseHooker) {
-        if (hooker.isEmpty()) error("loadSystem method need a \"hooker\" param")
-        loadApp(AppParasitics.SYSTEM_FRAMEWORK_NAME, *hooker)
+    fun loadSystem(block: PackageParam.() -> Unit) {
+        if (wrapper?.type == HookEntryType.SYSTEM_SERVER) block(this)
     }
 
     /**
-     * Loads APP Zygote events.
-     * @param initiate the Hook block.
+     * Loads and hooks the system server.
+     * @see loadApp
+     * @param hooker the hooker.
      */
-    inline fun loadZygote(initiate: PackageParam.() -> Unit) {
-        if (wrapper?.type == HookEntryType.ZYGOTE) initiate(this)
+    fun loadSystem(hooker: YukiBaseHooker) {
+        if (wrapper?.type == HookEntryType.SYSTEM_SERVER) loadHooker(hooker)
     }
 
     /**
-     * Loads APP Zygote events.
-     * @param hooker the Hook subclass.
+     * Loads and hooks the system server.
+     * @see loadApp
+     * @param hookers the hookers.
      */
+    fun loadSystem(vararg hookers: YukiBaseHooker) {
+        require(hookers.isNotEmpty()) {
+            "loadSystem function required \"hookers\" param."
+        }
+
+        if (wrapper?.type == HookEntryType.SYSTEM_SERVER) hookers.forEach { loadHooker(it) }
+    }
+
+    /**
+     * Loads legacy zygote events.
+     *
+     * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
+     *   and cannot preserve parent-zygote execution or fork inheritance.
+     *
+     * - Supports for [YukiHookRuntime.XPOSED_82] only.
+     * @see loadApp
+     * @see loadSystem
+     * @param block the param block.
+     */
+    @Deprecated(message = "Use loadApp or loadSystem instead.")
+    fun loadZygote(block: PackageParam.() -> Unit) {
+        if (wrapper?.type == HookEntryType.ZYGOTE) block(this)
+    }
+
+    /**
+     * Loads legacy zygote events.
+     *
+     * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
+     *   and cannot preserve parent-zygote execution or fork inheritance.
+     *
+     * - Supports for [YukiHookRuntime.XPOSED_82] only.
+     * @see loadApp
+     * @see loadSystem
+     * @param hooker the hooker.
+     */
+    @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(hooker: YukiBaseHooker) {
         if (wrapper?.type == HookEntryType.ZYGOTE) loadHooker(hooker)
     }
 
     /**
-     * Loads APP Zygote events.
-     * @param hooker the Hook subclasses.
+     * Loads legacy zygote events.
+     *
+     * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
+     *   and cannot preserve parent-zygote execution or fork inheritance.
+     *
+     * - Supports for [YukiHookRuntime.XPOSED_82] only.
+     * @see loadApp
+     * @see loadSystem
+     * @param hookers the hookers.
      */
-    fun loadZygote(vararg hooker: YukiBaseHooker) {
-        if (hooker.isEmpty()) error("loadZygote method need a \"hooker\" param")
-        if (wrapper?.type == HookEntryType.ZYGOTE) hooker.forEach { loadHooker(it) }
+    @Deprecated(message = "Use loadApp or loadSystem instead.")
+    fun loadZygote(vararg hookers: YukiBaseHooker) {
+        require(hookers.isNotEmpty()) {
+            "loadZygote function required \"hookers\" param."
+        }
+
+        if (wrapper?.type == HookEntryType.ZYGOTE) hookers.forEach { loadHooker(it) }
     }
 
     /**
-     * Loads and hooks a specified APP process.
-     * @param name the process name. Use [mainProcessName] to specify the main process, which has the same effect as [isFirstApplication].
-     * @param initiate the Hook block.
+     * Loads and hooks a specified app process.
+     * @param name the process name. Use [mainProcessName] to specify the main process.
+     * @param block the param block.
      */
-    inline fun withProcess(name: String, initiate: PackageParam.() -> Unit) {
-        if (processName == name) initiate(this)
+    fun withProcess(name: String, block: PackageParam.() -> Unit) {
+        if (processName == name) block(this)
     }
 
     /**
-     * Loads and hooks specified APP processes.
-     * @param name the process names. Use [mainProcessName] to specify the main process, which has the same effect as [isFirstApplication].
-     * @param initiate the Hook block.
+     * Loads and hooks specified app processes.
+     * @param names the process names. Use [mainProcessName] to specify the main process.
+     * @param block the param block.
      */
-    inline fun withProcess(vararg name: String, initiate: PackageParam.() -> Unit) {
-        if (name.isEmpty()) error("withProcess method need a \"name\" param")
-        if (name.any { it == processName }) initiate(this)
+    fun withProcess(vararg names: String, block: PackageParam.() -> Unit) {
+        require(names.isNotEmpty()) {
+            "withProcess function required \"names\" param."
+        }
+
+        if (names.any { it == processName }) block(this)
     }
 
     /**
-     * Loads and hooks a specified APP process.
-     * @param name the process name. Use [mainProcessName] to specify the main process, which has the same effect as [isFirstApplication].
-     * @param hooker the Hook subclass.
+     * Loads and hooks a specified app process.
+     * @param name the process name. Use [mainProcessName] to specify the main process.
+     * @param hooker the hooker.
      */
     fun withProcess(name: String, hooker: YukiBaseHooker) {
         if (processName == name) loadHooker(hooker)
     }
 
     /**
-     * Loads and hooks a specified APP process.
-     * @param name the process name. Use [mainProcessName] to specify the main process, which has the same effect as [isFirstApplication].
-     * @param hooker the Hook subclasses.
+     * Loads and hooks a specified app process.
+     * @param name the process name. Use [mainProcessName] to specify the main process.
+     * @param hookers the hookers.
      */
-    fun withProcess(name: String, vararg hooker: YukiBaseHooker) {
-        if (name.isEmpty()) error("withProcess method need a \"hooker\" param")
-        if (processName == name) hooker.forEach { loadHooker(it) }
+    fun withProcess(name: String, vararg hookers: YukiBaseHooker) {
+        require(hookers.isNotEmpty()) {
+            "withProcess function required \"hookers\" param."
+        }
+
+        if (processName == name) hookers.forEach { loadHooker(it) }
     }
 
     /**
-     * Loads a Hook subclass.
+     * Loads a hooker.
      *
-     * You can continue loading Hookers from a Hooker.
-     * @param hooker the Hook subclass.
+     * You can continue loading hookers from a hooker.
+     * @param hooker the hooker.
      */
-    fun loadHooker(hooker: YukiBaseHooker) {
-        hooker.wrapper?.also {
-            if (it.packageName.isNotBlank() && it.type != HookEntryType.ZYGOTE)
-                if (it.packageName == wrapper?.packageName)
-                    hooker.assignInstance(packageParam = this)
-                else YLog.innerW(
-                    msg = "This Hooker \"${hooker::class.java.name}\" is singleton or reused, " +
-                        "but the current process has multiple package name \"${wrapper?.packageName}\", " +
-                        "the original is \"${it.packageName}\"\n" +
-                        "Make sure your Hooker supports multiple instances for this situation\n" +
-                        "The process with package name \"${wrapper?.packageName}\" will be ignored"
-                )
-            else hooker.assignInstance(packageParam = this)
-        } ?: hooker.assignInstance(packageParam = this)
-    }
+    fun loadHooker(hooker: YukiBaseHooker) = hooker.bindTo(param = this)
 
-    /**
-     * Finds [Class] instances in the current Hook APP Dex through [appClassLoader] using specified conditions.
-     *
-     * - This function can be very time-consuming when there are too many [Class] instances or the lookup conditions are complex.
-     *
-     * - Enabling [async] or setting [name] is recommended. [name] automatically creates a local cache for different versions of the Hook APP (host) to improve efficiency.
-     *
-     * - This feature is still experimental. Performance and stability issues may remain. Report any issues you encounter and help us improve it.
-     * @param name the name identifying the current [Class] cache. Caching is disabled when omitted. Enabling caching automatically enables [async].
-     * @param async whether asynchronous lookup is enabled, false by default.
-     * @param initiate the finder block.
-     * @return [DexClassFinder.Result]
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    inline fun searchClass(name: String = "", async: Boolean = false, initiate: ClassConditions) =
-        DexClassFinder(name, async = async || name.isNotBlank(), appClassLoader).apply(initiate).build()
-
-    /**
-     * Converts a string class name to a concrete class in the current Hook APP.
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [toClass].
-     * @return [Class]
-     * @throws NoClassDefFoundError if the [Class] cannot be found.
-     */
-    @Deprecated(message = "Use the new naming method", ReplaceWith("toClass()"))
-    val String.clazz
-        get() = toClass()
-
-    /**
-     * Converts [LegacyVariousClass] to a concrete class in the current Hook APP.
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [toClass].
-     * @return [Class]
-     * @throws IllegalStateException if no [Class] matches.
-     */
-    @Deprecated(message = "Use the new naming method", ReplaceWith("toClass()"))
-    val LegacyVariousClass.clazz
-        get() = toClass()
-
-    /**
-     * Checks whether a string class name exists.
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [hasClass].
-     * @return [Boolean] whether the class exists.
-     */
-    @Deprecated(message = "Use the new naming method", ReplaceWith("hasClass()"))
-    val String.hasClass
-        get() = hasClass()
-
-    /**
-     * Converts a string class name to a concrete class in [loader].
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class]
-     * @throws NoClassDefFoundError if the [Class] cannot be found.
-     */
+    /** @see toClassGlobal */
     fun String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
         toClassGlobal(loader, initialize)
 
-    /**
-     * Converts a string class name to a concrete class in [loader].
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class]<[T]>
-     * @throws NoClassDefFoundError if the [Class] cannot be found.
-     * @throws IllegalStateException if the [Class] type is not [T].
-     */
-    @JvmName("toClass_Generics")
-    inline fun <reified T : Any> String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    /** @see toClassGlobal */
+    @JvmName("toClassTyped")
+    fun <T : Any> String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
         toClassGlobal<T>(loader, initialize)
 
-    /**
-     * Converts a string class name to a concrete class in [loader].
-     *
-     * Returns null without throwing an exception when the [Class] cannot be found.
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class] or null.
-     */
+    /** @see toClassOrNullGlobal */
     fun String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
         toClassOrNullGlobal(loader, initialize)
 
-    /**
-     * Converts a string class name to a concrete class in [loader].
-     *
-     * Returns null without throwing an exception when the [Class] cannot be found.
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class]<[T]> or null.
-     */
-    @JvmName("toClassOrNull_Generics")
-    inline fun <reified T : Any> String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    /** @see toClassOrNullGlobal */
+    @JvmName("toClassOrNullTyped")
+    fun <T : Any> String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
         toClassOrNullGlobal<T>(loader, initialize)
 
-    /**
-     * Converts [LegacyVariousClass] to a concrete class in [loader].
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class]
-     * @throws IllegalStateException if no [Class] matches.
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    fun LegacyVariousClass.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = get(loader, initialize)
-
-    /**
-     * Converts [VariousClass] to a concrete class in [loader].
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class]
-     * @throws IllegalStateException if no [Class] matches.
-     */
+    /** @see toClassGlobal */
     fun VariousClass.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = load(loader, initialize)
 
-    /**
-     * Converts [LegacyVariousClass] to a concrete class in [loader].
-     *
-     * Returns null without throwing an exception when no [Class] matches.
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class] or null.
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    fun LegacyVariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = getOrNull(loader, initialize)
-
-    /**
-     * Converts [VariousClass] to a concrete class in [loader].
-     *
-     * Returns null without throwing an exception when no [Class] matches.
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @return [Class] or null.
-     */
+    /** @see toClassGlobal */
     fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = loadOrNull(loader, initialize)
 
-    /**
-     * Creates a lazily loaded non-null [Class] instance.
-     * @param name the fully qualified class name.
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.NonNull]
-     */
+    /** @see lazyClassGlobal */
     fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassGlobal(name, initialize, loader)
 
-    /**
-     * Creates a lazily loaded non-null [Class] instance of type [T].
-     * @param name the fully qualified class name.
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.NonNull]<[T]>
-     */
-    @JvmName("lazyClass_Generics")
-    inline fun <reified T : Any> lazyClass(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
+    /** @see lazyClassGlobal */
+    @JvmName("lazyClassTyped")
+    fun <T : Any> lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassGlobal<T>(name, initialize, loader)
 
-    /**
-     * Creates a lazily loaded non-null [Class] instance.
-     * @param variousClass the [LegacyVariousClass].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.NonNull]
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    fun lazyClass(variousClass: LegacyVariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
-        lazyClassGlobalLegacy(variousClass, initialize, loader)
-
-    /**
-     * Creates a lazily loaded non-null [Class] instance.
-     * @param variousClass the [VariousClass].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.NonNull]
-     */
+    /** @see lazyClassGlobal */
     fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassGlobal(variousClass, initialize, loader)
 
-    /**
-     * Creates a lazily loaded nullable [Class] instance.
-     * @param name the fully qualified class name.
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.Nullable]
-     */
+    /** @see lazyClassOrNullGlobal */
     fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassOrNullGlobal(name, initialize, loader)
 
-    /**
-     * Creates a lazily loaded nullable [Class] instance of type [T].
-     * @param name the fully qualified class name.
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.Nullable]<[T]>
-     */
-    @JvmName("lazyClassOrNull_Generics")
-    inline fun <reified T : Any> lazyClassOrNull(name: String, initialize: Boolean = false, noinline loader: ClassLoaderInitializer? = appLoaderInit) =
+    /** @see lazyClassOrNullGlobal */
+    @JvmName("lazyClassOrNullTyped")
+    fun <T : Any> lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassOrNullGlobal<T>(name, initialize, loader)
 
-    /**
-     * Creates a lazily loaded nullable [Class] instance.
-     * @param variousClass the [LegacyVariousClass].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.Nullable]
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    fun lazyClassOrNull(variousClass: LegacyVariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
-        lazyClassOrNullGlobalLegacy(variousClass, initialize, loader)
-
-    /**
-     * Creates a lazily loaded nullable [Class] instance.
-     * @param variousClass the [VariousClass].
-     * @param initialize whether to initialize the static block of the [Class], false by default.
-     * @param loader the [ClassLoader] to load the class. The default is [appClassLoader].
-     * @return [LazyClass.Nullable]
-     */
+    /** @see lazyClassOrNullGlobal */
     fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
         lazyClassOrNullGlobal(variousClass, initialize, loader)
 
     /**
-     * Checks whether a string class name exists.
-     * @param loader the [ClassLoader] containing the [Class]. The default is [appClassLoader].
-     * @return [Boolean] whether the class exists.
+     * Creates a direct chain hook for methods and constructors.
+     *
+     * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
+     *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
+     *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
+     *   [priority] orders the local chain and does not preserve framework-wide hook ordering.
+     * @receiver the current member to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
      */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    fun String.hasClass(loader: ClassLoader? = appClassLoader) = hasClassLegacy(loader)
-
-    /**
-     * Finds and loads [HookClass].
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [toClass].
-     * @return [HookClass]
-     */
-    @LegacyHookApi
-    @Deprecated(message = "This function is no longer recommended", ReplaceWith("name.toClass(loader)"))
-    fun findClass(name: String, loader: ClassLoader? = appClassLoader) = name.toHookClass(loader)
-
-    /**
-     * Finds and loads [HookClass].
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [LegacyVariousClass].
-     * @return [HookClass]
-     */
-    @LegacyHookApi
-    @Deprecated(message = "This function is no longer recommended", ReplaceWith("VariousClass(*name)"))
-    fun findClass(vararg name: String, loader: ClassLoader? = appClassLoader) = LegacyVariousClass(*name).toHookClass(loader)
-
-    /**
-     * Hooks methods and constructors.
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [toClass].
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.Result]
-     */
-    @LegacyHookApi
-    @Deprecated(message = "This function is no longer recommended", ReplaceWith("this.toClass().hook(initiate = initiate)"))
-    inline fun String.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass().hook(initiate = initiate)
-
-    /**
-     * Hooks methods and constructors.
-     *
-     * - Automatically selects the [ClassLoader] matching the current [Class], preferring [appClassLoader].
-     *
-     * - Enable [isForceUseAbsolute] if the current [Class] is not in [appClassLoader] and automatic matching cannot find it.
-     * @param isForceUseAbsolute whether to force use of the absolute instance, false by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.Result]
-     */
-    @LegacyHookApi
-    inline fun Class<*>.hook(isForceUseAbsolute: Boolean = false, initiate: YukiMemberHookCreator.() -> Unit) = when {
-        isForceUseAbsolute -> toHookClass()
-        name.hasClass() -> name.toClass().toHookClass()
-        else -> toHookClass()
-    }.hook(initiate)
-
-    /**
-     * Hooks methods and constructors.
-     *
-     * - Uses the current [appClassLoader] to load the target [Class].
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.Result]
-     */
-    @LegacyHookApi
-    inline fun LegacyVariousClass.hook(initiate: YukiMemberHookCreator.() -> Unit) = toHookClass().hook(initiate)
-
-    /**
-     * Hooks methods and constructors.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.Result]
-     */
-    @LegacyHookApi
-    inline fun HookClass.hook(initiate: YukiMemberHookCreator.() -> Unit) =
-        YukiMemberHookCreator(packageParam = this@PackageParam, hookClass = this).apply(initiate).hook()
-
-    /**
-     * Hooks methods and constructors directly.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
-     */
-    fun Member.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = listOf(this).baseHook(priority)
-
-    /**
-     * Hooks methods and constructors directly.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
-     */
-    inline fun Member.hook(
+    fun Member.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = listOf(this).baseHook(priority, isLazyMode = true).apply(initiate).build()
+        invocation: HookChain.() -> Any? = { null }
+    ) = YukiHookCreator.createChainHooker(listOf(this), priority, invocation).build()
 
     /**
-     * Hooks methods and constructors directly through [BaseFinder.BaseResult].
+     * Creates a direct chain hook for methods and constructors through [MemberResolver].
      *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
+     * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
+     *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
+     *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
+     *   [priority] orders the local chain and does not preserve framework-wide hook ordering.
+     * @receiver the current member to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
      */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    fun BaseFinder.BaseResult.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(isMultiple = false, priority)
-
-    /**
-     * Hooks methods and constructors directly through [BaseFinder.BaseResult].
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    inline fun BaseFinder.BaseResult.hook(
+    @JvmName("interceptByMemberResolver")
+    fun MemberResolver<*, *>.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = baseHook(isMultiple = false, priority, isLazyMode = true).apply(initiate).build()
+        invocation: HookChain.() -> Any? = { null }
+    ) = YukiHookCreator.createChainHooker(listOf(self), priority, invocation).build()
 
     /**
-     * Hooks methods and constructors directly through [MemberResolver].
+     * Creates a direct chain hook for methods and constructors through a [List] of [MemberResolver] instances.
      *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. KavaRef will take it over completely in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
+     * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
+     *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
+     *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
+     *   [priority] orders the local chain and does not preserve framework-wide hook ordering.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
      */
-    fun MemberResolver<*, *>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(priority)
-
-    /**
-     * Hooks methods and constructors directly through [MemberResolver].
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. KavaRef will take it over completely in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
-     */
-    @JvmName("hook_MemberResolver")
-    inline fun MemberResolver<*, *>.hook(
+    @JvmName("interceptAllByMemberResolver")
+    fun Collection<MemberResolver<*, *>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = hook(priority).apply(initiate).build()
+        invocation: HookChain.() -> Any? = { null }
+    ) = YukiHookCreator.createChainHooker(map { it.self }, priority, invocation).build()
 
     /**
-     * Hooks methods and constructors directly through a [List] of [MemberResolver] instances.
+     * Creates a direct chain hook for methods and constructors through an [Array] of [Member] instances.
      *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. KavaRef will take it over completely in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
+     * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
+     *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
+     *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
+     *   [priority] orders the local chain and does not preserve framework-wide hook ordering.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
      */
-    fun List<MemberResolver<*, *>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(priority)
+    fun Array<Member>.interceptAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any? = { null }
+    ) = YukiHookCreator.createChainHooker(toList(), priority, invocation).build()
 
     /**
-     * Hooks methods and constructors directly through a [List] of [MemberResolver] instances.
+     * Creates a direct chain hook for methods and constructors through a [List] of [Member] instances.
      *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. KavaRef will take it over completely in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
+     *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
+     *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
+     *   [priority] orders the local chain and does not preserve framework-wide hook ordering.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @JvmName("interceptAllByMember")
+    fun Collection<Member>.interceptAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any? = { null }
+    ) = YukiHookCreator.createChainHooker(this, priority, invocation).build()
+
+    /**
+     * Creates a direct hook for methods and constructors.
+     * @receiver the current member to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    fun Member.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = listOf(this).createHooker(priority)
+
+    /**
+     * Creates a direct hook for methods and constructors.
+     * @receiver the current member to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun Member.hook(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = listOf(this).createHooker(priority, isLazyMode = true).apply(hooker).build()
+
+    /**
+     * Creates a direct hook for methods and constructors through [MemberResolver].
+     * @receiver the current member to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    fun MemberResolver<*, *>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
+
+    /**
+     * Creates a direct hook for methods and constructors through [MemberResolver].
+     * @receiver the current member to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @JvmName("hookByMemberResolver")
+    fun MemberResolver<*, *>.hook(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
+
+    /**
+     * Creates a direct hook for methods and constructors through a [List] of [MemberResolver] instances.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    fun Collection<MemberResolver<*, *>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
+
+    /**
+     * Creates a direct hook for methods and constructors through a [List] of [MemberResolver] instances.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
      */
     @JvmName("hookAll_MemberResolver")
-    inline fun List<MemberResolver<*, *>>.hookAll(
+    fun Collection<MemberResolver<*, *>>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = hookAll(priority).apply(initiate).build()
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
 
     /**
-     * Hooks methods and constructors directly in a batch.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
+     * Creates a direct hook for methods and constructors through an [Array] of [Member] instances.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
      */
-    fun Array<Member>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = toList().baseHook(priority)
+    fun Array<Member>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = toList().createHooker(priority)
 
     /**
-     * Hooks methods and constructors directly in a batch.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     * Creates a direct hook for methods and constructors through an [Array] of [Member] instances.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
      */
-    inline fun Array<Member>.hookAll(
+    fun Array<Member>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = toList().baseHook(priority, isLazyMode = true).apply(initiate).build()
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = toList().createHooker(priority, isLazyMode = true).apply(hooker).build()
 
     /**
-     * Hooks methods and constructors directly in a batch.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
+     * Creates a direct hook for methods and constructors through a [List] of [Member] instances.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
      */
-    @JvmName("hookAll_Member")
-    fun List<Member>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(priority)
+    @JvmName("hookAllByMember")
+    fun Collection<Member>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
 
     /**
-     * Hooks methods and constructors directly in a batch.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
+     * Creates a direct hook for methods and constructors through a [List] of [Member] instances.
+     * @receiver the current members to hook.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
      */
-    inline fun List<Member>.hookAll(
+    fun Collection<Member>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = baseHook(priority, isLazyMode = true).apply(initiate).build()
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
 
-    /**
-     * Hooks methods and constructors directly in a batch through [BaseFinder.BaseResult].
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    fun BaseFinder.BaseResult.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = baseHook(isMultiple = true, priority)
-
-    /**
-     * Hooks methods and constructors directly in a batch through [BaseFinder.BaseResult].
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param initiate the Hook block.
-     * @return [YukiMemberHookCreator.MemberHookCreator.Result]
-     */
-    @Deprecated(ReflectionMigration.KAVAREF_INFO)
-    inline fun BaseFinder.BaseResult.hookAll(
-        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit
-    ) = baseHook(isMultiple = true, priority, isLazyMode = true).apply(initiate).build()
-
-    /**
-     * Hooks methods and constructors directly through [BaseFinder.BaseResult].
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param isMultiple whether this is a multiple lookup.
-     * @param priority the Hook priority.
-     * @param isLazyMode whether lazy mode is enabled, false by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
-     */
-    private fun BaseFinder.BaseResult.baseHook(isMultiple: Boolean, priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        when (this) {
-            is DexClassFinder.Result ->
-                error("Use of searchClass { ... }.hook { ... } is an error, please use like searchClass { ... }.get()?.hook { ... }")
-            is ConstructorFinder.Result -> {
-                val members = if (isMultiple) giveAll()
-                else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
-                YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, priority, isLazyMode)
-            }
-            is MethodFinder.Result -> {
-                val members = if (isMultiple) giveAll()
-                else mutableListOf<Member>().also { give()?.also { e -> it.add(e) } }
-                YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, members, priority, isLazyMode)
-            }
-            else -> error("This type [$this] not support to hook, supported are Constructors and Methods")
-        }
-
-    /**
-     * Hooks methods and constructors directly through [MemberResolver].
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. KavaRef will take it over completely in 2.0.0.
-     * @param priority the Hook priority.
-     * @param isLazyMode whether lazy mode is enabled, false by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
-     */
-    private fun MemberResolver<*, *>.baseHook(priority: YukiHookPriority, isLazyMode: Boolean = false) = when (this) {
+    private fun MemberResolver<*, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) = when (this) {
         is ConstructorResolver,
-        is MethodResolver -> YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, listOf(self), priority, isLazyMode)
-        else -> error("This type [$this] not support to hook, supported are Constructors and Methods")
+        is MethodResolver -> YukiHookCreator.createClassicHooker(listOf(self), priority, isLazyMode)
+        else -> error("This type $this not support to hook, supported are constructor and method.")
     }
 
-    /**
-     * Hooks methods and constructors directly through a [List] of [MemberResolver] instances.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. KavaRef will take it over completely in 2.0.0.
-     * @param priority the Hook priority.
-     * @param isLazyMode whether lazy mode is enabled, false by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
-     */
-    private fun List<MemberResolver<*, *>>.baseHook(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, onEach {
-            if (it !is ConstructorResolver && it !is MethodResolver)
-                error("This type [$it] not support to hook, supported are Constructors and Methods")
+    private fun Collection<MemberResolver<*, *>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
+        YukiHookCreator.createClassicHooker(onEach {
+            require(it is ConstructorResolver || it is MethodResolver) {
+                "This type $it not support to hook, supported are constructor and method."
+            }
         }.map { it.self }, priority, isLazyMode)
 
-    /**
-     * Hooks methods and constructors directly.
-     *
-     * - This feature is still experimental and remains here temporarily in 1.x.x. It will be fully merged into the new API in 2.0.0.
-     * @param priority the Hook priority.
-     * @param isLazyMode whether lazy mode is enabled, false by default.
-     * @return [YukiMemberHookCreator.MemberHookCreator]
-     */
-    @JvmName("baseHook_Member")
-    private fun List<Member>.baseHook(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiMemberHookCreator.createMemberHook(packageParam = this@PackageParam, onEach {
-            if (it !is Constructor<*> && it !is Method) error("This type [$it] not support to hook, supported are Constructors and Methods")
+    @JvmName("createHookerByMember")
+    private fun Collection<Member>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
+        YukiHookCreator.createClassicHooker(onEach {
+            require(it is Constructor<*> || it is Method) { "This type $it not support to hook, supported are constructor and method." }
         }, priority, isLazyMode)
 
     /**
-     * Hooks the Resources of the APP.
+     * Lifecycle instance handler for the current host.
      *
-     * - This feature is no longer enabled by default. Set [InjectYukiHookWithXposed.isUsingResourcesHook] manually to enable it.
-     * @param initiate the Hook block.
+     * - Use [registerAppLifecycle] to obtain [AppLifecycle].
+     * @param packageName the package name of the current host.
+     * @param onFailureThrowToHost whether to throw exceptions to the host when they occur.
      */
-    @LegacyResourcesHook
-    inline fun HookResources.hook(initiate: YukiResourcesHookCreator.() -> Unit) =
-        YukiResourcesHookCreator(packageParam = this@PackageParam, hookResources = this).apply(initiate).hook()
+    class AppLifecycle private constructor(private val packageName: String, private val onFailureThrowToHost: Boolean) {
 
-    /**
-     * Converts [LegacyVariousClass] to [HookClass].
-     * @param loader the current [ClassLoader]. The default is [appClassLoader].
-     * @return [HookClass]
-     */
-    @LegacyHookApi
-    private fun LegacyVariousClass.toHookClass(loader: ClassLoader? = appClassLoader) =
-        runCatching { get(loader).toHookClass() }.getOrElse { HookClass(name = "VariousClass", throwable = Throwable(it.message)) }
+        internal companion object {
 
-    /**
-     * Converts [Class] to [HookClass].
-     * @return [HookClass]
-     */
-    @LegacyHookApi
-    private fun Class<*>.toHookClass() = HookClass(instance = this, name)
+            /**
+             * Registers a lifecycle listener for the current host [Application].
+             * @param packageName the package name of the current host.
+             * @param onFailureThrowToHost whether to throw exceptions to the host when they occur.
+             */
+            fun register(
+                packageName: String,
+                onFailureThrowToHost: Boolean,
+                block: AppLifecycle.() -> Unit
+            ) = AppLifecycle(packageName, onFailureThrowToHost).apply(block).build()
+        }
 
-    /**
-     * Converts a string class name to [HookClass].
-     * @param loader the current [ClassLoader]. The default is [appClassLoader].
-     * @return [HookClass]
-     */
-    @LegacyHookApi
-    private fun String.toHookClass(loader: ClassLoader? = appClassLoader) = HookClass(toClassOrNull(loader), name = this)
+        private var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null
+        private var onCreateCallback: (Application.() -> Unit)? = null
+        private var onTerminateCallback: (Application.() -> Unit)? = null
+        private var onLowMemoryCallback: (Application.() -> Unit)? = null
+        private var onTrimMemoryCallback: ((Application, Int) -> Unit)? = null
+        private var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
 
-    /**
-     * Lifecycle instance handler for the current Hook APP.
-     *
-     * - Use [onAppLifecycle] to obtain [AppLifecycle].
-     * @param isOnFailureThrowToApp whether to throw exceptions to the host when they occur.
-     */
-    inner class AppLifecycle internal constructor(private val isOnFailureThrowToApp: Boolean) {
+        private val onReceiverActionsCallbacks = mutableListOf<Pair<Array<out String>, (Context, Intent) -> Unit>>()
+        private val onReceiverFiltersCallbacks = mutableListOf<Pair<IntentFilter, (Context, Intent) -> Unit>>()
 
         /**
-         * Whether the current operation is in the [HookEntryType.PACKAGE] call scope.
-         *
-         * To avoid configuring callback events multiple times, they take effect only after Hooking starts.
-         * @return [Boolean]
+         * Listens for the current host loading [Application.attachBaseContext].
+         * @param callback callback with the base [Context] and whether super has been called.
          */
-        private val isCurrentScope get() = wrapper?.type == HookEntryType.PACKAGE
-
-        /**
-         * Listens for the current Hook APP loading [Application.attachBaseContext].
-         * @param result callback with the base [Context] and whether super has been called.
-         */
-        fun attachBaseContext(result: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).attachBaseContextCallback = result
+        fun attachBaseContext(callback: (baseContext: Context, hasCalledSuper: Boolean) -> Unit) {
+            attachBaseContextCallback = callback
         }
 
         /**
-         * Listens for the current Hook APP loading [Application.onCreate].
-         * @param initiate the callback block.
+         * Listens for the current host loading [Application.onCreate].
+         * @param callback the callback block.
          */
-        fun onCreate(initiate: Application.() -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onCreateCallback = initiate
+        fun onCreate(callback: Application.() -> Unit) {
+            onCreateCallback = callback
         }
 
         /**
-         * Listens for the current Hook APP loading [Application.onTerminate].
-         * @param initiate the callback block.
+         * Listens for the current host loading [Application.onTerminate].
+         * @param callback the callback block.
          */
-        fun onTerminate(initiate: Application.() -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onTerminateCallback = initiate
+        fun onTerminate(callback: Application.() -> Unit) {
+            onTerminateCallback = callback
         }
 
         /**
-         * Listens for the current Hook APP loading [Application.onLowMemory].
-         * @param initiate the callback block.
+         * Listens for the current host loading [Application.onLowMemory].
+         * @param callback the callback block.
          */
-        fun onLowMemory(initiate: Application.() -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onLowMemoryCallback = initiate
+        fun onLowMemory(callback: Application.() -> Unit) {
+            onLowMemoryCallback = callback
         }
 
         /**
-         * Listens for the current Hook APP loading [Application.onTrimMemory].
-         * @param result callback with the current [Application] instance and [Int] level.
+         * Listens for the current host loading [Application.onTrimMemory].
+         * @param callback callback with the current [Application] instance and [Int] level.
          */
-        fun onTrimMemory(result: (self: Application, level: Int) -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onTrimMemoryCallback = result
+        fun onTrimMemory(callback: (self: Application, level: Int) -> Unit) {
+            onTrimMemoryCallback = callback
         }
 
         /**
-         * Listens for the current Hook APP loading [Application.onConfigurationChanged].
-         * @param result callback with the current [Application] instance and [Configuration] instance.
+         * Listens for the current host loading [Application.onConfigurationChanged].
+         * @param callback callback with the current [Application] instance and [Configuration] instance.
          */
-        fun onConfigurationChanged(result: (self: Application, config: Configuration) -> Unit) {
-            if (isCurrentScope) AppParasitics.AppLifecycleActor.get(this@PackageParam).onConfigurationChangedCallback = result
+        fun onConfigurationChanged(callback: (self: Application, config: Configuration) -> Unit) {
+            onConfigurationChangedCallback = callback
         }
 
         /**
          * Registers a system broadcast listener.
-         * @param action the system broadcast actions.
-         * @param result callback with the current [Context] and [Intent].
+         * @param actions the system broadcast actions.
+         * @param callback callback with the current [Context] and [Intent].
          */
-        fun registerReceiver(vararg action: String, result: (context: Context, intent: Intent) -> Unit) {
-            if (isCurrentScope && action.isNotEmpty())
-                AppParasitics.AppLifecycleActor.get(this@PackageParam).onReceiverActionsCallbacks[action.value()] = action to result
+        fun registerReceiver(vararg actions: String, callback: (context: Context, intent: Intent) -> Unit) {
+            if (actions.isNotEmpty()) onReceiverActionsCallbacks += actions to callback
         }
 
         /**
          * Registers a system broadcast listener.
          * @param filter the broadcast intent filter.
-         * @param result callback with the current [Context] and [Intent].
+         * @param callback callback with the current [Context] and [Intent].
          */
-        fun registerReceiver(filter: IntentFilter, result: (context: Context, intent: Intent) -> Unit) {
-            if (isCurrentScope)
-                AppParasitics.AppLifecycleActor.get(this@PackageParam).onReceiverFiltersCallbacks[filter.toString()] = filter to result
+        fun registerReceiver(filter: IntentFilter, callback: (context: Context, intent: Intent) -> Unit) {
+            onReceiverFiltersCallbacks += filter to callback
         }
 
-        /** Configures lifecycle listener callbacks. */
-        internal fun build() {
-            if (AppParasitics.AppLifecycleActor.isOnFailureThrowToApp == null)
-                AppParasitics.AppLifecycleActor.isOnFailureThrowToApp = isOnFailureThrowToApp
-        }
+        private fun build() = AppParasitism.registerAppLifecycle(packageName, object : AppLifecycleBridge {
+
+            override val onFailureThrowToHost = this@AppLifecycle.onFailureThrowToHost
+            override val receiverActions = this@AppLifecycle.onReceiverActionsCallbacks
+            override val receiverFilters = this@AppLifecycle.onReceiverFiltersCallbacks
+
+            override fun onAttachBaseContext(baseContext: Context, hasCalledSuper: Boolean) {
+                attachBaseContextCallback?.invoke(baseContext, hasCalledSuper)
+            }
+
+            override fun onCreate(application: Application) {
+                onCreateCallback?.invoke(application)
+            }
+
+            override fun onTerminate(application: Application) {
+                onTerminateCallback?.invoke(application)
+            }
+
+            override fun onLowMemory(application: Application) {
+                onLowMemoryCallback?.invoke(application)
+            }
+
+            override fun onTrimMemory(application: Application, level: Int) {
+                onTrimMemoryCallback?.invoke(application, level)
+            }
+
+            override fun onConfigurationChanged(application: Application, config: Configuration) {
+                onConfigurationChangedCallback?.invoke(application, config)
+            }
+        })
     }
 
     override fun toString() = "PackageParam(${super.toString()}) by $wrapper"

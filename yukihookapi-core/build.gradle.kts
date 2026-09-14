@@ -1,6 +1,4 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SourcesJar
+import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     alias(libs.plugins.android.library)
@@ -9,7 +7,7 @@ plugins {
 }
 
 group = gropify.project.groupName
-version = gropify.project.yukihookapi.core.version
+version = gropify.project.yukihookapi.bom.version
 
 android {
     namespace = gropify.project.groupName
@@ -28,27 +26,28 @@ android {
     lint { checkReleaseBuilds = false }
 }
 
+configure<LibraryExtension> {
+    sourceSets.named("main") {
+        kotlin.directories.add("src/share/kotlin")
+    }
+}
+
 dependencies {
-    compileOnly(libs.rovo89.xposed.api)
-    compileOnly(projects.yukihookapiStub)
+    compileOnly(projects.yukihookapiRuntimeStub)
     implementation(libs.hiddenapibypass)
+
     implementation(platform(libs.kavaref.bom))
     implementation(libs.kavaref.core)
     implementation(libs.kavaref.android)
     implementation(libs.kavaref.extension)
+
     implementation(platform(libs.betterandroid.android.bom))
     implementation(libs.betterandroid.ui.extension)
     implementation(libs.betterandroid.system.extension)
+
+    api(libs.androidx.lifecycle.common)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.preference.ktx)
-}
-
-mavenPublishing {
-    configure(AndroidSingleVariantLibrary(JavadocJar.None(), SourcesJar.Sources()))
-    coordinates(
-        groupId = group.toString(),
-        artifactId = gropify.project.yukihookapi.core.moduleName,
-        version = version.toString()
-    )
 }

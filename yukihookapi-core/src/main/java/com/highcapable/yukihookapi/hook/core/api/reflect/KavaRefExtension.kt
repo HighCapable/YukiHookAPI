@@ -26,6 +26,10 @@ package com.highcapable.yukihookapi.hook.core.api.reflect
 import com.highcapable.kavaref.extension.makeAccessible
 import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
+import com.highcapable.yukihookapi.hook.param.PackageParam
+
+/** Defines an initializer for a [ClassLoader] instance. */
+internal typealias ClassLoaderInitializer = () -> ClassLoader?
 
 /**
  * Invoke the method with the given arguments.
@@ -35,9 +39,10 @@ import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
  * @return [T] or null.
  */
 @JvmName("invokeOriginalTyped")
-fun <T : Any?> MethodResolver<*>.invokeOriginal(vararg args: Any?): T? {
+context(_: PackageParam)
+fun <T> MethodResolver<*>.invokeOriginal(vararg args: Any?): T? {
     self.makeAccessible()
-    return YukiHookHelper.invokeOriginalMember(self, instance, args) as? T?
+    return YukiHookHelper.invokeOriginal(self, instance, args) as? T?
 }
 
 /**
@@ -48,7 +53,8 @@ fun <T : Any?> MethodResolver<*>.invokeOriginal(vararg args: Any?): T? {
  * @return [T] or null.
  */
 @JvmName("invokeOriginalQuietlyTyped")
-fun <T : Any?> MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) = runCatching { invokeOriginal<T>(*args) }.getOrNull()
+context(_: PackageParam)
+fun <T> MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) = runCatching { invokeOriginal<T>(*args) }.getOrNull()
 
 /**
  * Invoke the method with the given arguments.
@@ -57,9 +63,10 @@ fun <T : Any?> MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) = runC
  * @see MethodResolver.invoke
  * @return [Any] or null.
  */
+context(_: PackageParam)
 fun MethodResolver<*>.invokeOriginal(vararg args: Any?): Any? {
     self.makeAccessible()
-    return YukiHookHelper.invokeOriginalMember(self, instance, args)
+    return YukiHookHelper.invokeOriginal(self, instance, args)
 }
 
 /**
@@ -69,4 +76,5 @@ fun MethodResolver<*>.invokeOriginal(vararg args: Any?): Any? {
  * @see MethodResolver.invokeQuietly
  * @return [Any] or null.
  */
+context(_: PackageParam)
 fun MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) = runCatching { invokeOriginal(*args) }.getOrNull()

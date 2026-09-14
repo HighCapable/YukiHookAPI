@@ -19,198 +19,130 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
+@file:Suppress("unused", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.param
 
 import android.os.Bundle
-import com.highcapable.kavaref.extension.classOf
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator.MemberHookCreator
+import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
-import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
 import com.highcapable.yukihookapi.hook.log.YLog
-import java.lang.reflect.Constructor
+import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import java.lang.reflect.Member
-import java.lang.reflect.Method
 
 /**
  * Target object implementation for hooked methods and constructors.
- * @param creatorInstance the [YukiMemberHookCreator] instance.
- * @param paramId the current callback block ID.
- * @param param the Hook result callback interface.
+ * @param dataExtraStorage the storage shared by the current callback scope.
+ * @param hooker the hooker owning this invocation's registrations.
+ * @param param the hook result callback interface.
  */
 class HookParam private constructor(
-    private val creatorInstance: YukiMemberHookCreator,
-    private var paramId: String = "",
-    private var param: YukiHookCallback.Param? = null
-) {
+    dataExtraStorage: Bundle,
+    hooker: YukiHookCreator.MemberHooker<HookParam>,
+    private val param: ClassicHookerBridge.Param
+) : HookInvocation(dataExtraStorage, hooker, param) {
 
     internal companion object {
 
-        /** Stored data for each callback block. */
-        private val dataExtras = mutableMapOf<String, Bundle>()
-
-        /** Whether [HookParam] has executed its first callback event. */
-        internal var isCallbackCalled = false
-
         /**
-         * Creates a new [HookParam].
-         * @param creatorInstance the [YukiMemberHookCreator] instance.
-         * @param paramId the current callback block ID.
-         * @param param the Hook result callback interface.
+         * Creates a new [HookParam] from the given member hooker.
+         * @param dataExtraStorage the storage shared by the current callback scope.
+         * @param hooker the hooker owning this invocation's registrations.
+         * @param param the hook result callback interface.
          * @return [HookParam]
          */
-        internal fun create(creatorInstance: YukiMemberHookCreator, paramId: String, param: YukiHookCallback.Param) =
-            HookParam(creatorInstance, paramId, param)
-
-        /** Marks [HookParam] as having executed its first callback event. */
-        internal fun invoke() {
-            isCallbackCalled = true
-        }
+        fun from(
+            dataExtraStorage: Bundle,
+            hooker: YukiHookCreator.MemberHooker<HookParam>,
+            param: ClassicHookerBridge.Param
+        ) = HookParam(dataExtraStorage, hooker, param)
     }
 
     /**
-     * Gets the argument array of the currently hooked [method] or [constructor].
+     * Gets the argument array of the currently hooked method or constructor.
      *
-     * Each array element has the default type [Any]. Use [args] to access [ArgsModifyer.cast].
+     * Each array element has the default type [Any]. Use [args] to access [ArgsEditor.cast].
+     * @see arg
+     * @see firstArg
+     * @see lastArg
      * @return [Array]
-     * @throws IllegalStateException if the object is null.
      */
-    val args get() = param?.args ?: error("Current hooked Member args is null")
+    val args get() = param.args
 
     /**
-     * Gets the current hooked receiver instance.
-     *
-     * - A static hooked member has no receiver instance.
-     *
-     * - Use [instanceOrNull] when the current receiver may be null.
-     * @return [Any]
-     * @throws IllegalStateException if the object is null.
-     */
-    val instance get() = param?.instance ?: error("HookParam instance got null! Is this a static member?")
-
-    /**
-     * Gets the current hooked receiver instance.
-     *
-     * - A static hooked member has no receiver instance.
-     * @return [Any] or null.
-     */
-    val instanceOrNull get() = param?.instance
-
-    /**
-     * Gets the class of the current hooked receiver instance.
-     *
-     * - A static hooked member has no receiver instance.
-     * @return [Class] or null.
-     */
-    val instanceClass get() = param?.instance?.javaClass
-
-    /**
-     * Gets the currently hooked [Member].
-     *
-     * Use this property when the [Member] type may be either [Method] or [Constructor].
-     * @return [Member]
-     * @throws IllegalStateException if [member] is null.
-     */
-    val member get() = param?.member ?: error("Current hooked Member is null")
-
-    /**
-     * Gets the currently hooked method.
-     * @return [Method]
-     * @throws IllegalStateException if [member] is not a [Method].
-     */
-    val method get() = member as? Method? ?: error("Current hooked Member is not a Method")
-
-    /**
-     * Gets the currently hooked constructor.
-     * @return [Constructor]
-     * @throws IllegalStateException if [member] is not a [Constructor].
-     */
-    val constructor get() = member as? Constructor<*>? ?: error("Current hooked Member is not a Constructor")
-
-    /**
-     * Gets or sets the result of the currently hooked [method] or [constructor].
+     * Gets or sets the result of the currently hooked method or constructor.
      * @return [Any] or null.
      */
     var result: Any?
-        get() = param?.result
+        get() = param.result
         set(value) {
-            param?.result = value
+            param.result = value
         }
-
-    /**
-     * Gets the data storage instance scoped to the current callback block.
-     * @return [Bundle]
-     */
-    val dataExtra get() = dataExtras[paramId] ?: Bundle().apply { dataExtras[paramId] = this }
 
     /**
      * Gets whether an exception has been set for the invocation.
      * @return [Boolean]
      */
-    val hasThrowable get() = param?.hasThrowable
+    val hasThrowable: Boolean get() = param.throwable != null
 
     /**
      * Gets the exception set for the invocation.
      * @return [Throwable] or null.
      */
-    val throwable get() = param?.throwable
+    val throwable get() = param.throwable
 
     /**
-     * Throws an exception to the host app.
+     * Throws an exception to the current host.
      *
-     * Use [hasThrowable] to check whether an exception is currently set.
+     * - Use [hasThrowable] to check whether an exception is currently set.
+     * - Use [throwable] to get the exception set for the invocation.
      *
-     * Use [throwable] to get the exception set for the invocation.
-     *
-     * - This API is effective only in [MemberHookCreator.before] or [MemberHookCreator.after] callbacks.
-     *
-     * - Setting the exception also calls [resultNull] and throws it to the current host app.
+     * - This API is effective only in [YukiHookCreator.ClassicMemberHooker.before] or [YukiHookCreator.ClassicMemberHooker.after] callbacks.
+     * - Setting the exception also calls [result] to null and throws it to the current host.
+     * @receiver the exception to throw to the current host.
      * @return [Throwable] or null.
      * @throws Throwable
      */
-    fun Throwable.throwToApp() {
-        param?.throwable = this
+    fun Throwable.throwToHost() {
+        param.throwable = this
         YLog.innerE(message ?: "", this)
     }
 
     /**
-     * Gets the result [T] of the currently hooked [method] or [constructor].
+     * Gets the result [T] of the currently hooked method or constructor.
      * @return [T] or null.
+     * @throws ClassCastException if the result cannot be used as [T].
      */
-    inline fun <reified T : Any> result() = result as? T?
+    inline fun <reified T : Any> result() = result as T?
 
     /**
-     * Gets the current hooked receiver instance as [T].
-     * @return [T]
-     * @throws IllegalStateException if the object is null or is not of type [T].
-     */
-    inline fun <reified T : Any> instance() = instance as? T? ?: error("HookParam instance cannot cast to ${classOf<T>().name}")
-
-    /**
-     * Gets the current hooked receiver instance as [T].
-     * @return [T] or null.
-     */
-    inline fun <reified T : Any> instanceOrNull() = instanceOrNull as? T?
-
-    /**
-     * Gets the argument-index helper for the currently hooked [method] or [constructor].
-     * @return [ArgsIndexCondition]
-     */
-    fun args() = ArgsIndexCondition()
-
-    /**
-     * Gets an argument helper for the currently hooked [method] or [constructor].
+     * Gets an argument editor for the currently hooked method or constructor.
+     * @see firstArg
+     * @see lastArg
      * @param index the argument array index.
-     * @return [ArgsModifyer]
+     * @return [ArgsEditor]
      */
-    fun args(index: Int) = ArgsModifyer(index)
+    fun arg(index: Int) = ArgsEditor(index)
+
+    /**
+     * Gets the first index argument editor for the currently hooked method or constructor.
+     * @see arg
+     * @return [ArgsEditor]
+     */
+    fun firstArg() = arg(0)
+
+    /**
+     * Gets the last index argument editor for the currently hooked method or constructor.
+     * @see arg
+     * @return [ArgsEditor]
+     */
+    fun lastArg() = arg(args.lastIndex)
 
     /**
      * Invokes the original [Member].
      *
      * Invokes the unhooked original [Member] with its original arguments.
+     * @see invokeOriginal
      * @return [Any] or null.
      */
     fun callOriginal() = callOriginal<Any>()
@@ -219,15 +151,18 @@ class HookParam private constructor(
      * Invokes the original [Member].
      *
      * Invokes the unhooked original [Member] with its original arguments.
+     * @see invokeOriginal
      * @return [T] or null.
+     * @throws ClassCastException if the result cannot be used as [T].
      */
-    @JvmName(name = "callOriginal_Generics")
+    @JvmName(name = "callOriginalTyped")
     fun <T> callOriginal() = invokeOriginal<T>(*args)
 
     /**
      * Invokes the original [Member].
      *
      * Invokes the unhooked original [Member] with custom [args].
+     * @see callOriginal
      * @param args the argument instances.
      * @return [Any] or null.
      */
@@ -237,166 +172,35 @@ class HookParam private constructor(
      * Invokes the original [Member].
      *
      * Invokes the unhooked original [Member] with custom [args].
+     * @see callOriginal
      * @param args the argument instances.
      * @return [T] or null.
+     * @throws ClassCastException if the result cannot be used as [T].
      */
-    @JvmName(name = "invokeOriginal_Generics")
-    fun <T> invokeOriginal(vararg args: Any?) = YukiHookHelper.invokeOriginalMember(member, param?.instance, args) as T?
+    @JvmName(name = "invokeOriginalTyped")
+    fun <T> invokeOriginal(vararg args: Any?) = YukiHookHelper.invokeOriginal(member, param.instance, args) as T?
 
     /**
-     * Sets the [result] of the currently hooked method to true.
+     * Argument editor for the currently hooked method or constructor.
      *
-     * - Ensure that [result] is of type [Boolean].
-     */
-    fun resultTrue() {
-        result = true
-    }
-
-    /**
-     * Sets the [result] of the currently hooked method to false.
-     *
-     * - Ensure that [result] is of type [Boolean].
-     */
-    fun resultFalse() {
-        result = false
-    }
-
-    /**
-     * Sets the [result] of the currently hooked method to null.
-     *
-     * - This method forces the callback [result] to null.
-     */
-    fun resultNull() {
-        result = null
-    }
-
-    /**
-     * Argument-array index helper.
-     *
-     * - Use the first [args] overload to obtain [ArgsIndexCondition].
-     */
-    inner class ArgsIndexCondition internal constructor() {
-
-        /**
-         * Gets the first argument of the currently hooked [method] or [constructor].
-         * @return [ArgsModifyer]
-         */
-        fun first() = args(index = 0)
-
-        /**
-         * Gets the last argument of the currently hooked [method] or [constructor].
-         * @return [ArgsModifyer]
-         */
-        fun last() = args(index = args.lastIndex)
-    }
-
-    /**
-     * Argument modification helper.
-     *
-     * - Use the second [args] overload to obtain [ArgsModifyer].
+     * - Use the second [args] overload to obtain [ArgsEditor].
      * @param index the argument array index.
      */
-    inner class ArgsModifyer internal constructor(private val index: Int) {
+    inner class ArgsEditor internal constructor(private val index: Int) {
+
+        /**
+         * Gets the argument instance.
+         * @return [Any] or null.
+         */
+        fun get() = args.getOrNull(index)
 
         /**
          * Gets the argument instance as [T].
          * @return [T] or null.
+         * @throws ClassCastException if the argument cannot be used as [T].
          */
-        fun <T> cast() = runCatching { args[index] as? T? }.getOrNull()
-
-        /**
-         * Gets the argument instance as [Byte].
-         *
-         * - Verify the target argument type. An error returns null.
-         * @return [Byte] or null.
-         */
-        fun byte() = cast<Byte?>()
-
-        /**
-         * Gets the argument instance as [Int].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [Int] 0 when unavailable.
-         */
-        fun int() = cast() ?: 0
-
-        /**
-         * Gets the argument instance as [Long].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [Long] 0L when unavailable.
-         */
-        fun long() = cast() ?: 0L
-
-        /**
-         * Gets the argument instance as [Short].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [Short] 0 when unavailable.
-         */
-        fun short() = cast<Short?>() ?: 0
-
-        /**
-         * Gets the argument instance as [Double].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [Double] 0.0 when unavailable.
-         */
-        fun double() = cast() ?: 0.0
-
-        /**
-         * Gets the argument instance as [Float].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [Float] 0f when unavailable.
-         */
-        fun float() = cast() ?: 0f
-
-        /**
-         * Gets the argument instance as [String].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [String] an empty string when unavailable.
-         */
-        fun string() = cast() ?: ""
-
-        /**
-         * Gets the argument instance as [Char].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [Char] a space character when unavailable.
-         */
-        fun char() = cast() ?: ' '
-
-        /**
-         * Gets the argument instance as [Boolean].
-         *
-         * - Verify the target argument type. An error returns the default value.
-         * @return [Boolean] false when unavailable.
-         */
-        fun boolean() = cast() ?: false
-
-        /**
-         * Gets the argument instance as [Any].
-         * @return [Any] or null.
-         */
-        fun any() = cast<Any?>()
-
-        /**
-         * Gets the argument instance as an [Array] whose elements are of type [T].
-         *
-         * - Verify the target argument type. An error returns an empty array.
-         * @return [Array] an empty array when unavailable.
-         */
-        inline fun <reified T> array() = cast() ?: arrayOf<T>()
-
-        /**
-         * Gets the argument instance as a [List] whose elements are of type [T].
-         *
-         * - Verify the target argument type. An error returns an empty list.
-         * @return [List] an empty list when unavailable.
-         */
-        inline fun <reified T> list() = cast() ?: listOf<T>()
+        @JvmName("getTyped")
+        fun <T> get() = get() as T?
 
         /**
          * Sets the argument instance.
@@ -404,34 +208,184 @@ class HookParam private constructor(
          * @throws IllegalStateException if the target argument array is empty or [index] does not exist.
          */
         fun <T> set(any: T?) {
-            if (index < 0) error("HookParam Method args index must be >= 0")
-            if (args.isEmpty()) error("HookParam Method args is empty, mabe not has args")
-            if (index > args.lastIndex) error("HookParam Method args index out of bounds, max is ${args.lastIndex}")
-            param?.args?.set(index, any)
+            require(args.isNotEmpty()) { "Method args is empty, maybe not have args." }
+            require(index >= 0) { "Method args index must be >= 0." }
+            require(index <= args.lastIndex) { "Method args index out of bounds, max is ${args.lastIndex}." }
+
+            param.args[index] = any
         }
 
         /**
-         * Sets the argument instance to null.
-         *
-         * This method can set any hooked target argument to null.
+         * Gets the argument instance as [T].
+         * @return [T] or null.
          */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<T>()"))
+        fun <T> cast() = get<T>()
+
+        /**
+         * Gets the argument instance as [Byte].
+         * @return [Byte] or null.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Byte>()"))
+        fun byte() = get<Byte>()
+
+        /**
+         * Gets the argument instance as [Int].
+         * @return [Int] 0 when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Int>() ?: 0"))
+        fun int() = get<Int>() ?: 0
+
+        /**
+         * Gets the argument instance as [Long].
+         * @return [Long] 0L when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Long>() ?: 0L"))
+        fun long() = get<Long>() ?: 0L
+
+        /**
+         * Gets the argument instance as [Short].
+         * @return [Short] 0 when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Short>() ?: 0"))
+        fun short() = get<Short>() ?: 0
+
+        /**
+         * Gets the argument instance as [Double].
+         * @return [Double] 0.0 when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Double>() ?: 0.0"))
+        fun double() = get<Double>() ?: 0.0
+
+        /**
+         * Gets the argument instance as [Float].
+         * @return [Float] 0f when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Float>() ?: 0f"))
+        fun float() = get<Float>() ?: 0f
+
+        /**
+         * Gets the argument instance as [String].
+         * @return [String] an empty string when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<String>() ?: \"\""))
+        fun string() = get<String>() ?: ""
+
+        /**
+         * Gets the argument instance as [Char].
+         * @return [Char] a space character when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Char>() ?: ' '"))
+        fun char() = get<Char>() ?: ' '
+
+        /**
+         * Gets the argument instance as [Boolean].
+         * @return [Boolean] false when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Boolean>() ?: false"))
+        fun boolean() = get<Boolean>() ?: false
+
+        /**
+         * Gets the argument instance as [Any].
+         * @return [Any] or null.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get()"))
+        fun any() = get()
+
+        /**
+         * Gets the argument instance as an [Array] whose elements are of type [T].
+         * @return [Array] an empty array when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<Array<T>>() ?: emptyArray()"))
+        inline fun <reified T> array() = get<Array<T>>() ?: emptyArray()
+
+        /**
+         * Gets the argument instance as a [List] whose elements are of type [T].
+         * @return [List] an empty list when unavailable.
+         */
+        @Deprecated(message = "Use get instead.", replaceWith = ReplaceWith("get<List<T>>() ?: emptyList()"))
+        inline fun <reified T> list() = get<List<T>>() ?: emptyList()
+
+        /** Sets the argument instance to null. */
+        @Deprecated(message = "Use set instead.", replaceWith = ReplaceWith("set(null)"))
         fun setNull() = set(null)
 
-        /**
-         * Sets the argument instance to true.
-         *
-         * - Ensure that the target object is of type [Boolean] to avoid unexpected behavior.
-         */
+        /** Sets the argument instance to true. */
+        @Deprecated(message = "Use set instead.", replaceWith = ReplaceWith("set(true)"))
         fun setTrue() = set(true)
 
-        /**
-         * Sets the argument instance to false.
-         *
-         * - Ensure that the target object is of type [Boolean] to avoid unexpected behavior.
-         */
+        /** Sets the argument instance to false. */
+        @Deprecated(message = "Use set instead.", replaceWith = ReplaceWith("set(false)"))
         fun setFalse() = set(false)
 
-        override fun toString() = "Args of index $index"
+        override fun toString() = "ArgsEditor(index=$index, value=${args.getOrNull(index)}) by ${this@HookParam}"
+    }
+
+    /**
+     * Gets the class of the current hooked receiver instance.
+     *
+     * - Use [instanceOrNull] with [javaClass] directly.
+     * @return [Class] or null.
+     */
+    @Deprecated(message = "Use instanceOrNull?.javaClass directly.", replaceWith = ReplaceWith("instanceOrNull?.javaClass"))
+    val instanceClass get() = instanceOrNull?.javaClass
+
+    /**
+     * Gets the argument-index helper for the currently hooked method or constructor.
+     * @return [ArgsIndexCondition]
+     */
+    @Suppress("DEPRECATION")
+    @Deprecated(message = "Use firstArg or lastArg instead.")
+    fun args() = ArgsIndexCondition()
+
+    /**
+     * Gets an argument editor for the currently hooked method or constructor.
+     * @return [ArgsEditor]
+     */
+    @Deprecated(message = "Use arg instead.", replaceWith = ReplaceWith("arg(index)"))
+    fun args(index: Int) = ArgsEditor(index)
+
+    /** Sets the [result] of the currently hooked method to true. */
+    @Deprecated(message = "Use result instead.", replaceWith = ReplaceWith("result = true"))
+    fun resultTrue() {
+        result = true
+    }
+
+    /** Sets the [result] of the currently hooked method to false. */
+    @Deprecated(message = "Use result instead.", replaceWith = ReplaceWith("result = false"))
+    fun resultFalse() {
+        result = false
+    }
+
+    /** Sets the [result] of the currently hooked method to null. */
+    @Deprecated(message = "Use result instead.", replaceWith = ReplaceWith("result = null"))
+    fun resultNull() {
+        result = null
+    }
+
+    /** Throws an exception to the current host. */
+    @Deprecated(message = "Use throwToHost instead.", replaceWith = ReplaceWith("throwToHost()"))
+    fun Throwable.throwToApp() = throwToHost()
+
+    /**
+     * Argument-array index helper.
+     */
+    @Deprecated(message = "Use firstArg or lastArg instead.")
+    inner class ArgsIndexCondition internal constructor() {
+
+        /**
+         * Gets the first argument of the currently hooked method or constructor.
+         * @return [ArgsEditor]
+         */
+        @Deprecated(message = "Use firstArg instead.")
+        fun first() = firstArg()
+
+        /**
+         * Gets the last argument of the currently hooked method or constructor.
+         * @return [ArgsEditor]
+         */
+        @Deprecated(message = "Use lastArg instead.")
+        fun last() = lastArg()
     }
 
     override fun toString() = "HookParam(${super.toString()}) by $param"

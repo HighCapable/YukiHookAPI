@@ -22,58 +22,76 @@
 package com.highcapable.yukihookapi.hook.core.api.helper
 
 import com.highcapable.kavaref.resolver.base.MemberResolver
-import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
-import com.highcapable.yukihookapi.hook.core.api.compat.HookCompatHelper
-import com.highcapable.yukihookapi.hook.core.api.proxy.YukiHookCallback
+import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import java.lang.reflect.Member
 
 /**
- * Implements core Hook operations.
+ * Implements core hook operations.
  */
 internal object YukiHookHelper {
 
+    private const val DEFAULT_PRIORITY = 50
+    private const val LOWEST_PRIORITY = -10000
+    private const val HIGHEST_PRIORITY = 10000
+
     /**
      * Hook [MemberResolver]
-     * @param resolver the [MemberResolver] to Hook.
-     * @param callback the Hook callback.
-     * @return [YukiHookResult]
+     * @param resolver the [MemberResolver] to hook.
+     * @param hooker the hooker to register.
+     * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
+     * @return [YukiHookResult] or null when [resolver] is null.
      */
-    internal fun hook(resolver: MemberResolver<*, *>?, callback: YukiHookCallback) =
-        resolver?.self?.let { hookMember(it, callback) } ?: YukiHookResult()
+    fun hook(resolver: MemberResolver<*, *>?, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
+        hookMember(resolver?.self, hooker, priority)
 
     /**
      * Hook [Member]
-     * @param member the method or constructor to Hook.
-     * @param callback the Hook callback.
-     * @return [YukiHookResult]
+     * @param member the method or constructor to hook.
+     * @param hooker the hooker to register.
+     * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
+     * @return [YukiHookResult] or null when [member] is null.
      */
-    internal fun hookMember(member: Member?, callback: YukiHookCallback) =
-        YukiHookResult(hookedMember = HookCompatHelper.hookMember(member, callback))
+    fun hookMember(member: Member?, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) = member?.let {
+        val hook = YukiHookBridge.hookMember(
+            member = it,
+            priority = when (priority) {
+                YukiHookPriority.DEFAULT -> DEFAULT_PRIORITY
+                YukiHookPriority.LOWEST -> LOWEST_PRIORITY
+                YukiHookPriority.HIGHEST -> HIGHEST_PRIORITY
+            },
+            hooker = hooker
+        )
+        YukiHookResult(it, hook)
+    }
 
     /**
      * Invokes the original [Member].
      *
-     * The [Member] is invoked without applying its Hook.
+     * The [Member] is invoked without applying its hook.
      * @param member the member instance.
      * @param args the argument array.
      * @return [Any] or null.
      * @throws IllegalStateException if the [Member] argument count is invalid.
      */
-    internal fun invokeOriginalMember(member: Member?, instance: Any?, args: Array<out Any?>?) = member?.let {
-        runCatching { HookCompatHelper.invokeOriginalMember(member, instance, args) }.onFailure {
+    fun invokeOriginal(member: Member?, instance: Any?, args: Array<out Any?>?) = member?.let {
+        runCatching { YukiHookBridge.invokeOriginal(member, instance, args ?: emptyArray()) }.onFailure {
             if (it.message?.lowercase()?.contains("wrong number of arguments") == true) error(it.message ?: it.toString())
-            YLog.innerE("Invoke original Member [$member] failed", it)
+            YLog.innerE("Invoke original $member failed.", it)
         }.getOrNull()
     }
 
     /**
-     * Prints through the current Hook API logger.
+     * Logs a message with the given [priority], [tag], [msg] and optional [e].
+     * @param priority the log priority.
+     * @param tag the log tag.
      * @param msg the log message.
-     * @param e the exception stack trace, defaults to null.
+     * @param e the optional throwable to log.
      */
-    internal fun logByHooker(msg: String, e: Throwable? = null) {
-        if (HookApiCategoryHelper.hasAvailableHookApi) HookCompatHelper.logByHooker(msg, e)
+    fun log(priority: Int, tag: String, msg: String, e: Throwable? = null) {
+        if (YukiHookBridge.isHookAvailable) YukiHookBridge.log(priority, tag, msg, e)
     }
 }

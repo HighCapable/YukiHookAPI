@@ -1,0 +1,347 @@
+/*
+ * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
+ * Copyright (C) 2019 HighCapable
+ * https://github.com/HighCapable/YukiHookAPI
+ *
+ * Apache License Version 2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * This file is created by fankes on 2022/2/9.
+ */
+@file:Suppress("SetTextI18n")
+
+package com.highcapable.yukihookapi.demo_module_modern.hook
+
+import android.app.Activity
+import android.os.Bundle
+import android.widget.TextView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
+import com.highcapable.betterandroid.ui.extension.component.startActivity
+import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.ArrayClass
+import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithLibXposed
+import com.highcapable.yukihookapi.demo_module_modern.R
+import com.highcapable.yukihookapi.demo_module_modern.data.DataConst
+import com.highcapable.yukihookapi.demo_module_modern.hook.factory.compatStyle
+import com.highcapable.yukihookapi.demo_module_modern.ui.MainActivity
+import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
+import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
+import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+
+/**
+ * Modern Xposed module hook entry.
+ */
+@InjectYukiHookWithLibXposed(targetApiVersion = 102, scope = ["com.highcapable.yukihookapi.demo_app"])
+object HookEntry : IYukiHookXposedInit {
+
+    override fun onInit() {
+        // Configure YuKiHookAPI
+        // Can be shortened to configs {}
+        // 配置 YuKiHookAPI
+        // 可简写为 configs {}
+        YukiHookAPI.configs {
+            // Configure YukiHookLogger
+            // 配置 YukiHookLogger
+            debugLog {
+                // TAG for global debugging
+                // Filter this TAG in the Logcat console to find detailed logs
+                // 全局调试用的 TAG
+                // 在 Logcat 控制台过滤此 TAG 可找到详细日志
+                tag = "YukiHookAPI-Demo"
+                // Whether to enable the output function of the debug log, enabled by default
+                // When closed, the API will stop output all logs, it is recommended not to disable this option arbitrarily
+                // Although it is incorrect to say that a lot of logs are written to the user's device, but NO LOG NO DEBUGGABLE
+                // Whether the log will affect the fluency of the device has always been a false proposition
+                // But if not has this option may cause some criticism, it is recommended not to close it
+                // 是否启用调试日志的输出功能 - 默认启用
+                // 一旦关闭后除手动日志外 API 将停止全部日志的输出 - 建议不要随意关掉这个选项
+                // 虽然说对用户的设备写入大量日志是不正确的 - 但是没有日志你将无法调试
+                // 关于日志是否会影响设备的流畅度一直是一个伪命题
+                // 但是不设置这个选项可能会引起一些非议 - 建议不要关闭就是了
+                isEnable = true
+                // Whether to enable the logging function of debug log, not enabled by default
+                // When enabled, all available logs and exception stacks will be recorded in memory
+                // Please note, excessive logging may slow down the host app or cause frequent GCs
+                // After enabling, you can call [YukiHookLogger.saveToFile] to save the log to file in real-time
+                // Or use [YukiHookLogger.contents] to get the real-time log file contents
+                // 是否启用调试日志的记录功能 - 默认不启用
+                // 开启后将会在内存中记录全部可用的日志和异常堆栈
+                // 请注意 - 过量的日志可能会导致宿主运行缓慢或造成频繁 GC
+                // 开启后你可以调用 [YukiHookLogger.saveToFile] 实时保存日志到文件或使用 [YukiHookLogger.contents] 获取实时日志文件
+                isRecord = false
+                // Customize the elements displayed by the debug log externally
+                // Only valid for logging and [XposedBridge.log]
+                // The arrangement of log elements will be displayed in the order you set in [item]
+                // You can also leave [item] blank to not show all elements except the log content
+                // Available elements are: [TAG], [PRIORITY], [PACKAGE_NAME], [USER_ID]
+                // 自定义调试日志对外显示的元素
+                // 只对日志记录和 [XposedBridge.log] 生效
+                // 日志元素的排列将按照你在 [item] 中设置的顺序进行显示
+                // 你还可以留空 [item] 以不显示除日志内容外的全部元素
+                // 可用的元素有：[TAG]、[PRIORITY]、[PACKAGE_NAME]、[USER_ID]
+                elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+            }
+            // Whether to enable debug mode, not enabled by default
+            // Note: Please selectively enable this feature, this can cause I/O performance issues caused by continuous output logs
+            // Please note, for a release build, be sure to turn off this function to prevent a lot of log stuffing on the user's device
+            // To facilitate testing whether the module is activated, the demo enables this function by default
+            // 是否启用调试模式 - 默认不启用
+            // 注意：请选择性启用此功能 - 这会导致持续输出日志造成的 I/O 性能问题
+            // 若作为发布版本请务必关闭此功能防止对用户设备造成大量日志填充
+            // 为方便测试模块是否激活 - Demo 默认启用此功能
+            isDebug = true
+            // Whether to enable the current Xposed module's own [Resources] cache function
+            // Under normal circumstances, the resources of the module app will not change
+            // But in the case of locale changes, screen size changes. Etc. you need to refresh the cache
+            // If none of the above requirements, it is recommended to enable it before the host app restarts
+            // You can manually call [PackageParam.refreshModuleAppResources] to refresh the cache
+            // 是否启用当前 Xposed 模块自身 [Resources] 缓存功能
+            // 一般情况下模块的 Resources 是不会改变的 - 但是在语言区域更改、分辨率更改等情况下 - 就需要刷新缓存
+            // 若无上述需求 - 在宿主重新启动之前建议开启
+            // 你可以手动调用 [PackageParam.refreshModuleAppResources] 来刷新缓存
+            isEnableModuleAppResourcesCache = true
+            // Whether to enable the [YukiHookDataChannel] function of the current Xposed module interacting with the host app
+            // Please make sure the Xposed module's [Application] extends [ModuleApplication] to be valid
+            // This feature is enabled by default, when disabled it will not load [YukiHookDataChannel] when the feature is initialized
+            // When the feature is enabled, it will automatically register the Hook [Application] lifecycle method when the host app starts
+            // 是否启用当前 Xposed 模块与宿主交互的 [YukiHookDataChannel] 功能
+            // 请确保 Xposed 模块的 [Application] 继承于 [ModuleApplication] 才能有效
+            // 此功能默认启用 - 关闭后将不会在功能初始化的时候装载 [YukiHookDataChannel]
+            // 功能启用后 - 将会在宿主启动时自动 Hook [Application] 的生命周期方法进行注册
+            isEnableDataChannel = true
+        }
+    }
+
+    override fun onHook() {
+        // Start your hook
+        // Can be shortened to encase {}
+        // 开始你的 Hook
+        // 可简写为 encase {}
+        YukiHookAPI.encase {
+            // Load the app to be hooked
+            // 装载需要 Hook 的 app
+            loadApp(name = "com.highcapable.yukihookapi.demo_app") {
+                // Register Activity Proxy
+                // 注册模块 Activity 代理
+                registerAppLifecycle {
+                    onCreate {
+                        if (AndroidVersion.isAtLeast(AndroidVersion.N)) registerModuleAppActivities()
+                    }
+                }
+                // Find Class to hook
+                // 得到需要 Hook 的 Class
+                Activity::class.resolve()
+                    // 由于 Activity 的方法比较多，演示的时候将其静音防止刷爆日志
+                    // Since there are many methods in Activity, it is muted during the demo to prevent flooding the log
+                    .optional(silent = true)
+                    .firstMethod {
+                        name = "onCreate"
+                        parameters(Bundle::class)
+                    }.hook {
+                        after {
+                            // Add text after the [Activity] title
+                            // 在 [Activity] 标题后方加入文字
+                            instance<Activity>().apply { title = "$title [Active]" }
+                        }
+                    }
+                // Find Class to hook
+                // 得到需要 Hook 的 Class
+                "$packageName.ui.MainActivity".toClass().resolve().apply {
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstMethod {
+                        name = "getFirstText"
+                        emptyParameters()
+                        returnType = String::class
+                    }.hook {
+                        // Replaced hook
+                        // 执行替换 Hook
+                        intercept("Hello YukiHookAPI!")
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstMethod {
+                        name = "onCreate"
+                        parameters(Bundle::class)
+                    }.hook {
+                        // Before hook the method
+                        // 在方法执行之前拦截
+                        before {
+                            // The instance is "$packageName.ui.MainActivity"
+                            // We used "apply" function on the top
+                            // 当前实例为 "$packageName.ui.MainActivity"
+                            // 我们在顶部使用了 "apply" 方法
+                            firstField {
+                                name = "secondText"
+                                type = String::class
+                            }.of(instance).set("I am hook result")
+                        }
+                        // After hook the method
+                        // 在执行方法之后拦截
+                        after {
+                            if (prefs.getBoolean("show_dialog_when_demo_app_opend"))
+                                MaterialAlertDialogBuilder(instance<Activity>().applyModuleTheme(R.style.Theme_Default))
+                                    .setTitle("Hooked")
+                                    .setMessage(
+                                        "This App has been hooked!\n\n" +
+                                            "Hook Framework: ${YukiHookAPI.Status.Executor.name}\n\n" +
+                                            "Xposed API Version: ${YukiHookAPI.Status.Executor.apiLevel}"
+                                    )
+                                    .setPositiveButton("OK", null)
+                                    .show().compatStyle()
+                        }
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstMethod {
+                        name = "getRegularText"
+                        parameters(String::class)
+                        returnType = String::class
+                    }.hook {
+                        // Before hook the method
+                        // 在方法执行之前拦截
+                        before {
+                            // Set the 0th param (recomment)
+                            // 设置 0 号 param (推荐)
+                            firstArg().set("I am hook method param")
+                            // The following method is also ok
+                            // 下面这种方式也是可以的
+                            // args[0] = "I am hook method param"
+                        }
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstMethod {
+                        name = "getArray"
+                        parameters(ArrayClass(String::class))
+                        returnType = ArrayClass(String::class)
+                    }.hook {
+                        // Before hook the method
+                        // 在方法执行之前拦截
+                        before {
+                            // Set the 0th param
+                            // 设置 0 号 param
+                            firstArg().get<Array<String>>()?.set(0, "peach")
+                        }
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstMethod {
+                        name = "toast"
+                        emptyParameters()
+                        returnType = Void.TYPE
+                    }.hook {
+                        // Intercept the entire method
+                        // 拦截整个方法
+                        intercept {
+                            instance<Activity>().applyModuleTheme(R.style.Theme_Default).also { context ->
+                                MaterialAlertDialogBuilder(context)
+                                    .setTitle("Hooked")
+                                    .setMessage("I am hook your toast showing!")
+                                    .apply {
+                                        if (AndroidVersion.isAtLeast(AndroidVersion.N))
+                                            setPositiveButton("START PARASITIC") { _, _ ->
+                                                MaterialAlertDialogBuilder(context)
+                                                    .setTitle("Start Parasitic")
+                                                    .setMessage("This function will start MainActivity that exists in the module app.")
+                                                    .setPositiveButton("YES") { _, _ ->
+                                                        context.startActivity<MainActivity>()
+                                                    }.setNegativeButton("NO", null).show().compatStyle()
+                                            }
+                                    }.setNegativeButton("SEND MSG TO MODULE") { _, _ ->
+                                        dataChannel.put(DataConst.TEST_CN_DATA, value = "I am host, can you hear me?")
+                                    }.setNeutralButton("REMOVE HOOK") { _, _ ->
+                                        removeSelf()
+                                    }.show().compatStyle()
+                            }
+                        }
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstMethod {
+                        name = "getDataText"
+                        emptyParameters()
+                        returnType = String::class
+                    }.hook {
+                        // Replaced hook
+                        // 执行替换 Hook
+                        intercept(prefs.get(DataConst.TEST_KV_DATA))
+                    }
+                }
+                // Find Class to hook
+                // 得到需要 Hook 的 Class
+                "$packageName.test.Main".toClass().resolve().apply {
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstConstructor { parameters(String::class) }.hook {
+                        // Before hook the method
+                        // 在方法执行之前拦截
+                        before {
+                            // Set the 0th param
+                            // 设置 0 号 param
+                            firstArg().set("I am hook constructor param")
+                        }
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    firstMethod {
+                        name = "getSuperString"
+                        emptyParameters()
+                        // This method is not in the current Class
+                        // Just set this find condition to automatically go to the super class of the current Class to find
+                        // 这个方法不在当前的 Class
+                        // 只需要设置此查找条件即可自动前往当前 Class 的父类查找
+                        superclass()
+                    }.hook {
+                        // Replaced hook
+                        // 执行替换 Hook
+                        intercept("I am hook super class method")
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    method {
+                        name = "getTestResultFirst"
+                    }.hookAll {
+                        // Replaced hook
+                        // 执行替换 Hook
+                        intercept("I am hook all methods first")
+                    }
+                    // Inject the method to be hooked
+                    // 注入要 Hook 的方法
+                    method {
+                        name = "getTestResultLast"
+                    }.hookAll {
+                        // Replaced hook
+                        // 执行替换 Hook
+                        intercept("I am hook all methods last")
+                    }
+                }
+                // Intercept the text with HookChain
+                // 使用 HookChain 拦截文本
+                TextView::class.resolve().firstMethod {
+                    name = "setText"
+                    parameters(CharSequence::class, TextView.BufferType::class)
+                }.intercept {
+                    // Continue the chain with new arguments, leaving other text unchanged
+                    // 向后续调用链传入新参数，其余文本保持不变
+                    if (arg(0) == "This is the last sentence")
+                        proceed(arrayOf("I am hook last sentence", arg(1)))
+                    else proceed()
+                }
+            }
+        }
+    }
+}

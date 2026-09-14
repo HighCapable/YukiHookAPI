@@ -21,10 +21,16 @@
  */
 package com.highcapable.yukihookapi.hook.core.api.result
 
-import com.highcapable.yukihookapi.hook.core.api.proxy.YukiMemberHook
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
+import java.lang.reflect.Member
 
 /**
- * Holds the result of a Hook operation.
- * @param hookedMember the hooked member instance, defaults to null.
+ * Holds an independent hook registration.
+ * @param member the hooked member.
+ * @param hooker the registered hook returned by the runtime.
  */
-internal data class YukiHookResult(val hookedMember: YukiMemberHook.HookedMember? = null)
+internal class YukiHookResult(val member: Member, private val hooker: HookerBridge) {
+
+    /** Removes this registration without removing other hooks on [member]. */
+    fun remove() = hooker.remove()
+}

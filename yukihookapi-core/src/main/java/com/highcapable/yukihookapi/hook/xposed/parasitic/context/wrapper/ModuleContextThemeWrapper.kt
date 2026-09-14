@@ -28,6 +28,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.view.ContextThemeWrapper
+import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
@@ -35,55 +36,59 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
 /**
  * Proxies [ContextThemeWrapper].
  *
- * Allows module theme resources to be used in the (Xposed) host environment.
+ * Allows module theme resources to be used in the host environment.
  * @param baseContext the original [Context].
  * @param theme the theme to apply.
  * @param configuration the [Configuration] to apply.
  */
-class ModuleContextThemeWrapper private constructor(baseContext: Context, theme: Int, configuration: Configuration?) :
-    ContextThemeWrapper(baseContext, theme) {
+class ModuleContextThemeWrapper private constructor(baseContext: Context, theme: Int, configuration: Configuration?) : ContextThemeWrapper(
+    baseContext, theme
+) {
 
-        internal companion object {
-
-            /**
-             * Creates a [ModuleContextThemeWrapper] from [Context].
-             * @param baseContext the wrapped [Context].
-             * @param theme the theme to apply.
-             * @param configuration the [Configuration] to apply.
-             * @return [ModuleContextThemeWrapper]
-             * @throws IllegalStateException if the context is already wrapped.
-             */
-            internal fun wrapper(baseContext: Context, theme: Int, configuration: Configuration?) =
-                if (baseContext !is ModuleContextThemeWrapper)
-                    ModuleContextThemeWrapper(baseContext, theme, configuration)
-                else error("ModuleContextThemeWrapper already loaded")
-        }
-
-        /** Replacement [Resources] instance. */
-        private var baseResources: Resources? = null
-
-        init {
-            configuration?.also {
-                baseResources = baseContext.createConfigurationContext(it)?.resources
-                baseResources?.updateConfiguration(it, baseContext.resources.displayMetrics)
-            }
-            if (YukiXposedModule.isXposedEnvironment) resources?.injectModuleAppResources()
-        }
+    internal companion object {
 
         /**
-         * Applies a [Configuration] to the current [ModuleContextThemeWrapper].
-         *
-         * Calls [Resources.updateConfiguration] after applying the configuration block.
-         * @param initiate the [Configuration] block.
+         * Creates a [ModuleContextThemeWrapper] from [Context].
+         * @param baseContext the wrapped [Context].
+         * @param theme the theme to apply.
+         * @param configuration the [Configuration] to apply.
          * @return [ModuleContextThemeWrapper]
+         * @throws IllegalStateException if the context is already wrapped.
          */
-        fun applyConfiguration(initiate: Configuration.() -> Unit): ModuleContextThemeWrapper {
-            resources?.configuration?.apply(initiate)
-            resources?.updateConfiguration(resources?.configuration, resources?.displayMetrics)
-            return this
+        fun from(baseContext: Context, theme: Int, configuration: Configuration?) = if (baseContext !is ModuleContextThemeWrapper)
+            ModuleContextThemeWrapper(baseContext, theme, configuration)
+        else error("ModuleContextThemeWrapper already loaded.")
+    }
+
+    /** Replacement [Resources] instance. */
+    private var baseResources: Resources? = null
+
+    init {
+        configuration?.also {
+            baseResources = baseContext.createConfigurationContext(it)?.resources
+            baseResources?.updateConfiguration(it, baseContext.resources.displayMetrics)
         }
 
-        override fun getClassLoader(): ClassLoader = ModuleClassLoader.instance()
-
-        override fun getResources(): Resources? = baseResources ?: super.getResources()
+        if (YukiXposedModule.isXposedEnvironment) resources?.injectModuleAppResources()
     }
+
+    /**
+     * Applies a [Configuration] to the current [ModuleContextThemeWrapper].
+     *
+     * Calls [Resources.updateConfiguration] after applying the configuration block.
+     * @param block the [Configuration] block.
+     * @return [ModuleContextThemeWrapper]
+     */
+    fun applyConfiguration(block: Configuration.() -> Unit): ModuleContextThemeWrapper {
+        resources?.configuration?.apply(block)
+        resources?.updateConfiguration(resources?.configuration, resources?.displayMetrics)
+
+        return this
+    }
+
+    @CallSuper
+    override fun getClassLoader(): ClassLoader = ModuleClassLoader.get()
+
+    @CallSuper
+    override fun getResources(): Resources? = baseResources ?: super.getResources()
+}

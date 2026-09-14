@@ -21,82 +21,72 @@
  */
 package com.highcapable.yukihookapi.hook.xposed.prefs.ui
 
-import android.app.Activity
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.annotation.CallSuper
-import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
-import androidx.preference.PreferenceScreen
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.utils.factory.unit
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 
 /**
  * Extends preference support for Xposed modules built with [YukiHookAPI].
  *
- * Extends [PreferenceFragmentCompat] and makes the module's SharedPreferences globally readable and writable.
+ * Inherits [PreferenceFragmentCompat] to provides a [PreferenceDataStore] that
+ * uses [YukiHookPrefsBridge] to store preferences in the module's app.
  *
- * Extend this class instead of [PreferenceFragmentCompat].
- *
- * Override [onCreatePreferencesInModuleApp] instead of [onCreatePreferences].
+ * Inherits this class instead of [PreferenceFragmentCompat].
  */
 abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    /**
-     * Gets the SharedPreferences name.
-     * @return [String]
-     */
-    private val prefsName get() = "${activity?.packageName}_preferences"
+    private var current: SharedPreferences? = null
 
-    /**
-     * Gets the [Activity] attached to the current [Fragment].
-     * @return [Activity]
-     * @throws IllegalStateException if the [Fragment] is destroyed or not attached correctly.
-     */
-    private val currentActivity get() = requireActivity()
-
-    /**
-     * Gets the app's default [SharedPreferences].
-     * @return [SharedPreferences]
-     */
-    private val currentSharedPrefs get() = runCatching {
-        @Suppress("DEPRECATION", "WorldReadableFiles")
-        currentActivity.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
-    }.getOrNull() ?: PreferenceManager.getDefaultSharedPreferences(currentActivity)
+    private val bridge by lazy {
+        YukiHookPrefsBridge.from(requireContext())
+            .name(preferenceManager.sharedPreferencesName ?: "${requireContext().packageName}_preferences")
+    }
 
     @CallSuper
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        currentSharedPrefs.registerOnSharedPreferenceChangeListener(this)
-        makeNewXShareReadableIfPossible()
+        preferenceManager.preferenceDataStore = createDataStore()
+
+        current = bridge.current
+        current?.registerOnSharedPreferenceChangeListener(this)
+
+        @Suppress("DEPRECATION")
         onCreatePreferencesInModuleApp(savedInstanceState, rootKey)
     }
 
-    @CallSuper
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        makeNewXShareReadableIfPossible()
-    }
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) = Unit
 
     @CallSuper
     override fun onDestroy() {
-        currentSharedPrefs.unregisterOnSharedPreferenceChangeListener(this)
+        current?.unregisterOnSharedPreferenceChangeListener(this)
+        current = null
+
         super.onDestroy()
     }
 
-    /**
-     * Replaces the original [onCreatePreferences] entry point.
-     *
-     * Override this method to configure preferences while automatically enabling global module access.
-     * @param savedInstanceState if the fragment is being re-created from a previous saved state, this is the state.
-     * @param rootKey if non-null, this preference fragment should be rooted at the [PreferenceScreen] with this key.
-     */
-    abstract fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?)
+    /** This function was deprecated, please use [onCreatePreferences] directly. */
+    @Deprecated(message = "Use onCreatePreferences directly.")
+    open fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?) = Unit
 
-    /** Makes the module preferences globally readable and writable when possible. */
-    private fun makeNewXShareReadableIfPossible() = runCatching {
-        @Suppress("DEPRECATION", "WorldReadableFiles")
-        currentActivity.getSharedPreferences(prefsName, Context.MODE_WORLD_READABLE)
-    }.onFailure { YukiHookPrefsBridge.makeWorldReadable(currentActivity, prefsFileName = "$prefsName.xml") }.unit()
+    private fun createDataStore() = object : PreferenceDataStore() {
+        override fun getString(key: String, defValue: String?) = bridge.current.getString(key, defValue)
+        override fun getStringSet(key: String, defValues: Set<String>?) = bridge.current.getStringSet(key, defValues)
+        override fun getInt(key: String, defValue: Int) = bridge.getInt(key, defValue)
+        override fun getLong(key: String, defValue: Long) = bridge.getLong(key, defValue)
+        override fun getFloat(key: String, defValue: Float) = bridge.getFloat(key, defValue)
+        override fun getBoolean(key: String, defValue: Boolean) = bridge.getBoolean(key, defValue)
+        override fun putString(key: String, value: String?) = bridge.edit {
+            if (value == null) remove(key) else putString(key, value)
+        }
+        override fun putStringSet(key: String, values: Set<String>?) = bridge.edit {
+            if (values == null) remove(key) else putStringSet(key, values)
+        }
+        override fun putInt(key: String, value: Int) = bridge.edit { putInt(key, value) }
+        override fun putLong(key: String, value: Long) = bridge.edit { putLong(key, value) }
+        override fun putFloat(key: String, value: Float) = bridge.edit { putFloat(key, value) }
+        override fun putBoolean(key: String, value: Boolean) = bridge.edit { putBoolean(key, value) }
+    }
 }

@@ -19,61 +19,168 @@
  *
  * This file is created by fankes on 2023/1/9.
  */
-@file:Suppress("unused")
-
 package com.highcapable.yukihookapi.hook.xposed.bridge.caller
 
+import android.app.Application
 import android.content.pm.ApplicationInfo
+import androidx.annotation.RestrictTo
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
+import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 /**
  * Routes calls to the Xposed module lifecycle implementation.
+ *
+ * - Note: This class will be used internally by the KSP-generated Xposed module entry.
+ *   Do not call this class manually.
  */
-internal object YukiXposedModuleCaller {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+object YukiXposedModuleCaller {
+
+    private val initializingEntry = ThreadLocal<IYukiHookXposedInit>()
+    private val registeringFrameworkEvents = ThreadLocal<Boolean>()
+    private var isFrameworkEventsRegistered = false
 
     /**
-     * Gets whether the module has loaded its Xposed callback.
-     * @return [Boolean]
+     * Checks that a framework event listener is being configured inside the registration block.
+     * @throws IllegalStateException if no registration block is running on the current thread.
      */
-    internal val isXposedCallbackSetUp get() = YukiXposedModule.isXposedCallbackSetUp
+    fun checkFrameworkEventsRegistration() = check(registeringFrameworkEvents.get() == true) {
+        "Framework event listeners must be configured inside `registerFrameworkEvents`."
+    }
 
     /**
-     * Signals that the Xposed module started loading.
-     * @param packageName the current Xposed module package name.
-     * @param appFilePath the current Xposed module APK path.
+     * Calls [IYukiHookXposedInit.onInit] with framework event registration enabled for this entry.
+     * Used by both the host runtime and the generated module application entry.
+     * @param entry the user entry.
      */
-    internal fun callOnStartLoadModule(packageName: String, appFilePath: String) = YukiXposedModule.onStartLoadModule(packageName, appFilePath)
+    fun callOnInit(entry: IYukiHookXposedInit) {
+        initializingEntry.set(entry)
+
+        try {
+            entry.onInit()
+        } finally {
+            initializingEntry.remove()
+        }
+    }
 
     /**
-     * Signals that the Xposed module finished loading.
+     * Calls [IYukiHookXposedInit.onHook] on the user entry only after the runtime has attached its hook interface.
+     * @param entry the user entry.
+     * @param packageName the package name of the current process.
+     * @param appFilePath the path of the current process's APK file.
+     * @return [Boolean] whether the initialization was successful.
      */
-    internal fun callOnFinishLoadModule() = YukiXposedModule.onFinishLoadModule()
+    fun callOnHook(entry: IYukiHookXposedInit, packageName: String, appFilePath: String) = runCatching {
+        YukiXposedModule.onStartLoadModule(packageName, appFilePath)
+        callOnInit(entry)
+
+        check(!YukiXposedModule.isXposedCallbackSetUp) {
+            "Do not load hookers in `onInit`."
+        }
+        entry.onHook()
+
+        YukiXposedModule.onFinishLoadModule()
+    }.onFailure { YLog.innerE("YukiHookAPI failed to initialize the module.", it) }.isSuccess
 
     /**
-     * Signals that an available host app started loading.
-     * @param type the current Hook entry type.
-     * @param packageName the host package name.
-     * @param processName the host process name.
-     * @param appClassLoader the host [ClassLoader].
-     * @param appInfo the host [ApplicationInfo].
-     * @param appResources the host [YukiResources].
+     * Runs the single framework event registration block for this module process.
+     * @param entry the entry currently running [IYukiHookXposedInit.onInit].
+     * @param block the runtime's event configuration block.
+     * @throws IllegalStateException if called outside this entry's initialization or more than once.
      */
-    internal fun callOnPackageLoaded(
-        type: HookEntryType,
-        packageName: String?,
-        processName: String? = "",
-        appClassLoader: ClassLoader? = null,
-        appInfo: ApplicationInfo? = null,
-        appResources: YukiResources? = null
-    ) = YukiXposedModule.onPackageLoaded(type, packageName, processName, appClassLoader, appInfo, appResources)
+    fun callRegisterFrameworkEvents(entry: IYukiHookXposedInit, block: () -> Unit) {
+        check(initializingEntry.get() === entry) {
+            "Framework events must be registered in `onInit`, not `onHook` or later callbacks."
+        }
+        synchronized(this) {
+            check(!isFrameworkEventsRegistered) { "Framework events can only be registered once per module process." }
+            isFrameworkEventsRegistered = true
+        }
+        registeringFrameworkEvents.set(true)
+
+        try {
+            block()
+        } finally {
+            registeringFrameworkEvents.remove()
+        }
+    }
 
     /**
-     * Prints an error-level log entry.
-     * @param msg the log message.
-     * @param e the exception stack trace, defaults to null.
+     * Dispatches genuine legacy zygote initialization.
+     * @param packageName the package identity supplied by the runtime.
+     * @param processName the process identity supplied by the runtime.
+     * @param mainProcessName the main process identity supplied by the runtime.
+     * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
+     * @param loader the class loader of the current process.
      */
-    internal fun callLogError(msg: String, e: Throwable? = null) = YLog.innerE(msg, e)
+    fun callOnZygote(
+        packageName: String,
+        processName: String,
+        mainProcessName: String,
+        packageNameForMatching: String?,
+        loader: ClassLoader
+    ) = YukiXposedModule.onPackageLoaded(
+        type = HookEntryType.ZYGOTE,
+        packageName = packageName,
+        processName = processName,
+        mainProcessName = mainProcessName,
+        isFirstApplication = false,
+        packageNameForMatching = packageNameForMatching,
+        appClassLoader = loader
+    )
+
+    /**
+     * Dispatches system server startup independently of ordinary package loading.
+     * @param packageName the system package identity supplied by the runtime.
+     * @param processName the system process identity supplied by the runtime.
+     * @param mainProcessName the main process identity supplied by the runtime.
+     * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
+     * @param loader the class loader of the system server.
+     */
+    fun callOnSystemServerStarting(
+        packageName: String,
+        processName: String,
+        mainProcessName: String,
+        packageNameForMatching: String?,
+        loader: ClassLoader
+    ) = YukiXposedModule.onPackageLoaded(
+        type = HookEntryType.SYSTEM_SERVER,
+        packageName = packageName,
+        processName = processName,
+        mainProcessName = mainProcessName,
+        isFirstApplication = false,
+        packageNameForMatching = packageNameForMatching,
+        appClassLoader = loader
+    )
+
+    /**
+     * Dispatches a package whose final class loader is ready.
+     * @param packageName the name of the package.
+     * @param processName the name of the process.
+     * @param mainProcessName the main process identity supplied by the runtime.
+     * @param isFirstApplication whether this package owns the first [Application] in the current process.
+     * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
+     * @param loader the class loader of the package.
+     * @param appInfo the application info of the package.
+     */
+    fun callOnPackageLoaded(
+        packageName: String,
+        processName: String,
+        mainProcessName: String,
+        isFirstApplication: Boolean,
+        packageNameForMatching: String?,
+        loader: ClassLoader,
+        appInfo: ApplicationInfo?
+    ) = YukiXposedModule.onPackageLoaded(
+        type = HookEntryType.PACKAGE,
+        packageName = packageName,
+        processName = processName,
+        mainProcessName = mainProcessName,
+        isFirstApplication = isFirstApplication,
+        packageNameForMatching = packageNameForMatching,
+        appClassLoader = loader,
+        appInfo = appInfo
+    )
 }

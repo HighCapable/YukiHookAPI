@@ -23,50 +23,51 @@
 
 package com.highcapable.yukihookapi.hook.xposed.channel
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.TransactionTooLargeException
+import androidx.core.content.getSystemService
+import androidx.core.os.use
 import com.highcapable.betterandroid.system.extension.component.BroadcastReceiver
 import com.highcapable.betterandroid.system.extension.component.getSerializableCompat
 import com.highcapable.betterandroid.system.extension.component.registerReceiver
 import com.highcapable.betterandroid.system.extension.component.sendBroadcast
+import com.highcapable.betterandroid.ui.extension.component.hostActivity
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.log.data.YLogData
-import com.highcapable.yukihookapi.hook.utils.factory.RandomSeed
+import com.highcapable.yukihookapi.hook.utils.RandomString
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
 import com.highcapable.yukihookapi.hook.xposed.channel.annotation.SendTooLargeChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataWrapper
 import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
-import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Data communication bridge for a Xposed module.
+ * Data channel between the Xposed module and host.
  *
- * Exchanges data by registering [BroadcastReceiver] instances in both the module and host app.
+ * Exchanges data by registering [BroadcastReceiver] instances in both the module and host.
  *
- * The module's [Application] must extend [ModuleApplication] to use this feature.
+ * The module's [Application] must inherit [ModuleApplication] to use this feature.
  *
- * - Both the module and host app must remain alive to communicate.
+ * - Require both the module and host remain alive.
  */
 class YukiHookDataChannel private constructor() {
 
     internal companion object {
 
-        /** Whether the current environment is a (Xposed) host environment. */
+        /** Whether the current environment is a host environment. */
         private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
 
         /** Automatically generated Xposed module build version. */
@@ -79,10 +80,10 @@ class YukiHookDataChannel private constructor() {
         private const val RESULT_MODULE_GENERATED_VERSION = "module_generated_version_result"
 
         /** Tag for requesting debug log data. */
-        private const val GET_YUKI_LOGGER_INMEMORY_DATA = "yuki_logger_inmemory_data_get"
+        private const val GET_YUKI_LOGGER_IN_MEMORY_DATA = "yuki_logger_in_memory_data_get"
 
         /** Tag for the debug log data result. */
-        private val RESULT_YUKI_LOGGER_INMEMORY_DATA = ChannelData<List<YLogData>>("yuki_logger_inmemory_data_result")
+        private val RESULT_YUKI_LOGGER_IN_MEMORY_DATA = ChannelData<List<YLogData>>("yuki_logger_in_memory_data_result")
 
         /** Value used for listener-only results. */
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
@@ -91,9 +92,7 @@ class YukiHookDataChannel private constructor() {
          * Maximum data size in bytes allowed for a system broadcast.
          *
          * The standard limit is 1 MB. Tests show known limits of 1, 2, or 3 MB across different systems.
-         *
          * Tests also show that sending 900 KB in segments still fails on one Android 13 device.
-         *
          * To accommodate system-specific limits, the default is 500 KB. Larger data is sent in segments of this size.
          */
         private var receiverDataMaxByteSize = 500 * 1024
@@ -102,9 +101,7 @@ class YukiHookDataChannel private constructor() {
          * Maximum data-size compression factor for system broadcasts using segmented data.
          *
          * Each segment must also remain within [receiverDataMaxByteSize].
-         *
          * This factor is used to divide [receiverDataMaxByteSize].
-         *
          * The formula is [receiverDataMaxByteSize] / [receiverDataMaxByteCompressionFactor] = [receiverDataSegmentMaxByteSize].
          */
         private var receiverDataMaxByteCompressionFactor = 3
@@ -116,19 +113,24 @@ class YukiHookDataChannel private constructor() {
         private val receiverDataSegmentMaxByteSize get() = receiverDataMaxByteSize / receiverDataMaxByteCompressionFactor
 
         /** The current [YukiHookDataChannel] singleton. */
+        @Suppress("StaticFieldLeak")
         private var instance: YukiHookDataChannel? = null
 
         /**
          * Gets the [YukiHookDataChannel] singleton.
          * @return [YukiHookDataChannel]
          */
-        internal fun instance() = instance ?: YukiHookDataChannel().apply { instance = this }
+        fun get() = instance ?: YukiHookDataChannel().apply { instance = this }
     }
 
     /**
      * Listener type for key-value callbacks.
      */
-    private enum class CallbackKeyType { SINGLE, CDATA, VMFL }
+    private enum class CallbackKeyType {
+        SINGLE,
+        CDATA,
+        WAIT_FOR_LISTENER
+    }
 
     /** Registered broadcast callbacks. */
     private var receiverCallbacks = ConcurrentHashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
@@ -143,26 +145,30 @@ class YukiHookDataChannel private constructor() {
     private val handlerReceiver = BroadcastReceiver { _, intent ->
         intent.action?.also { action ->
             runCatching {
-                receiverCallbacks.takeIf { it.isNotEmpty() }?.apply {
-                    mutableListOf<String>().also { destroyedCallbacks ->
-                        forEach { (key, it) ->
-                            when {
-                                (it.first as? Activity?)?.isDestroyed == true -> destroyedCallbacks.add(key)
-                                isCurrentBroadcast(it.first) -> it.second(action, intent)
-                            }
+                var destroyedCallbacks: MutableList<String>? = null
+                receiverCallbacks.forEach { (key, param) ->
+                    when {
+                        param.first?.hostActivity?.isDestroyed == true -> {
+                            val callbacks = destroyedCallbacks ?: mutableListOf<String>().also { destroyedCallbacks = it }
+                            callbacks.add(key)
                         }
-                        destroyedCallbacks.takeIf { it.isNotEmpty() }?.forEach { remove(it) }
+                        isCurrentBroadcast(param.first) -> param.second(action, intent)
                     }
                 }
+                destroyedCallbacks?.forEach { receiverCallbacks.remove(it) }
             }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
         }
     }
 
     /** Checks the API loading state. */
     private fun checkApi() {
-        if (YukiHookAPI.isLoadedFromBaseContext) error("YukiHookDataChannel not allowed in Custom Hook API")
-        if (isXposedEnvironment && YukiXposedModule.modulePackageName.isBlank())
-            error("Xposed modulePackageName load failed, please reset and rebuild it")
+        require(!YukiHookAPI.isLoadedFromBaseContext) {
+            "YukiHookDataChannel not allowed in custom hook API."
+        }
+        if (isXposedEnvironment) require(YukiXposedModule.modulePackageName.isNotBlank()) {
+            "Xposed modulePackageName load failed, please reset and rebuild it."
+        }
+
         isAllowSendTooLargeData = false
     }
 
@@ -173,9 +179,9 @@ class YukiHookDataChannel private constructor() {
      */
     private fun isCurrentBroadcast(context: Context?) = runCatching {
         @Suppress("DEPRECATION")
-        context is Application || isXposedEnvironment || (((context ?: receiverContext)
-            ?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager?)
-            ?.getRunningTasks(9999)?.filter { context?.javaClass?.name == it?.topActivity?.className }?.size ?: 0) > 0
+        context is Application || isXposedEnvironment || ((context ?: receiverContext)
+            ?.getSystemService<ActivityManager>()
+            ?.getRunningTasks(9999)?.any { context?.javaClass?.name == it?.topActivity?.className } == true)
     }.getOrNull() ?: YLog.innerW("Couldn't got current Activity status because a SecurityException blocked it").let { false }
 
     /**
@@ -190,31 +196,35 @@ class YukiHookDataChannel private constructor() {
      * @param context the optional context instance, null by default.
      * @return [String]
      */
-    private fun moduleActionName(context: Context? = null) =
-        "yuki_hook_module_data_channel_${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" }.trim().hashCode()}"
+    private fun moduleActionName(context: Context? = null) = "yuki_hook_module_data_channel_${YukiXposedModule.modulePackageName.ifBlank {
+        context?.packageName ?: ""
+    }.trim().hashCode()}"
 
     /**
      * Registers broadcasts.
-     * @param context the global context of the target host app or module. Registration stops when null.
+     * @param context the global context of the target host or module. Registration stops when null.
      * @param packageName the package name. When empty, it is obtained from [Context.getPackageName] on [context].
      */
     internal fun register(context: Context?, packageName: String = context?.packageName ?: "") {
-        if (YukiHookAPI.Configs.isEnableDataChannel.not() || context == null) return
+        if (!YukiHookAPI.Configs.isEnableDataChannel || context == null) return
+
         receiverContext = context
         val filter = IntentFilter().apply {
             addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
         }
         context.registerReceiver(filter, exported = true, body = handlerReceiver)
+
         // Prevents the module from registering its own broadcast in the module environment.
-        if (isXposedEnvironment.not()) return
-        nameSpace(context, packageName).with {
-            // Registers a listener that checks whether module and host app versions match.
+        if (!isXposedEnvironment) return
+
+        namespace(context, packageName).with {
+            // Registers a listener that checks whether module and host versions match.
             wait<String>(GET_MODULE_GENERATED_VERSION) { fromPackageName ->
-                nameSpace(context, fromPackageName).put(RESULT_MODULE_GENERATED_VERSION, moduleGeneratedVersion)
+                namespace(context, fromPackageName).put(RESULT_MODULE_GENERATED_VERSION, moduleGeneratedVersion)
             }
-            // Registers a listener for debug log data exchanged between the module and host app.
-            wait<String>(GET_YUKI_LOGGER_INMEMORY_DATA) { fromPackageName ->
-                nameSpace(context, fromPackageName).put(RESULT_YUKI_LOGGER_INMEMORY_DATA, YLog.inMemoryData)
+            // Registers a listener for debug log data exchanged between the module and host.
+            wait<String>(GET_YUKI_LOGGER_IN_MEMORY_DATA) { fromPackageName ->
+                namespace(context, fromPackageName).put(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, YLog.inMemoryData)
             }
         }
     }
@@ -223,11 +233,11 @@ class YukiHookDataChannel private constructor() {
      * Gets a namespace.
      * @param context the context instance.
      * @param packageName the target host app package name.
-     * @return [NameSpace]
+     * @return [Namespace]
      */
-    internal fun nameSpace(context: Context? = null, packageName: String): NameSpace {
+    internal fun namespace(context: Context? = null, packageName: String): Namespace {
         checkApi()
-        return NameSpace(context = context ?: receiverContext, packageName)
+        return Namespace(context = context ?: receiverContext, packageName)
     }
 
     /**
@@ -237,21 +247,21 @@ class YukiHookDataChannel private constructor() {
      * @param setData the [Set] data segments.
      * @param stringData the [String] data segments.
      */
-    internal inner class SegmentsTempData(
-        var listData: MutableList<List<*>> = mutableListOf(),
-        var mapData: MutableList<Map<*, *>> = mutableListOf(),
-        var setData: MutableList<Set<*>> = mutableListOf(),
-        var stringData: MutableList<String> = mutableListOf()
+    internal class SegmentsTempData(
+        var listData: MutableList<List<*>>? = null,
+        var mapData: MutableList<Map<*, *>>? = null,
+        var setData: MutableList<Set<*>>? = null,
+        var stringData: MutableList<String>? = null
     )
 
     /**
      * [YukiHookDataChannel] namespace.
      *
-     * - Use [nameSpace] to obtain [NameSpace].
+     * - Use [namespace] to obtain [Namespace].
      * @param context the context instance.
      * @param packageName the target host app package name.
      */
-    inner class NameSpace internal constructor(private val context: Context?, private val packageName: String) {
+    inner class Namespace internal constructor(private val context: Context?, private val packageName: String) {
 
         /** The current temporary segmented data. */
         private val segmentsTempData = ConcurrentHashMap<String, SegmentsTempData>()
@@ -261,8 +271,9 @@ class YukiHookDataChannel private constructor() {
          * @param type the callback type.
          * @return [String]
          */
-        private fun keyShortName(type: CallbackKeyType) =
-            "${keyNonRepeatName}_${if (isXposedEnvironment) "X" else context?.javaClass?.name ?: "M"}_${type.ordinal}"
+        private fun keyShortName(type: CallbackKeyType) = "${keyNonRepeatName}_${
+            if (isXposedEnvironment) "X" else context?.javaClass?.name ?: "M"
+        }_${type.ordinal}"
 
         /**
          * Unique key-value name that prevents names used by different host apps from interfering with one another.
@@ -272,22 +283,19 @@ class YukiHookDataChannel private constructor() {
 
         /**
          * Creates an invocation scope.
-         * @param initiate the invocation block.
-         * @return [NameSpace] this namespace for chaining.
+         * @param block the invocation block.
+         * @return [Namespace] this namespace for chaining.
          */
-        inline fun with(initiate: NameSpace.() -> Unit) = apply(initiate)
+        inline fun with(block: Namespace.() -> Unit) = apply(block)
 
         /**
          * Maximum data size in bytes that [YukiHookDataChannel] may send.
          *
          * The default is 500 KB (500 * 1024). See the documentation for [receiverDataMaxByteSize].
-         *
          * The minimum is 100 KB (100 * 1024). Lower values are reset to 100 KB.
-         *
          * The value applies globally until the current process ends.
          *
          * - Data larger than this maximum is sent in segments automatically.
-         *
          * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
@@ -301,13 +309,10 @@ class YukiHookDataChannel private constructor() {
          * Maximum data-size compression factor that [YukiHookDataChannel] may use for segmented data.
          *
          * The default is 3. See the documentation for [receiverDataMaxByteCompressionFactor].
-         *
          * The minimum is 2. Lower values are reset to 2.
-         *
          * The value applies globally until the current process ends.
          *
          * - Data larger than the maximum is divided automatically by this factor relative to [receiverDataMaxByteSize].
-         *
          * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
@@ -321,14 +326,13 @@ class YukiHookDataChannel private constructor() {
          * Removes the outgoing data-size limit and disables segmented sending.
          *
          * This applies only to the current invocation. The feature is disabled automatically unless called again next time.
-         *
          * Declare [SendTooLargeChannelData] across the invocation scope to suppress the warning.
          *
          * - Do not use this feature unless you understand its consequences.
-         * @return [NameSpace]
+         * @return [Namespace]
          */
         @SendTooLargeChannelData
-        fun allowSendTooLargeData(): NameSpace {
+        fun allowSendTooLargeData(): Namespace {
             isAllowSendTooLargeData = true
             return this
         }
@@ -396,7 +400,7 @@ class YukiHookDataChannel private constructor() {
          * @param callback the result callback.
          */
         fun wait(key: String, priority: ChannelPriority? = null, callback: () -> Unit) {
-            receiverCallbacks[key + keyShortName(CallbackKeyType.VMFL)] = Pair(context) { action, intent ->
+            receiverCallbacks[key + keyShortName(CallbackKeyType.WAIT_FOR_LISTENER)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
                     if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
                         intent.getDataWrapper<String>(key)?.let { if (it.instance.value == VALUE_WAIT_FOR_LISTENER) callback() }
@@ -404,9 +408,9 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * Gets whether the module and host app versions match.
+         * Gets whether the module and host versions match.
          *
-         * This method detects a mismatch caused when the Xposed module is updated but the host app has not reloaded it.
+         * This method detects a mismatch caused when the Xposed module is updated but the host has not reloaded it.
          * @param priority the response priority, unset by default.
          * @param result the callback receiving whether the versions match.
          */
@@ -416,19 +420,18 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * Gets [List]<[YLogData]> data exchanged between the module and host app.
+         * Gets [List]<[YLogData]> data exchanged between the module and host.
          *
-         * Because the module and host app run in different processes, this bridge provides access to each process's debug log data.
+         * Because the module and host run in different processes, this bridge provides access to each process's debug log data.
          *
-         * - Both the module and host app must enable [YLog.Configs.isRecord] to obtain debug log data.
-         *
+         * - Both the module and host must enable [YLog.Configs.isRecord] to obtain debug log data.
          * - Android limits transfer size. Large debug logs are sent in segments automatically, and larger data transfers more slowly.
          * @param priority the response priority, unset by default.
          * @param result the [List]<[YLogData]> callback.
          */
         fun obtainLoggerInMemoryData(priority: ChannelPriority? = null, result: (List<YLogData>) -> Unit) {
-            wait(RESULT_YUKI_LOGGER_INMEMORY_DATA, priority) { result(it) }
-            put(GET_YUKI_LOGGER_INMEMORY_DATA, packageName)
+            wait(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, priority) { result(it) }
+            put(GET_YUKI_LOGGER_IN_MEMORY_DATA, packageName)
         }
 
         /**
@@ -442,56 +445,69 @@ class YukiHookDataChannel private constructor() {
 
         /**
          * Converts [ChannelData]<[T]> into a [ChannelDataWrapper]<[T]> instance.
-         * @param id the wrapper instance ID, [RandomSeed.createString] by default.
+         * @param id the wrapper instance ID, [RandomString.generate] by default.
          * @param size the total segmented-data size, -1 by default.
          * @param index the currently received segment index, -1 by default.
          * @return [ChannelDataWrapper]<[T]>
          */
-        private fun <T> ChannelData<T>.toWrapper(id: String = RandomSeed.createString(), size: Int = -1, index: Int = -1) =
+        private fun <T> ChannelData<T>.toWrapper(id: String = RandomString.generate(), size: Int = -1, index: Int = -1) =
             ChannelDataWrapper(id, size > 0, size, index, this)
 
         /**
          * Calculates the size in bytes occupied by any supported type.
+         * @receiver [Any]
          * @return [Int] the byte size.
          */
         private fun Any.calDataByteSize(): Int {
             val key = if (this is ChannelData<*>) key else "placeholder"
             val value = if (this is ChannelData<*>) value else this
             val bundle = Bundle().apply {
+                // Bundle chooses the Parcel encoding from the stored value, regardless of the put overload.
                 when (value) {
                     null -> Unit
-                    is Boolean -> putBoolean(key, value)
-                    is BooleanArray -> putBooleanArray(key, value)
-                    is Byte -> putByte(key, value)
-                    is ByteArray -> putByteArray(key, value)
-                    is Char -> putChar(key, value)
-                    is CharArray -> putCharArray(key, value)
-                    is Double -> putDouble(key, value)
-                    is DoubleArray -> putDoubleArray(key, value)
-                    is Float -> putFloat(key, value)
-                    is FloatArray -> putFloatArray(key, value)
-                    is Int -> putInt(key, value)
-                    is IntArray -> putIntArray(key, value)
-                    is Long -> putLong(key, value)
-                    is LongArray -> putLongArray(key, value)
-                    is Short -> putShort(key, value)
-                    is ShortArray -> putShortArray(key, value)
-                    is String -> putString(key, value)
-                    is Array<*> -> putSerializable(key, value)
+                    is Serializable -> putSerializable(key, value)
                     is CharSequence -> putCharSequence(key, value)
                     is Parcelable -> putParcelable(key, value)
-                    is Serializable -> putSerializable(key, value)
-                    else -> error("Key-Value type ${value.javaClass.name} is not allowed")
+                    else -> error("Key-Value type ${value.javaClass.name} is not allowed.")
                 }
             }
+
             return runCatching {
-                Parcel.obtain().let { parcel ->
-                    parcel.writeBundle(bundle)
-                    val size = parcel.dataSize()
-                    parcel.recycle()
-                    size
+                Parcel.obtain().use { parcel -> 
+                    bundle.calDataByteSize(parcel)
                 }
             }.getOrNull() ?: -1
+        }
+
+        /** Measures a bundle using the supplied scratch parcel. */
+        private fun Bundle.calDataByteSize(parcel: Parcel) = runCatching {
+            parcel.setDataPosition(0)
+            parcel.setDataSize(0)
+            parcel.writeBundle(this)
+            parcel.dataSize()
+        }.getOrNull() ?: -1
+
+        /** Splits a collection while preserving the existing per-element size checks and segment types. */
+        private inline fun <T, C : Serializable> Iterable<T>.toSegments(create: () -> C, append: C.(T) -> Unit): List<C> {
+            val segments = mutableListOf<C>()
+            val bundle = Bundle()
+
+            Parcel.obtain().use { parcel ->
+                var segment: C? = null
+                for (element in this) {
+                    val current = segment ?: create().also {
+                        segment = it
+                        bundle.putSerializable("placeholder", it)
+                    }
+                    current.append(element)
+                    if (bundle.calDataByteSize(parcel) >= receiverDataSegmentMaxByteSize) {
+                        segments.add(current)
+                        segment = null
+                    }
+                }
+                segment?.let(segments::add)
+            }
+            return segments
         }
 
         /**
@@ -500,45 +516,42 @@ class YukiHookDataChannel private constructor() {
          * @param result the result-data callback.
          */
         private fun <T> parseReceivedData(wrapper: ChannelDataWrapper<T>?, result: (value: T) -> Unit) {
-            if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
+            if (!YukiHookAPI.Configs.isEnableDataChannel) return
             if (wrapper == null) return
+
             if (wrapper.isSegmentsType) runCatching {
                 val tempData = segmentsTempData[wrapper.wrapperId] ?: SegmentsTempData().apply { segmentsTempData[wrapper.wrapperId] = this }
-                when (wrapper.instance.value) {
-                    is List<*> -> (wrapper.instance.value as List<*>).also { value ->
-                        if (tempData.listData.isEmpty() && wrapper.segmentsIndex > 0) return
-                        tempData.listData.add(wrapper.segmentsIndex, value)
-                        if (tempData.listData.size == wrapper.segmentsSize) {
-                            result(mutableListOf<Any?>().also { list -> tempData.listData.forEach { list.addAll(it) } } as T)
-                            tempData.listData.clear()
-                            segmentsTempData.remove(wrapper.wrapperId)
+                when (val value = wrapper.instance.value) {
+                    is List<*> -> {
+                        val segments = tempData.listData ?: mutableListOf<List<*>>().also { tempData.listData = it }
+                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                            ArrayList<Any?>(data.sumOf { it.size }).apply {
+                                for (segment in data) for (element in segment) add(element)
+                            }
                         }
                     }
-                    is Map<*, *> -> (wrapper.instance.value as Map<*, *>).also { value ->
-                        if (tempData.mapData.isEmpty() && wrapper.segmentsIndex > 0) return
-                        tempData.mapData.add(wrapper.segmentsIndex, value)
-                        if (tempData.mapData.size == wrapper.segmentsSize) {
-                            result(mutableMapOf<Any?, Any?>().also { map -> tempData.mapData.forEach { it.forEach { (k, v) -> map[k] = v } } } as T)
-                            tempData.mapData.clear()
-                            segmentsTempData.remove(wrapper.wrapperId)
+                    is Map<*, *> -> {
+                        val segments = tempData.mapData ?: mutableListOf<Map<*, *>>().also { tempData.mapData = it }
+                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                            LinkedHashMap<Any?, Any?>(data.sumOf { it.size }).apply {
+                                for (segment in data) putAll(segment)
+                            }
                         }
                     }
-                    is Set<*> -> (wrapper.instance.value as Set<*>).also { value ->
-                        if (tempData.setData.isEmpty() && wrapper.segmentsIndex > 0) return
-                        tempData.setData.add(wrapper.segmentsIndex, value)
-                        if (tempData.setData.size == wrapper.segmentsSize) {
-                            result(mutableSetOf<Any?>().also { set -> tempData.setData.forEach { set.addAll(it) } } as T)
-                            tempData.setData.clear()
-                            segmentsTempData.remove(wrapper.wrapperId)
+                    is Set<*> -> {
+                        val segments = tempData.setData ?: mutableListOf<Set<*>>().also { tempData.setData = it }
+                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                            LinkedHashSet<Any?>(data.sumOf { it.size }).apply {
+                                for (segment in data) addAll(segment)
+                            }
                         }
                     }
-                    is String -> (wrapper.instance.value as String).also { value ->
-                        if (tempData.stringData.isEmpty() && wrapper.segmentsIndex > 0) return
-                        tempData.stringData.add(wrapper.segmentsIndex, value)
-                        if (tempData.stringData.size == wrapper.segmentsSize) {
-                            result(StringBuilder().apply { tempData.stringData.forEach { append(it) } }.toString() as T)
-                            tempData.stringData.clear()
-                            segmentsTempData.remove(wrapper.wrapperId)
+                    is String -> {
+                        val segments = tempData.stringData ?: mutableListOf<String>().also { tempData.stringData = it }
+                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                            buildString(data.sumOf { it.length }) {
+                                for (segment in data) append(segment)
+                            }
                         }
                     }
                     else -> YLog.innerE("Unsupported segments data key of \"${wrapper.instance.key}\"'s type")
@@ -548,29 +561,48 @@ class YukiHookDataChannel private constructor() {
             } else wrapper.instance.value?.let { e -> result(e) }
         }
 
+        /** Merges a complete set of segments before delivering and releasing it. */
+        private inline fun <T, V> mergeReceivedSegments(
+            wrapper: ChannelDataWrapper<T>,
+            value: V,
+            segments: MutableList<V>,
+            result: (T) -> Unit,
+            merge: (List<V>) -> Any
+        ) {
+            if (segments.isEmpty() && wrapper.segmentsIndex > 0) return
+
+            segments.add(wrapper.segmentsIndex, value)
+            if (segments.size == wrapper.segmentsSize) {
+                result(merge(segments) as T)
+                segments.clear()
+                segmentsTempData.remove(wrapper.wrapperId)
+            }
+        }
+
         /**
          * Processes broadcast data to send.
          * @param wrapper the key-value data wrapper.
          */
         private fun parseSendingData(wrapper: ChannelDataWrapper<*>) {
-            if (YukiHookAPI.Configs.isEnableDataChannel.not()) return
-            /** The current wrapper instance ID. */
-            val wrapperId = RandomSeed.createString()
+            if (!YukiHookAPI.Configs.isEnableDataChannel) return
 
-            /** The size in bytes of the data to send. */
+            // The current wrapper instance ID.
+            val wrapperId = RandomString.generate()
+            // The size in bytes of the data to send.
             val dataByteSize = wrapper.instance.calDataByteSize()
-            if (dataByteSize < 0 && isAllowSendTooLargeData.not()) return YLog.innerE(
+            if (dataByteSize < 0 && !isAllowSendTooLargeData) return YLog.innerE(
                 msg = "YukiHookDataChannel cannot calculate the byte size of the data key of \"${wrapper.instance.key}\" to be sent, " +
-                    "so this data cannot be sent\n" +
+                    "so this data cannot be sent.\n" +
                     "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
                     "but this may cause the app crash"
             )
+
             /**
-             * Prints a warning when data is too large. This is effective only when [YukiHookAPI.Configs.isDebug] is enabled.
+             * Logs a warning when data is too large. This is effective only when [YukiHookAPI.Configs.isDebug] is enabled.
              * @param name the data type name.
              * @param size the total number of segments.
              */
-            fun loggerForTooLargeData(name: String, size: Int) {
+            fun logForTooLargeData(name: String, size: Int) {
                 if (YukiHookAPI.Configs.isDebug) YLog.innerW(
                     msg = "This data key of \"${wrapper.instance.key}\" type $name is too large (total ${dataByteSize / 1024f} KB, " +
                         "limit ${receiverDataMaxByteSize / 1024f} KB), will be segmented to $size piece to send"
@@ -578,97 +610,69 @@ class YukiHookDataChannel private constructor() {
             }
 
             /**
-             * Prints an error when data is too large and cannot be segmented.
+             * Logs an error when data is too large and cannot be segmented.
              * @param suggestionMessage the optional suggestion, empty by default.
              */
-            fun loggerForUnprocessableData(suggestionMessage: String = "") = YLog.innerE(
+            fun logForUnprocessableData(suggestionMessage: String = "") = YLog.innerE(
                 msg = "YukiHookDataChannel cannot send this data key of \"${wrapper.instance.key}\" type ${wrapper.instance.value?.javaClass}, " +
                     "because it is too large (total ${dataByteSize / 1024f} KB, " +
-                    "limit ${receiverDataMaxByteSize / 1024f} KB) and cannot be segmented\n" +
+                    "limit ${receiverDataMaxByteSize / 1024f} KB) and cannot be segmented.\n" +
                     (if (suggestionMessage.isNotBlank()) "$suggestionMessage\n" else "") +
                     "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
                     "but this may cause the app crash"
             )
 
             /**
-             * Prints an error when the first element is too large to segment and the segmented array is empty.
+             * Logs an error when the first element is too large to segment and the segmented array is empty.
              * @param name the data type name.
              */
-            fun loggerForUnprocessableDataByFirstElement(name: String) = loggerForUnprocessableData(
+            fun logForUnprocessableDataByFirstElement(name: String) = logForUnprocessableData(
                 suggestionMessage = "Failed to segment $name type because the size of its first element has exceeded the maximum limit"
             )
             when {
                 wrapper.isSegmentsType || isAllowSendTooLargeData -> pushReceiver(wrapper)
-                dataByteSize >= receiverDataMaxByteSize -> when (wrapper.instance.value) {
-                    is List<*> -> (wrapper.instance.value as List<*>).also { value ->
-                        val segments = mutableListOf<List<*>>()
-                        var segment = mutableListOf<Any?>()
-                        value.forEach {
-                            segment.add(it)
-                            if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
-                                segments.add(segment)
-                                segment = mutableListOf()
-                            }
+                dataByteSize >= receiverDataMaxByteSize -> {
+                    val name: String
+                    val segments = when (val value = wrapper.instance.value) {
+                        is List<*> -> {
+                            name = "List"
+                            value.toSegments(create = { ArrayList<Any?>() }) { add(it) }
                         }
-                        if (segment.isNotEmpty()) segments.add(segment)
-                        loggerForTooLargeData(name = "List", segments.size)
-                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
-                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        } ?: loggerForUnprocessableDataByFirstElement(name = "List")
-                    }
-                    is Map<*, *> -> (wrapper.instance.value as Map<*, *>).also { value ->
-                        val segments = mutableListOf<Map<*, *>>()
-                        var segment = mutableMapOf<Any?, Any?>()
-                        value.forEach { (k, v) ->
-                            segment[k] = v
-                            if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
-                                segments.add(segment)
-                                segment = mutableMapOf()
-                            }
+                        is Map<*, *> -> {
+                            name = "Map"
+                            value.entries.toSegments(create = { LinkedHashMap<Any?, Any?>() }) { put(it.key, it.value) }
                         }
-                        if (segment.isNotEmpty()) segments.add(segment)
-                        loggerForTooLargeData(name = "Map", segments.size)
-                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
-                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        } ?: loggerForUnprocessableDataByFirstElement(name = "Map")
-                    }
-                    is Set<*> -> (wrapper.instance.value as Set<*>).also { value ->
-                        val segments = mutableListOf<Set<*>>()
-                        var segment = mutableSetOf<Any?>()
-                        value.forEach {
-                            segment.add(it)
-                            if (segment.calDataByteSize() >= receiverDataSegmentMaxByteSize) {
-                                segments.add(segment)
-                                segment = mutableSetOf()
-                            }
+                        is Set<*> -> {
+                            name = "Set"
+                            value.toSegments(create = { LinkedHashSet<Any?>() }) { add(it) }
                         }
-                        if (segment.isNotEmpty()) segments.add(segment)
-                        loggerForTooLargeData(name = "Set", segments.size)
-                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
-                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        } ?: loggerForUnprocessableDataByFirstElement(name = "Set")
+                        is String -> {
+                            // Preserve the existing character boundaries, including the trailing empty segment.
+                            val twoByteMaxSize = receiverDataMaxByteSize / 2
+                            val segmentsSize = value.length / twoByteMaxSize + 1
+                            if (segmentsSize == 1) return pushReceiver(wrapper)
+
+                            logForTooLargeData(name = "String", segmentsSize)
+                            repeat(segmentsSize) { index ->
+                                val start = index * twoByteMaxSize
+                                val segment = value.substring(start, minOf(start + twoByteMaxSize, value.length))
+                                pushReceiver(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segmentsSize, index))
+                            }
+                            return
+                        }
+                        else -> return logForUnprocessableData(
+                            suggestionMessage = if (value?.javaClass?.isArray == true)
+                                "Primitive Array type like String[], int[] ... cannot be segmented, " +
+                                    "the suggestion is send those data using List type"
+                            else ""
+                        )
                     }
-                    is String -> (wrapper.instance.value as String).also { value ->
-                        /** Characters are counted as two bytes, so divide the byte-size limit by two. */
-                        val twoByteMaxSize = receiverDataMaxByteSize / 2
-                        val segments = mutableListOf<String>()
-                        for (i in 0..value.length step twoByteMaxSize)
-                            if (i + twoByteMaxSize <= value.length)
-                                segments.add(value.substring(i, i + twoByteMaxSize))
-                            else segments.add(value.substring(i, value.length))
-                        if (segments.size == 1) return pushReceiver(wrapper)
-                        loggerForTooLargeData(name = "String", segments.size)
-                        segments.takeIf { it.isNotEmpty() }?.forEachIndexed { p, it ->
-                            pushReceiver(ChannelData(wrapper.instance.key, it).toWrapper(wrapperId, segments.size, p))
-                        } ?: loggerForUnprocessableDataByFirstElement(name = "String")
+                    logForTooLargeData(name, segments.size)
+                    if (segments.isEmpty()) return logForUnprocessableDataByFirstElement(name)
+
+                    segments.forEachIndexed { index, segment ->
+                        pushReceiver(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segments.size, index))
                     }
-                    is ByteArray, is CharArray, is ShortArray,
-                    is IntArray, is LongArray, is FloatArray,
-                    is DoubleArray, is BooleanArray, is Array<*> -> loggerForUnprocessableData(
-                        suggestionMessage = "Primitive Array type like String[], int[] ... cannot be segmented, " +
-                            "the suggestion is send those data using List type"
-                    )
-                    else -> loggerForUnprocessableData()
                 }
                 else -> pushReceiver(wrapper)
             }
@@ -679,11 +683,11 @@ class YukiHookDataChannel private constructor() {
          * @param wrapper the key-value data wrapper.
          */
         private fun pushReceiver(wrapper: ChannelDataWrapper<*>) {
-            // Sends the broadcast.
-            (context ?: AppParasitics.currentApplication)?.sendBroadcast {
+            (context ?: AppParasitism.currentApplication)?.sendBroadcast {
                 action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
-                // The system framework package name may not be unique, so its broadcasts do not set a recipient package.
-                if (packageName != AppParasitics.SYSTEM_FRAMEWORK_NAME)
+
+                // The system server package name may not be unique, so its broadcasts do not set a recipient package.
+                if (packageName != AppParasitism.FRAMEWORK_PACKAGE_NAME)
                     setPackage(if (isXposedEnvironment) YukiXposedModule.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
             } ?: YLog.innerE("Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")

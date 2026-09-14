@@ -23,39 +23,37 @@ package com.highcapable.yukihookapi.annotation.xposed
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import de.robv.android.xposed.IXposedHookInitPackageResources
 
 /**
- * Marks the [YukiHookAPI] Xposed entry class for code generation.
+ * Marks the [YukiHookAPI] legacy Xposed entry class for code generation.
  *
- * - The project source directory defaults to `src/main` and can be customized through [sourcePath].
+ * Requires `yukihookapi-runtime-xposed82`. Missing, conflicting, or mismatched runtimes will cause KSP to reject the build.
  *
- * - The processor creates `xposed_init` under `[sourcePath]/assets`.
+ * Looking for modern libxposed, please use [InjectYukiHookWithLibXposed] with `yukihookapi-runtime-libxposed` instead.
  *
- * The generated `xposed_init` entry uses the fully qualified annotated class name plus `_YukiHookXposedInit`, or [entryClassName].
+ * - The AndroidManifest source directory defaults to `src/main` and can be customized through [sourcePath].
+ * - KSP generates `assets/xposed_init` as a build resource.
+ * - The runtime AndroidManifest supplies `xposedmodule=true` and `xposedminversion=82`.
+ *   To override the minimum version, declare it in your AndroidManifest with `tools:replace="android:value"`.
+ *   Declare `xposeddescription` and `xposedscope` yourself when needed. KSP does not generate or modify the AndroidManifest.
  *
- * - [modulePackageName] overrides the detected module package. Otherwise AndroidManifest.xml and Gradle metadata are analyzed.
+ * The generated `xposed_init` entry uses the fully qualified annotated class name + `_YukiHookXposedInit`, or [entryClassName].
  *
+ * - [modulePackageName] overrides the module application ID. Otherwise, `BuildConfig.APPLICATION_ID` is read.
  * - A custom [modulePackageName] produces a compile-time warning so the value can be verified.
- *
- * - Do not modify `[sourcePath]/assets/xposed_init` manually. Invalid content may prevent the module from loading.
- *
- * - The annotated class must implement [IYukiHookXposedInit] and [IYukiHookXposedInit.onHook].
- *
- * - Exactly one Hook entry may be annotated. Multiple entries produce a compile-time error.
- *
- * See [InjectYukiHookWithXposed Annotation](https://highcapable.github.io/YukiHookAPI/en/config/xposed-using#injectyukihookwithxposed-annotation)
- * @param sourcePath the project-relative source path, defaults to `src/main`.
- * @param modulePackageName the module package name, or an empty string for automatic detection.
- * @param entryClassName the generated Xposed entry class name, or an empty string to use `AnnotatedClass_YukiHookXposedInit`.
- * @param isUsingXposedModuleStatus whether automatic Xposed module status detection is enabled, defaults to true.
- * @param isUsingResourcesHook whether Resources Hook and [IXposedHookInitPackageResources] generation are enabled, defaults to false.
+ * - Entry files are generated per build variant. Do not add duplicate entries under the source directory.
+ * - The annotated class must implement [IYukiHookXposedInit].
+ * - Exactly one Hook entry may use either injection annotation. Multiple entries produce a compile-time error.
+ * @see InjectYukiHookWithLibXposed
+ * @param sourcePath the project-relative AndroidManifest source directory, defaults to `src/main`.
+ * @param modulePackageName the module application ID, or an empty string to read `BuildConfig.APPLICATION_ID`.
+ * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
+ * @param isUsingXposedModuleStatus whether legacy self-hook status generation is enabled, defaults to true.
  */
 @Target(AnnotationTarget.CLASS)
 annotation class InjectYukiHookWithXposed(
     val sourcePath: String = "src/main",
     val modulePackageName: String = "",
     val entryClassName: String = "",
-    val isUsingXposedModuleStatus: Boolean = true,
-    val isUsingResourcesHook: Boolean = false
+    val isUsingXposedModuleStatus: Boolean = true
 )

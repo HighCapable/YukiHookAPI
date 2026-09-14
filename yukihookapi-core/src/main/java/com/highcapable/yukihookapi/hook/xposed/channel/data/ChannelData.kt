@@ -31,4 +31,7 @@ import java.io.Serializable
  * @param key the channel key.
  * @param value the channel value, which may be null when receiving data.
  */
-data class ChannelData<T>(var key: String, var value: T? = null) : Serializable
+data class ChannelData<T>(
+    var key: String,
+    var value: T? = null
+) : Serializable

@@ -22,30 +22,52 @@
 package com.highcapable.yukihookapi.hook.entity
 
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithLibXposed
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
- * Base Hooker implementation for [YukiHookAPI].
+ * Base hooker implementation for [YukiHookAPI].
+ * Inherit this class to organize multiple hooker feature modules in a single Xposed module.
  *
- * Extend this class to organize multiple Hooker feature modules in a single Xposed module.
- *
- * See [InjectYukiHookWithXposed] for the entry-point configuration.
- *
- * See [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
+ * See [InjectYukiHookWithLibXposed] or [InjectYukiHookWithXposed] for the entry-point configuration.
+ * @see InjectYukiHookWithLibXposed
+ * @see InjectYukiHookWithXposed
+ * @see PackageParam
  */
 abstract class YukiBaseHooker : PackageParam() {
 
+    private val contextLock = Any()
+
     /**
-     * Assigns and copies a [PackageParam].
-     * @param packageParam the [PackageParam] to use.
+     * Binds a [PackageParam] context and loads this hooker.
+     * @param param the [PackageParam] to use.
      */
-    internal fun assignInstance(packageParam: PackageParam) {
-        assign(packageParam.wrapper)
-        runCatching { onHook() }.onFailure { YLog.innerE("An exception occurred in $this", it) }
+    internal fun bindTo(param: PackageParam) {
+        synchronized(contextLock) {
+            val targetWrapper = param.wrapper ?: return
+
+            val boundWrapper = wrapper
+            if (boundWrapper?.id == targetWrapper.id) return
+            if (boundWrapper != null &&
+                (boundWrapper.type != HookEntryType.ZYGOTE || targetWrapper.type == HookEntryType.ZYGOTE)
+            ) {
+                YLog.innerW(
+                    msg = "This hooker \"${this::class.java.name}\" is singleton or reused, " +
+                        "but it is already bound to hook entry \"${boundWrapper.id}\" while the current entry is " +
+                        "\"${targetWrapper.id}\". Make sure your hooker supports multiple instances for this situation, " +
+                        "the current hook entry will be ignored."
+                )
+                return
+            }
+
+            bind(targetWrapper)
+            runCatching { onHook() }.onFailure { YLog.innerE("An exception occurred in $this", it) }
+        }
     }
 
-    /** Starts this Hooker. */
+    /** Starts this hooker. */
     abstract fun onHook()
 }

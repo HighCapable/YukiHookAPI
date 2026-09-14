@@ -19,11 +19,12 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "UnusedReceiverParameter", "DeprecatedCallableAddReplaceWith")
+@file:Suppress("unused", "UnusedReceiverParameter", "DEPRECATION")
 
 package com.highcapable.yukihookapi.hook.factory
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -31,6 +32,7 @@ import android.content.res.Resources
 import android.os.Process
 import android.view.ContextThemeWrapper
 import android.widget.ImageView
+import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import androidx.core.net.toUri
@@ -38,137 +40,131 @@ import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
-import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper.ModuleContextThemeWrapper
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 
 /**
  * Calls [YukiHookAPI.configs] from [IYukiHookXposedInit].
- * @param initiate the configuration block.
+ * @receiver [IYukiHookXposedInit]
+ * @param block the configuration block.
  */
-inline fun IYukiHookXposedInit.configs(initiate: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(initiate)
+inline fun IYukiHookXposedInit.configs(block: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(block)
 
 /**
  * Calls [YukiHookAPI.encase] from [IYukiHookXposedInit].
- * @param initiate the Hook block.
+ * @receiver [IYukiHookXposedInit]
+ * @param block the param block.
  */
-fun IYukiHookXposedInit.encase(initiate: PackageParam.() -> Unit) = YukiHookAPI.encase(initiate)
+fun IYukiHookXposedInit.encase(block: PackageParam.() -> Unit) = YukiHookAPI.encase(block)
 
 /**
  * Loads [YukiHookAPI] from [IYukiHookXposedInit].
- * @param hooker the required, non-empty Hooker array.
- * @throws IllegalStateException if [hooker] is empty.
+ * @receiver [IYukiHookXposedInit]
+ * @param hookers the hookers.
+ * @throws IllegalStateException if [hookers] is empty.
  */
-fun IYukiHookXposedInit.encase(vararg hooker: YukiBaseHooker) = YukiHookAPI.encase(hooker = hooker)
+fun IYukiHookXposedInit.encase(vararg hookers: YukiBaseHooker) = YukiHookAPI.encase(hookers = hookers)
 
 /**
- * Gets the module preferences object.
+ * This function does nothing and does not invoke [block].
  *
- * - This API is deprecated and will be removed in a future version.
- *
- * - Migrate to [Context.prefs].
- * @return [YukiHookPrefsBridge]
+ * - Use the selected runtime's `registerFrameworkEvents` extension from [IYukiHookXposedInit.onInit] instead.
+ * @receiver [IYukiHookXposedInit]
+ * @param block the unused event configuration block.
  */
-@Deprecated(message = "Use the new naming method", ReplaceWith("prefs()"))
-val Context.modulePrefs get() = prefs()
-
-/**
- * Gets the module preferences object.
- *
- * - This API is deprecated and will be removed in a future version.
- *
- * - Migrate to [Context.prefs].
- * @return [YukiHookPrefsBridge]
- */
-@Deprecated(message = "Use the new naming method", ReplaceWith("prefs(name)"))
-fun Context.modulePrefs(name: String) = prefs(name)
+@Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
+inline fun IYukiHookXposedInit.events(block: YukiXposedEvent.() -> Unit) = Unit
 
 /**
  * Creates a [YukiHookPrefsBridge] object.
  *
- * This API is available in both module and (Xposed) host environments.
+ * - This API is available in both module and host environments.
  *
- * To store data in the current host app's private storage from a (Xposed) host environment, use [YukiHookPrefsBridge.native].
- *
- * Without any explicit conditions, the (Xposed) host environment reads module data by default.
- * @param name the custom SharedPreferences storage name, empty by default.
+ * To store data in the current host app's private storage from a host environment, use [YukiHookPrefsBridge.native].
+ * Without any explicit conditions, the host environment reads module data by default.
+ * @receiver the current context.
+ * @param name the custom shared preferences storage name, empty by default.
  * @return [YukiHookPrefsBridge]
  */
-fun Context.prefs(name: String = "") = YukiHookPrefsBridge.from(context = this).let { if (name.isNotBlank()) it.name(name) else it }
+fun Context.prefs(name: String = "") = YukiHookPrefsBridge.from(this).let { if (name.isNotBlank()) it.name(name) else it }
 
 /**
  * Gets a [YukiHookDataChannel] object.
  *
  * - This API is available only in the module environment and has no effect elsewhere.
+ * @receiver the current context.
  * @param packageName the target host app package name.
- * @return [YukiHookDataChannel.NameSpace]
+ * @return [YukiHookDataChannel.Namespace]
  */
-fun Context.dataChannel(packageName: String) = YukiHookDataChannel.instance().nameSpace(context = this, packageName)
+fun Context.dataChannel(packageName: String) = YukiHookDataChannel.get().namespace(this, packageName)
 
 /**
  * Gets the current process name.
+ * @receiver the current context.
  * @return [String]
  */
 val Context.processName
-    get() = runCatching {
-        BufferedReader(FileReader(File("/proc/${Process.myPid()}/cmdline"))).let { buff ->
-            buff.readLine().trim().let {
-                buff.close()
-                it
-            }
-        }
-    }.getOrNull() ?: packageName ?: ""
+    get() = (if (AndroidVersion.isAtLeast(AndroidVersion.P))
+        Application.getProcessName() ?: ""
+    else runCatching {
+        File("/proc/${Process.myPid()}/cmdline").readText()
+    }.getOrNull())
+        ?.takeIf { it.isNotBlank() }
+        // Removes transport padding and trailing replacement characters from a process name.
+        ?.substringBefore('\u0000')
+        ?.trimEnd('\uFFFD')
+        ?: packageName ?: ""
 
 /**
  * Injects the current Xposed module's resources into the host app [Context].
  *
- * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString] can load the current module's resource IDs directly.
+ * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString]
+ * can load the current module's resource IDs directly.
+ * Injected resources are scoped to the current [Context], so call this function for every host [Context] that needs them.
+ * Injection completes synchronously.
  *
- * Injected resources are scoped to the current [Context], so call this method for every host [Context] that needs them.
- *
- * See [Inject Module App's Resources](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#inject-module-app-s-resources)
- *
- * - This API is available only in a (Xposed) host environment. Elsewhere it has no effect and prints a warning.
+ * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
+ * - On Android 11 (API 30) or later, call this function on the main thread.
+ * @receiver the current context.
  */
+@MainThread
 fun Context.injectModuleAppResources() = resources?.injectModuleAppResources()
 
 /**
  * Injects the current Xposed module's resources directly into the specified host app [Resources].
  *
- * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString] can load the current module's resource IDs directly.
+ * After a successful injection, APIs such as [ImageView.setImageResource] or [Resources.getString]
+ * can load the current module's resource IDs directly.
+ * Injected resources are scoped to the current [Resources], so call this function for every host [Resources] instance that needs them.
+ * Injection completes synchronously.
  *
- * Injected resources are scoped to the current [Resources], so call this method for every host [Resources] instance that needs them.
- *
- * See [Inject Module App's Resources](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#inject-module-app-s-resources)
- *
- * - This API is available only in a (Xposed) host environment. Elsewhere it has no effect and prints a warning.
+ * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
+ * - On Android 11 (API 30) or later, call this function on the main thread.
+ * @receiver the current resources.
  */
-fun Resources.injectModuleAppResources() = AppParasitics.injectModuleAppResources(hostResources = this)
+@MainThread
+fun Resources.injectModuleAppResources() = AppParasitism.injectModuleAppResources(this)
 
 /**
  * Registers the current Xposed module's [Activity] in the host app.
  *
  * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host app.
- *
  * When an unregistered [Activity] starts in the host app, this API automatically calls [injectModuleAppResources] to inject module resources.
  *
  * - Each [Activity] that starts in the host app must implement [ModuleActivity].
- *
- * See [Register Module App's Activity](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#register-module-app-s-activity)
- *
- * - This API is available only in a (Xposed) host environment. Elsewhere it has no effect and prints a warning.
- *
+ * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
  * - Requires Android 7.0 (API 24) or later.
- * @param proxy the proxy [Activity], which must exist in the host AndroidManifest. Omit it to use the default [Activity].
+ * @receiver the current context.
+ * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
  */
 @RequiresApi(AndroidVersion.N)
-fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.registerModuleAppActivities(context = this, proxy)
+fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitism.registerModuleAppActivities(this, proxy)
 
 /**
  * Creates a [ContextThemeWrapper] proxy that applies the current Xposed module's theme resources.
@@ -176,31 +172,34 @@ fun Context.registerModuleAppActivities(proxy: Any? = null) = AppParasitics.regi
  * In a host app, this API automatically calls [injectModuleAppResources] to inject the current module's resources.
  *
  * - If this API throws [ClassCastException] in a host app, set a new [configuration] manually.
- *
- * See [Create ContextThemeWrapper Proxy](https://highcapable.github.io/YukiHookAPI/en/special-features/host-inject#create-contextthemewrapper-proxy)
+ * @receiver the current context.
  * @param theme the theme resource ID.
  * @param configuration the [Configuration] to use, null by default.
  * @return [ModuleContextThemeWrapper]
  */
 fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration? = null) =
-    ModuleContextThemeWrapper.wrapper(baseContext = this, theme, configuration)
+    ModuleContextThemeWrapper.from(this, theme, configuration)
 
 /**
- * Checks only whether the module is active in TaiChi or Wuji.
+ * Checks only whether the module is active in TaiChi/Wuji.
  *
  * This implementation wraps and improves the example from the official TaiChi documentation.
+ * @receiver the current context.
  * @return [Boolean] whether the module is active.
  */
-internal val Context.isTaiChiModuleActive: Boolean
-    get() {
-        /**
-         * Gets whether the module is active.
-         * @return [Boolean] or null.
-         */
-        fun isModuleActive() =
-            contentResolver?.call("content://me.weishu.exposed.CP/".toUri(), "active", null, null)?.getBoolean("active", false)
-        return runCatching { isModuleActive() }.getOrNull() ?: runCatching {
-            startActivity(Intent("me.weishu.exp.ACTION_ACTIVE").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
-            isModuleActive()
-        }.getOrNull() ?: false
-    }
+internal val Context.isTaiChiModuleActive: Boolean get() {
+    /**
+     * Gets whether the module is active.
+     * @return [Boolean] or null.
+     */
+    fun isModuleActive() = contentResolver?.call(
+        "content://me.weishu.exposed.CP/".toUri(),
+        "active",
+        null, null
+    )?.getBoolean("active", false)
+
+    return runCatching { isModuleActive() }.getOrNull() ?: runCatching {
+        startActivity(Intent("me.weishu.exp.ACTION_ACTIVE").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+        isModuleActive()
+    }.getOrNull() ?: false
+}

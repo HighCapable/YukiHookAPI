@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+@file:Suppress("unused")
 
 package com.highcapable.yukihookapi
 
@@ -27,41 +27,32 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
-import com.highcapable.yukihookapi.YukiHookAPI.Configs.debugLog
-import com.highcapable.yukihookapi.YukiHookAPI.configs
-import com.highcapable.yukihookapi.YukiHookAPI.encase
+import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
-import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
-import com.highcapable.yukihookapi.hook.core.api.compat.HookApiProperty
-import com.highcapable.yukihookapi.hook.core.api.compat.type.ExecutorType
+import com.highcapable.yukihookapi.hook.core.api.type.ExecutorType
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
-import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
-import com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiXposedModuleStatus
-import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
-import java.lang.reflect.Member
+import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
+import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 
 /**
- * [YukiHookAPI] loading entry point.
- *
- * Supports both module loading and custom Hook loading.
+ * [YukiHookAPI] entry point.
  *
  * Xposed module loading automatically adapts the relevant APIs. Call [encase] directly to complete the operation.
- *
- * Call [configs] to configure [YukiHookAPI].
  */
 object YukiHookAPI {
 
-    /** Whether the welcome message has not yet been printed. */
-    private var isShowSplashLogOnceTime = true
+    /** Whether the welcome message has not yet been logged. */
+    private var isSayHelloOnceTime = true
 
     /** Whether loading originated from a custom Hook API. */
     internal var isLoadedFromBaseContext = false
@@ -70,32 +61,33 @@ object YukiHookAPI {
     const val TAG = YukiHookAPIProperties.PROJECT_NAME
 
     /** The current version. */
-    const val VERSION = YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_CORE_VERSION
-
-    /**
-     * Version name.
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [VERSION].
-     */
-    @Deprecated(message = "Version names and version codes are no longer distinguished", ReplaceWith("VERSION"))
-    const val API_VERSION_NAME = VERSION
-
-    /**
-     * Version code.
-     *
-     * - This API is deprecated and will be removed in a future version.
-     *
-     * - Migrate to [VERSION].
-     */
-    @Deprecated(message = "Version names and version codes are no longer distinguished", ReplaceWith("VERSION"))
-    const val API_VERSION_CODE = -1
+    const val VERSION = YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_BOM_VERSION
 
     /**
      * Current [YukiHookAPI] status.
      */
     object Status {
+
+        /**
+         * The selected runtime, independently of module activation or hook availability.
+         * @return [YukiHookRuntime]
+         */
+        val runtime get() = YukiHookBridge.runtime
+
+        /**
+         * Observes framework service availability. The listener is invoked immediately and on bind/death.
+         * Callbacks may run on a binder thread. Call [FrameworkServiceBridge.unregister] on the returned subscription to cancel it.
+         *
+         * Optionally pass a [Lifecycle] to automatically cancel the subscription when it is destroyed.
+         * When provided, the subscription remains active while the lifecycle is stopped,
+         * an already destroyed lifecycle does not register or invoke the listener.
+         * @param lifecycle the optional lifecycle for automatic cancellation, null by default for manual cancellation only.
+         * @param listener the listener notified when the framework service is available or unavailable.
+         * @return [FrameworkServiceBridge] or null.
+         * @throws UnsupportedOperationException when using [YukiHookRuntime.XPOSED_82].
+         */
+        fun observeFrameworkService(lifecycle: Lifecycle? = null, listener: FrameworkServiceBridge) =
+            YukiHookBridge.observeService(lifecycle, listener)
 
         /**
          * Gets the project compilation timestamp in local time.
@@ -104,133 +96,88 @@ object YukiHookAPI {
         val compiledTimestamp get() = runCatching { YukiHookAPI_Impl.compiledTimestamp }.getOrNull() ?: 0L
 
         /**
-         * Gets whether the current environment is a (Xposed) host environment.
+         * Gets whether the current environment is a host environment.
          * @return [Boolean]
          */
         val isXposedEnvironment get() = YukiXposedModule.isXposedEnvironment
 
         /**
-         * Gets the current Hook Framework name.
+         * Checks whether module activation is detected through Xposed, TaiChi/Wuji.
          *
-         * - This API is deprecated and will be removed in a future version.
+         * - Includes both Xposed runtimes through [isXposedModuleActive]. Its runtime-specific
+         *   initialization requirements and asynchronous service behavior apply.
          *
-         * - Migrate to [Executor.name].
-         * @return [String]
+         * - Also checks [isTaiChiModuleActive], which requires [ModuleApplication] in the module.
+         * @return [Boolean] whether activation is currently detected.
          */
-        @Deprecated(
-            message = "Use the new API to implement this feature",
-            ReplaceWith("Executor.name", "com.highcapable.yukihookapi.YukiHookAPI.Status.Executor")
-        )
-        val executorName get() = Executor.name
+        val isModuleActive get() = isXposedModuleActive || isTaiChiModuleActive
 
         /**
-         * Gets the current Hook Framework version.
+         * Checks whether module activation is detected through the selected Xposed runtime.
          *
-         * - This API is deprecated and will be removed in a future version.
+         * - Returns true when [isXposedEnvironment] is true, independently of module-app services.
          *
-         * - Migrate to [Executor.apiLevel], [Executor.versionName], and [Executor.versionCode].
-         * @return [Int]
+         * - With [YukiHookRuntime.XPOSED_82], module-app detection uses self-hook status. It requires
+         *   [InjectYukiHookWithXposed.isUsingXposedModuleStatus] and framework injection into the module's own process.
+         * - With [YukiHookRuntime.LIBXPOSED], module-app detection requires a single compatible framework service connection.
+         *   [ModuleApplication] initializes it automatically. [observeFrameworkService] can also initialize it and observe changes.
+         *   Binding is asynchronous: false before connection or after disconnection does not necessarily mean the module is disabled.
+         *   The framework may keep the service connected after the module is disabled, so true does not guarantee
+         *   that the module is still enabled in the manager. This is not a real-time query of the manager's enable/disable state.
+         *
+         * - This does not verify the scope or whether hooks are installed in a particular target app.
+         * @return [Boolean] whether activation is currently detected.
          */
-        @Deprecated(
-            message = "Use the new API to implement this feature",
-            ReplaceWith("Executor.apiLevel", "com.highcapable.yukihookapi.YukiHookAPI.Status.Executor")
-        )
-        val executorVersion get() = Executor.apiLevel
+        val isXposedModuleActive get() = isXposedEnvironment || YukiHookBridge.isModuleActive
 
         /**
-         * Checks whether the module is active in Xposed, TaiChi, or Wuji.
+         * Checks only whether the module is active in TaiChi/Wuji.
          *
-         * - In the module environment, [Application] must extend [ModuleApplication].
-         *
-         * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
-         *
-         * - In a (Xposed) host environment, only the activation state excluding [isTaiChiModuleActive] is returned.
+         * - In the module environment, [Application] must inherit [ModuleApplication].
+         * - Always returns false in a host environment.
          * @return [Boolean] whether the module is active.
          */
-        val isModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive || isTaiChiModuleActive
+        val isTaiChiModuleActive get() = !isXposedEnvironment && (ModuleApplication.current?.isTaiChiModuleActive ?: false)
 
         /**
-         * Checks only whether the module is active in Xposed.
+         * Information about the hook framework used by the current [YukiHookAPI].
          *
-         * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
-         *
-         * - Always returns true in a (Xposed) host environment.
-         * @return [Boolean] whether the module is active.
-         */
-        val isXposedModuleActive get() = isXposedEnvironment || YukiXposedModuleStatus.isActive
-
-        /**
-         * Checks only whether the module is active in TaiChi or Wuji.
-         *
-         * - In the module environment, [Application] must extend [ModuleApplication].
-         *
-         * - Always returns false in a (Xposed) host environment.
-         * @return [Boolean] whether the module is active.
-         */
-        val isTaiChiModuleActive get() = isXposedEnvironment.not() && (ModuleApplication.currentContext?.isTaiChiModuleActive ?: false)
-
-        /**
-         * Checks whether the current Hook Framework supports Resources Hook.
-         *
-         * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
-         *
-         * - In a (Xposed) host environment, true may be returned only after a delayed event callback.
-         *
-         * - Ensure that [InjectYukiHookWithXposed.isUsingResourcesHook] is enabled. Otherwise this always returns false.
-         * @return [Boolean] whether Resources Hook is supported.
-         */
-        val isSupportResourcesHook
-            get() = YukiXposedModule.isSupportResourcesHook.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.isSupportResourcesHook
-
-        /**
-         * Information about the Hook Framework used by the current [YukiHookAPI].
+         * - In a legacy module, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+         * - In a modern module, these values follow framework-service availability.
          */
         object Executor {
 
             /**
-             * Gets the current Hook Framework name.
-             *
-             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * Gets the current hook framework name.
              * @return [String] `unknown` when unavailable or `invalid` when resolution fails.
              */
-            val name
-                get() = HookApiProperty.name.takeIf { isXposedEnvironment } ?: when {
-                    isXposedModuleActive -> YukiXposedModuleStatus.executorName
-                    isTaiChiModuleActive -> HookApiProperty.TAICHI_XPOSED_NAME
-                    else -> YukiXposedModuleStatus.executorName
-                }
+            val name get() = if (isTaiChiModuleActive && !isXposedModuleActive)
+                ExecutorType.TAICHI_XPOSED.explicitName
+            else YukiHookBridge.frameworkName
 
             /**
-             * Gets the current Hook Framework type.
-             *
-             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * Gets the current hook framework type.
              * @return [ExecutorType]
              */
-            val type get() = HookApiProperty.type.takeIf { isXposedEnvironment } ?: HookApiProperty.type(YukiXposedModuleStatus.executorName)
+            val type get() = ExecutorType.from(name)
 
             /**
-             * Gets the current Hook Framework API version.
-             *
-             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * Gets the current hook framework API level.
              * @return [Int] -1 when unavailable.
              */
-            val apiLevel get() = HookApiProperty.apiLevel.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorApiLevel
+            val apiLevel get() = YukiHookBridge.apiLevel
 
             /**
-             * Gets the current Hook Framework version name.
-             *
-             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * Gets the current hook framework version name.
              * @return [String] `unknown` when unavailable or `unsupported` when unsupported.
              */
-            val versionName get() = HookApiProperty.versionName.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionName
+            val versionName get() = YukiHookBridge.frameworkVersion
 
             /**
-             * Gets the current Hook Framework version code.
-             *
-             * - In the module environment, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+             * Gets the current hook framework version code.
              * @return [Int] -1 when unavailable or 0 when unsupported.
              */
-            val versionCode get() = HookApiProperty.versionCode.takeIf { isXposedEnvironment } ?: YukiXposedModuleStatus.executorVersionCode
+            val versionCode get() = YukiHookBridge.frameworkVersionCode
         }
     }
 
@@ -241,23 +188,9 @@ object YukiHookAPI {
 
         /**
          * Configures [YLog.Configs].
-         * @param initiate the configuration block.
+         * @param block the configuration block.
          */
-        inline fun debugLog(initiate: YLog.Configs.() -> Unit) = YLog.Configs.apply(initiate).build()
-
-        /**
-         * Global identifier for debug logs.
-         *
-         * - This API is deprecated and will be removed in a future version.
-         *
-         * - Migrate to [debugLog] and use [YLog.Configs.tag].
-         */
-        @Deprecated(message = "Use the new API to implement this feature")
-        var debugTag
-            get() = YLog.Configs.tag
-            set(value) {
-                YLog.Configs.tag = value
-            }
+        inline fun debugLog(block: YLog.Configs.() -> Unit) = YLog.Configs.apply(block).let {}
 
         /**
          * Whether debug mode is enabled, false by default.
@@ -269,44 +202,9 @@ object YukiHookAPI {
         var isDebug = false
 
         /**
-         * Whether debug log output is enabled.
-         *
-         * - This API is deprecated and will be removed in a future version.
-         *
-         * - Migrate to [debugLog] and use [YLog.Configs.isEnable].
-         */
-        @Deprecated(message = "Use the new API to implement this feature")
-        var isAllowPrintingLogs
-            get() = YLog.Configs.isEnable
-            set(value) {
-                YLog.Configs.isEnable = value
-            }
-
-        /**
-         * Whether [YukiHookPrefsBridge] key-value caching is enabled.
-         *
-         * - This API is deprecated and will be removed in a future version.
-         *
-         * - Migrate to [isEnablePrefsBridgeCache].
-         */
-        @Deprecated(message = "Use the renamed API to implement this feature", ReplaceWith("isEnablePrefsBridgeCache"))
-        var isEnableModulePrefsCache = false
-
-        /**
-         * Whether [YukiHookPrefsBridge] key-value caching is enabled.
-         *
-         * - This API and feature have been removed and will be deleted in a future version.
-         *
-         * - Direct key-value caching was removed because it can cause out-of-memory errors.
-         */
-        @Deprecated(message = "This API and feature have been removed. Delete this call")
-        var isEnablePrefsBridgeCache = false
-
-        /**
          * Whether caching the current Xposed module's [Resources] is enabled.
          *
          * - This feature is enabled by default to prevent excessive memory reuse.
-         *
          * - When disabled, every use of [PackageParam.moduleAppResources] creates a new instance and may reduce performance.
          *
          * Call [PackageParam.refreshModuleAppResources] to refresh the cache manually.
@@ -314,147 +212,124 @@ object YukiHookAPI {
         var isEnableModuleAppResourcesCache = true
 
         /**
-         * Whether Hook support for Xposed module activation and related states is enabled.
-         *
-         * - This API is deprecated and will be removed in a future version.
-         *
-         * - Migrate to [InjectYukiHookWithXposed.isUsingXposedModuleStatus].
-         */
-        @Deprecated(message = "Migrate manually to the new API")
-        var isEnableHookModuleStatus = true
-
-        /**
-         * Whether Hook support for [SharedPreferences] is enabled.
+         * Whether hook support for [SharedPreferences] is enabled.
          *
          * Once enabled, module startup forces [SharedPreferences] file permissions to [Context.MODE_WORLD_READABLE] (0664).
          *
          * - This optional experimental feature is disabled by default.
+         * - Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
          *
-         * - Use this only to fix file-permission errors that may remain on some systems after enabling New XSharedPreferences.
          * Do not enable it when [YukiHookPrefsBridge] already works correctly.
+         *
+         * - Supports for [YukiHookRuntime.XPOSED_82] only.
          */
+        @Deprecated(message = "Not recommended. This is a legacy trade-off switch, meaningless for modern frameworks.")
         var isEnableHookSharedPreferences = false
 
         /**
-         * Whether [YukiHookDataChannel] communication between the current Xposed module and host app is enabled.
+         * Whether [YukiHookDataChannel] between the current Xposed module and host is enabled.
          *
-         * The Xposed module's [Application] must extend [ModuleApplication].
+         * The Xposed module's [Application] must inherit [ModuleApplication].
          *
          * - This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
          */
         var isEnableDataChannel = true
-
-        /**
-         * Whether [Member] caching is enabled.
-         *
-         * - This API and feature have been removed and will be deleted in a future version.
-         *
-         * - Direct [Member] caching was removed because it can cause out-of-memory errors.
-         */
-        @Deprecated(message = "This API and feature have been removed. Delete this call")
-        var isEnableMemberCache = false
-
-        /** Completes the configuration block. */
-        internal fun build() = Unit
     }
 
     /**
      * Configures [YukiHookAPI].
-     *
-     * See [configs Method](https://highcapable.github.io/YukiHookAPI/en/config/api-example#configs-method)
-     * @param initiate the configuration block.
+     * @param block the configuration block.
      */
-    inline fun configs(initiate: Configs.() -> Unit) = Configs.apply(initiate).build()
+    inline fun configs(block: Configs.() -> Unit) = Configs.apply(block).let {}
 
     /**
-     * Loading entry point for a Xposed module.
-     *
-     * See [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
-     * @param initiate the Hook block.
+     * Loads entry point for a Xposed module.
+     * @param block the param block.
      */
-    fun encase(initiate: PackageParam.() -> Unit) {
+    fun encase(block: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = false
+
         if (YukiXposedModule.isXposedEnvironment)
-            YukiXposedModule.packageParamCallback = initiate
-        else printNotFoundHookApiError()
+            YukiXposedModule.packageParamCallback = block
+        else logNotFoundHookApiError()
     }
 
     /**
-     * Loading entry point for a Xposed module.
-     *
-     * See [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
-     * @param hooker the required, non-empty Hooker array.
-     * @throws IllegalStateException if [hooker] is empty.
+     * Loads entry point for a Xposed module.
+     * @param hookers the hookers.
+     * @throws IllegalStateException if [hookers] is empty.
      */
-    fun encase(vararg hooker: YukiBaseHooker) {
+    fun encase(vararg hookers: YukiBaseHooker) {
         isLoadedFromBaseContext = false
+
         if (YukiXposedModule.isXposedEnvironment)
             YukiXposedModule.packageParamCallback = {
-                if (hooker.isNotEmpty())
-                    hooker.forEach { it.assignInstance(packageParam = this) }
-                else YLog.innerE("Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true)
+                if (hookers.isNotEmpty())
+                    hookers.forEach { loadHooker(it) }
+                else YLog.innerE("Failed to passing \"encase\" function because your hookers param is empty", isImplicit = true)
             }
-        else printNotFoundHookApiError()
+        else logNotFoundHookApiError()
     }
 
     /**
-     * Loading entry point for an [Application].
+     * Loads legacy standalone custom hook APIs from an [Application].
      *
-     * Load [YukiHookAPI] from [Application.attachBaseContext].
-     *
-     * See [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
-     *
-     * See [Created by lambda](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-lambda)
-     * @param baseContext attachBaseContext.
-     * @param initiate the Hook block.
+     * - Supports for [YukiHookRuntime.XPOSED_82] only.
+     * @param baseContext the attachment base context.
+     * @param block the param block.
      */
-    fun encase(baseContext: Context?, initiate: PackageParam.() -> Unit) {
+    @Deprecated(message = "Not recommended, use the hook framework's native API instead.")
+    fun encase(baseContext: Context?, block: PackageParam.() -> Unit) {
+        if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
+
         isLoadedFromBaseContext = true
         when {
-            HookApiCategoryHelper.hasAvailableHookApi && baseContext != null ->
-                initiate(baseContext.createPackageParam().apply { printSplashInfo() })
-            else -> printNotFoundHookApiError()
+            YukiHookBridge.isCustomHookAvailable && baseContext != null ->
+                block(baseContext.createPackageParam().apply { sayHello() })
+            else -> logNotFoundHookApiError()
         }
     }
 
     /**
-     * Loading entry point for an [Application].
+     * Loads legacy standalone custom hook APIs from an [Application].
      *
-     * Load [YukiHookAPI] from [Application.attachBaseContext].
-     *
-     * See [Use as Hook API](https://highcapable.github.io/YukiHookAPI/en/guide/quick-start#use-as-hook-api)
-     *
-     * See [Created by Custom Hooker](https://highcapable.github.io/YukiHookAPI/en/config/api-example#created-by-custom-hooker)
-     * @param baseContext attachBaseContext.
-     * @param hooker the required, non-empty Hooker array.
+     * - Supports for [YukiHookRuntime.XPOSED_82] only.
+     * @param baseContext the attachment base context.
+     * @param hooker the hookers.
      * @throws IllegalStateException if [hooker] is empty.
      */
+    @Deprecated(message = "Not recommended, use the hook framework's native API instead.")
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
+        if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
+
         isLoadedFromBaseContext = true
-        if (HookApiCategoryHelper.hasAvailableHookApi) {
+        if (YukiHookBridge.isCustomHookAvailable) {
             if (baseContext != null)
                 if (hooker.isNotEmpty()) {
-                    printSplashInfo()
-                    hooker.forEach { it.assignInstance(packageParam = baseContext.createPackageParam()) }
-                } else YLog.innerE("Failed to passing \"encase\" method because your hooker param is empty", isImplicit = true)
-        } else printNotFoundHookApiError()
+                    sayHello()
+                    val param = baseContext.createPackageParam()
+                    hooker.forEach { param.loadHooker(it) }
+                } else YLog.innerE("Failed to passing \"encase\" function because your hookers param is empty", isImplicit = true)
+        } else logNotFoundHookApiError()
     }
 
-    /** Prints the welcome debug log. */
-    internal fun printSplashInfo() {
-        if (Configs.isDebug.not() || isShowSplashLogOnceTime.not()) return
-        isShowSplashLogOnceTime = false
-        YLog.innerD("Welcome to YukiHookAPI $VERSION! Using ${Status.Executor.name} API ${Status.Executor.apiLevel}", isImplicit = true)
+    /** Shows a welcome message when [Configs.isDebug] is enabled. */
+    internal fun sayHello() {
+        if (!Configs.isDebug || !isSayHelloOnceTime) return
+
+        isSayHelloOnceTime = false
+        YLog.innerD("Welcome to YukiHookAPI $VERSION! Running on ${Status.Executor.name} API ${Status.Executor.apiLevel}", isImplicit = true)
     }
 
-    /** Prints an error when no Hook API can be found. */
-    private fun printNotFoundHookApiError() =
-        YLog.innerE("Could not found any available Hook APIs in current environment! Aborted", isImplicit = true)
+    /** Logs an error when no hook API can be found. */
+    private fun logNotFoundHookApiError() = YLog.innerE(
+        "Could not found any available hook APIs in current environment. Aborted",
+        isImplicit = true
+    )
 
     /**
-     * Creates the Hook entry object from the base context.
+     * Creates the hook entry object from the base context.
      * @return [PackageParam]
      */
-    private fun Context.createPackageParam() =
-        PackageParam(PackageParamWrapper(HookEntryType.PACKAGE, packageName, processName, classLoader, applicationInfo))
+    private fun Context.createPackageParam() = PackageParam(PackageParamWrapper.from(this))
 }

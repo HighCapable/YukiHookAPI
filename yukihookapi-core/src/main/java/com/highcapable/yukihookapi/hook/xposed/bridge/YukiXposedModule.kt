@@ -20,27 +20,27 @@
  * This file is created by fankes on 2022/4/3.
  * This file is modified by fankes on 2023/1/9.
  */
+@file:Suppress("SameParameterValue")
+
 package com.highcapable.yukihookapi.hook.xposed.bridge
 
 import android.content.pm.ApplicationInfo
 import android.content.res.Resources
 import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.core.api.compat.HookApiCategoryHelper
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.xposed.bridge.proxy.IYukiXposedModuleLifecycle
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiModuleResources
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.proxy.YukiXposedModuleLifecycle
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiXposedModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
-import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
-import dalvik.system.PathClassLoader
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
+import com.highcapable.yukihookapi.runtime.YukiHookBridge
 
 /**
  * Core Xposed module implementation.
  */
-internal object YukiXposedModule : IYukiXposedModuleLifecycle {
+internal object YukiXposedModule : YukiXposedModuleLifecycle {
 
     /** Whether the Xposed module has been loaded. */
     private var isModuleLoaded = false
@@ -51,53 +51,44 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
     /** Whether the current Hook process is running in Zygote. */
     private var isInitializingZygote = false
 
-    /** The current [PackageParam] instances. */
-    private val packageParams = mutableMapOf<String, PackageParam>()
-
-    /** App package names already loaded into [PackageParam]. */
-    private val loadedPackageNames = mutableSetOf<String>()
-
-    /** The current [PackageParamWrapper] instances. */
-    private val packageParamWrappers = mutableMapOf<String, PackageParamWrapper>()
+    /** Hook entry IDs already loaded into [PackageParam]. */
+    private val loadedEntries = mutableSetOf<String>()
 
     /** The current [PackageParam] block callback. */
-    internal var packageParamCallback: (PackageParam.() -> Unit)? = null
-
-    /** Whether the current Hook Framework supports Resources Hook. */
-    internal var isSupportResourcesHook = false
+    var packageParamCallback: (PackageParam.() -> Unit)? = null
 
     /** The predefined Xposed module package name. */
-    internal var modulePackageName = ""
+    var modulePackageName = ""
 
     /** The APK path of the current Xposed module. */
-    internal var moduleAppFilePath = ""
+    var moduleAppFilePath = ""
 
     /** The current Xposed module's [Resources]. */
-    internal var moduleAppResources: YukiModuleResources? = null
+    var moduleAppResources: YukiXposedModuleResources? = null
 
     /**
      * Gets the current Xposed module's dynamic [Resources].
-     * @return [YukiModuleResources] or null.
+     * @return [YukiXposedModuleResources] or null.
      */
-    internal val dynamicModuleAppResources get() = runCatching { YukiModuleResources.wrapper(moduleAppFilePath) }.getOrNull()
+    val dynamicModuleAppResources get() = YukiXposedModuleResources.from(moduleAppFilePath)
 
     /**
      * Gets whether the module has loaded its Xposed callback.
      * @return [Boolean]
      */
-    internal val isXposedCallbackSetUp get() = isModuleLoadFinished.not() && packageParamCallback != null
+    val isXposedCallbackSetUp get() = !isModuleLoadFinished && packageParamCallback != null
 
     /**
-     * Gets the identifier of the Hook process currently running in the host app.
+     * Gets the identifier of the hook process currently running in the host.
      * @return [String]
      */
-    internal val hostProcessName get() = if (isInitializingZygote) "android-zygote" else AppParasitics.currentPackageName
+    val hostProcessName get() = if (isInitializingZygote) "android-zygote" else AppParasitism.currentPackageName
 
     /**
-     * Gets whether the current environment is a (Xposed) host environment.
+     * Gets whether the current environment is a host environment.
      * @return [Boolean]
      */
-    internal val isXposedEnvironment get() = HookApiCategoryHelper.hasAvailableHookApi && isModuleLoaded
+    val isXposedEnvironment get() = YukiHookBridge.isHookAvailable && isModuleLoaded
 
     /**
      * Automatically ignores log-collection injection instances that may appear on MIUI.
@@ -108,77 +99,14 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
         (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") &&
             javaClass.classLoader?.hasClass("android.miui.R") == true
 
-    /**
-     * Checks whether the current package has already been loaded for the specified [HookEntryType].
-     * @param packageName the package name.
-     * @param type the current Hook type.
-     * @return [Boolean] whether the package has already been loaded.
-     */
-    private fun isPackageLoaded(packageName: String?, type: HookEntryType): Boolean {
-        if (packageName == null) return false
-        if (loadedPackageNames.contains("$packageName:$type")) return true
-        loadedPackageNames.add("$packageName:$type")
-        return false
-    }
-
-    /**
-     * Instantiates the current [PackageParamWrapper] as [PackageParam].
-     *
-     * Creates a new instance automatically when none exists.
-     * @return [PackageParam]
-     */
-    private fun PackageParamWrapper.instantiate() = packageParams[wrapperNameId] ?: PackageParam().apply { packageParams[wrapperNameId] = this }
-
-    /**
-     * Creates or updates a [PackageParamWrapper].
-     *
-     * Avoids initially loading through [ClassLoader.getSystemClassLoader] when [appClassLoader] is null
-     * and [type] is not [HookEntryType.ZYGOTE].
-     * @param type the current Hook type.
-     * @param packageName the package name.
-     * @param processName the current process name.
-     * @param appClassLoader app [ClassLoader].
-     * @param appInfo app [ApplicationInfo].
-     * @param appResources app [YukiResources].
-     * @return [PackageParamWrapper] or null.
-     */
-    private fun assignWrapper(
-        type: HookEntryType,
-        packageName: String?,
-        processName: String? = "",
-        appClassLoader: ClassLoader? = null,
-        appInfo: ApplicationInfo? = null,
-        appResources: YukiResources? = null
-    ) = run {
-        isInitializingZygote = type == HookEntryType.ZYGOTE
-        if (packageParamWrappers[packageName] == null)
-            if (type == HookEntryType.ZYGOTE || appClassLoader != null)
-                PackageParamWrapper(
-                    type = type,
-                    packageName = packageName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME,
-                    processName = processName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME,
-                    appClassLoader = appClassLoader ?: ClassLoader.getSystemClassLoader(),
-                    appInfo = appInfo,
-                    appResources = appResources
-                ).also { packageParamWrappers[packageName ?: AppParasitics.SYSTEM_FRAMEWORK_NAME] = it }
-            else null
-        else packageParamWrappers[packageName]?.also { wrapper ->
-            wrapper.type = type
-            packageName?.takeIf { it.isNotBlank() }?.also { wrapper.packageName = it }
-            processName?.takeIf { it.isNotBlank() }?.also { wrapper.processName = it }
-            appClassLoader?.takeIf { type == HookEntryType.ZYGOTE || it is PathClassLoader }?.also { wrapper.appClassLoader = it }
-            appInfo?.also { wrapper.appInfo = it }
-            appResources?.also { wrapper.appResources = it }
-        }
-    }
-
     /** Refreshes the current Xposed module's [Resources]. */
-    internal fun refreshModuleAppResources() {
+    fun refreshModuleAppResources() {
         dynamicModuleAppResources?.let { moduleAppResources = it }
     }
 
     override fun onStartLoadModule(packageName: String, appFilePath: String) {
         isModuleLoaded = true
+
         modulePackageName = packageName
         moduleAppFilePath = appFilePath
         refreshModuleAppResources()
@@ -190,33 +118,34 @@ internal object YukiXposedModule : IYukiXposedModuleLifecycle {
 
     override fun onPackageLoaded(
         type: HookEntryType,
-        packageName: String?,
-        processName: String?,
-        appClassLoader: ClassLoader?,
-        appInfo: ApplicationInfo?,
-        appResources: YukiResources?
+        packageName: String,
+        processName: String,
+        mainProcessName: String,
+        isFirstApplication: Boolean,
+        packageNameForMatching: String?,
+        appClassLoader: ClassLoader,
+        appInfo: ApplicationInfo?
     ) {
-        if (isMiuiCatcherPatch(packageName).not()) when (type) {
-            HookEntryType.ZYGOTE ->
-                assignWrapper(HookEntryType.ZYGOTE, AppParasitics.SYSTEM_FRAMEWORK_NAME, AppParasitics.SYSTEM_FRAMEWORK_NAME, appClassLoader)
-            HookEntryType.PACKAGE ->
-                if (isPackageLoaded(packageName, HookEntryType.PACKAGE).not())
-                    assignWrapper(HookEntryType.PACKAGE, packageName, processName, appClassLoader, appInfo)
-                else null
-            HookEntryType.RESOURCES ->
-                // [packageName] may resolve to a package other than the actual host app, so ignore it when it differs from
-                // [AppParasitics.currentPackageName].
-                if (isPackageLoaded(packageName, HookEntryType.RESOURCES).not() && packageName == AppParasitics.currentPackageName)
-                    assignWrapper(HookEntryType.RESOURCES, packageName, appResources = appResources)
-                else null
-        }?.also {
-            runCatching {
-                if (it.isCorrectProcess) packageParamCallback?.invoke(it.instantiate().assign(it).apply { YukiHookAPI.printSplashInfo() })
-                if (it.type != HookEntryType.ZYGOTE && it.packageName == modulePackageName)
-                    AppParasitics.hookModuleAppRelated(it.appClassLoader, it.type)
-                if (it.type == HookEntryType.PACKAGE) AppParasitics.registerToAppLifecycle(it.packageName)
-                if (it.type == HookEntryType.RESOURCES) isSupportResourcesHook = true
-            }.onFailure { YLog.innerE("An exception occurred in the Hooking Process of YukiHookAPI", it) }
-        }
+        if (isMiuiCatcherPatch(packageName)) return
+        val wrapper = PackageParamWrapper(
+            type = type,
+            packageName = packageName,
+            processName = processName,
+            mainProcessName = mainProcessName,
+            isFirstApplication = isFirstApplication,
+            appClassLoader = appClassLoader,
+            appInfo = appInfo,
+            packageNameForMatching = packageNameForMatching
+        )
+        if (type != HookEntryType.ZYGOTE && synchronized(loadedEntries) { !loadedEntries.add(wrapper.id) }) return
+        isInitializingZygote = type == HookEntryType.ZYGOTE
+
+        runCatching {
+            packageParamCallback?.invoke(PackageParam(wrapper).apply { YukiHookAPI.sayHello() })
+
+            if (wrapper.type != HookEntryType.ZYGOTE && wrapper.packageName == modulePackageName)
+                AppParasitism.hookLegacyModuleAppRelated(wrapper.appClassLoader)
+            if (wrapper.isFirstApplication) AppParasitism.prepareHostApplication(wrapper.packageName)
+        }.onFailure { YLog.innerE("An exception occurred in the hooking process of YukiHookAPI", it) }
     }
 }

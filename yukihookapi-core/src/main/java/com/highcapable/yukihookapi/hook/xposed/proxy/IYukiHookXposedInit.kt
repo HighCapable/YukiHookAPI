@@ -25,64 +25,52 @@
 package com.highcapable.yukihookapi.hook.xposed.proxy
 
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithLibXposed
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.factory.encase
-import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 
 /**
- * Xposed loading entry point for [YukiHookAPI].
+ * Xposed module entry point for [YukiHookAPI].
  *
- * - Annotate the implementation with [InjectYukiHookWithXposed] to mark the module Hook entry.
+ * - Annotate the implementation with [InjectYukiHookWithLibXposed] for modern or
+ *   [InjectYukiHookWithXposed] for legacy to match the selected runtime.
  *
- * [onInit] is called automatically while [YukiHookAPI] initializes.
+ * - [onInit] is called automatically while [YukiHookAPI] initializes.
+ * - [onHook] is called automatically when hook loading starts.
  *
- * [onHook] is called automatically when Hook loading starts.
- *
- * Call [YukiHookAPI.configs] or [configs] from [onInit].
- *
- * Call [YukiHookAPI.encase] or [encase] from [onHook].
- *
- * Override [onXposedEvent] to listen for native Xposed API events.
- *
- * See [IYukiHookXposedInit Interface](https://highcapable.github.io/YukiHookAPI/en/config/xposed-using#iyukihookxposedinit-interface)
+ * - Call [YukiHookAPI.configs] or [configs] from [onInit].
+ * - Call [YukiHookAPI.encase] or [encase] from [onHook].
  */
 interface IYukiHookXposedInit {
 
     /**
      * Configures [YukiHookAPI.Configs] during initialization.
      *
-     * - Perform initialization only. Do not run Hook operations here.
+     * - Perform initialization only. Do not run hook operations here.
+     * - Register framework events once with the selected runtime's `registerFrameworkEvents { ... }` extension.
+     *   Call native APIs inside the event callbacks, not the registration block.
      *
-     * This method is optional when no custom configuration is required.
+     * This function is optional when no custom initialization is required.
      */
-    fun onInit() {}
+    fun onInit() = Unit
 
     /**
-     * Starts module Hook loading.
+     * Starts module hook loading.
      *
-     * Xposed API
-     *
-     * Call [YukiHookAPI.encase] or [encase] to start Hook operations.
+     * Call [YukiHookAPI.encase] or [encase] to start hook operations.
+     * Framework event registration is not allowed here, register it in [onInit] instead.
      */
     fun onHook()
 
     /**
-     * Listens for native Xposed loading events.
+     * This callback is no longer invoked and has no effect.
      *
-     * Implement native Xposed compatibility here when required by a Hook.
-     *
-     * Use [YukiXposedEvent] to register event callbacks.
-     *
-     * Available events:
-     *
-     * [YukiXposedEvent.onInitZygote]
-     *
-     * [YukiXposedEvent.onHandleLoadPackage]
-     *
-     * [YukiXposedEvent.onHandleInitPackageResources]
-     *
-     * - Use this callback only for native Xposed APIs. Do not operate [YukiHookAPI] here.
+     * - Move framework event registration to the selected runtime's `registerFrameworkEvents { ... }` extension inside [onInit].
      */
-    fun onXposedEvent() {}
+    @Deprecated(
+        message = "This callback is no longer invoked and has no effect. " +
+            "Use the runtime's registerFrameworkEvents { ... } extension in onInit instead."
+    )
+    fun onXposedEvent() = Unit
 }

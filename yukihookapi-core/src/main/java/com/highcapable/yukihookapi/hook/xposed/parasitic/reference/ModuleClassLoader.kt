@@ -24,13 +24,14 @@
 
 package com.highcapable.yukihookapi.hook.xposed.parasitic.reference
 
+import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
-import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitics
+import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 
 /**
- * Resolves classes across the (Xposed) host and module [ClassLoader] environments.
+ * Resolves classes across the host and module [ClassLoader] environments.
  */
-class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseClassLoader) {
+class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseClassLoader) {
 
     companion object {
 
@@ -47,14 +48,14 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
          * Gets the [ModuleClassLoader] singleton.
          * @return [ModuleClassLoader]
          */
-        internal fun instance() = instance ?: ModuleClassLoader().apply { instance = this }
+        internal fun get() = instance ?: ModuleClassLoader().apply { instance = this }
 
         /**
          * Adds classes to the host exclusion list.
          *
          * Excluded [Class] objects are loaded with the host [ClassLoader].
          *
-         * - This list is effective only in the (Xposed) host environment.
+         * - This list is effective only in the host environment.
          * @param name the fully qualified [Class] names to add.
          */
         fun excludeHostClasses(vararg name: String) {
@@ -66,7 +67,7 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
          *
          * Excluded [Class] objects are loaded with the module [ClassLoader] injected into the current host process.
          *
-         * - This list is effective only in the (Xposed) host environment.
+         * - This list is effective only in the host environment.
          * @param name the fully qualified [Class] names to add.
          */
         fun excludeModuleClasses(vararg name: String) {
@@ -79,11 +80,13 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitics.baseCl
     }
 
     /** Default module [ClassLoader]. */
-    private val baseLoader get() = AppParasitics.baseClassLoader
+    private val baseLoader get() = AppParasitism.baseClassLoader
 
+    @CallSuper
     override fun loadClass(name: String, resolve: Boolean): Class<*> {
-        if (YukiXposedModule.isXposedEnvironment.not()) return baseLoader.loadClass(name)
-        return AppParasitics.currentApplication?.classLoader?.let { hostLoader ->
+        if (!YukiXposedModule.isXposedEnvironment) return baseLoader.loadClass(name)
+
+        return AppParasitism.currentApplication?.classLoader?.let { hostLoader ->
             excludeHostClasses.takeIf { it.isNotEmpty() }?.forEach { runCatching { if (name == it) return@let hostLoader.loadClass(name) } }
             excludeModuleClasses.takeIf { it.isNotEmpty() }?.forEach { runCatching { if (name == it) return@let baseLoader.loadClass(name) } }
             runCatching { return@let baseLoader.loadClass(name) }

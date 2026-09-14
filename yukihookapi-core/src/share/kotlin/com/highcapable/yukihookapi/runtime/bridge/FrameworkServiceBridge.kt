@@ -1,0 +1,45 @@
+/*
+ * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
+ * Copyright (C) 2019 HighCapable
+ * https://github.com/HighCapable/YukiHookAPI
+ *
+ * Apache License Version 2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * This file is created by fankes on 2026/9/7.
+ */
+@file:Suppress("unused")
+
+package com.highcapable.yukihookapi.runtime.bridge
+
+/**
+ * Receives framework service availability changes.
+ * Each successful observation returns an independent subscription that can unregister itself.
+ */
+fun interface FrameworkServiceBridge {
+
+    /**
+     * Called immediately on registration and when the framework service binds or dies.
+     * Callbacks may run on a binder thread.
+     * @param available whether the framework service is available.
+     */
+    fun onServiceChanged(available: Boolean)
+
+    /**
+     * Cancels this subscription without disconnecting the framework service.
+     * Call this on the subscription returned by observation, not the input listener.
+     * The default implementation does nothing for an unregistered listener.
+     */
+    fun unregister() = Unit
+}

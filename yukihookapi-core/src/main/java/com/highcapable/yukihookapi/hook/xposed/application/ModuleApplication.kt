@@ -22,48 +22,48 @@
 package com.highcapable.yukihookapi.hook.xposed.application
 
 import android.app.Application
+import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication.Companion.appContext
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.runtime.YukiHookBridge
 
 /**
  * Provides an [Application] base class for Xposed modules built with [YukiHookAPI].
  *
- * Extend this class from the Xposed module's [Application].
- *
- * Or declare it directly in the `application` tag of AndroidManifest.xml.
+ * Inherit this class from the Xposed module's [Application].
+ * Or declare it directly in the `application` tag of AndroidManifest.
  *
  * This provides the following features:
  *
+ * - Initializes [YukiHookBridge] for module app runtime services.
  * - Exposes the module-wide static [appContext].
- *
  * - Loads [YukiHookAPI.Configs] in both module and host environments to avoid duplicate configuration.
- *
  * - Enables [YukiHookDataChannel] communication between the module and host.
- *
- * - Exposes [YukiHookAPI.Status.isTaiChiModuleActive] for TaiChi and Wuji activation checks.
+ * - Exposes [YukiHookAPI.Status.isTaiChiModuleActive] for TaiChi/Wuji activation checks.
  */
 open class ModuleApplication : Application() {
 
     companion object {
 
         /** Module-wide static [Application] instance. */
-        internal var currentContext: ModuleApplication? = null
+        internal var current: ModuleApplication? = null
 
         /**
          * Gets the module-wide static [Application] instance.
          * @return [ModuleApplication]
          * @throws IllegalStateException if the [Application] has not finished loading correctly.
          */
-        val appContext get() = currentContext ?: error("App is dead, You cannot call to appContext")
+        val appContext get() = current ?: error("App is dead, You cannot call to appContext.")
     }
 
+    @CallSuper
     override fun onCreate() {
         super.onCreate()
-        currentContext = this
+        current = this
+
+        YukiHookBridge.initializeModuleApp()
         // Calls [IYukiHookXposedInit.onInit] on the Hook entry class.
         runCatching { ModuleApplication_Impl.callHookEntryInit() }
-        YukiHookDataChannel.instance().register(context = this)
+        YukiHookDataChannel.get().register(context = this)
     }
 }

@@ -36,15 +36,19 @@ dependencies {
     implementation(libs.hikage.extension)
     implementation(libs.hikage.widget.androidx)
     implementation(libs.hikage.widget.material)
+
     implementation(platform(libs.betterandroid.android.bom))
     implementation(libs.betterandroid.ui.component)
     implementation(libs.betterandroid.ui.extension)
     implementation(libs.betterandroid.system.extension)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+
+    implementation(libs.material)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

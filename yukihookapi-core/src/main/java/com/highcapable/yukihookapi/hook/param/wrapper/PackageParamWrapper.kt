@@ -23,46 +23,64 @@
 
 package com.highcapable.yukihookapi.hook.param.wrapper
 
+import android.app.Application
+import android.content.Context
 import android.content.pm.ApplicationInfo
+import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
-import dalvik.system.PathClassLoader
 
 /**
- * Wraps [PackageParam] state for the current Hook entry.
- * @param type the current Hook entry type.
+ * Wraps [PackageParam] state for the current hook entry.
+ * @param type the current hook entry type.
  * @param packageName the package name.
  * @param processName the current process name.
+ * @param mainProcessName the main process identity supplied by the runtime.
+ * @param isFirstApplication whether this package owns the first [Application] in the current process.
  * @param appClassLoader app [ClassLoader].
  * @param appInfo app [ApplicationInfo].
- * @param appResources app [YukiResources].
+ * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
  */
-internal class PackageParamWrapper internal constructor(
-    var type: HookEntryType,
-    var packageName: String,
-    var processName: String,
-    var appClassLoader: ClassLoader,
-    var appInfo: ApplicationInfo? = null,
-    var appResources: YukiResources? = null
+internal data class PackageParamWrapper(
+    val type: HookEntryType,
+    val packageName: String,
+    val processName: String,
+    val mainProcessName: String = packageName.trim(),
+    val isFirstApplication: Boolean,
+    val appClassLoader: ClassLoader,
+    val appInfo: ApplicationInfo? = null,
+    private val packageNameForMatching: String? = packageName
 ) {
 
+    companion object {
+
+        /**
+         * Creates a new [PackageParamWrapper] from the current [Context].
+         * @param context the current context.
+         * @param type the current hook entry type, defaults to [HookEntryType.PACKAGE].
+         * @return [PackageParamWrapper]
+         */
+        fun from(context: Context, type: HookEntryType = HookEntryType.PACKAGE) = PackageParamWrapper(
+            type = type, 
+            packageName = context.packageName, 
+            processName = context.processName, 
+            mainProcessName = context.packageName, 
+            isFirstApplication = type == HookEntryType.PACKAGE,
+            appClassLoader = context.classLoader, 
+            appInfo = context.applicationInfo
+        )
+    }
+
     /**
-     * Gets the name ID of the current wrapper.
+     * Gets the ID of the current wrapper.
      * @return [String]
      */
-    internal val wrapperNameId get() = if (type == HookEntryType.ZYGOTE) "android-zygote" else packageName
+    val id = "$type:$packageName"
 
     /**
-     * Gets whether the current Hook process uses the expected [ClassLoader].
-     *
-     * This prevents [ClassLoader] mismatches while hooking the system framework or system apps.
-     *
-     * When [type] is not [HookEntryType.ZYGOTE], [appClassLoader] must be a [PathClassLoader].
-     * @return [Boolean] whether the process configuration is valid.
+     * Checks if the current wrapper matches the specified package name.
+     * @param name the package name to check.
+     * @return [Boolean]
      */
-    internal val isCorrectProcess get() = type == HookEntryType.ZYGOTE || (type != HookEntryType.ZYGOTE && appClassLoader is PathClassLoader)
-
-    override fun toString() =
-        "[type] $type [packageName] $packageName [processName] $processName [appClassLoader] $appClassLoader [appInfo] $appInfo [appResources] $appResources"
+    fun matchesPackage(name: String) = packageNameForMatching == name
 }

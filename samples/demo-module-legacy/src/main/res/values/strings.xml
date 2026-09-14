@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">YukiHook Legacy Module</string>
+    <string name="module_description">YukiHookAPI legacy Xposed module test</string>
+</resources>

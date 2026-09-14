@@ -1,0 +1,55 @@
+/*
+ * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
+ * Copyright (C) 2019 HighCapable
+ * https://github.com/HighCapable/YukiHookAPI
+ *
+ * Apache License Version 2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * This file is created by fankes on 2026/9/10.
+ */
+package com.highcapable.yukihookapi.compiler.subprocessor.spec
+
+import com.highcapable.yukihookapi.compiler.DeclaredSymbol
+
+/**
+ * Spec used to generate legacy Xposed entry sources and assets.
+ * @param entryPackageName the package name of the entry class.
+ * @param modulePackageName the detected module application ID, not the Android namespace.
+ * @param customMPackageName the manually configured module application ID.
+ * @param entryClassName the entry class name.
+ * @param xInitClassName the generated framework entry class name.
+ * @param isEntryClassKindOfObject whether the entry class is an `object` singleton.
+ * @param isUsingXposedModuleStatus whether legacy self-hook status generation is enabled.
+ */
+data class Xposed82GenerateSpec(
+    override var entryPackageName: String = "",
+    override var modulePackageName: String = "",
+    override var customMPackageName: String = "",
+    override var entryClassName: String = "",
+    override var xInitClassName: String = "",
+    override var isEntryClassKindOfObject: Boolean = false,
+    var isUsingXposedModuleStatus: Boolean = true
+) : GenerateSpec {
+
+    companion object {
+
+        const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.InjectYukiHookWithXposed"
+        const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.xposed82.Xposed82Entry"
+
+        const val RUNTIME_MODULE_NAME = "yukihookapi-runtime-xposed82"
+
+        const val INIT_FILE_PATH = "assets/xposed_init"
+    }
+}
