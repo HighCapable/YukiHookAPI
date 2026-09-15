@@ -166,7 +166,12 @@ class MainActivity : BaseActivity() {
                                     isSingleLine = true
                                     textSize = 18f
                                     hostEnvironment { isEnabled = false }
-                                    updateText(preferences().get(DataConst.TEST_KV_DATA))
+                                    updateText(
+                                        preferences().get(
+                                            DataConst.TEST_KV_DATA,
+                                            stringResource(R.string.demo_test_data_default)
+                                        )
+                                    )
                                 }
                             }
                         }

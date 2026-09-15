@@ -146,7 +146,9 @@ object HookEntry : YukiHookXposedModule {
                         after {
                             // Add text after the [Activity] title
                             // 在 [Activity] 标题后方加入文字
-                            instance<Activity>().apply { title = "$title [Active]" }
+                            instance<Activity>().apply {
+                                title = moduleResources.getString(R.string.demo_hooked_activity_title, title)
+                            }
                         }
                     }
                 // Register Activity Proxy
@@ -193,13 +195,15 @@ object HookEntry : YukiHookXposedModule {
                         after {
                             if (preferences.getBoolean("show_dialog_when_demo_app_opened"))
                                 MaterialAlertDialogBuilder(instance<Activity>().applyModuleTheme(R.style.Theme_Default))
-                                    .setTitle("Hooked")
+                                    .setTitle(moduleResources.getString(R.string.demo_hooked_dialog_title))
                                     .setMessage(
-                                        "This App has been hooked!\n\n" +
-                                            "Hook Framework: ${YukiHookAPI.Status.Executor.name}\n\n" +
-                                            "Xposed API Version: ${YukiHookAPI.Status.Executor.apiLevel}"
+                                        moduleResources.getString(
+                                            R.string.demo_hooked_dialog_message,
+                                            YukiHookAPI.Status.Executor.name,
+                                            YukiHookAPI.Status.Executor.apiLevel
+                                        )
                                     )
-                                    .setPositiveButton("OK", null)
+                                    .setPositiveButton(moduleResources.getString(R.string.demo_dialog_ok), null)
                                     .show().compatStyle()
                         }
                     }
@@ -248,21 +252,24 @@ object HookEntry : YukiHookXposedModule {
                         intercept {
                             instance<Activity>().applyModuleTheme(R.style.Theme_Default).also { context ->
                                 MaterialAlertDialogBuilder(context)
-                                    .setTitle("Hooked")
-                                    .setMessage("I am hook your toast showing!")
+                                    .setTitle(moduleResources.getString(R.string.demo_hooked_dialog_title))
+                                    .setMessage(moduleResources.getString(R.string.demo_hooked_toast_message))
                                     .apply {
                                         if (AndroidVersion.isAtLeast(AndroidVersion.N))
-                                            setPositiveButton("START PARASITIC") { _, _ ->
+                                            setPositiveButton(moduleResources.getString(R.string.demo_start_parasitic)) { _, _ ->
                                                 MaterialAlertDialogBuilder(context)
-                                                    .setTitle("Start Parasitic")
-                                                    .setMessage("This function will start MainActivity that exists in the module.")
-                                                    .setPositiveButton("YES") { _, _ ->
+                                                    .setTitle(moduleResources.getString(R.string.demo_start_parasitic_title))
+                                                    .setMessage(moduleResources.getString(R.string.demo_start_parasitic_message))
+                                                    .setPositiveButton(moduleResources.getString(R.string.demo_dialog_yes)) { _, _ ->
                                                         context.startActivity<MainActivity>()
-                                                    }.setNegativeButton("NO", null).show().compatStyle()
+                                                    }.setNegativeButton(moduleResources.getString(R.string.demo_dialog_no), null).show().compatStyle()
                                             }
-                                    }.setNegativeButton("SEND MSG TO MODULE") { _, _ ->
-                                        dataChannel.put(DataConst.TEST_CN_DATA, value = "I am host, can you hear me?")
-                                    }.setNeutralButton("REMOVE HOOK") { _, _ ->
+                                    }.setNegativeButton(moduleResources.getString(R.string.demo_send_message_to_module)) { _, _ ->
+                                        dataChannel.put(
+                                            DataConst.TEST_CN_DATA,
+                                            value = moduleResources.getString(R.string.demo_message_from_host)
+                                        )
+                                    }.setNeutralButton(moduleResources.getString(R.string.demo_remove_hook)) { _, _ ->
                                         removeSelf()
                                     }.show().compatStyle()
                             }

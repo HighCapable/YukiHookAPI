@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">YukiHook App</string>
+    <string name="app_name" translatable="false">YukiHook App</string>
+    <string name="demo_button_click_me">Click Me</string>
 </resources>

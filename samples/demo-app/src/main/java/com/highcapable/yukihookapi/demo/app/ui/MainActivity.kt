@@ -39,6 +39,7 @@ import com.highcapable.hikage.widget.android.widget.LinearLayout
 import com.highcapable.hikage.widget.android.widget.TextView
 import com.highcapable.hikage.widget.androidx.core.widget.NestedScrollView
 import com.highcapable.hikage.widget.com.google.android.material.appbar.MaterialToolbar
+import com.highcapable.yukihookapi.demo.app.R
 import com.highcapable.yukihookapi.demo.app.test.Main
 
 class MainActivity : AppViewsActivity() {
@@ -92,7 +93,7 @@ class MainActivity : AppViewsActivity() {
                             }
                         }
                         Button {
-                            text = "Click Me!"
+                            text = stringResource(R.string.demo_button_click_me)
                             setOnClickListener { toast() }
                         }
                     }
