@@ -17,21 +17,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This file is created by fankes on 2022/3/27.
+ * This file is created by fankes on 2026/9/15.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.hook.xposed.prefs.data
 
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
-import java.io.Serializable
+import com.highcapable.yukihookapi.hook.xposed.preference.data.PreferenceData
 
-/**
- * Defines a typed key-value preference entry.
- *
- * This class provides an extended usage pattern for [YukiHookPrefsBridge].
- * @param key the preference key.
- * @param value the default value.
- */
-data class PrefsData<T>(
-    var key: String,
-    var value: T
-) : Serializable
+/** Alias for [PreferenceData] class. */
+@Deprecated(
+    message = "This name is deprecated, migrate to PreferenceData.",
+    replaceWith = ReplaceWith(
+        expression = "PreferenceData",
+        imports = ["com.highcapable.yukihookapi.hook.xposed.preference.data.PreferenceData"]
+    )
+)
+typealias PrefsData<T> = PreferenceData<T>

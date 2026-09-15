@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/4/17.
  */
-package com.highcapable.yukihookapi.hook.xposed.prefs.ui
+package com.highcapable.yukihookapi.hook.xposed.preference.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -27,13 +27,13 @@ import androidx.annotation.CallSuper
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
+import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 
 /**
  * Extends preference support for Xposed modules built with [YukiHookAPI].
  *
  * Inherits [PreferenceFragmentCompat] to provides a [PreferenceDataStore] that
- * uses [YukiHookPrefsBridge] to store preferences in the module's app.
+ * uses [YukiHookPreferences] to store preferences in the module's app.
  *
  * Inherits this class instead of [PreferenceFragmentCompat].
  */
@@ -41,8 +41,8 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
 
     private var current: SharedPreferences? = null
 
-    private val bridge by lazy {
-        YukiHookPrefsBridge.from(requireContext())
+    private val preferences by lazy {
+        YukiHookPreferences.from(requireContext())
             .name(preferenceManager.sharedPreferencesName ?: "${requireContext().packageName}_preferences")
     }
 
@@ -50,7 +50,7 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = createDataStore()
 
-        current = bridge.current
+        current = preferences.current
         current?.registerOnSharedPreferenceChangeListener(this)
 
         @Suppress("DEPRECATION")
@@ -76,21 +76,21 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
     // endregion
 
     private fun createDataStore() = object : PreferenceDataStore() {
-        override fun getString(key: String, defValue: String?) = bridge.current.getString(key, defValue)
-        override fun getStringSet(key: String, defValues: Set<String>?) = bridge.current.getStringSet(key, defValues)
-        override fun getInt(key: String, defValue: Int) = bridge.getInt(key, defValue)
-        override fun getLong(key: String, defValue: Long) = bridge.getLong(key, defValue)
-        override fun getFloat(key: String, defValue: Float) = bridge.getFloat(key, defValue)
-        override fun getBoolean(key: String, defValue: Boolean) = bridge.getBoolean(key, defValue)
-        override fun putString(key: String, value: String?) = bridge.edit {
+        override fun getString(key: String, defValue: String?) = preferences.current.getString(key, defValue)
+        override fun getStringSet(key: String, defValues: Set<String>?) = preferences.current.getStringSet(key, defValues)
+        override fun getInt(key: String, defValue: Int) = preferences.getInt(key, defValue)
+        override fun getLong(key: String, defValue: Long) = preferences.getLong(key, defValue)
+        override fun getFloat(key: String, defValue: Float) = preferences.getFloat(key, defValue)
+        override fun getBoolean(key: String, defValue: Boolean) = preferences.getBoolean(key, defValue)
+        override fun putString(key: String, value: String?) = preferences.edit {
             if (value == null) remove(key) else putString(key, value)
         }
-        override fun putStringSet(key: String, values: Set<String>?) = bridge.edit {
+        override fun putStringSet(key: String, values: Set<String>?) = preferences.edit {
             if (values == null) remove(key) else putStringSet(key, values)
         }
-        override fun putInt(key: String, value: Int) = bridge.edit { putInt(key, value) }
-        override fun putLong(key: String, value: Long) = bridge.edit { putLong(key, value) }
-        override fun putFloat(key: String, value: Float) = bridge.edit { putFloat(key, value) }
-        override fun putBoolean(key: String, value: Boolean) = bridge.edit { putBoolean(key, value) }
+        override fun putInt(key: String, value: Int) = preferences.edit { putInt(key, value) }
+        override fun putLong(key: String, value: Long) = preferences.edit { putLong(key, value) }
+        override fun putFloat(key: String, value: Float) = preferences.edit { putFloat(key, value) }
+        override fun putBoolean(key: String, value: Boolean) = preferences.edit { putBoolean(key, value) }
     }
 }

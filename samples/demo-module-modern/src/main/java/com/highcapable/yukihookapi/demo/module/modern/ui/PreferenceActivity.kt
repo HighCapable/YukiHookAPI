@@ -36,7 +36,7 @@ import com.highcapable.hikage.widget.android.widget.FrameLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.demo.module.modern.R
 import com.highcapable.yukihookapi.demo.module.modern.ui.base.BaseActivity
-import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
+import com.highcapable.yukihookapi.hook.xposed.preference.ui.ModulePreferenceFragment
 
 class PreferenceActivity : BaseActivity() {
 

@@ -46,7 +46,7 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
 import com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper.ModuleContextThemeWrapper
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
+import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.File
 
@@ -73,17 +73,17 @@ fun YukiHookXposedModule.encase(block: PackageParam.() -> Unit) = YukiHookAPI.en
 fun YukiHookXposedModule.encase(vararg hookers: YukiBaseHooker) = YukiHookAPI.encase(hookers = hookers)
 
 /**
- * Creates a [YukiHookPrefsBridge] object.
+ * Creates a [YukiHookPreferences] object.
  *
  * - This API is available in both module and host environments.
  *
- * To store data in the current host's private storage from a host environment, use [YukiHookPrefsBridge.native].
+ * To store data in the current host's private storage from a host environment, use [YukiHookPreferences.native].
  * Without any explicit conditions, the host environment reads module data by default.
  * @receiver the current context.
  * @param name the custom shared preferences storage name, empty by default.
- * @return [YukiHookPrefsBridge]
+ * @return [YukiHookPreferences]
  */
-fun Context.prefs(name: String = "") = YukiHookPrefsBridge.from(this).let { if (name.isNotBlank()) it.name(name) else it }
+fun Context.preferences(name: String = "") = YukiHookPreferences.from(this).let { if (name.isNotBlank()) it.name(name) else it }
 
 /**
  * Gets a [YukiHookDataChannel] object.
@@ -214,6 +214,10 @@ inline fun YukiHookXposedModule.events(block: YukiXposedEvent.() -> Unit) = Unit
  */
 @Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
 inline fun IYukiHookXposedInit.events(block: YukiXposedEvent.() -> Unit) = Unit
+
+/** Creates a [YukiHookPreferences] object. */
+@Deprecated(message = "Use preferences instead.", replaceWith = ReplaceWith("preferences(name)"))
+fun Context.prefs(name: String = "") = preferences(name)
 
 /** Registers the current Xposed module's [Activity] in the host. */
 @Deprecated(message = "Use registerModuleActivities instead.", replaceWith = ReplaceWith("registerModuleActivities(proxy)"))

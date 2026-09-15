@@ -39,7 +39,7 @@ import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
+import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
@@ -227,7 +227,7 @@ object YukiHookAPI {
          * - This optional experimental feature is disabled by default.
          * - Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
          *
-         * Do not enable it when [YukiHookPrefsBridge] already works correctly.
+         * Do not enable it when [YukiHookPreferences] already works correctly.
          *
          * - Supports for [YukiHookRuntime.XPOSED_82] only.
          */

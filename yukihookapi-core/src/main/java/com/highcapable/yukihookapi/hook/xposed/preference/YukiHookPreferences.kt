@@ -24,7 +24,7 @@
     "CommitPrefEdits", "UNCHECKED_CAST"
 )
 
-package com.highcapable.yukihookapi.hook.xposed.prefs
+package com.highcapable.yukihookapi.hook.xposed.preference
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -32,8 +32,8 @@ import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
-import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
-import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
+import com.highcapable.yukihookapi.hook.xposed.preference.data.PreferenceData
+import com.highcapable.yukihookapi.hook.xposed.preference.ui.ModulePreferenceFragment
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
@@ -45,16 +45,16 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * For using [PreferenceFragmentCompat] in the module environment, [YukiHookAPI] provides [ModulePreferenceFragment] with the same functionality.
  * @param context the context instance, null by default.
  */
-class YukiHookPrefsBridge private constructor(private var context: Context? = null) {
+class YukiHookPreferences private constructor(private var context: Context? = null) {
 
     internal companion object {
 
         /**
          * Creates a bridge for the module or the current host.
          * @param context the context instance, null by default.
-         * @return [YukiHookPrefsBridge]
+         * @return [YukiHookPreferences]
          */
-        fun from(context: Context? = null) = YukiHookPrefsBridge(context)
+        fun from(context: Context? = null) = YukiHookPreferences(context)
     }
 
     private val isHostEnvironment get() = XposedModuleRuntime.isHostEnvironment
@@ -77,7 +77,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /** Checks the API loading state. */
     private fun checkApi() {
         require(!YukiHookAPI.isLoadedFromBaseContext) {
-            "YukiHookPrefsBridge not allowed in custom hook API."
+            "YukiHookPreferences not allowed in custom hook API."
         }
         if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
             "Xposed modulePackageName load failed, please reset and rebuild it."
@@ -105,7 +105,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     // region Deprecated properties for backward compatibility
 
     /**
-     * Gets the availability state of the current [YukiHookPrefsBridge].
+     * Gets the availability state of the current [YukiHookPreferences].
      *
      * - Migrate to [isAvailable] or [isWritable].
      * @return [Boolean]
@@ -130,19 +130,19 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     /**
      * Customizes the shared preferences storage name.
      * @param name the custom storage name.
-     * @return [YukiHookPrefsBridge]
+     * @return [YukiHookPreferences]
      */
-    fun name(name: String): YukiHookPrefsBridge {
+    fun name(name: String): YukiHookPreferences {
         prefsName = name
         return this
     }
 
     /**
      * Ignores the current environment and uses [Context.getSharedPreferences] directly to access data.
-     * @return [YukiHookPrefsBridge]
+     * @return [YukiHookPreferences]
      * @throws IllegalStateException if [context] is null.
      */
-    fun native(): YukiHookPrefsBridge {
+    fun native(): YukiHookPreferences {
         if (isHostEnvironment && context == null) context = AppParasitism.currentApplication
             ?: error("The host's context has not yet initialized successfully, the native function cannot be used at this time.")
         isUsingNativeStorage = true
@@ -154,7 +154,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * Gets a [String] value.
      *
      * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, "" by default.
      * @return [String]
@@ -165,18 +165,18 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * Gets a [Set] of [String] values.
      *
      * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
-     * @param value the default value, an empty [MutableSet] of [String] values by default.
+     * @param values the default values, an empty [MutableSet] of [String] values by default.
      * @return [Set]<[String]>
      */
-    fun getStringSet(key: String, value: Set<String> = mutableSetOf()) = current.getStringSet(key, value) ?: value
+    fun getStringSet(key: String, values: Set<String> = mutableSetOf()) = current.getStringSet(key, values) ?: values
 
     /**
      * Gets a [Boolean] value.
      *
      * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, false by default.
      * @return [Boolean]
@@ -187,7 +187,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * Gets an [Int] value.
      *
      * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, 0 by default.
      * @return [Int]
@@ -198,7 +198,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * Gets a [Float] value.
      *
      * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, 0f by default.
      * @return [Float]
@@ -209,7 +209,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * Gets a [Long] value.
      *
      * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PrefsData] to create a template and [get] to retrieve data is recommended.
+     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, 0L by default.
      * @return [Long]
@@ -218,20 +218,19 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
 
     /**
      * Gets a value of the specified type intelligently.
-     * @param prefs the key-value instance.
-     * @param value the default value. The default is [PrefsData.value] in [prefs].
+     * @param preference the key-value instance.
+     * @param value the default value. The default is [PreferenceData.value] in [preference].
      * @return [T] which can only be [String], [Set] of [String], [Int], [Float], [Long], or [Boolean].
      */
-    fun <T> get(prefs: PrefsData<T>, value: T = prefs.value): T = getPrefsData(prefs.key, value) as T
+    fun <T> get(preference: PreferenceData<T>, value: T = preference.value) = getPreferenceData(preference.key, value) as T
 
     /**
      * Gets a value of the specified type intelligently.
-     *
      * @param key the key.
      * @param value the default value.
      * @return [Any]
      */
-    private fun getPrefsData(key: String, value: Any?): Any = when (value) {
+    private fun getPreferenceData(key: String, value: Any?) = when (value) {
         is String -> getString(key, value)
         is Set<*> -> getStringSet(key, value as? Set<String> ?: error("Key-value type ${value.javaClass.name} is not allowed."))
         is Int -> getInt(key, value)
@@ -279,111 +278,51 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
     inline fun edit(block: Editor.() -> Unit) = edit().apply(block).apply()
 
     /**
-     * Storage proxy for [YukiHookPrefsBridge].
+     * Storage proxy for [YukiHookPreferences].
      *
      * - Use [edit] to obtain [Editor].
      * - Module preferences are read-only in a host process, so changes are ignored there.
      */
-    inner class Editor internal constructor() {
+    inner class Editor internal constructor() : SharedPreferences.Editor {
 
         private val editor = if (isWritable) current.edit() else null
 
-        /**
-         * Removes all stored data containing [key].
-         * @param key the key name.
-         * @return [Editor]
-         */
-        fun remove(key: String) = apply { editor?.remove(key) }
+        override fun remove(key: String) = apply { editor?.remove(key) }
 
-        /**
-         * Removes the stored data for [PrefsData.key].
-         * @param prefs the key-value instance.
-         * @return [Editor]
-         */
-        fun remove(prefs: PrefsData<*>) = remove(prefs.key)
+        override fun clear() = apply { editor?.clear() }
+        override fun putString(key: String?, value: String?) = apply { editor?.putString(key, value) }
 
-        /**
-         * Removes all stored data.
-         * @return [Editor]
-         */
-        fun clear() = apply { editor?.clear() }
-
-        /**
-         * Stores a [String] value.
-         *
-         * - Using [PrefsData] to create a template and [put] to store data is recommended.
-         * @param key the key name.
-         * @param value the value data.
-         * @return [Editor]
-         */
-        fun putString(key: String, value: String) = apply { editor?.putString(key, value) }
-
-        /**
-         * Stores a [Set] of [String] values.
-         *
-         * - Using [PrefsData] to create a template and [put] to store data is recommended.
-         * @param key the key name.
-         * @param value the value data.
-         * @return [Editor]
-         */
-        fun putStringSet(key: String, value: Set<String>) = apply { editor?.putStringSet(key, value) }
-
-        /**
-         * Stores a [Boolean] value.
-         *
-         * - Using [PrefsData] to create a template and [put] to store data is recommended.
-         * @param key the key name.
-         * @param value the value data.
-         * @return [Editor]
-         */
-        fun putBoolean(key: String, value: Boolean) = apply { editor?.putBoolean(key, value) }
-
-        /**
-         * Stores an [Int] value.
-         *
-         * - Using [PrefsData] to create a template and [put] to store data is recommended.
-         * @param key the key name.
-         * @param value the value data.
-         * @return [Editor]
-         */
-        fun putInt(key: String, value: Int) = apply { editor?.putInt(key, value) }
-
-        /**
-         * Stores a [Float] value.
-         *
-         * - Using [PrefsData] to create a template and [put] to store data is recommended.
-         * @param key the key name.
-         * @param value the value data.
-         * @return [Editor]
-         */
-        fun putFloat(key: String, value: Float) = apply { editor?.putFloat(key, value) }
-
-        /**
-         * Stores a [Long] value.
-         *
-         * - Using [PrefsData] to create a template and [put] to store data is recommended.
-         * @param key the key name.
-         * @param value the value data.
-         * @return [Editor]
-         */
-        fun putLong(key: String, value: Long) = apply { editor?.putLong(key, value) }
+        override fun putStringSet(key: String?, values: Set<String?>?) = apply { editor?.putStringSet(key, values) }
+        override fun putBoolean(key: String, value: Boolean) = apply { editor?.putBoolean(key, value) }
+        override fun putInt(key: String, value: Int) = apply { editor?.putInt(key, value) }
+        override fun putFloat(key: String, value: Float) = apply { editor?.putFloat(key, value) }
+        override fun putLong(key: String, value: Long) = apply { editor?.putLong(key, value) }
 
         /**
          * Stores a value of the specified type intelligently.
-         * @param prefs the key-value instance.
+         * @param preference the key-value instance.
          * @param value the value to store. It can only be [String], [Set] of [String], [Int], [Float], [Long], or [Boolean].
          * @return [Editor]
          */
-        fun <T> put(prefs: PrefsData<T>, value: T) = putPrefsData(prefs.key, value)
+        fun <T> put(preference: PreferenceData<T>, value: T) = putPreferenceData(preference.key, value)
+
+        /**
+         * Removes the stored data for [PreferenceData.key].
+         * @param preference the key-value instance.
+         * @return [Editor]
+         */
+        fun remove(preference: PreferenceData<*>) = remove(preference.key)
+
+        override fun commit() = editor?.commit() ?: false
+        override fun apply() = editor?.apply() ?: Unit
 
         /**
          * Stores a value of the specified type intelligently.
-         *
          * @param key the key.
          * @param value the value to store. It can only be [String], [Set] of [String], [Int], [Float], [Long], or [Boolean].
          * @return [Editor]
          */
-        private fun putPrefsData(key: String, value: Any?) = when (value) {
+        private fun putPreferenceData(key: String, value: Any?) = when (value) {
             is String -> putString(key, value)
             is Set<*> -> putStringSet(key, value as? Set<String> ?: error("Key-value type ${value.javaClass.name} is not allowed."))
             is Int -> putInt(key, value)
@@ -392,14 +331,5 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
             is Boolean -> putBoolean(key, value)
             else -> error("Key-value type ${value?.javaClass?.name} is not allowed.")
         }
-
-        /**
-         * Commits changes synchronously.
-         * @return [Boolean] whether the operation succeeded.
-         */
-        fun commit() = editor?.commit() ?: false
-
-        /** Applies changes asynchronously. */
-        fun apply() = editor?.apply() ?: Unit
     }
 }

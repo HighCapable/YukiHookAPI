@@ -46,7 +46,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
+import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
@@ -170,21 +170,21 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         else XposedModuleRuntime.dynamicModuleResources) ?: error("Current hook framework not support module resources.")
 
     /**
-     * Creates a [YukiHookPrefsBridge] object.
+     * Creates a [YukiHookPreferences] object.
      *
      * - This is unavailable when loaded as a custom hook API and throws an exception.
-     * @return [YukiHookPrefsBridge]
+     * @return [YukiHookPreferences]
      */
-    val prefs get() = YukiHookPrefsBridge.from()
+    val preferences get() = YukiHookPreferences.from()
 
     /**
-     * Creates a [YukiHookPrefsBridge] object.
+     * Creates a [YukiHookPreferences] object.
      *
      * - This is unavailable when loaded as a custom hook API and throws an exception.
      * @param name the custom SharedPreferences storage name.
-     * @return [YukiHookPrefsBridge]
+     * @return [YukiHookPreferences]
      */
-    fun prefs(name: String) = prefs.name(name)
+    fun preferences(name: String) = preferences.name(name)
 
     /**
      * Gets the [YukiHookDataChannel] object.
@@ -714,6 +714,14 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /** Gets the [Resources] of the current Xposed module. */
     @Deprecated(message = "Use moduleResources instead.", replaceWith = ReplaceWith("moduleResources"))
     val moduleAppResources get() = moduleResources
+
+    /** Creates a [YukiHookPreferences] object. */
+    @Deprecated(message = "Use preferences instead.", replaceWith = ReplaceWith("preferences"))
+    val prefs get() = preferences
+
+    /** Creates a [YukiHookPreferences] object. */
+    @Deprecated(message = "Use preferences instead.", replaceWith = ReplaceWith("preferences(name)"))
+    fun prefs(name: String) = preferences(name)
 
     /** Refreshes the [Resources] of the current Xposed module. */
     @Deprecated(message = "Use refreshModuleResources instead.", replaceWith = ReplaceWith("refreshModuleResources()"))

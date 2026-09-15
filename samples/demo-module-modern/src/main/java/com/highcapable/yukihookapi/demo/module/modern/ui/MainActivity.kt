@@ -51,7 +51,7 @@ import com.highcapable.yukihookapi.demo.module.modern.data.DataConst
 import com.highcapable.yukihookapi.demo.module.modern.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.modern.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.factory.dataChannel
-import com.highcapable.yukihookapi.hook.factory.prefs
+import com.highcapable.yukihookapi.hook.factory.preferences
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -166,7 +166,7 @@ class MainActivity : BaseActivity() {
                                     isSingleLine = true
                                     textSize = 18f
                                     hostEnvironment { isEnabled = false }
-                                    updateText(prefs().get(DataConst.TEST_KV_DATA))
+                                    updateText(preferences().get(DataConst.TEST_KV_DATA))
                                 }
                             }
                         }
@@ -180,7 +180,7 @@ class MainActivity : BaseActivity() {
                             setOnClickListener { _ ->
                                 moduleEnvironment {
                                     if (editText.textToString().isNotEmpty()) {
-                                        prefs().edit { put(DataConst.TEST_KV_DATA, editText.textToString()) }
+                                        preferences().edit { put(DataConst.TEST_KV_DATA, editText.textToString()) }
                                         toast(stringResource(R.string.demo_saved))
                                     } else toast(stringResource(R.string.demo_enter_text))
                                 }
@@ -221,7 +221,7 @@ class MainActivity : BaseActivity() {
             hikage.get<TextView>("sample_subtitle_text_3").text = getString(R.string.demo_status_yukihookapi_version_summary)
             hikage.get<TextView>("sample_title_text_4").text = getString(R.string.demo_status_runtime, YukiHookAPI.Status.runtime.explicitName)
             hikage.get<TextView>("sample_subtitle_text_4").text = getString(R.string.demo_status_runtime_summary)
-            hikage.get<TextView>("sample_title_text_5").text = getString(R.string.demo_status_prefs_writable, prefs().isWritable)
+            hikage.get<TextView>("sample_title_text_5").text = getString(R.string.demo_status_prefs_writable, preferences().isWritable)
             hikage.get<TextView>("sample_subtitle_text_5").text = getString(R.string.demo_status_prefs_writable_summary)
         }
 
