@@ -34,7 +34,6 @@ import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.resolver.ConstructorResolver
 import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.kavaref.resolver.base.MemberResolver
-import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
@@ -165,9 +164,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [ModuleResources]
      * @throws IllegalStateException if the current hook framework does not support this feature.
      */
-    val moduleResources
-        get() = (if (YukiHookAPI.Configs.isEnableModuleResourcesCache) XposedModuleRuntime.moduleResources
-        else XposedModuleRuntime.dynamicModuleResources) ?: error("Current hook framework not support module resources.")
+    val moduleResources get() = XposedModuleRuntime.moduleResources ?: error("Current hook framework not support module resources.")
 
     /**
      * Creates a [YukiHookPreferences] object.

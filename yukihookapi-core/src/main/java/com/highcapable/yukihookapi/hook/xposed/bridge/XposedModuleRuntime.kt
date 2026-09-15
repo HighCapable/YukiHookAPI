@@ -63,8 +63,14 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     /** The APK path of the current Xposed module. */
     var moduleFilePath = ""
 
-    /** The current Xposed module's [Resources]. */
-    var moduleResources: ModuleResources? = null
+    /** The cached Xposed module [Resources]. */
+    private var cachedModuleResources: ModuleResources? = null
+
+    /** The current Xposed module [Resources] synchronized with the host configuration. */
+    val moduleResources
+        get() = (if (YukiHookAPI.Configs.isEnableModuleResourcesCache)
+            cachedModuleResources
+        else dynamicModuleResources)?.syncConfiguration(AppParasitism.currentApplication?.resources ?: Resources.getSystem())
 
     /**
      * Gets the current Xposed module's dynamic [Resources].
@@ -101,7 +107,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     /** Refreshes the current Xposed module's [Resources]. */
     fun refreshModuleResources() {
-        dynamicModuleResources?.let { moduleResources = it }
+        dynamicModuleResources?.let { cachedModuleResources = it }
     }
 
     override fun onStartLoadModule(packageName: String, appFilePath: String) {

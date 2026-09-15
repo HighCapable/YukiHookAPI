@@ -132,5 +132,18 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
         }
     }
 
+    /**
+     * Synchronizes the configuration copied from the current host resources.
+     *
+     * A separately constructed [Resources] is not managed by the host's resource manager,
+     * so configuration changes are not delivered to it automatically.
+     * @param resources the current host resources.
+     * @return [ModuleResources]
+     */
+    internal fun syncConfiguration(resources: Resources) = apply {
+        if (configuration != resources.configuration || displayMetrics != resources.displayMetrics)
+            updateConfiguration(resources.configuration, resources.displayMetrics)
+    }
+
     override fun toString() = "ModuleResources($baseInstance)"
 }
