@@ -30,7 +30,7 @@ import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithLibXposed
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.demo.module.modern.R
 import com.highcapable.yukihookapi.demo.module.modern.data.DataConst
 import com.highcapable.yukihookapi.demo.module.modern.generated.DemoProperties
@@ -38,16 +38,16 @@ import com.highcapable.yukihookapi.demo.module.modern.ui.MainActivity
 import com.highcapable.yukihookapi.demo.module.modern.ui.component.compatStyle
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
 import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 
 /**
  * Modern Xposed module hook entry.
  */
-@InjectYukiHookWithLibXposed(
+@YukiHookLibXposedEntry(
     targetApiVersion = 102,
     scope = [DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME]
 )
-object HookEntry : IYukiHookXposedInit {
+object HookEntry : YukiHookXposedModule {
 
     override fun onInit() {
         // Configure YuKiHookAPI

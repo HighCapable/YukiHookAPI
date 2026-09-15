@@ -30,7 +30,7 @@ import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.demo.module.legacy.R
 import com.highcapable.yukihookapi.demo.module.legacy.data.DataConst
 import com.highcapable.yukihookapi.demo.module.legacy.generated.DemoProperties
@@ -38,13 +38,13 @@ import com.highcapable.yukihookapi.demo.module.legacy.ui.MainActivity
 import com.highcapable.yukihookapi.demo.module.legacy.ui.component.compatStyle
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
 import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 
 /**
  * Legacy Xposed module hook entry.
  */
-@InjectYukiHookWithXposed
-object HookEntry : IYukiHookXposedInit {
+@YukiHookXposed82Entry
+object HookEntry : YukiHookXposedModule {
 
     override fun onInit() {
         // Configure YuKiHookAPI
