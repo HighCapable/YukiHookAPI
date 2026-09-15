@@ -21,9 +21,9 @@
  */
 package com.highcapable.yukihookapi.runtime.xposed82
 
-import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiXposedModuleCaller
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.caller.YukiXposed82EventCaller
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.IXposedHookZygoteInit
@@ -43,15 +43,15 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
     protected abstract val modulePackageName: String
 
     /** Creates the module's entry after framework attachment. */
-    protected abstract fun createHookEntry(): IYukiHookXposedInit
+    protected abstract fun createHookEntry(): YukiHookXposedModule
 
     private var initialized = false
 
     final override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam) {
         YukiHookBridge.attach()
 
-        initialized = YukiXposedModuleCaller.callOnHook(createHookEntry(), modulePackageName, startupParam.modulePath)
-        if (initialized) YukiXposedModuleCaller.callOnZygote(
+        initialized = YukiHookModuleCaller.callOnHook(createHookEntry(), modulePackageName, startupParam.modulePath)
+        if (initialized) YukiHookModuleCaller.callOnZygote(
             packageName = FRAMEWORK_PACKAGE_NAME,
             processName = FRAMEWORK_PACKAGE_NAME,
             mainProcessName = FRAMEWORK_PACKAGE_NAME,
@@ -71,14 +71,14 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
         // Xposed 82 reports system_server as the android package without `ApplicationInfo`.
         if (param.packageName == FRAMEWORK_PACKAGE_NAME && param.appInfo == null)
-            YukiXposedModuleCaller.callOnSystemServerStarting(
+            YukiHookModuleCaller.callOnSystemServerStarting(
                 packageName = param.packageName,
                 processName = processName,
                 mainProcessName = param.packageName.trim(),
                 packageNameForMatching = param.packageName,
                 loader = param.classLoader
             )
-        else YukiXposedModuleCaller.callOnPackageLoaded(
+        else YukiHookModuleCaller.callOnPackageLoaded(
             packageName = param.packageName,
             processName = processName,
             mainProcessName = param.packageName.trim(),

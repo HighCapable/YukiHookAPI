@@ -38,8 +38,9 @@ import java.lang.reflect.Proxy
 class YukiHookProcessorTest {
 
     private companion object {
-        const val LEGACY_ANNOTATION = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
-        const val MODERN_ANNOTATION = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithLibXposed"
+        const val DEPRECATED_LEGACY_ANNOTATION = "com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed"
+        const val LEGACY_ANNOTATION = "com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry"
+        const val MODERN_ANNOTATION = "com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry"
         const val LEGACY_RUNTIME = "com.highcapable.yukihookapi.runtime.xposed82.Xposed82Entry"
         const val MODERN_RUNTIME = "com.highcapable.yukihookapi.runtime.libxposed.LibXposedEntry"
     }
@@ -65,13 +66,13 @@ class YukiHookProcessorTest {
     @Test
     fun legacyAnnotationRejectsModernRuntime() = assertRejected(
         resolver(legacyEntries = 1, runtimes = setOf(MODERN_RUNTIME)),
-        "@InjectYukiHookWithXposed", "requires yukihookapi-runtime-xposed82", "but yukihookapi-runtime-libxposed"
+        "@YukiHookXposed82Entry", "requires yukihookapi-runtime-xposed82", "but yukihookapi-runtime-libxposed"
     )
 
     @Test
     fun modernAnnotationRejectsLegacyRuntime() = assertRejected(
         resolver(modernEntries = 1, runtimes = setOf(LEGACY_RUNTIME)),
-        "@InjectYukiHookWithLibXposed", "requires yukihookapi-runtime-libxposed", "but yukihookapi-runtime-xposed82"
+        "@YukiHookLibXposedEntry", "requires yukihookapi-runtime-libxposed", "but yukihookapi-runtime-xposed82"
     )
 
     @Test
@@ -135,6 +136,7 @@ class YukiHookProcessorTest {
             when (name) {
                 "getSymbolsWithAnnotation" -> List(
                     when (args[0]) {
+                        DEPRECATED_LEGACY_ANNOTATION -> 0
                         LEGACY_ANNOTATION -> legacyEntries
                         MODERN_ANNOTATION -> modernEntries
                         else -> error("Unexpected annotation: ${args[0]}")

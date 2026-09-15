@@ -30,7 +30,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceFragmentCompat
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
@@ -57,7 +57,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         fun from(context: Context? = null) = YukiHookPrefsBridge(context)
     }
 
-    private val isXposedEnvironment get() = YukiXposedModule.isXposedEnvironment
+    private val isHostEnvironment get() = XposedModuleRuntime.isHostEnvironment
 
     /** Storage name. */
     private var prefsName = ""
@@ -71,7 +71,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      */
     private val currentPrefsName get() = prefsName.ifBlank {
         if (isUsingNativeStorage) "${context?.packageName ?: "unknown"}_preferences"
-        else "${YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "unknown" }}_preferences"
+        else "${XposedModuleRuntime.modulePackageName.ifBlank { context?.packageName ?: "unknown" }}_preferences"
     }
 
     /** Checks the API loading state. */
@@ -79,7 +79,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
         require(!YukiHookAPI.isLoadedFromBaseContext) {
             "YukiHookPrefsBridge not allowed in custom hook API."
         }
-        if (isXposedEnvironment) require(YukiXposedModule.modulePackageName.isNotBlank()) {
+        if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
             "Xposed modulePackageName load failed, please reset and rebuild it."
         }
     }
@@ -96,9 +96,9 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
 
         return YukiHookBridge.preferences(
             context = context,
-            packageName = YukiXposedModule.modulePackageName.ifBlank { context?.packageName ?: "" },
+            packageName = XposedModuleRuntime.modulePackageName.ifBlank { context?.packageName ?: "" },
             name = currentPrefsName,
-            hostEnvironment = isXposedEnvironment
+            hostEnvironment = isHostEnvironment
         )
     }
 
@@ -125,7 +125,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * Gets whether the current preferences are writable.
      * @return [Boolean]
      */
-    val isWritable get() = !isXposedEnvironment || isUsingNativeStorage
+    val isWritable get() = !isHostEnvironment || isUsingNativeStorage
 
     /**
      * Customizes the shared preferences storage name.
@@ -143,7 +143,7 @@ class YukiHookPrefsBridge private constructor(private var context: Context? = nu
      * @throws IllegalStateException if [context] is null.
      */
     fun native(): YukiHookPrefsBridge {
-        if (isXposedEnvironment && context == null) context = AppParasitism.currentApplication
+        if (isHostEnvironment && context == null) context = AppParasitism.currentApplication
             ?: error("The host's context has not yet initialized successfully, the native function cannot be used at this time.")
         isUsingNativeStorage = true
 

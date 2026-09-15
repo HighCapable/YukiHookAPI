@@ -34,10 +34,10 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.events
 import com.highcapable.yukihookapi.hook.factory.prefs
-import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiXposedModuleCaller
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.registerFrameworkEvents
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
@@ -51,12 +51,12 @@ class RuntimeIsolationTest {
 
     @Test
     fun frameworkEventsRegisterOnceOnlyDuringOnInit() {
-        val registered = YukiXposedModuleCaller.asResolver().firstField { name = "isFrameworkEventsRegistered" }
+        val registered = YukiHookModuleCaller.asResolver().firstField { name = "isFrameworkEventsRegistered" }
         val previous = checkNotNull(registered.get<Boolean>())
         registered.set(false)
         try {
             var configurations = 0
-            val entry = object : IYukiHookXposedInit {
+            val entry = object : YukiHookXposedModule {
                 override fun onInit() = registerFrameworkEvents {
                     configurations++
                     Assert.assertThrows(IllegalStateException::class.java) {
@@ -73,7 +73,7 @@ class RuntimeIsolationTest {
                     onHandleInitPackageResources { configurations++ }
                 }
             }
-            val anotherEntry = object : IYukiHookXposedInit {
+            val anotherEntry = object : YukiHookXposedModule {
                 override fun onInit() = registerFrameworkEvents { configurations++ }
                 override fun onHook() = Unit
             }
@@ -81,10 +81,10 @@ class RuntimeIsolationTest {
             entry.onXposedEvent()
             Assert.assertEquals(0, configurations)
             Assert.assertThrows(IllegalStateException::class.java) { entry.onHook() }
-            YukiXposedModuleCaller.callOnInit(entry)
-            Assert.assertThrows(IllegalStateException::class.java) { YukiXposedModuleCaller.checkFrameworkEventsRegistration() }
+            YukiHookModuleCaller.callOnInit(entry)
+            Assert.assertThrows(IllegalStateException::class.java) { YukiHookModuleCaller.checkFrameworkEventsRegistration() }
             Assert.assertThrows(IllegalStateException::class.java) { entry.onHook() }
-            Assert.assertThrows(IllegalStateException::class.java) { YukiXposedModuleCaller.callOnInit(anotherEntry) }
+            Assert.assertThrows(IllegalStateException::class.java) { YukiHookModuleCaller.callOnInit(anotherEntry) }
             Assert.assertThrows(IllegalStateException::class.java) { entry.registerFrameworkEvents { configurations++ } }
             entry.onXposedEvent()
             Assert.assertEquals(1, configurations)
@@ -138,7 +138,7 @@ class RuntimeIsolationTest {
         Assert.assertNull("de.robv.android.xposed.XposedBridge".toClassOrNull())
         YukiHookBridge.initializeModuleServices()
         Assert.assertEquals(YukiHookRuntime.XPOSED_82, YukiHookAPI.Status.runtime)
-        Assert.assertFalse(YukiHookAPI.Status.isXposedEnvironment)
+        Assert.assertFalse(YukiHookAPI.Status.isHostEnvironment)
         Assert.assertFalse(YukiHookAPI.Status.isXposedModuleActive)
         val exception = Assert.assertThrows(UnsupportedOperationException::class.java) {
             YukiHookAPI.Status.observeFrameworkService { Assert.fail("Xposed API 82 does not provide framework services.") }
@@ -241,7 +241,7 @@ class RuntimeIsolationTest {
     @Test
     fun hookedHostModulePreferenceWritesAreIgnored() {
         val moduleInstance = checkNotNull(
-            checkNotNull("com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule".toClassOrNull())
+            checkNotNull("com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime".toClassOrNull())
                 .asResolver().firstField { name = "INSTANCE" }.get<Any>()
         )
         val isModuleLoaded = moduleInstance.asResolver().firstField { name = "isModuleLoaded" }

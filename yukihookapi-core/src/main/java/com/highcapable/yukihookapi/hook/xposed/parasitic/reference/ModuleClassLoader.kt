@@ -25,7 +25,7 @@
 package com.highcapable.yukihookapi.hook.xposed.parasitic.reference
 
 import androidx.annotation.CallSuper
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 
 /**
@@ -84,7 +84,7 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
 
     @CallSuper
     override fun loadClass(name: String, resolve: Boolean): Class<*> {
-        if (!YukiXposedModule.isXposedEnvironment) return baseLoader.loadClass(name)
+        if (!XposedModuleRuntime.isHostEnvironment) return baseLoader.loadClass(name)
 
         return AppParasitism.currentApplication?.classLoader?.let { hostLoader ->
             excludeHostClasses.takeIf { it.isNotEmpty() }?.forEach { runCatching { if (name == it) return@let hostLoader.loadClass(name) } }

@@ -25,56 +25,28 @@
 package com.highcapable.yukihookapi.hook.xposed.proxy
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithLibXposed
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.factory.configs
-import com.highcapable.yukihookapi.hook.factory.encase
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 
 /**
  * Xposed module entry point for [YukiHookAPI].
  *
- * - Annotate the implementation with [InjectYukiHookWithLibXposed] for modern or
- *   [InjectYukiHookWithXposed] for legacy to match the selected runtime.
- *
- * - [onInit] is called automatically while [YukiHookAPI] initializes.
- * - [onHook] is called automatically when hook loading starts.
- *
- * - Call [YukiHookAPI.configs] or [configs] from [onInit].
- * - Call [YukiHookAPI.encase] or [encase] from [onHook].
+ * - This entry was deprecated, migrate to [YukiHookXposedModule].
  */
+@Deprecated(
+    message = "This entry was deprecated, migrate to YukiHookXposedModule.",
+    replaceWith = ReplaceWith(
+        expression = "YukiHookXposedModule",
+        imports = ["com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule"]
+    )
+)
 interface IYukiHookXposedInit {
 
-    /**
-     * Configures [YukiHookAPI.Configs] during initialization.
-     *
-     * - Perform initialization only. Do not run hook operations here.
-     * - Register framework events once with the selected runtime's `registerFrameworkEvents { ... }` extension.
-     *   Call native APIs inside the event callbacks, not the registration block.
-     *
-     * This function is optional when no custom initialization is required.
-     */
+    @Deprecated(message = "Migrate to YukiHookXposedModule.onInit()")
     fun onInit() = Unit
 
-    /**
-     * Starts module hook loading.
-     *
-     * Call [YukiHookAPI.encase] or [encase] to start hook operations.
-     * Framework event registration is not allowed here, register it in [onInit] instead.
-     */
+    @Deprecated(message = "Migrate to YukiHookXposedModule.onHook()")
     fun onHook()
 
-    // region Deprecated functions for backward compatibility
-
-    /**
-     * This callback is no longer invoked and has no effect.
-     *
-     * - Move framework event registration to the selected runtime's `registerFrameworkEvents { ... }` extension inside [onInit].
-     */
-    @Deprecated(
-        message = "This callback is no longer invoked and has no effect. " +
-            "Use the runtime's registerFrameworkEvents { ... } extension in onInit instead."
-    )
+    @Deprecated(message = "Migrate to YukiHookXposedModule.onXposedEvent()")
     fun onXposedEvent() = Unit
-
-    // endregion
 }

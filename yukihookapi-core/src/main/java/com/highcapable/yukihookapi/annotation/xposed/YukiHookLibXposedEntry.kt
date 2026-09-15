@@ -22,14 +22,14 @@
 package com.highcapable.yukihookapi.annotation.xposed
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 
 /**
  * Marks the [YukiHookAPI] libxposed entry class for code generation.
  *
  * Requires `yukihookapi-runtime-libxposed`. Missing, conflicting, or mismatched runtimes will cause KSP to reject the build.
  *
- * Looking for legacy Xposed 82, please use [InjectYukiHookWithXposed] with `yukihookapi-runtime-xposed82` instead.
+ * Looking for legacy Xposed 82, please use [YukiHookXposed82Entry] with `yukihookapi-runtime-xposed82` instead.
  *
  * - The AndroidManifest source directory defaults to `src/main` and can be customized through [sourcePath].
  * - KSP generates `java_init.list`, `module.prop`, and `scope.list` under `META-INF/xposed` as build resources.
@@ -44,9 +44,9 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
  * - [modulePackageName] overrides the module application ID. Otherwise, `BuildConfig.APPLICATION_ID` is read.
  * - A custom [modulePackageName] produces a compile-time warning so the value can be verified.
  * - Entry files are generated per build variant. Do not add duplicate entries under the source directory.
- * - The annotated class must implement [IYukiHookXposedInit].
- * - Exactly one Hook entry may use either injection annotation. Multiple entries produce a compile-time error.
- * @see InjectYukiHookWithXposed
+ * - The annotated class must implement [YukiHookXposedModule].
+ * - Exactly one Hook entry may use either entry annotation. Multiple entries produce a compile-time error.
+ * @see YukiHookXposed82Entry
  * @param sourcePath the project-relative AndroidManifest source directory, defaults to `src/main`.
  * @param modulePackageName the module application ID, or an empty string to read `BuildConfig.APPLICATION_ID`.
  * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
@@ -58,7 +58,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
  * Empty disables generation of `native_init.list`. Libraries must be packaged and loaded by the module itself.
  */
 @Target(AnnotationTarget.CLASS)
-annotation class InjectYukiHookWithLibXposed(
+annotation class YukiHookLibXposedEntry(
     val sourcePath: String = "src/main",
     val modulePackageName: String = "",
     val entryClassName: String = "",

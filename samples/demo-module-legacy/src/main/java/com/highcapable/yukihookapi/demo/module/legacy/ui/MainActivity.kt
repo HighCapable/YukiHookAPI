@@ -229,10 +229,10 @@ class MainActivity : BaseActivity() {
     }
 
     private inline fun hostEnvironment(callback: () -> Unit) {
-        if (YukiHookAPI.Status.isXposedEnvironment) callback()
+        if (YukiHookAPI.Status.isHostEnvironment) callback()
     }
 
     private inline fun moduleEnvironment(callback: () -> Unit) {
-        if (!YukiHookAPI.Status.isXposedEnvironment) callback()
+        if (!YukiHookAPI.Status.isHostEnvironment) callback()
     }
 }

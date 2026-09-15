@@ -19,16 +19,15 @@
  *
  * This file is created by fankes on 2023/1/11.
  */
-package com.highcapable.yukihookapi.hook.xposed.bridge.proxy
+package com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle
 
-import android.app.Application
 import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
  * Defines the Xposed module loading lifecycle.
  */
-internal interface YukiXposedModuleLifecycle {
+internal interface XposedModuleLifecycle {
 
     /**
      * Called when the Xposed module starts loading.
@@ -46,10 +45,10 @@ internal interface YukiXposedModuleLifecycle {
      * @param packageName the host package name.
      * @param processName the host process name.
      * @param mainProcessName the main process identity supplied by the runtime.
-     * @param isFirstApplication whether this package owns the first [Application] in the current process.
+     * @param isFirstApplication whether this package owns the first [android.app.Application] in the current process.
      * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
      * @param appClassLoader the host [ClassLoader].
-     * @param appInfo the host [ApplicationInfo].
+     * @param appInfo the host [android.content.pm.ApplicationInfo].
      */
     fun onPackageLoaded(
         type: HookEntryType,

@@ -57,9 +57,9 @@ import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.log.YLog
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiXposedModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
@@ -383,12 +383,12 @@ internal object AppParasitism {
      * @param hostResources the host [Resources] to inject.
      */
     fun injectModuleResources(hostResources: Resources) {
-        if (!YukiXposedModule.isXposedEnvironment)
+        if (!XposedModuleRuntime.isHostEnvironment)
             return YLog.innerW("You can only inject module resources in host environment")
-        if (currentPackageName == YukiXposedModule.modulePackageName)
+        if (currentPackageName == XposedModuleRuntime.modulePackageName)
             return YLog.innerE("You cannot inject module resources into yourself")
 
-        YukiXposedModuleResources.injectModuleResources(hostResources, YukiXposedModule.moduleFilePath).onFailure {
+        ModuleResources.injectModuleResources(hostResources, XposedModuleRuntime.moduleFilePath).onFailure {
             YLog.innerE("Failed to inject module resources into $hostResources", it)
         }
     }
@@ -418,14 +418,14 @@ internal object AppParasitism {
         }
 
         if (isActivityProxyRegistered) return
-        if (!YukiXposedModule.isXposedEnvironment) return YLog.innerW("You can only register Activity proxy in host environment")
-        if (context.packageName == YukiXposedModule.modulePackageName) return YLog.innerE("You cannot register Activity proxy into yourself")
+        if (!XposedModuleRuntime.isHostEnvironment) return YLog.innerW("You can only register Activity proxy in host environment")
+        if (context.packageName == XposedModuleRuntime.modulePackageName) return YLog.innerE("You cannot register Activity proxy into yourself")
         if (AndroidVersion.isAtMost(AndroidVersion.N)) return YLog.innerE("Activity proxy only support for Android 7.0 (API 24) or higher")
 
         val hooked = mutableListOf<YukiHookResult>()
         runCatching {
             ActivityProxyConfig.apply {
-                proxyIntentName = "${YukiXposedModule.modulePackageName}.ACTIVITY_PROXY_INTENT"
+                proxyIntentName = "${XposedModuleRuntime.modulePackageName}.ACTIVITY_PROXY_INTENT"
                 proxyClassName = proxy?.let {
                     when (it) {
                         is String, is CharSequence -> it.toString()
@@ -513,7 +513,7 @@ internal object AppParasitism {
                 override fun afterHookedMember(param: ClassicHookerBridge.Param) {
                     if (param.instance !== instrumentation || param.throwable == null) return
                     val className = param.args[1] as? String ?: return
-                    if (!className.startsWith(YukiXposedModule.modulePackageName)) return
+                    if (!className.startsWith(XposedModuleRuntime.modulePackageName)) return
 
                     className.toClassOrNull<Activity>(baseClassLoader)?.createInstanceOrNull()?.let { param.result = it }
                 }
@@ -523,7 +523,7 @@ internal object AppParasitism {
                     override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
                         if (param.instance !== instrumentation) return
                         val activity = param.args[0] as? Activity ?: return
-                        if (!activity.javaClass.name.startsWith(YukiXposedModule.modulePackageName)) return
+                        if (!activity.javaClass.name.startsWith(XposedModuleRuntime.modulePackageName)) return
 
                         (param.args[1] as? Bundle)?.classLoader = baseClassLoader
                         injectModuleResources(activity.resources)

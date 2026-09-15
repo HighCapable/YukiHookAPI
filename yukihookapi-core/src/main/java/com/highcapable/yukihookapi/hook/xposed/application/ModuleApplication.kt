@@ -62,7 +62,7 @@ open class ModuleApplication : Application() {
         current = this
 
         YukiHookBridge.initializeModuleServices()
-        // Calls [IYukiHookXposedInit.onInit] on the Hook entry class.
+        // Calls [YukiHookXposedModule.onInit] on the hook entry class.
         runCatching { ModuleApplication_Impl.callHookEntryInit() }
         YukiHookDataChannel.get().register(context = this)
     }

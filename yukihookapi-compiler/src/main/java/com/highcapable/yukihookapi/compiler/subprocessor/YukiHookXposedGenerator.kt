@@ -83,6 +83,11 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     override fun startProcess(resolver: Resolver) {
         if (isGenerated) return
 
+        if (resolver.getSymbolsWithAnnotation(Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME).any()) problem(
+            "`@${Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME.substringAfterLast('.')}` is no longer supported. " +
+                "Migrate it to `@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}`."
+        )
+
         val legacySymbols = resolver.getSymbolsWithAnnotation(Xposed82GenerateSpec.ANNOTATION_NAME).toList()
         val modernSymbols = resolver.getSymbolsWithAnnotation(LibXposedGenerateSpec.ANNOTATION_NAME).toList()
 
@@ -125,8 +130,18 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         }
 
         val entry = (legacySymbols + modernSymbols).single() as? KSClassDeclaration ?: problem(
-            "The hook entry annotation must target a class or object implementing `IYukiHookXposedInit`."
+            "The hook entry annotation must target a class or object implementing `YukiHookXposedModule`."
         )
+
+        val entrySuperTypes = entry.getAllSuperTypes().mapNotNull { it.declaration.qualifiedName?.asString() }.toSet()
+        if (DeclaredSymbol.LEGACY_HOOK_ENTRY_CLASS in entrySuperTypes) problem(
+            "The hook entry class \"${entry.simpleName.asString()}\" still implements the deprecated " +
+                "`IYukiHookXposedInit`. Migrate it to `YukiHookXposedModule`."
+        )
+        if (DeclaredSymbol.HOOK_ENTRY_CLASS !in entrySuperTypes) problem(
+            "The hook entry class \"${entry.simpleName.asString()}\" must implement `YukiHookXposedModule`."
+        )
+
         val annotation = entry.annotations.single {
             it.annotationType.resolve().declaration.qualifiedName?.asString() == annotationName
         }
@@ -140,40 +155,38 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 nativeLibraries = (arguments["nativeLibraries"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
             )
             YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec(
-                isUsingXposedModuleStatus = arguments["isUsingXposedModuleStatus"] as? Boolean ?: true
+                usingXposedModuleStatus = arguments["usingXposedModuleStatus"] as? Boolean ?: true
             )
         }
         val sourcePath = (arguments["sourcePath"] as? String).orEmpty().trim()
 
-        spec.customMPackageName = (arguments["modulePackageName"] as? String).orEmpty().trim()
-        spec.xInitClassName = (arguments["entryClassName"] as? String).orEmpty().trim()
+        spec.customPackageName = (arguments["modulePackageName"] as? String).orEmpty().trim()
+        spec.initClassName = (arguments["entryClassName"] as? String).orEmpty().trim()
 
-        if ((spec.customMPackageName.startsWith(".") ||
-                spec.customMPackageName.endsWith(".") ||
-                !spec.customMPackageName.contains(".") ||
-                spec.customMPackageName.contains("..")) &&
-            spec.customMPackageName.isNotEmpty()
-        ) problem(msg = "Invalid module package name \"${spec.customMPackageName}\".")
+        if ((spec.customPackageName.startsWith(".") ||
+                spec.customPackageName.endsWith(".") ||
+                !spec.customPackageName.contains(".") ||
+                spec.customPackageName.contains("..")) &&
+            spec.customPackageName.isNotEmpty()
+        ) problem("Invalid module package name \"${spec.customPackageName}\".")
 
-        if (("[^\\p{L}\\p{N}_]".toRegex().containsMatchIn(spec.xInitClassName) ||
-                true.let { for (i in 0..9) if (spec.xInitClassName.startsWith(i.toString())) return@let true; false }) &&
-            spec.xInitClassName.isNotEmpty()
-        ) problem(msg = "Invalid hook entry class name \"${spec.xInitClassName}\".")
+        if (("[^\\p{L}\\p{N}_]".toRegex().containsMatchIn(spec.initClassName) ||
+                true.let { for (i in 0..9) if (spec.initClassName.startsWith(i.toString())) return@let true; false }) &&
+            spec.initClassName.isNotEmpty()
+        ) problem("Invalid hook entry class name \"${spec.initClassName}\".")
 
-        if (entry.getAllSuperTypes().none { it.declaration.qualifiedName?.asString() == DeclaredSymbol.HOOK_ENTRY_CLASS })
-            problem(msg = "The hook entry class \"${entry.simpleName.asString()}\" must implement `IYukiHookXposedInit`.")
         if ((entry.primaryConstructor?.parameters?.size ?: 0) > 0)
-            problem(msg = "The hook entry class \"${entry.simpleName.asString()}\" must not have constructor parameters.")
-        if (spec.xInitClassName == entry.simpleName.asString())
-            problem(msg = "Duplicate hook entry class name \"${spec.xInitClassName}\".")
+            problem("The hook entry class \"${entry.simpleName.asString()}\" must not have constructor parameters.")
+        if (spec.initClassName == entry.simpleName.asString())
+            problem("Duplicate hook entry class name \"${spec.initClassName}\".")
 
         spec.entryPackageName = entry.packageName.asString()
         spec.entryClassName = entry.simpleName.asString()
-        spec.xInitClassName = spec.xInitClassName.ifBlank { "${spec.entryClassName}$XPOSED_CLASS_SHORT_NAME" }
+        spec.initClassName = spec.initClassName.ifBlank { "${spec.entryClassName}$XPOSED_CLASS_SHORT_NAME" }
         spec.isEntryClassKindOfObject = when (entry.classKind) {
             ClassKind.CLASS -> false
             ClassKind.OBJECT -> true
-            else -> problem(msg = "Invalid hook entry class \"${spec.entryClassName}\" kind `${entry.classKind}`.")
+            else -> problem("Invalid hook entry class \"${spec.entryClassName}\" kind `${entry.classKind}`.")
         }
 
         generateResources(
@@ -190,8 +203,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
      * @param spec the template generation data.
      */
     private fun generateResources(codePath: String, sourcePath: String, spec: GenerateSpec) {
-        if (codePath.isBlank()) problem(msg = "Project code path not available.")
-        if (sourcePath.isBlank()) problem(msg = "Project source path not available.")
+        if (codePath.isBlank()) problem("Project code path not available.")
+        if (sourcePath.isBlank()) problem("Project source path not available.")
 
         // Runtime-specific entries may live outside src/main while sharing its AndroidManifest.
         // Find the module root independently of the annotated entry's source set.
@@ -210,7 +223,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         )
 
         spec.modulePackageName = parseModulePackageName(projectDir)
-        if (spec.modulePackageName.isBlank() && spec.customMPackageName.isBlank()) problem(
+        if (spec.modulePackageName.isBlank() && spec.customPackageName.isBlank()) problem(
             "Cannot identify the module application ID, enable the BuildConfig feature or set `modulePackageName`."
         )
         if (spec is LibXposedGenerateSpec) {
@@ -252,8 +265,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
      * @param spec the template generation spec.
      */
     private fun generateCodeFiles(spec: GenerateSpec) {
-        if (spec.customMPackageName.isNotBlank()) warn(
-            msg = "You set the customize module package name to \"${spec.customMPackageName}\", " +
+        if (spec.customPackageName.isNotBlank()) warn(
+            "You set the customize module package name to \"${spec.customPackageName}\", " +
                 "please check for yourself if it is correct."
         )
         spec.createSources().forEach { it.writeTo(codeGenerator, Dependencies.ALL_FILES) }
@@ -294,7 +307,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     private fun GenerateSpec.createSources() = buildList {
         add(createApiSource())
         add(createApplicationSource())
-        if (this@createSources is Xposed82GenerateSpec && isUsingXposedModuleStatus) add(createLegacyModuleStatusSource())
+        if (this@createSources is Xposed82GenerateSpec && usingXposedModuleStatus) add(createLegacyModuleStatusSource())
         add(createXposedEntrySource())
     }
 
@@ -303,7 +316,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
      * @return [Map]<[String], [String]>
      */
     private fun GenerateSpec.createResources(): Map<String, String> {
-        val entryName = "$entryPackageName.$xInitClassName"
+        val entryName = "$entryPackageName.$initClassName"
 
         return when (this) {
             is LibXposedGenerateSpec -> buildMap {
@@ -338,7 +351,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 getter(FunSpec.getterBuilder().apply {
                     addStatement(
                         "return %S",
-                        if (this@createApiSource is Xposed82GenerateSpec && isUsingXposedModuleStatus)
+                        if (this@createApiSource is Xposed82GenerateSpec && usingXposedModuleStatus)
                             withModuleSuffix(LegacyModuleStatusImplClass).canonicalName else ""
                     )
                 }.build())
@@ -404,10 +417,10 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         }.build())
     }.build()
 
-    private fun GenerateSpec.createXposedEntrySource() = FileSpec.builder(entryPackageName, xInitClassName).apply {
+    private fun GenerateSpec.createXposedEntrySource() = FileSpec.builder(entryPackageName, initClassName).apply {
         addCopyrightFileComment()
         indent("    ")
-        addType(TypeSpec.classBuilder(xInitClassName).apply {
+        addType(TypeSpec.classBuilder(initClassName).apply {
             addKdoc("Framework entry generated by `YukiHookAPI`.\n")
             addAnnotation(KeepClass)
 
@@ -419,7 +432,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             if (this@createXposedEntrySource is Xposed82GenerateSpec)
                 addProperty(PropertySpec.builder("modulePackageName", STRING).apply {
                     addModifiers(KModifier.OVERRIDE)
-                    initializer("%S", customMPackageName.ifBlank { modulePackageName })
+                    initializer("%S", customPackageName.ifBlank { modulePackageName })
                 }.build())
 
             addFunction(FunSpec.builder("createHookEntry").apply {

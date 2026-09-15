@@ -31,16 +31,16 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.xposed.bridge.proxy.YukiXposedModuleLifecycle
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiXposedModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.XposedModuleLifecycle
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 
 /**
- * Core Xposed module implementation.
+ * Core Xposed module runtime for [YukiHookAPI].
  */
-internal object YukiXposedModule : YukiXposedModuleLifecycle {
+internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     /** Whether the Xposed module has been loaded. */
     private var isModuleLoaded = false
@@ -64,13 +64,13 @@ internal object YukiXposedModule : YukiXposedModuleLifecycle {
     var moduleFilePath = ""
 
     /** The current Xposed module's [Resources]. */
-    var moduleResources: YukiXposedModuleResources? = null
+    var moduleResources: ModuleResources? = null
 
     /**
      * Gets the current Xposed module's dynamic [Resources].
-     * @return [YukiXposedModuleResources] or null.
+     * @return [ModuleResources] or null.
      */
-    val dynamicModuleResources get() = YukiXposedModuleResources.from(moduleFilePath)
+    val dynamicModuleResources get() = ModuleResources.from(moduleFilePath)
 
     /**
      * Gets whether the module has loaded its Xposed callback.
@@ -88,7 +88,7 @@ internal object YukiXposedModule : YukiXposedModuleLifecycle {
      * Gets whether the current environment is a host environment.
      * @return [Boolean]
      */
-    val isXposedEnvironment get() = YukiHookBridge.isHookAvailable && isModuleLoaded
+    val isHostEnvironment get() = YukiHookBridge.isHookAvailable && isModuleLoaded
 
     /**
      * Automatically ignores log-collection injection instances that may appear on MIUI.

@@ -30,7 +30,7 @@ import com.highcapable.kavaref.runtime.KavaRefRuntime
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.log.data.YLogData
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import java.io.File
 
 /**
@@ -351,10 +351,10 @@ object YLog {
         when (env) {
             EnvType.LOGD -> logByLogd()
             EnvType.XPOSED_ENVIRONMENT -> logByHooker()
-            EnvType.SCOPE -> if (YukiXposedModule.isXposedEnvironment) logByHooker() else logByLogd()
+            EnvType.SCOPE -> if (XposedModuleRuntime.isHostEnvironment) logByHooker() else logByLogd()
             EnvType.BOTH -> {
                 logByLogd()
-                if (YukiXposedModule.isXposedEnvironment) logByHooker()
+                if (XposedModuleRuntime.isHostEnvironment) logByHooker()
             }
         }
         if (!isImplicit && Configs.isRecord && isNotBlankLog) inMemoryData.add(data)

@@ -23,25 +23,25 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event
 
-import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiXposedModuleCaller
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModuleInterface
 
 /**
- * Registers framework event listeners from [IYukiHookXposedInit.onInit].
+ * Registers framework event listeners from [YukiHookXposedModule.onInit].
  *
  * The configuration block runs immediately, event callbacks receive the attached [XposedInterface]
  * and the original framework parameters when the framework dispatches them.
- * Use native libxposed APIs in these callbacks and keep `YukiHookAPI` hook loading in [IYukiHookXposedInit.onHook].
+ * Use native libxposed APIs in these callbacks and keep `YukiHookAPI` hook loading in [YukiHookXposedModule.onHook].
  *
  * Only one registration block is allowed per module process, even across different entry instances.
- * @receiver [IYukiHookXposedInit]
+ * @receiver [YukiHookXposedModule]
  * @param block the event configuration block.
- * @throws IllegalStateException if called outside [IYukiHookXposedInit.onInit] or more than once.
+ * @throws IllegalStateException if called outside [YukiHookXposedModule.onInit] or more than once.
  */
-fun IYukiHookXposedInit.registerFrameworkEvents(block: YukiLibXposedEvent.() -> Unit) =
-    YukiXposedModuleCaller.callRegisterFrameworkEvents(this) { YukiLibXposedEvent.block() }
+fun YukiHookXposedModule.registerFrameworkEvents(block: YukiLibXposedEvent.() -> Unit) =
+    YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiLibXposedEvent.block() }
 
 /**
  * Registers listeners for framework lifecycle events exposed by libxposed.
@@ -63,7 +63,7 @@ object YukiLibXposedEvent {
      * @param callback the event callback with the attached API as its receiver.
      */
     fun onModuleLoaded(callback: XposedInterface.(XposedModuleInterface.ModuleLoadedParam) -> Unit) {
-        YukiXposedModuleCaller.checkFrameworkEventsRegistration()
+        YukiHookModuleCaller.checkFrameworkEventsRegistration()
         check(moduleLoaded == null) {
             "onModuleLoaded is already registered."
         }
@@ -76,7 +76,7 @@ object YukiLibXposedEvent {
      * @param callback the event callback with the attached API as its receiver.
      */
     fun onPackageLoaded(callback: XposedInterface.(XposedModuleInterface.PackageLoadedParam) -> Unit) {
-        YukiXposedModuleCaller.checkFrameworkEventsRegistration()
+        YukiHookModuleCaller.checkFrameworkEventsRegistration()
         check(packageLoaded == null) {
             "onPackageLoaded is already registered."
         }
@@ -89,7 +89,7 @@ object YukiLibXposedEvent {
      * @param callback the event callback with the attached API as its receiver.
      */
     fun onPackageReady(callback: XposedInterface.(XposedModuleInterface.PackageReadyParam) -> Unit) {
-        YukiXposedModuleCaller.checkFrameworkEventsRegistration()
+        YukiHookModuleCaller.checkFrameworkEventsRegistration()
         check(packageReady == null) {
             "onPackageReady is already registered."
         }
@@ -102,7 +102,7 @@ object YukiLibXposedEvent {
      * @param callback the event callback with the attached API as its receiver.
      */
     fun onSystemServerStarting(callback: XposedInterface.(XposedModuleInterface.SystemServerStartingParam) -> Unit) {
-        YukiXposedModuleCaller.checkFrameworkEventsRegistration()
+        YukiHookModuleCaller.checkFrameworkEventsRegistration()
         check(systemServerStarting == null) {
             "onSystemServerStarting is already registered."
         }

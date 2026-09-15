@@ -24,24 +24,24 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event
 
-import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiXposedModuleCaller
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import de.robv.android.xposed.IXposedHookZygoteInit
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
- * Registers framework event listeners from [IYukiHookXposedInit.onInit].
+ * Registers framework event listeners from [YukiHookXposedModule.onInit].
  *
  * The configuration block runs immediately, event callbacks run when the framework dispatches them.
- * Use native Xposed APIs in these callbacks and keep `YukiHookAPI` hook loading in [IYukiHookXposedInit.onHook].
+ * Use native Xposed APIs in these callbacks and keep `YukiHookAPI` hook loading in [YukiHookXposedModule.onHook].
  *
  * Only one registration block is allowed per module process, even across different entry instances.
- * @receiver [IYukiHookXposedInit]
+ * @receiver [YukiHookXposedModule]
  * @param block the event configuration block.
- * @throws IllegalStateException if called outside [IYukiHookXposedInit.onInit] or more than once.
+ * @throws IllegalStateException if called outside [YukiHookXposedModule.onInit] or more than once.
  */
-fun IYukiHookXposedInit.registerFrameworkEvents(block: YukiXposed82Event.() -> Unit) =
-    YukiXposedModuleCaller.callRegisterFrameworkEvents(this) { YukiXposed82Event.block() }
+fun YukiHookXposedModule.registerFrameworkEvents(block: YukiXposed82Event.() -> Unit) =
+    YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiXposed82Event.block() }
 
 /**
  * Registers listeners for framework lifecycle events exposed by Xposed API 82.
@@ -59,7 +59,7 @@ object YukiXposed82Event {
      * @param callback the event callback.
      */
     fun onInitZygote(callback: (IXposedHookZygoteInit.StartupParam) -> Unit) {
-        YukiXposedModuleCaller.checkFrameworkEventsRegistration()
+        YukiHookModuleCaller.checkFrameworkEventsRegistration()
         check(initZygoteCallback == null) {
             "`onInitZygote` is already registered."
         }
@@ -72,7 +72,7 @@ object YukiXposed82Event {
      * @param callback the event callback.
      */
     fun onHandleLoadPackage(callback: (XC_LoadPackage.LoadPackageParam) -> Unit) {
-        YukiXposedModuleCaller.checkFrameworkEventsRegistration()
+        YukiHookModuleCaller.checkFrameworkEventsRegistration()
         check(handleLoadPackageCallback == null) {
             "`onHandleLoadPackage` is already registered."
         }

@@ -28,7 +28,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
 import com.highcapable.yukihookapi.hook.core.api.type.ExecutorType
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
@@ -37,7 +37,7 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
@@ -99,7 +99,7 @@ object YukiHookAPI {
          * Gets whether the current environment is a host environment.
          * @return [Boolean]
          */
-        val isXposedEnvironment get() = YukiXposedModule.isXposedEnvironment
+        val isHostEnvironment get() = XposedModuleRuntime.isHostEnvironment
 
         /**
          * Checks whether module activation is detected through Xposed, TaiChi/Wuji.
@@ -115,10 +115,10 @@ object YukiHookAPI {
         /**
          * Checks whether module activation is detected through the selected Xposed runtime.
          *
-         * - Returns true when [isXposedEnvironment] is true, independently of module services.
+         * - Returns true when [isHostEnvironment] is true, independently of module services.
          *
          * - With [YukiHookRuntime.XPOSED_82], module detection uses self-hook status. It requires
-         *   [InjectYukiHookWithXposed.isUsingXposedModuleStatus] and framework injection into the module's own process.
+         *   [YukiHookXposed82Entry.usingXposedModuleStatus] and framework injection into the module's own process.
          * - With [YukiHookRuntime.LIBXPOSED], module detection requires a single compatible framework service connection.
          *   [ModuleApplication] initializes it automatically. [observeFrameworkService] can also initialize it and observe changes.
          *   Binding is asynchronous: false before connection or after disconnection does not necessarily mean the module is disabled.
@@ -128,7 +128,7 @@ object YukiHookAPI {
          * - This does not verify the scope or whether hooks are installed in a particular target app.
          * @return [Boolean] whether activation is currently detected.
          */
-        val isXposedModuleActive get() = isXposedEnvironment || YukiHookBridge.isModuleActive
+        val isXposedModuleActive get() = isHostEnvironment || YukiHookBridge.isModuleActive
 
         /**
          * Checks only whether the module is active in TaiChi/Wuji.
@@ -137,12 +137,20 @@ object YukiHookAPI {
          * - Always returns false in a host environment.
          * @return [Boolean] whether the module is active.
          */
-        val isTaiChiModuleActive get() = !isXposedEnvironment && (ModuleApplication.current?.isTaiChiModuleActive ?: false)
+        val isTaiChiModuleActive get() = !isHostEnvironment && (ModuleApplication.current?.isTaiChiModuleActive ?: false)
+
+        // region Deprecated properties for backward compatibility
+
+        /** Gets whether the current environment is a host environment. */
+        @Deprecated(message = "Use isHostEnvironment instead.", replaceWith = ReplaceWith("isHostEnvironment"))
+        val isXposedEnvironment get() = isHostEnvironment
+
+        // endregion
 
         /**
          * Information about the hook framework used by the current [YukiHookAPI].
          *
-         * - In a legacy module, [InjectYukiHookWithXposed.isUsingXposedModuleStatus] must be enabled.
+         * - In a legacy module, [YukiHookXposed82Entry.usingXposedModuleStatus] must be enabled.
          * - In a modern module, these values follow framework-service availability.
          */
         object Executor {
@@ -257,8 +265,8 @@ object YukiHookAPI {
     fun encase(block: PackageParam.() -> Unit) {
         isLoadedFromBaseContext = false
 
-        if (YukiXposedModule.isXposedEnvironment)
-            YukiXposedModule.packageParamCallback = block
+        if (XposedModuleRuntime.isHostEnvironment)
+            XposedModuleRuntime.packageParamCallback = block
         else logNotFoundHookApiError()
     }
 
@@ -270,8 +278,8 @@ object YukiHookAPI {
     fun encase(vararg hookers: YukiBaseHooker) {
         isLoadedFromBaseContext = false
 
-        if (YukiXposedModule.isXposedEnvironment)
-            YukiXposedModule.packageParamCallback = {
+        if (XposedModuleRuntime.isHostEnvironment)
+            XposedModuleRuntime.packageParamCallback = {
                 if (hookers.isNotEmpty())
                     hookers.forEach { loadHooker(it) }
                 else YLog.innerE("Failed to passing \"encase\" function because your hookers param is empty", isImplicit = true)

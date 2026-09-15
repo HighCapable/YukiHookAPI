@@ -40,9 +40,9 @@ import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
-import com.highcapable.yukihookapi.hook.xposed.bridge.resources.YukiXposedModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
@@ -156,18 +156,18 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - This is unavailable when loaded as a custom hook API and returns an empty string.
      * @return [String]
      */
-    val moduleFilePath get() = YukiXposedModule.moduleFilePath
+    val moduleFilePath get() = XposedModuleRuntime.moduleFilePath
 
     /**
      * Gets the [Resources] of the current Xposed module.
      *
      * - This is unavailable when loaded as a custom hook API or under an unsupported hook framework and throws an exception.
-     * @return [YukiXposedModuleResources]
+     * @return [ModuleResources]
      * @throws IllegalStateException if the current hook framework does not support this feature.
      */
     val moduleResources
-        get() = (if (YukiHookAPI.Configs.isEnableModuleResourcesCache) YukiXposedModule.moduleResources
-        else YukiXposedModule.dynamicModuleResources) ?: error("Current hook framework not support module resources.")
+        get() = (if (YukiHookAPI.Configs.isEnableModuleResourcesCache) XposedModuleRuntime.moduleResources
+        else XposedModuleRuntime.dynamicModuleResources) ?: error("Current hook framework not support module resources.")
 
     /**
      * Creates a [YukiHookPrefsBridge] object.
@@ -209,7 +209,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     }
 
     /** Refreshes the [Resources] of the current Xposed module. */
-    fun refreshModuleResources() = YukiXposedModule.refreshModuleResources()
+    fun refreshModuleResources() = XposedModuleRuntime.refreshModuleResources()
 
     /**
      * Registers a lifecycle listener for the current host [Application].
@@ -278,7 +278,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      */
     fun loadApp(excludeSelf: Boolean = false, block: PackageParam.() -> Unit) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || wrapper?.matchesPackage(YukiXposedModule.modulePackageName) != true)
+            (!excludeSelf || wrapper?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
         ) block(this)
     }
 
@@ -290,7 +290,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      */
     fun loadApp(excludeSelf: Boolean = false, hooker: YukiBaseHooker) {
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || wrapper?.matchesPackage(YukiXposedModule.modulePackageName) != true)
+            (!excludeSelf || wrapper?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
         ) loadHooker(hooker)
     }
 
@@ -306,7 +306,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         }
 
         if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || wrapper?.matchesPackage(YukiXposedModule.modulePackageName) != true)
+            (!excludeSelf || wrapper?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
         ) hookers.forEach { loadHooker(it) }
     }
 

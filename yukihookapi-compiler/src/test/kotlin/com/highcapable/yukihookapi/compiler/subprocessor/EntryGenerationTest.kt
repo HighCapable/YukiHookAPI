@@ -50,7 +50,7 @@ class EntryGenerationTest {
         entryPackageName = "example.module"
         modulePackageName = "example.module"
         entryClassName = "HookEntry"
-        xInitClassName = "HookEntry_YukiHookXposedInit"
+        initClassName = "HookEntry_YukiHookXposedInit"
         isEntryClassKindOfObject = true
     }
 
@@ -109,10 +109,10 @@ class EntryGenerationTest {
                 data.isEntryClassKindOfObject = singleton
                 val entry = if (singleton) "HookEntry" else "HookEntry()"
                 val applicationSource = data.source("ModuleApplication_Impl")
-                Assert.assertTrue(data.source(data.xInitClassName).contains("= $entry\n"))
-                Assert.assertTrue(applicationSource.contains("YukiXposedModuleCaller.callOnInit($entry)"))
-                Assert.assertFalse(applicationSource.contains("YukiXposedModuleCaller.callOnHook("))
-                Assert.assertFalse(applicationSource.contains("YukiXposedModuleCaller.callRegisterFrameworkEvents("))
+                Assert.assertTrue(data.source(data.initClassName).contains("= $entry\n"))
+                Assert.assertTrue(applicationSource.contains("YukiHookModuleCaller.callOnInit($entry)"))
+                Assert.assertFalse(applicationSource.contains("YukiHookModuleCaller.callOnHook("))
+                Assert.assertFalse(applicationSource.contains("YukiHookModuleCaller.callRegisterFrameworkEvents("))
             }
         }
     }
@@ -125,12 +125,12 @@ class EntryGenerationTest {
             "HookEntry_YukiHookXposedInit"
         )
         listOf(
-            data(Xposed82GenerateSpec(isUsingXposedModuleStatus = false)),
-            data(Xposed82GenerateSpec(isUsingXposedModuleStatus = true)),
+            data(Xposed82GenerateSpec(usingXposedModuleStatus = false)),
+            data(Xposed82GenerateSpec(usingXposedModuleStatus = true)),
             data(LibXposedGenerateSpec(targetApiVersion = 102))
         ).forEach { data ->
             val sources = data.createSources()
-            val hasStatusHooks = data is Xposed82GenerateSpec && data.isUsingXposedModuleStatus
+            val hasStatusHooks = data is Xposed82GenerateSpec && data.usingXposedModuleStatus
             val expected = if (hasStatusHooks) commonFiles + "YukiHookLegacyModuleStatus_Impl" else commonFiles
             Assert.assertEquals(expected.sorted(), sources.map { it.name }.sorted())
             val statusClass = if (hasStatusHooks)
@@ -153,8 +153,8 @@ class EntryGenerationTest {
     @Test
     fun modulePackageOverrideIsOnlyGeneratedForLegacy() {
         listOf(data(Xposed82GenerateSpec()), data(LibXposedGenerateSpec(targetApiVersion = 102))).forEach { data ->
-            data.customMPackageName = "example.custom"
-            val source = data.source(data.xInitClassName)
+            data.customPackageName = "example.custom"
+            val source = data.source(data.initClassName)
             when (data) {
                 is Xposed82GenerateSpec -> Assert.assertTrue(source.contains("modulePackageName: String = \"example.custom\""))
                 is LibXposedGenerateSpec -> Assert.assertFalse(source.contains("modulePackageName"))

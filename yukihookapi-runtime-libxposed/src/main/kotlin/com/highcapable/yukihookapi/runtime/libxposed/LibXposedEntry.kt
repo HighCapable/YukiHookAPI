@@ -22,9 +22,9 @@
 package com.highcapable.yukihookapi.runtime.libxposed
 
 import androidx.annotation.RequiresApi
-import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiXposedModuleCaller
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiLibXposedEvent
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 
@@ -38,7 +38,7 @@ abstract class LibXposedEntry : XposedModule() {
     }
 
     /** Creates the user's entry only after the framework interface has been attached. */
-    protected abstract fun createHookEntry(): IYukiHookXposedInit
+    protected abstract fun createHookEntry(): YukiHookXposedModule
 
     private var initialized = false
     private var processName = ""
@@ -50,7 +50,7 @@ abstract class LibXposedEntry : XposedModule() {
             // Removes transport padding and trailing replacement characters from a process name.
             .substringBefore('\u0000')
             .trimEnd('\uFFFD')
-        initialized = YukiXposedModuleCaller.callOnHook(createHookEntry(), moduleApplicationInfo.packageName, moduleApplicationInfo.sourceDir)
+        initialized = YukiHookModuleCaller.callOnHook(createHookEntry(), moduleApplicationInfo.packageName, moduleApplicationInfo.sourceDir)
         YukiLibXposedEvent.moduleLoaded?.invoke(this, param)
     }
 
@@ -60,7 +60,7 @@ abstract class LibXposedEntry : XposedModule() {
     }
 
     final override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
-        if (initialized) YukiXposedModuleCaller.callOnPackageLoaded(
+        if (initialized) YukiHookModuleCaller.callOnPackageLoaded(
             packageName = param.packageName,
             processName = processName,
             mainProcessName = param.packageName.trim(),
@@ -73,7 +73,7 @@ abstract class LibXposedEntry : XposedModule() {
     }
 
     final override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) {
-        if (initialized) YukiXposedModuleCaller.callOnSystemServerStarting(
+        if (initialized) YukiHookModuleCaller.callOnSystemServerStarting(
             packageName = FRAMEWORK_PACKAGE_NAME,
             processName = processName,
             mainProcessName = processName.trim(),

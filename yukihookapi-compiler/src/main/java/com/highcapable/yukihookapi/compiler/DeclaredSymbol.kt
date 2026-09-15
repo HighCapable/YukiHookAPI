@@ -34,12 +34,13 @@ object DeclaredSymbol {
     const val MODULE_STATUS_PACKAGE_NAME = "$API_PACKAGE_NAME.hook.xposed.bridge.status"
     const val LEGACY_MODULE_STATUS_IMPL_CLASS_NAME = "YukiHookLegacyModuleStatus_Impl"
 
-    const val HOOK_ENTRY_PACKAGE_NAME = "$API_PACKAGE_NAME.hook.xposed.proxy"
-    const val HOOK_ENTRY_CLASS_NAME = "IYukiHookXposedInit"
+    const val HOOK_ENTRY_PACKAGE_NAME = "$API_PACKAGE_NAME.hook.xposed"
+    const val HOOK_ENTRY_CLASS_NAME = "YukiHookXposedModule"
     const val HOOK_ENTRY_CLASS = "$HOOK_ENTRY_PACKAGE_NAME.$HOOK_ENTRY_CLASS_NAME"
+    const val LEGACY_HOOK_ENTRY_CLASS = "$API_PACKAGE_NAME.hook.xposed.proxy.IYukiHookXposedInit"
 
     const val MODULE_CALLER_PACKAGE_NAME = "$API_PACKAGE_NAME.hook.xposed.bridge.caller"
-    const val MODULE_CALLER_CLASS_NAME = "YukiXposedModuleCaller"
+    const val MODULE_CALLER_CLASS_NAME = "YukiHookModuleCaller"
 
     const val ANDROIDX_ANNOTATION_PACKAGE_NAME = "androidx.annotation"
     const val KEEP_ANNOTATION_CLASS_NAME = "Keep"

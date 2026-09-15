@@ -19,37 +19,18 @@
  *
  * This file is created by fankes on 2022/2/3.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.annotation.xposed
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 /**
  * Marks the [YukiHookAPI] legacy Xposed entry class for code generation.
  *
- * Requires `yukihookapi-runtime-xposed82`. Missing, conflicting, or mismatched runtimes will cause KSP to reject the build.
- *
- * Looking for modern libxposed, please use [InjectYukiHookWithLibXposed] with `yukihookapi-runtime-libxposed` instead.
- *
- * - The AndroidManifest source directory defaults to `src/main` and can be customized through [sourcePath].
- * - KSP generates `assets/xposed_init` as a build resource.
- * - The runtime AndroidManifest supplies `xposedmodule=true` and `xposedminversion=82`.
- *   To override the minimum version, declare it in your AndroidManifest with `tools:replace="android:value"`.
- *   Declare `xposeddescription` and `xposedscope` yourself when needed. KSP does not generate or modify the AndroidManifest.
- *
- * The generated `xposed_init` entry uses the fully qualified annotated class name + `_YukiHookXposedInit`, or [entryClassName].
- *
- * - [modulePackageName] overrides the module application ID. Otherwise, `BuildConfig.APPLICATION_ID` is read.
- * - A custom [modulePackageName] produces a compile-time warning so the value can be verified.
- * - Entry files are generated per build variant. Do not add duplicate entries under the source directory.
- * - The annotated class must implement [IYukiHookXposedInit].
- * - Exactly one Hook entry may use either injection annotation. Multiple entries produce a compile-time error.
- * @see InjectYukiHookWithLibXposed
- * @param sourcePath the project-relative AndroidManifest source directory, defaults to `src/main`.
- * @param modulePackageName the module application ID, or an empty string to read `BuildConfig.APPLICATION_ID`.
- * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
- * @param isUsingXposedModuleStatus whether legacy self-hook status generation is enabled, defaults to true.
+ * - This annotation was deprecated, migrate to [YukiHookXposed82Entry].
  */
+@Deprecated(message = "Migrate to YukiHookXposed82Entry.", replaceWith = ReplaceWith("YukiHookXposed82Entry"))
 @Target(AnnotationTarget.CLASS)
 annotation class InjectYukiHookWithXposed(
     val sourcePath: String = "src/main",

@@ -25,9 +25,9 @@ import android.app.Application
 import android.content.pm.ApplicationInfo
 import androidx.annotation.RestrictTo
 import com.highcapable.yukihookapi.hook.log.YLog
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 
 /**
  * Routes calls to the Xposed module lifecycle implementation.
@@ -36,9 +36,9 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
  *   Do not call this class manually.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-object YukiXposedModuleCaller {
+object YukiHookModuleCaller {
 
-    private val initializingEntry = ThreadLocal<IYukiHookXposedInit>()
+    private val initializingEntry = ThreadLocal<YukiHookXposedModule>()
     private val registeringFrameworkEvents = ThreadLocal<Boolean>()
     private var isFrameworkEventsRegistered = false
 
@@ -51,11 +51,11 @@ object YukiXposedModuleCaller {
     }
 
     /**
-     * Calls [IYukiHookXposedInit.onInit] with framework event registration enabled for this entry.
+     * Calls [YukiHookXposedModule.onInit] with framework event registration enabled for this entry.
      * Used by both the host runtime and the generated module application entry.
      * @param entry the user entry.
      */
-    fun callOnInit(entry: IYukiHookXposedInit) {
+    fun callOnInit(entry: YukiHookXposedModule) {
         initializingEntry.set(entry)
 
         try {
@@ -66,31 +66,31 @@ object YukiXposedModuleCaller {
     }
 
     /**
-     * Calls [IYukiHookXposedInit.onHook] on the user entry only after the runtime has attached its hook interface.
+     * Calls [YukiHookXposedModule.onHook] on the user entry only after the runtime has attached its hook interface.
      * @param entry the user entry.
      * @param packageName the package name of the current process.
      * @param appFilePath the path of the current process's APK file.
      * @return [Boolean] whether the initialization was successful.
      */
-    fun callOnHook(entry: IYukiHookXposedInit, packageName: String, appFilePath: String) = runCatching {
-        YukiXposedModule.onStartLoadModule(packageName, appFilePath)
+    fun callOnHook(entry: YukiHookXposedModule, packageName: String, appFilePath: String) = runCatching {
+        XposedModuleRuntime.onStartLoadModule(packageName, appFilePath)
         callOnInit(entry)
 
-        check(!YukiXposedModule.isXposedCallbackSetUp) {
+        check(!XposedModuleRuntime.isXposedCallbackSetUp) {
             "Do not load hookers in `onInit`."
         }
         entry.onHook()
 
-        YukiXposedModule.onFinishLoadModule()
+        XposedModuleRuntime.onFinishLoadModule()
     }.onFailure { YLog.innerE("YukiHookAPI failed to initialize the module.", it) }.isSuccess
 
     /**
      * Runs the single framework event registration block for this module process.
-     * @param entry the entry currently running [IYukiHookXposedInit.onInit].
+     * @param entry the entry currently running [YukiHookXposedModule.onInit].
      * @param block the runtime's event configuration block.
      * @throws IllegalStateException if called outside this entry's initialization or more than once.
      */
-    fun callRegisterFrameworkEvents(entry: IYukiHookXposedInit, block: () -> Unit) {
+    fun callRegisterFrameworkEvents(entry: YukiHookXposedModule, block: () -> Unit) {
         check(initializingEntry.get() === entry) {
             "Framework events must be registered in `onInit`, not `onHook` or later callbacks."
         }
@@ -121,7 +121,7 @@ object YukiXposedModuleCaller {
         mainProcessName: String,
         packageNameForMatching: String?,
         loader: ClassLoader
-    ) = YukiXposedModule.onPackageLoaded(
+    ) = XposedModuleRuntime.onPackageLoaded(
         type = HookEntryType.ZYGOTE,
         packageName = packageName,
         processName = processName,
@@ -145,7 +145,7 @@ object YukiXposedModuleCaller {
         mainProcessName: String,
         packageNameForMatching: String?,
         loader: ClassLoader
-    ) = YukiXposedModule.onPackageLoaded(
+    ) = XposedModuleRuntime.onPackageLoaded(
         type = HookEntryType.SYSTEM_SERVER,
         packageName = packageName,
         processName = processName,
@@ -173,7 +173,7 @@ object YukiXposedModuleCaller {
         packageNameForMatching: String?,
         loader: ClassLoader,
         appInfo: ApplicationInfo?
-    ) = YukiXposedModule.onPackageLoaded(
+    ) = XposedModuleRuntime.onPackageLoaded(
         type = HookEntryType.PACKAGE,
         packageName = packageName,
         processName = processName,

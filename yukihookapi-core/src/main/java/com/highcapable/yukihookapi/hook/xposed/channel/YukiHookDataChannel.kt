@@ -45,7 +45,7 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.log.data.YLogData
 import com.highcapable.yukihookapi.hook.utils.RandomString
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.channel.annotation.SendTooLargeChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataWrapper
@@ -68,7 +68,7 @@ class YukiHookDataChannel private constructor() {
     internal companion object {
 
         /** Whether the current environment is a host environment. */
-        private val isXposedEnvironment = YukiXposedModule.isXposedEnvironment
+        private val isHostEnvironment = XposedModuleRuntime.isHostEnvironment
 
         /** Automatically generated Xposed module build version. */
         private val moduleGeneratedVersion = YukiHookAPI.Status.compiledTimestamp.toString()
@@ -165,7 +165,7 @@ class YukiHookDataChannel private constructor() {
         require(!YukiHookAPI.isLoadedFromBaseContext) {
             "YukiHookDataChannel not allowed in custom hook API."
         }
-        if (isXposedEnvironment) require(YukiXposedModule.modulePackageName.isNotBlank()) {
+        if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
             "Xposed modulePackageName load failed, please reset and rebuild it."
         }
 
@@ -179,7 +179,7 @@ class YukiHookDataChannel private constructor() {
      */
     private fun isCurrentBroadcast(context: Context?) = runCatching {
         @Suppress("DEPRECATION")
-        context is Application || isXposedEnvironment || ((context ?: receiverContext)
+        context is Application || isHostEnvironment || ((context ?: receiverContext)
             ?.getSystemService<ActivityManager>()
             ?.getRunningTasks(9999)?.any { context?.javaClass?.name == it?.topActivity?.className } == true)
     }.getOrNull() ?: YLog.innerW("Couldn't got current Activity status because a SecurityException blocked it").let { false }
@@ -196,7 +196,7 @@ class YukiHookDataChannel private constructor() {
      * @param context the optional context instance, null by default.
      * @return [String]
      */
-    private fun moduleActionName(context: Context? = null) = "yuki_hook_module_data_channel_${YukiXposedModule.modulePackageName.ifBlank {
+    private fun moduleActionName(context: Context? = null) = "yuki_hook_module_data_channel_${XposedModuleRuntime.modulePackageName.ifBlank {
         context?.packageName ?: ""
     }.trim().hashCode()}"
 
@@ -210,12 +210,12 @@ class YukiHookDataChannel private constructor() {
 
         receiverContext = context
         val filter = IntentFilter().apply {
-            addAction(if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+            addAction(if (isHostEnvironment) hostActionName(packageName) else moduleActionName(context))
         }
         context.registerReceiver(filter, exported = true, body = handlerReceiver)
 
         // Prevents the module from registering its own broadcast in the module environment.
-        if (!isXposedEnvironment) return
+        if (!isHostEnvironment) return
 
         namespace(context, packageName).with {
             // Registers a listener that checks whether module and host versions match.
@@ -272,7 +272,7 @@ class YukiHookDataChannel private constructor() {
          * @return [String]
          */
         private fun keyShortName(type: CallbackKeyType) = "${keyNonRepeatName}_${
-            if (isXposedEnvironment) "X" else context?.javaClass?.name ?: "M"
+            if (isHostEnvironment) "X" else context?.javaClass?.name ?: "M"
         }_${type.ordinal}"
 
         /**
@@ -372,7 +372,7 @@ class YukiHookDataChannel private constructor() {
         fun <T> wait(key: String, priority: ChannelPriority? = null, result: (value: T) -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.SINGLE)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
-                    if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+                    if (action == if (isHostEnvironment) hostActionName(packageName) else moduleActionName(context))
                         parseReceivedData(intent.getDataWrapper(key), result)
             }
         }
@@ -386,7 +386,7 @@ class YukiHookDataChannel private constructor() {
         fun <T> wait(data: ChannelData<T>, priority: ChannelPriority? = null, result: (value: T) -> Unit) {
             receiverCallbacks[data.key + keyShortName(CallbackKeyType.CDATA)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
-                    if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+                    if (action == if (isHostEnvironment) hostActionName(packageName) else moduleActionName(context))
                         parseReceivedData(intent.getDataWrapper(data.key), result)
             }
         }
@@ -402,7 +402,7 @@ class YukiHookDataChannel private constructor() {
         fun wait(key: String, priority: ChannelPriority? = null, callback: () -> Unit) {
             receiverCallbacks[key + keyShortName(CallbackKeyType.WAIT_FOR_LISTENER)] = Pair(context) { action, intent ->
                 if (priority == null || priority.result)
-                    if (action == if (isXposedEnvironment) hostActionName(packageName) else moduleActionName(context))
+                    if (action == if (isHostEnvironment) hostActionName(packageName) else moduleActionName(context))
                         intent.getDataWrapper<String>(key)?.let { if (it.instance.value == VALUE_WAIT_FOR_LISTENER) callback() }
             }
         }
@@ -630,7 +630,7 @@ class YukiHookDataChannel private constructor() {
                 suggestionMessage = "Failed to segment $name type because the size of its first element has exceeded the maximum limit"
             )
             when {
-                wrapper.isSegmentsType || isAllowSendTooLargeData -> pushReceiver(wrapper)
+                wrapper.isSegmentsType || isAllowSendTooLargeData -> sendBroadcast(wrapper)
                 dataByteSize >= receiverDataMaxByteSize -> {
                     val name: String
                     val segments = when (val value = wrapper.instance.value) {
@@ -650,13 +650,13 @@ class YukiHookDataChannel private constructor() {
                             // Preserve the existing character boundaries, including the trailing empty segment.
                             val twoByteMaxSize = receiverDataMaxByteSize / 2
                             val segmentsSize = value.length / twoByteMaxSize + 1
-                            if (segmentsSize == 1) return pushReceiver(wrapper)
+                            if (segmentsSize == 1) return sendBroadcast(wrapper)
 
                             logForTooLargeData(name = "String", segmentsSize)
                             repeat(segmentsSize) { index ->
                                 val start = index * twoByteMaxSize
                                 val segment = value.substring(start, minOf(start + twoByteMaxSize, value.length))
-                                pushReceiver(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segmentsSize, index))
+                                sendBroadcast(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segmentsSize, index))
                             }
                             return
                         }
@@ -671,10 +671,10 @@ class YukiHookDataChannel private constructor() {
                     if (segments.isEmpty()) return logForUnprocessableDataByFirstElement(name)
 
                     segments.forEachIndexed { index, segment ->
-                        pushReceiver(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segments.size, index))
+                        sendBroadcast(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segments.size, index))
                     }
                 }
-                else -> pushReceiver(wrapper)
+                else -> sendBroadcast(wrapper)
             }
         }
 
@@ -682,13 +682,13 @@ class YukiHookDataChannel private constructor() {
          * Sends a broadcast.
          * @param wrapper the key-value data wrapper.
          */
-        private fun pushReceiver(wrapper: ChannelDataWrapper<*>) {
+        private fun sendBroadcast(wrapper: ChannelDataWrapper<*>) {
             (context ?: AppParasitism.currentApplication)?.sendBroadcast {
-                action = if (isXposedEnvironment) moduleActionName() else hostActionName(packageName)
+                action = if (isHostEnvironment) moduleActionName() else hostActionName(packageName)
 
                 // The system server package name may not be unique, so its broadcasts do not set a recipient package.
                 if (packageName != AppParasitism.FRAMEWORK_PACKAGE_NAME)
-                    setPackage(if (isXposedEnvironment) YukiXposedModule.modulePackageName else packageName)
+                    setPackage(if (isHostEnvironment) XposedModuleRuntime.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
             } ?: YLog.innerE("Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
         }

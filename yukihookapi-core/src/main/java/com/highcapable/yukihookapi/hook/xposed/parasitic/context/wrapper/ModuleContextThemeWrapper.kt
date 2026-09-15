@@ -30,7 +30,7 @@ import android.content.res.Resources
 import android.view.ContextThemeWrapper
 import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.hook.factory.injectModuleResources
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
@@ -70,7 +70,7 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
             baseResources?.updateConfiguration(it, baseContext.resources.displayMetrics)
         }
 
-        if (YukiXposedModule.isXposedEnvironment) resources?.injectModuleResources()
+        if (XposedModuleRuntime.isHostEnvironment) resources?.injectModuleResources()
     }
 
     /**

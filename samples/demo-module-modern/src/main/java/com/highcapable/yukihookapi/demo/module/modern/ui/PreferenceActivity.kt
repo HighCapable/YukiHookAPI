@@ -78,7 +78,7 @@ class PreferenceActivity : BaseActivity() {
             super.onCreatePreferences(savedInstanceState, rootKey)
 
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
-            findPreference<SwitchPreference>("show_dialog_when_demo_app_opened")?.isEnabled = !YukiHookAPI.Status.isXposedEnvironment
+            findPreference<SwitchPreference>("show_dialog_when_demo_app_opened")?.isEnabled = !YukiHookAPI.Status.isHostEnvironment
         }
     }
 }

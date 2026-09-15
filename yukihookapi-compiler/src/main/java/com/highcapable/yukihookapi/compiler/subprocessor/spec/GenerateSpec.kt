@@ -33,13 +33,13 @@ sealed interface GenerateSpec {
     var modulePackageName: String
 
     /** The manually configured module application ID. */
-    var customMPackageName: String
+    var customPackageName: String
 
     /** The entry class name. */
     var entryClassName: String
 
     /** The generated framework entry class name. */
-    var xInitClassName: String
+    var initClassName: String
 
     /** Whether the entry class is an `object` singleton. */
     var isEntryClassKindOfObject: Boolean

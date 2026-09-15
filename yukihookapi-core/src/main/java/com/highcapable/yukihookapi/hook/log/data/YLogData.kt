@@ -22,7 +22,7 @@
 package com.highcapable.yukihookapi.hook.log.data
 
 import com.highcapable.yukihookapi.hook.log.YLog
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -58,7 +58,7 @@ data class YLogData internal constructor(
     init {
         timestamp = System.currentTimeMillis()
         time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT).format(Date(timestamp))
-        packageName = if (YukiXposedModule.isXposedEnvironment) YukiXposedModule.hostProcessName else AppParasitism.currentPackageName
+        packageName = if (XposedModuleRuntime.isHostEnvironment) XposedModuleRuntime.hostProcessName else AppParasitism.currentPackageName
         userId = AppParasitism.findUserId(AppParasitism.currentPackageName)
     }
 

@@ -37,9 +37,9 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import java.io.File
 
 /**
- * The module APK resources wrapper class.
+ * The module APK resources.
  */
-class YukiXposedModuleResources private constructor(private val baseInstance: Resources) : Resources(
+class ModuleResources private constructor(private val baseInstance: Resources) : Resources(
     baseInstance.assets,
     baseInstance.displayMetrics,
     baseInstance.configuration
@@ -49,7 +49,7 @@ class YukiXposedModuleResources private constructor(private val baseInstance: Re
 
         /**
          * Loads the module APK into a separate [AssetManager] without modifying host resources.
-         * @return [YukiXposedModuleResources] or null when the resources cannot be created.
+         * @return [ModuleResources] or null when the resources cannot be created.
          */
         fun from(path: String) = runCatching {
             val assets = AssetManager::class.resolve()
@@ -60,7 +60,7 @@ class YukiXposedModuleResources private constructor(private val baseInstance: Re
             val resources = Resources(assets, system.displayMetrics, system.configuration)
 
             addModuleAssetPath(resources, path).getOrThrow()
-            YukiXposedModuleResources(resources)
+            ModuleResources(resources)
         }.onFailure {
             YLog.innerE("Failed to create module resources from $path", it)
         }.getOrNull()
@@ -132,5 +132,5 @@ class YukiXposedModuleResources private constructor(private val baseInstance: Re
         }
     }
 
-    override fun toString() = "YukiXposedModuleResources($baseInstance)"
+    override fun toString() = "ModuleResources($baseInstance)"
 }

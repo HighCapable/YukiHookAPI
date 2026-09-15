@@ -30,7 +30,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
-import com.highcapable.yukihookapi.hook.xposed.bridge.YukiXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 
 /**
@@ -84,13 +84,13 @@ interface ModuleActivity {
 
         /**  @see Activity.onCreate */
         fun onCreate(savedInstanceState: Bundle?) {
-            if (YukiXposedModule.isXposedEnvironment && self.moduleTheme != -1)
+            if (XposedModuleRuntime.isHostEnvironment && self.moduleTheme != -1)
                 selfActivity.setTheme(self.moduleTheme)
         }
 
         /** @see Activity.onConfigurationChanged */
         fun onConfigurationChanged(newConfig: Configuration) {
-            if (YukiXposedModule.isXposedEnvironment) selfActivity.injectModuleResources()
+            if (XposedModuleRuntime.isHostEnvironment) selfActivity.injectModuleResources()
         }
 
         /** @see Activity.onRestoreInstanceState */

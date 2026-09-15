@@ -22,8 +22,8 @@
 package com.highcapable.yukihookapi.hook.entity
 
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithLibXposed
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
@@ -32,9 +32,9 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
  * Base hooker implementation for [YukiHookAPI].
  * Inherit this class to organize multiple hooker feature modules in a single Xposed module.
  *
- * See [InjectYukiHookWithLibXposed] or [InjectYukiHookWithXposed] for the entry-point configuration.
- * @see InjectYukiHookWithLibXposed
- * @see InjectYukiHookWithXposed
+ * See [YukiHookLibXposedEntry] or [YukiHookXposed82Entry] for the entry-point configuration.
+ * @see YukiHookLibXposedEntry
+ * @see YukiHookXposed82Entry
  * @see PackageParam
  */
 abstract class YukiBaseHooker : PackageParam() {

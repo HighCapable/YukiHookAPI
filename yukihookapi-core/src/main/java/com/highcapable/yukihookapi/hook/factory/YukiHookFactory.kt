@@ -40,6 +40,7 @@ import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
@@ -50,26 +51,26 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.File
 
 /**
- * Calls [YukiHookAPI.configs] from [IYukiHookXposedInit].
- * @receiver [IYukiHookXposedInit]
+ * Calls [YukiHookAPI.configs] from [YukiHookXposedModule].
+ * @receiver [YukiHookXposedModule]
  * @param block the configuration block.
  */
-inline fun IYukiHookXposedInit.configs(block: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(block)
+inline fun YukiHookXposedModule.configs(block: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(block)
 
 /**
- * Calls [YukiHookAPI.encase] from [IYukiHookXposedInit].
- * @receiver [IYukiHookXposedInit]
+ * Calls [YukiHookAPI.encase] from [YukiHookXposedModule].
+ * @receiver [YukiHookXposedModule]
  * @param block the param block.
  */
-fun IYukiHookXposedInit.encase(block: PackageParam.() -> Unit) = YukiHookAPI.encase(block)
+fun YukiHookXposedModule.encase(block: PackageParam.() -> Unit) = YukiHookAPI.encase(block)
 
 /**
- * Loads [YukiHookAPI] from [IYukiHookXposedInit].
- * @receiver [IYukiHookXposedInit]
+ * Loads [YukiHookAPI] from [YukiHookXposedModule].
+ * @receiver [YukiHookXposedModule]
  * @param hookers the hookers.
  * @throws IllegalStateException if [hookers] is empty.
  */
-fun IYukiHookXposedInit.encase(vararg hookers: YukiBaseHooker) = YukiHookAPI.encase(hookers = hookers)
+fun YukiHookXposedModule.encase(vararg hookers: YukiBaseHooker) = YukiHookAPI.encase(hookers = hookers)
 
 /**
  * Creates a [YukiHookPrefsBridge] object.
@@ -177,9 +178,39 @@ fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration?
 /**
  * This function does nothing and does not invoke [block].
  *
+ * - Use [YukiHookXposedModule.configs] instead.
+ */
+@Deprecated(message = "Use YukiHookXposedModule.configs instead.")
+inline fun IYukiHookXposedInit.configs(block: YukiHookAPI.Configs.() -> Unit) = Unit
+
+/**
+ * This function does nothing and does not invoke [block].
+ *
+ * - Use [YukiHookXposedModule.encase] instead.
+ */
+@Deprecated(message = "Use YukiHookXposedModule.encase instead.")
+fun IYukiHookXposedInit.encase(block: PackageParam.() -> Unit) = Unit
+
+/**
+ * This function does nothing and does not invoke [hookers].
+ *
+ * - Use [YukiHookXposedModule.encase] instead.
+ */
+@Deprecated(message = "Use YukiHookXposedModule.encase instead.")
+fun IYukiHookXposedInit.encase(vararg hookers: YukiBaseHooker) = Unit
+
+/**
+ * This function does nothing and does not invoke [block].
+ *
+ * - Use the selected runtime's `registerFrameworkEvents` extension from [YukiHookXposedModule.onInit] instead.
+ */
+@Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
+inline fun YukiHookXposedModule.events(block: YukiXposedEvent.() -> Unit) = Unit
+
+/**
+ * This function does nothing and does not invoke [block].
+ *
  * - Use the selected runtime's `registerFrameworkEvents` extension from [IYukiHookXposedInit.onInit] instead.
- * @receiver [IYukiHookXposedInit]
- * @param block the unused event configuration block.
  */
 @Deprecated(message = "This API has no effect. Use the runtime's registerFrameworkEvents in onInit instead.")
 inline fun IYukiHookXposedInit.events(block: YukiXposedEvent.() -> Unit) = Unit

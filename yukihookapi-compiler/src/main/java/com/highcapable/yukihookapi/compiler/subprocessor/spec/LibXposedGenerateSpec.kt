@@ -25,12 +25,6 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
 
 /**
  * Spec used to generate libxposed entry sources and metadata.
- * @param entryPackageName the package name of the entry class.
- * @param modulePackageName the detected module application ID, not the Android namespace.
- * @param customMPackageName the manually configured module application ID.
- * @param entryClassName the entry class name.
- * @param xInitClassName the generated framework entry class name.
- * @param isEntryClassKindOfObject whether the entry class is an `object` singleton.
  * @param minApiVersion the minimum framework API version.
  * @param targetApiVersion the targeted framework behavior.
  * @param scope the explicitly declared scope.
@@ -40,9 +34,9 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
 data class LibXposedGenerateSpec(
     override var entryPackageName: String = "",
     override var modulePackageName: String = "",
-    override var customMPackageName: String = "",
+    override var customPackageName: String = "",
     override var entryClassName: String = "",
-    override var xInitClassName: String = "",
+    override var initClassName: String = "",
     override var isEntryClassKindOfObject: Boolean = false,
     var minApiVersion: Int = RUNTIME_MIN_API_VERSION,
     var targetApiVersion: Int,
@@ -53,7 +47,7 @@ data class LibXposedGenerateSpec(
 
     companion object {
 
-        const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.InjectYukiHookWithLibXposed"
+        const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.YukiHookLibXposedEntry"
         const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.LibXposedEntry"
 
         const val RUNTIME_MODULE_NAME = "yukihookapi-runtime-libxposed"
