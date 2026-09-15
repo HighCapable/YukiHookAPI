@@ -17,8 +17,8 @@
     <string name="demo_status_yukihookapi_version_summary">YukiHookAPI version</string>
     <string name="demo_status_runtime">YukiHookAPI runtime: %1$s</string>
     <string name="demo_status_runtime_summary">YukiHookAPI runtime environment</string>
-    <string name="demo_status_prefs_writable">YukiHookPrefsBridge writable: %1$b</string>
-    <string name="demo_status_prefs_writable_summary">YukiHookPrefsBridge writable state</string>
+    <string name="demo_status_prefs_writable">YukiHookPreferences writable: %1$b</string>
+    <string name="demo_status_prefs_writable_summary">YukiHookPreferences writable state</string>
     <string name="demo_preferences_title">Preferences</string>
     <string name="demo_preference_category">Demo Preferences</string>
     <string name="demo_preference_show_dialog_title">Show dialog</string>

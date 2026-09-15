@@ -191,7 +191,7 @@ object HookEntry : YukiHookXposedModule {
                         // After hook the method
                         // 在执行方法之后拦截
                         after {
-                            if (prefs.getBoolean("show_dialog_when_demo_app_opened"))
+                            if (preferences.getBoolean("show_dialog_when_demo_app_opened"))
                                 MaterialAlertDialogBuilder(instance<Activity>().applyModuleTheme(R.style.Theme_Default))
                                     .setTitle("Hooked")
                                     .setMessage(
@@ -277,7 +277,7 @@ object HookEntry : YukiHookXposedModule {
                     }.hook {
                         // Replaced hook
                         // 执行替换 Hook
-                        intercept(prefs.get(DataConst.TEST_KV_DATA))
+                        intercept(preferences.get(DataConst.TEST_KV_DATA))
                     }
                 }
                 // Find Class to hook

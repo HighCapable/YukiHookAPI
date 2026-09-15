@@ -22,11 +22,11 @@
 package com.highcapable.yukihookapi.demo.module.legacy.data
 
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
-import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
+import com.highcapable.yukihookapi.hook.xposed.preference.data.PreferenceData
 
 object DataConst {
 
-    val TEST_KV_DATA = PrefsData("test_data", "Test data is nothing")
+    val TEST_KV_DATA = PreferenceData("test_data", "Test data is nothing")
 
     val TEST_CN_DATA = ChannelData<String>("key_from_host")
 }
