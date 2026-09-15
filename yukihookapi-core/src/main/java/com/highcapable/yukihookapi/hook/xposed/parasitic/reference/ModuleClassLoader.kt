@@ -39,10 +39,15 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
         private var instance: ModuleClassLoader? = null
 
         /** Host [Class] names that must bypass the module-first lookup. */
-        private val excludeHostClasses = mutableSetOf<String>()
+        @Volatile
+        private var excludeHostClasses = setOf("androidx.lifecycle.ReportFragment")
 
         /** Module [Class] names that must bypass the host lookup. */
-        private val excludeModuleClasses = mutableSetOf<String>()
+        @Volatile
+        private var excludeModuleClasses = emptySet<String>()
+
+        /** Coordinates publication of class-exclusion snapshots. */
+        private val exclusionLock = Any()
 
         /**
          * Gets the [ModuleClassLoader] singleton.
@@ -59,7 +64,9 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
          * @param name the fully qualified [Class] names to add.
          */
         fun excludeHostClasses(vararg name: String) {
-            excludeHostClasses.addAll(name.toList())
+            synchronized(exclusionLock) {
+                excludeHostClasses = excludeHostClasses + name
+            }
         }
 
         /**
@@ -71,11 +78,9 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
          * @param name the fully qualified [Class] names to add.
          */
         fun excludeModuleClasses(vararg name: String) {
-            excludeModuleClasses.addAll(name.toList())
-        }
-
-        init {
-            excludeHostClasses.add("androidx.lifecycle.ReportFragment")
+            synchronized(exclusionLock) {
+                excludeModuleClasses = excludeModuleClasses + name
+            }
         }
     }
 
@@ -87,8 +92,9 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
         if (!XposedModuleRuntime.isHostEnvironment) return baseLoader.loadClass(name)
 
         return AppParasitism.currentApplication?.classLoader?.let { hostLoader ->
-            excludeHostClasses.takeIf { it.isNotEmpty() }?.forEach { runCatching { if (name == it) return@let hostLoader.loadClass(name) } }
-            excludeModuleClasses.takeIf { it.isNotEmpty() }?.forEach { runCatching { if (name == it) return@let baseLoader.loadClass(name) } }
+            if (name in excludeHostClasses) runCatching { hostLoader.loadClass(name) }.getOrNull()?.let { return@let it }
+            if (name in excludeModuleClasses) runCatching { baseLoader.loadClass(name) }.getOrNull()?.let { return@let it }
+
             runCatching { return@let baseLoader.loadClass(name) }
             runCatching { baseLoader.loadClass(name) }.getOrNull() ?: hostLoader.loadClass(name)
         } ?: super.loadClass(name, resolve)

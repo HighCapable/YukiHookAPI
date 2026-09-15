@@ -207,6 +207,29 @@ class MemberHookerTest {
     }
 
     @Test
+    fun hookCanRemoveItselfWhileNativeRegistrationIsCompleting() {
+        var removalReported = false
+        YukiHookBridge.hookCallback = { member, _, hooker ->
+            ClassicInvocationAdapter.from(member, "value", arrayOf(1)) { throw it }
+                .intercept(hooker as ClassicHookerBridge) { "original" }
+            object : HookerBridge {
+                override fun remove() {
+                    removed += member
+                }
+            }
+        }
+
+        scope.run {
+            method.hook().before {
+                removeSelf { removalReported = it }
+            }
+        }
+
+        Assert.assertFalse(removalReported)
+        Assert.assertEquals(listOf(method), removed)
+    }
+
+    @Test
     fun classicInterceptionSkipsOriginalAndNormalizesVoidResult() {
         var callbackInvoked = false
         var valueOriginalInvoked = false

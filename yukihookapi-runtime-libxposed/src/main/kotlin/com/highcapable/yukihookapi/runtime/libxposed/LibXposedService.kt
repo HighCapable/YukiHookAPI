@@ -38,13 +38,11 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal object LibXposedService {
 
     private val services = linkedSetOf<XposedService>()
-
-    private val listeners = CopyOnWriteArraySet<FrameworkServiceBridge>()
-    private val listenerLock = Any()
-
-    private var initialized = false
+    private val listeners = CopyOnWriteArraySet<ServiceSubscription>()
 
     private val service get() = synchronized(services) { services.singleOrNull() }
+
+    private var initialized = false
 
     val isAvailable get() = runCatching { service?.apiVersion?.let { it >= XposedInterface.API_101 } ?: false }.getOrDefault(false)
     val frameworkName get() = runCatching { service?.frameworkName }.getOrNull() ?: "unknown"
@@ -73,37 +71,15 @@ internal object LibXposedService {
     fun observe(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? {
         if (lifecycle?.currentState == Lifecycle.State.DESTROYED) return null
 
-        return object : FrameworkServiceBridge, DefaultLifecycleObserver {
+        return ServiceSubscription(lifecycle, listener).also { subscription ->
+            runCatching {
+                lifecycle?.addObserver(subscription)
 
-            @Volatile
-            private var isUnregistered = false
-
-            init {
-                runCatching {
-                    lifecycle?.addObserver(this)
-
-                    initialize()
-                    synchronized(listenerLock) {
-                        if (!isUnregistered) {
-                            listeners.add(this)
-                            onServiceChanged(isAvailable)
-                        }
-                    }
-                }.onFailure { unregister() }.getOrThrow()
-            }
-
-            override fun onServiceChanged(available: Boolean) {
-                if (!isUnregistered) listener.onServiceChanged(available)
-            }
-
-            override fun onDestroy(owner: LifecycleOwner) = unregister()
-
-            override fun unregister() {
-                isUnregistered = true
-
-                listeners.remove(this)
-                lifecycle?.removeObserver(this)
-            }
+                initialize()
+                subscription.register()
+            }.onFailure {
+                subscription.unregister()
+            }.getOrThrow()
         }
     }
 
@@ -122,14 +98,77 @@ internal object LibXposedService {
         return current.getRemotePreferences(name)
     }
 
-    private fun notifyListeners() = synchronized(listenerLock) {
-        val isAvailable = isAvailable
-        listeners.forEach { listener ->
+    private fun notifyListeners() {
+        val available = isAvailable
+
+        listeners.forEach { subscription ->
             runCatching {
-                listener.onServiceChanged(isAvailable)
+                subscription.dispatch(available)
             }.onFailure {
                 Log.e("YukiHookAPI", "Service listener failed", it)
             }
+        }
+    }
+
+    /**
+     * Independent lifecycle-aware subscription with ordered callback delivery.
+     */
+    private class ServiceSubscription(
+        private val lifecycle: Lifecycle?,
+        private val listener: FrameworkServiceBridge
+    ) : FrameworkServiceBridge, DefaultLifecycleObserver {
+
+        private val callbackLock = Any()
+        private val pendingEvents = ArrayDeque<Boolean>()
+
+        private var isInitialized = false
+        private var isUnregistered = false
+
+        override fun onServiceChanged(available: Boolean) = synchronized(callbackLock) {
+            notifyListener(available)
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) = unregister()
+
+        override fun unregister() {
+            synchronized(callbackLock) {
+                if (isUnregistered) return
+                isUnregistered = true
+                pendingEvents.clear()
+            }
+
+            listeners.remove(this)
+            lifecycle?.removeObserver(this)
+        }
+
+        fun register() = synchronized(callbackLock) {
+            if (isUnregistered) return@synchronized
+
+            listeners.add(this)
+            notifyListener(isAvailable)
+            if (isUnregistered) {
+                pendingEvents.clear()
+                return@synchronized
+            }
+
+            isInitialized = true
+            while (pendingEvents.isNotEmpty() && !isUnregistered) runCatching {
+                notifyListener(pendingEvents.removeFirst())
+            }.onFailure {
+                Log.e("YukiHookAPI", "Service listener failed", it)
+            }
+        }
+
+        fun dispatch(available: Boolean) = synchronized(callbackLock) {
+            if (isUnregistered) return@synchronized
+
+            if (!isInitialized)
+                pendingEvents.addLast(available)
+            else notifyListener(available)
+        }
+
+        private fun notifyListener(available: Boolean) {
+            if (!isUnregistered) listener.onServiceChanged(available)
         }
     }
 }

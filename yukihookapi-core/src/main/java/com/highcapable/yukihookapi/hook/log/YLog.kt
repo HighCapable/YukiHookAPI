@@ -32,6 +32,7 @@ import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.log.data.YLogData
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import java.io.File
+import java.util.Collections
 
 /**
  * Global log manager.
@@ -158,7 +159,7 @@ object YLog {
      *
      * - Log data is isolated between host and module processes.
      */
-    val inMemoryData = mutableListOf<YLogData>()
+    val inMemoryData: MutableList<YLogData> = Collections.synchronizedList(mutableListOf())
 
     /**
      * Gets the current log file contents.
@@ -171,6 +172,12 @@ object YLog {
     val contents get() = contents()
 
     /**
+     * Returns a stable snapshot of the currently [inMemoryData].
+     * @return [List]<[YLogData]>
+     */
+    internal fun createSnapshot() = synchronized(inMemoryData) { inMemoryData.toList() }
+
+    /**
      * Gets and formats the current log file contents.
      *
      * Returns an empty string when no logs have been recorded and [data] is empty.
@@ -180,16 +187,17 @@ object YLog {
      * @return [String]
      */
     fun contents(data: List<YLogData> = inMemoryData): String {
-        var content = ""
-        data.takeIf { it.isNotEmpty() }?.forEach {
-            content += "${it.head}$it\n"
-            it.throwable?.also { e ->
-                content += "${it.head}Dump stack trace for \"${e.javaClass.name}\":\n"
-                content += e.stackTraceToString()
+        val currentData = if (data === inMemoryData) createSnapshot() else data
+
+        return buildString {
+            currentData.forEach {
+                append("${it.head}$it\n")
+                it.throwable?.also { e ->
+                    append("${it.head}Dump stack trace for \"${e.javaClass.name}\":\n")
+                    append(e.stackTraceToString())
+                }
             }
         }
-
-        return content
     }
 
     /**
@@ -213,7 +221,8 @@ object YLog {
      * @throws ErrnoException if the target path is not writable.
      */
     fun saveToFile(fileName: String, data: List<YLogData> = inMemoryData) {
-        if (data.isNotEmpty()) File(fileName).appendText(contents(data))
+        val currentData = if (data === inMemoryData) createSnapshot() else data
+        if (currentData.isNotEmpty()) File(fileName).appendText(contents(currentData))
     }
 
     /**

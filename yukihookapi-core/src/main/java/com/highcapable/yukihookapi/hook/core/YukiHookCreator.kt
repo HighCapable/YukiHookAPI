@@ -59,9 +59,8 @@ class YukiHookCreator private constructor() {
          * @param invocation the interceptor invoked for each call.
          * @return [ChainMemberHooker]
          */
-        fun createChainHooker(members: Collection<Member>, priority: YukiHookPriority, invocation: HookChain.() -> Any?) = YukiHookCreator()
-            .ChainMemberHooker(priority, invocation)
-            .also { it.members.addAll(members) }
+        fun createChainHooker(members: Collection<Member>, priority: YukiHookPriority, invocation: HookChain.() -> Any?) =
+            ChainMemberHooker(priority, invocation).also { it.members.addAll(members) }
 
         /**
          * Creates a classic member hooker.
@@ -70,19 +69,23 @@ class YukiHookCreator private constructor() {
          * @param isLazyMode whether registration waits until the hook block has been configured.
          * @return [ClassicMemberHooker]
          */
-        fun createClassicHooker(members: Collection<Member>, priority: YukiHookPriority, isLazyMode: Boolean) = YukiHookCreator()
-            .ClassicMemberHooker(priority, if (isLazyMode) HookMode.LAZY else HookMode.IMMEDIATE)
-            .also { it.members.addAll(members) }
+        fun createClassicHooker(members: Collection<Member>, priority: YukiHookPriority, isLazyMode: Boolean) =
+            ClassicMemberHooker(priority, if (isLazyMode) HookMode.LAZY else HookMode.IMMEDIATE)
+                .also { it.members.addAll(members) }
     }
 
     /**
      * Base member registration and invocation-listener implementation.
      * @param priority the hook priority.
      */
-    abstract inner class MemberHooker<I : HookInvocation> internal constructor(private val priority: YukiHookPriority) {
+    abstract class MemberHooker<I : HookInvocation> internal constructor(private val priority: YukiHookPriority) {
 
-        private var result: Result? = null
+        private val registrationLock = Any()
+        private val result = Result()
+
         private var isHooked = false
+        private var isRegistering = false
+        private var isRemovalPending = false
 
         private var onConductFailureCallback: ((I, Throwable) -> Unit)? = null
         private var onInvocationFailureCallback: ((Throwable) -> Unit)? = null
@@ -96,27 +99,67 @@ class YukiHookCreator private constructor() {
          * Removes every registered hook belonging to this hooker.
          * @param callback callback indicating whether any registrations were removed.
          */
-        fun removeSelf(callback: (Boolean) -> Unit = {}) = this.result?.remove(callback) ?: callback(false)
+        fun removeSelf(callback: (Boolean) -> Unit = {}) = result.remove(callback)
 
         /**
          * Registers the configured hooker.
          * @return [Result] for removal and invocation failure listeners.
          */
-        internal fun build() = Result().apply {
-            this@MemberHooker.result = this
-            hook()
-        }
+        internal fun build() = result.apply { hook() }
 
         /** Registers each member independently so one failure does not interrupt the remaining hooks. */
         internal fun hook() {
-            if (!YukiHookBridge.isHookAvailable || isHooked) return
-            isHooked = true
+            if (!YukiHookBridge.isHookAvailable) return
+            val pendingMembers = synchronized(registrationLock) {
+                if (isHooked) return
 
-            members.forEach { member ->
-                runCatching {
-                    YukiHookHelper.hookMember(member, createHooker(member), priority)?.also { results.add(it) }
-                }.onFailure { logError(it, member) }
+                isHooked = true
+                isRegistering = true
+                members.toList()
             }
+
+            runCatching {
+                pendingMembers.forEach { member ->
+                    runCatching {
+                        YukiHookHelper.hookMember(member, createHooker(member), priority)?.also(::storeRegistration)
+                    }.onFailure { logError(it, member) }
+                }
+            }.also {
+                synchronized(registrationLock) {
+                    isRegistering = false
+                    isRemovalPending = false
+                }
+            }.getOrThrow()
+        }
+
+        /**
+         * Stores a completed registration or removes it when removal was requested while registering.
+         * @param registration the completed registration.
+         */
+        private fun storeRegistration(registration: YukiHookResult) {
+            val shouldRemove = synchronized(registrationLock) {
+                if (isRemovalPending) true else {
+                    results.add(registration)
+                    false
+                }
+            }
+
+            if (shouldRemove) runCatching {
+                removeRegistration(registration)
+            }.onFailure {
+                synchronized(registrationLock) {
+                    results.add(registration)
+                }
+            }.getOrThrow()
+        }
+
+        /**
+         * Removes one native registration outside [registrationLock].
+         * @param registration the registration to remove.
+         */
+        private fun removeRegistration(registration: YukiHookResult) {
+            registration.remove()
+            YLog.innerD("Removed hooker for ${registration.member}")
         }
 
         /**
@@ -192,14 +235,23 @@ class YukiHookCreator private constructor() {
              * @param callback callback indicating whether any registrations were removed.
              */
             fun remove(callback: (Boolean) -> Unit = {}) {
-                results.takeIf { it.isNotEmpty() }?.apply {
-                    forEach {
-                        it.remove()
-                        YLog.innerD("Removed hooker for ${it.member}")
+                val registrations = synchronized(registrationLock) {
+                    val registrations = results.toList()
+                    results.clear()
+
+                    if (isRegistering) isRemovalPending = true
+                    registrations
+                }
+
+                runCatching {
+                    registrations.forEach(::removeRegistration)
+                }.onFailure {
+                    synchronized(registrationLock) {
+                        results.addAll(registrations)
                     }
-                    clear()
-                    callback(true)
-                } ?: callback(false)
+                }.getOrThrow()
+
+                callback(registrations.isNotEmpty())
             }
 
             // region Deprecated functions for backward compatibility
@@ -275,7 +327,7 @@ class YukiHookCreator private constructor() {
      * @param priority the hook priority.
      * @param invocation the interceptor invoked for each call.
      */
-    inner class ChainMemberHooker internal constructor(
+    class ChainMemberHooker internal constructor(
         priority: YukiHookPriority,
         private val invocation: HookChain.() -> Any?
     ) : MemberHooker<HookChain>(priority) {
@@ -310,7 +362,7 @@ class YukiHookCreator private constructor() {
      * @param priority the hook priority.
      * @param hookMode the registration mode.
      */
-    inner class ClassicMemberHooker internal constructor(
+    class ClassicMemberHooker internal constructor(
         priority: YukiHookPriority,
         private val hookMode: HookMode
     ) : MemberHooker<HookParam>(priority) {

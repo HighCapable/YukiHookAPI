@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/5/16.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "UNCHECKED_CAST", "StaticFieldLeak", "KotlinConstantConditions")
+@file:Suppress("unused", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.xposed.channel
 
@@ -113,14 +113,13 @@ class YukiHookDataChannel private constructor() {
         private val receiverDataSegmentMaxByteSize get() = receiverDataMaxByteSize / receiverDataMaxByteCompressionFactor
 
         /** The current [YukiHookDataChannel] singleton. */
-        @Suppress("StaticFieldLeak")
-        private var instance: YukiHookDataChannel? = null
+        private val instance = YukiHookDataChannel()
 
         /**
          * Gets the [YukiHookDataChannel] singleton.
          * @return [YukiHookDataChannel]
          */
-        fun get() = instance ?: YukiHookDataChannel().apply { instance = this }
+        fun get() = instance
     }
 
     /**
@@ -133,29 +132,21 @@ class YukiHookDataChannel private constructor() {
     }
 
     /** Registered broadcast callbacks. */
-    private var receiverCallbacks = ConcurrentHashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
+    private val receiverCallbacks = ConcurrentHashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
 
     /** The [Context] currently used to register broadcasts. */
     private var receiverContext: Context? = null
-
-    /** Whether data larger than [receiverDataMaxByteSize] may be sent. */
-    private var isAllowSendTooLargeData = false
 
     /** The broadcast receiver. */
     private val handlerReceiver = BroadcastReceiver { _, intent ->
         intent.action?.also { action ->
             runCatching {
-                var destroyedCallbacks: MutableList<String>? = null
                 receiverCallbacks.forEach { (key, param) ->
                     when {
-                        param.first?.hostActivity?.isDestroyed == true -> {
-                            val callbacks = destroyedCallbacks ?: mutableListOf<String>().also { destroyedCallbacks = it }
-                            callbacks.add(key)
-                        }
+                        param.first?.hostActivity?.isDestroyed == true -> receiverCallbacks.remove(key, param)
                         isCurrentBroadcast(param.first) -> param.second(action, intent)
                     }
                 }
-                destroyedCallbacks?.forEach { receiverCallbacks.remove(it) }
             }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
         }
     }
@@ -168,8 +159,6 @@ class YukiHookDataChannel private constructor() {
         if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
             "Xposed modulePackageName load failed, please reset and rebuild it."
         }
-
-        isAllowSendTooLargeData = false
     }
 
     /**
@@ -224,7 +213,7 @@ class YukiHookDataChannel private constructor() {
             }
             // Registers a listener for debug log data exchanged between the module and host.
             wait<String>(GET_YUKI_LOGGER_IN_MEMORY_DATA) { fromPackageName ->
-                namespace(context, fromPackageName).put(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, YLog.inMemoryData)
+                namespace(context, fromPackageName).put(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, YLog.createSnapshot())
             }
         }
     }
@@ -265,6 +254,9 @@ class YukiHookDataChannel private constructor() {
 
         /** The current temporary segmented data. */
         private val segmentsTempData = ConcurrentHashMap<String, SegmentsTempData>()
+
+        /** Whether sending from this namespace may bypass the data-size limit. */
+        private var allowSendTooLargeData = false
 
         /**
          * Gets the key-value suffix.
@@ -325,7 +317,8 @@ class YukiHookDataChannel private constructor() {
         /**
          * Removes the outgoing data-size limit and disables segmented sending.
          *
-         * This applies only to the current invocation. The feature is disabled automatically unless called again next time.
+         * Once enabled, this applies to every subsequent sending invocation from the current [Namespace] instance.
+         * Obtain a new [Namespace] instance to restore the data-size limit.
          * Declare [SendTooLargeChannelData] across the invocation scope to suppress the warning.
          *
          * - Do not use this feature unless you understand its consequences.
@@ -333,7 +326,7 @@ class YukiHookDataChannel private constructor() {
          */
         @SendTooLargeChannelData
         fun allowSendTooLargeData(): Namespace {
-            isAllowSendTooLargeData = true
+            allowSendTooLargeData = true
             return this
         }
 
@@ -342,20 +335,28 @@ class YukiHookDataChannel private constructor() {
          * @param key the key name.
          * @param value the value data.
          */
-        fun <T> put(key: String, value: T) = parseSendingData(ChannelData(key, value).toWrapper())
+        fun <T> put(key: String, value: T) = parseSendingData(
+            ChannelData(key, value).toWrapper(),
+            allowSendTooLargeData
+        )
 
         /**
          * Sends key-value data.
          * @param data the key-value instance.
          * @param value the value data, [ChannelData.value] when omitted.
          */
-        fun <T> put(data: ChannelData<T>, value: T? = data.value) = parseSendingData(ChannelData(data.key, value).toWrapper())
+        fun <T> put(data: ChannelData<T>, value: T? = data.value) = parseSendingData(
+            ChannelData(data.key, value).toWrapper(),
+            allowSendTooLargeData
+        )
 
         /**
          * Sends key-value data.
          * @param data the key-value instances.
          */
-        fun put(vararg data: ChannelData<*>) = data.takeIf { it.isNotEmpty() }?.forEach { parseSendingData(it.toWrapper()) }
+        fun put(vararg data: ChannelData<*>) = data.takeIf { it.isNotEmpty() }?.let {
+            it.forEach { item -> parseSendingData(item.toWrapper(), allowSendTooLargeData) }
+        }
 
         /**
          * Sends a key-value listener request only, using [VALUE_WAIT_FOR_LISTENER] as the value.
@@ -582,15 +583,16 @@ class YukiHookDataChannel private constructor() {
         /**
          * Processes broadcast data to send.
          * @param wrapper the key-value data wrapper.
+         * @param allowSendTooLargeData whether to allow sending data larger than the system limit.
          */
-        private fun parseSendingData(wrapper: ChannelDataWrapper<*>) {
+        private fun parseSendingData(wrapper: ChannelDataWrapper<*>, allowSendTooLargeData: Boolean) {
             if (!YukiHookAPI.Configs.isEnableDataChannel) return
 
             // The current wrapper instance ID.
             val wrapperId = RandomString.generate()
             // The size in bytes of the data to send.
             val dataByteSize = wrapper.instance.calDataByteSize()
-            if (dataByteSize < 0 && !isAllowSendTooLargeData) return YLog.innerE(
+            if (dataByteSize < 0 && !allowSendTooLargeData) return YLog.innerE(
                 msg = "YukiHookDataChannel cannot calculate the byte size of the data key of \"${wrapper.instance.key}\" to be sent, " +
                     "so this data cannot be sent.\n" +
                     "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
@@ -630,7 +632,7 @@ class YukiHookDataChannel private constructor() {
                 suggestionMessage = "Failed to segment $name type because the size of its first element has exceeded the maximum limit"
             )
             when {
-                wrapper.isSegmentsType || isAllowSendTooLargeData -> sendBroadcast(wrapper)
+                wrapper.isSegmentsType || allowSendTooLargeData -> sendBroadcast(wrapper)
                 dataByteSize >= receiverDataMaxByteSize -> {
                     val name: String
                     val segments = when (val value = wrapper.instance.value) {
