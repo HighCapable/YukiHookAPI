@@ -26,6 +26,7 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookChain
 import com.highcapable.yukihookapi.hook.param.HookParam
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
@@ -64,7 +65,8 @@ class MemberHookerTest {
     @Before
     fun installRuntime() {
         YLog.Configs.isEnable = false
-        YukiHookBridge.hookCallback = { member, _, hooker ->
+        YukiHookBridge.hookCallback = { target, _, hooker ->
+            val member = (target as HookPoint.Member).value
             hookers += hooker
             object : HookerBridge {
                 override fun remove() { removed += member }
@@ -155,10 +157,10 @@ class MemberHookerTest {
         val failure = UnsupportedOperationException("unsupported hooker")
         val register = checkNotNull(YukiHookBridge.hookCallback)
         var attempts = 0
-        YukiHookBridge.hookCallback = { member, priority, hooker ->
+        YukiHookBridge.hookCallback = { target, priority, hooker ->
             attempts++
             if (attempts == 1) throw failure
-            register(member, priority, hooker)
+            register(target, priority, hooker)
         }
         scope.run {
             listOf(method, otherMethod).interceptAll {
@@ -209,7 +211,8 @@ class MemberHookerTest {
     @Test
     fun hookCanRemoveItselfWhileNativeRegistrationIsCompleting() {
         var removalReported = false
-        YukiHookBridge.hookCallback = { member, _, hooker ->
+        YukiHookBridge.hookCallback = { target, _, hooker ->
+            val member = (target as HookPoint.Member).value
             ClassicInvocationAdapter.from(member, "value", arrayOf(1)) { throw it }
                 .intercept(hooker as ClassicHookerBridge) { "original" }
             object : HookerBridge {

@@ -26,6 +26,7 @@ import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import java.lang.reflect.Member
 
@@ -39,25 +40,15 @@ internal object YukiHookHelper {
     private const val HIGHEST_PRIORITY = 10000
 
     /**
-     * Hook [MemberResolver]
-     * @param resolver the [MemberResolver] to hook.
+     * Hooks a [HookPoint].
+     * @param target the point to hook.
      * @param hooker the hooker to register.
      * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
-     * @return [YukiHookResult] or null when [resolver] is null.
+     * @return [YukiHookResult] or null when [target] is null.
      */
-    fun hook(resolver: MemberResolver<*, *>?, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
-        hookMember(resolver?.self, hooker, priority)
-
-    /**
-     * Hook [Member]
-     * @param member the method or constructor to hook.
-     * @param hooker the hooker to register.
-     * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
-     * @return [YukiHookResult] or null when [member] is null.
-     */
-    fun hookMember(member: Member?, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) = member?.let {
-        val hook = YukiHookBridge.hookMember(
-            member = it,
+    fun hook(target: HookPoint?, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) = target?.let {
+        val hook = YukiHookBridge.hook(
+            target = it,
             priority = when (priority) {
                 YukiHookPriority.DEFAULT -> DEFAULT_PRIORITY
                 YukiHookPriority.LOWEST -> LOWEST_PRIORITY
@@ -65,8 +56,19 @@ internal object YukiHookHelper {
             },
             hooker = hooker
         )
+
         YukiHookResult(it, hook)
     }
+
+    /**
+     * Hooks a [MemberResolver].
+     * @param resolver the [MemberResolver] to hook.
+     * @param hooker the hooker to register.
+     * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
+     * @return [YukiHookResult] or null when [resolver] is null.
+     */
+    fun hook(resolver: MemberResolver<*, *>?, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
+        hook(resolver?.self?.let { HookPoint.Member(it) }, hooker, priority)
 
     /**
      * Invokes the original [Member].

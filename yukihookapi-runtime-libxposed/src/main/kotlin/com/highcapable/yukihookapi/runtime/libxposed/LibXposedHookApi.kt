@@ -23,6 +23,7 @@ package com.highcapable.yukihookapi.runtime.libxposed
 
 import android.util.Log
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
@@ -53,14 +54,10 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
             }
             api.getRemotePreferences(name)
         }
-        YukiHookBridge.hookCallback = ::hookMember
+        YukiHookBridge.hookCallback = ::hook
     }
 
-    private fun hookMember(member: Member, priority: Int, hooker: HookerBridge): HookerBridge {
-        require(member is Executable) {
-            "Only methods and constructors can be hooked."
-        }
-
+    private fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
         val nativeHooker = when (hooker) {
             is ChainHookerBridge -> XposedInterface.Hooker { chain -> hooker.intercept(chain.toBridge()) }
             is ClassicHookerBridge -> XposedInterface.Hooker { chain ->
@@ -74,7 +71,11 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
             }
             else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}.")
         }
-        val handle = api.hook(member)
+        val builder = when (target) {
+            is HookPoint.Member -> api.hook(target.value as Executable)
+            is HookPoint.Initializer -> api.hookClassInitializer(target.type)
+        }
+        val handle = builder
             .setPriority(priority)
             // Classic hookers apply their own failure policy, chain hookers must preserve
             // the interceptor's result or exception without automatic recovery.

@@ -31,8 +31,6 @@ import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.resolver.ConstructorResolver
-import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
@@ -47,9 +45,9 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
-import java.lang.reflect.Constructor
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import java.lang.reflect.Member
-import java.lang.reflect.Method
+import kotlin.reflect.KClass
 import com.highcapable.kavaref.extension.lazyClass as lazyClassGlobal
 import com.highcapable.kavaref.extension.lazyClassOrNull as lazyClassOrNullGlobal
 import com.highcapable.kavaref.extension.toClass as toClassGlobal
@@ -493,6 +491,105 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         lazyClassOrNullGlobal(variousClass, initialize, loader)
 
     /**
+     * Creates a direct chain hook for the static initializer of this class.
+     *
+     * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
+     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the class whose static initializer will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun Class<*>.intercept(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any?
+    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Initializer(this)), priority, invocation).build()
+
+    /**
+     * Creates a direct chain hook for the static initializer of this [KClass].
+     *
+     * - If the class is already initialized, this hook is never invoked.
+     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun KClass<*>.intercept(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any?
+    ) = java.intercept(priority, invocation)
+
+    /**
+     * Creates direct chain hooks for the static initializers of these classes.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the classes whose static initializers will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun Array<out Class<*>>.interceptAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any?
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Initializer(it) }, priority, invocation).build()
+
+    /**
+     * Creates direct chain hooks for the static initializers of these [KClass] instances.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - An already initialized class never invokes this hook.
+     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun Array<out KClass<*>>.interceptAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any?
+    ) = map { it.java }.interceptAll(priority, invocation)
+
+    /**
+     * Creates direct chain hooks for the static initializers of these classes.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the classes whose static initializers will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @JvmName("interceptAllByClass")
+    fun Collection<Class<*>>.interceptAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any?
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Initializer(it) }, priority, invocation).build()
+
+    /**
+     * Creates direct chain hooks for the static initializers of these [KClass] instances.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - An already initialized class never invokes this hook.
+     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param invocation the chain hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @JvmName("interceptAllByKClass")
+    fun Collection<KClass<*>>.interceptAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        invocation: HookChain.() -> Any?
+    ) = map { it.java }.interceptAll(priority, invocation)
+
+    /**
      * Creates a direct chain hook for methods and constructors.
      *
      * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
@@ -507,7 +604,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Member.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(listOf(this), priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Member(this)), priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through [MemberResolver].
@@ -525,7 +622,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun MemberResolver<*, *>.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(listOf(self), priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Member(self)), priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through a [List] of [MemberResolver] instances.
@@ -543,7 +640,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Collection<MemberResolver<*, *>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(map { it.self }, priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Member(it.self) }, priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through an [Array] of [Member] instances.
@@ -560,7 +657,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Array<Member>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(toList(), priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Member(it) }, priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through a [List] of [Member] instances.
@@ -578,7 +675,183 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Collection<Member>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(this, priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Member(it) }, priority, invocation).build()
+
+    /**
+     * Creates a direct hook for the static initializer of this class.
+     *
+     * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
+     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the class whose static initializer will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    fun Class<*>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = listOf(this).createHooker(priority)
+
+    /**
+     * Creates a direct hook for the static initializer of this class.
+     *
+     * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
+     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the class whose static initializer will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun Class<*>.hook(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = listOf(this).createHooker(priority, isLazyMode = true).apply(hooker).build()
+
+    /**
+     * Creates a direct hook for the static initializer of this [KClass].
+     *
+     * - If the class is already initialized, this hook is never invoked.
+     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    fun KClass<*>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = java.hook(priority)
+
+    /**
+     * Creates a direct hook for the static initializer of this [KClass].
+     *
+     * - If the class is already initialized, this hook is never invoked.
+     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun KClass<*>.hook(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = java.hook(priority, hooker)
+
+    /**
+     * Creates direct hooks for the static initializers of these classes.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the classes whose static initializers will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    fun Array<out Class<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = toList().createHooker(priority)
+
+    /**
+     * Creates direct hooks for the static initializers of these classes.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the classes whose static initializers will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun Array<out Class<*>>.hookAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = toList().createHooker(priority, isLazyMode = true).apply(hooker).build()
+
+    /**
+     * Creates direct hooks for the static initializers of these [KClass] instances.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    fun Array<out KClass<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
+        map { it.java }.hookAll(priority)
+
+    /**
+     * Creates direct hooks for the static initializers of these [KClass] instances.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    fun Array<out KClass<*>>.hookAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = map { it.java }.hookAll(priority, hooker)
+
+    /**
+     * Creates direct hooks for the static initializers of these classes.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the classes whose static initializers will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    @JvmName("hookAllByClass")
+    fun Collection<Class<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
+
+    /**
+     * Creates direct hooks for the static initializers of these classes.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @receiver the classes whose static initializers will be hooked.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @JvmName("hookAllByClass")
+    fun Collection<Class<*>>.hookAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
+
+    /**
+     * Creates direct hooks for the static initializers of these [KClass] instances.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @return [YukiHookCreator.ClassicMemberHooker]
+     */
+    @JvmName("hookAllByKClass")
+    fun Collection<KClass<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
+        map { it.java }.hookAll(priority)
+
+    /**
+     * Creates direct hooks for the static initializers of these [KClass] instances.
+     *
+     * - Each class is registered independently; this operation is not atomic.
+     * - An already initialized class never invokes this hook.
+     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
+     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
+     * @param hooker the hook block.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @JvmName("hookAllByKClass")
+    fun Collection<KClass<*>>.hookAll(
+        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = map { it.java }.hookAll(priority, hooker)
 
     /**
      * Creates a direct hook for methods and constructors.
@@ -683,24 +956,19 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
     ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
 
-    private fun MemberResolver<*, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) = when (this) {
-        is ConstructorResolver,
-        is MethodResolver -> YukiHookCreator.createClassicHooker(listOf(self), priority, isLazyMode)
-        else -> error("This type $this not support to hook, supported are constructor and method.")
-    }
+    private fun MemberResolver<*, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
+        YukiHookCreator.createClassicHooker(listOf(HookPoint.Member(self)), priority, isLazyMode)
 
     private fun Collection<MemberResolver<*, *>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiHookCreator.createClassicHooker(onEach {
-            require(it is ConstructorResolver || it is MethodResolver) {
-                "This type $it not support to hook, supported are constructor and method."
-            }
-        }.map { it.self }, priority, isLazyMode)
+        YukiHookCreator.createClassicHooker(map { HookPoint.Member(it.self) }, priority, isLazyMode)
+
+    @JvmName("createHookerByClass")
+    private fun Collection<Class<*>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
+        YukiHookCreator.createClassicHooker(map { HookPoint.Initializer(it) }, priority, isLazyMode)
 
     @JvmName("createHookerByMember")
     private fun Collection<Member>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiHookCreator.createClassicHooker(onEach {
-            require(it is Constructor<*> || it is Method) { "This type $it not support to hook, supported are constructor and method." }
-        }, priority, isLazyMode)
+        YukiHookCreator.createClassicHooker(map { HookPoint.Member(it) }, priority, isLazyMode)
 
     // region Deprecated properties and functions for backward compatibility
 

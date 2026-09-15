@@ -29,6 +29,7 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedPreferences
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedService
@@ -44,7 +45,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     var hostVersion = "unknown"
     var hostVersionCode = -1
 
-    var hookCallback: ((Member, Int, HookerBridge) -> HookerBridge)? = null
+    var hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null
     var originalCallback: ((Member, Any?, Array<out Any?>) -> Any?)? = null
     var loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
     var preferencesCallback: ((String) -> SharedPreferences)? = null
@@ -63,9 +64,9 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge) = LibXposedService.observe(lifecycle, listener)
 
-    override fun hookMember(member: Member, priority: Int, hooker: HookerBridge) = checkNotNull(hookCallback) {
+    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkNotNull(hookCallback) {
         "libxposed is not attached to this process."
-    }(member, priority, hooker)
+    }(target, priority, hooker)
 
     override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>) = checkNotNull(originalCallback) {
         "libxposed is not attached to this process."

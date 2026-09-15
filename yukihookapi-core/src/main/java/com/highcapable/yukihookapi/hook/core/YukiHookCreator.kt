@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.hook.param.HookChain
 import com.highcapable.yukihookapi.hook.param.HookInvocation
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
@@ -54,24 +55,24 @@ class YukiHookCreator private constructor() {
 
         /**
          * Creates a chain member hooker.
-         * @param members the members to hook.
+         * @param targets the points to hook.
          * @param priority the hook priority.
          * @param invocation the interceptor invoked for each call.
          * @return [ChainMemberHooker]
          */
-        fun createChainHooker(members: Collection<Member>, priority: YukiHookPriority, invocation: HookChain.() -> Any?) =
-            ChainMemberHooker(priority, invocation).also { it.members.addAll(members) }
+        fun createChainHooker(targets: Collection<HookPoint>, priority: YukiHookPriority, invocation: HookChain.() -> Any?) =
+            ChainMemberHooker(priority, invocation).also { it.targets.addAll(targets) }
 
         /**
          * Creates a classic member hooker.
-         * @param members the members to hook.
+         * @param targets the points to hook.
          * @param priority the hook priority.
          * @param isLazyMode whether registration waits until the hook block has been configured.
          * @return [ClassicMemberHooker]
          */
-        fun createClassicHooker(members: Collection<Member>, priority: YukiHookPriority, isLazyMode: Boolean) =
+        fun createClassicHooker(targets: Collection<HookPoint>, priority: YukiHookPriority, isLazyMode: Boolean) =
             ClassicMemberHooker(priority, if (isLazyMode) HookMode.LAZY else HookMode.IMMEDIATE)
-                .also { it.members.addAll(members) }
+                .also { it.targets.addAll(targets) }
     }
 
     /**
@@ -92,8 +93,8 @@ class YukiHookCreator private constructor() {
 
         private val results = mutableSetOf<YukiHookResult>()
 
-        /** Members selected for this registration group. */
-        internal val members = mutableSetOf<Member>()
+        /** Points selected for this registration group. */
+        internal val targets = mutableSetOf<HookPoint>()
 
         /**
          * Removes every registered hook belonging to this hooker.
@@ -107,22 +108,22 @@ class YukiHookCreator private constructor() {
          */
         internal fun build() = result.apply { hook() }
 
-        /** Registers each member independently so one failure does not interrupt the remaining hooks. */
+        /** Registers each point independently so one failure does not interrupt the remaining hooks. */
         internal fun hook() {
             if (!YukiHookBridge.isHookAvailable) return
-            val pendingMembers = synchronized(registrationLock) {
+            val pendingTargets = synchronized(registrationLock) {
                 if (isHooked) return
 
                 isHooked = true
                 isRegistering = true
-                members.toList()
+                targets.toList()
             }
 
             runCatching {
-                pendingMembers.forEach { member ->
+                pendingTargets.forEach { target ->
                     runCatching {
-                        YukiHookHelper.hookMember(member, createHooker(member), priority)?.also(::storeRegistration)
-                    }.onFailure { logError(it, member) }
+                        YukiHookHelper.hook(target, createHooker(target), priority)?.also(::storeRegistration)
+                    }.onFailure { logError(it, target) }
                 }
             }.also {
                 synchronized(registrationLock) {
@@ -159,15 +160,15 @@ class YukiHookCreator private constructor() {
          */
         private fun removeRegistration(registration: YukiHookResult) {
             registration.remove()
-            YLog.innerD("Removed hooker for ${registration.member}")
+            YLog.innerD("Removed hooker for ${registration.target}")
         }
 
         /**
-         * Creates the runtime hooker for one member.
-         * @param member the member being registered.
+         * Creates the runtime hooker for one point.
+         * @param target the point being registered.
          * @return [HookerBridge]
          */
-        internal abstract fun createHooker(member: Member): HookerBridge
+        internal abstract fun createHooker(target: HookPoint): HookerBridge
 
         /**
          * Notifies invocation failure listeners without choosing a recovery policy.
@@ -180,9 +181,9 @@ class YukiHookCreator private constructor() {
             if (onConductFailureCallback == null && onInvocationFailureCallback == null) logError(throwable, invocation.member)
         }
 
-        private fun logError(throwable: Throwable, member: Member) = YLog.innerE("Try to hook $member got an exception", throwable)
+        private fun logError(throwable: Throwable, target: Any) = YLog.innerE("Try to hook $target got an exception", throwable)
 
-        override fun toString() = "${javaClass.simpleName}(members=$members, priority=$priority, isHooked=$isHooked)"
+        override fun toString() = "${javaClass.simpleName}(members=$targets, priority=$priority, isHooked=$isHooked)"
 
         /**
          * Registration group handle and invocation failure listeners.
@@ -334,18 +335,14 @@ class YukiHookCreator private constructor() {
 
         private val dataExtra = Bundle()
 
-        override fun createHooker(member: Member): ChainHookerBridge {
-            require(member is Method || member is Constructor<*>) {
-                "This type $member not support to hook, supported are constructor and method."
-            }
-
+        override fun createHooker(target: HookPoint): ChainHookerBridge {
             val invocationCount = AtomicLong()
 
             return ChainHookerBridge { chain ->
                 val invocation = HookChain.from(dataExtra, this@ChainMemberHooker, chain)
 
                 runCatching {
-                    YLog.innerD("Executing hooker [intercept] (${invocationCount.incrementAndGet()}) for $member")
+                    YLog.innerD("Executing hooker [intercept] (${invocationCount.incrementAndGet()}) for $target")
                     invocation(invocation)
                 }.getOrElse { throwable ->
                     notifyConductFailure(invocation, throwable)
@@ -460,7 +457,7 @@ class YukiHookCreator private constructor() {
             if (hookMode == HookMode.IMMEDIATE) hook()
         }
 
-        override fun createHooker(member: Member): ClassicHookerBridge {
+        override fun createHooker(target: HookPoint): ClassicHookerBridge {
             // The mode is fixed at registration, even if the creator is configured again later.
             val isInterception = isInterceptHookMode
 
@@ -479,7 +476,7 @@ class YukiHookCreator private constructor() {
                         val callback = if (isInterception) interceptHookCallback else beforeHookCallback
                         if (callback != null) YLog.innerD(
                             "Executing hooker [${if (isInterception) "intercept" else "before"}] " +
-                                "(${beforeInvocationCount.incrementAndGet()}) for $member"
+                                "(${beforeInvocationCount.incrementAndGet()}) for $target"
                         )
 
                         val value = callback?.invoke(invocation)
@@ -510,7 +507,7 @@ class YukiHookCreator private constructor() {
                         runCatching {
                             val callback = afterHookCallback
                             if (callback != null) {
-                                YLog.innerD("Executing hooker [after] (${afterInvocationCount.incrementAndGet()}) for $member")
+                                YLog.innerD("Executing hooker [after] (${afterInvocationCount.incrementAndGet()}) for $target")
                                 callback(invocation)
                             }
                         }.onFailure {

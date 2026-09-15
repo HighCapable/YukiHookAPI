@@ -26,6 +26,7 @@ import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClassOrNull
 import com.highcapable.yukihookapi.YukiHookAPI_Impl
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 
 /**
@@ -88,7 +89,7 @@ internal object Xposed82ModuleStatus {
                 emptyParameters()
             }?.self ?: return
 
-        YukiHookBridge.hookMember(method, DEFAULT_PRIORITY, object : ClassicHookerBridge {
+        YukiHookBridge.hook(HookPoint.Member(method), DEFAULT_PRIORITY, object : ClassicHookerBridge {
             override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
                 param.result = result()
             }

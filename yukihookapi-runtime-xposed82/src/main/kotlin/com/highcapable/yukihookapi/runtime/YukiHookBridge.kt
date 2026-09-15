@@ -28,6 +28,7 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
@@ -68,7 +69,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? =
         throw UnsupportedOperationException("Framework service unavailable in Xposed API 82.")
 
-    override fun hookMember(member: Member, priority: Int, hooker: HookerBridge): HookerBridge {
+    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
         if (hooker !is ClassicHookerBridge && hooker !is ChainHookerBridge)
             throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}.")
 
@@ -76,7 +77,12 @@ internal object YukiHookBridge : FrameworkHookBridge {
             "Xposed API is not attached to this process."
         }
 
-        return Xposed82HookApi.hookMember(member, priority, hooker)
+        return when (target) {
+            is HookPoint.Member -> Xposed82HookApi.hookMember(target.value, priority, hooker)
+            is HookPoint.Initializer -> throw UnsupportedOperationException(
+                "Static initializer hooks are unavailable in Xposed API 82."
+            )
+        }
     }
 
     override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? {

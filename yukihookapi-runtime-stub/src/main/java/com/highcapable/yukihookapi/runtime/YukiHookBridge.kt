@@ -28,6 +28,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import java.lang.reflect.Member
 
@@ -49,7 +50,7 @@ object YukiHookBridge : FrameworkHookBridge {
     override fun initializeModuleServices(): Unit = error("Stub!")
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?): Unit = error("Stub!")
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? = error("Stub!")
-    override fun hookMember(member: Member, priority: Int, hooker: HookerBridge): HookerBridge = error("Stub!")
+    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge = error("Stub!")
     override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? = error("Stub!")
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?): Unit = error("Stub!")
     override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences = error("Stub!")

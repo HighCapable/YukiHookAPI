@@ -81,14 +81,14 @@ interface FrameworkHookBridge {
     fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge?
 
     /**
-     * Registers a Hook using the supplied hooker contract and returns an independent Hook that can remove itself.
-     * @param member the member to hook.
+     * Registers a hook using the supplied hooker contract and returns an independent Hook that can remove itself.
+     * @param target the point to hook.
      * @param priority the priority of the hook.
      * @param hooker the hooker to invoke when the hook is triggered.
      * @return [HookerBridge]
-     * @throws UnsupportedOperationException when the runtime does not support the hooker type.
+     * @throws UnsupportedOperationException when the runtime does not support the target or hooker type.
      */
-    fun hookMember(member: Member, priority: Int, hooker: HookerBridge): HookerBridge
+    fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge
 
     /**
      * Invokes the original method or constructor on an existing receiver.

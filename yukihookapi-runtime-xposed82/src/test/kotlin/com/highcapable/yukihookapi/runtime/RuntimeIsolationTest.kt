@@ -38,6 +38,7 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposedEvent
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.registerFrameworkEvents
+import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
@@ -153,12 +154,12 @@ class RuntimeIsolationTest {
             parameters(Int::class)
         }.self
         Assert.assertThrows(UnsupportedOperationException::class.java) {
-            YukiHookBridge.hookMember(member, 50, object : HookerBridge {})
+            YukiHookBridge.hook(HookPoint.Member(member), 50, object : HookerBridge {})
         }
         val hookers = listOf(object : ClassicHookerBridge {}, ChainHookerBridge { error("No framework is attached.") })
         hookers.forEach { hooker ->
             Assert.assertThrows(IllegalStateException::class.java) {
-                YukiHookBridge.hookMember(member, 50, hooker)
+                YukiHookBridge.hook(HookPoint.Member(member), 50, hooker)
             }
         }
     }
