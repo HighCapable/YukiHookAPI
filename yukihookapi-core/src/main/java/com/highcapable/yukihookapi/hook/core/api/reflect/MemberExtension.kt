@@ -24,6 +24,7 @@
 package com.highcapable.yukihookapi.hook.core.api.reflect
 
 import com.highcapable.kavaref.extension.makeAccessible
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
@@ -63,11 +64,11 @@ fun Method.invokeOriginal(instance: Any?, vararg args: Any?): Any? {
  * Invokes this method non-virtually on the given [instance] with the given arguments.
  *
  * This action directly invokes this method without hook or subclass overrides.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [Method]
  * @param instance the instance to invoke the method on.
  * @return [T] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 @JvmName("invokeSpecialTyped")
 context(_: PackageParam)
 fun <T> Method.invokeSpecial(instance: Any, vararg args: Any?) =
@@ -77,11 +78,11 @@ fun <T> Method.invokeSpecial(instance: Any, vararg args: Any?) =
  * Invokes this method non-virtually on the given [instance] with the given arguments.
  *
  * This action directly invokes this method without hook or subclass overrides.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [Method]
  * @param instance the instance to invoke the method on.
  * @return [Any] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun Method.invokeSpecial(instance: Any, vararg args: Any?) =
     YukiHookHelper.invokeSpecial(this, instance, args)
@@ -90,11 +91,11 @@ fun Method.invokeSpecial(instance: Any, vararg args: Any?) =
  * Initialize an existing [instance] non-virtually with this constructor and the given arguments.
  *
  * This action initializes the existing instance and does not create a new one.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [Constructor]
  * @param instance the instance to initialize.
  * @return [Any] null after the constructor completes.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun Constructor<*>.initializeSpecial(instance: Any, vararg args: Any?) =
     YukiHookHelper.invokeSpecial(this, instance, args)
@@ -103,10 +104,10 @@ fun Constructor<*>.initializeSpecial(instance: Any, vararg args: Any?) =
  * Creates a new instance with this original constructor and the given arguments.
  *
  * This action skips all hooks registered for the constructor.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [Constructor]
  * @return [T]
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun <T : Any> Constructor<T>.newInstanceOriginal(vararg args: Any?) =
     YukiHookHelper.newInstanceOriginal(this, args) as T
@@ -116,11 +117,11 @@ fun <T : Any> Constructor<T>.newInstanceOriginal(vararg args: Any?) =
  *
  * This action skips all hooks registered for the constructor. The subclass constructor is not invoked,
  * so subclass fields can remain uninitialized.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [Constructor]
  * @param subclass the subclass to instantiate.
  * @return [T]
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun <T : Any> Constructor<*>.newInstanceSpecial(subclass: Class<T>, vararg args: Any?) =
     YukiHookHelper.newInstanceSpecial(this, subclass, args) as T

@@ -32,6 +32,7 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.resolver.base.MemberResolver
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
@@ -342,11 +343,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
      *   and cannot preserve parent-zygote execution or fork inheritance.
      *
-     * - Supports for [YukiHookRuntime.XPOSED_82] only.
      * @see loadApp
      * @see loadSystem
      * @param block the param block.
      */
+    @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(block: PackageParam.() -> Unit) {
         if (wrapper?.type == HookEntryType.ZYGOTE) block(this)
@@ -358,11 +359,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
      *   and cannot preserve parent-zygote execution or fork inheritance.
      *
-     * - Supports for [YukiHookRuntime.XPOSED_82] only.
      * @see loadApp
      * @see loadSystem
      * @param hooker the hooker.
      */
+    @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(hooker: YukiBaseHooker) {
         if (wrapper?.type == HookEntryType.ZYGOTE) loadHooker(hooker)
@@ -374,11 +375,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
      *   and cannot preserve parent-zygote execution or fork inheritance.
      *
-     * - Supports for [YukiHookRuntime.XPOSED_82] only.
      * @see loadApp
      * @see loadSystem
      * @param hookers the hookers.
      */
+    @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(vararg hookers: YukiBaseHooker) {
         require(hookers.isNotEmpty()) {
@@ -495,12 +496,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Class<*>.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any?
@@ -511,11 +512,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - If the class is already initialized, this hook is never invoked.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun KClass<*>.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any?
@@ -527,12 +528,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out Class<*>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any?
@@ -544,11 +545,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out KClass<*>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any?
@@ -560,12 +561,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("interceptAllByClass")
     fun Collection<Class<*>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
@@ -578,11 +579,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("interceptAllByKClass")
     fun Collection<KClass<*>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
@@ -682,11 +683,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
      * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Class<*>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = listOf(this).createHooker(priority)
 
     /**
@@ -694,12 +695,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
      * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Class<*>.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
@@ -710,10 +711,10 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - If the class is already initialized, this hook is never invoked.
      * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun KClass<*>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = java.hook(priority)
 
     /**
@@ -721,11 +722,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      *
      * - If the class is already initialized, this hook is never invoked.
      * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun KClass<*>.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
@@ -737,11 +738,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out Class<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = toList().createHooker(priority)
 
     /**
@@ -750,12 +751,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out Class<*>>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
@@ -767,10 +768,10 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out KClass<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
         map { it.java }.hookAll(priority)
 
@@ -780,11 +781,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out KClass<*>>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
@@ -796,11 +797,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("hookAllByClass")
     fun Collection<Class<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
 
@@ -810,12 +811,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("hookAllByClass")
     fun Collection<Class<*>>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
@@ -828,10 +829,10 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("hookAllByKClass")
     fun Collection<KClass<*>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
         map { it.java }.hookAll(priority)
@@ -842,11 +843,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Each class is registered independently; this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Result]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("hookAllByKClass")
     fun Collection<KClass<*>>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,

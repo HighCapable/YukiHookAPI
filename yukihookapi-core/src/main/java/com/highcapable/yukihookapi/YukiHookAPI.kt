@@ -28,6 +28,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
 import com.highcapable.yukihookapi.hook.core.api.type.ExecutorType
@@ -84,8 +85,8 @@ object YukiHookAPI {
          * @param lifecycle the optional lifecycle for automatic cancellation, null by default for manual cancellation only.
          * @param listener the listener notified when the framework service is available or unavailable.
          * @return [FrameworkServiceBridge] or null.
-         * @throws UnsupportedOperationException when using [YukiHookRuntime.XPOSED_82].
          */
+        @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
         fun observeFrameworkService(lifecycle: Lifecycle? = null, listener: FrameworkServiceBridge) =
             YukiHookBridge.observeService(lifecycle, listener)
 
@@ -228,9 +229,8 @@ object YukiHookAPI {
          * - Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
          *
          * Do not enable it when [YukiHookPreferences] already works correctly.
-         *
-         * - Supports for [YukiHookRuntime.XPOSED_82] only.
          */
+        @RequiresRuntime(YukiHookRuntime.XPOSED_82)
         @Deprecated(message = "Not recommended. This is a legacy trade-off switch, meaningless for modern frameworks.")
         var isEnableHookSharedPreferences = false
 
@@ -290,10 +290,10 @@ object YukiHookAPI {
     /**
      * Loads legacy standalone custom hook APIs from an [Application].
      *
-     * - Supports for [YukiHookRuntime.XPOSED_82] only.
      * @param baseContext the attachment base context.
      * @param block the param block.
      */
+    @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Not recommended, use the hook framework's native API instead.")
     fun encase(baseContext: Context?, block: PackageParam.() -> Unit) {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
@@ -309,11 +309,11 @@ object YukiHookAPI {
     /**
      * Loads legacy standalone custom hook APIs from an [Application].
      *
-     * - Supports for [YukiHookRuntime.XPOSED_82] only.
      * @param baseContext the attachment base context.
      * @param hooker the hookers.
      * @throws IllegalStateException if [hooker] is empty.
      */
+    @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Not recommended, use the hook framework's native API instead.")
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return

@@ -33,6 +33,8 @@ configure<LibraryExtension> {
 }
 
 dependencies {
+    lintPublish(projects.yukihookapiCoreLint)
+
     compileOnly(projects.yukihookapiRuntimeStub)
     implementation(libs.hiddenapibypass)
 

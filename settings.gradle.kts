@@ -64,6 +64,7 @@ gropify {
     }
     projects(
         ":yukihookapi-core",
+        ":yukihookapi-core-lint",
         ":yukihookapi-compiler"
     ) {
         sourceCode {
@@ -86,4 +87,5 @@ rootProject.name = "YukiHookAPI"
 include(":samples:demo-app", ":samples:demo-module-legacy", ":samples:demo-module-modern")
 include(":yukihookapi-bom")
 include(":yukihookapi-core", ":yukihookapi-compiler", ":yukihookapi-runtime-stub")
+include(":yukihookapi-core-lint")
 include(":yukihookapi-runtime-xposed82", ":yukihookapi-runtime-libxposed")

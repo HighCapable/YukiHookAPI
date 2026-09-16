@@ -33,6 +33,7 @@ androidx-lifecycle = "2.9.0"
 material = "1.11.0"
 androidx-constraintlayout = "2.2.2"
 junit = "4.13.2"
+android-lint = "32.3.2"
 androidx-test-ext-junit = "1.3.0"
 androidx-test-espresso-core = "3.7.0"
 
@@ -46,6 +47,7 @@ hikage = { id = "com.highcapable.hikage", version.ref = "hikage-plugin" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 
 [libraries]
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 libxposed-api = { module = "io.github.libxposed:api", version.ref = "libxposed-api" }
 libxposed-service = { module = "io.github.libxposed:service", version.ref = "libxposed-service" }
 rovo89-xposed-api = { module = "de.robv.android.xposed:api", version.ref = "rovo89-xposed-api" }
@@ -80,5 +82,7 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 material = { module = "com.google.android.material:material", version.ref = "material" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
 junit = { module = "junit:junit", version.ref = "junit" }
+android-lint-api = { group = "com.android.tools.lint", name = "lint-api", version.ref = "android-lint" }
+android-lint-checks = { group = "com.android.tools.lint", name = "lint-checks", version.ref = "android-lint" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-ext-junit" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso-core" }

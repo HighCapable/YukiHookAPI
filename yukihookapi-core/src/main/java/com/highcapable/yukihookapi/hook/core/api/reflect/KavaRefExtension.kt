@@ -26,6 +26,7 @@ package com.highcapable.yukihookapi.hook.core.api.reflect
 import com.highcapable.kavaref.extension.makeAccessible
 import com.highcapable.kavaref.resolver.ConstructorResolver
 import com.highcapable.kavaref.resolver.MethodResolver
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
@@ -92,11 +93,11 @@ fun MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) =
  *
  * This action directly invokes the method declared by this resolver without hook or subclass overrides.
  * - An instance must be set using [MethodResolver.of].
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @see MethodResolver.invoke
  * @receiver [MethodResolver]
  * @return [T] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 @JvmName("invokeSpecialTyped")
 context(_: PackageParam)
 fun <T> MethodResolver<*>.invokeSpecial(vararg args: Any?): T? =
@@ -107,11 +108,11 @@ fun <T> MethodResolver<*>.invokeSpecial(vararg args: Any?): T? =
  *
  * This action directly invokes the method declared by this resolver without hook or subclass overrides.
  * - An instance must be set using [MethodResolver.of].
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @see MethodResolver.invokeQuietly
  * @receiver [MethodResolver]
  * @return [T] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 @JvmName("invokeSpecialQuietlyTyped")
 context(_: PackageParam)
 fun <T> MethodResolver<*>.invokeSpecialQuietly(vararg args: Any?) =
@@ -122,11 +123,11 @@ fun <T> MethodResolver<*>.invokeSpecialQuietly(vararg args: Any?) =
  *
  * This action directly invokes the method declared by this resolver without hook or subclass overrides.
  * - An instance must be set using [MethodResolver.of].
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @see MethodResolver.invoke
  * @receiver [MethodResolver]
  * @return [Any] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun MethodResolver<*>.invokeSpecial(vararg args: Any?) =
     YukiHookHelper.invokeSpecial(self, checkNotNull(instance) { "An instance is required for special invocation." }, args)
@@ -136,11 +137,11 @@ fun MethodResolver<*>.invokeSpecial(vararg args: Any?) =
  *
  * This action directly invokes the method declared by this resolver without hook or subclass overrides.
  * - An instance must be set using [MethodResolver.of].
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @see MethodResolver.invokeQuietly
  * @receiver [MethodResolver]
  * @return [Any] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun MethodResolver<*>.invokeSpecialQuietly(vararg args: Any?) =
     runCatching { invokeSpecial(*args) }.getOrNull()
@@ -149,11 +150,11 @@ fun MethodResolver<*>.invokeSpecialQuietly(vararg args: Any?) =
  * Initialize an existing [instance] non-virtually with this constructor and the given arguments.
  *
  * This action initializes the existing instance and does not create a new one.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [ConstructorResolver]
  * @param instance the instance to initialize.
  * @return [Any] null after the constructor completes.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun ConstructorResolver<*>.initializeSpecial(instance: Any, vararg args: Any?) =
     YukiHookHelper.invokeSpecial(self, instance, args)
@@ -162,11 +163,11 @@ fun ConstructorResolver<*>.initializeSpecial(instance: Any, vararg args: Any?) =
  * Initialize an existing [instance] non-virtually with this constructor and the given arguments and ignore any exceptions.
  *
  * This action initializes the existing instance and does not create a new one.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [ConstructorResolver]
  * @param instance the instance to initialize.
  * @return [Any] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun ConstructorResolver<*>.initializeSpecialQuietly(instance: Any, vararg args: Any?) =
     runCatching { initializeSpecial(instance, *args) }.getOrNull()
@@ -175,11 +176,11 @@ fun ConstructorResolver<*>.initializeSpecialQuietly(instance: Any, vararg args: 
  * Creates a new instance with this original constructor and the given arguments.
  *
  * This action skips all hooks registered for the constructor.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [ConstructorResolver]
  * @see ConstructorResolver.create
  * @return [T]
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun <T : Any> ConstructorResolver<T>.createOriginal(vararg args: Any?) =
     YukiHookHelper.newInstanceOriginal(self, args) as T
@@ -188,11 +189,11 @@ fun <T : Any> ConstructorResolver<T>.createOriginal(vararg args: Any?) =
  * Creates a new instance with this original constructor and the given arguments, and ignore any exceptions.
  *
  * This action skips all hooks registered for the constructor.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [ConstructorResolver]
  * @see ConstructorResolver.createQuietly
  * @return [T] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun <T : Any> ConstructorResolver<T>.createOriginalQuietly(vararg args: Any?) =
     runCatching { createOriginal(*args) }.getOrNull()
@@ -202,12 +203,12 @@ fun <T : Any> ConstructorResolver<T>.createOriginalQuietly(vararg args: Any?) =
  *
  * This action skips all hooks registered for the constructor. The subclass constructor is not invoked,
  * so subclass fields can remain uninitialized.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [ConstructorResolver]
  * @see ConstructorResolver.create
  * @param subclass the subclass to instantiate.
  * @return [T]
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun <T : Any> ConstructorResolver<*>.createSpecial(subclass: Class<T>, vararg args: Any?) =
     YukiHookHelper.newInstanceSpecial(self, subclass, args) as T
@@ -217,12 +218,12 @@ fun <T : Any> ConstructorResolver<*>.createSpecial(subclass: Class<T>, vararg ar
  *
  * This action skips all hooks registered for the constructor. The subclass constructor is not invoked,
  * so subclass fields can remain uninitialized.
- * - Supports for [YukiHookRuntime.LIBXPOSED] only.
  * @receiver [ConstructorResolver]
  * @see ConstructorResolver.createQuietly
  * @param subclass the subclass to instantiate.
  * @return [T] or null.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 context(_: PackageParam)
 fun <T : Any> ConstructorResolver<*>.createSpecialQuietly(subclass: Class<T>, vararg args: Any?) =
     runCatching { createSpecial(subclass, *args) }.getOrNull()

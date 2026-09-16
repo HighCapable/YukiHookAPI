@@ -24,6 +24,7 @@
 package com.highcapable.yukihookapi.hook.param
 
 import android.os.Bundle
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.log.YLog
@@ -185,21 +186,21 @@ class HookParam private constructor(
      * Invokes the current [Member] non-virtually.
      *
      * Invokes the current [Member] without hook or subclass overrides using its current arguments.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @see invokeSpecial
      * @return [Any] or null.
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun callSpecial() = callSpecial<Any>()
 
     /**
      * Invokes the current [Member] non-virtually.
      *
      * Invokes the current [Member] without hook or subclass overrides using its current arguments.
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @see invokeSpecial
      * @return [T] or null.
      * @throws ClassCastException if the result cannot be used as [T].
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName(name = "callSpecialTyped")
     fun <T> callSpecial() = invokeSpecial<T>(*args)
 
@@ -207,23 +208,23 @@ class HookParam private constructor(
      * Invokes the current [Member] non-virtually.
      *
      * Invokes the current [Member] without hook or subclass overrides using custom [args].
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @see callSpecial
      * @param args the argument instances.
      * @return [Any] or null.
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun invokeSpecial(vararg args: Any?) = invokeSpecial<Any>(*args)
 
     /**
      * Invokes the current [Member] non-virtually.
      *
      * Invokes the current [Member] without hook or subclass overrides using custom [args].
-     * - Supports for [YukiHookRuntime.LIBXPOSED] only.
      * @see callSpecial
      * @param args the argument instances.
      * @return [T] or null.
      * @throws ClassCastException if the result cannot be used as [T].
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName(name = "invokeSpecialTyped")
     fun <T> invokeSpecial(vararg args: Any?) = YukiHookHelper.invokeSpecial(member, instance, args) as T?
 
