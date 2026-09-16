@@ -212,17 +212,18 @@ internal object AppParasitism {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
 
         @Suppress("DEPRECATION")
-        if (YukiHookAPI.Configs.isEnableHookSharedPreferences) YukiHookHelper.hook(
-            ContextImplClass.resolve()
-                .processor(AndroidHiddenApiBypassResolver.get())
-                .optional(silent = true)
-                .firstMethodOrNull { name = "setFilePermissionsFromMode" },
-            object : ClassicHookerBridge {
-                override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
-                    if ((param.args[0] as? String?)?.endsWith("preferences.xml") == true) param.args[1] = 1
-                }
+        if (YukiHookAPI.Configs.isEnableHookSharedPreferences) ContextImplClass.resolve()
+            .processor(AndroidHiddenApiBypassResolver.get())
+            .optional(silent = true)
+            .firstMethodOrNull { name = "setFilePermissionsFromMode" }?.let {
+                YukiHookHelper.hook(
+                    it, object : ClassicHookerBridge {
+                        override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+                            if ((param.args[0] as? String?)?.endsWith("preferences.xml") == true) param.args[1] = 1
+                        }
+                    }
+                )
             }
-        )
         YukiHookBridge.installLegacyModuleStatusHooks(loader)
     }
 
@@ -276,7 +277,7 @@ internal object AppParasitism {
 
                         param.dispatchAppLifecycle { onAttachBaseContext(baseContext, true) }
                     }
-                })?.let(hooked::add)
+                }).let(hooked::add)
                 YukiHookHelper.hook(firstMethod { name = "onTerminate" }, object : ClassicHookerBridge {
                     override fun afterHookedMember(param: ClassicHookerBridge.Param) {
                         val application = param.instance as? Application ?: return
@@ -284,7 +285,7 @@ internal object AppParasitism {
 
                         param.dispatchAppLifecycle { onTerminate(application) }
                     }
-                })?.let(hooked::add)
+                }).let(hooked::add)
                 YukiHookHelper.hook(firstMethod { name = "onLowMemory" }, object : ClassicHookerBridge {
                     override fun afterHookedMember(param: ClassicHookerBridge.Param) {
                         val application = param.instance as? Application ?: return
@@ -292,7 +293,7 @@ internal object AppParasitism {
 
                         param.dispatchAppLifecycle { onLowMemory(application) }
                     }
-                })?.let(hooked::add)
+                }).let(hooked::add)
                 YukiHookHelper.hook(firstMethod { name = "onTrimMemory"; parameters(Int::class) }, object : ClassicHookerBridge {
                     override fun afterHookedMember(param: ClassicHookerBridge.Param) {
                         val application = param.instance as? Application ?: return
@@ -301,7 +302,7 @@ internal object AppParasitism {
 
                         param.dispatchAppLifecycle { onTrimMemory(application, level) }
                     }
-                })?.let(hooked::add)
+                }).let(hooked::add)
                 YukiHookHelper.hook(
                     firstMethod { name = "onConfigurationChanged"; parameters(Configuration::class) },
                     object : ClassicHookerBridge {
@@ -313,7 +314,7 @@ internal object AppParasitism {
                             param.dispatchAppLifecycle { onConfigurationChanged(application, config) }
                         }
                     }
-                )?.let(hooked::add)
+                ).let(hooked::add)
             }
 
             isAppLifecycleHooked = true
@@ -517,7 +518,7 @@ internal object AppParasitism {
 
                     className.toClassOrNull<Activity>(baseClassLoader)?.createInstanceOrNull()?.let { param.result = it }
                 }
-            })?.let(hooked::add)
+            }).let(hooked::add)
             callActivityOnCreateResolvers.forEach { resolver ->
                 YukiHookHelper.hook(resolver, object : ClassicHookerBridge {
                     override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
@@ -528,7 +529,7 @@ internal object AppParasitism {
                         (param.args[1] as? Bundle)?.classLoader = baseClassLoader
                         injectModuleResources(activity.resources)
                     }
-                })?.let(hooked::add)
+                }).let(hooked::add)
             }
             YukiHookHelper.hook(performLaunchActivity, object : ClassicHookerBridge {
                 override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
@@ -545,7 +546,7 @@ internal object AppParasitism {
                     val original = intent.getParcelableExtraCompat<Intent>(ActivityProxyConfig.proxyIntentName) ?: return
                     intentResolver.set(original)
                 }
-            })?.let(hooked::add)
+            }).let(hooked::add)
             startActivityResolvers.forEach { resolver ->
                 YukiHookHelper.hook(resolver, object : ClassicHookerBridge {
                     override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
@@ -554,7 +555,7 @@ internal object AppParasitism {
                         val index = args.indexOfFirst { it is Intent }
                         if (index >= 0) args[index] = (args[index] as Intent).wrap()
                     }
-                })?.let(hooked::add)
+                }).let(hooked::add)
             }
 
             isActivityProxyRegistered = true

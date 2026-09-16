@@ -29,7 +29,6 @@ import androidx.annotation.RestrictTo
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
-import java.lang.reflect.Member
 
 /**
  * Binary hook bridge contract shared by core and the selected runtime,
@@ -62,6 +61,9 @@ interface FrameworkHookBridge {
     /** Framework version code, constrained by the existing [Int] API. */
     val frameworkVersionCode: Int
 
+    /** Member invocation capabilities supplied by the selected runtime. */
+    val memberInvoker: MemberInvokerBridge
+
     /** Initializes module runtime services without loading host-only API classes. */
     fun initializeModuleServices()
 
@@ -89,15 +91,6 @@ interface FrameworkHookBridge {
      * @throws UnsupportedOperationException when the runtime does not support the target or hooker type.
      */
     fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge
-
-    /**
-     * Invokes the original method or constructor on an existing receiver.
-     * @param member the member to invoke.
-     * @param instance the instance to invoke the member on, or null for static members.
-     * @param args the arguments to pass to the member.
-     * @return [Any] or null.
-     */
-    fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any?
 
     /**
      * Logs using the attached framework without discarding its priority or tag.

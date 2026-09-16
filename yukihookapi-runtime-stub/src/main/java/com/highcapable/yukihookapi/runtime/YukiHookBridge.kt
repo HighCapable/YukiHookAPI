@@ -29,8 +29,8 @@ import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import com.highcapable.yukihookapi.runtime.bridge.HookPoint
+import com.highcapable.yukihookapi.runtime.bridge.MemberInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
-import java.lang.reflect.Member
 
 /**
  * The core bridge for the `YukiHookAPI` runtime.
@@ -46,12 +46,12 @@ object YukiHookBridge : FrameworkHookBridge {
     override val apiLevel: Int get() = error("Stub!")
     override val frameworkVersion: String get() = error("Stub!")
     override val frameworkVersionCode: Int get() = error("Stub!")
+    override val memberInvoker: MemberInvokerBridge get() = error("Stub!")
 
     override fun initializeModuleServices(): Unit = error("Stub!")
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?): Unit = error("Stub!")
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? = error("Stub!")
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge = error("Stub!")
-    override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? = error("Stub!")
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?): Unit = error("Stub!")
     override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences = error("Stub!")
 }

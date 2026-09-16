@@ -29,10 +29,7 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.adapter.ClassicInvocationAdapter
 import io.github.libxposed.api.XposedInterface
-import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
-import java.lang.reflect.Member
-import java.lang.reflect.Method
 
 /**
  * All native hook API calls are compiled here against API 102.
@@ -44,7 +41,8 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         YukiHookBridge.hostApiLevel = api.apiVersion
         YukiHookBridge.hostVersion = api.frameworkVersion
         YukiHookBridge.hostVersionCode = api.frameworkVersionCode.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
-        YukiHookBridge.originalCallback = ::invokeOriginal
+        YukiHookBridge.memberInvokerBridge = LibXposedMemberInvoker(api)
+        YukiHookBridge.hookCallback = ::hook
         YukiHookBridge.loggerCallback = { priority, tag, message, throwable ->
             api.log(priority, tag, message, throwable)
         }
@@ -54,7 +52,6 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
             }
             api.getRemotePreferences(name)
         }
-        YukiHookBridge.hookCallback = ::hook
     }
 
     private fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
@@ -85,12 +82,6 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         return object : HookerBridge by hooker {
             override fun remove() = handle.unhook()
         }
-    }
-
-    private fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? = when (member) {
-        is Method -> api.getInvoker(member).setType(XposedInterface.Invoker.Type.ORIGIN).invoke(instance, *args)
-        is Constructor<*> -> api.getInvoker(member).setType(XposedInterface.Invoker.Type.ORIGIN).invoke(instance, *args)
-        else -> error("Only methods and constructors have an original invocation.")
     }
 
     private fun XposedInterface.Chain.toBridge() = object : ChainHookerBridge.Chain {

@@ -30,10 +30,10 @@ import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import com.highcapable.yukihookapi.runtime.bridge.HookPoint
+import com.highcapable.yukihookapi.runtime.bridge.MemberInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedPreferences
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedService
-import java.lang.reflect.Member
 
 /**
  * The core bridge for the `YukiHookAPI` runtime for `yukihookapi-runtime-libxposed`.
@@ -45,8 +45,8 @@ internal object YukiHookBridge : FrameworkHookBridge {
     var hostVersion = "unknown"
     var hostVersionCode = -1
 
+    var memberInvokerBridge: MemberInvokerBridge? = null
     var hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null
-    var originalCallback: ((Member, Any?, Array<out Any?>) -> Any?)? = null
     var loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
     var preferencesCallback: ((String) -> SharedPreferences)? = null
 
@@ -58,6 +58,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val apiLevel get() = if (isHookAvailable) hostApiLevel else LibXposedService.apiLevel
     override val frameworkVersion get() = if (isHookAvailable) hostVersion else LibXposedService.frameworkVersion
     override val frameworkVersionCode get() = if (isHookAvailable) hostVersionCode else LibXposedService.frameworkVersionCode
+    override val memberInvoker get() = checkNotNull(memberInvokerBridge) { "libxposed is not attached to this process." }
 
     override fun initializeModuleServices() = LibXposedService.initialize()
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Unit
@@ -67,10 +68,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkNotNull(hookCallback) {
         "libxposed is not attached to this process."
     }(target, priority, hooker)
-
-    override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>) = checkNotNull(originalCallback) {
-        "libxposed is not attached to this process."
-    }(member, instance, args)
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
         val callback = loggerCallback

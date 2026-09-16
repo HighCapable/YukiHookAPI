@@ -33,9 +33,9 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82HookApi
+import com.highcapable.yukihookapi.runtime.xposed82.Xposed82MemberInvoker
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82ModuleStatus
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82Preferences
-import java.lang.reflect.Member
 
 /**
  * The core bridge for the `YukiHookAPI` runtime for `yukihookapi-runtime-xposed82`.
@@ -58,6 +58,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val apiLevel get() = if (attached) Xposed82HookApi.apiLevel else Xposed82ModuleStatus.apiLevel
     override val frameworkVersion get() = if (attached) "unsupported" else Xposed82ModuleStatus.frameworkVersion
     override val frameworkVersionCode get() = if (attached) 0 else Xposed82ModuleStatus.frameworkVersionCode
+    override val memberInvoker get() = if (attached) Xposed82MemberInvoker else error("Xposed API is not attached to this process.")
 
     fun attach() {
         attached = true
@@ -83,14 +84,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
                 "Static initializer hooks are unavailable in Xposed API 82."
             )
         }
-    }
-
-    override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? {
-        check(attached) {
-            "Xposed API is not attached to this process."
-        }
-
-        return Xposed82HookApi.invokeOriginal(member, instance, args)
     }
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {

@@ -122,7 +122,7 @@ class YukiHookCreator private constructor() {
             runCatching {
                 pendingTargets.forEach { target ->
                     runCatching {
-                        YukiHookHelper.hook(target, createHooker(target), priority)?.also(::storeRegistration)
+                        YukiHookHelper.hook(target, createHooker(target), priority).let(::storeRegistration)
                     }.onFailure { logError(it, target) }
                 }
             }.also {

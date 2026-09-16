@@ -68,7 +68,10 @@ internal object Xposed82HookApi {
 
     private fun hookChainMember(member: Member, priority: Int, hooker: ChainHookerBridge): HookerBridge = synchronized(chainHooks) {
         val (adapter, nativeHook) = chainHooks.getOrPut(member) {
-            val adapter = ChainInvocationAdapter(member) { instance, args -> invokeOriginal(member, instance, args) }
+            val adapter = ChainInvocationAdapter(member) { instance, args ->
+                Xposed82MemberInvoker.invokeOriginal(member, instance, args)
+            }
+
             // API 82 cannot resume native callbacks from proceed. Keep ordinary hooks outside
             // the local chain; native hooks ordered after this entry can still be skipped.
             adapter to hookClassicMember(member, XCallback.PRIORITY_LOWEST, adapter)
@@ -98,9 +101,6 @@ internal object Xposed82HookApi {
             override fun remove() = handle.unhook()
         }
     }
-
-    fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? =
-        XposedBridge.invokeOriginalMethod(member, instance, args)
 
     @Suppress("UNUSED_PARAMETER")
     fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
