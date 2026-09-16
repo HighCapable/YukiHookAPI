@@ -35,9 +35,9 @@ import com.highcapable.yukihookapi.hook.param.HookChain
 import com.highcapable.yukihookapi.hook.param.HookInvocation
 import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
-import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member

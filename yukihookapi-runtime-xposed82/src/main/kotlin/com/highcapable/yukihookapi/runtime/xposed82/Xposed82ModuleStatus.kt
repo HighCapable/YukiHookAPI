@@ -26,8 +26,8 @@ import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClassOrNull
 import com.highcapable.yukihookapi.YukiHookAPI_Impl
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
-import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 
 /**
  * Transports legacy module status through the generated self-hook target.

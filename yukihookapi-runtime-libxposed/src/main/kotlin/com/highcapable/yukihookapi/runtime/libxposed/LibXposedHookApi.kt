@@ -23,9 +23,9 @@ package com.highcapable.yukihookapi.runtime.libxposed
 
 import android.util.Log
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
-import com.highcapable.yukihookapi.runtime.bridge.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.adapter.ClassicInvocationAdapter
 import io.github.libxposed.api.XposedInterface

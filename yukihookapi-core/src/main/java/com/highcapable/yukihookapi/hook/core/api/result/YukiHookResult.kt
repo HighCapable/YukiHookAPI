@@ -21,7 +21,7 @@
  */
 package com.highcapable.yukihookapi.hook.core.api.result
 
-import com.highcapable.yukihookapi.runtime.bridge.HookPoint
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 
 /**

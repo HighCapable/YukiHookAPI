@@ -45,7 +45,7 @@ import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
-import com.highcapable.yukihookapi.runtime.bridge.HookPoint
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import java.lang.reflect.Member
 import kotlin.reflect.KClass
 import com.highcapable.kavaref.extension.lazyClass as lazyClassGlobal

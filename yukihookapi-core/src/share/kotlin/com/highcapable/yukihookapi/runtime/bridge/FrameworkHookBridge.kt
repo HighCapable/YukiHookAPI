@@ -28,6 +28,7 @@ import android.content.SharedPreferences
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 
 /**

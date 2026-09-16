@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2026/9/15.
  */
-package com.highcapable.yukihookapi.runtime.bridge
+package com.highcapable.yukihookapi.runtime.bridge.hooker
 
 import androidx.annotation.RestrictTo
 import java.lang.reflect.Constructor
