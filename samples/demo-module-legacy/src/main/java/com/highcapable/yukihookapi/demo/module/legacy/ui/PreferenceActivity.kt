@@ -22,14 +22,12 @@
 package com.highcapable.yukihookapi.demo.module.legacy.ui
 
 import android.os.Bundle
-import android.view.View
 import android.view.Window
 import android.widget.FrameLayout
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
-import androidx.fragment.app.commit
 import androidx.preference.SwitchPreference
-import com.highcapable.betterandroid.ui.extension.component.fragmentManager
+import com.highcapable.betterandroid.ui.extension.component.replace
 import com.highcapable.hikage.core.layout.LayoutParams
 import com.highcapable.hikage.extension.addView
 import com.highcapable.hikage.widget.android.widget.FrameLayout
@@ -53,13 +51,10 @@ class PreferenceActivity : BaseActivity() {
                 FrameLayout(
                     lparams = LayoutParams(matchParent = true),
                     init = {
-                        id = View.generateViewId()
                         updatePadding(top = 100.dp)
 
                         doOnLayout {
-                            fragmentManager().commit(allowStateLoss = true) {
-                                replace(id, SettingsFragment())
-                            }
+                            SettingsFragment().replace(this@PreferenceActivity, this)
                         }
                     }
                 )
