@@ -22,7 +22,9 @@
 package com.highcapable.yukihookapi.annotation.xposed
 
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
  * Marks the [YukiHookAPI] libxposed entry class for code generation.
@@ -57,6 +59,7 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
  * @param nativeLibraries native entry library filenames, such as `libexample.so`, one per generated line.
  * Empty disables generation of `native_init.list`. Libraries must be packaged and loaded by the module itself.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 @Target(AnnotationTarget.CLASS)
 annotation class YukiHookLibXposedEntry(
     val sourcePath: String = "src/main",

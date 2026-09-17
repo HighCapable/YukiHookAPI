@@ -22,7 +22,9 @@
 package com.highcapable.yukihookapi.annotation.xposed
 
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
  * Marks the [YukiHookAPI] Xposed API 82 entry class for code generation.
@@ -50,6 +52,7 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
  * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
  * @param usingXposedModuleStatus whether legacy self-hook status generation is enabled, defaults to true.
  */
+@RequiresRuntime(YukiHookRuntime.XPOSED_82)
 @Target(AnnotationTarget.CLASS)
 annotation class YukiHookXposed82Entry(
     val sourcePath: String = "src/main",
