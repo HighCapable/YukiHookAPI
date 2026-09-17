@@ -41,6 +41,7 @@ import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.USimpleNameReferenceExpression
@@ -79,12 +80,23 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
     }
 
     override fun getApplicableUastTypes() = listOf(
+        UAnnotation::class.java,
         UCallExpression::class.java,
         USimpleNameReferenceExpression::class.java,
         UTypeReferenceExpression::class.java
     )
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
+
+        override fun visitAnnotation(node: UAnnotation) {
+            val declaration = node.resolve() ?: return
+            reportRequirement(
+                scope = node,
+                declaration = declaration,
+                apiName = declaration.name ?: node.qualifiedName ?: node.asSourceString(),
+                location = context.getNameLocation(node)
+            )
+        }
 
         override fun visitCallExpression(node: UCallExpression) {
             val method = node.resolve() ?: return
