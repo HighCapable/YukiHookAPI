@@ -66,7 +66,7 @@ class MemberHookerTest {
     fun installRuntime() {
         YLog.Configs.isEnable = false
         YukiHookBridge.hookCallback = { target, _, hooker ->
-            val member = (target as HookPoint.Member).value
+            val member = (target as HookPoint.Executable).value
             hookers += hooker
             object : HookerBridge {
                 override fun remove() { removed += member }
@@ -212,7 +212,7 @@ class MemberHookerTest {
     fun hookCanRemoveItselfWhileNativeRegistrationIsCompleting() {
         var removalReported = false
         YukiHookBridge.hookCallback = { target, _, hooker ->
-            val member = (target as HookPoint.Member).value
+            val member = (target as HookPoint.Executable).value
             ClassicInvocationAdapter.from(member, "value", arrayOf(1)) { throw it }
                 .intercept(hooker as ClassicHookerBridge) { "original" }
             object : HookerBridge {

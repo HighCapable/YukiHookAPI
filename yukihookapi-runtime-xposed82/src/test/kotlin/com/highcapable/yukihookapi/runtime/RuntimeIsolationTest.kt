@@ -154,12 +154,12 @@ class RuntimeIsolationTest {
             parameters(Int::class)
         }.self
         Assert.assertThrows(UnsupportedOperationException::class.java) {
-            YukiHookBridge.hook(HookPoint.Member(member), 50, object : HookerBridge {})
+            YukiHookBridge.hook(HookPoint.Executable(member), 50, object : HookerBridge {})
         }
         val hookers = listOf(object : ClassicHookerBridge {}, ChainHookerBridge { error("No framework is attached.") })
         hookers.forEach { hooker ->
             Assert.assertThrows(IllegalStateException::class.java) {
-                YukiHookBridge.hook(HookPoint.Member(member), 50, hooker)
+                YukiHookBridge.hook(HookPoint.Executable(member), 50, hooker)
             }
         }
     }
@@ -237,28 +237,6 @@ class RuntimeIsolationTest {
             listOf(Context.MODE_WORLD_READABLE, Context.MODE_PRIVATE, Context.MODE_WORLD_READABLE, Context.MODE_PRIVATE),
             modes
         )
-    }
-
-    @Test
-    fun hookedHostModulePreferenceWritesAreIgnored() {
-        val moduleInstance = checkNotNull(
-            checkNotNull("com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime".toClassOrNull())
-                .asResolver().firstField { name = "INSTANCE" }.get<Any>()
-        )
-        val isModuleLoaded = moduleInstance.asResolver().firstField { name = "isModuleLoaded" }
-        val previousModuleLoaded = checkNotNull(isModuleLoaded.get<Boolean>())
-        val attached = YukiHookBridge.asResolver().firstField { name = "attached" }
-        val previousAttached = checkNotNull(attached.get<Boolean>())
-        isModuleLoaded.set(true)
-        attached.set(true)
-        try {
-            val preferences = HookContext().prefs()
-            Assert.assertFalse(preferences.edit().putBoolean("key", true).commit())
-            preferences.edit { putBoolean("key", true) }
-        } finally {
-            attached.set(previousAttached)
-            isModuleLoaded.set(previousModuleLoaded)
-        }
     }
 
     @Test

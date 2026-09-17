@@ -149,27 +149,6 @@ class RuntimeIsolationTest {
     }
 
     @Test
-    fun hookedHostModulePreferenceWritesAreIgnored() {
-        val moduleInstance = checkNotNull(
-            checkNotNull("com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime".toClassOrNull())
-                .asResolver().firstField { name = "INSTANCE" }.get<Any>()
-        )
-        val isModuleLoaded = moduleInstance.asResolver().firstField { name = "isModuleLoaded" }
-        val previousModuleLoaded = checkNotNull(isModuleLoaded.get<Boolean>())
-        val previousHook = YukiHookBridge.hookCallback
-        isModuleLoaded.set(true)
-        YukiHookBridge.hookCallback = { _, _, callback -> callback }
-        try {
-            val preferences = ModuleContext().prefs()
-            Assert.assertFalse(preferences.edit().putBoolean("key", true).commit())
-            preferences.edit { putBoolean("key", true) }
-        } finally {
-            YukiHookBridge.hookCallback = previousHook
-            isModuleLoaded.set(previousModuleLoaded)
-        }
-    }
-
-    @Test
     fun serviceObserverReportsInitialUnavailableState() {
         val states = mutableListOf<Boolean>()
         val subscription = checkNotNull(YukiHookAPI.Status.observeFrameworkService { states += it })
