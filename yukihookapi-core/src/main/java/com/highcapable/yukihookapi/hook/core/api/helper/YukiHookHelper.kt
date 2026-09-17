@@ -22,9 +22,11 @@
 package com.highcapable.yukihookapi.hook.core.api.helper
 
 import com.highcapable.kavaref.resolver.base.MemberResolver
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import java.lang.reflect.Constructor
@@ -68,7 +70,7 @@ internal object YukiHookHelper {
      * @return [YukiHookResult]
      */
     fun hook(resolver: MemberResolver<*, *>, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
-        hook(HookPoint.Member(resolver.self), hooker, priority)
+        hook(HookPoint.Executable(resolver.self), hooker, priority)
 
     /**
      * Invokes the original [Member].
@@ -79,7 +81,7 @@ internal object YukiHookHelper {
      * @return [Any] or null.
      */
     fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>) =
-        YukiHookBridge.memberInvoker.invokeOriginal(member, instance, args)
+        YukiHookBridge.executableInvoker.invokeOriginal(member, instance, args)
 
     /**
      * Invokes a non-virtual [Member] without applying its hooks.
@@ -88,8 +90,9 @@ internal object YukiHookHelper {
      * @param args the arguments to pass to the member.
      * @return [Any] or null.
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun invokeSpecial(member: Member, instance: Any, args: Array<out Any?>) =
-        YukiHookBridge.memberInvoker.invokeSpecial(member, instance, args)
+        YukiHookBridge.executableInvoker.invokeSpecial(member, instance, args)
 
     /**
      * Creates an instance with the original [Constructor] without applying its hooks.
@@ -97,8 +100,9 @@ internal object YukiHookHelper {
      * @param args the arguments to pass to the constructor.
      * @return [Any]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun newInstanceOriginal(constructor: Constructor<*>, args: Array<out Any?>) =
-        YukiHookBridge.memberInvoker.newInstanceOriginal(constructor, args)
+        YukiHookBridge.executableInvoker.newInstanceOriginal(constructor, args)
 
     /**
      * Creates a subclass instance initialized by a parent [Constructor] without applying its hooks.
@@ -107,8 +111,9 @@ internal object YukiHookHelper {
      * @param args the arguments to pass to the constructor.
      * @return [Any]
      */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun newInstanceSpecial(constructor: Constructor<*>, subclass: Class<*>, args: Array<out Any?>) =
-        YukiHookBridge.memberInvoker.newInstanceSpecial(constructor, subclass, args)
+        YukiHookBridge.executableInvoker.newInstanceSpecial(constructor, subclass, args)
 
     /**
      * Logs a message with the given [priority], [tag], [msg] and optional [e].

@@ -21,16 +21,16 @@
  */
 package com.highcapable.yukihookapi.runtime.libxposed
 
-import com.highcapable.yukihookapi.runtime.bridge.MemberInvokerBridge
+import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import io.github.libxposed.api.XposedInterface
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * Member invocation backed by the libxposed API.
+ * Executable invocation backed by the libxposed API.
  */
-internal class LibXposedMemberInvoker(private val api: XposedInterface) : MemberInvokerBridge {
+internal class LibXposedExecutableInvoker(private val api: XposedInterface) : ExecutableInvokerBridge {
 
     override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? =
         getInvoker(member).invoke(instance, *args)

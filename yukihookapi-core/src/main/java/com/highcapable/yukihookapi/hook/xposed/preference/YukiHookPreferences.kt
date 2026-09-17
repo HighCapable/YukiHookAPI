@@ -49,6 +49,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
 
     internal companion object {
 
+        private val isHostEnvironment = XposedModuleRuntime.isHostEnvironment
+
         /**
          * Creates a bridge for the module or the current host.
          * @param context the context instance, null by default.
@@ -57,10 +59,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
         fun from(context: Context? = null) = YukiHookPreferences(context)
     }
 
-    private val isHostEnvironment get() = XposedModuleRuntime.isHostEnvironment
-
     /** Storage name. */
-    private var prefsName = ""
+    private var preferenceName = ""
 
     /** Whether native storage is enabled. */
     private var isUsingNativeStorage = false
@@ -69,7 +69,7 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
      * Gets the current storage name, package name + "_preferences" by default.
      * @return [String]
      */
-    private val currentPrefsName get() = prefsName.ifBlank {
+    private val currentPreferenceName get() = preferenceName.ifBlank {
         if (isUsingNativeStorage) "${context?.packageName ?: "unknown"}_preferences"
         else "${XposedModuleRuntime.modulePackageName.ifBlank { context?.packageName ?: "unknown" }}_preferences"
     }
@@ -92,12 +92,12 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
         checkApi()
         if (isUsingNativeStorage) return checkNotNull(context) {
             "Native preferences require a Context"
-        }.getSharedPreferences(currentPrefsName, Context.MODE_PRIVATE)
+        }.getSharedPreferences(currentPreferenceName, Context.MODE_PRIVATE)
 
         return YukiHookBridge.preferences(
             context = context,
             packageName = XposedModuleRuntime.modulePackageName.ifBlank { context?.packageName ?: "" },
-            name = currentPrefsName,
+            name = currentPreferenceName,
             hostEnvironment = isHostEnvironment
         )
     }
@@ -133,7 +133,7 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
      * @return [YukiHookPreferences]
      */
     fun name(name: String): YukiHookPreferences {
-        prefsName = name
+        preferenceName = name
         return this
     }
 

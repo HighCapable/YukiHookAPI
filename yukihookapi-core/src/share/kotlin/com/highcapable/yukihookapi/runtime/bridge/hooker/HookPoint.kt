@@ -23,8 +23,8 @@ package com.highcapable.yukihookapi.runtime.bridge.hooker
 
 import androidx.annotation.RestrictTo
 import java.lang.reflect.Constructor
+import java.lang.reflect.Member
 import java.lang.reflect.Method
-import java.lang.reflect.Member as ReflectMember
 
 /**
  * A hook registration point understood by the selected runtime.
@@ -37,7 +37,7 @@ sealed interface HookPoint {
      * @param value the method or constructor to hook.
      * @throws IllegalArgumentException when [value] is not a method or constructor.
      */
-    data class Member(val value: ReflectMember) : HookPoint {
+    data class Executable(val value: Member) : HookPoint {
 
         init {
             require(value is Method || value is Constructor<*>) {

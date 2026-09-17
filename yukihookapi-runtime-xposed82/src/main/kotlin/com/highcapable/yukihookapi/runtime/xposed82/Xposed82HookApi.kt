@@ -69,7 +69,7 @@ internal object Xposed82HookApi {
     private fun hookChainMember(member: Member, priority: Int, hooker: ChainHookerBridge): HookerBridge = synchronized(chainHooks) {
         val (adapter, nativeHook) = chainHooks.getOrPut(member) {
             val adapter = ChainInvocationAdapter(member) { instance, args ->
-                Xposed82MemberInvoker.invokeOriginal(member, instance, args)
+                Xposed82ExecutableInvoker.invokeOriginal(member, instance, args)
             }
 
             // API 82 cannot resume native callbacks from proceed. Keep ordinary hooks outside

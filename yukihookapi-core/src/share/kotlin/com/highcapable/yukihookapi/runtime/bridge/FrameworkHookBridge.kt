@@ -62,8 +62,8 @@ interface FrameworkHookBridge {
     /** Framework version code, constrained by the existing [Int] API. */
     val frameworkVersionCode: Int
 
-    /** Member invocation capabilities supplied by the selected runtime. */
-    val memberInvoker: MemberInvokerBridge
+    /** Executable invocation capabilities supplied by the selected runtime. */
+    val executableInvoker: ExecutableInvokerBridge
 
     /** Initializes module runtime services without loading host-only API classes. */
     fun initializeModuleServices()

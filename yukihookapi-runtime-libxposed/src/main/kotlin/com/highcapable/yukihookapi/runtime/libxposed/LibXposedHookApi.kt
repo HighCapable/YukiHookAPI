@@ -41,7 +41,7 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         YukiHookBridge.hostApiLevel = api.apiVersion
         YukiHookBridge.hostVersion = api.frameworkVersion
         YukiHookBridge.hostVersionCode = api.frameworkVersionCode.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
-        YukiHookBridge.memberInvokerBridge = LibXposedMemberInvoker(api)
+        YukiHookBridge.executableInvokerBridge = LibXposedExecutableInvoker(api)
         YukiHookBridge.hookCallback = ::hook
         YukiHookBridge.loggerCallback = { priority, tag, message, throwable ->
             api.log(priority, tag, message, throwable)
@@ -69,7 +69,7 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
             else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}.")
         }
         val builder = when (target) {
-            is HookPoint.Member -> api.hook(target.value as Executable)
+            is HookPoint.Executable -> api.hook(target.value as Executable)
             is HookPoint.Initializer -> api.hookClassInitializer(target.type)
         }
         val handle = builder

@@ -19,6 +19,8 @@
  *
  * This file is created by fankes on 2022/4/15.
  */
+@file:Suppress("unused")
+
 package com.highcapable.yukihookapi.hook.xposed.application
 
 import android.app.Application
@@ -36,7 +38,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookBridge
  * This provides the following features:
  *
  * - Initializes [YukiHookBridge] for module runtime services.
- * - Exposes the module-wide static [appContext].
+ * - Exposes the module-wide static [current], you can also call [requireContext].
  * - Loads [YukiHookAPI.Configs] in both module and host environments to avoid duplicate configuration.
  * - Enables [YukiHookDataChannel] communication between the module and host.
  * - Exposes [YukiHookAPI.Status.isTaiChiModuleActive] for TaiChi/Wuji activation checks.
@@ -45,15 +47,23 @@ open class ModuleApplication : Application() {
 
     companion object {
 
-        /** Module-wide static [Application] instance. */
-        internal var current: ModuleApplication? = null
+        /**
+         * Module-wide static [Application] instance.
+         * @see requireContext
+         */
+        var current: ModuleApplication? = null
 
         /**
-         * Gets the module-wide static [Application] instance.
+         * Requires the module-wide static [Application] instance.
+         * @see current
          * @return [ModuleApplication]
          * @throws IllegalStateException if the [Application] has not finished loading correctly.
          */
-        val appContext get() = current ?: error("App is dead, You cannot call to appContext.")
+        fun requireContext() = current ?: error("ModuleApplication not attached to a context.")
+
+        /** Gets the module-wide static [Application] instance. */
+        @Deprecated(message = "Use requireContext instead.", replaceWith = ReplaceWith("requireContext()"))
+        val appContext get() = requireContext()
     }
 
     @CallSuper
@@ -64,6 +74,14 @@ open class ModuleApplication : Application() {
         YukiHookBridge.initializeModuleServices()
         // Calls [YukiHookXposedModule.onInit] on the hook entry class.
         runCatching { ModuleApplication_Impl.callHookEntryInit() }
-        YukiHookDataChannel.get().register(context = this)
+        YukiHookDataChannel.get().register(this)
+    }
+
+    @CallSuper
+    override fun onTerminate() {
+        YukiHookDataChannel.get().unregister()
+        current = null
+
+        super.onTerminate()
     }
 }

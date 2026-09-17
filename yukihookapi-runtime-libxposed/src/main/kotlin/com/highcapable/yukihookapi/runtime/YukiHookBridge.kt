@@ -27,9 +27,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.Lifecycle
+import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
-import com.highcapable.yukihookapi.runtime.bridge.MemberInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedPreferences
@@ -45,7 +45,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     var hostVersion = "unknown"
     var hostVersionCode = -1
 
-    var memberInvokerBridge: MemberInvokerBridge? = null
+    var executableInvokerBridge: ExecutableInvokerBridge? = null
     var hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null
     var loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
     var preferencesCallback: ((String) -> SharedPreferences)? = null
@@ -58,7 +58,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val apiLevel get() = if (isHookAvailable) hostApiLevel else LibXposedService.apiLevel
     override val frameworkVersion get() = if (isHookAvailable) hostVersion else LibXposedService.frameworkVersion
     override val frameworkVersionCode get() = if (isHookAvailable) hostVersionCode else LibXposedService.frameworkVersionCode
-    override val memberInvoker get() = checkNotNull(memberInvokerBridge) { "libxposed is not attached to this process." }
+    override val executableInvoker get() = checkNotNull(executableInvokerBridge) { "libxposed is not attached to this process." }
 
     override fun initializeModuleServices() = LibXposedService.initialize()
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Unit

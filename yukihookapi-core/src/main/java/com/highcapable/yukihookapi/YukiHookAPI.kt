@@ -211,16 +211,6 @@ object YukiHookAPI {
         var isDebug = false
 
         /**
-         * Whether caching the current Xposed module's [Resources] is enabled.
-         *
-         * - This feature is enabled by default to prevent excessive memory reuse.
-         * - When disabled, every use of [PackageParam.moduleResources] creates a new instance and may reduce performance.
-         *
-         * Call [PackageParam.refreshModuleResources] to refresh the cache manually.
-         */
-        var isEnableModuleResourcesCache = true
-
-        /**
          * Whether hook support for [SharedPreferences] is enabled.
          *
          * Once enabled, module startup forces [SharedPreferences] file permissions to [Context.MODE_WORLD_READABLE] (0664).
@@ -245,8 +235,12 @@ object YukiHookAPI {
 
         // region Deprecated properties for backward compatibility
 
-        /** Whether caching the current Xposed module's [Resources] is enabled. */
-        @Deprecated(message = "Use isEnableModuleResourcesCache instead.", replaceWith = ReplaceWith("isEnableModuleResourcesCache"))
+        /**
+         * Whether caching the current Xposed module's [Resources] is enabled.
+         *
+         * - [YukiHookAPI] has adjusted module caching strategy, so this feature is no longer needed.
+         */
+        @Deprecated(message = "This property was deprecated and no longer has any effect, removed it directly.")
         var isEnableModuleAppResourcesCache = true
 
         // endregion

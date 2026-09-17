@@ -19,16 +19,16 @@
  *
  * This file is created by fankes on 2026/9/6.
  */
-@file:Suppress("unused", "UNUSED_PARAMETER", "RedundantNullableReturnType")
+@file:Suppress("unused", "RedundantNullableReturnType")
 
 package com.highcapable.yukihookapi.runtime
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.Lifecycle
+import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
-import com.highcapable.yukihookapi.runtime.bridge.MemberInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 
@@ -46,7 +46,7 @@ object YukiHookBridge : FrameworkHookBridge {
     override val apiLevel: Int get() = error("Stub!")
     override val frameworkVersion: String get() = error("Stub!")
     override val frameworkVersionCode: Int get() = error("Stub!")
-    override val memberInvoker: MemberInvokerBridge get() = error("Stub!")
+    override val executableInvoker: ExecutableInvokerBridge get() = error("Stub!")
 
     override fun initializeModuleServices(): Unit = error("Stub!")
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?): Unit = error("Stub!")

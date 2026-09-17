@@ -113,6 +113,7 @@ class YukiHookDataChannel private constructor() {
         private val receiverDataSegmentMaxByteSize get() = receiverDataMaxByteSize / receiverDataMaxByteCompressionFactor
 
         /** The current [YukiHookDataChannel] singleton. */
+        @Suppress("StaticFieldLeak")
         private val instance = YukiHookDataChannel()
 
         /**
@@ -138,7 +139,10 @@ class YukiHookDataChannel private constructor() {
     private var receiverContext: Context? = null
 
     /** The broadcast receiver. */
-    private val handlerReceiver = BroadcastReceiver { _, intent ->
+    private var handlerReceiver: BroadcastReceiver? = null
+
+    /** The broadcast receiver callback. */
+    private val handlerReceiverCallback = BroadcastReceiver { _, intent ->
         intent.action?.also { action ->
             runCatching {
                 receiverCallbacks.forEach { (key, param) ->
@@ -201,7 +205,7 @@ class YukiHookDataChannel private constructor() {
         val filter = IntentFilter().apply {
             addAction(if (isHostEnvironment) hostActionName(packageName) else moduleActionName(context))
         }
-        context.registerReceiver(filter, exported = true, body = handlerReceiver)
+        handlerReceiver = context.registerReceiver(filter, exported = true, body = handlerReceiverCallback)
 
         // Prevents the module from registering its own broadcast in the module environment.
         if (!isHostEnvironment) return
@@ -216,6 +220,13 @@ class YukiHookDataChannel private constructor() {
                 namespace(context, fromPackageName).put(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, YLog.createSnapshot())
             }
         }
+    }
+
+    /** Unregisters broadcasts. */
+    internal fun unregister() {
+        handlerReceiver?.let { receiverContext?.unregisterReceiver(it) }
+        receiverCallbacks.clear()
+        receiverContext = null
     }
 
     /**

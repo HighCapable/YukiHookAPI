@@ -89,7 +89,7 @@ internal object Xposed82ModuleStatus {
                 emptyParameters()
             }?.self ?: return
 
-        YukiHookBridge.hook(HookPoint.Member(method), DEFAULT_PRIORITY, object : ClassicHookerBridge {
+        YukiHookBridge.hook(HookPoint.Executable(method), DEFAULT_PRIORITY, object : ClassicHookerBridge {
             override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
                 param.result = result()
             }

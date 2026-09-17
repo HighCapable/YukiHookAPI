@@ -26,10 +26,10 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 
 /**
- * Member invocation contract implemented by the selected runtime.
+ * Executable invocation contract implemented by the selected runtime.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-interface MemberInvokerBridge {
+interface ExecutableInvokerBridge {
 
     /**
      * Invokes the original method or constructor on an existing receiver.

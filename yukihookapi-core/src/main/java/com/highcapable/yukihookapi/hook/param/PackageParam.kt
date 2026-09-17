@@ -64,10 +64,34 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     private var currentClassLoader: ClassLoader? = null
 
     /**
-     * Gets the [appClassLoader] initializer.
+     * Gets the [hostClassLoader] initializer.
      * @return [ClassLoaderInitializer]
      */
-    private val appLoaderInit get(): ClassLoaderInitializer = { appClassLoader }
+    private val hostClassLoaderInit get(): ClassLoaderInitializer = { hostClassLoader }
+
+    /**
+     * Module specification for the current Xposed module.
+     *
+     * - This is unavailable when loaded as a custom hook API.
+     */
+    class ModuleSpec internal constructor() {
+
+        /**
+         * Gets the APK file path of the current Xposed module.
+         * @return [String]
+         */
+        val filePath get() = XposedModuleRuntime.moduleFilePath
+
+        /**
+         * Gets the [Resources] of the current Xposed module.
+         * @return [ModuleResources]
+         * @throws IllegalStateException if the current hook framework does not support this feature.
+         */
+        val resources get() = XposedModuleRuntime.moduleResources ?: error("Current hook framework not support module resources.")
+
+        /** Reloads the [Resources] of the current Xposed module. */
+        fun reloadResources() = XposedModuleRuntime.reloadModuleResources()
+    }
 
     /**
      * Gets or sets the [ClassLoader] of the current host.
@@ -77,7 +101,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Setting an incorrect or invalid [ClassLoader] causes feature failures. Use this carefully.
      * @return [ClassLoader] or null.
      */
-    var appClassLoader
+    var hostClassLoader
         get() = currentClassLoader ?: wrapper?.appClassLoader ?: AppParasitism.currentApplication?.classLoader
         set(value) {
             currentClassLoader = value
@@ -95,7 +119,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * The owner is 0. Cloned apps and work profiles have different IDs depending on the system environment.
      * @return [Int]
      */
-    val appUserId get() = AppParasitism.findUserId(packageName)
+    val userId get() = AppParasitism.findUserId(packageName)
 
     /**
      * Gets the [Application] instance of the current host.
@@ -103,15 +127,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - It may be null during initial loading. Retrieve it later or configure a [registerAppLifecycle] listener.
      * @return [Application] or null.
      */
-    val appContext get() = AppParasitism.hostApplication ?: AppParasitism.currentApplication
-
-    /**
-     * Gets the [Resources] of the current host.
-     *
-     * - This is available after [appContext] finishes loading.
-     * @return [Resources] or null.
-     */
-    val appResources get() = appContext?.resources
+    val hostApplication get() = AppParasitism.hostApplication ?: AppParasitism.currentApplication
 
     /**
      * Gets the [Context] of the current system server.
@@ -149,21 +165,11 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     val mainProcessName get() = wrapper?.mainProcessName ?: packageName.trim()
 
     /**
-     * Gets the APK file path of the current Xposed module.
+     * Gets the [ModuleSpec] of the current Xposed module.
      *
-     * - This is unavailable when loaded as a custom hook API and returns an empty string.
-     * @return [String]
+     * - This is unavailable when loaded as a custom hook API.
      */
-    val moduleFilePath get() = XposedModuleRuntime.moduleFilePath
-
-    /**
-     * Gets the [Resources] of the current Xposed module.
-     *
-     * - This is unavailable when loaded as a custom hook API or under an unsupported hook framework and throws an exception.
-     * @return [ModuleResources]
-     * @throws IllegalStateException if the current hook framework does not support this feature.
-     */
-    val moduleResources get() = XposedModuleRuntime.moduleResources ?: error("Current hook framework not support module resources.")
+    val module = ModuleSpec()
 
     /**
      * Creates a [YukiHookPreferences] object.
@@ -203,9 +209,6 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         this.wrapper = wrapper
         return this
     }
-
-    /** Refreshes the [Resources] of the current Xposed module. */
-    fun refreshModuleResources() = XposedModuleRuntime.refreshModuleResources()
 
     /**
      * Registers a lifecycle listener for the current host [Application].
@@ -442,53 +445,53 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun loadHooker(hooker: YukiBaseHooker) = hooker.bindTo(param = this)
 
     /** @see toClassGlobal */
-    fun String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    fun String.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
         toClassGlobal(loader, initialize)
 
     /** @see toClassGlobal */
     @JvmName("toClassTyped")
-    fun <T : Any> String.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    fun <T : Any> String.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
         toClassGlobal<T>(loader, initialize)
 
     /** @see toClassOrNullGlobal */
-    fun String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    fun String.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
         toClassOrNullGlobal(loader, initialize)
 
     /** @see toClassOrNullGlobal */
     @JvmName("toClassOrNullTyped")
-    fun <T : Any> String.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) =
+    fun <T : Any> String.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
         toClassOrNullGlobal<T>(loader, initialize)
 
     /** @see toClassGlobal */
-    fun VariousClass.toClass(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = load(loader, initialize)
+    fun VariousClass.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = load(loader, initialize)
 
     /** @see toClassGlobal */
-    fun VariousClass.toClassOrNull(loader: ClassLoader? = appClassLoader, initialize: Boolean = false) = loadOrNull(loader, initialize)
+    fun VariousClass.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = loadOrNull(loader, initialize)
 
     /** @see lazyClassGlobal */
-    fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+    fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
         lazyClassGlobal(name, initialize, loader)
 
     /** @see lazyClassGlobal */
     @JvmName("lazyClassTyped")
-    fun <T : Any> lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+    fun <T : Any> lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
         lazyClassGlobal<T>(name, initialize, loader)
 
     /** @see lazyClassGlobal */
-    fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+    fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
         lazyClassGlobal(variousClass, initialize, loader)
 
     /** @see lazyClassOrNullGlobal */
-    fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+    fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
         lazyClassOrNullGlobal(name, initialize, loader)
 
     /** @see lazyClassOrNullGlobal */
     @JvmName("lazyClassOrNullTyped")
-    fun <T : Any> lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+    fun <T : Any> lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
         lazyClassOrNullGlobal<T>(name, initialize, loader)
 
     /** @see lazyClassOrNullGlobal */
-    fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = appLoaderInit) =
+    fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
         lazyClassOrNullGlobal(variousClass, initialize, loader)
 
     /**
@@ -605,7 +608,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Member.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Member(this)), priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Executable(this)), priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through [MemberResolver].
@@ -623,7 +626,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun MemberResolver<*, *>.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Member(self)), priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Executable(self)), priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through a [List] of [MemberResolver] instances.
@@ -641,7 +644,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Collection<MemberResolver<*, *>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(map { HookPoint.Member(it.self) }, priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Executable(it.self) }, priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through an [Array] of [Member] instances.
@@ -658,7 +661,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Array<Member>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(map { HookPoint.Member(it) }, priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Executable(it) }, priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through a [List] of [Member] instances.
@@ -676,7 +679,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun Collection<Member>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(map { HookPoint.Member(it) }, priority, invocation).build()
+    ) = YukiHookCreator.createChainHooker(map { HookPoint.Executable(it) }, priority, invocation).build()
 
     /**
      * Creates a direct hook for the static initializer of this class.
@@ -958,10 +961,10 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
 
     private fun MemberResolver<*, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiHookCreator.createClassicHooker(listOf(HookPoint.Member(self)), priority, isLazyMode)
+        YukiHookCreator.createClassicHooker(listOf(HookPoint.Executable(self)), priority, isLazyMode)
 
     private fun Collection<MemberResolver<*, *>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiHookCreator.createClassicHooker(map { HookPoint.Member(it.self) }, priority, isLazyMode)
+        YukiHookCreator.createClassicHooker(map { HookPoint.Executable(it.self) }, priority, isLazyMode)
 
     @JvmName("createHookerByClass")
     private fun Collection<Class<*>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
@@ -969,17 +972,36 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
 
     @JvmName("createHookerByMember")
     private fun Collection<Member>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiHookCreator.createClassicHooker(map { HookPoint.Member(it) }, priority, isLazyMode)
+        YukiHookCreator.createClassicHooker(map { HookPoint.Executable(it) }, priority, isLazyMode)
 
     // region Deprecated properties and functions for backward compatibility
 
+    /** Gets or sets the [ClassLoader] of the current host. */
+    @Deprecated(message = "Use hostClassLoader instead.", replaceWith = ReplaceWith("hostClassLoader"))
+    var appClassLoader get() = hostClassLoader
+        set(value) {
+            hostClassLoader = value
+        }
+
+    /** Gets the user ID of the current host. */
+    @Deprecated(message = "Use userId instead.", replaceWith = ReplaceWith("userId"))
+    val appUserId get() = userId
+
+    /** Gets the [Application] instance of the current host. */
+    @Deprecated(message = "Use hostApplication instead.", replaceWith = ReplaceWith("hostApplication"))
+    val appContext get() = hostApplication
+
+    /** Gets the [Resources] of the current host. */
+    @Deprecated(message = "Use hostApplication?.resources instead.", replaceWith = ReplaceWith("hostApplication?.resources"))
+    val appResources get() = hostApplication?.resources
+
     /** Gets the APK file path of the current Xposed module. */
-    @Deprecated(message = "Use moduleFilePath instead.", replaceWith = ReplaceWith("moduleFilePath"))
-    val moduleAppFilePath get() = moduleFilePath
+    @Deprecated(message = "Use module.filePath instead.", replaceWith = ReplaceWith("module.filePath"))
+    val moduleAppFilePath get() = module.filePath
 
     /** Gets the [Resources] of the current Xposed module. */
-    @Deprecated(message = "Use moduleResources instead.", replaceWith = ReplaceWith("moduleResources"))
-    val moduleAppResources get() = moduleResources
+    @Deprecated(message = "Use module.resources instead.", replaceWith = ReplaceWith("module.resources"))
+    val moduleAppResources get() = module.resources
 
     /** Creates a [YukiHookPreferences] object. */
     @Deprecated(message = "Use preferences instead.", replaceWith = ReplaceWith("preferences"))
@@ -990,8 +1012,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     fun prefs(name: String) = preferences(name)
 
     /** Refreshes the [Resources] of the current Xposed module. */
-    @Deprecated(message = "Use refreshModuleResources instead.", replaceWith = ReplaceWith("refreshModuleResources()"))
-    fun refreshModuleAppResources() = refreshModuleResources()
+    @Deprecated(message = "Use module.reloadResources instead.", replaceWith = ReplaceWith("module.reloadResources()"))
+    fun refreshModuleAppResources() = module.reloadResources()
 
     /** Listens for lifecycle loading events of the current host. */
     @Deprecated(

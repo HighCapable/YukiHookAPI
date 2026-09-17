@@ -23,15 +23,15 @@
 
 package com.highcapable.yukihookapi.runtime.xposed82
 
-import com.highcapable.yukihookapi.runtime.bridge.MemberInvokerBridge
+import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 
 /**
- * Member invocation backed by Xposed API 82.
+ * Executable invocation backed by Xposed API 82.
  */
-internal object Xposed82MemberInvoker : MemberInvokerBridge {
+internal object Xposed82ExecutableInvoker : ExecutableInvokerBridge {
 
     override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? =
         XposedBridge.invokeOriginalMethod(member, instance, args)

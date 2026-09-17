@@ -63,20 +63,15 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     /** The APK path of the current Xposed module. */
     var moduleFilePath = ""
 
-    /** The cached Xposed module [Resources]. */
-    private var cachedModuleResources: ModuleResources? = null
-
-    /** The current Xposed module [Resources] synchronized with the host configuration. */
-    val moduleResources
-        get() = (if (YukiHookAPI.Configs.isEnableModuleResourcesCache)
-            cachedModuleResources
-        else dynamicModuleResources)?.syncConfiguration(AppParasitism.currentApplication?.resources ?: Resources.getSystem())
+    /** The current Xposed module resources. */
+    private var currentModuleResources: ModuleResources? = null
 
     /**
-     * Gets the current Xposed module's dynamic [Resources].
+     * Gets the current Xposed module resources synchronized with the host configuration.
      * @return [ModuleResources] or null.
      */
-    val dynamicModuleResources get() = ModuleResources.from(moduleFilePath)
+    val moduleResources get() = currentModuleResources
+        ?.syncConfiguration(AppParasitism.currentApplication?.resources ?: Resources.getSystem())
 
     /**
      * Gets whether the module has loaded its Xposed callback.
@@ -105,9 +100,9 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") &&
             javaClass.classLoader?.hasClass("android.miui.R") == true
 
-    /** Refreshes the current Xposed module's [Resources]. */
-    fun refreshModuleResources() {
-        dynamicModuleResources?.let { cachedModuleResources = it }
+    /** Reloads the current Xposed module's [Resources]. */
+    fun reloadModuleResources() {
+        currentModuleResources = ModuleResources.from(moduleFilePath)
     }
 
     override fun onStartLoadModule(packageName: String, appFilePath: String) {
@@ -115,7 +110,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
         modulePackageName = packageName
         moduleFilePath = appFilePath
-        refreshModuleResources()
+        reloadModuleResources()
     }
 
     override fun onFinishLoadModule() {
