@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.runtime.xposed82.Xposed82ExecutableInvoker
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82HookApi
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82ModuleStatus
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82Preferences
+import java.lang.reflect.Member
 
 /**
  * The core bridge for the `YukiHookAPI` runtime for `yukihookapi-runtime-xposed82`.
@@ -69,6 +70,9 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? =
         throw UnsupportedOperationException("Framework service unavailable in Xposed API 82.")
+
+    override fun deoptimize(member: Member): Boolean =
+        throw UnsupportedOperationException("Method deoptimization is unavailable in Xposed API 82.")
 
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
         if (hooker !is ClassicHookerBridge && hooker !is ChainHookerBridge)

@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedPreferences
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedService
+import java.lang.reflect.Member
 
 /**
  * The core bridge for the `YukiHookAPI` runtime for `yukihookapi-runtime-libxposed`.
@@ -46,6 +47,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     var hostVersionCode = -1
 
     var executableInvokerBridge: ExecutableInvokerBridge? = null
+    var deoptimizeCallback: ((Member) -> Boolean)? = null
     var hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null
     var loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
     var preferencesCallback: ((String) -> SharedPreferences)? = null
@@ -64,6 +66,10 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Unit
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge) = LibXposedService.observe(lifecycle, listener)
+
+    override fun deoptimize(member: Member) = checkNotNull(deoptimizeCallback) {
+        "libxposed is not attached to this process."
+    }(member)
 
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkNotNull(hookCallback) {
         "libxposed is not attached to this process."

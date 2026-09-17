@@ -34,6 +34,7 @@ import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
+import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
@@ -493,6 +494,59 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /** @see lazyClassOrNullGlobal */
     fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
         lazyClassOrNullGlobal(variousClass, initialize, loader)
+
+    /**
+     * Deoptimizes this calling method or constructor so its callees are invoked without runtime inlining.
+     *
+     * Use this on the caller containing an inlined call, not on the hooked callee.
+     * @receiver the calling method or constructor to deoptimize.
+     * @return [Boolean] whether deoptimization succeeded.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    fun Member.deoptimize() = YukiHookHelper.deoptimize(this)
+
+    /**
+     * Deoptimizes this calling method or constructor through [MemberResolver] so its callees are invoked
+     * without runtime inlining.
+     *
+     * Use this on the caller containing an inlined call, not on the hooked callee.
+     * @receiver the calling method or constructor to deoptimize.
+     * @return [Boolean] whether deoptimization succeeded.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    fun MemberResolver<*, *>.deoptimize() = YukiHookHelper.deoptimize(self)
+
+    /**
+     * Deoptimizes these calling methods and constructors through a [Collection] of [MemberResolver] instances.
+     *
+     * A false result does not stop the remaining members. Use these on callers containing inlined calls, not on hooked callees.
+     * @receiver the calling methods and constructors to deoptimize.
+     * @return [Boolean] whether every deoptimization succeeded.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    @JvmName("deoptimizeAllByMemberResolver")
+    fun Collection<MemberResolver<*, *>>.deoptimizeAll() = deoptimizeAll { it.self }
+
+    /**
+     * Deoptimizes these calling methods and constructors so their callees are invoked without runtime inlining.
+     *
+     * A false result does not stop the remaining members. Use these on callers containing inlined calls, not on hooked callees.
+     * @receiver the calling methods and constructors to deoptimize.
+     * @return [Boolean] whether every deoptimization succeeded.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    fun Array<Member>.deoptimizeAll() = asIterable().deoptimizeAll { it }
+
+    /**
+     * Deoptimizes these calling methods and constructors so their callees are invoked without runtime inlining.
+     *
+     * A false result does not stop the remaining members. Use these on callers containing inlined calls, not on hooked callees.
+     * @receiver the calling methods and constructors to deoptimize.
+     * @return [Boolean] whether every deoptimization succeeded.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    @JvmName("deoptimizeAllByMember")
+    fun Collection<Member>.deoptimizeAll() = deoptimizeAll { it }
 
     /**
      * Creates a direct chain hook for the static initializer of this class.
@@ -959,6 +1013,12 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
     ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
+
+    private inline fun <T> Iterable<T>.deoptimizeAll(member: (T) -> Member): Boolean {
+        var isSuccessful = true
+        forEach { if (!YukiHookHelper.deoptimize(member(it))) isSuccessful = false }
+        return isSuccessful
+    }
 
     private fun MemberResolver<*, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
         YukiHookCreator.createClassicHooker(listOf(HookPoint.Executable(self)), priority, isLazyMode)

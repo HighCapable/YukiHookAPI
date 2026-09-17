@@ -30,6 +30,7 @@ import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
+import java.lang.reflect.Member
 
 /**
  * Binary hook bridge contract shared by core and the selected runtime,
@@ -84,12 +85,19 @@ interface FrameworkHookBridge {
     fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge?
 
     /**
+     * Deoptimizes a method or constructor so its callees are invoked without runtime inlining.
+     * @param member the calling method or constructor to deoptimize.
+     * @return [Boolean] whether deoptimization succeeded.
+     * @throws UnsupportedOperationException when the selected runtime does not support deoptimization.
+     */
+    fun deoptimize(member: Member): Boolean
+
+    /**
      * Registers a hook using the supplied hooker contract and returns an independent Hook that can remove itself.
      * @param target the point to hook.
      * @param priority the priority of the hook.
      * @param hooker the hooker to invoke when the hook is triggered.
      * @return [HookerBridge]
-     * @throws UnsupportedOperationException when the runtime does not support the target or hooker type.
      */
     fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge
 

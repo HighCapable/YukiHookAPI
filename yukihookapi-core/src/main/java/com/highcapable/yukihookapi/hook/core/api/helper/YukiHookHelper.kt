@@ -42,6 +42,14 @@ internal object YukiHookHelper {
     private const val HIGHEST_PRIORITY = 10000
 
     /**
+     * Deoptimizes a calling [Member] so its callees are invoked without runtime inlining.
+     * @param member the calling method or constructor to deoptimize.
+     * @return [Boolean] whether deoptimization succeeded.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    fun deoptimize(member: Member) = YukiHookBridge.deoptimize(member)
+
+    /**
      * Hooks a [HookPoint].
      * @param target the point to hook.
      * @param hooker the hooker to register.

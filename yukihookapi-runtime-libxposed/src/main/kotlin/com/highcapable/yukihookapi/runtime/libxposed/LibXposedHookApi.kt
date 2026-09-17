@@ -30,6 +30,7 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.adapter.ClassicInvocationAdapter
 import io.github.libxposed.api.XposedInterface
 import java.lang.reflect.Executable
+import java.lang.reflect.Member
 
 /**
  * All native hook API calls are compiled here against API 102.
@@ -42,6 +43,7 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         YukiHookBridge.hostVersion = api.frameworkVersion
         YukiHookBridge.hostVersionCode = api.frameworkVersionCode.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
         YukiHookBridge.executableInvokerBridge = LibXposedExecutableInvoker(api)
+        YukiHookBridge.deoptimizeCallback = ::deoptimize
         YukiHookBridge.hookCallback = ::hook
         YukiHookBridge.loggerCallback = { priority, tag, message, throwable ->
             api.log(priority, tag, message, throwable)
@@ -52,6 +54,11 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
             }
             api.getRemotePreferences(name)
         }
+    }
+
+    private fun deoptimize(member: Member): Boolean {
+        require(member is Executable) { "Only methods and constructors can be deoptimized." }
+        return api.deoptimize(member)
     }
 
     private fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
