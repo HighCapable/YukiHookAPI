@@ -150,7 +150,7 @@ object YukiHookModuleCaller {
         packageName = packageName,
         processName = processName,
         mainProcessName = mainProcessName,
-        isFirstApplication = false,
+        isFirstApplication = true,
         packageNameForMatching = packageNameForMatching,
         appClassLoader = loader
     )

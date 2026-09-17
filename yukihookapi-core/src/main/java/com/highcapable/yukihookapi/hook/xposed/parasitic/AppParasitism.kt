@@ -36,6 +36,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.PersistableBundle
 import android.os.UserHandle
 import androidx.annotation.RequiresApi
@@ -60,6 +62,7 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleActivity
@@ -85,14 +88,20 @@ internal object AppParasitism {
     private var isActivityProxyRegistered = false
 
     /** Whether host lifecycle methods have been hooked. */
-    private var isAppLifecycleHooked = false
+    private var isAppLifecycleInstalled = false
 
     /** Whether [Instrumentation.callApplicationOnCreate] has been hooked. */
-    private var isApplicationOnCreateHooked = false
+    private var isApplicationOnCreateInstalled = false
+
+    /** Whether system server initialization is waiting for the main looper. */
+    private var isSystemServerInitializationPending = false
 
     /** Lifecycle callbacks for the current host. */
     @Volatile
-    private var appLifecycles = emptyList<AppLifecycleBridge>()
+    private var lifecycles = emptyList<AppLifecycleBridge>()
+
+    /** Lifecycle callbacks that have already received the host [Application]. */
+    private val initializedLifecycles = mutableSetOf<AppLifecycleBridge>()
 
     /** Package owning the first [Application] in this process. */
     private var lifecyclePackageName = ""
@@ -103,7 +112,7 @@ internal object AppParasitism {
     /**
      * Global lifecycle [Application] of the current host.
      *
-     * This is effective only when [YukiHookAPI.Configs.isEnableDataChannel] is enabled or [appLifecycles] is not empty.
+     * This is effective only when [YukiHookAPI.Configs.isEnableDataChannel] is enabled or [lifecycles] is not empty.
      */
     var hostApplication: Application? = null
 
@@ -231,34 +240,44 @@ internal object AppParasitism {
      * Registers lifecycle callbacks for the first [Application] in this process.
      * @param packageName the package owning the [Application].
      * @param lifecycle the lifecycle callbacks.
+     * @param entryType the current hook entry type.
      */
     @Synchronized
-    fun registerAppLifecycle(packageName: String, lifecycle: AppLifecycleBridge) {
+    fun registerAppLifecycle(packageName: String, lifecycle: AppLifecycleBridge, entryType: HookEntryType) {
+        if (YukiHookAPI.isLoadedFromBaseContext) return
+
         prepareLifecyclePackage(packageName)
-        appLifecycles += lifecycle
+        lifecycles += lifecycle
 
         installAppLifecycleHooks()
         installApplicationOnCreateHook()
+        if (entryType == HookEntryType.SYSTEM_SERVER) scheduleSystemServerInitialization()
     }
 
     /**
      * Prepares services that require the first [Application] in this process.
      * @param packageName the package owning the [Application].
+     * @param entryType the current hook entry type.
      */
     @Synchronized
-    fun prepareHostApplication(packageName: String) {
+    fun prepareHostApplication(packageName: String, entryType: HookEntryType) {
         prepareLifecyclePackage(packageName)
+
         if (YukiHookAPI.Configs.isEnableDataChannel) installApplicationOnCreateHook()
+        if (entryType == HookEntryType.SYSTEM_SERVER) scheduleSystemServerInitialization()
     }
 
-    /** Assigns the package owning the first [Application] in this process. */
+    /**
+     * Assigns the package owning the first [Application] in this process.
+     * @param packageName the package owning the [Application].
+     */
     private fun prepareLifecyclePackage(packageName: String) {
         if (lifecyclePackageName.isEmpty()) lifecyclePackageName = packageName
     }
 
     /** Hooks lifecycle methods used by registered callbacks. */
     private fun installAppLifecycleHooks() {
-        if (isAppLifecycleHooked) return
+        if (isAppLifecycleInstalled) return
 
         val hooked = mutableListOf<YukiHookResult>()
         runCatching {
@@ -317,7 +336,7 @@ internal object AppParasitism {
                 ).let(hooked::add)
             }
 
-            isAppLifecycleHooked = true
+            isAppLifecycleInstalled = true
         }.onFailure {
             hooked.forEach { result -> result.remove() }
             YLog.innerE("App lifecycle initialization failed", it)
@@ -326,7 +345,7 @@ internal object AppParasitism {
 
     /** Hooks [Instrumentation.callApplicationOnCreate] for lifecycle callbacks and the data channel. */
     private fun installApplicationOnCreateHook() {
-        if (isApplicationOnCreateHooked) return
+        if (isApplicationOnCreateInstalled) return
 
         runCatching {
             YukiHookHelper.hook(
@@ -338,45 +357,89 @@ internal object AppParasitism {
                         val application = param.args[0] as? Application ?: return
                         if (application.packageName != lifecyclePackageName) return
 
-                        hostApplication = application
-                        param.dispatchAppLifecycle {
-                            onCreate(application)
-                            receiverActions.forEach { (actions, callback) ->
-                                application.registerReceiver(
-                                    filter = IntentFilter().apply { actions.forEach { action -> addAction(action) } },
-                                    exported = true
-                                ) { context, intent -> callback(context, intent) }
-                            }
-                            receiverFilters.forEach { (filter, callback) ->
-                                application.registerReceiver(filter = filter, exported = true) { context, intent -> callback(context, intent) }
-                            }
-                        }
-                        if (!YukiHookAPI.Configs.isEnableDataChannel || isDataChannelRegistered) return
-
-                        runCatching {
-                            YukiHookDataChannel.get().register(application, lifecyclePackageName)
-                            isDataChannelRegistered = true
-                        }.onFailure { YLog.innerE("Data channel initialization failed", it) }
+                        initializeHostApplication(application)?.let { param.throwable = it }
                     }
                 }
             )
-            isApplicationOnCreateHooked = true
+
+            isApplicationOnCreateInstalled = true
         }.onFailure { YLog.innerE("Application onCreate initialization failed", it) }
+    }
+
+    /**
+     * Initializes host-dependent features when the host [Application] is available.
+     * @param application the host [Application].
+     */
+    private fun initializeHostApplication(application: Application): Throwable? {
+        hostApplication = application
+
+        val pendingLifecycles = synchronized(this) {
+            lifecycles.filter { initializedLifecycles.add(it) }
+        }
+        val failureToHost = pendingLifecycles.dispatchAppLifecycle {
+            onCreate(application)
+
+            receiverActions.forEach { (actions, callback) ->
+                application.registerReceiver(
+                    filter = IntentFilter().apply { actions.forEach { action -> addAction(action) } },
+                    exported = true
+                ) { context, intent -> callback(context, intent) }
+            }
+            receiverFilters.forEach { (filter, callback) ->
+                application.registerReceiver(filter = filter, exported = true) { context, intent ->
+                    callback(context, intent)
+                }
+            }
+        }
+
+        if (YukiHookAPI.Configs.isEnableDataChannel && !isDataChannelRegistered) runCatching {
+            YukiHookDataChannel.get().register(application, lifecyclePackageName)
+            isDataChannelRegistered = true
+        }.onFailure { YLog.innerE("Data channel initialization failed", it) }
+
+        return failureToHost
+    }
+
+    /** Schedules system server initialization after its services finish starting. */
+    @Synchronized
+    private fun scheduleSystemServerInitialization() {
+        if (isSystemServerInitializationPending) return
+
+        isSystemServerInitializationPending = true
+        Handler(Looper.getMainLooper()).post {
+            synchronized(this) { isSystemServerInitializationPending = false }
+            initializeReadyHostApplication()
+        }
+    }
+
+    /** Initializes the system server [Application] created before the runtime callback. */
+    private fun initializeReadyHostApplication() {
+        currentApplication
+            ?.takeIf { it.packageName == lifecyclePackageName }
+            ?.let(::initializeHostApplication)
+            ?.let { YLog.innerE("An exception occurred during AppLifecycle event", e = it) }
     }
 
     /** Dispatches one lifecycle event without letting one registration interrupt the others. */
     private inline fun ClassicHookerBridge.Param.dispatchAppLifecycle(
         crossinline callback: AppLifecycleBridge.() -> Unit
     ) {
+        lifecycles.dispatchAppLifecycle(callback)?.let { throwable = it }
+    }
+
+    /** Dispatches one lifecycle event and returns the first failure intended for the host. */
+    private inline fun Iterable<AppLifecycleBridge>.dispatchAppLifecycle(
+        crossinline callback: AppLifecycleBridge.() -> Unit
+    ): Throwable? {
         var failureToHost: Throwable? = null
-        appLifecycles.forEach { lifecycle ->
+        forEach { lifecycle ->
             runCatching { lifecycle.callback() }.onFailure { failure ->
                 if (lifecycle.onFailureThrowToHost) {
                     if (failureToHost == null) failureToHost = failure
                 } else YLog.innerE("An exception occurred during AppLifecycle event", e = failure)
             }
         }
-        failureToHost?.let { throwable = it }
+        return failureToHost
     }
 
     /**

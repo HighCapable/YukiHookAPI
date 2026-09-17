@@ -146,7 +146,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
             if (wrapper.type != HookEntryType.ZYGOTE && wrapper.packageName == modulePackageName)
                 AppParasitism.hookLegacyModuleRelated(wrapper.appClassLoader)
-            if (wrapper.isFirstApplication) AppParasitism.prepareHostApplication(wrapper.packageName)
+            if (wrapper.isFirstApplication) AppParasitism.prepareHostApplication(wrapper.packageName, wrapper.type)
         }.onFailure { YLog.innerE("An exception occurred in the hooking process of YukiHookAPI", it) }
     }
 }

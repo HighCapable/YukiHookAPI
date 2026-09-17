@@ -219,12 +219,19 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * Registers a lifecycle listener for the current host [Application].
      *
      * This is loaded only for the package that owns the first [Application] in the current process.
-     * A standalone custom hook API can observe only lifecycle events that occur after registration.
+     * In system server, [AppLifecycle.onCreate] is dispatched after system services start because its [Application]
+     * has already completed creation, while [AppLifecycle.attachBaseContext] cannot observe the completed event.
      * @param onFailureThrowToHost whether to throw exceptions to the host when they occur, true by default.
      * @param block the lifecycle block.
      */
     fun registerAppLifecycle(onFailureThrowToHost: Boolean = true, block: AppLifecycle.() -> Unit) {
-        if (isFirstApplication) AppLifecycle.register(packageName, onFailureThrowToHost, block)
+        val current = wrapper ?: return
+        if (current.isFirstApplication) AppLifecycle.register(
+            packageName = packageName,
+            onFailureThrowToHost = onFailureThrowToHost,
+            entryType = current.type,
+            block = block
+        )
     }
 
     /**
@@ -1355,8 +1362,13 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * - Use [registerAppLifecycle] to obtain [AppLifecycle].
      * @param packageName the package name of the current host.
      * @param onFailureThrowToHost whether to throw exceptions to the host when they occur.
+     * @param entryType the current hook entry type.
      */
-    class AppLifecycle private constructor(private val packageName: String, private val onFailureThrowToHost: Boolean) {
+    class AppLifecycle private constructor(
+        private val packageName: String,
+        private val onFailureThrowToHost: Boolean,
+        private val entryType: HookEntryType
+    ) {
 
         internal companion object {
 
@@ -1364,12 +1376,14 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
              * Registers a lifecycle listener for the current host [Application].
              * @param packageName the package name of the current host.
              * @param onFailureThrowToHost whether to throw exceptions to the host when they occur.
+             * @param entryType the current hook entry type.
              */
             fun register(
                 packageName: String,
                 onFailureThrowToHost: Boolean,
+                entryType: HookEntryType,
                 block: AppLifecycle.() -> Unit
-            ) = AppLifecycle(packageName, onFailureThrowToHost).apply(block).build()
+            ) = AppLifecycle(packageName, onFailureThrowToHost, entryType).apply(block).build()
         }
 
         private var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null
@@ -1477,7 +1491,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             override fun onConfigurationChanged(application: Application, config: Configuration) {
                 onConfigurationChangedCallback?.invoke(application, config)
             }
-        })
+        }, entryType)
     }
 
     override fun toString() = "PackageParam(${super.toString()}) by $wrapper"
