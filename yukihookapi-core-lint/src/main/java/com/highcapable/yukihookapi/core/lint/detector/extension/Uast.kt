@@ -32,8 +32,9 @@ import org.jetbrains.uast.UastCallKind
 
 private const val YUKIHOOKAPI_MODULE_NAME_PREFIX = "yukihookapi-"
 
-internal fun JavaContext.createExternalOnlyUastHandler(handler: UElementHandler) =
-    handler.takeUnless { project.name.split('.', ':').any { it.startsWith(YUKIHOOKAPI_MODULE_NAME_PREFIX) } }
+internal fun JavaContext.createExternalOnlyUastHandler(handler: UElementHandler) = handler.takeUnless {
+    project.name.split('.', ':').any { it.startsWith(YUKIHOOKAPI_MODULE_NAME_PREFIX) }
+}
 
 internal fun USimpleNameReferenceExpression.reportNode(): UElement {
     val parent = uastParent
