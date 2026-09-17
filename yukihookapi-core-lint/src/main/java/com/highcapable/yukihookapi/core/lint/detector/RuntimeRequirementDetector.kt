@@ -31,6 +31,9 @@ import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
+import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
+import com.highcapable.yukihookapi.core.lint.detector.extension.isConstructorReference
+import com.highcapable.yukihookapi.core.lint.detector.extension.reportNode
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
@@ -38,13 +41,10 @@ import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifierListOwner
-import org.jetbrains.uast.UBinaryExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UTypeReferenceExpression
-import org.jetbrains.uast.UastCallKind
 
 class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
@@ -84,7 +84,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         UTypeReferenceExpression::class.java
     )
 
-    override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
+    override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
 
         override fun visitCallExpression(node: UCallExpression) {
             val method = node.resolve() ?: return
@@ -157,36 +157,5 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
             return fields.firstOrNull { it.name == propertyName || it.name == "is$nameStem" }
         }
-
-        private fun USimpleNameReferenceExpression.reportNode(): UElement {
-            val parent = uastParent
-            val grandparent = parent?.uastParent
-
-            return when {
-                parent is UQualifiedReferenceExpression && parent.selector == this -> when (grandparent) {
-                    is UBinaryExpression -> grandparent
-                    else -> parent.outermostQualifiedReference()
-                }
-                parent is UQualifiedReferenceExpression && parent.receiver == this -> parent.outermostQualifiedReference()
-                parent is UBinaryExpression -> parent
-                grandparent is UBinaryExpression -> grandparent
-                else -> this
-            }
-        }
-
-        private fun UElement.outermostQualifiedReference(): UElement {
-            var current = this
-            while (true) {
-                val next = current.uastParent as? UQualifiedReferenceExpression ?: return current
-                if (next.receiver != current) return current
-                current = next
-            }
-        }
-
-        private fun USimpleNameReferenceExpression.isConstructorReference(): Boolean {
-            var parent = uastParent
-            while (parent is UQualifiedReferenceExpression) parent = parent.uastParent
-            return (parent as? UCallExpression)?.kind == UastCallKind.CONSTRUCTOR_CALL
-        }
-    }
+    })
 }
