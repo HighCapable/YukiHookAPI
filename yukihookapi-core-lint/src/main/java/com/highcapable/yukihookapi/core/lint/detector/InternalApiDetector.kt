@@ -137,7 +137,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
                 issue = ISSUE,
                 scope = scope,
                 location = location,
-                message = "`$apiName` is an internal YukiHookAPI API and must not be used directly.",
+                message = "`$apiName` is an internal YukiHookAPI's API and must not be used directly.",
                 quickfixData = lintFix
             )
         }
