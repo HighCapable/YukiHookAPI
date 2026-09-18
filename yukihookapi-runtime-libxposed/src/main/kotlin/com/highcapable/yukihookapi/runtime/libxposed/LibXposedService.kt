@@ -19,9 +19,10 @@
  *
  * This file is created by fankes on 2026/9/6.
  */
+@file:Suppress("SameParameterValue")
+
 package com.highcapable.yukihookapi.runtime.libxposed
 
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -49,6 +50,7 @@ internal object LibXposedService {
     val apiLevel get() = runCatching { service?.apiVersion }.getOrNull() ?: -1
     val frameworkVersion get() = runCatching { service?.frameworkVersion }.getOrNull() ?: "unknown"
     val frameworkVersionCode get() = runCatching { service?.frameworkVersionCode?.coerceIn(0, Int.MAX_VALUE.toLong())?.toInt() }.getOrNull() ?: -1
+    val isRemoteFilesAvailable get() = useRemoteFiles(false) { true }
 
     @Synchronized
     fun initialize() {
@@ -83,19 +85,31 @@ internal object LibXposedService {
         }
     }
 
-    fun preferencesOrNull(name: String): SharedPreferences? {
+    fun preferencesOrNull(name: String) = useService(XposedService.PROP_CAP_REMOTE, "remote preferences") {
+        it.getRemotePreferences(name)
+    }
+
+    fun listRemoteFiles() = useRemoteFiles { it.listRemoteFiles().toList() }
+    fun openRemoteFile(name: String) = useRemoteFiles { it.openRemoteFile(name) }
+    fun deleteRemoteFile(name: String) = useRemoteFiles { it.deleteRemoteFile(name) }
+
+    private inline fun <T> useRemoteFiles(defaultValue: T? = null, block: (XposedService) -> T) = checkNotNull(
+        useService(XposedService.PROP_CAP_REMOTE, "remote files", block) ?: defaultValue
+    ) { "libxposed services are unavailable." }
+
+    private inline fun <T> useService(capability: Long, capabilityName: String, block: (XposedService) -> T): T? {
         initialize()
         val current = synchronized(services) {
             check(services.size <= 1) {
-                "Multiple Xposed frameworks are connected, remote preferences have no unambiguous owner."
+                "Multiple Xposed frameworks are connected, $capabilityName have no unambiguous owner."
             }
             services.singleOrNull()
         } ?: return null
 
-        check(current.frameworkProperties and XposedService.PROP_CAP_REMOTE != 0L) {
-            "This framework does not support remote preferences."
+        check(current.frameworkProperties and capability != 0L) {
+            "This framework does not support $capabilityName."
         }
-        return current.getRemotePreferences(name)
+        return block(current)
     }
 
     private fun notifyListeners() {

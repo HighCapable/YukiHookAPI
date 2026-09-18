@@ -29,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.bridge.SharedFilesBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import java.lang.reflect.Member
@@ -56,4 +57,5 @@ object YukiHookBridge : FrameworkHookBridge {
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge = error("Stub!")
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?): Unit = error("Stub!")
     override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences = error("Stub!")
+    override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge = error("Stub!")
 }

@@ -28,6 +28,7 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.bridge.SharedFilesBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
@@ -98,4 +99,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
         Xposed82Preferences.open(context.takeUnless { hostEnvironment }, packageName, name)
+
+    override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge =
+        throw UnsupportedOperationException("Shared files are unavailable in Xposed API 82.")
 }

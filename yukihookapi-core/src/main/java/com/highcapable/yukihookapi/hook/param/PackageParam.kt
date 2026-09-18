@@ -46,6 +46,7 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBrid
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import com.highcapable.yukihookapi.hook.xposed.file.YukiHookSharedFiles
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
@@ -188,10 +189,19 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * Creates a [YukiHookPreferences] object.
      *
      * - This is unavailable when loaded as a custom hook API and throws an exception.
-     * @param name the custom SharedPreferences storage name.
+     * @param name the custom shared preferences storage name.
      * @return [YukiHookPreferences]
      */
     fun preferences(name: String) = preferences.name(name)
+
+    /**
+     * Gets the [YukiHookSharedFiles] object.
+     *
+     * - This is unavailable when loaded as a custom hook API and throws an exception.
+     * @return [YukiHookSharedFiles]
+     */
+    @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    val sharedFiles get() = YukiHookSharedFiles.get()
 
     /**
      * Gets the [YukiHookDataChannel] object.

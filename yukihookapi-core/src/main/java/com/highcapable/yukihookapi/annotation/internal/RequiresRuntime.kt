@@ -31,6 +31,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 @Target(
     AnnotationTarget.CLASS,
     AnnotationTarget.FIELD,
+    AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.FUNCTION
 )
 internal annotation class RequiresRuntime(val value: YukiHookRuntime)

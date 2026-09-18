@@ -119,4 +119,12 @@ interface FrameworkHookBridge {
      * @return [SharedPreferences]
      */
     fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences
+
+    /**
+     * Gets shared-file storage for the current environment.
+     * @param hostEnvironment whether storage is accessed from a host environment.
+     * @return [SharedFilesBridge]
+     * @throws UnsupportedOperationException when the selected runtime does not support shared files.
+     */
+    fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge
 }

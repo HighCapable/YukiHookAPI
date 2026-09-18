@@ -23,7 +23,7 @@ package com.highcapable.yukihookapi.runtime.libxposed
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import io.github.libxposed.api.XposedInterface
 
 /**
  * Remote preferences with private module storage as the inactive fallback.
@@ -31,10 +31,36 @@ import com.highcapable.yukihookapi.runtime.YukiHookBridge
 internal object LibXposedPreferences {
 
     fun open(context: Context?, name: String): SharedPreferences {
-        if (context == null) return checkNotNull(YukiHookBridge.preferencesCallback) {
-            "libxposed host remote preferences are unavailable."
-        }(name)
+        if (context == null) return Host.open(name)
+        return Module.open(context, name)
+    }
 
-        return LibXposedService.preferencesOrNull(name) ?: context.getSharedPreferences(name, Context.MODE_PRIVATE)
+    fun attach(api: XposedInterface) = Host.attach(api)
+
+    private object Module {
+
+        fun open(context: Context, name: String): SharedPreferences =
+            LibXposedService.preferencesOrNull(name) ?: context.getSharedPreferences(name, Context.MODE_PRIVATE)
+    }
+
+    private object Host {
+
+        private var xposedApi: XposedInterface? = null
+
+        private val api get() = checkNotNull(xposedApi) {
+            "libxposed host remote preferences are unavailable."
+        }
+
+        fun attach(api: XposedInterface) {
+            xposedApi = api
+        }
+
+        fun open(name: String): SharedPreferences {
+            check(api.frameworkProperties and XposedInterface.PROP_CAP_REMOTE != 0L) {
+                "This framework does not support remote preferences."
+            }
+
+            return api.getRemotePreferences(name)
+        }
     }
 }

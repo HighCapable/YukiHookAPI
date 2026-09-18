@@ -24,7 +24,6 @@
 package com.highcapable.yukihookapi.runtime
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
@@ -34,6 +33,7 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedPreferences
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedService
+import com.highcapable.yukihookapi.runtime.libxposed.LibXposedSharedFiles
 import java.lang.reflect.Member
 
 /**
@@ -50,7 +50,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
     var deoptimizeCallback: ((Member) -> Boolean)? = null
     var hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null
     var loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
-    var preferencesCallback: ((String) -> SharedPreferences)? = null
 
     override val runtime get() = YukiHookRuntime.LIBXPOSED
     override val isHookAvailable get() = hookCallback != null
@@ -85,4 +84,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
         LibXposedPreferences.open(context.takeUnless { hostEnvironment }, name)
+
+    override fun sharedFiles(hostEnvironment: Boolean) = LibXposedSharedFiles.open(hostEnvironment)
 }

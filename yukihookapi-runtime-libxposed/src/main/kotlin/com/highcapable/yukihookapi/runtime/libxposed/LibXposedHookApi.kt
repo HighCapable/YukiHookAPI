@@ -48,12 +48,9 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         YukiHookBridge.loggerCallback = { priority, tag, message, throwable ->
             api.log(priority, tag, message, throwable)
         }
-        YukiHookBridge.preferencesCallback = { name ->
-            check(api.frameworkProperties and XposedInterface.PROP_CAP_REMOTE != 0L) {
-                "This framework does not support remote preferences."
-            }
-            api.getRemotePreferences(name)
-        }
+
+        LibXposedPreferences.attach(api)
+        LibXposedSharedFiles.attach(api)
     }
 
     private fun deoptimize(member: Member): Boolean {
