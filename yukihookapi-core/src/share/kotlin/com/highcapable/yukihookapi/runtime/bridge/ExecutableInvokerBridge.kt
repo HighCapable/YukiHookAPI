@@ -54,7 +54,7 @@ interface ExecutableInvokerBridge {
      * Creates an instance with the original constructor without applying its hooks.
      * @param constructor the constructor to invoke.
      * @param args the arguments to pass to the constructor.
-     * @return the created instance.
+     * @return [Any] the created instance.
      * @throws UnsupportedOperationException when the selected runtime does not support original construction.
      */
     fun newInstanceOriginal(constructor: Constructor<*>, args: Array<out Any?>): Any
@@ -64,7 +64,7 @@ interface ExecutableInvokerBridge {
      * @param constructor the parent constructor to invoke.
      * @param subclass the subclass to instantiate.
      * @param args the arguments to pass to the constructor.
-     * @return the created subclass instance.
+     * @return [Any] the created subclass instance.
      * @throws UnsupportedOperationException when the selected runtime does not support special construction.
      */
     fun newInstanceSpecial(constructor: Constructor<*>, subclass: Class<*>, args: Array<out Any?>): Any
