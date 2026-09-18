@@ -27,6 +27,7 @@ import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * Executable invocation backed by Xposed API 82.
@@ -36,8 +37,12 @@ internal object Xposed82ExecutableInvoker : ExecutableInvokerBridge {
     override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? =
         XposedBridge.invokeOriginalMethod(member, instance, args)
 
-    override fun invokeSpecial(member: Member, instance: Any, args: Array<out Any?>): Any? =
-        throw UnsupportedOperationException("Special invocation is unavailable in Xposed API 82.")
+    override fun invokeSpecial(member: Member, instance: Any, args: Array<out Any?>): Any? = when (member) {
+        is Constructor<*> -> XposedBridge.invokeOriginalMethod(member, instance, args)
+        // Xposed API 82 has no non-virtual method invocation support.
+        is Method -> throw UnsupportedOperationException("Special method invocation is unavailable in Xposed API 82.")
+        else -> throw IllegalArgumentException("Unsupported member type: ${member.javaClass.name}")
+    }
 
     override fun newInstanceOriginal(constructor: Constructor<*>, args: Array<out Any?>): Any =
         throw UnsupportedOperationException("Original construction is unavailable in Xposed API 82.")

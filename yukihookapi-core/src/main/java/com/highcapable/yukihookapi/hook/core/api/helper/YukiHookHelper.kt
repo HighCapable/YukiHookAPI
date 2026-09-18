@@ -98,7 +98,6 @@ internal object YukiHookHelper {
      * @param args the arguments to pass to the member.
      * @return [Any] or null.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun invokeSpecial(member: Member, instance: Any, args: Array<out Any?>) =
         YukiHookBridge.executableInvoker.invokeSpecial(member, instance, args)
 

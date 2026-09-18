@@ -614,7 +614,6 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param instance the instance to initialize.
      * @return [Any] null after the constructor completes.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun ConstructorResolver<*>.initializeSpecial(instance: Any, vararg args: Any?) =
         YukiHookHelper.invokeSpecial(self, instance, args)
 
@@ -626,7 +625,6 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param instance the instance to initialize.
      * @return [Any] or null.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun ConstructorResolver<*>.initializeSpecialQuietly(instance: Any, vararg args: Any?) =
         runCatching { initializeSpecial(instance, *args) }.getOrNull()
 
@@ -738,7 +736,6 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param instance the instance to initialize.
      * @return [Any] null after the constructor completes.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Constructor<*>.initializeSpecial(instance: Any, vararg args: Any?) =
         YukiHookHelper.invokeSpecial(this, instance, args)
 
