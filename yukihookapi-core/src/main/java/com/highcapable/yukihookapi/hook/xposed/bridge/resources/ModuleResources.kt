@@ -59,46 +59,52 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
             val system = getSystem()
             val resources = Resources(assets, system.displayMetrics, system.configuration)
 
-            addModuleAssetPath(resources, path).getOrThrow()
+            assets.addAssetPath(path).getOrThrow()
             ModuleResources(resources)
         }.onFailure {
             YLog.innerE("Failed to create module resources from $path", it)
         }.getOrNull()
 
         /**
-         * Injects the module APK into host [Resources] synchronously.
+         * Injects the APK into host [Resources] synchronously.
          *
          * On Android 11 (API 30) or later, call this function on the main thread.
          * Resource loaders participate in system resource rebuilding, older Android versions use asset paths.
-         * @param resources the host resources.
-         * @param path the module APK path.
-         * @return [Result]
+         * @param host the host resources.
+         * @param path the APK path.
+         * @param callback the callback to receive the result of the injection.
          */
-        fun injectModuleResources(resources: Resources, path: String) =
-            if (AndroidVersion.isAtLeast(AndroidVersion.R)) runCatching {
-                require(path.isNotBlank()) { "Module APK path is unavailable." }
-                Api30_Impl.inject(resources, path)
-            } else addModuleAssetPath(resources, path)
+        fun inject(host: Resources, path: String, callback: (Throwable?) -> Unit = {}) {
+            fun Result<*>.notify() = onSuccess { callback(null) }.onFailure { callback(it) }
+
+            if (AndroidVersion.isAtLeast(AndroidVersion.R)) {
+                require(path.isNotBlank()) { "APK path is unavailable." }
+
+                runCatching {
+                    Api30_Impl.inject(host, path)
+                }.notify()
+            } else host.assets.addAssetPath(path).notify()
+        }
 
         /**
-         * Adds the module APK path to an existing [Resources] instance.
-         * @param resources the target resources.
-         * @param path the module APK path.
+         * Adds the APK path to an existing [Resources] instance.
+         * @receiver the target assets.
+         * @param path the APK path.
          * @return [Result]
          */
-        private fun addModuleAssetPath(resources: Resources, path: String) = runCatching {
-            require(path.isNotBlank()) { "Module APK path is unavailable." }
+        private fun AssetManager.addAssetPath(path: String) = runCatching {
+            require(path.isNotBlank()) { "APK path is unavailable." }
 
             // `addAssetPath` is hidden on Android. Use the existing hidden-API resolver rather
             // than `XModuleResources`, which is unavailable to modern modules.
-            val cookie = resources.assets.asResolver()
+            val cookie = this.asResolver()
                 .processor(AndroidHiddenApiBypassResolver.get())
                 .optional(silent = true)
                 .firstMethodOrNull {
                     name = "addAssetPath"
                     parameters(String::class)
                 }?.invoke<Int>(path)
-            check(cookie != null && cookie != 0) { "Unable to load module resources from $path" }
+            check(cookie != null && cookie != 0) { "Unable to load resources from $path" }
         }
 
         /**
@@ -109,7 +115,7 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
 
             private var loader: ResourcesLoader? = null
 
-            fun inject(resources: Resources, path: String) {
+            fun inject(host: Resources, path: String) {
                 val moduleLoader = loader ?: ParcelFileDescriptor.open(File(path), ParcelFileDescriptor.MODE_READ_ONLY).use { descriptor ->
                     ResourcesLoader().apply {
                         // The provider duplicates the descriptor, so closing it does not unload the APK.
@@ -120,13 +126,13 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
                 try {
                     // Unlike `addAssetPath`, loaders are recorded in `ResourcesKey` and survive `ResourcesImpl` rebuilding.
                     // Reusing the same loader also lets `Resources.addLoaders` handle duplicate injection.
-                    resources.addLoaders(moduleLoader)
+                    host.addLoaders(moduleLoader)
                 } catch (cause: IllegalArgumentException) {
                     if (cause.message != "Cannot modify resource loaders of ResourcesImpl not registered with ResourcesManager") throw cause
 
                     // A framework-replaced `ResourcesImpl` may no longer have a `ResourcesManager` record.
                     // Only this registration mismatch falls back to mutating its current `AssetManager`.
-                    addModuleAssetPath(resources, path).getOrThrow()
+                    host.assets.addAssetPath(path).getOrThrow()
                 }
             }
         }
