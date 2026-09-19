@@ -12,6 +12,8 @@
     <string name="demo_status_module_active_summary">Xposed module activation status</string>
     <string name="demo_status_hook_framework">Hook Framework: %1$s</string>
     <string name="demo_status_hook_framework_summary">Current hook framework</string>
+    <string name="demo_status_hook_framework_version">Framework Version: %1$s</string>
+    <string name="demo_status_hook_framework_version_summary">Current hook framework version</string>
     <string name="demo_status_xposed_api_version">Xposed API Version: %1$d</string>
     <string name="demo_status_xposed_api_version_summary">Xposed API version</string>
     <string name="demo_status_yukihookapi_version">%1$s Version: %2$s</string>

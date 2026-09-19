@@ -28,6 +28,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.updateMargins
 import com.highcapable.betterandroid.ui.extension.component.startActivity
+import com.highcapable.betterandroid.ui.extension.insets.factory.handleOnWindowInsetsChanged
+import com.highcapable.betterandroid.ui.extension.insets.factory.setInsetsPadding
 import com.highcapable.betterandroid.ui.extension.view.textToString
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.betterandroid.ui.extension.view.updateMargins
@@ -119,14 +121,14 @@ class MainActivity : BaseActivity() {
                                 gravity = Gravity.CENTER or Gravity.START
                             }
                         ) {
-                            repeat(6) { index ->
+                            repeat(7) { index ->
                                 TextView(
                                     id = "sample_title_text_$index",
                                     lparams = LayoutParams {
                                         bottomMargin = 5.dp
                                     }
                                 ) {
-                                    textSize = 18f
+                                    textSize = 16f
                                     isSingleLine = true
                                     ellipsize = TextUtils.TruncateAt.END
                                     gravity = Gravity.CENTER or Gravity.START
@@ -134,11 +136,11 @@ class MainActivity : BaseActivity() {
                                 TextView(
                                     id = "sample_subtitle_text_$index",
                                     lparams = LayoutParams {
-                                        bottomMargin = if (index < 5) 15.dp else 25.dp
+                                        bottomMargin = if (index < 7) 10.dp else 15.dp
                                     }
                                 ) {
                                     alpha = 0.85f
-                                    textSize = 15f
+                                    textSize = 13f
                                     isSingleLine = true
                                     ellipsize = TextUtils.TruncateAt.END
                                     gravity = Gravity.CENTER or Gravity.START
@@ -215,19 +217,25 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        hikage.root.handleOnWindowInsetsChanged(animated = true) { view, insetsWrapper ->
+            view.setInsetsPadding(insetsWrapper.safeDrawing)
+        }
+
         fun refreshStatus() {
             hikage.get<TextView>("sample_title_text_0").text = getString(R.string.demo_status_module_active, YukiHookAPI.Status.isModuleActive)
             hikage.get<TextView>("sample_subtitle_text_0").text = getString(R.string.demo_status_module_active_summary)
             hikage.get<TextView>("sample_title_text_1").text = getString(R.string.demo_status_hook_framework, YukiHookAPI.Status.Executor.name)
-            hikage.get<TextView>("sample_subtitle_text_1").text = getString(R.string.demo_status_hook_framework_summary)
-            hikage.get<TextView>("sample_title_text_2").text = getString(R.string.demo_status_xposed_api_version, YukiHookAPI.Status.Executor.apiLevel)
-            hikage.get<TextView>("sample_subtitle_text_2").text = getString(R.string.demo_status_xposed_api_version_summary)
-            hikage.get<TextView>("sample_title_text_3").text = getString(R.string.demo_status_yukihookapi_version, YukiHookAPI.TAG, YukiHookAPI.VERSION)
-            hikage.get<TextView>("sample_subtitle_text_3").text = getString(R.string.demo_status_yukihookapi_version_summary)
-            hikage.get<TextView>("sample_title_text_4").text = getString(R.string.demo_status_runtime, YukiHookAPI.Status.runtime.explicitName)
-            hikage.get<TextView>("sample_subtitle_text_4").text = getString(R.string.demo_status_runtime_summary)
-            hikage.get<TextView>("sample_title_text_5").text = getString(R.string.demo_status_prefs_writable, preferences().isWritable)
-            hikage.get<TextView>("sample_subtitle_text_5").text = getString(R.string.demo_status_prefs_writable_summary)
+            hikage.get<TextView>("sample_subtitle_text_1").text = getString(R.string.demo_status_hook_framework_summary) 
+            hikage.get<TextView>("sample_title_text_2").text = getString(R.string.demo_status_hook_framework_version, "${YukiHookAPI.Status.Executor.version} (${YukiHookAPI.Status.Executor.versionCode})")
+            hikage.get<TextView>("sample_subtitle_text_2").text = getString(R.string.demo_status_hook_framework_version_summary)
+            hikage.get<TextView>("sample_title_text_3").text = getString(R.string.demo_status_xposed_api_version, YukiHookAPI.Status.Executor.apiVersion)
+            hikage.get<TextView>("sample_subtitle_text_3").text = getString(R.string.demo_status_xposed_api_version_summary)
+            hikage.get<TextView>("sample_title_text_4").text = getString(R.string.demo_status_yukihookapi_version, YukiHookAPI.TAG, YukiHookAPI.VERSION)
+            hikage.get<TextView>("sample_subtitle_text_4").text = getString(R.string.demo_status_yukihookapi_version_summary)
+            hikage.get<TextView>("sample_title_text_5").text = getString(R.string.demo_status_runtime, YukiHookAPI.Status.runtime.explicitName)
+            hikage.get<TextView>("sample_subtitle_text_5").text = getString(R.string.demo_status_runtime_summary)
+            hikage.get<TextView>("sample_title_text_6").text = getString(R.string.demo_status_prefs_writable, preferences().isWritable)
+            hikage.get<TextView>("sample_subtitle_text_6").text = getString(R.string.demo_status_prefs_writable_summary)
         }
 
         refreshStatus()

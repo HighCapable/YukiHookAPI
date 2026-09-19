@@ -10,6 +10,8 @@
     <string name="demo_status_module_active_summary">Xposed 模块激活状态</string>
     <string name="demo_status_hook_framework">Hook 框架：%1$s</string>
     <string name="demo_status_hook_framework_summary">当前 Hook 框架</string>
+    <string name="demo_status_hook_framework_version">框架版本：%1$s</string>
+    <string name="demo_status_hook_framework_version_summary">当前 Hook 框架版本</string>
     <string name="demo_status_xposed_api_version">Xposed API 版本：%1$d</string>
     <string name="demo_status_xposed_api_version_summary">Xposed API 版本</string>
     <string name="demo_status_yukihookapi_version">%1$s 版本：%2$s</string>

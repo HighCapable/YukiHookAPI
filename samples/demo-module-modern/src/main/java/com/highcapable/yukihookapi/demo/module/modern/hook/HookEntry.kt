@@ -192,8 +192,10 @@ object HookEntry : YukiHookXposedModule {
                                     .setMessage(
                                         module.resources.getString(
                                             R.string.demo_hooked_dialog_message,
-                                            YukiHookAPI.Status.Executor.name,
-                                            YukiHookAPI.Status.Executor.apiLevel
+                                            "${YukiHookAPI.Status.Executor.name} " +
+                                                "${YukiHookAPI.Status.Executor.version} " +
+                                                "(${YukiHookAPI.Status.Executor.versionCode})",
+                                            YukiHookAPI.Status.Executor.apiVersion
                                         )
                                     )
                                     .setPositiveButton(module.resources.getString(R.string.demo_dialog_ok), null)
