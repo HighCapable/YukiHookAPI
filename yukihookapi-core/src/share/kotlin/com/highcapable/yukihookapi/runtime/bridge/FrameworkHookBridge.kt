@@ -51,17 +51,17 @@ interface FrameworkHookBridge {
     /** Whether the module has one available framework service. */
     val isModuleActive: Boolean
 
+    /** Runtime framework API version. */
+    val apiVersion: Int
+
     /** Framework display name. */
     val frameworkName: String
 
-    /** Runtime framework API version. */
-    val apiLevel: Int
-
-    /** Framework version name. */
+    /** Framework version. */
     val frameworkVersion: String
 
-    /** Framework version code, constrained by the existing [Int] API. */
-    val frameworkVersionCode: Int
+    /** Framework version code. */
+    val frameworkVersionCode: Long
 
     /** Executable invocation capabilities supplied by the selected runtime. */
     val executableInvoker: ExecutableInvokerBridge

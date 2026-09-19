@@ -41,7 +41,7 @@ internal object Xposed82HookApi {
     private val chainHooks = mutableMapOf<Member, Pair<ChainInvocationAdapter, HookerBridge>>()
 
     val isAvailable get() = runCatching { XposedBridge.getXposedVersion(); true }.getOrDefault(false)
-    val apiLevel get() = runCatching { XposedBridge.getXposedVersion() }.getOrDefault(-1)
+    val apiVersion get() = runCatching { XposedBridge.getXposedVersion() }.getOrDefault(-1)
     val frameworkName get() = runCatching {
         val loader = classOf<XposedBridge>().classLoader
 

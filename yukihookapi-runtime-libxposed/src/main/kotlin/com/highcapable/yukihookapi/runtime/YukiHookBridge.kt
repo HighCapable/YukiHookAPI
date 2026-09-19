@@ -41,41 +41,46 @@ import java.lang.reflect.Member
  */
 internal object YukiHookBridge : FrameworkHookBridge {
 
-    var hostFrameworkName = "unknown"
-    var hostApiLevel = -1
-    var hostVersion = "unknown"
-    var hostVersionCode = -1
+    private const val NOT_ATTACHED_ERROR = "libxposed is not attached to this process."
 
-    var executableInvokerBridge: ExecutableInvokerBridge? = null
-    var deoptimizeCallback: ((Member) -> Boolean)? = null
-    var hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null
-    var loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
+    class ApiSpec(
+        val apiVersion: Int = -1,
+        val frameworkName: String = "unknown",
+        val frameworkVersion: String = "unknown",
+        val frameworkVersionCode: Long = -1L,
+        val executableInvokerBridge: ExecutableInvokerBridge? = null,
+        val deoptimizeCallback: ((Member) -> Boolean)? = null,
+        val hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null,
+        val loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
+    )
+
+    private var apiSpec: ApiSpec? = null
+    private val api get() = apiSpec ?: error(NOT_ATTACHED_ERROR)
 
     override val runtime get() = YukiHookRuntime.LIBXPOSED
-    override val isHookAvailable get() = hookCallback != null
+    override val isHookAvailable get() = apiSpec != null
     override val isCustomHookAvailable get() = false
     override val isModuleActive get() = LibXposedService.isAvailable
-    override val frameworkName get() = if (isHookAvailable) hostFrameworkName else LibXposedService.frameworkName
-    override val apiLevel get() = if (isHookAvailable) hostApiLevel else LibXposedService.apiLevel
-    override val frameworkVersion get() = if (isHookAvailable) hostVersion else LibXposedService.frameworkVersion
-    override val frameworkVersionCode get() = if (isHookAvailable) hostVersionCode else LibXposedService.frameworkVersionCode
-    override val executableInvoker get() = checkNotNull(executableInvokerBridge) { "libxposed is not attached to this process." }
+    override val apiVersion get() = if (isHookAvailable) api.apiVersion else LibXposedService.apiVersion
+    override val frameworkName get() = if (isHookAvailable) api.frameworkName else LibXposedService.frameworkName
+    override val frameworkVersion get() = if (isHookAvailable) api.frameworkVersion else LibXposedService.frameworkVersion
+    override val frameworkVersionCode get() = if (isHookAvailable) api.frameworkVersionCode else LibXposedService.frameworkVersionCode
+    override val executableInvoker get() = checkApi(api.executableInvokerBridge)
+
+    fun attach(spec: ApiSpec) {
+        apiSpec = spec
+    }
 
     override fun initializeModuleServices() = LibXposedService.initialize()
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Unit
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge) = LibXposedService.observe(lifecycle, listener)
 
-    override fun deoptimize(member: Member) = checkNotNull(deoptimizeCallback) {
-        "libxposed is not attached to this process."
-    }(member)
-
-    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkNotNull(hookCallback) {
-        "libxposed is not attached to this process."
-    }(target, priority, hooker)
+    override fun deoptimize(member: Member) = checkApi(api.deoptimizeCallback)(member)
+    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkApi(api.hookCallback)(target, priority, hooker)
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
-        val callback = loggerCallback
+        val callback = api.loggerCallback
 
         if (callback != null)
             callback(priority, tag, message, throwable)
@@ -86,4 +91,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
         LibXposedPreferences.open(context.takeUnless { hostEnvironment }, name)
 
     override fun sharedFiles(hostEnvironment: Boolean) = LibXposedSharedFiles.open(hostEnvironment)
+
+    private inline fun <reified T : Any> checkApi(value: T?) = checkNotNull(value) { NOT_ATTACHED_ERROR }
 }

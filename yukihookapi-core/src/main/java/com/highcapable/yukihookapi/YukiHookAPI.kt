@@ -171,22 +171,34 @@ object YukiHookAPI {
             val type get() = ExecutorType.from(name)
 
             /**
-             * Gets the current hook framework API level.
+             * Gets the current hook framework API version.
              * @return [Int] -1 when unavailable.
              */
-            val apiLevel get() = YukiHookBridge.apiLevel
+            val apiVersion get() = YukiHookBridge.apiVersion
 
             /**
-             * Gets the current hook framework version name.
+             * Gets the current hook framework version.
              * @return [String] `unknown` when unavailable or `unsupported` when unsupported.
              */
-            val versionName get() = YukiHookBridge.frameworkVersion
+            val version get() = YukiHookBridge.frameworkVersion
 
             /**
              * Gets the current hook framework version code.
              * @return [Int] -1 when unavailable or 0 when unsupported.
              */
             val versionCode get() = YukiHookBridge.frameworkVersionCode
+
+            // region Deprecated properties for backward compatibility
+
+            /** Gets the current hook framework API version. */
+            @Deprecated(message = "Use apiVersion instead.", replaceWith = ReplaceWith("apiVersion"))
+            val apiLevel get() = apiVersion
+
+            /** Gets the current hook framework version. */
+            @Deprecated(message = "Use version instead.", replaceWith = ReplaceWith("version"))
+            val versionName get() = version
+
+            // endregion
         }
     }
 
@@ -328,7 +340,7 @@ object YukiHookAPI {
         if (!Configs.isDebug || !isSayHelloOnceTime) return
 
         isSayHelloOnceTime = false
-        YLog.innerD("Welcome to YukiHookAPI $VERSION! Running on ${Status.Executor.name} API ${Status.Executor.apiLevel}", isImplicit = true)
+        YLog.innerD("Welcome to YukiHookAPI $VERSION! Running on ${Status.Executor.name} API ${Status.Executor.apiVersion}", isImplicit = true)
     }
 
     /** Logs an error when no hook API can be found. */

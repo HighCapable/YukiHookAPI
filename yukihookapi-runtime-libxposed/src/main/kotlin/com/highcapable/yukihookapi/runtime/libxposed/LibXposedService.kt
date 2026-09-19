@@ -46,10 +46,10 @@ internal object LibXposedService {
     private var initialized = false
 
     val isAvailable get() = runCatching { service?.apiVersion?.let { it >= XposedInterface.API_101 } ?: false }.getOrDefault(false)
+    val apiVersion get() = runCatching { service?.apiVersion }.getOrNull() ?: -1
     val frameworkName get() = runCatching { service?.frameworkName }.getOrNull() ?: "unknown"
-    val apiLevel get() = runCatching { service?.apiVersion }.getOrNull() ?: -1
     val frameworkVersion get() = runCatching { service?.frameworkVersion }.getOrNull() ?: "unknown"
-    val frameworkVersionCode get() = runCatching { service?.frameworkVersionCode?.coerceIn(0, Int.MAX_VALUE.toLong())?.toInt() }.getOrNull() ?: -1
+    val frameworkVersionCode get() = runCatching { service?.frameworkVersionCode }.getOrNull() ?: -1L
     val isRemoteFilesAvailable get() = useRemoteFiles(false) { true }
 
     @Synchronized
@@ -119,7 +119,7 @@ internal object LibXposedService {
             runCatching {
                 subscription.dispatch(available)
             }.onFailure {
-                Log.e("YukiHookAPI", "Service listener failed", it)
+                Log.e("YukiHookAPI-Runtime", "Service listener failed", it)
             }
         }
     }
@@ -169,7 +169,7 @@ internal object LibXposedService {
             while (pendingEvents.isNotEmpty() && !isUnregistered) runCatching {
                 notifyListener(pendingEvents.removeFirst())
             }.onFailure {
-                Log.e("YukiHookAPI", "Service listener failed", it)
+                Log.e("YukiHookAPI-Runtime", "Service listener failed", it)
             }
         }
 

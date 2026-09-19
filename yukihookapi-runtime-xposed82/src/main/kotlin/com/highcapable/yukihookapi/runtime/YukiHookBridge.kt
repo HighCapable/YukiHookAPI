@@ -56,10 +56,10 @@ internal object YukiHookBridge : FrameworkHookBridge {
     }
 
     override val isModuleActive get() = Xposed82ModuleStatus.isActive
+    override val apiVersion get() = if (attached) Xposed82HookApi.apiVersion else Xposed82ModuleStatus.apiVersion
     override val frameworkName get() = if (attached) Xposed82HookApi.frameworkName else Xposed82ModuleStatus.frameworkName
-    override val apiLevel get() = if (attached) Xposed82HookApi.apiLevel else Xposed82ModuleStatus.apiLevel
     override val frameworkVersion get() = if (attached) "unsupported" else Xposed82ModuleStatus.frameworkVersion
-    override val frameworkVersionCode get() = if (attached) 0 else Xposed82ModuleStatus.frameworkVersionCode
+    override val frameworkVersionCode get() = if (attached) 0L else Xposed82ModuleStatus.frameworkVersionCode
     override val executableInvoker get() = if (attached) Xposed82ExecutableInvoker else error("Xposed API is not attached to this process.")
 
     fun attach() {

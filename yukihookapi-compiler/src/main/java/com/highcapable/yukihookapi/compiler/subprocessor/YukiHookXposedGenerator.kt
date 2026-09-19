@@ -62,9 +62,9 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         const val XPOSED_CLASS_SHORT_NAME = "_YukiHookXposedInit"
 
         const val IS_ACTIVE_METHOD_NAME = "__--"
+        const val GET_EXECUTOR_API_VERSION_METHOD_NAME = "-__-"
         const val GET_EXECUTOR_NAME_METHOD_NAME = "_-_-"
-        const val GET_EXECUTOR_API_LEVEL_METHOD_NAME = "-__-"
-        const val GET_EXECUTOR_VERSION_NAME_METHOD_NAME = "-_-_"
+        const val GET_EXECUTOR_VERSION_METHOD_NAME = "-_-_"
         const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
 
         val ApiImplClass = ClassName(DeclaredSymbol.API_PACKAGE_NAME, DeclaredSymbol.API_IMPL_CLASS_NAME)
@@ -395,10 +395,10 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             addKdoc("%L Class\n", LegacyModuleStatusImplClass.simpleName)
             addAnnotation(KeepClass)
             addFunction(funSpec(IS_ACTIVE_METHOD_NAME, BOOLEAN, CodeBlock.of("false")))
+            addFunction(funSpec(GET_EXECUTOR_API_VERSION_METHOD_NAME, INT, CodeBlock.of("-1")))
             addFunction(funSpec(GET_EXECUTOR_NAME_METHOD_NAME, STRING, CodeBlock.of("%S", "unknown")))
-            addFunction(funSpec(GET_EXECUTOR_API_LEVEL_METHOD_NAME, INT, CodeBlock.of("-1")))
-            addFunction(funSpec(GET_EXECUTOR_VERSION_NAME_METHOD_NAME, STRING, CodeBlock.of("%S", "unknown")))
-            addFunction(funSpec(GET_EXECUTOR_VERSION_CODE_METHOD_NAME, INT, CodeBlock.of("-1")))
+            addFunction(funSpec(GET_EXECUTOR_VERSION_METHOD_NAME, STRING, CodeBlock.of("%S", "unknown")))
+            addFunction(funSpec(GET_EXECUTOR_VERSION_CODE_METHOD_NAME, LONG, CodeBlock.of("-1L")))
             addFunction(FunSpec.builder("phe").apply {
                 addModifiers(KModifier.PRIVATE)
                 addAnnotation(JvmStatic::class)

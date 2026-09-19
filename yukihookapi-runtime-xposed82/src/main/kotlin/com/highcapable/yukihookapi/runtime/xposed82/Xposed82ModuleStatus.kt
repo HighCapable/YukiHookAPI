@@ -37,9 +37,9 @@ internal object Xposed82ModuleStatus {
     private const val DEFAULT_PRIORITY = 50
 
     private const val IS_ACTIVE_METHOD_NAME = "__--"
+    private const val GET_EXECUTOR_API_VERSION_METHOD_NAME = "-__-"
     private const val GET_EXECUTOR_NAME_METHOD_NAME = "_-_-"
-    private const val GET_EXECUTOR_API_LEVEL_METHOD_NAME = "-__-"
-    private const val GET_EXECUTOR_VERSION_NAME_METHOD_NAME = "-_-_"
+    private const val GET_EXECUTOR_VERSION_METHOD_NAME = "-_-_"
     private const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
 
     private val className = runCatching { YukiHookAPI_Impl.legacyModuleStatusClassName }.getOrDefault("")
@@ -48,9 +48,9 @@ internal object Xposed82ModuleStatus {
     private val methods by lazy {
         val methodNames = setOf(
             IS_ACTIVE_METHOD_NAME,
+            GET_EXECUTOR_API_VERSION_METHOD_NAME,
             GET_EXECUTOR_NAME_METHOD_NAME,
-            GET_EXECUTOR_API_LEVEL_METHOD_NAME,
-            GET_EXECUTOR_VERSION_NAME_METHOD_NAME,
+            GET_EXECUTOR_VERSION_METHOD_NAME,
             GET_EXECUTOR_VERSION_CODE_METHOD_NAME
         )
         className.takeIf { it.isNotBlank() }
@@ -64,10 +64,10 @@ internal object Xposed82ModuleStatus {
     }
 
     val isActive get() = invoke<Boolean>(IS_ACTIVE_METHOD_NAME) ?: false
+    val apiVersion get() = invoke<Int>(GET_EXECUTOR_API_VERSION_METHOD_NAME)?.takeIf { it > 0 } ?: -1
     val frameworkName get() = invoke<String>(GET_EXECUTOR_NAME_METHOD_NAME)?.ifBlank { "unknown" } ?: "unknown"
-    val apiLevel get() = invoke<Int>(GET_EXECUTOR_API_LEVEL_METHOD_NAME)?.takeIf { it > 0 } ?: -1
-    val frameworkVersion get() = invoke<String>(GET_EXECUTOR_VERSION_NAME_METHOD_NAME)?.ifBlank { "unknown" } ?: "unknown"
-    val frameworkVersionCode get() = invoke<Int>(GET_EXECUTOR_VERSION_CODE_METHOD_NAME)?.takeIf { it > 0 } ?: -1
+    val frameworkVersion get() = invoke<String>(GET_EXECUTOR_VERSION_METHOD_NAME)?.ifBlank { "unknown" } ?: "unknown"
+    val frameworkVersionCode get() = invoke<Long>(GET_EXECUTOR_VERSION_CODE_METHOD_NAME)?.takeIf { it > 0 } ?: -1L
 
     fun install(loader: ClassLoader?) {
         if (loader == null || className.isBlank()) return
@@ -75,9 +75,9 @@ internal object Xposed82ModuleStatus {
         // Self-hook targets belong to the supplied app ClassLoader, independently of query methods.
         val target = className.toClassOrNull(loader) ?: return
         hook(target, IS_ACTIVE_METHOD_NAME) { true }
+        hook(target, GET_EXECUTOR_API_VERSION_METHOD_NAME) { YukiHookBridge.apiVersion }
         hook(target, GET_EXECUTOR_NAME_METHOD_NAME) { YukiHookBridge.frameworkName }
-        hook(target, GET_EXECUTOR_API_LEVEL_METHOD_NAME) { YukiHookBridge.apiLevel }
-        hook(target, GET_EXECUTOR_VERSION_NAME_METHOD_NAME) { YukiHookBridge.frameworkVersion }
+        hook(target, GET_EXECUTOR_VERSION_METHOD_NAME) { YukiHookBridge.frameworkVersion }
         hook(target, GET_EXECUTOR_VERSION_CODE_METHOD_NAME) { YukiHookBridge.frameworkVersionCode }
     }
 

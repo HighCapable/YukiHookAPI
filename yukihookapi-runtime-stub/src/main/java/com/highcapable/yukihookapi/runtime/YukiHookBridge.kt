@@ -44,10 +44,10 @@ object YukiHookBridge : FrameworkHookBridge {
     override val isHookAvailable: Boolean get() = error("Stub!")
     override val isCustomHookAvailable get(): Boolean = error("Stub!")
     override val isModuleActive: Boolean get() = error("Stub!")
+    override val apiVersion: Int get() = error("Stub!")
     override val frameworkName: String get() = error("Stub!")
-    override val apiLevel: Int get() = error("Stub!")
     override val frameworkVersion: String get() = error("Stub!")
-    override val frameworkVersionCode: Int get() = error("Stub!")
+    override val frameworkVersionCode: Long get() = error("Stub!")
     override val executableInvoker: ExecutableInvokerBridge get() = error("Stub!")
 
     override fun initializeModuleServices(): Unit = error("Stub!")

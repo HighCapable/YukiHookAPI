@@ -38,16 +38,20 @@ import java.lang.reflect.Member
 internal class LibXposedHookApi(private val api: XposedInterface) {
 
     fun attach() {
-        YukiHookBridge.hostFrameworkName = api.frameworkName
-        YukiHookBridge.hostApiLevel = api.apiVersion
-        YukiHookBridge.hostVersion = api.frameworkVersion
-        YukiHookBridge.hostVersionCode = api.frameworkVersionCode.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
-        YukiHookBridge.executableInvokerBridge = LibXposedExecutableInvoker(api)
-        YukiHookBridge.deoptimizeCallback = ::deoptimize
-        YukiHookBridge.hookCallback = ::hook
-        YukiHookBridge.loggerCallback = { priority, tag, message, throwable ->
-            api.log(priority, tag, message, throwable)
-        }
+        YukiHookBridge.attach(
+            YukiHookBridge.ApiSpec(
+                apiVersion = api.apiVersion,
+                frameworkName = api.frameworkName,
+                frameworkVersion = api.frameworkVersion,
+                frameworkVersionCode = api.frameworkVersionCode,
+                executableInvokerBridge = LibXposedExecutableInvoker(api),
+                deoptimizeCallback = ::deoptimize,
+                hookCallback = ::hook,
+                loggerCallback = { priority, tag, message, throwable ->
+                    api.log(priority, tag, message, throwable)
+                }
+            )
+        )
 
         LibXposedPreferences.attach(api)
         LibXposedSharedFiles.attach(api)
