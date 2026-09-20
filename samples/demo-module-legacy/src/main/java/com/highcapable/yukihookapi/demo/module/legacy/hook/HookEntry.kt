@@ -70,7 +70,7 @@ object HookEntry : YukiHookXposedModule {
                 // 虽然说对用户的设备写入大量日志是不正确的 - 但是没有日志你将无法调试
                 // 关于日志是否会影响设备的流畅度一直是一个伪命题
                 // 但是不设置这个选项可能会引起一些非议 - 建议不要关闭就是了
-                isEnable = true
+                enabled = true
                 // Whether to enable the logging function of debug log, not enabled by default
                 // When enabled, all available logs and exception stacks will be recorded in memory
                 // Please note, excessive logging may slow down the host or cause frequent GCs
@@ -80,7 +80,7 @@ object HookEntry : YukiHookXposedModule {
                 // 开启后将会在内存中记录全部可用的日志和异常堆栈
                 // 请注意 - 过量的日志可能会导致宿主运行缓慢或造成频繁 GC
                 // 开启后你可以调用 [YukiHookLogger.saveToFile] 实时保存日志到文件或使用 [YukiHookLogger.contents] 获取实时日志文件
-                isRecord = false
+                recording = false
                 // Customize the elements displayed by the debug log externally
                 // Only valid for logging and [XposedBridge.log]
                 // The arrangement of log elements will be displayed in the order you set in [item]
@@ -101,7 +101,7 @@ object HookEntry : YukiHookXposedModule {
             // 注意：请选择性启用此功能 - 这会导致持续输出日志造成的 I/O 性能问题
             // 若作为发布版本请务必关闭此功能防止对用户设备造成大量日志填充
             // 为方便测试模块是否激活 - Demo 默认启用此功能
-            isDebug = true
+            debug = true
             // Whether to enable the [YukiHookDataChannel] function of the current Xposed module interacting with the host
             // Please make sure the Xposed module's [Application] extends [ModuleApplication] to be valid
             // This feature is enabled by default, when disabled it will not load [YukiHookDataChannel] when the feature is initialized
@@ -110,7 +110,7 @@ object HookEntry : YukiHookXposedModule {
             // 请确保 Xposed 模块的 [Application] 继承于 [ModuleApplication] 才能有效
             // 此功能默认启用 - 关闭后将不会在功能初始化的时候装载 [YukiHookDataChannel]
             // 功能启用后 - 将会在宿主启动时自动 Hook [Application] 的生命周期方法进行注册
-            isEnableDataChannel = true
+            dataChannel = true
         }
     }
 
