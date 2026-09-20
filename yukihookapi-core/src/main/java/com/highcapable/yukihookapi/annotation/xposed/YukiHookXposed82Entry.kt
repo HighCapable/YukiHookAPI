@@ -50,7 +50,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * @param sourcePath the project-relative AndroidManifest source directory, defaults to `src/main`.
  * @param modulePackageName the module application ID, or an empty string to read `BuildConfig.APPLICATION_ID`.
  * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
- * @param usingXposedModuleStatus whether legacy self-hook status generation is enabled, defaults to true.
+ * @param generateModuleStatus whether legacy self-hook status generation is enabled, defaults to true.
  */
 @RequiresRuntime(YukiHookRuntime.XPOSED_82)
 @Target(AnnotationTarget.CLASS)
@@ -58,5 +58,5 @@ annotation class YukiHookXposed82Entry(
     val sourcePath: String = "src/main",
     val modulePackageName: String = "",
     val entryClassName: String = "",
-    val usingXposedModuleStatus: Boolean = true
+    val generateModuleStatus: Boolean = true
 )

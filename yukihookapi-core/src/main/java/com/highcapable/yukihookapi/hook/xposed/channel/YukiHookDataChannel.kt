@@ -157,7 +157,7 @@ class YukiHookDataChannel private constructor() {
 
     /** Checks the API loading state. */
     private fun checkApi() {
-        require(!YukiHookAPI.isLoadedFromBaseContext) {
+        require(!YukiHookAPI.isStandalone) {
             "YukiHookDataChannel not allowed in standalone hook API."
         }
         if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
@@ -199,7 +199,7 @@ class YukiHookDataChannel private constructor() {
      * @param packageName the package name. When empty, it is obtained from [Context.getPackageName] on [context].
      */
     internal fun register(context: Context?, packageName: String = context?.packageName ?: "") {
-        if (!YukiHookAPI.Configs.isEnableDataChannel || context == null) return
+        if (!YukiHookAPI.Configs.dataChannel || context == null) return
 
         receiverContext = context
         val filter = IntentFilter().apply {
@@ -292,7 +292,7 @@ class YukiHookDataChannel private constructor() {
         inline fun with(block: Namespace.() -> Unit) = apply(block)
 
         /**
-         * Maximum data size in bytes that [YukiHookDataChannel] may send.
+         * Maximum data size in bytes that [YukiHookDataChannel] may send before segmenting it.
          *
          * The default is 500 KB (500 * 1024). See the documentation for [receiverDataMaxByteSize].
          * The minimum is 100 KB (100 * 1024). Lower values are reset to 100 KB.
@@ -302,24 +302,24 @@ class YukiHookDataChannel private constructor() {
          * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
-        var dataMaxByteSize
+        var maxDataSizeBytes
             get() = receiverDataMaxByteSize
             set(value) {
                 receiverDataMaxByteSize = if (value < 100 * 1024) 100 * 1024 else value
             }
 
         /**
-         * Maximum data-size compression factor that [YukiHookDataChannel] may use for segmented data.
+         * Divisor used to calculate the size of each data segment.
          *
          * The default is 3. See the documentation for [receiverDataMaxByteCompressionFactor].
          * The minimum is 2. Lower values are reset to 2.
          * The value applies globally until the current process ends.
          *
-         * - Data larger than the maximum is divided automatically by this factor relative to [receiverDataMaxByteSize].
+         * - [receiverDataMaxByteSize] is divided by this value to determine the target size of each segment.
          * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
-        var dataMaxByteCompressionFactor
+        var segmentSizeDivisor
             get() = receiverDataMaxByteCompressionFactor
             set(value) {
                 receiverDataMaxByteCompressionFactor = if (value < 2) 2 else value
@@ -336,7 +336,7 @@ class YukiHookDataChannel private constructor() {
          * @return [Namespace]
          */
         @SendTooLargeChannelData
-        fun allowSendTooLargeData(): Namespace {
+        fun allowOversizedData(): Namespace {
             allowSendTooLargeData = true
             return this
         }
@@ -420,13 +420,13 @@ class YukiHookDataChannel private constructor() {
         }
 
         /**
-         * Gets whether the module and host versions match.
+         * Checks whether the module and host versions match.
          *
          * This method detects a mismatch caused when the Xposed module is updated but the host has not reloaded it.
          * @param priority the response priority, unset by default.
          * @param result the callback receiving whether the versions match.
          */
-        fun checkingVersionEquals(priority: ChannelPriority? = null, result: (Boolean) -> Unit) {
+        fun checkVersionMatch(priority: ChannelPriority? = null, result: (Boolean) -> Unit) {
             wait<String>(RESULT_MODULE_GENERATED_VERSION, priority) { result(it == moduleGeneratedVersion) }
             put(GET_MODULE_GENERATED_VERSION, packageName)
         }
@@ -436,7 +436,7 @@ class YukiHookDataChannel private constructor() {
          *
          * Because the module and host run in different processes, this bridge provides access to each process's debug log data.
          *
-         * - Both the module and host must enable [YLog.Configs.isRecord] to obtain debug log data.
+         * - Both the module and host must enable [YLog.Configs.recording] to obtain debug log data.
          * - Android limits transfer size. Large debug logs are sent in segments automatically, and larger data transfers more slowly.
          * @param priority the response priority, unset by default.
          * @param result the [List]<[YLogData]> callback.
@@ -445,6 +445,35 @@ class YukiHookDataChannel private constructor() {
             wait(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, priority) { result(it) }
             put(GET_YUKI_LOGGER_IN_MEMORY_DATA, packageName)
         }
+
+        // region Deprecated properties and functions for backward compatibility
+
+        /** Maximum data size in bytes that [YukiHookDataChannel] may send before segmenting it. */
+        @Deprecated(message = "Use maxDataSizeBytes instead.", replaceWith = ReplaceWith("maxDataSizeBytes"))
+        var dataMaxByteSize
+            get() = maxDataSizeBytes
+            set(value) {
+                maxDataSizeBytes = value
+            }
+
+        /** Divisor used to calculate the size of each data segment. */
+        @Deprecated(message = "Use segmentSizeDivisor instead.", replaceWith = ReplaceWith("segmentSizeDivisor"))
+        var dataMaxByteCompressionFactor
+            get() = segmentSizeDivisor
+            set(value) {
+                segmentSizeDivisor = value
+            }
+
+        /** Removes the outgoing data-size limit through [allowOversizedData]. */
+        @Deprecated(message = "Use allowOversizedData instead.", replaceWith = ReplaceWith("allowOversizedData()"))
+        @SendTooLargeChannelData
+        fun allowSendTooLargeData() = allowOversizedData()
+
+        /** Checks whether the module and host versions match. */
+        @Deprecated(message = "Use checkVersionMatch instead.", replaceWith = ReplaceWith("checkVersionMatch(priority, result)"))
+        fun checkingVersionEquals(priority: ChannelPriority? = null, result: (Boolean) -> Unit) = checkVersionMatch(priority, result)
+
+        // endregion
 
         /**
          * Converts arbitrary received data from an [Intent] into a [ChannelDataWrapper]<[T]> instance.
@@ -528,7 +557,7 @@ class YukiHookDataChannel private constructor() {
          * @param result the result-data callback.
          */
         private fun <T> parseReceivedData(wrapper: ChannelDataWrapper<T>?, result: (value: T) -> Unit) {
-            if (!YukiHookAPI.Configs.isEnableDataChannel) return
+            if (!YukiHookAPI.Configs.dataChannel) return
             if (wrapper == null) return
 
             if (wrapper.isSegmentsType) runCatching {
@@ -597,7 +626,7 @@ class YukiHookDataChannel private constructor() {
          * @param allowSendTooLargeData whether to allow sending data larger than the system limit.
          */
         private fun parseSendingData(wrapper: ChannelDataWrapper<*>, allowSendTooLargeData: Boolean) {
-            if (!YukiHookAPI.Configs.isEnableDataChannel) return
+            if (!YukiHookAPI.Configs.dataChannel) return
 
             // The current wrapper instance ID.
             val wrapperId = RandomString.generate()
@@ -606,17 +635,17 @@ class YukiHookDataChannel private constructor() {
             if (dataByteSize < 0 && !allowSendTooLargeData) return YLog.innerE(
                 msg = "YukiHookDataChannel cannot calculate the byte size of the data key of \"${wrapper.instance.key}\" to be sent, " +
                     "so this data cannot be sent.\n" +
-                    "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
+                    "If you want to lift this restriction, use the allowOversizedData function when calling, " +
                     "but this may cause the app crash"
             )
 
             /**
-             * Logs a warning when data is too large. This is effective only when [YukiHookAPI.Configs.isDebug] is enabled.
+             * Logs a warning when data is too large. This is effective only when [YukiHookAPI.Configs.debug] is enabled.
              * @param name the data type name.
              * @param size the total number of segments.
              */
             fun logForTooLargeData(name: String, size: Int) {
-                if (YukiHookAPI.Configs.isDebug) YLog.innerW(
+                if (YukiHookAPI.Configs.debug) YLog.innerW(
                     msg = "This data key of \"${wrapper.instance.key}\" type $name is too large (total ${dataByteSize / 1024f} KB, " +
                         "limit ${receiverDataMaxByteSize / 1024f} KB), will be segmented to $size piece to send"
                 )
@@ -631,7 +660,7 @@ class YukiHookDataChannel private constructor() {
                     "because it is too large (total ${dataByteSize / 1024f} KB, " +
                     "limit ${receiverDataMaxByteSize / 1024f} KB) and cannot be segmented.\n" +
                     (if (suggestionMessage.isNotBlank()) "$suggestionMessage\n" else "") +
-                    "If you want to lift this restriction, use the allowSendTooLargeData function when calling, " +
+                    "If you want to lift this restriction, use the allowOversizedData function when calling, " +
                     "but this may cause the app crash"
             )
 

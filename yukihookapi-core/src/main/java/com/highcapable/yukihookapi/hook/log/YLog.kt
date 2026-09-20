@@ -106,9 +106,9 @@ object YLog {
          *
          * [debug]、[info]、[warn]、[error]
          *
-         * Disabling [isEnable] also disables [YukiHookAPI.Configs.isDebug].
+         * Disabling [enabled] also disables [YukiHookAPI.Configs.debug].
          */
-        var isEnable = true
+        var enabled = true
             set(value) {
                 field = value
                 initKavaRefLoggerIfNot()
@@ -119,17 +119,37 @@ object YLog {
          *
          * Enabling this records all available logs and exception stack traces in memory.
          *
-         * [isEnable] must also be enabled.
+         * [enabled] must also be enabled.
          *
          * - Excessive logging may slow down the host or cause frequent garbage collection.
          *
          * Once enabled, call [saveToFile] to save logs to a file in real time or use [contents] to obtain the current log contents.
          */
-        var isRecord = false
+        var recording = false
             set(value) {
                 field = value
                 initKavaRefLoggerIfNot()
             }
+
+        // region Deprecated properties for backward compatibility
+
+        /** Whether debug log output is enabled. */
+        @Deprecated(message = "Use enabled instead.", replaceWith = ReplaceWith("enabled"))
+        var isEnable
+            get() = enabled
+            set(value) {
+                enabled = value
+            }
+
+        /** Whether debug log recording is enabled. */
+        @Deprecated(message = "Use recording instead.", replaceWith = ReplaceWith("recording"))
+        var isRecord
+            get() = recording
+            set(value) {
+                recording = value
+            }
+
+        // endregion
 
         /** The current ordered list of elements. */
         internal var elements = arrayOf(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
@@ -212,7 +232,7 @@ object YLog {
     /**
      * Saves the current logs to a file.
      *
-     * Performs no operation when [Configs.isRecord] is disabled or no logs have been recorded.
+     * Performs no operation when [Configs.recording] is disabled or no logs have been recorded.
      * Logs are appended to [fileName], which is created automatically when it does not exist.
      *
      * - File access depends on the permissions granted to the current host or module.
@@ -280,7 +300,7 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerD(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (!Configs.isEnable || !YukiHookAPI.Configs.isDebug) return initKavaRefLoggerIfNot()
+        if (!Configs.enabled || !YukiHookAPI.Configs.debug) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "D", msg = msg.toString(), throwable = e), isImplicit)
     }
 
@@ -291,7 +311,7 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerI(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (!Configs.isEnable) return initKavaRefLoggerIfNot()
+        if (!Configs.enabled) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "I", msg = msg.toString(), throwable = e), isImplicit)
     }
 
@@ -302,7 +322,7 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerW(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (!Configs.isEnable) return initKavaRefLoggerIfNot()
+        if (!Configs.enabled) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "W", msg = msg.toString(), throwable = e), isImplicit)
     }
 
@@ -313,7 +333,7 @@ object YLog {
      * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
      */
     internal fun innerE(msg: Any? = null, e: Throwable? = null, isImplicit: Boolean = false) {
-        if (!Configs.isEnable) return initKavaRefLoggerIfNot()
+        if (!Configs.enabled) return initKavaRefLoggerIfNot()
         log(EnvType.BOTH, YLogData(priority = "E", msg = msg.toString(), throwable = e), isImplicit)
     }
 
@@ -366,7 +386,7 @@ object YLog {
                 if (XposedModuleRuntime.isHostEnvironment) logByHooker()
             }
         }
-        if (!isImplicit && Configs.isRecord && isNotBlankLog) inMemoryData.add(data)
+        if (!isImplicit && Configs.recording && isNotBlankLog) inMemoryData.add(data)
     }
 
     /** Defines the [KavaRef] logger. */
@@ -406,8 +426,8 @@ object YLog {
     /** Updates the [KavaRef] logger level. */
     private fun updateKavaRefLogLevel() {
         KavaRef.logLevel = when {
-            !Configs.isEnable -> KavaRefRuntime.LogLevel.OFF
-            YukiHookAPI.Configs.isDebug -> KavaRefRuntime.LogLevel.DEBUG
+            !Configs.enabled -> KavaRefRuntime.LogLevel.OFF
+            YukiHookAPI.Configs.debug -> KavaRefRuntime.LogLevel.DEBUG
             else -> KavaRefRuntime.LogLevel.INFO
         }
     }

@@ -28,7 +28,7 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
  * @param minApiVersion the minimum framework API version.
  * @param targetApiVersion the targeted framework behavior.
  * @param scope the explicitly declared scope.
- * @param isStaticScope whether the scope is fixed.
+ * @param staticScope whether the scope is fixed.
  * @param nativeLibraries the native entry library filenames.
  */
 data class LibXposedGenerateSpec(
@@ -37,11 +37,11 @@ data class LibXposedGenerateSpec(
     override var customPackageName: String = "",
     override var entryClassName: String = "",
     override var initClassName: String = "",
-    override var isEntryClassKindOfObject: Boolean = false,
+    override var isObjectEntry: Boolean = false,
     var minApiVersion: Int = RUNTIME_MIN_API_VERSION,
     var targetApiVersion: Int,
     var scope: List<String> = emptyList(),
-    var isStaticScope: Boolean = false,
+    var staticScope: Boolean = false,
     var nativeLibraries: List<String> = emptyList()
 ) : GenerateSpec {
 

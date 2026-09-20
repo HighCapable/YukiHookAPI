@@ -112,7 +112,7 @@ internal object AppParasitism {
     /**
      * Global lifecycle [Application] of the current host.
      *
-     * This is effective only when [YukiHookAPI.Configs.isEnableDataChannel] is enabled or [lifecycles] is not empty.
+     * This is effective only when [YukiHookAPI.Configs.dataChannel] is enabled or [lifecycles] is not empty.
      */
     var hostApplication: Application? = null
 
@@ -244,7 +244,7 @@ internal object AppParasitism {
      */
     @Synchronized
     fun registerAppLifecycle(packageName: String, lifecycle: AppLifecycleBridge, entryType: HookEntryType) {
-        if (YukiHookAPI.isLoadedFromBaseContext) return
+        if (YukiHookAPI.isStandalone) return
 
         prepareLifecyclePackage(packageName)
         lifecycles += lifecycle
@@ -263,7 +263,7 @@ internal object AppParasitism {
     fun prepareHostApplication(packageName: String, entryType: HookEntryType) {
         prepareLifecyclePackage(packageName)
 
-        if (YukiHookAPI.Configs.isEnableDataChannel) installApplicationOnCreateHook()
+        if (YukiHookAPI.Configs.dataChannel) installApplicationOnCreateHook()
         if (entryType == HookEntryType.SYSTEM_SERVER) scheduleSystemServerInitialization()
     }
 
@@ -392,7 +392,7 @@ internal object AppParasitism {
             }
         }
 
-        if (YukiHookAPI.Configs.isEnableDataChannel && !isDataChannelRegistered) runCatching {
+        if (YukiHookAPI.Configs.dataChannel && !isDataChannelRegistered) runCatching {
             YukiHookDataChannel.get().register(application, lifecyclePackageName)
             isDataChannelRegistered = true
         }.onFailure { YLog.innerE("Data channel initialization failed", it) }
@@ -434,7 +434,7 @@ internal object AppParasitism {
         var failureToHost: Throwable? = null
         forEach { lifecycle ->
             runCatching { lifecycle.callback() }.onFailure { failure ->
-                if (lifecycle.onFailureThrowToHost) {
+                if (lifecycle.throwToHostOnFailure) {
                     if (failureToHost == null) failureToHost = failure
                 } else YLog.innerE("An exception occurred during AppLifecycle event", e = failure)
             }

@@ -55,7 +55,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * @param minApiVersion minimum framework API version, at least 101.
  * @param targetApiVersion targeted API behavior, independently of the compile-only API dependency.
  * @param scope scope packages. An empty array declares no recommended scope. Use `system` explicitly for system_server.
- * @param isStaticScope whether scope selection is restricted to the declared list.
+ * @param staticScope whether scope selection is restricted to the declared list.
  * @param nativeLibraries native entry library filenames, such as `libexample.so`, one per generated line.
  * Empty disables generation of `native_init.list`. Libraries must be packaged and loaded by the module itself.
  */
@@ -68,6 +68,6 @@ annotation class YukiHookLibXposedEntry(
     val minApiVersion: Int = 101,
     val targetApiVersion: Int,
     val scope: Array<String> = [],
-    val isStaticScope: Boolean = false,
+    val staticScope: Boolean = false,
     val nativeLibraries: Array<String> = []
 )

@@ -76,7 +76,7 @@ object YukiHookModuleCaller {
         XposedModuleRuntime.onStartLoadModule(packageName, appFilePath)
         callOnInit(entry)
 
-        check(!XposedModuleRuntime.isXposedCallbackSetUp) {
+        check(!XposedModuleRuntime.hasEarlyHookCallback) {
             "Do not load hookers in `onInit`."
         }
         entry.onHook()

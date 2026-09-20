@@ -118,9 +118,9 @@ class RuntimeIsolationTest {
 
     @Test
     fun deprecatedStandaloneEntriesDoNothingInModernRuntime() {
-        val loadedFromBaseContext = YukiHookAPI.asResolver().firstField { name = "isLoadedFromBaseContext" }
-        val previous = checkNotNull(loadedFromBaseContext.get<Boolean>())
-        loadedFromBaseContext.set(false)
+        val standalone = YukiHookAPI.asResolver().firstField { name = "isStandalone" }
+        val previous = checkNotNull(standalone.get<Boolean>())
+        standalone.set(false)
         try {
             var lambdaCalled = false
             var hookerCalled = false
@@ -132,9 +132,9 @@ class RuntimeIsolationTest {
             Assert.assertFalse(YukiHookBridge.isStandaloneAvailable)
             Assert.assertFalse(lambdaCalled)
             Assert.assertFalse(hookerCalled)
-            Assert.assertFalse(loadedFromBaseContext.get<Boolean>() ?: true)
+            Assert.assertFalse(standalone.get<Boolean>() ?: true)
         } finally {
-            loadedFromBaseContext.set(previous)
+            standalone.set(previous)
         }
     }
 

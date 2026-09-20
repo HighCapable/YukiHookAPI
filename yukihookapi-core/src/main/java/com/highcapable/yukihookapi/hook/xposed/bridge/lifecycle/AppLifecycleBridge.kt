@@ -33,7 +33,7 @@ import android.content.res.Configuration
 internal interface AppLifecycleBridge {
 
     /** Whether callback failures should be thrown to the current host. */
-    val onFailureThrowToHost: Boolean
+    val throwToHostOnFailure: Boolean
 
     /** Broadcast listeners registered from action names. */
     val receiverActions: List<Pair<Array<out String>, (Context, Intent) -> Unit>>

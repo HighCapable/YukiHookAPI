@@ -25,7 +25,7 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
 
 /**
  * Spec used to generate legacy Xposed entry sources and assets.
- * @param usingXposedModuleStatus whether legacy self-hook status generation is enabled.
+ * @param generateModuleStatus whether legacy self-hook status generation is enabled.
  */
 data class Xposed82GenerateSpec(
     override var entryPackageName: String = "",
@@ -33,8 +33,8 @@ data class Xposed82GenerateSpec(
     override var customPackageName: String = "",
     override var entryClassName: String = "",
     override var initClassName: String = "",
-    override var isEntryClassKindOfObject: Boolean = false,
-    var usingXposedModuleStatus: Boolean = true
+    override var isObjectEntry: Boolean = false,
+    var generateModuleStatus: Boolean = true
 ) : GenerateSpec {
 
     companion object {

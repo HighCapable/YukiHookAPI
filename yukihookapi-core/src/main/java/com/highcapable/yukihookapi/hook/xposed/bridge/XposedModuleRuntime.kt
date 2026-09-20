@@ -74,10 +74,10 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         ?.syncConfiguration(AppParasitism.currentApplication?.resources ?: Resources.getSystem())
 
     /**
-     * Gets whether the module has loaded its Xposed callback.
+     * Gets whether a hook callback was registered before module loading completed.
      * @return [Boolean]
      */
-    val isXposedCallbackSetUp get() = !isModuleLoadFinished && packageParamCallback != null
+    val hasEarlyHookCallback get() = !isModuleLoadFinished && packageParamCallback != null
 
     /**
      * Gets the identifier of the hook process currently running in the host.

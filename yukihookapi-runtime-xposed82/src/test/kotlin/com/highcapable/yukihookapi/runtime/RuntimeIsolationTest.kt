@@ -198,11 +198,11 @@ class RuntimeIsolationTest {
     @Test
     fun deprecatedStandaloneEntriesRunAfterLegacyAttachment() {
         val attached = YukiHookBridge.asResolver().firstField { name = "attached" }
-        val loadedFromBaseContext = YukiHookAPI.asResolver().firstField { name = "isLoadedFromBaseContext" }
+        val standalone = YukiHookAPI.asResolver().firstField { name = "isStandalone" }
         val previousAttached = checkNotNull(attached.get<Boolean>())
-        val previousLoadedFromBaseContext = checkNotNull(loadedFromBaseContext.get<Boolean>())
+        val previousStandalone = checkNotNull(standalone.get<Boolean>())
         attached.set(false)
-        loadedFromBaseContext.set(false)
+        standalone.set(false)
         try {
             var lambdaCalled = false
             var hookerCalled = false
@@ -216,7 +216,7 @@ class RuntimeIsolationTest {
             Assert.assertTrue(hookerCalled)
         } finally {
             attached.set(previousAttached)
-            loadedFromBaseContext.set(previousLoadedFromBaseContext)
+            standalone.set(previousStandalone)
         }
     }
 

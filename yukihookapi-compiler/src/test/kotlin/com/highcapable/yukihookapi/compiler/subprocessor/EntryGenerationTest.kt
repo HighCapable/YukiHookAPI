@@ -51,7 +51,7 @@ class EntryGenerationTest {
         modulePackageName = "example.module"
         entryClassName = "HookEntry"
         initClassName = "HookEntry_YukiHookXposedInit"
-        isEntryClassKindOfObject = true
+        isObjectEntry = true
     }
 
     @Test
@@ -106,7 +106,7 @@ class EntryGenerationTest {
     fun objectAndClassEntriesUseTheSameConstructionInBothBridges() {
         listOf(data(Xposed82GenerateSpec()), data(LibXposedGenerateSpec(targetApiVersion = 102))).forEach { data ->
             listOf(false, true).forEach { singleton ->
-                data.isEntryClassKindOfObject = singleton
+                data.isObjectEntry = singleton
                 val entry = if (singleton) "HookEntry" else "HookEntry()"
                 val applicationSource = data.source("ModuleApplication_Impl")
                 Assert.assertTrue(data.source(data.initClassName).contains("= $entry\n"))
@@ -125,12 +125,12 @@ class EntryGenerationTest {
             "HookEntry_YukiHookXposedInit"
         )
         listOf(
-            data(Xposed82GenerateSpec(usingXposedModuleStatus = false)),
-            data(Xposed82GenerateSpec(usingXposedModuleStatus = true)),
+            data(Xposed82GenerateSpec(generateModuleStatus = false)),
+            data(Xposed82GenerateSpec(generateModuleStatus = true)),
             data(LibXposedGenerateSpec(targetApiVersion = 102))
         ).forEach { data ->
             val sources = data.createSources()
-            val hasStatusHooks = data is Xposed82GenerateSpec && data.usingXposedModuleStatus
+            val hasStatusHooks = data is Xposed82GenerateSpec && data.generateModuleStatus
             val expected = if (hasStatusHooks) commonFiles + "YukiHookLegacyModuleStatus_Impl" else commonFiles
             Assert.assertEquals(expected.sorted(), sources.map { it.name }.sorted())
             val statusClass = if (hasStatusHooks)

@@ -44,6 +44,7 @@ import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import kotlin.jvm.JvmName
 
 /**
  * [YukiHookAPI] entry point.
@@ -56,7 +57,7 @@ object YukiHookAPI {
     private var isSayHelloOnceTime = true
 
     /** Whether loading originated from a standalone hook API. */
-    internal var isLoadedFromBaseContext = false
+    internal var isStandalone = false
 
     /** The tag name. */
     const val TAG = YukiHookAPIProperties.PROJECT_NAME
@@ -119,7 +120,7 @@ object YukiHookAPI {
          * - Returns true when [isHostEnvironment] is true, independently of module services.
          *
          * - With [YukiHookRuntime.XPOSED_82], module detection uses self-hook status. It requires
-         *   [YukiHookXposed82Entry.usingXposedModuleStatus] and framework injection into the module's own process.
+         *   [YukiHookXposed82Entry.generateModuleStatus] and framework injection into the module's own process.
          * - With [YukiHookRuntime.LIBXPOSED], module detection requires a single compatible framework service connection.
          *   [ModuleApplication] initializes it automatically. [observeFrameworkService] can also initialize it and observe changes.
          *   Binding is asynchronous: false before connection or after disconnection does not necessarily mean the module is disabled.
@@ -151,7 +152,7 @@ object YukiHookAPI {
         /**
          * Information about the hook framework used by the current [YukiHookAPI].
          *
-         * - In a legacy module, [YukiHookXposed82Entry.usingXposedModuleStatus] must be enabled.
+         * - In a legacy module, [YukiHookXposed82Entry.generateModuleStatus] must be enabled.
          * - In a modern module, these values follow framework-service availability.
          */
         object Executor {
@@ -218,9 +219,10 @@ object YukiHookAPI {
          *
          * Once enabled, the log manager prints detailed Hook logs to the console.
          *
-         * Disabling [YLog.Configs.isEnable] also disables [isDebug].
+         * Disabling [YLog.Configs.enabled] also disables [debug].
          */
-        var isDebug = false
+        @set:JvmName("setDebugEnabled")
+        var debug = false
 
         /**
          * Whether hook support for [SharedPreferences] is enabled.
@@ -243,9 +245,25 @@ object YukiHookAPI {
          *
          * - This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
          */
-        var isEnableDataChannel = true
+        var dataChannel = true
 
         // region Deprecated properties for backward compatibility
+
+        /** Whether debug mode is enabled. */
+        @Deprecated(message = "Use debug instead.", replaceWith = ReplaceWith("debug"))
+        var isDebug
+            get() = debug
+            set(value) {
+                debug = value
+            }
+
+        /** Whether [YukiHookDataChannel] between the current Xposed module and host is enabled. */
+        @Deprecated(message = "Use dataChannel instead.", replaceWith = ReplaceWith("dataChannel"))
+        var isEnableDataChannel
+            get() = dataChannel
+            set(value) {
+                dataChannel = value
+            }
 
         /**
          * Whether caching the current Xposed module's [Resources] is enabled.
@@ -269,7 +287,7 @@ object YukiHookAPI {
      * @param block the param block.
      */
     fun encase(block: PackageParam.() -> Unit) {
-        isLoadedFromBaseContext = false
+        isStandalone = false
 
         if (XposedModuleRuntime.isHostEnvironment)
             XposedModuleRuntime.packageParamCallback = block
@@ -282,7 +300,7 @@ object YukiHookAPI {
      * @throws IllegalStateException if [hookers] is empty.
      */
     fun encase(vararg hookers: YukiBaseHooker) {
-        isLoadedFromBaseContext = false
+        isStandalone = false
 
         if (XposedModuleRuntime.isHostEnvironment)
             XposedModuleRuntime.packageParamCallback = {
@@ -303,7 +321,7 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, block: PackageParam.() -> Unit) {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
 
-        isLoadedFromBaseContext = true
+        isStandalone = true
         when {
             YukiHookBridge.isStandaloneAvailable && baseContext != null -> block(baseContext.createPackageParam().apply { sayHello() })
             else -> logNotFoundHookApiError()
@@ -321,7 +339,7 @@ object YukiHookAPI {
     fun encase(baseContext: Context?, vararg hooker: YukiBaseHooker) {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
 
-        isLoadedFromBaseContext = true
+        isStandalone = true
         if (YukiHookBridge.isStandaloneAvailable) {
             if (baseContext != null)
                 if (hooker.isNotEmpty()) {
@@ -332,9 +350,9 @@ object YukiHookAPI {
         } else logNotFoundHookApiError()
     }
 
-    /** Shows a welcome message when [Configs.isDebug] is enabled. */
+    /** Shows a welcome message when [Configs.debug] is enabled. */
     internal fun sayHello() {
-        if (!Configs.isDebug || !isSayHelloOnceTime) return
+        if (!Configs.debug || !isSayHelloOnceTime) return
 
         isSayHelloOnceTime = false
         YLog.innerD("Welcome to YukiHookAPI $VERSION! Running on ${Status.Executor.name} API ${Status.Executor.apiVersion}", isImplicit = true)

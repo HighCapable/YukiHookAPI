@@ -59,7 +59,7 @@ class MemberHookerTest {
     }.self
     private val hookers = mutableListOf<HookerBridge>()
     private val removed = mutableListOf<Member>()
-    private val previousEnabled = YLog.Configs.isEnable
+    private val previousEnabled = YLog.Configs.enabled
     private val registerHook = { target: HookPoint, _: Int, hooker: HookerBridge ->
         val member = (target as HookPoint.Executable).value
         hookers += hooker
@@ -70,13 +70,13 @@ class MemberHookerTest {
 
     @Before
     fun installRuntime() {
-        YLog.Configs.isEnable = false
+        YLog.Configs.enabled = false
         YukiHookBridge.attach(YukiHookBridge.ApiSpec(hookCallback = registerHook))
     }
 
     @After
     fun restoreRuntime() {
-        YLog.Configs.isEnable = previousEnabled
+        YLog.Configs.enabled = previousEnabled
     }
 
     @Test
@@ -124,7 +124,7 @@ class MemberHookerTest {
             method.intercept {
                 proceed()
                 throw failure
-            }.onConductFailure { invocation, throwable ->
+            }.onCallbackFailure { invocation, throwable ->
                 observed = invocation
                 Assert.assertSame(failure, throwable)
             }.onInvocationFailure {
@@ -140,7 +140,7 @@ class MemberHookerTest {
         Assert.assertSame(method, checkNotNull(observed).member)
         Assert.assertSame(failure, observedFailure)
 
-        registration.ignoredInvocationFailure()
+        registration.ignoreInvocationFailure()
         observed = null
         observedFailure = null
         Assert.assertSame(failure, Assert.assertThrows(IllegalStateException::class.java) {
@@ -192,7 +192,7 @@ class MemberHookerTest {
                     result = "changed"
                     removeSelf()
                 }
-            }.onConductFailure { invocation, throwable ->
+            }.onCallbackFailure { invocation, throwable ->
                 observed = invocation
                 throw throwable
             }.apply {

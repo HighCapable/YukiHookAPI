@@ -62,7 +62,7 @@ class YukiHookSharedFiles private constructor() {
 
     /** Checks the API loading state and access mode. */
     private fun checkApi(requireWritable: Boolean = false) {
-        require(!YukiHookAPI.isLoadedFromBaseContext) {
+        require(!YukiHookAPI.isStandalone) {
             "YukiHookSharedFiles not allowed in standalone hook API."
         }
         if (requireWritable) check(!isHostEnvironment) {

@@ -50,7 +50,7 @@ internal object LibXposedService {
     val frameworkName get() = runCatching { service?.frameworkName }.getOrNull() ?: "unknown"
     val frameworkVersion get() = runCatching { service?.frameworkVersion }.getOrNull() ?: "unknown"
     val frameworkVersionCode get() = runCatching { service?.frameworkVersionCode }.getOrNull() ?: -1L
-    val isRemoteFilesAvailable get() = useRemoteFiles(false) { true }
+    val isRemoteFileAccessAvailable get() = useRemoteFiles(false) { true }
 
     @Synchronized
     fun initialize() {

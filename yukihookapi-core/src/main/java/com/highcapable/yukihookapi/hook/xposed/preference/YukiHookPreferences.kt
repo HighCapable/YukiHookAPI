@@ -76,7 +76,7 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
 
     /** Checks the API loading state. */
     private fun checkApi() {
-        require(!YukiHookAPI.isLoadedFromBaseContext) {
+        require(!YukiHookAPI.isStandalone) {
             "YukiHookPreferences not allowed in standalone hook API."
         }
         if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {

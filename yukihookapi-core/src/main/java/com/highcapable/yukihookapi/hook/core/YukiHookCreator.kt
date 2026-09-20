@@ -88,7 +88,7 @@ class YukiHookCreator private constructor() {
         private var isRegistering = false
         private var isRemovalPending = false
 
-        private var onConductFailureCallback: ((I, Throwable) -> Unit)? = null
+        private var onCallbackFailureCallback: ((I, Throwable) -> Unit)? = null
         private var onInvocationFailureCallback: ((Throwable) -> Unit)? = null
 
         private val results = mutableSetOf<YukiHookResult>()
@@ -171,14 +171,14 @@ class YukiHookCreator private constructor() {
         internal abstract fun createHooker(target: HookPoint): HookerBridge
 
         /**
-         * Notifies invocation failure listeners without choosing a recovery policy.
+         * Notifies hooker callback failure listeners without choosing a recovery policy.
          * @param invocation the failed invocation.
-         * @param throwable the invocation failure.
+         * @param throwable the callback failure.
          */
-        protected fun notifyConductFailure(invocation: I, throwable: Throwable) {
-            onConductFailureCallback?.invoke(invocation, throwable)
+        protected fun notifyCallbackFailure(invocation: I, throwable: Throwable) {
+            onCallbackFailureCallback?.invoke(invocation, throwable)
             onInvocationFailureCallback?.invoke(throwable)
-            if (onConductFailureCallback == null && onInvocationFailureCallback == null) logError(throwable, invocation.member)
+            if (onCallbackFailureCallback == null && onInvocationFailureCallback == null) logError(throwable, invocation.member)
         }
 
         private fun logError(throwable: Throwable, target: Any) = YLog.innerE("Try to hook $target got an exception", throwable)
@@ -193,27 +193,27 @@ class YukiHookCreator private constructor() {
         inner class Result internal constructor() {
 
             /**
-             * Listens for invocation failures.
+             * Listens for hooker callback failures with the invocation context.
              *
              * This listener does not change the hooker's exception policy. Chain failures still propagate.
              * @param callback the listener receiving the concrete invocation and its failure.
              * @return [Result]
              */
-            fun onConductFailure(callback: (I, Throwable) -> Unit): Result {
-                onConductFailureCallback = callback
+            fun onCallbackFailure(callback: (I, Throwable) -> Unit): Result {
+                onCallbackFailureCallback = callback
                 return this
             }
 
             /**
-             * Suppresses default invocation failure logging without changing exception propagation.
+             * Suppresses default callback failure logging without changing exception propagation.
              * @return [Result]
              */
-            fun ignoredConductFailure() = onConductFailure { _, _ -> }
+            fun ignoreCallbackFailure() = onCallbackFailure { _, _ -> }
 
             /**
              * Listens for invocation failures without receiving the invocation context.
              *
-             * This listener is independent of [onConductFailure] and does not observe registration failures.
+             * This listener is independent of [onCallbackFailure] and does not observe registration failures.
              * It does not change the hooker's exception policy. Chain failures still propagate.
              * @param callback the listener receiving the invocation failure.
              * @return [Result]
@@ -226,10 +226,10 @@ class YukiHookCreator private constructor() {
             /**
              * Suppresses default invocation failure logging without changing exception propagation.
              *
-             * This does not replace the listener configured through [onConductFailure].
+             * This does not replace the listener configured through [onCallbackFailure].
              * @return [Result]
              */
-            fun ignoredInvocationFailure() = onInvocationFailure {}
+            fun ignoreInvocationFailure() = onInvocationFailure {}
 
             /**
              * Removes every registration belonging to this hooker.
@@ -258,6 +258,18 @@ class YukiHookCreator private constructor() {
             // region Deprecated functions for backward compatibility
 
             /**
+             * Listens for hooker callback failures through [onCallbackFailure].
+             * @param callback the listener receiving the concrete invocation and its failure.
+             * @return [Result]
+             */
+            @Deprecated(message = "Use onCallbackFailure instead.", replaceWith = ReplaceWith("onCallbackFailure(callback)"))
+            fun onConductFailure(callback: (I, Throwable) -> Unit) = onCallbackFailure(callback)
+
+            /** Suppresses default callback failure logging through [ignoreCallbackFailure]. */
+            @Deprecated(message = "Use ignoreCallbackFailure instead.", replaceWith = ReplaceWith("ignoreCallbackFailure()"))
+            fun ignoredConductFailure() = ignoreCallbackFailure()
+
+            /**
              * Listens for invocation failures through [onInvocationFailure].
              * @param callback the listener receiving the invocation failure.
              * @return [Result]
@@ -266,11 +278,11 @@ class YukiHookCreator private constructor() {
             fun onAllFailure(callback: (Throwable) -> Unit) = onInvocationFailure(callback)
 
             /**
-             * Suppresses default invocation failure logging through [ignoredInvocationFailure].
+             * Suppresses default invocation failure logging through [ignoreInvocationFailure].
              * @return [Result]
              */
-            @Deprecated(message = "Use ignoredInvocationFailure instead.", replaceWith = ReplaceWith("ignoredInvocationFailure()"))
-            fun ignoredAllFailure() = ignoredInvocationFailure()
+            @Deprecated(message = "Use ignoreInvocationFailure instead.", replaceWith = ReplaceWith("ignoreInvocationFailure()"))
+            fun ignoredAllFailure() = ignoreInvocationFailure()
 
             /**
              * Configures this result through [apply].
@@ -345,7 +357,7 @@ class YukiHookCreator private constructor() {
                     YLog.innerD("Executing hooker [intercept] (${invocationCount.incrementAndGet()}) for $target")
                     invocation(invocation)
                 }.getOrElse { throwable ->
-                    notifyConductFailure(invocation, throwable)
+                    notifyCallbackFailure(invocation, throwable)
 
                     // The remaining chain may already have executed, never retry it as failure recovery.
                     throw throwable
@@ -368,7 +380,7 @@ class YukiHookCreator private constructor() {
         private var afterHookCallback: (HookParam.() -> Unit)? = null
         private var interceptHookCallback: (HookParam.() -> Any?)? = null
 
-        private var onFailureThrowToHost = false
+        private var throwToHostOnFailure = false
         private var isInterceptHookMode = false
 
         private val beforeDataExtra = Bundle()
@@ -489,11 +501,11 @@ class YukiHookCreator private constructor() {
 
                         interceptedValue
                     }.getOrElse {
-                        notifyConductFailure(invocation, it)
+                        notifyCallbackFailure(invocation, it)
 
                         // A failed interception invokes the original unhooked `Member` to keep the host running normally.
                         if (isInterception) invocation.callOriginal() else {
-                            if (onFailureThrowToHost) param.throwable = it
+                            if (throwToHostOnFailure) param.throwable = it
                             null
                         }
                     }
@@ -511,8 +523,8 @@ class YukiHookCreator private constructor() {
                                 callback(invocation)
                             }
                         }.onFailure {
-                            notifyConductFailure(invocation, it)
-                            if (onFailureThrowToHost) param.throwable = it
+                            notifyCallbackFailure(invocation, it)
+                            if (throwToHostOnFailure) param.throwable = it
                         }
                     }
                 }
@@ -547,13 +559,13 @@ class YukiHookCreator private constructor() {
         inner class HookCallback internal constructor() {
 
             /** Throws an exception to the current host when one occurs in the callback body. */
-            fun onFailureThrowToHost() {
-                onFailureThrowToHost = true
+            fun throwToHostOnFailure() {
+                throwToHostOnFailure = true
             }
 
             /** Throws an exception to the current host when one occurs in the callback body. */
-            @Deprecated(message = "Use onFailureThrowToHost instead.", replaceWith = ReplaceWith("onFailureThrowToHost()"))
-            fun onFailureThrowToApp() = onFailureThrowToHost()
+            @Deprecated(message = "Use throwToHostOnFailure instead.", replaceWith = ReplaceWith("throwToHostOnFailure()"))
+            fun onFailureThrowToApp() = throwToHostOnFailure()
         }
     }
 

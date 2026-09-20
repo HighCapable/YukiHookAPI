@@ -35,7 +35,7 @@ internal object LibXposedSharedFiles {
 
     private object Module : SharedFilesBridge {
 
-        override val isAvailable get() = LibXposedService.isRemoteFilesAvailable
+        override val isAvailable get() = LibXposedService.isRemoteFileAccessAvailable
         override val isWritable get() = isAvailable
 
         override fun list() = LibXposedService.listRemoteFiles()

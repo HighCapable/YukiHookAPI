@@ -42,5 +42,5 @@ sealed interface GenerateSpec {
     var initClassName: String
 
     /** Whether the entry class is an `object` singleton. */
-    var isEntryClassKindOfObject: Boolean
+    var isObjectEntry: Boolean
 }
