@@ -91,6 +91,9 @@ internal object YukiHookBridge : FrameworkHookBridge {
         }
     }
 
+    override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge =
+        throw UnsupportedOperationException("Atomic hook replacement is unavailable in Xposed API 82.")
+
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
         if (attached)
             Xposed82HookApi.log(priority, tag, message, throwable)

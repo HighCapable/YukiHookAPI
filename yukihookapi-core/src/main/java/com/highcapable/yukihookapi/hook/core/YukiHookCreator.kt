@@ -163,12 +163,41 @@ class YukiHookCreator private constructor() {
             YLog.innerD("Removed hooker for ${registration.target}")
         }
 
+        /** Replaces each currently registered point with a new callback generation. */
+        internal fun replaceRegistrations() {
+            synchronized(registrationLock) { results.toList() }.forEach { registration ->
+                runCatching {
+                    replaceRegistration(registration)
+                }.getOrElse { throwable ->
+                    if (throwable is UnsupportedOperationException) throw throwable
+                    logError(throwable, registration.target)
+                }
+            }
+        }
+
+        private fun replaceRegistration(registration: YukiHookResult) {
+            synchronized(registrationLock) {
+                if (!results.contains(registration)) return
+
+                val replacement = YukiHookHelper.replace(registration, createHooker(registration.target))
+                results.remove(registration)
+                results.add(replacement)
+            }
+        }
+
         /**
          * Creates the runtime hooker for one point.
          * @param target the point being registered.
          * @return [HookerBridge]
          */
         internal abstract fun createHooker(target: HookPoint): HookerBridge
+
+        /**
+         * Casts this hooker to the required type.
+         * @return [T]
+         * @throws IllegalStateException if this hooker is not of the required type.
+         */
+        internal inline fun <reified T : MemberHooker<*>> asType() = this as? T ?: error("Current hooker is not a type of ${classOf<T>().name}.")
 
         /**
          * Notifies hooker callback failure listeners without choosing a recovery policy.
@@ -191,6 +220,9 @@ class YukiHookCreator private constructor() {
          * Listeners observe subsequent invocation failures only.
          */
         inner class Result internal constructor() {
+
+            /** The [MemberHooker] that owns this result. */
+            internal val owner get() = this@MemberHooker
 
             /**
              * Listens for hooker callback failures with the invocation context.
@@ -342,20 +374,32 @@ class YukiHookCreator private constructor() {
      */
     class ChainMemberHooker internal constructor(
         priority: YukiHookPriority,
-        private val invocation: HookChain.() -> Any?
+        private var invocation: HookChain.() -> Any?
     ) : MemberHooker<HookChain>(priority) {
 
-        private val dataExtra = Bundle()
+        private var dataExtra = Bundle()
+
+        /**
+         * Replaces the current hooker with a new one.
+         * @param invocation the new interceptor invoked for each call.
+         */
+        internal fun replace(invocation: HookChain.() -> Any?) {
+            this.invocation = invocation
+            dataExtra = Bundle()
+            replaceRegistrations()
+        }
 
         override fun createHooker(target: HookPoint): ChainHookerBridge {
             val invocationCount = AtomicLong()
+            val callback = invocation
+            val dataExtraStorage = dataExtra
 
             return ChainHookerBridge { chain ->
-                val invocation = HookChain.from(dataExtra, this@ChainMemberHooker, chain)
+                val invocation = HookChain.from(dataExtraStorage, this@ChainMemberHooker, chain)
 
                 runCatching {
                     YLog.innerD("Executing hooker [intercept] (${invocationCount.incrementAndGet()}) for $target")
-                    invocation(invocation)
+                    callback(invocation)
                 }.getOrElse { throwable ->
                     notifyCallbackFailure(invocation, throwable)
 
@@ -376,16 +420,31 @@ class YukiHookCreator private constructor() {
         private val hookMode: HookMode
     ) : MemberHooker<HookParam>(priority) {
 
-        private var beforeHookCallback: (HookParam.() -> Unit)? = null
-        private var afterHookCallback: (HookParam.() -> Unit)? = null
-        private var interceptHookCallback: (HookParam.() -> Any?)? = null
+        private class CallbackState {
 
-        private var throwToHostOnFailure = false
-        private var isInterceptHookMode = false
+            var beforeHookCallback: (HookParam.() -> Unit)? = null
+            var afterHookCallback: (HookParam.() -> Unit)? = null
+            var interceptHookCallback: (HookParam.() -> Any?)? = null
 
-        private val beforeDataExtra = Bundle()
-        private val afterDataExtra = Bundle()
-        private val interceptDataExtra = Bundle()
+            var throwToHostOnFailure = false
+            var isInterceptHookMode = false
+
+            var beforeDataExtra = Bundle()
+            var afterDataExtra = Bundle()
+            var interceptDataExtra = Bundle()
+        }
+
+        private var state = CallbackState()
+
+        /**
+         * Replaces the current hooker with a new one.
+         * @param hooker the new configuration block.
+         */
+        internal fun replace(hooker: ClassicMemberHooker.() -> Unit) {
+            state = CallbackState()
+            hooker(this)
+            replaceRegistrations()
+        }
 
         /**
          * Hooks before [Member] execution completes.
@@ -395,8 +454,8 @@ class YukiHookCreator private constructor() {
          * @return [HookCallback]
          */
         fun before(callback: HookParam.() -> Unit): HookCallback {
-            isInterceptHookMode = false
-            beforeHookCallback = callback
+            state.isInterceptHookMode = false
+            state.beforeHookCallback = callback
             immediateHook()
 
             return HookCallback()
@@ -410,8 +469,8 @@ class YukiHookCreator private constructor() {
          * @return [HookCallback]
          */
         fun after(callback: HookParam.() -> Unit): HookCallback {
-            isInterceptHookMode = false
-            afterHookCallback = callback
+            state.isInterceptHookMode = false
+            state.afterHookCallback = callback
             immediateHook()
 
             return HookCallback()
@@ -425,8 +484,8 @@ class YukiHookCreator private constructor() {
          * @param callback the [HookParam] function body.
          */
         fun intercept(callback: HookParam.() -> Any?) {
-            isInterceptHookMode = true
-            interceptHookCallback = callback
+            state.isInterceptHookMode = true
+            state.interceptHookCallback = callback
             immediateHook()
         }
 
@@ -471,7 +530,8 @@ class YukiHookCreator private constructor() {
 
         override fun createHooker(target: HookPoint): ClassicHookerBridge {
             // The mode is fixed at registration, even if the creator is configured again later.
-            val isInterception = isInterceptHookMode
+            val state = state
+            val isInterception = state.isInterceptHookMode
 
             return object : ClassicHookerBridge {
 
@@ -480,12 +540,12 @@ class YukiHookCreator private constructor() {
 
                 override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
                     val invocation = HookParam.from(
-                        dataExtraStorage = if (isInterception) interceptDataExtra else beforeDataExtra,
+                        dataExtraStorage = if (isInterception) state.interceptDataExtra else state.beforeDataExtra,
                         this@ClassicMemberHooker, param
                     )
 
                     val result = runCatching {
-                        val callback = if (isInterception) interceptHookCallback else beforeHookCallback
+                        val callback = if (isInterception) state.interceptHookCallback else state.beforeHookCallback
                         if (callback != null) YLog.innerD(
                             "Executing hooker [${if (isInterception) "intercept" else "before"}] " +
                                 "(${beforeInvocationCount.incrementAndGet()}) for $target"
@@ -505,7 +565,7 @@ class YukiHookCreator private constructor() {
 
                         // A failed interception invokes the original unhooked `Member` to keep the host running normally.
                         if (isInterception) invocation.callOriginal() else {
-                            if (throwToHostOnFailure) param.throwable = it
+                            if (state.throwToHostOnFailure) param.throwable = it
                             null
                         }
                     }
@@ -515,16 +575,16 @@ class YukiHookCreator private constructor() {
                 override fun afterHookedMember(param: ClassicHookerBridge.Param) {
                     if (isInterception) return
 
-                    HookParam.from(afterDataExtra, this@ClassicMemberHooker, param).also { invocation ->
+                    HookParam.from(state.afterDataExtra, this@ClassicMemberHooker, param).also { invocation ->
                         runCatching {
-                            val callback = afterHookCallback
+                            val callback = state.afterHookCallback
                             if (callback != null) {
                                 YLog.innerD("Executing hooker [after] (${afterInvocationCount.incrementAndGet()}) for $target")
                                 callback(invocation)
                             }
                         }.onFailure {
                             notifyCallbackFailure(invocation, it)
-                            if (throwToHostOnFailure) param.throwable = it
+                            if (state.throwToHostOnFailure) param.throwable = it
                         }
                     }
                 }
@@ -560,7 +620,7 @@ class YukiHookCreator private constructor() {
 
             /** Throws an exception to the current host when one occurs in the callback body. */
             fun throwToHostOnFailure() {
-                throwToHostOnFailure = true
+                state.throwToHostOnFailure = true
             }
 
             /** Throws an exception to the current host when one occurs in the callback body. */

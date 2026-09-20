@@ -55,6 +55,7 @@ object YukiHookBridge : FrameworkHookBridge {
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? = error("Stub!")
     override fun deoptimize(member: Member): Boolean = error("Stub!")
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge = error("Stub!")
+    override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge = error("Stub!")
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?): Unit = error("Stub!")
     override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences = error("Stub!")
     override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge = error("Stub!")

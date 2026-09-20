@@ -58,20 +58,25 @@ class MemberHookerTest {
         parameters(Int::class)
     }.self
     private val hookers = mutableListOf<HookerBridge>()
+    private val registrations = mutableListOf<TestRegistration>()
     private val removed = mutableListOf<Member>()
     private val previousEnabled = YLog.Configs.enabled
     private val registerHook = { target: HookPoint, _: Int, hooker: HookerBridge ->
         val member = (target as HookPoint.Executable).value
         hookers += hooker
-        object : HookerBridge {
-            override fun remove() { removed += member }
+        TestRegistration(hooker) { removed += member }.also(registrations::add)
+    }
+    private val replaceHook = { handle: HookerBridge, replacement: HookerBridge ->
+        val registration = handle as TestRegistration
+        TestRegistration(replacement, registration.onRemove).also {
+            registrations[registrations.indexOf(registration)] = it
         }
     }
 
     @Before
     fun installRuntime() {
         YLog.Configs.enabled = false
-        YukiHookBridge.attach(YukiHookBridge.ApiSpec(hookCallback = registerHook))
+        YukiHookBridge.attach(YukiHookBridge.ApiSpec(hookCallback = registerHook, replaceCallback = replaceHook))
     }
 
     @After
@@ -267,6 +272,87 @@ class MemberHookerTest {
     }
 
     @Test
+    fun chainResultReplacesCurrentCallbackWithANewRegistrationSnapshot() {
+        val result = scope.run {
+            method.intercept { "old" }
+        }
+        val oldHooker = registrations.single().hooker
+
+        scope.run {
+            result.replace(invocation = {
+                "new"
+            })
+        }
+
+        val currentHooker = registrations.single().hooker
+        Assert.assertNotSame(oldHooker, currentHooker)
+        Assert.assertEquals("old", (oldHooker as ChainHookerBridge).intercept(RecordingChain(method)))
+        Assert.assertEquals("new", (currentHooker as ChainHookerBridge).intercept(RecordingChain(method)))
+
+        result.remove()
+        Assert.assertEquals(listOf(method), removed)
+    }
+
+    @Test
+    fun classicResultReplacesCallbackConfiguration() {
+        val result = scope.run {
+            method.hook { intercept("old") }
+        }
+        val oldHooker = registrations.single().hooker
+
+        scope.run {
+            result.replace(hooker = {
+                intercept("new")
+            })
+        }
+
+        val currentHooker = registrations.single().hooker
+        val oldInvocation = ClassicInvocationAdapter.from(method, "value", arrayOf(1)) { throw it }
+        val currentInvocation = ClassicInvocationAdapter.from(method, "value", arrayOf(1)) { throw it }
+        Assert.assertEquals("old", oldInvocation.intercept(oldHooker as ClassicHookerBridge) { "original" })
+        Assert.assertEquals("new", currentInvocation.intercept(currentHooker as ClassicHookerBridge) { "original" })
+
+        result.remove()
+        Assert.assertEquals(listOf(method), removed)
+    }
+
+    @Test
+    fun immediateClassicBuilderKeepsUpdatingItsCurrentCallbackGeneration() {
+        val hooker = scope.run { method.hook() }
+        hooker.intercept("old")
+        val nativeHooker = registrations.single().hooker as ClassicHookerBridge
+
+        hooker.intercept("new")
+
+        val invocation = ClassicInvocationAdapter.from(method, "value", arrayOf(1)) { throw it }
+        Assert.assertEquals("new", invocation.intercept(nativeHooker) { "original" })
+    }
+
+    @Test
+    fun replacingBatchResultUpdatesEveryRegisteredTarget() {
+        val result = scope.run {
+            listOf(method, otherMethod).interceptAll { "old" }
+        }
+        val oldHookers = registrations.map { it.hooker }
+
+        scope.run {
+            result.replace(invocation = { "new" })
+        }
+
+        val currentHookers = registrations.map { it.hooker }
+        Assert.assertEquals(2, currentHookers.size)
+        oldHookers.forEach { hooker ->
+            Assert.assertEquals("old", (hooker as ChainHookerBridge).intercept(RecordingChain(method)))
+        }
+        currentHookers.forEach { hooker ->
+            Assert.assertEquals("new", (hooker as ChainHookerBridge).intercept(RecordingChain(method)))
+        }
+
+        result.remove()
+        Assert.assertEquals(listOf(method, otherMethod), removed)
+    }
+
+    @Test
     fun resolverBlockHooksDeferRegistrationAndBuilderHooksRemainImmediate() {
         val resolver = String::class.resolve().firstMethod {
             name = "substring"
@@ -322,5 +408,13 @@ class MemberHookerTest {
             forwardedArgs = args
             return "downstream"
         }
+    }
+
+    private class TestRegistration(
+        val hooker: HookerBridge,
+        val onRemove: () -> Unit
+    ) : HookerBridge {
+
+        override fun remove() = onRemove()
     }
 }

@@ -102,6 +102,15 @@ interface FrameworkHookBridge {
     fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge
 
     /**
+     * Replaces a registered hook with a new hooker while preserving the registration settings.
+     * @param handle the handle returned by [hook].
+     * @param replacement the replacement hooker callback.
+     * @return [HookerBridge]
+     * @throws UnsupportedOperationException when the selected runtime does not support replacement.
+     */
+    fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge
+
+    /**
      * Logs using the attached framework without discarding its priority or tag.
      * @param priority the priority of the log.
      * @param tag the tag of the log.

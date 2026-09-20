@@ -47,9 +47,8 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
                 executableInvokerBridge = LibXposedExecutableInvoker(api),
                 deoptimizeCallback = ::deoptimize,
                 hookCallback = ::hook,
-                loggerCallback = { priority, tag, message, throwable ->
-                    api.log(priority, tag, message, throwable)
-                }
+                replaceCallback = ::replace,
+                loggerCallback = api::log
             )
         )
 
@@ -63,19 +62,7 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
     }
 
     private fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
-        val nativeHooker = when (hooker) {
-            is ChainHookerBridge -> XposedInterface.Hooker { chain -> hooker.intercept(chain.toBridge()) }
-            is ClassicHookerBridge -> XposedInterface.Hooker { chain ->
-                ClassicInvocationAdapter.from(
-                    member = chain.executable,
-                    instance = chain.thisObject,
-                    args = chain.args.toTypedArray()
-                ) { failure ->
-                    api.log(Log.ERROR, "YukiHookAPI", "An exception occurred in a classic hook callback.", failure)
-                }.intercept(hooker) { chain.proceed(it) }
-            }
-            else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}.")
-        }
+        val nativeHooker = createNativeHooker(hooker)
         val builder = when (target) {
             is HookPoint.Executable -> api.hook(target.value as Executable)
             is HookPoint.Initializer -> api.hookClassInitializer(target.type)
@@ -87,8 +74,43 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
             .setExceptionMode(XposedInterface.ExceptionMode.PASSTHROUGH)
             .intercept(nativeHooker)
 
-        return object : HookerBridge by hooker {
-            override fun remove() = handle.unhook()
+        return RegistrationHandle(handle)
+    }
+
+    private fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge {
+        require(handle is RegistrationHandle) {
+            "The hook handle was not created by the libxposed runtime."
+        }
+
+        return handle.replace(replacement)
+    }
+
+    private fun createNativeHooker(hooker: HookerBridge) = when (hooker) {
+        is ChainHookerBridge -> XposedInterface.Hooker { chain -> hooker.intercept(chain.toBridge()) }
+        is ClassicHookerBridge -> XposedInterface.Hooker { chain ->
+            ClassicInvocationAdapter.from(
+                member = chain.executable,
+                instance = chain.thisObject,
+                args = chain.args.toTypedArray()
+            ) { failure ->
+                api.log(Log.ERROR, "YukiHookAPI", "An exception occurred in a classic hook callback.", failure)
+            }.intercept(hooker) { chain.proceed(it) }
+        }
+        else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}.")
+    }
+
+    private inner class RegistrationHandle(
+        private val nativeHandle: XposedInterface.HookHandle
+    ) : HookerBridge {
+
+        private val lock = Any()
+
+        override fun remove() = synchronized(lock) {
+            nativeHandle.unhook()
+        }
+
+        fun replace(replacement: HookerBridge): HookerBridge = synchronized(lock) {
+            RegistrationHandle(nativeHandle.replaceHook(createNativeHooker(replacement)))
         }
     }
 

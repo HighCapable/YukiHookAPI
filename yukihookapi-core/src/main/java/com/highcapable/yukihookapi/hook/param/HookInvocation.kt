@@ -47,6 +47,7 @@ abstract class HookInvocation internal constructor(
      *
      * Reused across invocations and batch members of this hooker. Classic before, after and
      * replacement callbacks have separate storage, each chain hooker has its own.
+     * A hook replacement starts a new callback generation with fresh storage.
      *
      * This is not per-invocation storage or a shared container for different interceptors.
      * Concurrent access to the contents must be synchronized by the caller.

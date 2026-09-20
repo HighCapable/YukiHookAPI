@@ -1014,6 +1014,40 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     ) = YukiHookCreator.createChainHooker(map { HookPoint.Executable(it) }, priority, invocation).build()
 
     /**
+     * Replaces a chain hook registration with a new chain callback.
+     *
+     * - The returned result remains the same registration group.
+     * - Each target in a batch is replaced independently.
+     * - An invocation already in progress continues with the previous callback.
+     * @receiver the chain hook registration result.
+     * @param invocation the replacement chain callback.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    @JvmName("replaceChain")
+    fun YukiHookCreator.MemberHooker<HookChain>.Result.replace(
+        invocation: HookChain.() -> Any?
+    ) = apply { owner.asType<YukiHookCreator.ChainMemberHooker>().replace(invocation) }
+
+    /**
+     * Replaces a classic hook registration with a new classic callback configuration.
+     *
+     * - The returned result remains the same registration group.
+     * - The block may configure [YukiHookCreator.ClassicMemberHooker.before], [YukiHookCreator.ClassicMemberHooker.after]
+     *   or [YukiHookCreator.ClassicMemberHooker.intercept].
+     * - Each target in a batch is replaced independently.
+     * - An invocation already in progress continues with the previous callback.
+     * @receiver the classic hook registration result.
+     * @param hooker the replacement classic callback configuration.
+     * @return [YukiHookCreator.MemberHooker.Result]
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    @JvmName("replaceClassic")
+    fun YukiHookCreator.MemberHooker<HookParam>.Result.replace(
+        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
+    ) = apply { owner.asType<YukiHookCreator.ClassicMemberHooker>().replace(hooker) }
+
+    /**
      * Creates a direct hook for the static initializer of this class.
      *
      * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.

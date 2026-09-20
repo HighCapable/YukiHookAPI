@@ -51,6 +51,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
         val executableInvokerBridge: ExecutableInvokerBridge? = null,
         val deoptimizeCallback: ((Member) -> Boolean)? = null,
         val hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null,
+        val replaceCallback: ((HookerBridge, HookerBridge) -> HookerBridge)? = null,
         val loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
     )
 
@@ -78,6 +79,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun deoptimize(member: Member) = checkApi(api.deoptimizeCallback)(member)
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkApi(api.hookCallback)(target, priority, hooker)
+    override fun replace(handle: HookerBridge, replacement: HookerBridge) = checkApi(api.replaceCallback)(handle, replacement)
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
         val callback = api.loggerCallback

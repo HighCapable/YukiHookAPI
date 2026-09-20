@@ -25,11 +25,22 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 
 /**
- * Holds an independent hook registration.
+ * Holds an immutable snapshot of an independent hook registration.
  * @param target the hooked point.
  * @param hooker the registered hook returned by the runtime.
  */
-internal class YukiHookResult(val target: HookPoint, private val hooker: HookerBridge) {
+internal class YukiHookResult private constructor(val target: HookPoint, val hooker: HookerBridge) {
+
+    companion object {
+
+        /**
+         * Creates a [YukiHookResult] instance.
+         * @param target the hooked point.
+         * @param hooker the registered hook returned by the runtime.
+         * @return [YukiHookResult]
+         */
+        fun from(target: HookPoint, hooker: HookerBridge) = YukiHookResult(target, hooker)
+    }
 
     /** Removes this registration without removing other hooks on [target]. */
     fun remove() = hooker.remove()

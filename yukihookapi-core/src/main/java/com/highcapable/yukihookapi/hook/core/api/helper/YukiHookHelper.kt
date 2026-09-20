@@ -67,7 +67,7 @@ internal object YukiHookHelper {
             hooker = hooker
         )
 
-        return YukiHookResult(target, hook)
+        return YukiHookResult.from(target, hook)
     }
 
     /**
@@ -79,6 +79,18 @@ internal object YukiHookHelper {
      */
     fun hook(resolver: MemberResolver<*, *>, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
         hook(HookPoint.Executable(resolver.self), hooker, priority)
+
+    /**
+     * Replaces one registered hook with a new hooker.
+     * @param registration the registered hook to replace.
+     * @param hooker the replacement hooker callback.
+     * @return [YukiHookResult] a new registration snapshot for the replacement hooker.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    fun replace(registration: YukiHookResult, hooker: HookerBridge) = YukiHookResult.from(
+        target = registration.target, 
+        hooker = YukiHookBridge.replace(registration.hooker, hooker)
+    )
 
     /**
      * Invokes the original [Member].
