@@ -41,8 +41,8 @@ import java.lang.reflect.Member
 object YukiHookBridge : FrameworkHookBridge {
 
     override val runtime: YukiHookRuntime get() = error("Stub!")
-    override val isHookAvailable: Boolean get() = error("Stub!")
-    override val isCustomHookAvailable get(): Boolean = error("Stub!")
+    override val isAvailable: Boolean get() = error("Stub!")
+    override val isStandaloneAvailable get(): Boolean = error("Stub!")
     override val isModuleActive: Boolean get() = error("Stub!")
     override val apiVersion: Int get() = error("Stub!")
     override val frameworkName: String get() = error("Stub!")

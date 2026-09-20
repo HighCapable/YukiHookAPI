@@ -58,13 +58,13 @@ internal object YukiHookBridge : FrameworkHookBridge {
     private val api get() = apiSpec ?: error(NOT_ATTACHED_ERROR)
 
     override val runtime get() = YukiHookRuntime.LIBXPOSED
-    override val isHookAvailable get() = apiSpec != null
-    override val isCustomHookAvailable get() = false
+    override val isAvailable get() = apiSpec != null
+    override val isStandaloneAvailable get() = false
     override val isModuleActive get() = LibXposedService.isAvailable
-    override val apiVersion get() = if (isHookAvailable) api.apiVersion else LibXposedService.apiVersion
-    override val frameworkName get() = if (isHookAvailable) api.frameworkName else LibXposedService.frameworkName
-    override val frameworkVersion get() = if (isHookAvailable) api.frameworkVersion else LibXposedService.frameworkVersion
-    override val frameworkVersionCode get() = if (isHookAvailable) api.frameworkVersionCode else LibXposedService.frameworkVersionCode
+    override val apiVersion get() = if (isAvailable) api.apiVersion else LibXposedService.apiVersion
+    override val frameworkName get() = if (isAvailable) api.frameworkName else LibXposedService.frameworkName
+    override val frameworkVersion get() = if (isAvailable) api.frameworkVersion else LibXposedService.frameworkVersion
+    override val frameworkVersionCode get() = if (isAvailable) api.frameworkVersionCode else LibXposedService.frameworkVersionCode
     override val executableInvoker get() = checkApi(api.executableInvokerBridge)
 
     fun attach(spec: ApiSpec) {

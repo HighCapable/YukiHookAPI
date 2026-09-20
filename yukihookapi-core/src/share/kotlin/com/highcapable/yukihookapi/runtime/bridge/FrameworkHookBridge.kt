@@ -42,11 +42,11 @@ interface FrameworkHookBridge {
     /** The current runtime type. */
     val runtime: YukiHookRuntime
 
-    /** Whether a host hook interface has been attached. */
-    val isHookAvailable: Boolean
+    /** Whether the runtime is available for hook operations. */
+    val isAvailable: Boolean
 
-    /** Initializes a standalone custom hook API and returns whether hooking is available. */
-    val isCustomHookAvailable: Boolean
+    /** Whether the standalone hook API is available. */
+    val isStandaloneAvailable: Boolean
 
     /** Whether the module has one available framework service. */
     val isModuleActive: Boolean

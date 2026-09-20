@@ -117,7 +117,7 @@ class RuntimeIsolationTest {
     }
 
     @Test
-    fun deprecatedCustomHookEntriesDoNothingInModernRuntime() {
+    fun deprecatedStandaloneEntriesDoNothingInModernRuntime() {
         val loadedFromBaseContext = YukiHookAPI.asResolver().firstField { name = "isLoadedFromBaseContext" }
         val previous = checkNotNull(loadedFromBaseContext.get<Boolean>())
         loadedFromBaseContext.set(false)
@@ -129,7 +129,7 @@ class RuntimeIsolationTest {
             }
             YukiHookAPI.encase(ModuleContext()) { lambdaCalled = true }
             YukiHookAPI.encase(ModuleContext(), hooker)
-            Assert.assertFalse(YukiHookBridge.isCustomHookAvailable)
+            Assert.assertFalse(YukiHookBridge.isStandaloneAvailable)
             Assert.assertFalse(lambdaCalled)
             Assert.assertFalse(hookerCalled)
             Assert.assertFalse(loadedFromBaseContext.get<Boolean>() ?: true)

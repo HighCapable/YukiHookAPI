@@ -131,7 +131,7 @@ class RuntimeIsolationTest {
         /** Returns the framework version code after self-hook installation. */
         @JvmStatic
         @JvmName("___-")
-        fun frameworkVersionCode() = if (isHooked) 7190 else -1
+        fun frameworkVersionCode() = if (isHooked) 7190L else -1L
     }
 
     @Test
@@ -168,35 +168,35 @@ class RuntimeIsolationTest {
     fun generatedModuleStatusIsResolvedThroughTheRuntimeBridge() {
         Assert.assertFalse(YukiHookBridge.isModuleActive)
         Assert.assertEquals("unknown", YukiHookBridge.frameworkName)
-        Assert.assertEquals(-1, YukiHookBridge.apiLevel)
+        Assert.assertEquals(-1, YukiHookBridge.apiVersion)
         Assert.assertEquals("unknown", YukiHookBridge.frameworkVersion)
-        Assert.assertEquals(-1, YukiHookBridge.frameworkVersionCode)
+        Assert.assertEquals(-1L, YukiHookBridge.frameworkVersionCode)
         GeneratedModuleStatus.isHooked = true
         try {
             Assert.assertTrue(YukiHookBridge.isModuleActive)
             Assert.assertEquals("LSPosed", YukiHookBridge.frameworkName)
-            Assert.assertEquals(82, YukiHookBridge.apiLevel)
+            Assert.assertEquals(82, YukiHookBridge.apiVersion)
             Assert.assertEquals("1.9.2", YukiHookBridge.frameworkVersion)
-            Assert.assertEquals(7190, YukiHookBridge.frameworkVersionCode)
+            Assert.assertEquals(7190L, YukiHookBridge.frameworkVersionCode)
         } finally {
             GeneratedModuleStatus.isHooked = false
         }
     }
 
     @Test
-    fun customHookInitializationFailsCleanlyWithoutInjectedXposedBridge() {
+    fun standaloneInitializationFailsCleanlyWithoutInjectedXposedBridge() {
         val attached = YukiHookBridge.asResolver().firstField { name = "attached" }
         val previous = checkNotNull(attached.get<Boolean>())
         attached.set(false)
         try {
-            Assert.assertFalse(YukiHookBridge.isCustomHookAvailable)
+            Assert.assertFalse(YukiHookBridge.isStandaloneAvailable)
         } finally {
             attached.set(previous)
         }
     }
 
     @Test
-    fun deprecatedCustomHookEntriesRunAfterLegacyAttachment() {
+    fun deprecatedStandaloneEntriesRunAfterLegacyAttachment() {
         val attached = YukiHookBridge.asResolver().firstField { name = "attached" }
         val loadedFromBaseContext = YukiHookAPI.asResolver().firstField { name = "isLoadedFromBaseContext" }
         val previousAttached = checkNotNull(attached.get<Boolean>())

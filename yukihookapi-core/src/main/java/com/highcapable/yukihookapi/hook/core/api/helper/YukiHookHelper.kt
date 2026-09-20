@@ -130,6 +130,6 @@ internal object YukiHookHelper {
      * @param e the optional throwable to log.
      */
     fun log(priority: Int, tag: String, msg: String, e: Throwable? = null) {
-        if (YukiHookBridge.isHookAvailable) YukiHookBridge.log(priority, tag, msg, e)
+        if (YukiHookBridge.isAvailable) YukiHookBridge.log(priority, tag, msg, e)
     }
 }

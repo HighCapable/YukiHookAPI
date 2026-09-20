@@ -158,7 +158,7 @@ class YukiHookDataChannel private constructor() {
     /** Checks the API loading state. */
     private fun checkApi() {
         require(!YukiHookAPI.isLoadedFromBaseContext) {
-            "YukiHookDataChannel not allowed in custom hook API."
+            "YukiHookDataChannel not allowed in standalone hook API."
         }
         if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
             "Xposed modulePackageName load failed, please reset and rebuild it."

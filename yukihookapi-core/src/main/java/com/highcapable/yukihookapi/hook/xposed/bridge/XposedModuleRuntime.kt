@@ -89,7 +89,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
      * Gets whether the current environment is a host environment.
      * @return [Boolean]
      */
-    val isHostEnvironment get() = YukiHookBridge.isHookAvailable && isModuleLoaded
+    val isHostEnvironment get() = YukiHookBridge.isAvailable && isModuleLoaded
 
     /**
      * Automatically ignores log-collection injection instances that may appear on MIUI.

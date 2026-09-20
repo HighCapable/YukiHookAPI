@@ -59,24 +59,23 @@ class MemberHookerTest {
     }.self
     private val hookers = mutableListOf<HookerBridge>()
     private val removed = mutableListOf<Member>()
-    private val previousHook = YukiHookBridge.hookCallback
     private val previousEnabled = YLog.Configs.isEnable
+    private val registerHook = { target: HookPoint, _: Int, hooker: HookerBridge ->
+        val member = (target as HookPoint.Executable).value
+        hookers += hooker
+        object : HookerBridge {
+            override fun remove() { removed += member }
+        }
+    }
 
     @Before
     fun installRuntime() {
         YLog.Configs.isEnable = false
-        YukiHookBridge.hookCallback = { target, _, hooker ->
-            val member = (target as HookPoint.Executable).value
-            hookers += hooker
-            object : HookerBridge {
-                override fun remove() { removed += member }
-            }
-        }
+        YukiHookBridge.attach(YukiHookBridge.ApiSpec(hookCallback = registerHook))
     }
 
     @After
     fun restoreRuntime() {
-        YukiHookBridge.hookCallback = previousHook
         YLog.Configs.isEnable = previousEnabled
     }
 
@@ -155,13 +154,14 @@ class MemberHookerTest {
     @Test
     fun failedRegistrationDoesNotInterruptLaterMembersAndHookers() {
         val failure = UnsupportedOperationException("unsupported hooker")
-        val register = checkNotNull(YukiHookBridge.hookCallback)
         var attempts = 0
-        YukiHookBridge.hookCallback = { target, priority, hooker ->
-            attempts++
-            if (attempts == 1) throw failure
-            register(target, priority, hooker)
-        }
+        YukiHookBridge.attach(YukiHookBridge.ApiSpec(
+            hookCallback = { target, priority, hooker ->
+                attempts++
+                if (attempts == 1) throw failure
+                registerHook(target, priority, hooker)
+            }
+        ))
         scope.run {
             listOf(method, otherMethod).interceptAll {
                 removeSelf()
@@ -211,16 +211,18 @@ class MemberHookerTest {
     @Test
     fun hookCanRemoveItselfWhileNativeRegistrationIsCompleting() {
         var removalReported = false
-        YukiHookBridge.hookCallback = { target, _, hooker ->
-            val member = (target as HookPoint.Executable).value
-            ClassicInvocationAdapter.from(member, "value", arrayOf(1)) { throw it }
-                .intercept(hooker as ClassicHookerBridge) { "original" }
-            object : HookerBridge {
-                override fun remove() {
-                    removed += member
+        YukiHookBridge.attach(YukiHookBridge.ApiSpec(
+            hookCallback = { target, _, hooker ->
+                val member = (target as HookPoint.Executable).value
+                ClassicInvocationAdapter.from(member, "value", arrayOf(1)) { throw it }
+                    .intercept(hooker as ClassicHookerBridge) { "original" }
+                object : HookerBridge {
+                    override fun remove() {
+                        removed += member
+                    }
                 }
             }
-        }
+        ))
 
         scope.run {
             method.hook().before {

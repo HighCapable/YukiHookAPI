@@ -47,9 +47,9 @@ internal object YukiHookBridge : FrameworkHookBridge {
     private var attached = false
 
     override val runtime get() = YukiHookRuntime.XPOSED_82
-    override val isHookAvailable get() = attached
+    override val isAvailable get() = attached
 
-    override val isCustomHookAvailable get(): Boolean {
+    override val isStandaloneAvailable get(): Boolean {
         if (attached) return true
         attached = Xposed82HookApi.isAvailable
         return attached

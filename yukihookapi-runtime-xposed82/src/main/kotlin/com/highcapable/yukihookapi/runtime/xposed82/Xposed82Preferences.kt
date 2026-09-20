@@ -39,7 +39,7 @@ internal object Xposed82Preferences {
         if (context != null) return modulePreferences[context.toString() + name]
             ?: createModulePreferences(context, name).also { modulePreferences[context.toString() + name] = it }
 
-        check(YukiHookBridge.isHookAvailable) {
+        check(YukiHookBridge.isAvailable) {
             "XSharedPreferences requires an attached Xposed host or a module context."
         }
         return Host.open(packageName, name)

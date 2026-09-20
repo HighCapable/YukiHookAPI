@@ -110,7 +110,7 @@ class YukiHookCreator private constructor() {
 
         /** Registers each point independently so one failure does not interrupt the remaining hooks. */
         internal fun hook() {
-            if (!YukiHookBridge.isHookAvailable) return
+            if (!YukiHookBridge.isAvailable) return
             val pendingTargets = synchronized(registrationLock) {
                 if (isHooked) return
 

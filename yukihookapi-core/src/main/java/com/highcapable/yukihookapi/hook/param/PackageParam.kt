@@ -78,7 +78,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Module specification for the current Xposed module.
      *
-     * - This is unavailable when loaded as a custom hook API.
+     * - This is unavailable when loaded as a standalone hook API.
      */
     class ModuleSpec internal constructor() {
 
@@ -173,14 +173,14 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Gets the [ModuleSpec] of the current Xposed module.
      *
-     * - This is unavailable when loaded as a custom hook API.
+     * - This is unavailable when loaded as a standalone hook API.
      */
     val module = ModuleSpec()
 
     /**
      * Creates a [YukiHookPreferences] object.
      *
-     * - This is unavailable when loaded as a custom hook API and throws an exception.
+     * - This is unavailable when loaded as a standalone hook API and throws an exception.
      * @return [YukiHookPreferences]
      */
     val preferences get() = YukiHookPreferences.from()
@@ -188,7 +188,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates a [YukiHookPreferences] object.
      *
-     * - This is unavailable when loaded as a custom hook API and throws an exception.
+     * - This is unavailable when loaded as a standalone hook API and throws an exception.
      * @param name the custom shared preferences storage name.
      * @return [YukiHookPreferences]
      */
@@ -197,7 +197,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Gets the [YukiHookSharedFiles] object.
      *
-     * - This is unavailable when loaded as a custom hook API and throws an exception.
+     * - This is unavailable when loaded as a standalone hook API and throws an exception.
      * @return [YukiHookSharedFiles]
      */
     @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
@@ -206,7 +206,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Gets the [YukiHookDataChannel] object.
      *
-     * - This is unavailable when loaded as a custom hook API and throws an exception.
+     * - This is unavailable when loaded as a standalone hook API and throws an exception.
      * @return [YukiHookDataChannel.Namespace]
      * @throws IllegalStateException if loaded in [HookEntryType.ZYGOTE].
      */

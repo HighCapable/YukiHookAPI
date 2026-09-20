@@ -55,7 +55,7 @@ object YukiHookAPI {
     /** Whether the welcome message has not yet been logged. */
     private var isSayHelloOnceTime = true
 
-    /** Whether loading originated from a custom Hook API. */
+    /** Whether loading originated from a standalone hook API. */
     internal var isLoadedFromBaseContext = false
 
     /** The tag name. */
@@ -294,8 +294,7 @@ object YukiHookAPI {
     }
 
     /**
-     * Loads legacy standalone custom hook APIs from an [Application].
-     *
+     * Loads the legacy standalone hook API from an [Application].
      * @param baseContext the attachment base context.
      * @param block the param block.
      */
@@ -306,15 +305,13 @@ object YukiHookAPI {
 
         isLoadedFromBaseContext = true
         when {
-            YukiHookBridge.isCustomHookAvailable && baseContext != null ->
-                block(baseContext.createPackageParam().apply { sayHello() })
+            YukiHookBridge.isStandaloneAvailable && baseContext != null -> block(baseContext.createPackageParam().apply { sayHello() })
             else -> logNotFoundHookApiError()
         }
     }
 
     /**
-     * Loads legacy standalone custom hook APIs from an [Application].
-     *
+     * Loads the legacy standalone hook API from an [Application].
      * @param baseContext the attachment base context.
      * @param hooker the hookers.
      * @throws IllegalStateException if [hooker] is empty.
@@ -325,7 +322,7 @@ object YukiHookAPI {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
 
         isLoadedFromBaseContext = true
-        if (YukiHookBridge.isCustomHookAvailable) {
+        if (YukiHookBridge.isStandaloneAvailable) {
             if (baseContext != null)
                 if (hooker.isNotEmpty()) {
                     sayHello()
