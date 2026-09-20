@@ -560,7 +560,7 @@ class YukiHookDataChannel private constructor() {
             if (!YukiHookAPI.Configs.dataChannel) return
             if (wrapper == null) return
 
-            if (wrapper.isSegmentsType) runCatching {
+            if (wrapper.isSegmented) runCatching {
                 val tempData = segmentsTempData[wrapper.wrapperId] ?: SegmentsTempData().apply { segmentsTempData[wrapper.wrapperId] = this }
                 when (val value = wrapper.instance.value) {
                     is List<*> -> {
@@ -610,10 +610,10 @@ class YukiHookDataChannel private constructor() {
             result: (T) -> Unit,
             merge: (List<V>) -> Any
         ) {
-            if (segments.isEmpty() && wrapper.segmentsIndex > 0) return
+            if (segments.isEmpty() && wrapper.segmentIndex > 0) return
 
-            segments.add(wrapper.segmentsIndex, value)
-            if (segments.size == wrapper.segmentsSize) {
+            segments.add(wrapper.segmentIndex, value)
+            if (segments.size == wrapper.segmentCount) {
                 result(merge(segments) as T)
                 segments.clear()
                 segmentsTempData.remove(wrapper.wrapperId)
@@ -672,7 +672,7 @@ class YukiHookDataChannel private constructor() {
                 suggestionMessage = "Failed to segment $name type because the size of its first element has exceeded the maximum limit"
             )
             when {
-                wrapper.isSegmentsType || allowSendTooLargeData -> sendBroadcast(wrapper)
+                wrapper.isSegmented || allowSendTooLargeData -> sendBroadcast(wrapper)
                 dataByteSize >= receiverDataMaxByteSize -> {
                     val name: String
                     val segments = when (val value = wrapper.instance.value) {
@@ -691,14 +691,14 @@ class YukiHookDataChannel private constructor() {
                         is String -> {
                             // Preserve the existing character boundaries, including the trailing empty segment.
                             val twoByteMaxSize = receiverDataMaxByteSize / 2
-                            val segmentsSize = value.length / twoByteMaxSize + 1
-                            if (segmentsSize == 1) return sendBroadcast(wrapper)
+                            val segmentCount = value.length / twoByteMaxSize + 1
+                            if (segmentCount == 1) return sendBroadcast(wrapper)
 
-                            logForTooLargeData(name = "String", segmentsSize)
-                            repeat(segmentsSize) { index ->
+                            logForTooLargeData(name = "String", segmentCount)
+                            repeat(segmentCount) { index ->
                                 val start = index * twoByteMaxSize
                                 val segment = value.substring(start, minOf(start + twoByteMaxSize, value.length))
-                                sendBroadcast(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segmentsSize, index))
+                                sendBroadcast(ChannelData(wrapper.instance.key, segment).toWrapper(wrapperId, segmentCount, index))
                             }
                             return
                         }

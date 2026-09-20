@@ -27,15 +27,15 @@ import java.io.Serializable
 /**
  * Wraps key-value data sent through the data channel.
  * @param wrapperId the wrapper instance ID.
- * @param isSegmentsType whether the payload is segmented.
- * @param segmentsSize the total number of payload segments.
- * @param segmentsIndex the index of the currently received segment.
+ * @param isSegmented whether the payload is segmented.
+ * @param segmentCount the total number of payload segments.
+ * @param segmentIndex the index of the currently received segment.
  * @param instance the original data instance.
  */
 internal data class ChannelDataWrapper<T>(
     val wrapperId: String,
-    val isSegmentsType: Boolean,
-    val segmentsSize: Int,
-    val segmentsIndex: Int,
+    val isSegmented: Boolean,
+    val segmentCount: Int,
+    val segmentIndex: Int,
     val instance: ChannelData<T>
 ) : Serializable
