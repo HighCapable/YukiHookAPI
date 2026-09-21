@@ -63,7 +63,7 @@ class HookParam private constructor(
     /**
      * Gets the argument array of the currently hooked method or constructor.
      *
-     * Each array element has the default type [Any]. Use [args] to access [ArgsEditor.cast].
+     * Each array element has the default type [Any]. Use [args] to access [ArgumentEditor.cast].
      * @see arg
      * @see firstArg
      * @see lastArg
@@ -122,21 +122,21 @@ class HookParam private constructor(
      * @see firstArg
      * @see lastArg
      * @param index the argument array index.
-     * @return [ArgsEditor]
+     * @return [ArgumentEditor]
      */
-    fun arg(index: Int) = ArgsEditor(index)
+    fun arg(index: Int) = ArgumentEditor(index)
 
     /**
      * Gets the first index argument editor for the currently hooked method or constructor.
      * @see arg
-     * @return [ArgsEditor]
+     * @return [ArgumentEditor]
      */
     fun firstArg() = arg(0)
 
     /**
      * Gets the last index argument editor for the currently hooked method or constructor.
      * @see arg
-     * @return [ArgsEditor]
+     * @return [ArgumentEditor]
      */
     fun lastArg() = arg(args.lastIndex)
 
@@ -231,10 +231,10 @@ class HookParam private constructor(
     /**
      * Argument editor for the currently hooked method or constructor.
      *
-     * - Use the second [args] overload to obtain [ArgsEditor].
+     * - Use the second [args] overload to obtain [ArgumentEditor].
      * @param index the argument array index.
      */
-    inner class ArgsEditor internal constructor(private val index: Int) {
+    inner class ArgumentEditor internal constructor(private val index: Int) {
 
         /**
          * Gets the argument instance.
@@ -370,7 +370,7 @@ class HookParam private constructor(
 
         // endregion
 
-        override fun toString() = "ArgsEditor(index=$index, value=${args.getOrNull(index)}) by ${this@HookParam}"
+        override fun toString() = "ArgumentEditor(index=$index, value=${args.getOrNull(index)}) by ${this@HookParam}"
     }
 
     // region Deprecated functions and classes for backward compatibility
@@ -394,10 +394,10 @@ class HookParam private constructor(
 
     /**
      * Gets an argument editor for the currently hooked method or constructor.
-     * @return [ArgsEditor]
+     * @return [ArgumentEditor]
      */
     @Deprecated(message = "Use arg instead.", replaceWith = ReplaceWith("arg(index)"))
-    fun args(index: Int) = ArgsEditor(index)
+    fun args(index: Int) = ArgumentEditor(index)
 
     /** Sets the [result] of the currently hooked method to true. */
     @Deprecated(message = "Use result instead.", replaceWith = ReplaceWith("result = true"))
@@ -429,14 +429,14 @@ class HookParam private constructor(
 
         /**
          * Gets the first argument of the currently hooked method or constructor.
-         * @return [ArgsEditor]
+         * @return [ArgumentEditor]
          */
         @Deprecated(message = "Use firstArg instead.")
         fun first() = firstArg()
 
         /**
          * Gets the last argument of the currently hooked method or constructor.
-         * @return [ArgsEditor]
+         * @return [ArgumentEditor]
          */
         @Deprecated(message = "Use lastArg instead.")
         fun last() = lastArg()

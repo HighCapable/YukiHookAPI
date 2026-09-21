@@ -64,13 +64,18 @@ class HookChain private constructor(
      *
      * Pass a new array to [proceed] to change the arguments used downstream.
      * @see arg
+     * @see firstArg
+     * @see lastArg
      * @see proceed
+     * @return [List]
      */
     val args get() = chain.args
 
     /**
-     * Reads an invocation argument without creating an argument editor.
+     * Reads an invocation argument.
      * @see args
+     * @see firstArg
+     * @see lastArg
      * @param index the argument index.
      * @return [Any] the argument, or null.
      * @throws IndexOutOfBoundsException if the index is out of bounds.
@@ -80,6 +85,8 @@ class HookChain private constructor(
     /**
      * Reads an invocation argument as [T].
      * @see args
+     * @see firstArg
+     * @see lastArg
      * @param index the argument index.
      * @return [T] or null.
      * @throws IndexOutOfBoundsException if the index is out of bounds.
@@ -87,6 +94,46 @@ class HookChain private constructor(
      */
     @JvmName("argTyped")
     fun <T> arg(index: Int) = arg(index) as T?
+
+    /**
+     * Reads the first invocation argument.
+     * @see arg
+     * @see args
+     * @see lastArg
+     * @return [Any] the argument, or null.
+     */
+    fun firstArg() = arg(0)
+
+    /**
+     * Reads the first invocation argument as [T].
+     * @see arg
+     * @see args
+     * @see lastArg
+     * @return [T] or null.
+     * @throws ClassCastException if the argument cannot be used as [T].
+     */
+    @JvmName("firstArgTyped")
+    fun <T> firstArg() = firstArg() as T?
+
+    /**
+     * Reads the last invocation argument.
+     * @see arg
+     * @see args
+     * @see firstArg
+     * @return [Any] the argument, or null.
+     */
+    fun lastArg() = arg(args.lastIndex)
+
+    /**
+     * Reads the last invocation argument as [T].
+     * @see arg
+     * @see args
+     * @see firstArg
+     * @return [T] or null.
+     * @throws ClassCastException if the argument cannot be used as [T].
+     */
+    @JvmName("lastArgTyped")
+    fun <T> lastArg() = lastArg() as T?
 
     /**
      * Continues the remaining chain with the current arguments and receiver.
