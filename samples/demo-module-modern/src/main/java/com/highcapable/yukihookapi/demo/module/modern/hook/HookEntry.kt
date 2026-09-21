@@ -338,8 +338,8 @@ object HookEntry : YukiHookXposedModule {
                 }.intercept {
                     // Continue the chain with new arguments, leaving other text unchanged
                     // 向后续调用链传入新参数，其余文本保持不变
-                    if (arg(0) == "This is the last sentence")
-                        proceed(arrayOf("I am hook last sentence", arg(1)))
+                    if (firstArg() == "This is the last sentence")
+                        proceed(arrayOf("I am hook last sentence", lastArg()))
                     else proceed()
                 }
             }
