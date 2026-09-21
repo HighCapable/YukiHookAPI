@@ -40,11 +40,12 @@ import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
+import com.highcapable.yukihookapi.hook.xposed.file.YukiHookSharedFiles
 import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
+import com.highcapable.yukihookapi.hook.xposed.scope.YukiHookModuleScope
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
-import kotlin.jvm.JvmName
 
 /**
  * [YukiHookAPI] entry point.
@@ -66,7 +67,80 @@ object YukiHookAPI {
     const val VERSION = YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_BOM_VERSION
 
     /**
-     * Current [YukiHookAPI] status.
+     * Configuration for [YukiHookAPI].
+     */
+    object Configs {
+
+        /**
+         * Configures [YLog.Configs].
+         * @param block the configuration block.
+         */
+        inline fun debugLog(block: YLog.Configs.() -> Unit) = YLog.Configs.apply(block).let {}
+
+        /**
+         * Whether debug mode is enabled, false by default.
+         *
+         * Once enabled, the log manager prints detailed Hook logs to the console.
+         *
+         * Disabling [YLog.Configs.enabled] also disables [debug].
+         */
+        @set:JvmName("setDebugEnabled")
+        var debug = false
+
+        /**
+         * Whether hook support for [SharedPreferences] is enabled.
+         *
+         * Once enabled, module startup forces [SharedPreferences] file permissions to [Context.MODE_WORLD_READABLE] (0664).
+         *
+         * - This optional experimental feature is disabled by default.
+         * - Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
+         *
+         * Do not enable it when [YukiHookPreferences] already works correctly.
+         */
+        @RequiresRuntime(YukiHookRuntime.XPOSED_82)
+        @Deprecated(message = "Not recommended. This is a legacy trade-off switch, meaningless for modern frameworks.")
+        var isEnableHookSharedPreferences = false
+
+        /**
+         * Whether [YukiHookDataChannel] between the current Xposed module and host is enabled.
+         *
+         * The Xposed module's [Application] must inherit [ModuleApplication].
+         *
+         * - This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
+         */
+        var dataChannel = true
+
+        // region Deprecated properties for backward compatibility
+
+        /** Whether debug mode is enabled. */
+        @Deprecated(message = "Use debug instead.", replaceWith = ReplaceWith("debug"))
+        var isDebug
+            get() = debug
+            set(value) {
+                debug = value
+            }
+
+        /** Whether [YukiHookDataChannel] between the current Xposed module and host is enabled. */
+        @Deprecated(message = "Use dataChannel instead.", replaceWith = ReplaceWith("dataChannel"))
+        var isEnableDataChannel
+            get() = dataChannel
+            set(value) {
+                dataChannel = value
+            }
+
+        /**
+         * Whether caching the current Xposed module's [Resources] is enabled.
+         *
+         * - [YukiHookAPI] has adjusted module caching strategy, so this feature is no longer needed.
+         */
+        @Deprecated(message = "This property was deprecated and no longer has any effect, removed it directly.")
+        var isEnableModuleAppResourcesCache = true
+
+        // endregion
+    }
+
+    /**
+     * Current status for [YukiHookAPI].
      */
     object Status {
 
@@ -204,76 +278,30 @@ object YukiHookAPI {
     }
 
     /**
-     * [YukiHookAPI] configuration.
+     * Module scope for [YukiHookAPI].
      */
-    object Configs {
+    object Module {
 
         /**
-         * Configures [YLog.Configs].
-         * @param block the configuration block.
+         * Gets the module-wide [YukiHookModuleScope] object.
+         *
+         * - Requires [YukiHookAPI.Status.isXposedModuleActive].
+         * @return [YukiHookModuleScope]
          */
-        inline fun debugLog(block: YLog.Configs.() -> Unit) = YLog.Configs.apply(block).let {}
+        @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+        val scope get() = YukiHookModuleScope.get()
 
         /**
-         * Whether debug mode is enabled, false by default.
+         * Gets the module-wide [YukiHookSharedFiles] object.
          *
-         * Once enabled, the log manager prints detailed Hook logs to the console.
+         * - Requires [YukiHookAPI.Status.isXposedModuleActive].
          *
-         * Disabling [YLog.Configs.enabled] also disables [debug].
+         * Files are writable from the module environment and read-only from a host environment.
+         * This storage is independent of the module application's private file directory.
+         * @return [YukiHookSharedFiles]
          */
-        @set:JvmName("setDebugEnabled")
-        var debug = false
-
-        /**
-         * Whether hook support for [SharedPreferences] is enabled.
-         *
-         * Once enabled, module startup forces [SharedPreferences] file permissions to [Context.MODE_WORLD_READABLE] (0664).
-         *
-         * - This optional experimental feature is disabled by default.
-         * - Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
-         *
-         * Do not enable it when [YukiHookPreferences] already works correctly.
-         */
-        @RequiresRuntime(YukiHookRuntime.XPOSED_82)
-        @Deprecated(message = "Not recommended. This is a legacy trade-off switch, meaningless for modern frameworks.")
-        var isEnableHookSharedPreferences = false
-
-        /**
-         * Whether [YukiHookDataChannel] between the current Xposed module and host is enabled.
-         *
-         * The Xposed module's [Application] must inherit [ModuleApplication].
-         *
-         * - This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
-         */
-        var dataChannel = true
-
-        // region Deprecated properties for backward compatibility
-
-        /** Whether debug mode is enabled. */
-        @Deprecated(message = "Use debug instead.", replaceWith = ReplaceWith("debug"))
-        var isDebug
-            get() = debug
-            set(value) {
-                debug = value
-            }
-
-        /** Whether [YukiHookDataChannel] between the current Xposed module and host is enabled. */
-        @Deprecated(message = "Use dataChannel instead.", replaceWith = ReplaceWith("dataChannel"))
-        var isEnableDataChannel
-            get() = dataChannel
-            set(value) {
-                dataChannel = value
-            }
-
-        /**
-         * Whether caching the current Xposed module's [Resources] is enabled.
-         *
-         * - [YukiHookAPI] has adjusted module caching strategy, so this feature is no longer needed.
-         */
-        @Deprecated(message = "This property was deprecated and no longer has any effect, removed it directly.")
-        var isEnableModuleAppResourcesCache = true
-
-        // endregion
+        @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+        val sharedFiles get() = YukiHookSharedFiles.get()
     }
 
     /**
