@@ -36,6 +36,8 @@ import java.nio.charset.Charset
 /**
  * [YukiHookAPI] shared-file storage backed by the module and host environments.
  *
+ * Call [isAvailable] before using this API.
+ *
  * Files are writable from the module environment and read-only from a host environment.
  * This storage is independent of the module application's private file directory.
  */
@@ -67,6 +69,9 @@ class YukiHookSharedFiles private constructor() {
         }
         if (requireWritable) check(!isHostEnvironment) {
             "Shared files are read-only in a host process."
+        }
+        check(!isHostEnvironment && YukiHookBridge.isModuleActive) {
+            "Activate the module in the hook framework to use YukiHookSharedFiles."
         }
     }
 
