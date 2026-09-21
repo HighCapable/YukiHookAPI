@@ -47,13 +47,13 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 object HookEntry : YukiHookXposedModule {
 
     override fun onInit() {
-        // Configure YuKiHookAPI
-        // Can be shortened to configs {}
+        // Configures YuKiHookAPI
+        // Can be shortened to configure {}
         // 配置 YuKiHookAPI
-        // 可简写为 configs {}
-        YukiHookAPI.configs {
-            // Configure YukiHookLogger
-            // 配置 YukiHookLogger
+        // 可简写为 configure {}
+        YukiHookAPI.configure {
+            // Configures YLog
+            // 配置 YLog
             debugLog {
                 // TAG for global debugging
                 // Filter this TAG in the Logcat console to find detailed logs

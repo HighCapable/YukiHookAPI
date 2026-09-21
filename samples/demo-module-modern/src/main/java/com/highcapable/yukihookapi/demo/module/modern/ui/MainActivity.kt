@@ -24,12 +24,16 @@ package com.highcapable.yukihookapi.demo.module.modern.ui
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.updateMargins
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.highcapable.betterandroid.ui.extension.component.base.getThemeAttrsColorStateList
 import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.betterandroid.ui.extension.insets.factory.handleOnWindowInsetsChanged
 import com.highcapable.betterandroid.ui.extension.insets.factory.setInsetsPadding
+import com.highcapable.betterandroid.ui.extension.view.padding
 import com.highcapable.betterandroid.ui.extension.view.textToString
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.betterandroid.ui.extension.view.updateMargins
@@ -54,10 +58,16 @@ import com.highcapable.yukihookapi.demo.module.modern.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.modern.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.preferences
+import com.highcapable.yukihookapi.hook.xposed.scope.YukiHookModuleScope
 import java.text.SimpleDateFormat
 import java.util.Date
+import com.google.android.material.R as Material_R
 
 class MainActivity : BaseActivity() {
+
+    private companion object {
+        const val SETTINGS_PACKAGE_NAME = "com.android.settings"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +97,21 @@ class MainActivity : BaseActivity() {
                     attrs = {
                         app {
                             set("title", "@string/app_name")
+                        }
+                    },
+                    init = {
+                        moduleEnvironment {
+                            menu.add(R.string.demo_module_scope_title).apply {
+                                setIcon(R.drawable.ic_microscope)
+                                iconTintList = getThemeAttrsColorStateList(Material_R.attr.colorOnSurface)
+                                padding.end = 10.dp
+
+                                setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                                setOnMenuItemClickListener {
+                                    showModuleScopeDialog()
+                                    true
+                                }
+                            }
                         }
                     }
                 )
@@ -245,6 +270,56 @@ class MainActivity : BaseActivity() {
         }
 
         refreshStatus()
+    }
+
+    private fun showModuleScopeDialog() {
+        if (!YukiHookAPI.Status.isXposedModuleActive) {
+            toast(getString(R.string.demo_module_scope_not_active))
+            return
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.demo_module_scope_title)
+            .setMessage(
+                getString(
+                    R.string.demo_module_scope_list,
+                    YukiHookAPI.Module.scope.packages.joinToString("\n")
+                )
+            )
+            .setPositiveButton(R.string.demo_module_scope_request) { _, _ ->
+                showModuleScopeRequestDialog()
+            }.setNegativeButton(R.string.demo_module_scope_remove) { _, _ ->
+                YukiHookAPI.Module.scope.remove(SETTINGS_PACKAGE_NAME)
+                toast(getString(R.string.demo_module_scope_request_sent))
+            }.setNeutralButton(R.string.demo_dialog_close, null)
+            .show()
+    }
+
+    private fun showModuleScopeRequestDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.demo_dialog_notice)
+            .setMessage(R.string.demo_module_scope_request_message)
+            .setPositiveButton(R.string.demo_dialog_ok) { _, _ ->
+                YukiHookAPI.Module.scope.request(SETTINGS_PACKAGE_NAME) { approved, error, errorMessage, _ ->
+                    showModuleScopeRequestResultDialog(approved, error, errorMessage)
+                }
+            }.setNegativeButton(R.string.demo_dialog_cancel, null)
+            .show()
+    }
+
+    private fun showModuleScopeRequestResultDialog(
+        approved: Boolean,
+        error: YukiHookModuleScope.ReceivingError?,
+        errorMessage: String?
+    ) {
+        val message = if (approved) getString(R.string.demo_module_scope_request_succeeded)
+        else getString(R.string.demo_module_scope_request_failed, errorMessage, error.toString())
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.demo_module_scope_request_result)
+            .setMessage(message)
+            .setPositiveButton(R.string.demo_dialog_ok, null)
+            .show()
     }
 
     private inline fun hostEnvironment(callback: () -> Unit) {
