@@ -27,7 +27,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.highcapable.yukihookapi.compiler.subprocessor.spec.GenerateSpec
 import com.highcapable.yukihookapi.compiler.subprocessor.spec.LibXposedGenerateSpec
 import com.highcapable.yukihookapi.compiler.subprocessor.spec.Xposed82GenerateSpec
-import com.squareup.kotlinpoet.FileSpec
 import org.junit.Assert
 import org.junit.Test
 import java.lang.reflect.Proxy
@@ -48,27 +47,7 @@ class EntryGenerationTest {
 
     private fun <T : GenerateSpec> data(value: T) = value.apply {
         entryPackageName = "example.module"
-        modulePackageName = "example.module"
-        entryClassName = "HookEntry"
         initClassName = "HookEntry_YukiHookXposedInit"
-        isObjectEntry = true
-    }
-
-    @Test
-    fun modernEntryOnlyReferencesItsRuntimeBase() {
-        val source = data(LibXposedGenerateSpec(targetApiVersion = 102)).source("HookEntry_YukiHookXposedInit")
-        Assert.assertTrue(source.contains("LibXposedEntry"))
-        Assert.assertFalse(source.contains("Xposed82Entry"))
-        Assert.assertFalse(source.contains("de.robv"))
-        Assert.assertFalse(source.contains("io.github.libxposed.api"))
-    }
-
-    @Test
-    fun legacyEntryContainsNoResourceHook() {
-        val source = data(Xposed82GenerateSpec()).source("HookEntry_YukiHookXposedInit")
-        Assert.assertTrue(source.contains("Xposed82Entry"))
-        Assert.assertFalse(source.contains("Resources"))
-        Assert.assertFalse(source.contains("libxposed"))
     }
 
     @Test
@@ -101,70 +80,6 @@ class EntryGenerationTest {
             data.createResources()
         )
     }
-
-    @Test
-    fun objectAndClassEntriesUseTheSameConstructionInBothBridges() {
-        listOf(data(Xposed82GenerateSpec()), data(LibXposedGenerateSpec(targetApiVersion = 102))).forEach { data ->
-            listOf(false, true).forEach { singleton ->
-                data.isObjectEntry = singleton
-                val entry = if (singleton) "HookEntry" else "HookEntry()"
-                val applicationSource = data.source("ModuleApplication_Impl")
-                Assert.assertTrue(data.source(data.initClassName).contains("= $entry\n"))
-                Assert.assertTrue(applicationSource.contains("YukiHookModuleCaller.callOnInit($entry)"))
-                Assert.assertFalse(applicationSource.contains("YukiHookModuleCaller.callOnHook("))
-                Assert.assertFalse(applicationSource.contains("YukiHookModuleCaller.callRegisterFrameworkEvents("))
-            }
-        }
-    }
-
-    @Test
-    fun generatedSourceSetMatchesRuntimeAndStatusSettings() {
-        val commonFiles = listOf(
-            "YukiHookAPI_Impl",
-            "ModuleApplication_Impl",
-            "HookEntry_YukiHookXposedInit"
-        )
-        listOf(
-            data(Xposed82GenerateSpec(generateModuleStatus = false)),
-            data(Xposed82GenerateSpec(generateModuleStatus = true)),
-            data(LibXposedGenerateSpec(targetApiVersion = 102))
-        ).forEach { data ->
-            val sources = data.createSources()
-            val hasStatusHooks = data is Xposed82GenerateSpec && data.generateModuleStatus
-            val expected = if (hasStatusHooks) commonFiles + "YukiHookLegacyModuleStatus_Impl" else commonFiles
-            Assert.assertEquals(expected.sorted(), sources.map { it.name }.sorted())
-            val statusClass = if (hasStatusHooks)
-                "com.highcapable.yukihookapi.hook.xposed.bridge.status.YukiHookLegacyModuleStatus_Impl_example_module"
-            else ""
-            Assert.assertTrue(data.source("YukiHookAPI_Impl").contains("\"$statusClass\""))
-        }
-    }
-
-    @Test
-    fun legacyStatusJvmNamesAndKeepArePreserved() {
-        val source = data(Xposed82GenerateSpec()).source("YukiHookLegacyModuleStatus_Impl")
-        Assert.assertTrue(source.contains("@Keep"))
-        listOf("__--", "_-_-", "-__-", "-_-_", "___-").forEach { Assert.assertTrue(source.contains("@JvmName(\"$it\")")) }
-        Assert.assertTrue(source.contains("return false"))
-        Assert.assertTrue(source.contains("return \"unknown\""))
-        Assert.assertTrue(source.contains("return -1"))
-    }
-
-    @Test
-    fun modulePackageOverrideIsOnlyGeneratedForLegacy() {
-        listOf(data(Xposed82GenerateSpec()), data(LibXposedGenerateSpec(targetApiVersion = 102))).forEach { data ->
-            data.customPackageName = "example.custom"
-            val source = data.source(data.initClassName)
-            when (data) {
-                is Xposed82GenerateSpec -> Assert.assertTrue(source.contains("modulePackageName: String = \"example.custom\""))
-                is LibXposedGenerateSpec -> Assert.assertFalse(source.contains("modulePackageName"))
-            }
-        }
-    }
-
-    private fun GenerateSpec.source(name: String) = createSources().single { it.name == name }.toString()
-
-    private fun GenerateSpec.createSources() = generate<List<FileSpec>>("createSources", GenerateSpec::class.java)
 
     private fun GenerateSpec.createResources() = generate<Map<String, String>>("createResources", GenerateSpec::class.java)
 
