@@ -308,7 +308,7 @@ object YukiHookAPI {
      * Configures [YukiHookAPI].
      * @param block the configuration block.
      */
-    inline fun configs(block: Configs.() -> Unit) = Configs.apply(block).let {}
+    inline fun configure(block: Configs.() -> Unit) = Configs.apply(block).let {}
 
     /**
      * Loads entry point for a Xposed module.
@@ -377,6 +377,14 @@ object YukiHookAPI {
                 } else YLog.innerE("Failed to passing \"encase\" function because your hookers param is empty", isImplicit = true)
         } else logNotFoundHookApiError()
     }
+
+    // region Deprecated functions for backward compatibility
+
+    /** Configures [YukiHookAPI]. */
+    @Deprecated(message = "Use configure instead.", replaceWith = ReplaceWith("configure(block)"))
+    inline fun configs(block: Configs.() -> Unit) = configure(block)
+
+    // endregion
 
     /** Shows a welcome message when [Configs.debug] is enabled. */
     internal fun sayHello() {

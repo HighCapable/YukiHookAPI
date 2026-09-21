@@ -51,11 +51,11 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.File
 
 /**
- * Calls [YukiHookAPI.configs] from [YukiHookXposedModule].
+ * Calls [YukiHookAPI.configure] from [YukiHookXposedModule].
  * @receiver [YukiHookXposedModule]
  * @param block the configuration block.
  */
-inline fun YukiHookXposedModule.configs(block: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(block)
+inline fun YukiHookXposedModule.configure(block: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configure(block)
 
 /**
  * Calls [YukiHookAPI.encase] from [YukiHookXposedModule].
@@ -178,10 +178,14 @@ fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration?
 /**
  * This function does nothing and does not invoke [block].
  *
- * - Use [YukiHookXposedModule.configs] instead.
+ * - Use [YukiHookXposedModule.configure] instead.
  */
-@Deprecated(message = "Use YukiHookXposedModule.configs instead.")
+@Deprecated(message = "Use YukiHookXposedModule.configure instead.")
 inline fun IYukiHookXposedInit.configs(block: YukiHookAPI.Configs.() -> Unit) = Unit
+
+/** Calls [YukiHookAPI.configure] from [YukiHookXposedModule]. */
+@Deprecated(message = "Use configure instead.")
+inline fun YukiHookXposedModule.configs(block: YukiHookAPI.Configs.() -> Unit) = configure(block)
 
 /**
  * This function does nothing and does not invoke [block].
