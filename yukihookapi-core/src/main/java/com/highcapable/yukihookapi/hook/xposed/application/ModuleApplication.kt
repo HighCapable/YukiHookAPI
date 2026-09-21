@@ -29,6 +29,7 @@ import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.file.YukiHookSharedFiles
+import com.highcapable.yukihookapi.hook.xposed.scope.YukiHookModuleScope
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
@@ -42,6 +43,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  *
  * - Initializes [YukiHookBridge] for module runtime services.
  * - Exposes the module-wide static [current], you can also call [requireContext].
+ * - Gets and uses [YukiHookModuleScope].
  * - Gets and uses [YukiHookSharedFiles].
  * - Loads [YukiHookAPI.Configs] in both module and host environments to avoid duplicate configuration.
  * - Enables [YukiHookDataChannel] communication between the module and host.
@@ -64,6 +66,13 @@ open class ModuleApplication : Application() {
          * @throws IllegalStateException if the [Application] has not finished loading correctly.
          */
         fun requireContext() = current ?: error("ModuleApplication not attached to a context.")
+
+        /**
+         * Gets the module-wide [YukiHookModuleScope] object.
+         * @return [YukiHookModuleScope]
+         */
+        @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+        val moduleScope get() = YukiHookModuleScope.get()
 
         /**
          * Gets the  [YukiHookSharedFiles] object.

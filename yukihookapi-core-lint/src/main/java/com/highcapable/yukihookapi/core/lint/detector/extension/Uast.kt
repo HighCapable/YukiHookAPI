@@ -26,9 +26,11 @@ import com.android.tools.lint.detector.api.JavaContext
 import org.jetbrains.uast.UBinaryExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UFile
 import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UastCallKind
+import java.io.File
 
 private const val YUKIHOOKAPI_MODULE_NAME_PREFIX = "yukihookapi-"
 
@@ -65,4 +67,14 @@ internal fun USimpleNameReferenceExpression.isConstructorReference(): Boolean {
     var parent = uastParent
     while (parent is UQualifiedReferenceExpression) parent = parent.uastParent
     return (parent as? UCallExpression)?.kind == UastCallKind.CONSTRUCTOR_CALL
+}
+
+internal fun JavaContext.toUFile(source: File): UFile? {
+    if (source == file) return uastFile
+    val sourceContext = JavaContext(driver, project, null, source).also {
+        it.uastParser = uastParser
+        it.sourceSetType = sourceSetType
+    }
+
+    return uastParser.parse(sourceContext)
 }

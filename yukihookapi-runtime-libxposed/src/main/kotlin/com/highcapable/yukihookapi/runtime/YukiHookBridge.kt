@@ -31,6 +31,7 @@ import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
+import com.highcapable.yukihookapi.runtime.libxposed.LibXposedModuleScope
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedPreferences
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedService
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedSharedFiles
@@ -59,6 +60,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     private val api get() = apiSpec ?: error(NOT_ATTACHED_ERROR)
 
     override val runtime get() = YukiHookRuntime.LIBXPOSED
+
     override val isAvailable get() = apiSpec != null
     override val isStandaloneAvailable get() = false
     override val isModuleActive get() = LibXposedService.isAvailable
@@ -66,6 +68,8 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val frameworkName get() = if (isAvailable) api.frameworkName else LibXposedService.frameworkName
     override val frameworkVersion get() = if (isAvailable) api.frameworkVersion else LibXposedService.frameworkVersion
     override val frameworkVersionCode get() = if (isAvailable) api.frameworkVersionCode else LibXposedService.frameworkVersionCode
+
+    override val moduleScope get() = LibXposedModuleScope
     override val executableInvoker get() = checkApi(api.executableInvokerBridge)
 
     fun attach(spec: ApiSpec) {
@@ -76,6 +80,11 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Unit
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge) = LibXposedService.observe(lifecycle, listener)
+
+    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
+        LibXposedPreferences.open(context.takeUnless { hostEnvironment }, name)
+
+    override fun sharedFiles(hostEnvironment: Boolean) = LibXposedSharedFiles.open(hostEnvironment)
 
     override fun deoptimize(member: Member) = checkApi(api.deoptimizeCallback)(member)
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkApi(api.hookCallback)(target, priority, hooker)
@@ -88,11 +97,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
             callback(priority, tag, message, throwable)
         else Log.println(priority, tag, message + (throwable?.let { "\n${Log.getStackTraceString(it)}" } ?: ""))
     }
-
-    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
-        LibXposedPreferences.open(context.takeUnless { hostEnvironment }, name)
-
-    override fun sharedFiles(hostEnvironment: Boolean) = LibXposedSharedFiles.open(hostEnvironment)
 
     private inline fun <reified T : Any> checkApi(value: T?) = checkNotNull(value) { NOT_ATTACHED_ERROR }
 }

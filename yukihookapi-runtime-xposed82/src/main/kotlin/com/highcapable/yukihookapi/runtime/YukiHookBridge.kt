@@ -28,6 +28,7 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.bridge.ModuleScopeBridge
 import com.highcapable.yukihookapi.runtime.bridge.SharedFilesBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
@@ -47,19 +48,20 @@ internal object YukiHookBridge : FrameworkHookBridge {
     private var attached = false
 
     override val runtime get() = YukiHookRuntime.XPOSED_82
-    override val isAvailable get() = attached
 
+    override val isAvailable get() = attached
     override val isStandaloneAvailable get(): Boolean {
         if (attached) return true
         attached = Xposed82HookApi.isAvailable
         return attached
     }
-
     override val isModuleActive get() = Xposed82ModuleStatus.isActive
     override val apiVersion get() = if (attached) Xposed82HookApi.apiVersion else Xposed82ModuleStatus.apiVersion
     override val frameworkName get() = if (attached) Xposed82HookApi.frameworkName else Xposed82ModuleStatus.frameworkName
     override val frameworkVersion get() = if (attached) "unsupported" else Xposed82ModuleStatus.frameworkVersion
     override val frameworkVersionCode get() = if (attached) 0L else Xposed82ModuleStatus.frameworkVersionCode
+
+    override val moduleScope: ModuleScopeBridge get() = throw UnsupportedOperationException("Module scope is unavailable in Xposed API 82.")
     override val executableInvoker get() = if (attached) Xposed82ExecutableInvoker else error("Xposed API is not attached to this process.")
 
     fun attach() {
@@ -71,6 +73,12 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? =
         throw UnsupportedOperationException("Framework service unavailable in Xposed API 82.")
+
+    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
+        Xposed82Preferences.open(context.takeUnless { hostEnvironment }, packageName, name)
+
+    override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge =
+        throw UnsupportedOperationException("Shared files are unavailable in Xposed API 82.")
 
     override fun deoptimize(member: Member): Boolean =
         throw UnsupportedOperationException("Method deoptimization is unavailable in Xposed API 82.")
@@ -99,10 +107,4 @@ internal object YukiHookBridge : FrameworkHookBridge {
             Xposed82HookApi.log(priority, tag, message, throwable)
         else Log.println(priority, tag, message + (throwable?.let { "\n${Log.getStackTraceString(it)}" } ?: ""))
     }
-
-    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
-        Xposed82Preferences.open(context.takeUnless { hostEnvironment }, packageName, name)
-
-    override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge =
-        throw UnsupportedOperationException("Shared files are unavailable in Xposed API 82.")
 }

@@ -27,6 +27,7 @@ import com.android.tools.lint.client.api.IssueRegistry
 import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.highcapable.yukihookapi.core.lint.detector.InternalApiDetector
+import com.highcapable.yukihookapi.core.lint.detector.ModuleScopeDetector
 import com.highcapable.yukihookapi.core.lint.detector.ModuleUsageDetector
 import com.highcapable.yukihookapi.core.lint.detector.RuntimeRequirementDetector
 import com.highcapable.yukihookapi.generated.YukiHookAPIProperties
@@ -36,6 +37,7 @@ class YukiHookAPIIssueRegistry : IssueRegistry() {
     override val issues get() = listOf(
         InternalApiDetector.ISSUE,
         ModuleUsageDetector.ISSUE,
+        ModuleScopeDetector.ISSUE,
         RuntimeRequirementDetector.ISSUE
     )
 

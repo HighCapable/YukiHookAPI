@@ -85,7 +85,11 @@ internal object LibXposedService {
         }
     }
 
-    fun preferencesOrNull(name: String) = useService(XposedService.PROP_CAP_REMOTE, "remote preferences") {
+    fun getScope() = useModuleScope { it.scope }
+    fun requestScope(packages: List<String>, callback: XposedService.OnScopeEventListener) = useModuleScope { it.requestScope(packages, callback) }
+    fun removeScope(packages: List<String>) = useModuleScope { it.removeScope(packages) }
+
+    fun preferencesOrNull(name: String) = useService("remote preferences", XposedService.PROP_CAP_REMOTE) {
         it.getRemotePreferences(name)
     }
 
@@ -93,11 +97,24 @@ internal object LibXposedService {
     fun openRemoteFile(name: String) = useRemoteFiles { it.openRemoteFile(name) }
     fun deleteRemoteFile(name: String) = useRemoteFiles { it.deleteRemoteFile(name) }
 
-    private inline fun <T> useRemoteFiles(defaultValue: T? = null, block: (XposedService) -> T) = checkNotNull(
-        useService(XposedService.PROP_CAP_REMOTE, "remote files", block) ?: defaultValue
+    private inline fun <T> useModuleScope(block: (XposedService) -> T) = checkNotNull(
+        useService("module scope") {
+            check(it.apiVersion >= XposedService.API_101) {
+                "Module scope requires libxposed service API ${XposedService.API_101}."
+            }
+            block(it)
+        }
     ) { "libxposed services are unavailable." }
 
-    private inline fun <T> useService(capability: Long, capabilityName: String, block: (XposedService) -> T): T? {
+    private inline fun <T> useRemoteFiles(defaultValue: T? = null, block: (XposedService) -> T) = checkNotNull(
+        useService("remote files", XposedService.PROP_CAP_REMOTE, block) ?: defaultValue
+    ) { "libxposed services are unavailable." }
+
+    private inline fun <T> useService(
+        capabilityName: String,
+        capability: Long? = null,
+        block: (XposedService) -> T
+    ): T? {
         initialize()
         val current = synchronized(services) {
             check(services.size <= 1) {
@@ -106,8 +123,10 @@ internal object LibXposedService {
             services.singleOrNull()
         } ?: return null
 
-        check(current.frameworkProperties and capability != 0L) {
-            "This framework does not support $capabilityName."
+        capability?.let {
+            check(current.frameworkProperties and it != 0L) {
+                "This framework does not support $capabilityName."
+            }
         }
         return block(current)
     }

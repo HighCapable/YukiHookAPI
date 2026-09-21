@@ -62,6 +62,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             "$HOOKER_BRIDGE_PACKAGE_NAME.HookPoint",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.ExecutableInvokerBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.FrameworkHookBridge",
+            "$RUNTIME_BRIDGE_PACKAGE_NAME.ModuleScopeBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.SharedFilesBridge",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.caller.YukiHookModuleCaller",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookAPI_Impl",

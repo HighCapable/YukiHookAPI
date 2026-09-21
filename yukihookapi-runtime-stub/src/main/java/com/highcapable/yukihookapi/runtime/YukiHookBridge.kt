@@ -29,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.bridge.ModuleScopeBridge
 import com.highcapable.yukihookapi.runtime.bridge.SharedFilesBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
@@ -41,6 +42,7 @@ import java.lang.reflect.Member
 object YukiHookBridge : FrameworkHookBridge {
 
     override val runtime: YukiHookRuntime get() = error("Stub!")
+
     override val isAvailable: Boolean get() = error("Stub!")
     override val isStandaloneAvailable get(): Boolean = error("Stub!")
     override val isModuleActive: Boolean get() = error("Stub!")
@@ -48,15 +50,17 @@ object YukiHookBridge : FrameworkHookBridge {
     override val frameworkName: String get() = error("Stub!")
     override val frameworkVersion: String get() = error("Stub!")
     override val frameworkVersionCode: Long get() = error("Stub!")
+
+    override val moduleScope: ModuleScopeBridge get() = error("Stub!")
     override val executableInvoker: ExecutableInvokerBridge get() = error("Stub!")
 
     override fun initializeModuleServices(): Unit = error("Stub!")
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?): Unit = error("Stub!")
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? = error("Stub!")
+    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences = error("Stub!")
+    override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge = error("Stub!")
     override fun deoptimize(member: Member): Boolean = error("Stub!")
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge = error("Stub!")
     override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge = error("Stub!")
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?): Unit = error("Stub!")
-    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences = error("Stub!")
-    override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge = error("Stub!")
 }

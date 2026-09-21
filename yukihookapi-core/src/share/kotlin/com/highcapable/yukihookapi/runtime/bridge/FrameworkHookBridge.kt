@@ -63,6 +63,9 @@ interface FrameworkHookBridge {
     /** Framework version code. */
     val frameworkVersionCode: Long
 
+    /** Module-scope bridge. */
+    val moduleScope: ModuleScopeBridge
+
     /** Executable invocation capabilities supplied by the selected runtime. */
     val executableInvoker: ExecutableInvokerBridge
 
@@ -83,6 +86,24 @@ interface FrameworkHookBridge {
      * @throws UnsupportedOperationException when the selected runtime does not support framework services.
      */
     fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge?
+
+    /**
+     * Opens the storage selected by the runtime for the current environment.
+     * @param context the context to use.
+     * @param packageName the package name of the storage.
+     * @param name the name of the storage.
+     * @param hostEnvironment whether the storage is for the host environment.
+     * @return [SharedPreferences]
+     */
+    fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences
+
+    /**
+     * Gets shared-file storage for the current environment.
+     * @param hostEnvironment whether storage is accessed from a host environment.
+     * @return [SharedFilesBridge]
+     * @throws UnsupportedOperationException when the selected runtime does not support shared files.
+     */
+    fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge
 
     /**
      * Deoptimizes a method or constructor so its callees are invoked without runtime inlining.
@@ -118,22 +139,4 @@ interface FrameworkHookBridge {
      * @param throwable the throwable of the log.
      */
     fun log(priority: Int, tag: String, message: String, throwable: Throwable?)
-
-    /**
-     * Opens the storage selected by the runtime for the current environment.
-     * @param context the context to use.
-     * @param packageName the package name of the storage.
-     * @param name the name of the storage.
-     * @param hostEnvironment whether the storage is for the host environment.
-     * @return [SharedPreferences]
-     */
-    fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences
-
-    /**
-     * Gets shared-file storage for the current environment.
-     * @param hostEnvironment whether storage is accessed from a host environment.
-     * @return [SharedFilesBridge]
-     * @throws UnsupportedOperationException when the selected runtime does not support shared files.
-     */
-    fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge
 }
