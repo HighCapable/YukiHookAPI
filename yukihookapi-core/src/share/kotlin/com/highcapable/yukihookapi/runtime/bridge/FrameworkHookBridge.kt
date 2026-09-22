@@ -114,7 +114,7 @@ interface FrameworkHookBridge {
     fun deoptimize(member: Member): Boolean
 
     /**
-     * Registers a hook using the supplied hooker contract and returns an independent Hook that can remove itself.
+     * Registers a hook using the supplied hooker contract and returns an independent hook that can remove itself.
      * @param target the point to hook.
      * @param priority the priority of the hook.
      * @param hooker the hooker to invoke when the hook is triggered.
