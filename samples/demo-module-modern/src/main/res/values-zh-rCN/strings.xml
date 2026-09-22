@@ -42,10 +42,8 @@
     <string name="demo_module_scope_request_message">此操作将使用 “系统设置” 作为示例申请作用域。</string>
     <string name="demo_module_scope_request_result">申请结果</string>
     <string name="demo_module_scope_request_succeeded">作用域已添加。</string>
-    <string name="demo_module_scope_request_failed">添加失败。\n\n原因：%1$s\n类型：%2$s</string>
-    <string name="demo_module_scope_remove_result">移除结果</string>
-    <string name="demo_module_scope_remove_succeeded">已移除</string>
-    <string name="demo_module_scope_remove_failed">移除失败。\n\n原因：%1$s\n类型：%2$s</string>
+    <string name="demo_module_scope_request_failed">添加失败。\n\n原因：%1$s</string>
+    <string name="demo_module_scope_request_sent">已发送请求</string>
     <string name="demo_start_parasitic">启动寄生界面</string>
     <string name="demo_start_parasitic_title">启动寄生界面</string>
     <string name="demo_start_parasitic_message">此功能将启动模块中的 MainActivity。</string>

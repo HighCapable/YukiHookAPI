@@ -27,7 +27,6 @@ import android.view.Gravity
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.StringRes
 import androidx.core.view.updateMargins
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.highcapable.betterandroid.ui.extension.component.base.getThemeAttrsColorStateList
@@ -289,17 +288,8 @@ class MainActivity : BaseActivity() {
             .setPositiveButton(R.string.demo_module_scope_request) { _, _ ->
                 showModuleScopeRequestDialog()
             }.setNegativeButton(R.string.demo_module_scope_remove) { _, _ ->
-                YukiHookAPI.Module.scope.remove(SETTINGS_PACKAGE_NAME) { succeed, error, errorMessage, _ ->
-                    if (succeed) toast(getString(R.string.demo_module_scope_remove_succeeded))
-                    else showModuleScopeEventResultDialog(
-                        title = R.string.demo_module_scope_remove_result,
-                        message = getString(
-                            R.string.demo_module_scope_remove_failed,
-                            errorMessage,
-                            error.toString()
-                        )
-                    )
-                }
+                YukiHookAPI.Module.scope.remove(SETTINGS_PACKAGE_NAME)
+                toast(getString(R.string.demo_module_scope_request_sent))
             }.setNeutralButton(R.string.demo_dialog_close, null)
             .show()
     }
@@ -309,19 +299,19 @@ class MainActivity : BaseActivity() {
             .setTitle(R.string.demo_dialog_notice)
             .setMessage(R.string.demo_module_scope_request_message)
             .setPositiveButton(R.string.demo_dialog_ok) { _, _ ->
-                YukiHookAPI.Module.scope.request(SETTINGS_PACKAGE_NAME) { approved, error, errorMessage, _ ->
+                YukiHookAPI.Module.scope.request(SETTINGS_PACKAGE_NAME) { approved, errorMessage, _ ->
                     val message = if (approved) getString(R.string.demo_module_scope_request_succeeded)
-                    else getString(R.string.demo_module_scope_request_failed, errorMessage, error.toString())
+                    else getString(R.string.demo_module_scope_request_failed, errorMessage)
 
-                    showModuleScopeEventResultDialog(R.string.demo_module_scope_request_result, message)
+                    showModuleScopeRequestResultDialog(message)
                 }
             }.setNegativeButton(R.string.demo_dialog_cancel, null)
             .show()
     }
 
-    private fun showModuleScopeEventResultDialog(@StringRes title: Int, message: String) {
+    private fun showModuleScopeRequestResultDialog(message: String) {
         MaterialAlertDialogBuilder(this)
-            .setTitle(title)
+            .setTitle(R.string.demo_module_scope_request_result)
             .setMessage(message)
             .setPositiveButton(R.string.demo_dialog_ok, null)
             .show()
