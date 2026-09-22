@@ -45,7 +45,9 @@
     <string name="demo_module_scope_request_result">Request Result</string>
     <string name="demo_module_scope_request_succeeded">Scope added.</string>
     <string name="demo_module_scope_request_failed">Failed to add scope.\n\nReason: %1$s\nType: %2$s</string>
-    <string name="demo_module_scope_request_sent">Request sent</string>
+    <string name="demo_module_scope_remove_result">Removal Result</string>
+    <string name="demo_module_scope_remove_succeeded">Removed</string>
+    <string name="demo_module_scope_remove_failed">Failed to remove scope.\n\nReason: %1$s\nType: %2$s</string>
     <string name="demo_start_parasitic">Start Parasitic</string>
     <string name="demo_start_parasitic_title">Start Parasitic</string>
     <string name="demo_start_parasitic_message">This function will start MainActivity that exists in the module.</string>

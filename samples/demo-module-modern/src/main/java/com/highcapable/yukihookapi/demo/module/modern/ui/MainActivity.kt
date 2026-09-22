@@ -27,6 +27,7 @@ import android.view.Gravity
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.core.view.updateMargins
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.highcapable.betterandroid.ui.extension.component.base.getThemeAttrsColorStateList
@@ -58,7 +59,6 @@ import com.highcapable.yukihookapi.demo.module.modern.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.modern.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.highcapable.yukihookapi.hook.factory.preferences
-import com.highcapable.yukihookapi.hook.xposed.scope.YukiHookModuleScope
 import java.text.SimpleDateFormat
 import java.util.Date
 import com.google.android.material.R as Material_R
@@ -289,8 +289,17 @@ class MainActivity : BaseActivity() {
             .setPositiveButton(R.string.demo_module_scope_request) { _, _ ->
                 showModuleScopeRequestDialog()
             }.setNegativeButton(R.string.demo_module_scope_remove) { _, _ ->
-                YukiHookAPI.Module.scope.remove(SETTINGS_PACKAGE_NAME)
-                toast(getString(R.string.demo_module_scope_request_sent))
+                YukiHookAPI.Module.scope.remove(SETTINGS_PACKAGE_NAME) { succeed, error, errorMessage, _ ->
+                    if (succeed) toast(getString(R.string.demo_module_scope_remove_succeeded))
+                    else showModuleScopeEventResultDialog(
+                        title = R.string.demo_module_scope_remove_result,
+                        message = getString(
+                            R.string.demo_module_scope_remove_failed,
+                            errorMessage,
+                            error.toString()
+                        )
+                    )
+                }
             }.setNeutralButton(R.string.demo_dialog_close, null)
             .show()
     }
@@ -301,22 +310,18 @@ class MainActivity : BaseActivity() {
             .setMessage(R.string.demo_module_scope_request_message)
             .setPositiveButton(R.string.demo_dialog_ok) { _, _ ->
                 YukiHookAPI.Module.scope.request(SETTINGS_PACKAGE_NAME) { approved, error, errorMessage, _ ->
-                    showModuleScopeRequestResultDialog(approved, error, errorMessage)
+                    val message = if (approved) getString(R.string.demo_module_scope_request_succeeded)
+                    else getString(R.string.demo_module_scope_request_failed, errorMessage, error.toString())
+
+                    showModuleScopeEventResultDialog(R.string.demo_module_scope_request_result, message)
                 }
             }.setNegativeButton(R.string.demo_dialog_cancel, null)
             .show()
     }
 
-    private fun showModuleScopeRequestResultDialog(
-        approved: Boolean,
-        error: YukiHookModuleScope.ReceivingError?,
-        errorMessage: String?
-    ) {
-        val message = if (approved) getString(R.string.demo_module_scope_request_succeeded)
-        else getString(R.string.demo_module_scope_request_failed, errorMessage, error.toString())
-
+    private fun showModuleScopeEventResultDialog(@StringRes title: Int, message: String) {
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.demo_module_scope_request_result)
+            .setTitle(title)
             .setMessage(message)
             .setPositiveButton(R.string.demo_dialog_ok, null)
             .show()
