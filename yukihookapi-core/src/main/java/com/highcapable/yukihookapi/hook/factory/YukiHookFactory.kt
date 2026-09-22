@@ -184,7 +184,7 @@ fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration?
 inline fun IYukiHookXposedInit.configs(block: YukiHookAPI.Configs.() -> Unit) = Unit
 
 /** Calls [YukiHookAPI.configure] from [YukiHookXposedModule]. */
-@Deprecated(message = "Use configure instead.")
+@Deprecated(message = "Use configure instead.", replaceWith = ReplaceWith("configure(block)"))
 inline fun YukiHookXposedModule.configs(block: YukiHookAPI.Configs.() -> Unit) = configure(block)
 
 /**
