@@ -25,7 +25,6 @@ package com.highcapable.yukihookapi.hook.xposed.scope
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
-import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
@@ -35,8 +34,6 @@ import com.highcapable.yukihookapi.runtime.bridge.ModuleScopeBridge
  * [YukiHookAPI] module scope backed by the module environment.
  *
  * Call [isAvailable] before using this API.
- *
- * - [request] and [remove] require [YukiHookLibXposedEntry.staticScope] to be false.
  *
  * This API does not restart host processes or manage existing hook registrations.
  * Restart the affected host processes to apply their new scope.
@@ -136,7 +133,6 @@ class YukiHookModuleScope private constructor() {
      *
      * The callback is always invoked on the main thread.
      * Submission errors are thrown directly and do not invoke the callback.
-     * [YukiHookLibXposedEntry.staticScope] must be false to use this function.
      * @param packages package names to request, including `system` when targeting system_server.
      * @param callback callback invoked with the approved packages or a failure message.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
@@ -152,7 +148,6 @@ class YukiHookModuleScope private constructor() {
      *
      * The callback is always invoked on the main thread.
      * Submission errors are thrown directly and do not invoke the callback.
-     * [YukiHookLibXposedEntry.staticScope] must be false to use this function.
      * @param packages package names to request, including `system` when targeting system_server.
      * @param callback callback invoked with the approved packages or a failure message.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
@@ -172,9 +167,6 @@ class YukiHookModuleScope private constructor() {
 
     /**
      * Removes packages from the module scope.
-     *
-     * This operation is synchronous and has no approval callback.
-     * [YukiHookLibXposedEntry.staticScope] must be false to use this function.
      * @param packages package names to remove.
      * @param callback callback invoked with the success status of the removal operation.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
@@ -186,9 +178,6 @@ class YukiHookModuleScope private constructor() {
 
     /**
      * Removes packages from the module scope.
-     *
-     * This operation is synchronous and has no approval callback.
-     * [YukiHookLibXposedEntry.staticScope] must be false to use this function.
      * @param packages package names to remove.
      * @param callback callback invoked with the success status of the removal operation.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
