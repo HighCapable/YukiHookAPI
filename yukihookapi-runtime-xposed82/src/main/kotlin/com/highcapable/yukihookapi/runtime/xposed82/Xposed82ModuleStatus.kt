@@ -67,7 +67,7 @@ internal object Xposed82ModuleStatus {
     val apiVersion get() = invoke<Int>(GET_EXECUTOR_API_VERSION_METHOD_NAME)?.takeIf { it > 0 } ?: -1
     val frameworkName get() = invoke<String>(GET_EXECUTOR_NAME_METHOD_NAME)?.ifBlank { "unknown" } ?: "unknown"
     val frameworkVersion get() = invoke<String>(GET_EXECUTOR_VERSION_METHOD_NAME)?.ifBlank { "unknown" } ?: "unknown"
-    val frameworkVersionCode get() = invoke<Long>(GET_EXECUTOR_VERSION_CODE_METHOD_NAME)?.takeIf { it > 0 } ?: -1L
+    val frameworkVersionCode get() = invoke<Long>(GET_EXECUTOR_VERSION_CODE_METHOD_NAME)?.takeIf { it >= 0 } ?: -1L
 
     fun install(loader: ClassLoader?) {
         if (loader == null || className.isBlank()) return
