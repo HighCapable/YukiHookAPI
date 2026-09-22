@@ -56,43 +56,6 @@ class YukiHookModuleScope private constructor() {
         fun get() = instance
     }
 
-    /**
-     * Error types for receiving the result of a scope request.
-     */
-    enum class RequestError {
-        /** The requested packages are already in the module scope. */
-        ALREADY_EXISTS,
-
-        /** The requested packages were not found or not installed in this system. */
-        NOT_FOUND,
-
-        /** The request was rejected by the user. */
-        USER_REJECTED,
-
-        /** The request was blocked by the framework. */
-        BLOCKED,
-
-        /** The request did not receive a response. */
-        NO_RESPONSE,
-
-        /** The request failed for an unknown reason. */
-        UNKNOWN
-    }
-
-    /**
-     * Error types for receiving the result of a scope removal.
-     */
-    enum class RemoveError {
-        /** The requested packages were not found in the module scope. */
-        NOT_FOUND,
-
-        /** The request did not receive a response. */
-        NO_RESPONSE,
-
-        /** The request failed for an unknown reason. */
-        UNKNOWN
-    }
-
     private val current by YukiHookBridge::moduleScope
 
     /** Checks that this API is used from the module process. */
@@ -129,84 +92,60 @@ class YukiHookModuleScope private constructor() {
 
     /**
      * Requests additional packages for the module scope.
-     * Returning from this function only means the request was submitted.
      *
+     * Returning from this function only means the request was submitted.
      * The callback is always invoked on the main thread.
      * Submission errors are thrown directly and do not invoke the callback.
-     * @param packages package names to request, including `system` when targeting system_server.
+     * @param packages package names to request, including `system` when targeting system server.
      * @param callback callback invoked with the approved packages or a failure message.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
      */
     fun request(
         vararg packages: String,
-        callback: (approved: Boolean, error: RequestError?, errorMessage: String?, packages: List<String>) -> Unit
+        callback: (approved: Boolean, errorMessage: String?, packages: List<String>) -> Unit
     ) = request(packages.toList(), callback)
 
     /**
      * Requests additional packages for the module scope.
-     * Returning from this function only means the request was submitted.
      *
+     * Returning from this function only means the request was submitted.
      * The callback is always invoked on the main thread.
      * Submission errors are thrown directly and do not invoke the callback.
-     * @param packages package names to request, including `system` when targeting system_server.
+     * @param packages package names to request, including `system` when targeting system server.
      * @param callback callback invoked with the approved packages or a failure message.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
      */
     fun request(
         packages: Collection<String>,
-        callback: (approved: Boolean, error: RequestError?, errorMessage: String?, packages: List<String>) -> Unit
+        callback: (approved: Boolean, errorMessage: String?, packages: List<String>) -> Unit
     ) {
         checkApi()
         current.request(packages, object : ModuleScopeBridge.RequestCallback {
-            override fun onApproved(packages: List<String>) =
-                callback(true, null, null, packages)
-            override fun onFailed(error: ModuleScopeBridge.RequestCallback.Error, message: String) =
-                callback(false, error.toFacade(), message, emptyList())
+            override fun onApproved(packages: List<String>) = callback(true, null, packages)
+            override fun onFailed(message: String) = callback(false, message, emptyList())
         })
     }
 
     /**
      * Removes packages from the module scope.
+     *
+     * Returning from this function only means the removal request was submitted.
+     * The framework does not report the result of this operation.
      * @param packages package names to remove.
-     * @param callback callback invoked with the success status of the removal operation.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
      */
-    fun remove(
-        vararg packages: String,
-        callback: (succeed: Boolean, error: RemoveError?, errorMessage: String?, packages: List<String>) -> Unit = { _, _, _, _ -> }
-    ) = remove(packages.toList(), callback)
+    fun remove(vararg packages: String) = remove(packages.toList())
 
     /**
      * Removes packages from the module scope.
+     *
+     * Returning from this function only means the removal request was submitted.
+     * The framework does not report the result of this operation.
      * @param packages package names to remove.
-     * @param callback callback invoked with the success status of the removal operation.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
      */
-    fun remove(
-        packages: Collection<String>,
-        callback: (succeed: Boolean, error: RemoveError?, errorMessage: String?, packages: List<String>) -> Unit = { _, _, _, _ -> }
-    ) {
+    fun remove(packages: Collection<String>) {
         checkApi()
-        current.remove(packages, object : ModuleScopeBridge.RemoveCallback {
-            override fun onRemoved(packages: List<String>) =
-                callback(true, null, null, packages)
-            override fun onFailed(error: ModuleScopeBridge.RemoveCallback.Error, message: String) =
-                callback(false, error.toFacade(), message, emptyList())
-        })
-    }
-
-    private fun ModuleScopeBridge.RequestCallback.Error.toFacade() = when (this) {
-        ModuleScopeBridge.RequestCallback.Error.ALREADY_EXISTS -> RequestError.ALREADY_EXISTS
-        ModuleScopeBridge.RequestCallback.Error.NOT_FOUND -> RequestError.NOT_FOUND
-        ModuleScopeBridge.RequestCallback.Error.USER_REJECTED -> RequestError.USER_REJECTED
-        ModuleScopeBridge.RequestCallback.Error.BLOCKED -> RequestError.BLOCKED
-        ModuleScopeBridge.RequestCallback.Error.NO_RESPONSE -> RequestError.NO_RESPONSE
-        ModuleScopeBridge.RequestCallback.Error.UNKNOWN -> RequestError.UNKNOWN
-    }
-
-    private fun ModuleScopeBridge.RemoveCallback.Error.toFacade() = when (this) {
-        ModuleScopeBridge.RemoveCallback.Error.NOT_FOUND -> RemoveError.NOT_FOUND
-        ModuleScopeBridge.RemoveCallback.Error.NO_RESPONSE -> RemoveError.NO_RESPONSE
-        ModuleScopeBridge.RemoveCallback.Error.UNKNOWN -> RemoveError.UNKNOWN
+        current.remove(packages)
     }
 }
