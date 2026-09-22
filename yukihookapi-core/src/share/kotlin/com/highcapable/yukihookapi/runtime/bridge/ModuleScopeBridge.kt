@@ -31,16 +31,38 @@ import androidx.annotation.RestrictTo
 interface ModuleScopeBridge {
 
     /**
+     * Receives the result of a scope event, such as a request or removal operation.
+     *
+     * The callback is always invoked on the main thread.
+     */
+    interface EventCallback<Error> {
+
+        /**
+         * Called when the scope event fails.
+         * @param error the error type indicating the reason for the failure.
+         * @param message the failure message provided by the framework.
+         */
+        @MainThread
+        fun onFailed(error: Error, message: String)
+    }
+
+    /**
      * Receives the result of a scope request.
      *
      * The callback is always invoked on the main thread.
      */
-    interface RequestCallback {
+    interface RequestCallback : EventCallback<RequestCallback.Error> {
 
         /**
          * Error types for receiving the result of a scope request.
          */
         enum class Error {
+            /** The requested packages are already in the module scope. */
+            ALREADY_EXISTS,
+
+            /** The requested packages were not found or not installed in this system. */
+            NOT_FOUND,
+
             /** The request was rejected by the user. */
             USER_REJECTED,
 
@@ -61,13 +83,38 @@ interface ModuleScopeBridge {
         @MainThread
         fun onApproved(packages: List<String>)
 
+        override fun onFailed(error: Error, message: String)
+    }
+
+    /**
+     * Receives the result of a scope removal.
+     *
+     * The callback is always invoked on the main thread.
+     */
+    interface RemoveCallback : EventCallback<RemoveCallback.Error> {
+
         /**
-         * Called when the scope request fails.
-         * @param error the error type indicating the reason for the failure.
-         * @param message the failure message provided by the framework.
+         * Error types for receiving the result of a scope removal.
+         */
+        enum class Error {
+            /** The requested packages were not found in the module scope. */
+            NOT_FOUND,
+
+            /** The request did not receive a response. */
+            NO_RESPONSE,
+
+            /** The request failed for an unknown reason. */
+            UNKNOWN
+        }
+
+        /**
+         * Called with the packages removed by the framework.
+         * @param packages the removed packages, which may be a subset of the requested packages.
          */
         @MainThread
-        fun onFailed(error: Error, message: String)
+        fun onRemoved(packages: List<String>)
+
+        override fun onFailed(error: Error, message: String)
     }
 
     /** Whether module-scope operations are currently available. */
@@ -86,6 +133,7 @@ interface ModuleScopeBridge {
     /**
      * Removes packages from the module scope.
      * @param packages the package names to remove.
+     * @param callback the callback invoked with the success status of the removal operation.
      */
-    fun remove(packages: Collection<String>)
+    fun remove(packages: Collection<String>, callback: RemoveCallback)
 }

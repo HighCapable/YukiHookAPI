@@ -36,19 +36,58 @@ internal object LibXposedModuleScope : ModuleScopeBridge {
     override val isAvailable get() = LibXposedService.isAvailable
     override val packages get() = LibXposedService.getScope()
 
-    override fun request(packages: Collection<String>, callback: ModuleScopeBridge.RequestCallback) =
+    override fun request(packages: Collection<String>, callback: ModuleScopeBridge.RequestCallback) {
+        if (packages.all { it in this.packages }) {
+            mainHandler.post {
+                callback.onFailed(
+                    ModuleScopeBridge.RequestCallback.Error.ALREADY_EXISTS,
+                    "All requested packages are already in the module scope"
+                )
+            }
+            return
+        }
+
         LibXposedService.requestScope(packages.toList(), object : XposedService.OnScopeEventListener {
 
             override fun onScopeRequestApproved(approved: List<String>) {
-                mainHandler.post { callback.onApproved(approved) }
+                if (approved.isNotEmpty())
+                    mainHandler.post { callback.onApproved(approved) }
+                else mainHandler.post { 
+                    callback.onFailed(
+                        ModuleScopeBridge.RequestCallback.Error.NOT_FOUND,
+                        "Requested packages were not found in this system"
+                    )
+                }
             }
 
             override fun onScopeRequestFailed(message: String) {
                 mainHandler.post { callback.onFailed(message.convertToError(), message) }
             }
         })
+    }
 
-    override fun remove(packages: Collection<String>) = LibXposedService.removeScope(packages.toList())
+    override fun remove(packages: Collection<String>, callback: ModuleScopeBridge.RemoveCallback) {
+        try {
+            if (packages.any { it in this.packages }) {
+                LibXposedService.removeScope(packages.toList())
+                mainHandler.post { callback.onRemoved(packages.toList()) }
+            } else mainHandler.post {
+                callback.onFailed(
+                    ModuleScopeBridge.RemoveCallback.Error.NOT_FOUND, 
+                    "No packages found in the current module scope"
+                )
+            }
+        } catch (e: IllegalStateException) {
+            throw e
+        } catch (t: Throwable) {
+            mainHandler.post {
+                callback.onFailed(
+                    ModuleScopeBridge.RemoveCallback.Error.UNKNOWN, 
+                    t.message ?: "Unknown error"
+                )
+            }
+        }
+    }
 
     private fun String?.convertToError(): ModuleScopeBridge.RequestCallback.Error {
         val message = this?.trim()?.lowercase() ?: return ModuleScopeBridge.RequestCallback.Error.UNKNOWN

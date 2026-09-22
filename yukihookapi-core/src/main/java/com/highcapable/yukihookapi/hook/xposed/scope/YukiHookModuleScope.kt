@@ -62,12 +62,32 @@ class YukiHookModuleScope private constructor() {
     /**
      * Error types for receiving the result of a scope request.
      */
-    enum class ReceivingError {
+    enum class RequestError {
+        /** The requested packages are already in the module scope. */
+        ALREADY_EXISTS,
+
+        /** The requested packages were not found or not installed in this system. */
+        NOT_FOUND,
+
         /** The request was rejected by the user. */
         USER_REJECTED,
 
         /** The request was blocked by the framework. */
         BLOCKED,
+
+        /** The request did not receive a response. */
+        NO_RESPONSE,
+
+        /** The request failed for an unknown reason. */
+        UNKNOWN
+    }
+
+    /**
+     * Error types for receiving the result of a scope removal.
+     */
+    enum class RemoveError {
+        /** The requested packages were not found in the module scope. */
+        NOT_FOUND,
 
         /** The request did not receive a response. */
         NO_RESPONSE,
@@ -123,7 +143,7 @@ class YukiHookModuleScope private constructor() {
      */
     fun request(
         vararg packages: String,
-        callback: (approved: Boolean, error: ReceivingError?, errorMessage: String?, packages: List<String>) -> Unit
+        callback: (approved: Boolean, error: RequestError?, errorMessage: String?, packages: List<String>) -> Unit
     ) = request(packages.toList(), callback)
 
     /**
@@ -139,7 +159,7 @@ class YukiHookModuleScope private constructor() {
      */
     fun request(
         packages: Collection<String>,
-        callback: (approved: Boolean, error: ReceivingError?, errorMessage: String?, packages: List<String>) -> Unit
+        callback: (approved: Boolean, error: RequestError?, errorMessage: String?, packages: List<String>) -> Unit
     ) {
         checkApi()
         current.request(packages, object : ModuleScopeBridge.RequestCallback {
@@ -156,9 +176,13 @@ class YukiHookModuleScope private constructor() {
      * This operation is synchronous and has no approval callback.
      * [YukiHookLibXposedEntry.staticScope] must be false to use this function.
      * @param packages package names to remove.
+     * @param callback callback invoked with the success status of the removal operation.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
      */
-    fun remove(vararg packages: String) = remove(packages.toList())
+    fun remove(
+        vararg packages: String,
+        callback: (succeed: Boolean, error: RemoveError?, errorMessage: String?, packages: List<String>) -> Unit = { _, _, _, _ -> }
+    ) = remove(packages.toList(), callback)
 
     /**
      * Removes packages from the module scope.
@@ -166,17 +190,34 @@ class YukiHookModuleScope private constructor() {
      * This operation is synchronous and has no approval callback.
      * [YukiHookLibXposedEntry.staticScope] must be false to use this function.
      * @param packages package names to remove.
+     * @param callback callback invoked with the success status of the removal operation.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
      */
-    fun remove(packages: Collection<String>) {
+    fun remove(
+        packages: Collection<String>,
+        callback: (succeed: Boolean, error: RemoveError?, errorMessage: String?, packages: List<String>) -> Unit = { _, _, _, _ -> }
+    ) {
         checkApi()
-        current.remove(packages)
+        current.remove(packages, object : ModuleScopeBridge.RemoveCallback {
+            override fun onRemoved(packages: List<String>) =
+                callback(true, null, null, packages)
+            override fun onFailed(error: ModuleScopeBridge.RemoveCallback.Error, message: String) =
+                callback(false, error.toFacade(), message, emptyList())
+        })
     }
 
     private fun ModuleScopeBridge.RequestCallback.Error.toFacade() = when (this) {
-        ModuleScopeBridge.RequestCallback.Error.USER_REJECTED -> ReceivingError.USER_REJECTED
-        ModuleScopeBridge.RequestCallback.Error.BLOCKED -> ReceivingError.BLOCKED
-        ModuleScopeBridge.RequestCallback.Error.NO_RESPONSE -> ReceivingError.NO_RESPONSE
-        ModuleScopeBridge.RequestCallback.Error.UNKNOWN -> ReceivingError.UNKNOWN
+        ModuleScopeBridge.RequestCallback.Error.ALREADY_EXISTS -> RequestError.ALREADY_EXISTS
+        ModuleScopeBridge.RequestCallback.Error.NOT_FOUND -> RequestError.NOT_FOUND
+        ModuleScopeBridge.RequestCallback.Error.USER_REJECTED -> RequestError.USER_REJECTED
+        ModuleScopeBridge.RequestCallback.Error.BLOCKED -> RequestError.BLOCKED
+        ModuleScopeBridge.RequestCallback.Error.NO_RESPONSE -> RequestError.NO_RESPONSE
+        ModuleScopeBridge.RequestCallback.Error.UNKNOWN -> RequestError.UNKNOWN
+    }
+
+    private fun ModuleScopeBridge.RemoveCallback.Error.toFacade() = when (this) {
+        ModuleScopeBridge.RemoveCallback.Error.NOT_FOUND -> RemoveError.NOT_FOUND
+        ModuleScopeBridge.RemoveCallback.Error.NO_RESPONSE -> RemoveError.NO_RESPONSE
+        ModuleScopeBridge.RemoveCallback.Error.UNKNOWN -> RemoveError.UNKNOWN
     }
 }
