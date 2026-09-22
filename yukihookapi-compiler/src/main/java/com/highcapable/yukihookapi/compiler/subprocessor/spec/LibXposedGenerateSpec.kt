@@ -33,8 +33,6 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
  */
 data class LibXposedGenerateSpec(
     override var entryPackageName: String = "",
-    override var modulePackageName: String = "",
-    override var customPackageName: String = "",
     override var entryClassName: String = "",
     override var initClassName: String = "",
     override var isObjectEntry: Boolean = false,

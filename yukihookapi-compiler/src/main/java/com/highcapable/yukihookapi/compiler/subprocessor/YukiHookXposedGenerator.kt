@@ -62,6 +62,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         const val VERSION = YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_BOM_VERSION
         const val XPOSED_CLASS_SHORT_NAME = "_YukiHookXposedInit"
 
+        val MODULE_PACKAGE_NAME_REGEX = "[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)+".toRegex()
+
         const val IS_ACTIVE_METHOD_NAME = "__--"
         const val GET_EXECUTOR_API_VERSION_METHOD_NAME = "-__-"
         const val GET_EXECUTOR_NAME_METHOD_NAME = "_-_-"
@@ -157,21 +159,16 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 nativeLibraries = (arguments["nativeLibraries"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
             )
             YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec(
+                modulePackageName = (arguments["modulePackageName"] as? String).orEmpty().trim(),
                 generateModuleStatus = arguments["generateModuleStatus"] as? Boolean ?: true
             )
         }
-        val sourcePath = (arguments["sourcePath"] as? String).orEmpty().trim()
         val entrySource = entry.containingFile ?: problem("The hook entry must be declared in a source file.")
 
-        spec.customPackageName = (arguments["modulePackageName"] as? String).orEmpty().trim()
         spec.initClassName = (arguments["entryClassName"] as? String).orEmpty().trim()
-
-        if ((spec.customPackageName.startsWith(".") ||
-                spec.customPackageName.endsWith(".") ||
-                !spec.customPackageName.contains(".") ||
-                spec.customPackageName.contains("..")) &&
-            spec.customPackageName.isNotEmpty()
-        ) problem("Invalid module package name \"${spec.customPackageName}\".")
+        if (spec is Xposed82GenerateSpec && spec.modulePackageName.isNotEmpty() &&
+            !MODULE_PACKAGE_NAME_REGEX.matches(spec.modulePackageName)
+        ) problem("Invalid module package name \"${spec.modulePackageName}\".")
 
         if (("[^\\p{L}\\p{N}_]".toRegex().containsMatchIn(spec.initClassName) ||
                 true.let { for (i in 0..9) if (spec.initClassName.startsWith(i.toString())) return@let true; false }) &&
@@ -193,8 +190,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         }
 
         generateResources(
-            codePath = (entry.location as? FileLocation)?.filePath?.parseFileSeparator() ?: "",
-            sourcePath = sourcePath.parseFileSeparator(),
+            codePath = (entry.location as? FileLocation)?.filePath ?: "",
             spec = spec,
             resolver = resolver,
             entrySource = entrySource
@@ -204,29 +200,13 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     /**
      * Generates the framework entry and metadata resources.
      * @param codePath the full source path of the annotated class.
-     * @param sourcePath the configured source path.
      * @param spec the template generation data.
      * @param resolver the current KSP resolver.
      * @param entrySource the annotated entry source file.
      */
-    private fun generateResources(
-        codePath: String,
-        sourcePath: String,
-        spec: GenerateSpec,
-        resolver: Resolver,
-        entrySource: KSFile
-    ) {
-        if (codePath.isBlank()) problem("Project code path not available.")
-        if (sourcePath.isBlank()) problem("Project source path not available.")
-
-        // Runtime-specific entries may live outside src/main while sharing its AndroidManifest.
-        // Find the module root independently of the annotated entry's source set.
-        val projectDir = generateSequence(File(codePath.parseFileSeparator()).parentFile) { it.parentFile }
-            .firstOrNull { it.resolve(sourcePath).resolve("AndroidManifest.xml").isFile }
-            ?: problem("Project source path \"$sourcePath\" has no AndroidManifest.xml in an enclosing module.")
-
-        val sourceDir = projectDir.resolve(sourcePath)
-        val resourcesDir = sourceDir.resolve("resources")
+    private fun generateResources(codePath: String, spec: GenerateSpec, resolver: Resolver, entrySource: KSFile) {
+        val projectDir = findProjectDir(codePath)
+        checkSourceEntryFiles(projectDir)
 
         if (spec is LibXposedGenerateSpec &&
             (spec.minApiVersion < LibXposedGenerateSpec.RUNTIME_MIN_API_VERSION || spec.targetApiVersion < spec.minApiVersion)
@@ -235,11 +215,18 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 "and targetApiVersion >= minApiVersion. API 100 is unsupported."
         )
 
-        val (modulePackageName, modulePackageSource) = parseModulePackageName(projectDir, resolver)
-        spec.modulePackageName = modulePackageName
-        if (spec.modulePackageName.isBlank() && spec.customPackageName.isBlank()) problem(
-            "Cannot identify the module application ID, enable the BuildConfig feature or set `modulePackageName`."
-        )
+        val modulePackageSource = if (spec is Xposed82GenerateSpec) {
+            if (spec.modulePackageName.isNotBlank()) {
+                warn(
+                    "The module package name is explicitly set to \"${spec.modulePackageName}\". " +
+                        "Please verify that it matches the application ID."
+                )
+                null
+            } else parseModulePackageName(resolver).let { (packageName, source) ->
+                spec.modulePackageName = packageName
+                source
+            }
+        } else null
         if (spec is LibXposedGenerateSpec) {
             if (spec.scope.any { it.isBlank() || it.any(Char::isWhitespace) })
                 problem("Each modern scope entry must be a nonblank package name or system.")
@@ -249,21 +236,6 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 "Each nativeLibraries entry must be a .so filename without paths or whitespace, for example libexample.so"
             )
         }
-
-        val sourceEntryFiles = when (spec) {
-            is Xposed82GenerateSpec -> listOf(sourceDir.resolve(Xposed82GenerateSpec.INIT_FILE_PATH))
-            is LibXposedGenerateSpec -> listOf(
-                LibXposedGenerateSpec.JAVA_INIT_FILE_PATH,
-                LibXposedGenerateSpec.MODULE_PROPERTIES_FILE_PATH,
-                LibXposedGenerateSpec.SCOPE_FILE_PATH,
-                LibXposedGenerateSpec.NATIVE_INIT_FILE_PATH
-            ).map { resourcesDir.resolve(it) }
-        }.filter { it.isFile }
-        if (sourceEntryFiles.isNotEmpty()) problem(
-            "Xposed entry and metadata files must be generated exclusively by YukiHookAPI.\n" +
-                "Remove the following files from your source directory manually before building:\n" +
-                sourceEntryFiles.joinToString("\n")
-        )
 
         val entryDependencies = Dependencies(aggregating = false, entrySource)
         val modulePackageDependencies = modulePackageSource?.let {
@@ -286,10 +258,6 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
      * @param modulePackageDependencies dependencies that also originate from `BuildConfig.java` when available.
      */
     private fun generateCodeFiles(spec: GenerateSpec, entryDependencies: Dependencies, modulePackageDependencies: Dependencies) {
-        if (spec.customPackageName.isNotBlank()) warn(
-            "You set the customize module package name to \"${spec.customPackageName}\", " +
-                "please check for yourself if it is correct."
-        )
         spec.createSources(entryDependencies, modulePackageDependencies).forEach { (source, dependencies) ->
             source.writeTo(codeGenerator, dependencies)
         }
@@ -465,7 +433,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             if (this@createXposedEntrySource is Xposed82GenerateSpec)
                 addProperty(PropertySpec.builder("modulePackageName", STRING).apply {
                     addModifiers(KModifier.OVERRIDE)
-                    initializer("%S", customPackageName.ifBlank { modulePackageName })
+                    initializer("%S", modulePackageName)
                 }.build())
 
             addFunction(FunSpec.builder("createHookEntry").apply {
@@ -477,31 +445,79 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     }.build()
 
     /**
-     * Resolves the module package name.
-     * @param projectDir the project directory.
-     * @param resolver the current KSP resolver.
-     * @return [Pair] the module package name and its `BuildConfig.java` source when available.
+     * Finds the Gradle module containing the annotated source file.
+     * @param codePath the full source path of the annotated class.
+     * @return [File] the Gradle module directory.
      */
-    private fun parseModulePackageName(projectDir: File, resolver: Resolver): Pair<String, KSFile?> {
-        val buildConfigFile = projectDir
-            .resolve("build")
-            .resolve("generated")
-            .resolve("source")
-            .resolve("buildConfig")
-            .walkTopDown()
-            .filter { it.name == "BuildConfig.java" }
-            .maxByOrNull { it.lastModified() } ?: return "" to null
+    private fun findProjectDir(codePath: String): File {
+        if (codePath.isBlank()) problem("Project code path not available.")
+        return generateSequence(File(codePath).parentFile) { it.parentFile }
+            .firstOrNull { it.resolve("build.gradle").isFile || it.resolve("build.gradle.kts").isFile }
+            ?: problem("Cannot find a Gradle module containing \"$codePath\".")
+    }
 
+    /**
+     * Rejects framework entry and metadata files manually declared in source directories.
+     * @param projectDir the Gradle module directory.
+     */
+    private fun checkSourceEntryFiles(projectDir: File) {
+        val sourceDirectories = projectDir.walkTopDown()
+            .onEnter { it == projectDir || (it.name != "build" && it.name != ".gradle") }
+            .filter { it.isFile && it.name == "AndroidManifest.xml" }
+            .mapNotNull { it.parentFile }
+            .toList()
+        if (sourceDirectories.isEmpty()) problem(
+            "Cannot find an AndroidManifest.xml source file in Gradle module \"${projectDir.path}\"."
+        )
+
+        val sourceFilePaths = listOf(
+            Xposed82GenerateSpec.INIT_FILE_PATH,
+            Xposed82GenerateSpec.DEPRECATED_ASSET_INIT_FILE_PATH
+        )
+        val resourceFilePaths = listOf(
+            Xposed82GenerateSpec.DEPRECATED_RESOURCE_INIT_FILE_PATH,
+            LibXposedGenerateSpec.JAVA_INIT_FILE_PATH,
+            LibXposedGenerateSpec.MODULE_PROPERTIES_FILE_PATH,
+            LibXposedGenerateSpec.SCOPE_FILE_PATH,
+            LibXposedGenerateSpec.NATIVE_INIT_FILE_PATH
+        )
+        val sourceEntryFiles = sourceDirectories.flatMap { sourceDir ->
+            sourceFilePaths.map(sourceDir::resolve) +
+                resourceFilePaths.map(sourceDir.resolve("resources")::resolve)
+        }.filter(File::isFile)
+
+        if (sourceEntryFiles.isNotEmpty()) problem(
+            "Xposed entry and metadata files must be generated exclusively by YukiHookAPI.\n" +
+                "Remove the following files from your source directory manually before building:\n" +
+                sourceEntryFiles.joinToString("\n")
+        )
+    }
+
+    /**
+     * Resolves the module package name.
+     * @param resolver the current KSP resolver.
+     * @return [Pair] the module application ID and its `BuildConfig.java` source.
+     */
+    private fun parseModulePackageName(resolver: Resolver): Pair<String, KSFile> {
         val matcher = "APPLICATION_ID\\s*=\\s*\"([^\"]+)\"".toRegex()
-        val modulePackageName = runCatching {
-            matcher.find(buildConfigFile.readText())?.groups?.get(1)?.value
-        }.getOrNull() ?: ""
-        val buildConfigPath = buildConfigFile.absolutePath.parseFileSeparator()
-        val source = resolver.getAllFiles().firstOrNull {
-            val sourcePath = (it.location as? FileLocation)?.filePath ?: return@firstOrNull false
-            File(sourcePath).absolutePath.parseFileSeparator() == buildConfigPath
-        }
-        return modulePackageName to source
+        val candidates = resolver.getAllFiles().mapNotNull { source ->
+            if (source.fileName != "BuildConfig.java") return@mapNotNull null
+            val sourcePath = (source.location as? FileLocation)?.filePath ?: return@mapNotNull null
+            val modulePackageName = runCatching {
+                matcher.find(File(sourcePath).readText())?.groups?.get(1)?.value
+            }.getOrNull()?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            modulePackageName to source
+        }.toList()
+
+        if (candidates.isEmpty()) problem(
+            "Cannot identify the module application ID from the current KSP compilation. " +
+                "Enable the BuildConfig feature or set `modulePackageName`."
+        )
+        if (candidates.size > 1) problem(
+            "Multiple BuildConfig.java files with APPLICATION_ID are visible in the current KSP compilation. " +
+                "Set `modulePackageName` explicitly."
+        )
+        return candidates.single()
     }
 
     /**
@@ -525,6 +541,4 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
      * @param msg the warning message.
      */
     private fun warn(msg: String) = logger.warn(message = "[$TAG] $msg")
-
-    private fun String.parseFileSeparator() = replace("\\", "/")
 }

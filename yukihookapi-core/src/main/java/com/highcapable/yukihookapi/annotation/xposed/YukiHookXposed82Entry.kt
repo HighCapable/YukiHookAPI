@@ -33,7 +33,6 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  *
  * Looking for modern libxposed, please use [YukiHookLibXposedEntry] with `yukihookapi-runtime-libxposed` instead.
  *
- * - The AndroidManifest source directory defaults to `src/main` and can be customized through [sourcePath].
  * - KSP generates `assets/xposed_init` as a build resource.
  * - The runtime AndroidManifest supplies `xposedmodule=true` and `xposedminversion=82`.
  *   To override the minimum version, declare it in your AndroidManifest with `tools:replace="android:value"`.
@@ -41,21 +40,20 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  *
  * The generated `xposed_init` entry uses the fully qualified annotated class name + `_YukiHookXposedInit`, or [entryClassName].
  *
- * - [modulePackageName] overrides the module application ID. Otherwise, `BuildConfig.APPLICATION_ID` is read.
+ * - [modulePackageName] overrides the module application ID. Otherwise, `BuildConfig.APPLICATION_ID` is read from
+ *   the unique `BuildConfig.java` visible to the current KSP compilation. Missing or ambiguous values fail the build.
  * - A custom [modulePackageName] produces a compile-time warning so the value can be verified.
  * - Entry files are generated per build variant. Do not add duplicate entries under the source directory.
  * - The annotated class must implement [YukiHookXposedModule].
  * - Exactly one Hook entry may use either entry annotation. Multiple entries produce a compile-time error.
  * @see YukiHookLibXposedEntry
- * @param sourcePath the project-relative AndroidManifest source directory, defaults to `src/main`.
- * @param modulePackageName the module application ID, or an empty string to read `BuildConfig.APPLICATION_ID`.
+ * @param modulePackageName the module application ID, or an empty string to read it from the current KSP compilation.
  * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
  * @param generateModuleStatus whether legacy self-hook status generation is enabled, defaults to true.
  */
 @RequiresRuntime(YukiHookRuntime.XPOSED_82)
 @Target(AnnotationTarget.CLASS)
 annotation class YukiHookXposed82Entry(
-    val sourcePath: String = "src/main",
     val modulePackageName: String = "",
     val entryClassName: String = "",
     val generateModuleStatus: Boolean = true

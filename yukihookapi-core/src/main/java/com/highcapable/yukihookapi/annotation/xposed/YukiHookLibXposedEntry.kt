@@ -33,7 +33,6 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  *
  * Looking for legacy Xposed 82, please use [YukiHookXposed82Entry] with `yukihookapi-runtime-xposed82` instead.
  *
- * - The AndroidManifest source directory defaults to `src/main` and can be customized through [sourcePath].
  * - KSP generates `java_init.list`, `module.prop`, and `scope.list` under `META-INF/xposed` as build resources.
  *   `native_init.list` is also generated when [nativeLibraries] is not empty.
  * - The framework reads the module name and description from the application's standard
@@ -43,14 +42,10 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  *
  * The generated `java_init.list` entry uses the fully qualified annotated class name + `_YukiHookXposedInit`, or [entryClassName].
  *
- * - [modulePackageName] overrides the module application ID. Otherwise, `BuildConfig.APPLICATION_ID` is read.
- * - A custom [modulePackageName] produces a compile-time warning so the value can be verified.
  * - Entry files are generated per build variant. Do not add duplicate entries under the source directory.
  * - The annotated class must implement [YukiHookXposedModule].
  * - Exactly one Hook entry may use either entry annotation. Multiple entries produce a compile-time error.
  * @see YukiHookXposed82Entry
- * @param sourcePath the project-relative AndroidManifest source directory, defaults to `src/main`.
- * @param modulePackageName the module application ID, or an empty string to read `BuildConfig.APPLICATION_ID`.
  * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
  * @param minApiVersion minimum framework API version, at least 101.
  * @param targetApiVersion targeted API behavior, independently of the compile-only API dependency.
@@ -62,8 +57,6 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 @Target(AnnotationTarget.CLASS)
 annotation class YukiHookLibXposedEntry(
-    val sourcePath: String = "src/main",
-    val modulePackageName: String = "",
     val entryClassName: String = "",
     val minApiVersion: Int = 101,
     val targetApiVersion: Int,

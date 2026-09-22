@@ -29,12 +29,6 @@ sealed interface GenerateSpec {
     /** The package name of the entry class. */
     var entryPackageName: String
 
-    /** The detected module application ID, not the Android namespace. */
-    var modulePackageName: String
-
-    /** The manually configured module application ID. */
-    var customPackageName: String
-
     /** The entry class name. */
     var entryClassName: String
 

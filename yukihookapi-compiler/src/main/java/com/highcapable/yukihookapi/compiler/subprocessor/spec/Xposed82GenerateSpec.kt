@@ -25,15 +25,15 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
 
 /**
  * Spec used to generate legacy Xposed entry sources and assets.
+ * @param modulePackageName the resolved module application ID.
  * @param generateModuleStatus whether legacy self-hook status generation is enabled.
  */
 data class Xposed82GenerateSpec(
     override var entryPackageName: String = "",
-    override var modulePackageName: String = "",
-    override var customPackageName: String = "",
     override var entryClassName: String = "",
     override var initClassName: String = "",
     override var isObjectEntry: Boolean = false,
+    var modulePackageName: String = "",
     var generateModuleStatus: Boolean = true
 ) : GenerateSpec {
 
@@ -46,5 +46,7 @@ data class Xposed82GenerateSpec(
         const val RUNTIME_MODULE_NAME = "yukihookapi-runtime-xposed82"
 
         const val INIT_FILE_PATH = "assets/xposed_init"
+        const val DEPRECATED_ASSET_INIT_FILE_PATH = "assets/yukihookapi_init"
+        const val DEPRECATED_RESOURCE_INIT_FILE_PATH = "META-INF/yukihookapi_init"
     }
 }
