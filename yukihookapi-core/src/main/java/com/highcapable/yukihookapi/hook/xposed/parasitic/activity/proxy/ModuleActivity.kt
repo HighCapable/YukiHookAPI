@@ -47,7 +47,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  * ```kotlin
  * abstract class BaseActivity : AppCompatActivity(), ModuleActivity {
  *
- *     // Sets the AppCompat theme when this is an [AppCompatActivity].
+ *     // Sets the app compat theme when this is an [AppCompatActivity].
  *     override val moduleTheme get() = R.style.YourAppTheme
  * 
  *     override fun getClassLoader() = delegate.getClassLoader()
