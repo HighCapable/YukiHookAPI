@@ -66,6 +66,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             "$RUNTIME_BRIDGE_PACKAGE_NAME.SharedFilesBridge",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.caller.YukiHookModuleCaller",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookAPI_Impl",
+            "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookCompiledTimestamp",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.application.ModuleApplication_Impl"
         )
 

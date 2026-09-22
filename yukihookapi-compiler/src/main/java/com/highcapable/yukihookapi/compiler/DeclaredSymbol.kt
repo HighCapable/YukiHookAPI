@@ -27,6 +27,7 @@ object DeclaredSymbol {
 
     const val API_PACKAGE_NAME = YukiHookAPIProperties.PROJECT_GROUP_NAME
     const val API_IMPL_CLASS_NAME = "YukiHookAPI_Impl"
+    const val COMPILED_TIMESTAMP_CLASS_NAME = "YukiHookCompiledTimestamp"
 
     const val MODULE_APPLICATION_PACKAGE_NAME = "$API_PACKAGE_NAME.hook.xposed.application"
     const val MODULE_APPLICATION_IMPL_CLASS_NAME = "ModuleApplication_Impl"

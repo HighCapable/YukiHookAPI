@@ -30,6 +30,7 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.highcapable.yukihookapi.compiler.DeclaredSymbol
 import com.highcapable.yukihookapi.compiler.subprocessor.base.BaseSymbolProcessor
 import com.highcapable.yukihookapi.compiler.subprocessor.spec.GenerateSpec
@@ -68,6 +69,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         const val GET_EXECUTOR_VERSION_CODE_METHOD_NAME = "___-"
 
         val ApiImplClass = ClassName(DeclaredSymbol.API_PACKAGE_NAME, DeclaredSymbol.API_IMPL_CLASS_NAME)
+        val CompiledTimestampClass = ClassName(DeclaredSymbol.API_PACKAGE_NAME, DeclaredSymbol.COMPILED_TIMESTAMP_CLASS_NAME)
         val ModuleApplicationImplClass = ClassName(DeclaredSymbol.MODULE_APPLICATION_PACKAGE_NAME, DeclaredSymbol.MODULE_APPLICATION_IMPL_CLASS_NAME)
         val LegacyModuleStatusImplClass = ClassName(DeclaredSymbol.MODULE_STATUS_PACKAGE_NAME, DeclaredSymbol.LEGACY_MODULE_STATUS_IMPL_CLASS_NAME)
         val HookEntryClass = ClassName(DeclaredSymbol.HOOK_ENTRY_PACKAGE_NAME, DeclaredSymbol.HOOK_ENTRY_CLASS_NAME)
@@ -159,6 +161,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             )
         }
         val sourcePath = (arguments["sourcePath"] as? String).orEmpty().trim()
+        val entrySource = entry.containingFile ?: problem("The hook entry must be declared in a source file.")
 
         spec.customPackageName = (arguments["modulePackageName"] as? String).orEmpty().trim()
         spec.initClassName = (arguments["entryClassName"] as? String).orEmpty().trim()
@@ -192,7 +195,9 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         generateResources(
             codePath = (entry.location as? FileLocation)?.filePath?.parseFileSeparator() ?: "",
             sourcePath = sourcePath.parseFileSeparator(),
-            spec = spec
+            spec = spec,
+            resolver = resolver,
+            entrySource = entrySource
         )
     }
 
@@ -201,8 +206,16 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
      * @param codePath the full source path of the annotated class.
      * @param sourcePath the configured source path.
      * @param spec the template generation data.
+     * @param resolver the current KSP resolver.
+     * @param entrySource the annotated entry source file.
      */
-    private fun generateResources(codePath: String, sourcePath: String, spec: GenerateSpec) {
+    private fun generateResources(
+        codePath: String,
+        sourcePath: String,
+        spec: GenerateSpec,
+        resolver: Resolver,
+        entrySource: KSFile
+    ) {
         if (codePath.isBlank()) problem("Project code path not available.")
         if (sourcePath.isBlank()) problem("Project source path not available.")
 
@@ -222,7 +235,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 "and targetApiVersion >= minApiVersion. API 100 is unsupported."
         )
 
-        spec.modulePackageName = parseModulePackageName(projectDir)
+        val (modulePackageName, modulePackageSource) = parseModulePackageName(projectDir, resolver)
+        spec.modulePackageName = modulePackageName
         if (spec.modulePackageName.isBlank() && spec.customPackageName.isBlank()) problem(
             "Cannot identify the module application ID, enable the BuildConfig feature or set `modulePackageName`."
         )
@@ -251,25 +265,34 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 sourceEntryFiles.joinToString("\n")
         )
 
+        val entryDependencies = Dependencies(aggregating = false, entrySource)
+        val modulePackageDependencies = modulePackageSource?.let {
+            Dependencies(aggregating = false, entrySource, it)
+        } ?: entryDependencies
+
         spec.createResources().forEach { (path, content) ->
-            codeGenerator.createNewFileByPath(Dependencies.ALL_FILES, path, extensionName = "")
+            codeGenerator.createNewFileByPath(entryDependencies, path, extensionName = "")
                 .bufferedWriter().use { it.write(content) }
         }
 
-        generateCodeFiles(spec)
+        generateCodeFiles(spec, entryDependencies, modulePackageDependencies)
         isGenerated = true
     }
 
     /**
      * Generates the required class files.
      * @param spec the template generation spec.
+     * @param entryDependencies dependencies originating from the annotated entry.
+     * @param modulePackageDependencies dependencies that also originate from `BuildConfig.java` when available.
      */
-    private fun generateCodeFiles(spec: GenerateSpec) {
+    private fun generateCodeFiles(spec: GenerateSpec, entryDependencies: Dependencies, modulePackageDependencies: Dependencies) {
         if (spec.customPackageName.isNotBlank()) warn(
             "You set the customize module package name to \"${spec.customPackageName}\", " +
                 "please check for yourself if it is correct."
         )
-        spec.createSources().forEach { it.writeTo(codeGenerator, Dependencies.ALL_FILES) }
+        spec.createSources(entryDependencies, modulePackageDependencies).forEach { (source, dependencies) ->
+            source.writeTo(codeGenerator, dependencies)
+        }
     }
 
     private fun Xposed82GenerateSpec.withModuleSuffix(type: ClassName) =
@@ -302,13 +325,17 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
     /**
      * Creates the Kotlin source files required by the selected runtime.
-     * @return [List]<[FileSpec]>
+     * @return generated source files and their dependencies.
      */
-    private fun GenerateSpec.createSources() = buildList {
-        add(createApiSource())
-        add(createApplicationSource())
-        if (this@createSources is Xposed82GenerateSpec && generateModuleStatus) add(createLegacyModuleStatusSource())
-        add(createXposedEntrySource())
+    private fun GenerateSpec.createSources(entryDependencies: Dependencies, modulePackageDependencies: Dependencies) = buildList {
+        val runtimeDependencies = if (this@createSources is Xposed82GenerateSpec) modulePackageDependencies else entryDependencies
+
+        add(createApiSource() to runtimeDependencies)
+        add(createCompiledTimestampSource() to Dependencies.ALL_FILES)
+        add(createApplicationSource() to entryDependencies)
+        if (this@createSources is Xposed82GenerateSpec && generateModuleStatus)
+            add(createLegacyModuleStatusSource() to modulePackageDependencies)
+        add(createXposedEntrySource() to runtimeDependencies)
     }
 
     /**
@@ -359,8 +386,19 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             addProperty(PropertySpec.builder("compiledTimestamp", LONG).apply {
                 addKdoc("Timestamp of this generated module build.\n")
                 getter(FunSpec.getterBuilder().apply {
-                    addStatement("return %L", System.currentTimeMillis())
+                    addStatement("return %T.get()", CompiledTimestampClass)
                 }.build())
+            }.build())
+        }.build())
+    }.build()
+
+    private fun createCompiledTimestampSource() = CompiledTimestampClass.sourceFileBuilder().apply {
+        addType(TypeSpec.objectBuilder(CompiledTimestampClass).apply {
+            addKdoc("%L Class\n", CompiledTimestampClass.simpleName)
+            addFunction(FunSpec.builder("get").apply {
+                addKdoc("Timestamp of this generated module build.\n")
+                returns(LONG)
+                addStatement("return %L", System.currentTimeMillis())
             }.build())
         }.build())
     }.build()
@@ -379,39 +417,34 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     }.build()
 
     private fun Xposed82GenerateSpec.createLegacyModuleStatusSource() = LegacyModuleStatusImplClass.sourceFileBuilder().apply {
-        fun funSpec(jvmName: String, resultType: TypeName, defaultValue: CodeBlock) =
-            FunSpec.builder("function" + (1000..99999).random()).apply {
+        fun funSpec(name: String, jvmName: String, resultType: TypeName, defaultValue: CodeBlock) =
+            FunSpec.builder(name).apply {
                 addKdoc("Returns the fallback value until the legacy framework hooks this function.\n")
                 addAnnotation(JvmStatic::class)
                 addAnnotation(AnnotationSpec.builder(JvmName::class).apply {
                     addMember("%S", jvmName)
                 }.build())
                 returns(resultType)
-                addStatement("phe()")
+                addStatement("preventOptimization()")
                 addStatement("return %L", defaultValue)
             }.build()
 
         addType(TypeSpec.objectBuilder(withModuleSuffix(LegacyModuleStatusImplClass)).apply {
             addKdoc("%L Class\n", LegacyModuleStatusImplClass.simpleName)
             addAnnotation(KeepClass)
-            addFunction(funSpec(IS_ACTIVE_METHOD_NAME, BOOLEAN, CodeBlock.of("false")))
-            addFunction(funSpec(GET_EXECUTOR_API_VERSION_METHOD_NAME, INT, CodeBlock.of("-1")))
-            addFunction(funSpec(GET_EXECUTOR_NAME_METHOD_NAME, STRING, CodeBlock.of("%S", "unknown")))
-            addFunction(funSpec(GET_EXECUTOR_VERSION_METHOD_NAME, STRING, CodeBlock.of("%S", "unknown")))
-            addFunction(funSpec(GET_EXECUTOR_VERSION_CODE_METHOD_NAME, LONG, CodeBlock.of("-1L")))
-            addFunction(FunSpec.builder("phe").apply {
+            addFunction(funSpec("isActive", IS_ACTIVE_METHOD_NAME, BOOLEAN, CodeBlock.of("false")))
+            addFunction(funSpec("getExecutorApiVersion", GET_EXECUTOR_API_VERSION_METHOD_NAME, INT, CodeBlock.of("-1")))
+            addFunction(funSpec("getExecutorName", GET_EXECUTOR_NAME_METHOD_NAME, STRING, CodeBlock.of("%S", "unknown")))
+            addFunction(funSpec("getExecutorVersion", GET_EXECUTOR_VERSION_METHOD_NAME, STRING, CodeBlock.of("%S", "unknown")))
+            addFunction(funSpec("getExecutorVersionCode", GET_EXECUTOR_VERSION_CODE_METHOD_NAME, LONG, CodeBlock.of("-1L")))
+            addFunction(FunSpec.builder("preventOptimization").apply {
                 addModifiers(KModifier.PRIVATE)
                 addAnnotation(JvmStatic::class)
-                addAnnotation(AnnotationSpec.builder(JvmName::class).apply {
-                    addMember("%S", "_" + (1000..99999).random())
-                }.build())
-                addComment("Consume a long method body.")
+                addComment("Keeps the hook targets from becoming short method bodies.")
                 addStatement(
                     "if (%T.currentTimeMillis() == 0L) %T.d(%S, %S)",
-                    System::class,
-                    LogClass,
-                    (1000..9999).random().toString(),
-                    (100000..999999).random().toString()
+                    System::class, LogClass, TAG,
+                    "Generated legacy module status"
                 )
             }.build())
         }.build())
@@ -446,9 +479,10 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     /**
      * Resolves the module package name.
      * @param projectDir the project directory.
-     * @return [String] the module package name.
+     * @param resolver the current KSP resolver.
+     * @return [Pair] the module package name and its `BuildConfig.java` source when available.
      */
-    private fun parseModulePackageName(projectDir: File): String {
+    private fun parseModulePackageName(projectDir: File, resolver: Resolver): Pair<String, KSFile?> {
         val buildConfigFile = projectDir
             .resolve("build")
             .resolve("generated")
@@ -456,10 +490,18 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             .resolve("buildConfig")
             .walkTopDown()
             .filter { it.name == "BuildConfig.java" }
-            .maxByOrNull { it.lastModified() } ?: return ""
+            .maxByOrNull { it.lastModified() } ?: return "" to null
 
         val matcher = "APPLICATION_ID\\s*=\\s*\"([^\"]+)\"".toRegex()
-        return runCatching { matcher.find(buildConfigFile.readText())?.groups?.get(1)?.value }.getOrNull() ?: ""
+        val modulePackageName = runCatching {
+            matcher.find(buildConfigFile.readText())?.groups?.get(1)?.value
+        }.getOrNull() ?: ""
+        val buildConfigPath = buildConfigFile.absolutePath.parseFileSeparator()
+        val source = resolver.getAllFiles().firstOrNull {
+            val sourcePath = (it.location as? FileLocation)?.filePath ?: return@firstOrNull false
+            File(sourcePath).absolutePath.parseFileSeparator() == buildConfigPath
+        }
+        return modulePackageName to source
     }
 
     /**
