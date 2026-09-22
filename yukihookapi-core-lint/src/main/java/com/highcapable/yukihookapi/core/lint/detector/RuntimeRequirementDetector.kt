@@ -57,9 +57,10 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         private const val XPOSED_82_RUNTIME = "XPOSED_82"
 
         private val RUNTIME_CLASSES = mapOf(
-            LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.LibXposedEntry",
-            XPOSED_82_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.xposed82.Xposed82Entry"
+            LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.entry.LibXposedEntry",
+            XPOSED_82_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.xposed82.entry.Xposed82Entry"
         )
+
         private val RUNTIME_MODULES = mapOf(
             LIBXPOSED_RUNTIME to YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_RUNTIME_LIBXPOSED_MODULE_NAME,
             XPOSED_82_RUNTIME to YukiHookAPIProperties.PROJECT_YUKIHOOKAPI_RUNTIME_XPOSED82_MODULE_NAME

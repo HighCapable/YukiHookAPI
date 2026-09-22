@@ -41,7 +41,7 @@ data class Xposed82GenerateSpec(
 
         const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.YukiHookXposed82Entry"
         const val LEGACY_ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.InjectYukiHookWithXposed"
-        const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.xposed82.Xposed82Entry"
+        const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.xposed82.entry.Xposed82Entry"
 
         const val RUNTIME_MODULE_NAME = "yukihookapi-runtime-xposed82"
 

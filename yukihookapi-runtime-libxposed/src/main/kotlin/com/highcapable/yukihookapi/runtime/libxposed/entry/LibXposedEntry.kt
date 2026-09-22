@@ -19,12 +19,13 @@
  *
  * This file is created by fankes on 2026/9/6.
  */
-package com.highcapable.yukihookapi.runtime.libxposed
+package com.highcapable.yukihookapi.runtime.libxposed.entry
 
 import androidx.annotation.RequiresApi
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiLibXposedEvent
+import com.highcapable.yukihookapi.runtime.libxposed.LibXposedHookApi
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 

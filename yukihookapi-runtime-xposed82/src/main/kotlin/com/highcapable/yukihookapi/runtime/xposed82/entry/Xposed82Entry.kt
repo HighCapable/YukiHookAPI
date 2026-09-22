@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2026/9/6.
  */
-package com.highcapable.yukihookapi.runtime.xposed82
+package com.highcapable.yukihookapi.runtime.xposed82.entry
 
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller

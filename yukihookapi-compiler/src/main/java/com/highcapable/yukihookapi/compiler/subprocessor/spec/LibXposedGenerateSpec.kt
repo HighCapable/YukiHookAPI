@@ -48,7 +48,7 @@ data class LibXposedGenerateSpec(
     companion object {
 
         const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.YukiHookLibXposedEntry"
-        const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.LibXposedEntry"
+        const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.LibXposedEntry"
 
         const val RUNTIME_MODULE_NAME = "yukihookapi-runtime-libxposed"
 

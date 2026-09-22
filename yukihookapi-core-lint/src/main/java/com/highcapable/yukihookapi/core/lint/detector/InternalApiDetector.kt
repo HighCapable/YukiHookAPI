@@ -68,9 +68,10 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookAPI_Impl",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.application.ModuleApplication_Impl"
         )
+
         private val GENERATED_ENTRY_SUPER_CLASSES = setOf(
-            "$RUNTIME_PACKAGE_NAME.libxposed.LibXposedEntry",
-            "$RUNTIME_PACKAGE_NAME.xposed82.Xposed82Entry"
+            "$RUNTIME_PACKAGE_NAME.libxposed.entry.LibXposedEntry",
+            "$RUNTIME_PACKAGE_NAME.xposed82.entry.Xposed82Entry"
         )
 
         val ISSUE = Issue.create(
