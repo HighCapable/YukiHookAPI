@@ -69,11 +69,28 @@ object YukiHookModuleCaller {
      * Calls [YukiHookXposedModule.onHook] on the user entry only after the runtime has attached its hook interface.
      * @param entry the user entry.
      * @param packageName the package name of the current process.
-     * @param appFilePath the path of the current process's APK file.
+     * @param sourceDir the current Xposed module source directory.
      * @return [Boolean] whether the initialization was successful.
      */
-    fun callOnHook(entry: YukiHookXposedModule, packageName: String, appFilePath: String) = runCatching {
-        XposedModuleRuntime.onStartLoadModule(packageName, appFilePath)
+    fun callOnHook(entry: YukiHookXposedModule, packageName: String, sourceDir: String) =
+        callOnHook(entry, packageName, sourceDir, null)
+
+    /**
+     * Calls [YukiHookXposedModule.onHook] with the current Xposed module [ApplicationInfo].
+     * @param entry the user entry.
+     * @param appInfo the current Xposed module application info.
+     * @return [Boolean] whether the initialization was successful.
+     */
+    fun callOnHook(entry: YukiHookXposedModule, appInfo: ApplicationInfo) =
+        callOnHook(entry, appInfo.packageName, appInfo.sourceDir, appInfo)
+
+    private fun callOnHook(
+        entry: YukiHookXposedModule,
+        packageName: String,
+        sourceDir: String,
+        appInfo: ApplicationInfo?
+    ) = runCatching {
+        XposedModuleRuntime.onStartLoadModule(packageName, sourceDir, appInfo)
         callOnInit(entry)
 
         check(!XposedModuleRuntime.hasEarlyHookCallback) {

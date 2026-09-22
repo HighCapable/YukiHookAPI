@@ -451,7 +451,7 @@ internal object AppParasitism {
         if (currentPackageName == XposedModuleRuntime.modulePackageName)
             return YLog.innerE("You cannot inject module resources into yourself")
 
-        ModuleResources.inject(hostResources, XposedModuleRuntime.moduleFilePath) { throwable -> 
+        ModuleResources.inject(hostResources, XposedModuleRuntime.moduleSourceDir) { throwable ->
             throwable?.let { YLog.innerE("Failed to inject module resources into $hostResources", it) }
         }
     }

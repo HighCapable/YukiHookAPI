@@ -59,9 +59,15 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     /** The predefined Xposed module package name. */
     var modulePackageName = ""
+        private set
 
-    /** The APK path of the current Xposed module. */
-    var moduleFilePath = ""
+    /** The current Xposed module source directory. */
+    var moduleSourceDir = ""
+        private set
+
+    /** The current Xposed module application info. */
+    var moduleAppInfo: ApplicationInfo? = null
+        private set
 
     /** The current Xposed module resources. */
     private var currentModuleResources: ModuleResources? = null
@@ -102,14 +108,15 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     /** Reloads the current Xposed module's [Resources]. */
     fun reloadModuleResources() {
-        currentModuleResources = ModuleResources.from(moduleFilePath)
+        currentModuleResources = ModuleResources.from(moduleSourceDir)
     }
 
-    override fun onStartLoadModule(packageName: String, appFilePath: String) {
+    override fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?) {
         isModuleLoaded = true
 
         modulePackageName = packageName
-        moduleFilePath = appFilePath
+        moduleSourceDir = sourceDir
+        moduleAppInfo = appInfo
         reloadModuleResources()
     }
 

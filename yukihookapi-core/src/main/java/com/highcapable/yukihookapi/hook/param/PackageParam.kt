@@ -83,10 +83,18 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     class ModuleSpec internal constructor() {
 
         /**
-         * Gets the APK file path of the current Xposed module.
+         * Gets the [ApplicationInfo] of the current Xposed module.
+         * @return [ApplicationInfo]
+         * @throws IllegalStateException if the current hook framework does not support this feature.
+         */
+        @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+        val appInfo get() = XposedModuleRuntime.moduleAppInfo ?: error("Current hook framework not support module application info.")
+
+        /**
+         * Gets the source directory of the current Xposed module.
          * @return [String]
          */
-        val filePath get() = XposedModuleRuntime.moduleFilePath
+        val sourceDir get() = XposedModuleRuntime.moduleSourceDir
 
         /**
          * Gets the [Resources] of the current Xposed module.
@@ -1368,8 +1376,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     val appResources get() = hostApplication?.resources
 
     /** Gets the APK file path of the current Xposed module. */
-    @Deprecated(message = "Use module.filePath instead.", replaceWith = ReplaceWith("module.filePath"))
-    val moduleAppFilePath get() = module.filePath
+    @Deprecated(message = "Use module.sourceDir instead.", replaceWith = ReplaceWith("module.sourceDir"))
+    val moduleAppFilePath get() = module.sourceDir
 
     /** Gets the [Resources] of the current Xposed module. */
     @Deprecated(message = "Use module.resources instead.", replaceWith = ReplaceWith("module.resources"))

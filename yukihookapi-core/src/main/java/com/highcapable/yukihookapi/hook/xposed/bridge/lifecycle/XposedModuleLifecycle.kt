@@ -32,9 +32,10 @@ internal interface XposedModuleLifecycle {
     /**
      * Called when the Xposed module starts loading.
      * @param packageName the current Xposed module package name.
-     * @param appFilePath the current Xposed module APK path.
+     * @param sourceDir the current Xposed module source directory.
+     * @param appInfo the current Xposed module [ApplicationInfo], or null when unavailable.
      */
-    fun onStartLoadModule(packageName: String, appFilePath: String)
+    fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?)
 
     /** Called when the Xposed module finishes loading. */
     fun onFinishLoadModule()
