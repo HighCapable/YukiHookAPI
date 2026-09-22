@@ -48,7 +48,6 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.createInstanceAsTypeOrNull
-import com.highcapable.kavaref.extension.createInstanceOrNull
 import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.kavaref.extension.isSubclassOf
 import com.highcapable.kavaref.extension.lazyClass
@@ -464,16 +463,19 @@ internal object AppParasitism {
      */
     @RequiresApi(AndroidVersion.N)
     fun registerModuleActivities(context: Context, proxy: Any?) {
+        fun String.toModuleActivityClassOrNull() = toClassOrNull(baseClassLoader)?.takeIf {
+            it isSubclassOf Activity::class && it isSubclassOf ModuleActivity::class
+        }
+
         fun Intent.wrap(): Intent {
             val component = this.component ?: return this
-            if (component.packageName != currentPackageName || !baseClassLoader.hasClass(component.className)) return this
+            if (component.packageName != currentPackageName) return this
+            val activityClass = component.className.toModuleActivityClassOrNull() ?: return this
 
-            val proxyClassName = component.className.toClassOrNull()?.runCatching {
-                if (this isSubclassOf ModuleActivity::class)
-                    createInstanceAsTypeOrNull<ModuleActivity>()?.proxyClassName
-                        ?.takeIf { hostApplication?.classLoader?.hasClass(it) == true }
-                else null
-            }?.getOrNull() ?: ActivityProxyConfig.proxyClassName
+            val proxyClassName = activityClass.runCatching {
+                createInstanceAsTypeOrNull<ModuleActivity>()?.proxyClassName
+                    ?.takeIf { hostApplication?.classLoader?.hasClass(it) == true }
+            }.getOrNull() ?: ActivityProxyConfig.proxyClassName
 
             return Intent().apply {
                 setClassName(component.packageName, proxyClassName)
@@ -577,9 +579,10 @@ internal object AppParasitism {
                 override fun afterHookedMember(param: ClassicHookerBridge.Param) {
                     if (param.instance !== instrumentation || param.throwable == null) return
                     val className = param.args[1] as? String ?: return
-                    if (!className.startsWith(XposedModuleRuntime.modulePackageName)) return
 
-                    className.toClassOrNull<Activity>(baseClassLoader)?.createInstanceOrNull()?.let { param.result = it }
+                    className.toModuleActivityClassOrNull()
+                        ?.createInstanceAsTypeOrNull<Activity>()
+                        ?.let { param.result = it }
                 }
             }).let(hooked::add)
             callActivityOnCreateResolvers.forEach { resolver ->
@@ -587,7 +590,7 @@ internal object AppParasitism {
                     override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
                         if (param.instance !== instrumentation) return
                         val activity = param.args[0] as? Activity ?: return
-                        if (!activity.javaClass.name.startsWith(XposedModuleRuntime.modulePackageName)) return
+                        if (activity !is ModuleActivity) return
 
                         (param.args[1] as? Bundle)?.classLoader = baseClassLoader
                         injectModuleResources(activity.resources)
