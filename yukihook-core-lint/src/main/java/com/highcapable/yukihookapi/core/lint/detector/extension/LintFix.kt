@@ -24,13 +24,13 @@ package com.highcapable.yukihookapi.core.lint.detector.extension
 import com.android.tools.lint.detector.api.LintFix
 import com.android.tools.lint.detector.api.Location
 
-internal fun buildReplaceFix(name: String, replacement: String, vararg imports: String, range: Location? = null) =
+internal fun buildReplaceFix(name: String, replacement: String, vararg imports: String, range: Location? = null, reformat: Boolean = true) =
     LintFix.create()
         .name(name)
         .replace()
         .run { if (range != null) range(range) else all() }
         .with(replacement)
-        .reformat(true)
+        .reformat(reformat)
         .shortenNames()
         .imports(*imports)
         .build()

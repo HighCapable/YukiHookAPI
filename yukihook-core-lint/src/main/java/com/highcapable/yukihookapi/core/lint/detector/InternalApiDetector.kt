@@ -34,9 +34,16 @@ import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.isConstructorReference
+import com.highcapable.yukihookapi.core.lint.detector.extension.outermostQualifiedReference
 import com.highcapable.yukihookapi.core.lint.detector.extension.reportNode
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiMember
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtClassLiteralExpression
+import org.jetbrains.kotlin.psi.KtCollectionLiteralExpression
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtObjectLiteralExpression
+import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UQualifiedReferenceExpression
@@ -134,15 +141,41 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
         }
 
         private fun report(scope: UElement, apiName: String, location: Location) {
-            val lintFix = buildReplaceFix("Delete Call Expression", "", range = location)
+            val source = scope.sourcePsi
+
+            val objectLiteral = generateSequence(source) { it.parent }
+                .filterIsInstance<KtObjectLiteralExpression>().firstOrNull { it.parent is KtBlockExpression }
+            val classLiteral = generateSequence(source) { it.parent }
+                .filterIsInstance<KtClassLiteralExpression>().firstOrNull()
+            val standaloneReference = generateSequence(source) { it.parent }
+                .filterIsInstance<KtNameReferenceExpression>().firstOrNull { it.parent is KtBlockExpression }
+
+            val expression = (scope as? UCallExpression)?.outermostQualifiedReference()
+            val fixLocation = when {
+                objectLiteral != null -> context.getLocation(objectLiteral)
+                classLiteral != null -> classLiteral.deletionLocation()
+                standaloneReference != null -> context.getLocation(standaloneReference)
+                expression?.uastParent is UBlockExpression -> context.getLocation(expression)
+                else -> null
+            }
+            val lintFix = fixLocation?.let {
+                buildReplaceFix("Delete Call Expression", "", range = it, reformat = false)
+            }
 
             context.report(
                 issue = ISSUE,
                 scope = scope,
-                location = location,
+                location = fixLocation ?: location,
                 message = "`$apiName` is an internal YukiHook's API and must not be used directly.",
                 quickfixData = lintFix
             )
+        }
+
+        private fun KtClassLiteralExpression.deletionLocation(): Location? {
+            if (parent is KtBlockExpression) return context.getLocation(this)
+            val collection = parent as? KtCollectionLiteralExpression ?: return null
+            if (collection.trailingComma != null || collection.innerExpressions.lastOrNull() != this) return null
+            return context.getLocation(this)
         }
 
         private fun PsiMember.isInternalApi() = when (this) {
@@ -154,9 +187,13 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             var type: PsiClass? = this
             while (type != null) {
                 val qualifiedName = type.qualifiedName
-                if (qualifiedName in INTERNAL_API_CLASSES || qualifiedName.isGeneratedModuleStatusClass()) return true
+                if (qualifiedName in INTERNAL_API_CLASSES || qualifiedName in GENERATED_ENTRY_SUPER_CLASSES ||
+                    qualifiedName.isGeneratedModuleStatusClass()
+                ) return true
+
                 type = type.containingClass
             }
+
             return superClass?.qualifiedName in GENERATED_ENTRY_SUPER_CLASSES
         }
 
