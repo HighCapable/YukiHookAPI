@@ -31,6 +31,7 @@ import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSType
 import com.highcapable.yukihookapi.compiler.DeclaredSymbol
 import com.highcapable.yukihookapi.compiler.subprocessor.base.BaseSymbolProcessor
 import com.highcapable.yukihookapi.compiler.subprocessor.spec.GenerateSpec
@@ -51,6 +52,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import java.io.File
 
@@ -156,7 +158,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 targetApiVersion = arguments["targetApiVersion"] as? Int ?: LibXposedGenerateSpec.DEFAULT_TARGET_API_VERSION,
                 scope = (arguments["scope"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
                 staticScope = arguments["staticScope"] as? Boolean ?: false,
-                nativeLibraries = (arguments["nativeLibraries"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+                nativeEntries = (arguments["nativeEntries"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
             )
             YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec(
                 modulePackageName = (arguments["modulePackageName"] as? String).orEmpty().trim(),
@@ -188,6 +190,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             ClassKind.OBJECT -> true
             else -> problem("Invalid hook entry class \"${spec.entryClassName}\" kind `${entry.classKind}`.")
         }
+        if (spec is LibXposedGenerateSpec) spec.javaEntries = resolveLibXposedJavaEntries(arguments["javaEntries"], spec)
 
         generateResources(
             codePath = (entry.location as? FileLocation)?.filePath ?: "",
@@ -195,6 +198,39 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             resolver = resolver,
             entrySource = entrySource
         )
+    }
+
+    private fun resolveLibXposedJavaEntries(value: Any?, spec: LibXposedGenerateSpec): List<String> {
+        val entries = when (value) {
+            null -> emptyList()
+            is List<*> -> value
+            is Array<*> -> value.toList()
+            else -> problem("Invalid java entries annotation argument.")
+        }
+
+        val generatedEntryName = "${spec.entryPackageName}.${spec.initClassName}"
+        val names = entries.map { value ->
+            val declaration = (value as? KSType)?.declaration as? KSClassDeclaration
+                ?: problem("Each java entries item must reference a libxposed entry class.")
+            val name = declaration.toClassName().reflectionName()
+            if (name == generatedEntryName) problem(
+                "You should not include the generated entry class \"$generatedEntryName\" in java entries."
+            )
+
+            val superTypes = declaration.getAllSuperTypes()
+                .mapNotNull { it.declaration.qualifiedName?.asString() }
+                .toSet()
+
+            if (name == LibXposedGenerateSpec.ENTRY_CLASS_NAME || LibXposedGenerateSpec.ENTRY_CLASS_NAME in superTypes)
+                problem("You should not include the YukiHook internal entry class \"$name\" in java entries.")
+            if (LibXposedGenerateSpec.XPOSED_MODULE_CLASS_NAME !in superTypes)
+                problem("\"$name\" must inherits libxposed XposedModule.")
+
+            name
+        }
+
+        if (names.size != names.toSet().size) problem("Java entries contains duplicate libxposed entry classes.")
+        return names
     }
 
     /**
@@ -230,10 +266,10 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         if (spec is LibXposedGenerateSpec) {
             if (spec.scope.any { it.isBlank() || it.any(Char::isWhitespace) })
                 problem("Each modern scope entry must be a nonblank package name or system.")
-            if (spec.nativeLibraries.any {
+            if (spec.nativeEntries.any {
                     it.isBlank() || it.any(Char::isWhitespace) || '/' in it || '\\' in it || !it.endsWith(".so")
                 }) problem(
-                "Each nativeLibraries entry must be a .so filename without paths or whitespace, for example libexample.so"
+                "Each nativeEntries entry must be a .so filename without paths or whitespace, for example libexample.so"
             )
         }
 
@@ -315,11 +351,11 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
         return when (this) {
             is LibXposedGenerateSpec -> buildMap {
-                put(LibXposedGenerateSpec.JAVA_INIT_FILE_PATH, entryName)
+                put(LibXposedGenerateSpec.JAVA_INIT_FILE_PATH, javaEntries.toMutableList().apply { addFirst(entryName) }.joinToString("\n"))
                 put(LibXposedGenerateSpec.MODULE_PROPERTIES_FILE_PATH, createModuleProperties())
                 put(LibXposedGenerateSpec.SCOPE_FILE_PATH, scope.joinToString("\n"))
 
-                if (nativeLibraries.isNotEmpty()) put(LibXposedGenerateSpec.NATIVE_INIT_FILE_PATH, nativeLibraries.joinToString("\n"))
+                if (nativeEntries.isNotEmpty()) put(LibXposedGenerateSpec.NATIVE_INIT_FILE_PATH, nativeEntries.joinToString("\n"))
             }
             is Xposed82GenerateSpec -> mapOf(Xposed82GenerateSpec.INIT_FILE_PATH to entryName)
         }

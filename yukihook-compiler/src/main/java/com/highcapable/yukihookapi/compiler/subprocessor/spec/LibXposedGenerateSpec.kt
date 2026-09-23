@@ -29,7 +29,8 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
  * @param targetApiVersion the targeted framework behavior.
  * @param scope the explicitly declared scope.
  * @param staticScope whether the scope is fixed.
- * @param nativeLibraries the native entry library filenames.
+ * @param javaEntries additional native libxposed Java entry class names.
+ * @param nativeEntries the native entry library filenames.
  */
 data class LibXposedGenerateSpec(
     override var entryPackageName: String = "",
@@ -40,13 +41,15 @@ data class LibXposedGenerateSpec(
     var targetApiVersion: Int,
     var scope: List<String> = emptyList(),
     var staticScope: Boolean = false,
-    var nativeLibraries: List<String> = emptyList()
+    var javaEntries: List<String> = emptyList(),
+    var nativeEntries: List<String> = emptyList()
 ) : GenerateSpec {
 
     companion object {
 
         const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.YukiHookLibXposedEntry"
         const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.LibXposedEntry"
+        const val XPOSED_MODULE_CLASS_NAME = "io.github.libxposed.api.XposedModule"
 
         const val RUNTIME_MODULE_NAME = "yukihook-runtime-libxposed"
 

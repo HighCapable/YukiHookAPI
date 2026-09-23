@@ -62,13 +62,13 @@ class EntryGenerationTest {
     }
 
     @Test
-    fun modernNativeEntryTracksConfiguredLibrariesWithoutChangingOtherMetadata() {
-        val data = data(LibXposedGenerateSpec(targetApiVersion = 102, nativeLibraries = listOf("libexample.so", "libsecond.so")))
+    fun modernNativeEntriesTrackConfiguredFilesWithoutChangingOtherMetadata() {
+        val data = data(LibXposedGenerateSpec(targetApiVersion = 102, nativeEntries = listOf("libexample.so", "libsecond.so")))
         val resources = data.createResources()
         Assert.assertEquals("libexample.so\nlibsecond.so", resources["META-INF/xposed/native_init.list"])
         Assert.assertEquals("example.module.HookEntry_YukiHookXposedInit", resources["META-INF/xposed/java_init.list"])
         Assert.assertEquals(4, resources.size)
-        data.nativeLibraries = emptyList()
+        data.nativeEntries = emptyList()
         Assert.assertEquals(resources - "META-INF/xposed/native_init.list", data.createResources())
     }
 

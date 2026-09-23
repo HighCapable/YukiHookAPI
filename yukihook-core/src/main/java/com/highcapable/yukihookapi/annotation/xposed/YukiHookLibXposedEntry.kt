@@ -25,6 +25,7 @@ import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
+import kotlin.reflect.KClass
 
 /**
  * Marks the [YukiHook] libxposed entry class for code generation.
@@ -34,25 +35,28 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * Looking for legacy Xposed 82, please use [YukiHookXposed82Entry] with `yukihook-runtime-xposed82` instead.
  *
  * - KSP generates `java_init.list`, `module.prop`, and `scope.list` under `META-INF/xposed` as build resources.
- *   `native_init.list` is also generated when [nativeLibraries] is not empty.
+ *   `native_init.list` is also generated when [nativeEntries] is not empty.
  * - The framework reads the module name and description from the application's standard
  *   `android:label` and `android:description` attributes, not legacy `xposed*` meta-data
  *   or `module.prop`. KSP does not generate or modify the AndroidManifest.
  * - Hot reload is not supported in 1.x. Support is deferred to 2.x.
  *
- * The generated `java_init.list` entry uses the fully qualified annotated class name + `_YukiHookXposedInit`, or [entryClassName].
+ * The generated `java_init.list` lists the [YukiHook] entry first, followed by [javaEntries].
+ * Its [YukiHook] entry uses the fully qualified annotated class name + `_YukiHookXposedInit`, or [entryClassName].
  *
  * - Entry files are generated per build variant. Do not add duplicate entries under the source directory.
  * - The annotated class must implement [YukiHookXposedModule].
- * - Exactly one Hook entry may use either entry annotation. Multiple entries produce a compile-time error.
+ * - Exactly one hook entry may use either entry annotation. Multiple entries produce a compile-time error.
  * @see YukiHookXposed82Entry
  * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
  * @param minApiVersion minimum framework API version, at least 101.
  * @param targetApiVersion targeted API behavior, independently of the compile-only API dependency.
  * @param scope scope packages. An empty array declares no recommended scope. Use `system` explicitly for system_server.
  * @param staticScope whether scope selection is restricted to the declared list.
- * @param nativeLibraries native entry library filenames, such as `libexample.so`, one per generated line.
- * Empty disables generation of `native_init.list`. Libraries must be packaged and loaded by the module itself.
+ * @param javaEntries additional native libxposed Java entries extending `XposedModule`.
+ * These entries use their own framework callbacks and must keep their class names when R8 obfuscation is enabled.
+ * @param nativeEntries native entry library filenames, such as `libexample.so`, one per generated line.
+ * Empty disables generation of `native_init.list`. Package these libraries in the module APK; the framework loads them as native entries.
  */
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 @Target(AnnotationTarget.CLASS)
@@ -62,5 +66,6 @@ annotation class YukiHookLibXposedEntry(
     val targetApiVersion: Int,
     val scope: Array<String> = [],
     val staticScope: Boolean = false,
-    val nativeLibraries: Array<String> = []
+    val javaEntries: Array<KClass<*>> = [],
+    val nativeEntries: Array<String> = []
 )

@@ -45,7 +45,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * - A custom [modulePackageName] produces a compile-time warning so the value can be verified.
  * - Entry files are generated per build variant. Do not add duplicate entries under the source directory.
  * - The annotated class must implement [YukiHookXposedModule].
- * - Exactly one Hook entry may use either entry annotation. Multiple entries produce a compile-time error.
+ * - Exactly one hook entry may use either entry annotation. Multiple entries produce a compile-time error.
  * @see YukiHookLibXposedEntry
  * @param modulePackageName the module application ID, or an empty string to read it from the current KSP compilation.
  * @param entryClassName the generated Xposed entry class name, or an empty string to use entry class name + `_YukiHookXposedInit`.
