@@ -32,9 +32,9 @@ android {
 
 dependencies {
     compileOnly(libs.libxposed.api)
-    implementation(projects.yukihookapiRuntimeLibxposed)
-    implementation(projects.yukihookapiCore)
-    ksp(projects.yukihookapiCompiler)
+    implementation(projects.yukihookRuntimeLibxposed)
+    implementation(projects.yukihookCore)
+    ksp(projects.yukihookCompiler)
 
     implementation(platform(libs.kavaref.bom))
     implementation(libs.kavaref.core)

@@ -81,8 +81,8 @@ libraryProjects {
         configure<MavenPublishBaseExtension> {
             coordinates(artifactId = project.name)
             when (project.name) {
-                Libraries.YUKIHOOKAPI_BOM -> configure(JavaPlatform())
-                Libraries.YUKIHOOKAPI_COMPILER -> configure(KotlinJvm(JavadocJar.Javadoc(), SourcesJar.Sources()))
+                Libraries.YUKIHOOK_BOM -> configure(JavaPlatform())
+                Libraries.YUKIHOOK_COMPILER -> configure(KotlinJvm(JavadocJar.Javadoc(), SourcesJar.Sources()))
                 else -> configure(AndroidSingleVariantLibrary(JavadocJar.None(), SourcesJar.Sources()))
             }
         }
@@ -94,7 +94,7 @@ libraryProjects {
                 outputDirectory.set(layout.buildDirectory.dir("dokka/html"))
             }
             pluginsConfiguration.withType<DokkaHtmlPluginParameters>().configureEach {
-                footerMessage.set("YukiHookAPI | Apache-2.0 License | Copyright (C) 2019 HighCapable")
+                footerMessage.set("YukiHook | Apache-2.0 License | Copyright (C) 2019 HighCapable")
             }
         }
 
@@ -157,17 +157,17 @@ fun libraryProjects(action: Action<in Project>) {
 }
 
 object Libraries {
-    const val YUKIHOOKAPI_BOM = "yukihookapi-bom"
-    const val YUKIHOOKAPI_CORE = "yukihookapi-core"
-    const val YUKIHOOKAPI_COMPILER = "yukihookapi-compiler"
-    const val YUKIHOOKAPI_RUNTIME_LIBXPOSED = "yukihookapi-runtime-libxposed"
-    const val YUKIHOOKAPI_RUNTIME_XPOSED82 = "yukihookapi-runtime-xposed82"
+    const val YUKIHOOK_BOM = "yukihook-bom"
+    const val YUKIHOOK_CORE = "yukihook-core"
+    const val YUKIHOOK_COMPILER = "yukihook-compiler"
+    const val YUKIHOOK_RUNTIME_LIBXPOSED = "yukihook-runtime-libxposed"
+    const val YUKIHOOK_RUNTIME_XPOSED82 = "yukihook-runtime-xposed82"
 
     val apiLibs = listOf(
-        YUKIHOOKAPI_BOM,
-        YUKIHOOKAPI_CORE,
-        YUKIHOOKAPI_COMPILER,
-        YUKIHOOKAPI_RUNTIME_LIBXPOSED,
-        YUKIHOOKAPI_RUNTIME_XPOSED82
+        YUKIHOOK_BOM,
+        YUKIHOOK_CORE,
+        YUKIHOOK_COMPILER,
+        YUKIHOOK_RUNTIME_LIBXPOSED,
+        YUKIHOOK_RUNTIME_XPOSED82
     )
 }

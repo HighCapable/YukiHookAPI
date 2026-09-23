@@ -88,7 +88,7 @@ var instance = classOf<Test>(customClassLoader)
 
 ::: tip
 
-For more functions, please refer to [classOf](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/class-of), [String.toClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/to-class), [String.toClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/to-class-or-null), [PackageParam → String+ VariousClass.toClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class), [PackageParam → String+VariousClass.toClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class-or-null) methods.
+For more functions, please refer to [classOf](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/class-of), [String.toClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/to-class), [String.toClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/to-class-or-null), [PackageParam → String+ VariousClass.toClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class), [PackageParam → String+VariousClass.toClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class-or-null) methods.
 
 :::
 
@@ -136,7 +136,7 @@ instance?.method {
 
 ::: tip
 
-For more functions, please refer to [lazyClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/lazy-class), [lazyClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/lazy-class-or-null), [PackageParam → lazyClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class), [PackageParam → lazyClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class-or-null) methods.
+For more functions, please refer to [lazyClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/lazy-class), [lazyClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/lazy-class-or-null), [PackageParam → lazyClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class), [PackageParam → lazyClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class-or-null) methods.
 
 :::
 
@@ -183,7 +183,7 @@ var isExist = "com.demo.Test".hasClass(customClassLoader)
 
 ::: tip
 
-For more functions, please refer to [String.hasClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/has-class), [PackageParam → String.hasClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/has-class) methods.
+For more functions, please refer to [String.hasClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/has-class), [PackageParam → String.hasClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/has-class) methods.
 
 :::
 
@@ -365,7 +365,7 @@ searchClass {
 
 The conditional usage of **Field**, **Method**, **Constructor** in the above usage is consistent with the related usage in [Member Extensions](#member-extensions), with only minor differences.
 
-For more functions, please refer to [MemberRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-member-rules), [FieldRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-field-rules), [MethodRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-method-rules), [ConstructorRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-constructor-rules).
+For more functions, please refer to [MemberRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-member-rules), [FieldRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-field-rules), [MethodRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-method-rules), [ConstructorRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-constructor-rules).
 
 :::
 
@@ -488,7 +488,7 @@ searchClass(async = true) {
 
 ::: tip
 
-For more functions, please refer to [ClassLoader.searchClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/search-class), [PackageParam.searchClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/search-class) methods.
+For more functions, please refer to [ClassLoader.searchClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/search-class), [PackageParam.searchClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/search-class) methods.
 
 :::
 
@@ -614,7 +614,7 @@ Test::class.java.method {
 
 ::: tip
 
-For more features, please refer to [MethodFinder](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder).
+For more features, please refer to [MethodFinder](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder).
 
 :::
 
@@ -634,7 +634,7 @@ Test::class.java.field {
 
 ::: tip
 
-For more features, please refer to [FieldFinder](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder).
+For more features, please refer to [FieldFinder](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder).
 
 :::
 
@@ -658,7 +658,7 @@ Test::class.java.constructor().get().call() // Create a new instance
 
 ::: tip
 
-For more features, please refer to [ConstructorFinder](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder).
+For more features, please refer to [ConstructorFinder](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder).
 
 :::
 
@@ -757,7 +757,7 @@ Use **param { ... }** to create a conditional method body, where the variable **
 
 The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
 
-For more functions, please refer to [FieldFinder.type](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/type), [MethodFinder.param](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param), [MethodFinder.returnType](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/return-type), [ConstructorFinder.param](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param) method.
+For more functions, please refer to [FieldFinder.type](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/type), [MethodFinder.param](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param), [MethodFinder.returnType](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/return-type), [ConstructorFinder.param](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param) method.
 
 :::
 
@@ -807,7 +807,7 @@ Once `superClass` is set, it will automatically cycle backward to find out wheth
 
 ::: tip
 
-For more functions, please refer to [MethodFinder.superClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/super-class), [ConstructorFinder.superClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/super-class), [FieldFinder.superClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/super-class) methods.
+For more functions, please refer to [MethodFinder.superClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/super-class), [ConstructorFinder.superClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/super-class), [FieldFinder.superClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/super-class) methods.
 
 :::
 
@@ -895,7 +895,7 @@ Use **name { ... }** to create a conditional method body, where the variable **i
 
 The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
 
-For more functions, please refer to [FieldFinder.name](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/name), [MethodFinder.name](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/name) methods and [NameRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-name-rules).
+For more functions, please refer to [FieldFinder.name](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/name), [MethodFinder.name](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/name) methods and [NameRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-name-rules).
 
 :::
 
@@ -989,7 +989,7 @@ Use **paramCount { ... }** to create a conditional method body, where the variab
 
 The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
 
-For more functions, please refer to [MethodFinder.paramCount](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param-count), [ConstructorFinder.paramCount](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param-count) methods and [CountRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-count-rules).
+For more functions, please refer to [MethodFinder.paramCount](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param-count), [ConstructorFinder.paramCount](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param-count) methods and [CountRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-count-rules).
 
 :::
 
@@ -1053,7 +1053,7 @@ Use **modifiers { ... }** to create a conditional method body, at which point yo
 
 The condition at the end of the method body needs to return a **Boolean**, which is the final condition judgment result.
 
-For more functions, please refer to [FieldFinder.modifiers](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/modifiers), [MethodFinder.modifiers](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/modifiers), [ConstructorFinder.modifiers](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/modifiers) methods and [ModifierRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-modifier-rules).
+For more functions, please refer to [FieldFinder.modifiers](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/modifiers), [MethodFinder.modifiers](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/modifiers), [ConstructorFinder.modifiers](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/modifiers) methods and [ModifierRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-modifier-rules).
 
 :::
 
@@ -1330,7 +1330,7 @@ test.doTask("task_name")
 
 ::: tip
 
-For more functions, please refer to [CurrentClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-current-class) and [Class.buildOf](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/build-of) method.
+For more functions, please refer to [CurrentClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-current-class) and [Class.buildOf](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/build-of) method.
 
 :::
 
@@ -1397,7 +1397,7 @@ val result = Test::class.java.method {
 
 ::: tip
 
-For more functions, please refer to the [MethodFinder.Result.original](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-result/-instance/original) method.
+For more functions, please refer to the [MethodFinder.Result.original](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-result/-instance/original) method.
 
 :::
 
@@ -1418,7 +1418,7 @@ public class Test {
 }
 ```
 
-> The following example of version B 
+> The following example of version B
 
 ```java:no-line-numbers
 public class Test {
@@ -1429,7 +1429,7 @@ public class Test {
 }
 ```
 
-> The following example of version C 
+> The following example of version C
 
 ```java:no-line-numbers
 public class Test {
@@ -1508,7 +1508,7 @@ Test::class.java.method {
 
 ::: tip
 
-For more functions, please refer to [MethodFinder.RemedyPlan](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-remedy-plan), [ConstructorFinder.RemedyPlan](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/-remedy-plan), [FieldFinder.RemedyPlan](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/-remedy-plan) .
+For more functions, please refer to [MethodFinder.RemedyPlan](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-remedy-plan), [ConstructorFinder.RemedyPlan](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/-remedy-plan), [FieldFinder.RemedyPlan](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/-remedy-plan) .
 
 :::
 
@@ -1605,7 +1605,7 @@ VariousClass("com.demo.ATest", "com.demo.BTest").toClass().method {
 
 ::: tip
 
-For more functions, please refer to [VariousClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-various-class).
+For more functions, please refer to [VariousClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-various-class).
 
 :::
 
@@ -1694,7 +1694,7 @@ TestGeneric::class.java.generic()?.argument()?.method {
 
 ::: tip
 
-For more functions, please refer to [CurrentClass.generic](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-current-class/generic), [Class.generic](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/generic) methods and [GenericClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-generic-class).
+For more functions, please refer to [CurrentClass.generic](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-current-class/generic), [Class.generic](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/generic) methods and [GenericClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-generic-class).
 
 :::
 
@@ -1817,7 +1817,7 @@ If you write `constructor()` and miss `emptyParam()`, the result found at this t
 
 ::: tip Compatibility Notes
 
-In past historical versions of the API, if the constructor does not fill in any search parameters, the constructor will not be found directly. 
+In past historical versions of the API, if the constructor does not fill in any search parameters, the constructor will not be found directly.
 
 <u>**This is a BUG and has been fixed in the latest version**</u>, please make sure you are using the latest API version.
 
@@ -1968,7 +1968,7 @@ For example, the encapsulation type of **byte[]** is **ByteArrayType** or **Arra
 
 ::: tip
 
-For more types, see [ComponentTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.android), [GraphicsTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.android), [ViewTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.android), [VariableTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.java).
+For more types, see [ComponentTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.android), [GraphicsTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.android), [ViewTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.android), [VariableTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.java).
 
 :::
 

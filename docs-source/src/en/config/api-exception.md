@@ -844,7 +844,7 @@ When the data you send exceeds the upper limit of the system broadcast, `YukiHoo
 
 ::: tip
 
-If you still want to use this feature, please refer to [YukiHookDataChannel.NameSpace.allowSendTooLargeData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/allow-send-too-large-data) method.
+If you still want to use this feature, please refer to [YukiHookDataChannel.NameSpace.allowSendTooLargeData](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/allow-send-too-large-data) method.
 
 But <u>**it is strongly recommended not to do this**</u>, <u>**this may cause the system to not allow too large data to be sent and cause the app crash**</u>.
 
@@ -1814,7 +1814,7 @@ For details, please refer to [Status Monitor](../guide/example#status-monitor).
 
 ###### exception
 
-::: danger IllegalStateException 
+::: danger IllegalStateException
 
 Use of searchClass { ... }.hook { ... } is an error, please use like searchClass { ... }.get()?.hook { ... }
 
@@ -1830,7 +1830,7 @@ Please use `searchClass { ... }.get()?.hook { ... }` to create a Hook instance.
 
 ###### exception
 
-::: danger IllegalStateException 
+::: danger IllegalStateException
 
 This type \[**TYPE**\] not support to hook, supported are Constructors and Methods
 

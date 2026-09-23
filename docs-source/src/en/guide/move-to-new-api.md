@@ -302,4 +302,4 @@ instance.current().superClass()?.method {
 
 ## Migrate More Functions Related to Hook API
 
-YukiHookAPI is a brand new Hook API, which is fundamentally different from other Hook APIs, you can refer to [KDoc](kdoc://yukihookapi-core) and [Special Features](../special-features/reflection) to determine some functional Migration and use.
+YukiHookAPI is a brand new Hook API, which is fundamentally different from other Hook APIs, you can refer to [KDoc](kdoc://yukihook-core) and [Special Features](../special-features/reflection) to determine some functional Migration and use.

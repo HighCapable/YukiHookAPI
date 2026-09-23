@@ -77,7 +77,7 @@ In this way, the API will intelligently select the specified method type to prin
 
 ::: tip
 
-For more functions, please refer to [YLog.debug](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/debug), [YLog.info](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/info) and [YLog.warn](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/warn) methods.
+For more functions, please refer to [YLog.debug](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/debug), [YLog.info](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/info) and [YLog.warn](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/warn) methods.
 
 :::
 
@@ -130,7 +130,7 @@ In the error log, you can also use `YLog.EnvType` to specify the method type cur
 
 ::: tip
 
-For more functions, please refer to the [YLog.error](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/error) method.
+For more functions, please refer to the [YLog.error](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/error) method.
 
 :::
 
@@ -198,7 +198,7 @@ You can only get the corresponding log data in the corresponding process.
 
 If you need to get these log data in real time anywhere, please refer to [Xposed Module and Host Channel](xposed-channel), [Register Module App's Activity](host-inject#register-module-app-s-activity).
 
-If you only want to get log data in real time through Module App or Host App, Please refer to the optional solution [YukiHookDataChannel.obtainLoggerInMemoryData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/obtain-logger-in-memory-data) method.
+If you only want to get log data in real time through Module App or Host App, Please refer to the optional solution [YukiHookDataChannel.obtainLoggerInMemoryData](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/obtain-logger-in-memory-data) method.
 
 :::
 
@@ -220,6 +220,6 @@ override fun onInit() = configs {
 
 ::: tip
 
-For more functions, please refer to [YLog.inMemoryData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/in-memory-data), [YLog.contents](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/contents), [YLog.contents](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/contents), [YLog.saveToFile](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/save-to-file) methods and [YLog.Configs](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/-configs).
+For more functions, please refer to [YLog.inMemoryData](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/in-memory-data), [YLog.contents](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/contents), [YLog.contents](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/contents), [YLog.saveToFile](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/save-to-file) methods and [YLog.Configs](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/-configs).
 
 :::

@@ -52,7 +52,7 @@ TargetClass.resolve().firstMethod {
 
 ```kotlin
 // Old version (1.2.x-1.3.0 (Not included))
-TargetClass.method { 
+TargetClass.method {
     // Your code here.
 }.hook {
     before {
@@ -63,9 +63,9 @@ TargetClass.method {
     }
 }
 // Old version
-TargetClass.hook { 
-    injectMember { 
-        method { 
+TargetClass.hook {
+    injectMember {
+        method {
             // Your code here.
         }
         beforeHook {
@@ -96,9 +96,9 @@ resources().hook {
 
 > You can find the demo provided by the API below to learn how to use `YukiHookAPI`.
 
-- Host App Demo [click here to view](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-app)
+- Host App Demo [click here to view](https://github.com/HighCapable/YukiHook/tree/master/samples/demo-app)
 
-- Module App Demo [click here to view](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module)
+- Module App Demo [click here to view](https://github.com/HighCapable/YukiHook/tree/master/samples/demo-module)
 
 Install the Host App and Module App Demo at the same time, and test the hooked function in the Host App by activating the Module App.
 
@@ -124,7 +124,7 @@ Add code in the body of the `encase` method.
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    Activity::class.resolve().firstMethod { 
+    Activity::class.resolve().firstMethod {
         name = "onCreate"
         parameters(Bundle::class)
     }.hook {
@@ -149,8 +149,8 @@ We can use Kotlin's `apply` method on `Activity::class.resolve()` to create a ca
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    Activity::class.resolve().apply { 
-        firstMethod { 
+    Activity::class.resolve().apply {
+        firstMethod {
             name = "onCreate"
             parameters(Bundle::class)
         }.hook {
@@ -162,7 +162,7 @@ loadApp(name = "com.android.browser") {
                     .show()
             }
         }
-        firstMethod { 
+        firstMethod {
             name = "onStart"
             emptyParameters()
         }.hook {
@@ -226,7 +226,7 @@ TestClass.resolve().firstMethod {
 
 ::: tip
 
-For more functions, please refer to [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator).
+For more functions, please refer to [MemberHookCreator](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator).
 
 :::
 
@@ -355,7 +355,7 @@ loadZygote {
 ```
 ::: tip
 
-For more functions, please refer to [ResourcesHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator).
+For more functions, please refer to [ResourcesHookCreator](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator).
 
 :::
 
@@ -369,7 +369,7 @@ The first way, save the `Result` instance of the current injected object, and ca
 
 ```kotlin
 // Set a variable to save the current instance
-val hookResult = 
+val hookResult =
     resolve().firstMethod {
         name = "test"
         returnType = Void.TYPE
@@ -387,7 +387,7 @@ The second method, call `removeSelf` in the Hook callback method to remove itsel
 > The following example
 
 ```kotlin
-resolve().firstMethod { 
+resolve().firstMethod {
     name = "test"
     returnType = Void.TYPE
 }.hook {
@@ -400,7 +400,7 @@ resolve().firstMethod {
 
 ::: tip
 
-For more functions, please refer to [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator).
+For more functions, please refer to [MemberHookCreator](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator).
 
 :::
 
@@ -470,7 +470,7 @@ method {
 
 ::: tip
 
-For more functions, please refer to [MemberHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-result), [ResourcesHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator/-result).
+For more functions, please refer to [MemberHookCreator.Result](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-result), [ResourcesHookCreator.Result](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator/-result).
 
 :::
 
@@ -563,7 +563,7 @@ In order to ensure that the Hook calling domain and the calling domain within th
 
 ::: tip
 
-For more functions, please refer to [Throwable.throwToApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-hook-param/throw-to-app), [YukiMemberHookCreator.MemberMookCreator.HookCallback](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-hook-callback).
+For more functions, please refer to [Throwable.throwToApp](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-hook-param/throw-to-app), [YukiMemberHookCreator.MemberMookCreator.HookCallback](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-hook-callback).
 
 :::
 
@@ -588,7 +588,7 @@ loadApp(name = "com.android.phone") {
 
 ::: tip
 
-For more functions, please refer to [PackageParam.loadApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/load-app).
+For more functions, please refer to [PackageParam.loadApp](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/load-app).
 
 :::
 
@@ -609,7 +609,7 @@ withProcess(name = "$packageName:tool") {
 
 ::: tip
 
-For more functions, please refer to [PackageParam.withProcess](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/with-process).
+For more functions, please refer to [PackageParam.withProcess](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/with-process).
 
 :::
 
@@ -685,7 +685,7 @@ if(YukiHookAPI.Status.isModuleActive) {
 
 ::: tip
 
-For more functions, please refer to [YukiHookAPI.Status](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status).
+For more functions, please refer to [YukiHookAPI.Status](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status).
 
 :::
 
@@ -737,7 +737,7 @@ val frameworkApiLevel = YukiHookAPI.Status.Executor.apiLevel
 
 ::: tip
 
-For more functions, please refer to [YukiHookAPI.Status.Executor](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status/-executor).
+For more functions, please refer to [YukiHookAPI.Status.Executor](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status/-executor).
 
 :::
 

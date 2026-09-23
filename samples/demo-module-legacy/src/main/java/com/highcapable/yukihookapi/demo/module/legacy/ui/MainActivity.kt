@@ -1,7 +1,7 @@
 /*
- * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
+ * YukiHook - A modern hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
- * https://github.com/HighCapable/YukiHookAPI
+ * https://github.com/HighCapable/YukiHook
  *
  * Apache License Version 2.0
  *
@@ -47,7 +47,7 @@ import com.highcapable.hikage.widget.androidx.core.widget.NestedScrollView
 import com.highcapable.hikage.widget.com.google.android.material.appbar.MaterialToolbar
 import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputEditText
 import com.highcapable.hikage.widget.com.google.android.material.textfield.TextInputLayout
-import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.demo.module.legacy.R
 import com.highcapable.yukihookapi.demo.module.legacy.data.DataConst
 import com.highcapable.yukihookapi.demo.module.legacy.generated.DemoProperties
@@ -209,7 +209,7 @@ class MainActivity : BaseActivity() {
                             gravity = Gravity.CENTER or Gravity.START
                             text = stringResource(
                                 R.string.demo_compiled_time,
-                                SimpleDateFormat.getDateTimeInstance().format(Date(YukiHookAPI.Status.compiledTimestamp))
+                                SimpleDateFormat.getDateTimeInstance().format(Date(YukiHook.Status.compiledTimestamp))
                             )
                         }
                     }
@@ -222,17 +222,17 @@ class MainActivity : BaseActivity() {
         }
 
         fun refreshStatus() {
-            hikage.get<TextView>("sample_title_text_0").text = getString(R.string.demo_status_module_active, YukiHookAPI.Status.isModuleActive)
+            hikage.get<TextView>("sample_title_text_0").text = getString(R.string.demo_status_module_active, YukiHook.Status.isModuleActive)
             hikage.get<TextView>("sample_subtitle_text_0").text = getString(R.string.demo_status_module_active_summary)
-            hikage.get<TextView>("sample_title_text_1").text = getString(R.string.demo_status_hook_framework, YukiHookAPI.Status.Executor.name)
+            hikage.get<TextView>("sample_title_text_1").text = getString(R.string.demo_status_hook_framework, YukiHook.Status.Executor.name)
             hikage.get<TextView>("sample_subtitle_text_1").text = getString(R.string.demo_status_hook_framework_summary) 
-            hikage.get<TextView>("sample_title_text_2").text = getString(R.string.demo_status_hook_framework_version, "${YukiHookAPI.Status.Executor.version} (${YukiHookAPI.Status.Executor.versionCode})")
+            hikage.get<TextView>("sample_title_text_2").text = getString(R.string.demo_status_hook_framework_version, "${YukiHook.Status.Executor.version} (${YukiHook.Status.Executor.versionCode})")
             hikage.get<TextView>("sample_subtitle_text_2").text = getString(R.string.demo_status_hook_framework_version_summary)
-            hikage.get<TextView>("sample_title_text_3").text = getString(R.string.demo_status_xposed_api_version, YukiHookAPI.Status.Executor.apiVersion)
+            hikage.get<TextView>("sample_title_text_3").text = getString(R.string.demo_status_xposed_api_version, YukiHook.Status.Executor.apiVersion)
             hikage.get<TextView>("sample_subtitle_text_3").text = getString(R.string.demo_status_xposed_api_version_summary)
-            hikage.get<TextView>("sample_title_text_4").text = getString(R.string.demo_status_yukihookapi_version, YukiHookAPI.TAG, YukiHookAPI.VERSION)
-            hikage.get<TextView>("sample_subtitle_text_4").text = getString(R.string.demo_status_yukihookapi_version_summary)
-            hikage.get<TextView>("sample_title_text_5").text = getString(R.string.demo_status_runtime, YukiHookAPI.Status.runtime.explicitName)
+            hikage.get<TextView>("sample_title_text_4").text = getString(R.string.demo_status_yukihook_version, YukiHook.TAG, YukiHook.VERSION)
+            hikage.get<TextView>("sample_subtitle_text_4").text = getString(R.string.demo_status_yukihook_version_summary)
+            hikage.get<TextView>("sample_title_text_5").text = getString(R.string.demo_status_runtime, YukiHook.Status.runtime.explicitName)
             hikage.get<TextView>("sample_subtitle_text_5").text = getString(R.string.demo_status_runtime_summary)
             hikage.get<TextView>("sample_title_text_6").text = getString(R.string.demo_status_prefs_writable, preferences().isWritable)
             hikage.get<TextView>("sample_subtitle_text_6").text = getString(R.string.demo_status_prefs_writable_summary)
@@ -242,10 +242,10 @@ class MainActivity : BaseActivity() {
     }
 
     private inline fun hostEnvironment(callback: () -> Unit) {
-        if (YukiHookAPI.Status.isHostEnvironment) callback()
+        if (YukiHook.Status.isHostEnvironment) callback()
     }
 
     private inline fun moduleEnvironment(callback: () -> Unit) {
-        if (!YukiHookAPI.Status.isHostEnvironment) callback()
+        if (!YukiHook.Status.isHostEnvironment) callback()
     }
 }

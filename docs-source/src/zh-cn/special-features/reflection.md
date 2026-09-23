@@ -83,7 +83,7 @@ var instance = classOf<Test>(customClassLoader)
 
 ::: tip
 
-更多功能请参考 [classOf](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/class-of)、[String.toClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/to-class)、[String.toClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/to-class-or-null)、[PackageParam → String+VariousClass.toClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class)、[PackageParam → String+VariousClass.toClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class-or-null) 方法。
+更多功能请参考 [classOf](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/class-of)、[String.toClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/to-class)、[String.toClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/to-class-or-null)、[PackageParam → String+VariousClass.toClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class)、[PackageParam → String+VariousClass.toClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/to-class-or-null) 方法。
 
 :::
 
@@ -103,8 +103,8 @@ val instance by lazyClass("com.demo.Test")
 val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoader
 val instance by lazyClass("com.demo.Test") { customClassLoader }
 // 在适当的时候调用这个 Class
-instance.method { 
-    // ...   
+instance.method {
+    // ...
 }
 ```
 
@@ -122,14 +122,14 @@ val customClassLoader: ClassLoader? = ... // 假设这个就是你的 ClassLoade
 // 得不到时结果会为 null 但不会抛出异常
 val instance by lazyClassOrNull("com.demo.Test") { customClassLoader }
 // 在适当的时候调用这个 Class
-instance?.method { 
-    // ...   
+instance?.method {
+    // ...
 }
 ```
 
 ::: tip
 
-更多功能请参考 [lazyClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/lazy-class)、[lazyClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/lazy-class-or-null)、[PackageParam → lazyClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class)、[PackageParam → lazyClassOrNull](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class-or-null) 方法。
+更多功能请参考 [lazyClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/lazy-class)、[lazyClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/lazy-class-or-null)、[PackageParam → lazyClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class)、[PackageParam → lazyClassOrNull](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/lazy-class-or-null) 方法。
 
 :::
 
@@ -174,7 +174,7 @@ var isExist = "com.demo.Test".hasClass(customClassLoader)
 
 ::: tip
 
-更多功能请参考 [String.hasClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/has-class)、[PackageParam → String.hasClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/has-class) 方法。
+更多功能请参考 [String.hasClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/has-class)、[PackageParam → String.hasClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/has-class) 方法。
 
 :::
 
@@ -329,7 +329,7 @@ searchClass {
 
 上述用法中对于 **Field**、**Method**、**Constructor** 的条件用法与 [Member 扩展](#member-扩展) 中的相关用法是一致的，仅有小部分区别。
 
-更多功能请参考 [MemberRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-member-rules)、[FieldRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-field-rules)、[MethodRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-method-rules)、[ConstructorRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-constructor-rules)。
+更多功能请参考 [MemberRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-member-rules)、[FieldRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-field-rules)、[MethodRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-method-rules)、[ConstructorRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.classes.rules/-constructor-rules)。
 
 :::
 
@@ -446,7 +446,7 @@ searchClass(async = true) {
 
 ::: tip
 
-更多功能请参考 [ClassLoader.searchClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/search-class)、[PackageParam.searchClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/search-class) 方法。
+更多功能请参考 [ClassLoader.searchClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/search-class)、[PackageParam.searchClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/search-class) 方法。
 
 :::
 
@@ -570,7 +570,7 @@ Test::class.java.method {
 
 ::: tip
 
-更多功能请参考 [MethodFinder](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder)。
+更多功能请参考 [MethodFinder](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder)。
 
 :::
 
@@ -590,7 +590,7 @@ Test::class.java.field {
 
 ::: tip
 
-更多功能请参考 [FieldFinder](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder)。
+更多功能请参考 [FieldFinder](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder)。
 
 :::
 
@@ -614,7 +614,7 @@ Test::class.java.constructor().get().call() // 可创建一个新的实例
 
 ::: tip
 
-更多功能请参考 [ConstructorFinder](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder)。
+更多功能请参考 [ConstructorFinder](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder)。
 
 :::
 
@@ -708,7 +708,7 @@ Test::class.java.method {
 
 方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
 
-更多功能请参考 [FieldFinder.type](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/type)、[MethodFinder.param](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param)、[MethodFinder.returnType](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/return-type)、[ConstructorFinder.param](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param) 方法。
+更多功能请参考 [FieldFinder.type](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/type)、[MethodFinder.param](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param)、[MethodFinder.returnType](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/return-type)、[ConstructorFinder.param](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param) 方法。
 
 :::
 
@@ -758,7 +758,7 @@ Test::class.java.method {
 
 ::: tip
 
-更多功能请参考 [MethodFinder.superClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/super-class)、[ConstructorFinder.superClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/super-class)、[FieldFinder.superClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/super-class) 方法。
+更多功能请参考 [MethodFinder.superClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/super-class)、[ConstructorFinder.superClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/super-class)、[FieldFinder.superClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/super-class) 方法。
 
 :::
 
@@ -846,7 +846,7 @@ Test::class.java.method {
 
 方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
 
-更多功能请参考 [FieldFinder.name](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/name)、[MethodFinder.name](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/name) 方法以及 [NameRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-name-rules)。
+更多功能请参考 [FieldFinder.name](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/name)、[MethodFinder.name](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/name) 方法以及 [NameRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-name-rules)。
 
 :::
 
@@ -938,7 +938,7 @@ Test::class.java.method {
 
 方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
 
-更多功能请参考 [MethodFinder.paramCount](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param-count)、[ConstructorFinder.paramCount](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param-count) 方法以及 [CountRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-count-rules)。
+更多功能请参考 [MethodFinder.paramCount](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/param-count)、[ConstructorFinder.paramCount](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/param-count) 方法以及 [CountRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-count-rules)。
 
 :::
 
@@ -1002,7 +1002,7 @@ Test::class.java.method {
 
 方法体末尾条件需要返回一个 **Boolean**，即最终的条件判断结果。
 
-更多功能请参考 [FieldFinder.modifiers](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/modifiers)、[MethodFinder.modifiers](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/modifiers)、[ConstructorFinder.modifiers](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/modifiers) 方法以及 [ModifierRules](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-modifier-rules)。
+更多功能请参考 [FieldFinder.modifiers](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/modifiers)、[MethodFinder.modifiers](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/modifiers)、[ConstructorFinder.modifiers](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/modifiers) 方法以及 [ModifierRules](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.base.rules/-modifier-rules)。
 
 :::
 
@@ -1274,7 +1274,7 @@ test.doTask("task_name")
 
 ::: tip
 
-更多功能请参考 [CurrentClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-current-class) 以及 [Class.buildOf](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/build-of) 方法。
+更多功能请参考 [CurrentClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-current-class) 以及 [Class.buildOf](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/build-of) 方法。
 
 :::
 
@@ -1341,7 +1341,7 @@ val result = Test::class.java.method {
 
 ::: tip
 
-更多功能请参考 [MethodFinder.Result.original](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-result/-instance/original) 方法。
+更多功能请参考 [MethodFinder.Result.original](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-result/-instance/original) 方法。
 
 :::
 
@@ -1452,7 +1452,7 @@ Test::class.java.method {
 
 ::: tip
 
-更多功能请参考 [MethodFinder.RemedyPlan](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-remedy-plan)、[ConstructorFinder.RemedyPlan](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/-remedy-plan)、[FieldFinder.RemedyPlan](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/-remedy-plan)。
+更多功能请参考 [MethodFinder.RemedyPlan](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-remedy-plan)、[ConstructorFinder.RemedyPlan](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/-remedy-plan)、[FieldFinder.RemedyPlan](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/-remedy-plan)。
 
 :::
 
@@ -1490,7 +1490,7 @@ public class BTest {
 
 ```kotlin
 // 首先查找到这个 Class
-val currentClass = 
+val currentClass =
     if("com.demo.ATest".hasClass()) "com.demo.ATest".toClass() else "com.demo.BTest".toClass()
 // 然后再查找这个方法并调用
 currentClass.method {
@@ -1549,7 +1549,7 @@ VariousClass("com.demo.ATest", "com.demo.BTest").toClass().method {
 
 ::: tip
 
-更多功能请参考 [VariousClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-various-class)。
+更多功能请参考 [VariousClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-various-class)。
 
 :::
 
@@ -1632,7 +1632,7 @@ TestGeneric::class.java.generic()?.argument()?.method {
 
 ::: tip
 
-更多功能请参考 [CurrentClass.generic](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-current-class/generic)、[Class.generic](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/generic) 方法以及 [GenericClass](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.bean/-generic-class)。
+更多功能请参考 [CurrentClass.generic](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-current-class/generic)、[Class.generic](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/generic) 方法以及 [GenericClass](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.bean/-generic-class)。
 
 :::
 
@@ -1900,7 +1900,7 @@ Java 中共有 9 个**原始类型关键字**，其中 8 个为**原始类型**�
 
 ::: tip
 
-更多类型可查看 [ComponentTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.android)、[GraphicsTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.android)、[ViewTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.android)、[VariableTypeFactory](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.type.java)。
+更多类型可查看 [ComponentTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.android)、[GraphicsTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.android)、[ViewTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.android)、[VariableTypeFactory](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.type.java)。
 
 :::
 

@@ -20,7 +20,7 @@
 
 LSPosed 现已实验性推出了 [Modern Xposed API](https://github.com/libxposed)，它采用 Service 的方式与模块通信，这将能够解决模块数据存储的问题。
 
-为了保证大部分模块的兼容性，后期 **YukiHookAPI** 计划使用自定义的 ContentProvider 实现模块与宿主的数据互通，敬请期待。 
+为了保证大部分模块的兼容性，后期 **YukiHookAPI** 计划使用自定义的 ContentProvider 实现模块与宿主的数据互通，敬请期待。
 
 :::
 
@@ -52,6 +52,6 @@ API 已经提供了 Xposed 原生 API 监听接口，你可以 [在这里](../co
 
 所有功能预计在 `2.0.0` 版本完成，敬请期待。
 
-- [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHookAPI/issues/49)
-- [New Hook Entry Class](https://github.com/HighCapable/YukiHookAPI/issues/48)
-- ~~[New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33)~~ (已由 [KavaRef](https://github.com/HighCapable/KavaRef) 取代)
+- [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHook/issues/49)
+- [New Hook Entry Class](https://github.com/HighCapable/YukiHook/issues/48)
+- ~~[New Hook Code Style](https://github.com/HighCapable/YukiHook/issues/33)~~ (已由 [KavaRef](https://github.com/HighCapable/KavaRef) 取代)

@@ -74,7 +74,7 @@ YLog.debug(tag = "YukiHookAPI", msg = "This is a log", env = YLog.EnvType.SCOPE)
 
 ::: tip
 
-更多功能请参考 [YLog.debug](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/debug)、[YLog.info](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/info) 及 [YLog.warn](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/warn) 方法。
+更多功能请参考 [YLog.debug](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/debug)、[YLog.info](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/info) 及 [YLog.warn](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/warn) 方法。
 
 :::
 
@@ -115,11 +115,11 @@ YLog.error(msg = "This is an error", e = throwable)
 
 ```text:no-line-numbers
 java.lang.Throwable
-    at com.demo.Test.<init>(...) 
-    at com.demo.Test.doTask(...) 
-    at com.demo.Test.stop(...) 
-    at com.demo.Test.init(...) 
-    at a.a.a(...) 
+    at com.demo.Test.<init>(...)
+    at com.demo.Test.doTask(...)
+    at com.demo.Test.stop(...)
+    at com.demo.Test.init(...)
+    at a.a.a(...)
     ... 3 more
 ```
 
@@ -127,7 +127,7 @@ java.lang.Throwable
 
 ::: tip
 
-更多功能请参考 [YLog.error](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/error) 方法。
+更多功能请参考 [YLog.error](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/error) 方法。
 
 :::
 
@@ -189,7 +189,7 @@ YLog.saveToFile("/sdcard/Documents/debug_log.log", data)
 
 你只能在对应的进程中获取对应的日志数据，如果你需要在任何地方实时得到这些日志数据，请参考 [Xposed 模块与宿主通讯桥](xposed-channel)、[注册模块 Activity](host-inject#注册模块-activity)。
 
-如果你只想通过模块或宿主来实时得到日志数据，请参考可选方案 [YukiHookDataChannel.obtainLoggerInMemoryData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/obtain-logger-in-memory-data) 方法。
+如果你只想通过模块或宿主来实时得到日志数据，请参考可选方案 [YukiHookDataChannel.obtainLoggerInMemoryData](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/obtain-logger-in-memory-data) 方法。
 
 :::
 
@@ -211,6 +211,6 @@ override fun onInit() = configs {
 
 ::: tip
 
-更多功能请参考 [YLog.inMemoryData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/in-memory-data)、[YLog.contents](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/contents)、[YLog.contents](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/contents)、[YLog.saveToFile](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/save-to-file) 方法以及 [YLog.Configs](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.log/-y-log/-configs)。
+更多功能请参考 [YLog.inMemoryData](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/in-memory-data)、[YLog.contents](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/contents)、[YLog.contents](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/contents)、[YLog.saveToFile](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/save-to-file) 方法以及 [YLog.Configs](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.log/-y-log/-configs)。
 
 :::

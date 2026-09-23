@@ -1,7 +1,7 @@
 /*
- * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
+ * YukiHook - A modern hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
- * https://github.com/HighCapable/YukiHookAPI
+ * https://github.com/HighCapable/YukiHook
  *
  * Apache License Version 2.0
  *
@@ -31,7 +31,7 @@ import com.highcapable.betterandroid.ui.extension.component.replace
 import com.highcapable.hikage.core.layout.LayoutParams
 import com.highcapable.hikage.extension.addView
 import com.highcapable.hikage.widget.android.widget.FrameLayout
-import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.demo.module.modern.R
 import com.highcapable.yukihookapi.demo.module.modern.ui.base.BaseActivity
 import com.highcapable.yukihookapi.hook.xposed.preference.ui.ModulePreferenceFragment
@@ -73,7 +73,7 @@ class PreferenceActivity : BaseActivity() {
             super.onCreatePreferences(savedInstanceState, rootKey)
 
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
-            findPreference<SwitchPreference>("show_dialog_when_demo_app_opened")?.isEnabled = !YukiHookAPI.Status.isHostEnvironment
+            findPreference<SwitchPreference>("show_dialog_when_demo_app_opened")?.isEnabled = !YukiHook.Status.isHostEnvironment
         }
     }
 }

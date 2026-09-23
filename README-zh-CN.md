@@ -1,14 +1,14 @@
-# Yuki Hook API
+# Yuki Hook
 
-[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHookAPI?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHookAPI/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHookAPI?display_name=release&logo=github&color=green&style=flat-square)](https://github.com/HighCapable/YukiHookAPI/releases)
+[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHook?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHook/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHook?display_name=release&logo=github&color=green&style=flat-square)](https://github.com/HighCapable/YukiHook/releases)
 [![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHookAPI)
 [![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/HighCapable_Dev)
 [![QQ](https://img.shields.io/badge/discussion%20dev-QQ-blue.svg?logo=tencent-qq&logoColor=red&style=flat-square)](https://qm.qq.com/cgi-bin/qm/qr?k=Pnsc5RY6N2mBKFjOLPiYldbAbprAU3V7&jump_from=webapi&authKey=X5EsOVzLXt1dRunge8ryTxDRrh9/IiW1Pua75eDLh9RE3KXE+bwXIYF5cWri/9lf)
 
 <img src="img-src/icon.png" width = "100" height = "100" alt="LOGO"/>
 
-⛱️ 一个使用 Kotlin 构建的高效 Hook API 与 Xposed 模块解决方案。
+一个现代化的 Hook API 与 Xposed 模块解决方案。
 
 [English](README.md) | 简体中文
 
@@ -27,26 +27,26 @@
 
 ## 开始使用
 
-[点击这里](https://highcapable.github.io/YukiHookAPI/zh-cn/) 前往文档页面查看更多详细教程和内容。
+[点击这里](https://highcapable.github.io/YukiHook/zh-cn/) 前往文档页面查看更多详细教程和内容。
 
-有关支持性的相关信息，你可以直接 [点击这里](https://highcapable.github.io/YukiHookAPI/zh-cn/guide/supportive)
+有关支持性的相关信息，你可以直接 [点击这里](https://highcapable.github.io/YukiHook/zh-cn/guide/supportive)
 进行查看。
 
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
-🚀 YukiHookAPI 正使用 KavaRef 作为反射 API 强力驱动，**点击上方链接 star 这个项目**，你也可以优雅地使用它！
+🚀 YukiHook 正使用 KavaRef 作为反射 API 强力驱动，**点击上方链接 star 这个项目**，你也可以优雅地使用它！
 
 ## 探索新版本
 
 `2.x` 版本正在重构中，你可以下方切换到 `2.x` 分支查看当前的开发进度。
 
-| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHookAPI/tree/2.x) |
+| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHook/tree/2.x) |
 |---------------------------------------------------------------------|---------------------------------------------------------------------|
 
 ## 谁在使用
 
-以下是正在使用 YukiHookAPI 的项目。
+以下是正在使用 YukiHook 的项目。
 
 | Repository                                                                         | Developer                                       |
 |------------------------------------------------------------------------------------|-------------------------------------------------|
@@ -78,7 +78,7 @@
 | [Bilibili_Innocent_Lab](https://github.com/jichuo1/Bilibili_Innocent_Lab)          | [jichuo1](https://github.com/jichuo1)           |
 | [LuckyTool](https://github.com/luckyzyx/LuckyTool)                                 | [luckyzyx](https://github.com/luckyzyx)         |
 
-你也在使用 YukiHookAPI 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
+你也在使用 YukiHook 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
 
 ## 更多项目
 
@@ -92,7 +92,7 @@
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=HighCapable/YukiHookAPI&type=date&legend=top-left&sealed_token=cH7W7hRbOUCtuZy08alMZDm3XT4rAGJk-gWnsAEiainLb9d0pvJTYIUCLnhkVyVHMbE0RweCCTM_gn0Mr2UBwjhmbisZCRRxaF_NprdiB44vhtI-5bjaug)](https://www.star-history.com/?repos=HighCapable%2FYukiHookAPI&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/chart?repos=HighCapable/YukiHook&type=date&legend=top-left&sealed_token=cH7W7hRbOUCtuZy08alMZDm3XT4rAGJk-gWnsAEiainLb9d0pvJTYIUCLnhkVyVHMbE0RweCCTM_gn0Mr2UBwjhmbisZCRRxaF_NprdiB44vhtI-5bjaug)](https://www.star-history.com/?repos=HighCapable%2FYukiHook&type=date&legend=top-left)
 
 ## 第三方开源使用声明
 

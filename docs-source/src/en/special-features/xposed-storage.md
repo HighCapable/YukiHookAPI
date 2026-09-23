@@ -89,7 +89,7 @@ prefs(). edit()
 
 ::: tip
 
-For more functions, please refer to [YukiHookPrefsBridge](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge), [PrefsData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data).
+For more functions, please refer to [YukiHookPrefsBridge](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge), [PrefsData](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data).
 
 :::
 
@@ -107,7 +107,7 @@ You must extends **ModulePreferenceFragment** to implement the module storage fu
 
 ::: tip
 
-For more functions, please refer to [ModulePreferenceFragment](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs.ui/-module-preference-fragment).
+For more functions, please refer to [ModulePreferenceFragment](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs.ui/-module-preference-fragment).
 
 :::
 
@@ -153,6 +153,6 @@ After using the `native` method, no matter in `Activity` or `PackageParam`, the 
 
 ::: tip
 
-For more functions, please refer to [YukiHookPrefsBridge](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge).
+For more functions, please refer to [YukiHookPrefsBridge](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge).
 
 :::

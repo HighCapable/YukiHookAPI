@@ -6,7 +6,7 @@ The following are the related functions, Xposed Frameworks, Hook Frameworks and 
 
 | Name                       | Availability | Description                                                                                                             |
 | -------------------------- | :----------: | ----------------------------------------------------------------------------------------------------------------------- |
-| Xposed Module Auto Builder | ✅   | Will use [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHookAPI/issues/49) on YukiHookAPI `2.0.0` |
+| Xposed Module Auto Builder | ✅   | Will use [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHook/issues/49) on YukiHookAPI `2.0.0` |
 | ART Dynamic Method Hook    | ✅   | Stable use in multiple scenarios                                                                                        |
 | Xposed Resources Hook      | ❗   | Supported, but will be removed on YukiHookAPI `2.0.0`                                                                 |
 

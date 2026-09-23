@@ -299,4 +299,4 @@ instance.current().superClass()?.method {
 
 ## 迁移更多有关 Hook API 的功能
 
-YukiHookAPI 是一套全新的 Hook API，与其它 Hook API 存在着本质区别，你可以参考 [KDoc](kdoc://yukihookapi-core) 以及 [特色功能](../special-features/reflection) 来决定一些功能性的迁移和使用。
+YukiHookAPI 是一套全新的 Hook API，与其它 Hook API 存在着本质区别，你可以参考 [KDoc](kdoc://yukihook-core) 以及 [特色功能](../special-features/reflection) 来决定一些功能性的迁移和使用。

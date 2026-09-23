@@ -68,7 +68,7 @@ The receiver needs to stay alive to receive the communication data.
 
 ::: tip
 
-For more functions, please refer to [YukiHookDataChannel](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel).
+For more functions, please refer to [YukiHookDataChannel](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel).
 
 :::
 
@@ -110,7 +110,7 @@ The Host App and Module App must be stay alive, and after activating the Module 
 
 ::: tip
 
-For more functions, please refer to [YukiHookDataChannel](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel).
+For more functions, please refer to [YukiHookDataChannel](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel).
 
 :::
 

@@ -32,9 +32,9 @@ android {
 
 dependencies {
     compileOnly(libs.rovo89.xposed.api)
-    implementation(projects.yukihookapiRuntimeXposed82)
-    implementation(projects.yukihookapiCore)
-    ksp(projects.yukihookapiCompiler)
+    implementation(projects.yukihookRuntimeXposed82)
+    implementation(projects.yukihookCore)
+    ksp(projects.yukihookCompiler)
 
     implementation(platform(libs.kavaref.bom))
     implementation(libs.kavaref.core)

@@ -1,14 +1,14 @@
-# Yuki Hook API
+# Yuki Hook
 
-[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHookAPI?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHookAPI/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHookAPI?display_name=release&logo=github&color=green&style=flat-square)](https://github.com/HighCapable/YukiHookAPI/releases)
+[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHook?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHook/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHook?display_name=release&logo=github&color=green&style=flat-square)](https://github.com/HighCapable/YukiHook/releases)
 [![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHookAPI)
 [![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/HighCapable_Dev)
 [![QQ](https://img.shields.io/badge/discussion%20dev-QQ-blue.svg?logo=tencent-qq&logoColor=red&style=flat-square)](https://qm.qq.com/cgi-bin/qm/qr?k=Pnsc5RY6N2mBKFjOLPiYldbAbprAU3V7&jump_from=webapi&authKey=X5EsOVzLXt1dRunge8ryTxDRrh9/IiW1Pua75eDLh9RE3KXE+bwXIYF5cWri/9lf)
 
 <img src="img-src/icon.png" width = "100" height = "100" alt="LOGO"/>
 
-⛱️ An efficient Hook API and Xposed Module solution built in Kotlin.
+A modern hook API and Xposed module solution.
 
 English | [简体中文](README-zh-CN.md)
 
@@ -30,16 +30,16 @@ in [Development Learning Project](https://github.com/fankes/TMore), now renamed 
 
 ## Get Started
 
-[Click here](https://highcapable.github.io/YukiHookAPI/en/) go to the documentation page for more
+[Click here](https://highcapable.github.io/YukiHook/en/) go to the documentation page for more
 detailed tutorials and content.
 
 For supportive related information, you can check it
-directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/supportive).
+directly [click here](https://highcapable.github.io/YukiHook/en/guide/supportive).
 
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
-🚀 YukiHookAPI is using KavaRef as a powerful driver for the reflection API.
+🚀 YukiHook is using KavaRef as a powerful driver for the reflection API.
 **Click on the link above star project**, and you can also use it gracefully!
 
 ## Explore New Version
@@ -47,12 +47,12 @@ directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/support
 The `2.x` version is being refactored, you can switch to the `2.x` branch below to view the current
 development progress.
 
-| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHookAPI/tree/2.x) |
+| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHook/tree/2.x) |
 |---------------------------------------------------------------------|---------------------------------------------------------------------|
 
 ## Adopters
 
-The following are projects that using YukiHookAPI.
+The following are projects that using YukiHook.
 
 | Repository                                                                         | Developer                                       |
 |------------------------------------------------------------------------------------|-------------------------------------------------|
@@ -84,7 +84,7 @@ The following are projects that using YukiHookAPI.
 | [Bilibili_Innocent_Lab](https://github.com/jichuo1/Bilibili_Innocent_Lab)          | [jichuo1](https://github.com/jichuo1)           |
 | [LuckyTool](https://github.com/luckyzyx/LuckyTool)                                 | [luckyzyx](https://github.com/luckyzyx)         |
 
-Are you also using YukiHookAPI? Come and **PR** to add your repository to the list above (private
+Are you also using YukiHook? Come and **PR** to add your repository to the list above (private
 repositories do not need to indicate web
 links).
 
@@ -100,7 +100,7 @@ links).
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=HighCapable/YukiHookAPI&type=date&legend=top-left&sealed_token=cH7W7hRbOUCtuZy08alMZDm3XT4rAGJk-gWnsAEiainLb9d0pvJTYIUCLnhkVyVHMbE0RweCCTM_gn0Mr2UBwjhmbisZCRRxaF_NprdiB44vhtI-5bjaug)](https://www.star-history.com/?repos=HighCapable%2FYukiHookAPI&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/chart?repos=HighCapable/YukiHook&type=date&legend=top-left&sealed_token=cH7W7hRbOUCtuZy08alMZDm3XT4rAGJk-gWnsAEiainLb9d0pvJTYIUCLnhkVyVHMbE0RweCCTM_gn0Mr2UBwjhmbisZCRRxaF_NprdiB44vhtI-5bjaug)](https://www.star-history.com/?repos=HighCapable%2FYukiHook&type=date&legend=top-left)
 
 ## Third-Party Open Source Usage Statement
 

@@ -6,7 +6,7 @@
 
 | 名称                             | 可用性 | 描述                                                                                                                 |
 | -------------------------------- | :----: | -------------------------------------------------------------------------------------------------------------------- |
-| 自动化 Xposed 模块构建           | ✅   | 计划 YukiHookAPI `2.0.0` 版本使用 [新的 Xposed 模块配置方案](https://github.com/HighCapable/YukiHookAPI/issues/49) |
+| 自动化 Xposed 模块构建           | ✅   | 计划 YukiHookAPI `2.0.0` 版本使用 [新的 Xposed 模块配置方案](https://github.com/HighCapable/YukiHook/issues/49) |
 | ART 动态方法 Hook                | ✅   | 多场景下稳定使用                                                                                                     |
 | Xposed 资源钩子 (Resources Hook) | ❗   | 支持，但计划 YukiHookAPI `2.0.0` 版本移除                                                                          |
 

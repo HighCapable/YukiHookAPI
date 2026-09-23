@@ -1,11 +1,11 @@
 ---
 layout: home
 hero:
-  name: Yuki Hook API
-  tagline: An efficient Hook API and Xposed Module solution built in Kotlin
+  name: Yuki Hook
+  tagline: A modern hook API and Xposed module solution
   image:
     src: /images/logo.png
-    alt: Yuki Hook API
+    alt: Yuki Hook
   actions:
     - text: Get Started
       link: /en/guide/home

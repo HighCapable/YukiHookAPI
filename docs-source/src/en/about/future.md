@@ -59,6 +59,6 @@ The plans below have been published in `issues` on GitHub, and you can view the 
 
 All functions are expected to be completed in `2.0.0` version, so stay tuned.
 
-- [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHookAPI/issues/49)
-- [New Hook Entry Class](https://github.com/HighCapable/YukiHookAPI/issues/48)
-- ~~[New Hook Code Style](https://github.com/HighCapable/YukiHookAPI/issues/33)~~ (Replaced by [KavaRef](https://github.com/HighCapable/KavaRef))
+- [New Xposed Module Config Plan](https://github.com/HighCapable/YukiHook/issues/49)
+- [New Hook Entry Class](https://github.com/HighCapable/YukiHook/issues/48)
+- ~~[New Hook Code Style](https://github.com/HighCapable/YukiHook/issues/33)~~ (Replaced by [KavaRef](https://github.com/HighCapable/KavaRef))

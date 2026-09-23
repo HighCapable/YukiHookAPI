@@ -1,5 +1,5 @@
 # 宿主生命周期扩展
- 
+
 > 这是一个自动 Hook 宿主 APP 生命周期的扩展功能。
 
 ## 监听生命周期
@@ -48,7 +48,7 @@ loadApp(name = "com.example.demo") {
 
 ::: tip
 
-更多功能请参考 [AppLifecycle](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle)。
+更多功能请参考 [AppLifecycle](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle)。
 
 :::
 
@@ -78,6 +78,6 @@ loadApp(name = "com.example.demo") {
 
 ::: tip
 
-更多功能请参考 [AppLifecycle](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle)。
+更多功能请参考 [AppLifecycle](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle)。
 
 :::

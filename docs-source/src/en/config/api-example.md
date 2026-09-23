@@ -16,7 +16,7 @@ The `configs` method implements a **lambda** method body on the `Configs` class,
 
 ::: tip
 
-For more functions, please refer to the [YukiHookAPI.configs](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/configs) method.
+For more functions, please refer to the [YukiHookAPI.configs](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/configs) method.
 
 :::
 
@@ -40,7 +40,7 @@ The `encase` method is the beginning of all Hook life. In a Module App or a Hook
 
 ::: tip
 
-For more functions, please refer to [PackageParam](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param).
+For more functions, please refer to [PackageParam](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param).
 
 :::
 
@@ -98,7 +98,7 @@ Also for the `encase` method, the variable array parameter `hooker` of the metho
 
 ::: tip
 
-For more functions, please refer to [YukiBaseHooker](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.entity/-yuki-base-hooker).
+For more functions, please refer to [YukiBaseHooker](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.entity/-yuki-base-hooker).
 
 :::
 

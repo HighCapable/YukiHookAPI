@@ -22,7 +22,7 @@
 
 ### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
-- 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-3-x)
+- 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHook/zh-cn/config/move-to-api-1-3-x)
 - 弃用了 YukiHookAPI 自身的反射 API，现在请迁移到全新的 [KavaRef](https://github.com/HighCapable/KavaRef)
 - 弃用了重复 Hook 的限制，现在你可以重复 Hook 同一个方法
 - 弃用了 ~~`ModuleAppActivity`~~、~~`ModuleAppCompatActivity`~~，现在请使用 `ModuleActivity` 创建自己的代理 `Activity`
@@ -32,17 +32,17 @@
 ### 1.2.1 | 2024.06.20 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 捕获单例 Hooker 中的异常，防止其阻断整个进程
-- 在自动处理程序中添加自动使用 "`" 来修复 Kotlin 关键字为包名的情况，感谢 [Fengning Zhu](https://github.com/zhufengning) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/70)
-- 适配 Kotlin 2.0.0+，修复在自动处理过程中无法通过编译的问题，感谢 [xihan123](https://github.com/xihan123) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/76)
+- 在自动处理程序中添加自动使用 "`" 来修复 Kotlin 关键字为包名的情况，感谢 [Fengning Zhu](https://github.com/zhufengning) 的 [PR](https://github.com/HighCapable/YukiHook/pull/70)
+- 适配 Kotlin 2.0.0+，修复在自动处理过程中无法通过编译的问题，感谢 [xihan123](https://github.com/xihan123) 的 [PR](https://github.com/HighCapable/YukiHook/pull/76)
 
 ### 1.2.0 | 2023.10.07 &ensp;<Badge type="warning" text="过旧" vertical="middle" />
 
 - 许可协议由 `MIT` 变更为 `Apache-2.0`，在此之后的版本将由此许可协议进行分发，您在使用此版本后应变更相关许可协议
-- 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.2.x](https://highcapable.github.io/YukiHookAPI/zh-cn/config/move-to-api-1-2-x)
-- 适配 Android 14，感谢 [BlueCat300](https://github.com/BlueCat300) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/44)
-- 修复 `findAllInterfaces` 相关问题，感谢 [buffcow](https://github.com/buffcow) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/38)
-- 修复 Hook 过程中的延迟回调问题，感谢 [cesaryuan](https://github.com/cesaryuan) 的 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/47)
-- 新增 Resources Hook 相关功能支持，详情请参考这个 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/36)
+- 这是一次重大更新，详情请参考 [迁移到 YukiHookAPI 1.2.x](https://highcapable.github.io/YukiHook/zh-cn/config/move-to-api-1-2-x)
+- 适配 Android 14，感谢 [BlueCat300](https://github.com/BlueCat300) 的 [PR](https://github.com/HighCapable/YukiHook/pull/44)
+- 修复 `findAllInterfaces` 相关问题，感谢 [buffcow](https://github.com/buffcow) 的 [PR](https://github.com/HighCapable/YukiHook/pull/38)
+- 修复 Hook 过程中的延迟回调问题，感谢 [cesaryuan](https://github.com/cesaryuan) 的 [Issue](https://github.com/HighCapable/YukiHook/issues/47)
+- 新增 Resources Hook 相关功能支持，详情请参考这个 [Issue](https://github.com/HighCapable/YukiHook/issues/36)
 - 新增 `YukiHookAPI.TAG`
 - 作废了 ~~`YukiHookAPI.API_VERSION_NAME`~~、~~`YukiHookAPI.API_VERSION_CODE`~~，统一合并到 `YukiHookAPI.VERSION`
 - 作废了 ~~`YukiMemberHookCreator`~~ 中的 ~~`useDangerousOperation`~~ 方法
@@ -107,7 +107,7 @@
 
 ### 1.1.8 | 2023.02.01 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
-- 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/HighCapable/YukiHookAPI/issues/23)
+- 修复底层 Hook 方法在回调时修改 `result` 等参数时时不能同步更新修改后的状态问题，感谢 [Yongzheng Lai](https://github.com/elvizlai) 的 [Issue](https://github.com/HighCapable/YukiHook/issues/23)
 - 移动 YukiHookAPI 自动生成的入口类名称文件 `assets/yukihookapi_init` 到 `resources/META-INF/yukihookapi_init`
 - 允许在仅打印异常堆栈时 `msg` 参数为空并可以不设置 `msg` 参数，留空 `msg` 参数的日志除非异常堆栈不为空否则将不会被记录
 - 修复 Hook 回调方法体内发生的异常打印的日志无具体方法信息的 BUG
@@ -202,7 +202,7 @@
 
 ### 1.1.0 | 2022.09.28 &ensp;<Badge type="danger" text="过期" vertical="middle" />
 
-- 这是一次大版本更新，有关更新日志中提到的变化及用法请参考 [KDoc](kdoc://yukihookapi-core) 以及 [特色功能](../special-features/reflection)
+- 这是一次大版本更新，有关更新日志中提到的变化及用法请参考 [KDoc](kdoc://yukihook-core) 以及 [特色功能](../special-features/reflection)
 - 更换帮助文档框架到 [VuePress](https://v2.vuepress.vuejs.org)
 - 统一并规范文档中的术语名词，例如“查询”一律更改为了“查找”，`XposedHelper` 拼写错误修改为了 `XposedHelpers`
 - 文档 [基础知识](../guide/knowledge) 页面加入友情链接，仅限简体中文
@@ -240,7 +240,7 @@
 - 新增反射查找中的多重查找功能，可使用相对查找条件同时获取多个查找结果，感谢 **AA** 以及 [Kitsune](https://github.com/KyuubiRan) 的建议
 - 修复 `appClassLoader` 获取到的对象在某些系统中的系统应用中不正确的问题，感谢 [Luckyzyx](https://github.com/luckyzyx) 的反馈
 - 修改了 `XposedBridge.invokeOriginalMethod` 的调用方式并在 `MethodFinder.Result.Instance` 中增加 `original` 功能
-- 修复 `YukiHookModulePrefs` 中 `getStringSet` 方法取值错误的问题并优化代码风格，感谢 [Teddy_Zhu](https://github.com/Teddy-Zhu) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/19)
+- 修复 `YukiHookModulePrefs` 中 `getStringSet` 方法取值错误的问题并优化代码风格，感谢 [Teddy_Zhu](https://github.com/Teddy-Zhu) 的 [PR](https://github.com/HighCapable/YukiHook/pull/19)
 - 修改 `YukiHookModulePrefs`，拦截 `XSharePreference` 可能不存在的异常
 - 修复 `YukiHookDataChannel` 在某些第三方 ROM 系统框架中无法注册成功的问题
 - 安全化 `YukiHookDataChannel`，现在它只能在来自指定包名的模块与宿主之间通信
@@ -263,7 +263,7 @@
 - Hook 过程中新增解除 Hook 功能，可使用 `remove` 及 `removeSelf` 方法解除 Hook
 - 修复在 ReplaceHook 失败的时候导致宿主抛出异常的问题，现修改为调用原始方法保证宿主功能正常运行
 - 新增 Hook 过程中对方法返回值的检查功能，在返回值不匹配的情况下会根据情景自动抛出异常或打印错误
-- Resources Hook 中新增 `array` 类型，感谢 [GSWXXN](https://github.com/GSWXXN) 的 [PR](https://github.com/HighCapable/YukiHookAPI/pull/12)
+- Resources Hook 中新增 `array` 类型，感谢 [GSWXXN](https://github.com/GSWXXN) 的 [PR](https://github.com/HighCapable/YukiHook/pull/12)
 - 移动 `me.weishu.reflection` 到 `thirdparty` 防止同时引入的同名依赖冲突
 - 移除 Hook 方法体为空时抛出的异常，修改为打印警告日志
 - 修改 `AppLifecycle` 的异常处理逻辑，当其发生异常时直接抛给宿主

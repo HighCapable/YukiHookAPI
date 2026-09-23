@@ -1,7 +1,7 @@
 /*
- * YukiHookAPI - An efficient Hook API and Xposed Module solution built in Kotlin.
+ * YukiHook - A modern hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
- * https://github.com/HighCapable/YukiHookAPI
+ * https://github.com/HighCapable/YukiHook
  *
  * Apache License Version 2.0
  *
@@ -29,7 +29,7 @@ import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
-import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.demo.module.legacy.R
 import com.highcapable.yukihookapi.demo.module.legacy.data.DataConst
@@ -47,19 +47,19 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 object HookEntry : YukiHookXposedModule {
 
     override fun onInit() {
-        // Configures YuKiHookAPI
+        // Configures YukiHook
         // Can be shortened to configure {}
-        // 配置 YuKiHookAPI
+        // 配置 YukiHook
         // 可简写为 configure {}
-        YukiHookAPI.configure {
+        YukiHook.configure {
             // Configures YLog
             // 配置 YLog
-            debugLog {
+            logging {
                 // TAG for global debugging
                 // Filter this TAG in the Logcat console to find detailed logs
                 // 全局调试用的 TAG
                 // 在 Logcat 控制台过滤此 TAG 可找到详细日志
-                tag = "YukiHookAPI-Demo"
+                tag = "YukiHook-Demo"
                 // Whether to enable the output function of the debug log, enabled by default
                 // When closed, the API will stop output all logs, it is recommended not to disable this option arbitrarily
                 // Although it is incorrect to say that a lot of logs are written to the user's device, but NO LOG NO DEBUGGABLE
@@ -119,7 +119,7 @@ object HookEntry : YukiHookXposedModule {
         // Can be shortened to encase {}
         // 开始你的 Hook
         // 可简写为 encase {}
-        YukiHookAPI.encase {
+        YukiHook.encase {
             // Load the app to be hooked
             // 装载需要 Hook 的 app
             loadApp(DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME) {
@@ -160,7 +160,7 @@ object HookEntry : YukiHookXposedModule {
                     }.hook {
                         // Replaced hook
                         // 执行替换 Hook
-                        intercept("Hello YukiHookAPI!")
+                        intercept("Hello YukiHook!")
                     }
                     // Inject the method to be hooked
                     // 注入要 Hook 的方法
@@ -189,10 +189,10 @@ object HookEntry : YukiHookXposedModule {
                                     .setMessage(
                                         module.resources.getString(
                                             R.string.demo_hooked_dialog_message,
-                                            "${YukiHookAPI.Status.Executor.name} " +
-                                                "${YukiHookAPI.Status.Executor.version} " +
-                                                "(${YukiHookAPI.Status.Executor.versionCode})",
-                                            YukiHookAPI.Status.Executor.apiVersion
+                                            "${YukiHook.Status.Executor.name} " +
+                                                "${YukiHook.Status.Executor.version} " +
+                                                "(${YukiHook.Status.Executor.versionCode})",
+                                            YukiHook.Status.Executor.apiVersion
                                         )
                                     )
                                     .setPositiveButton(module.resources.getString(R.string.demo_dialog_ok), null)

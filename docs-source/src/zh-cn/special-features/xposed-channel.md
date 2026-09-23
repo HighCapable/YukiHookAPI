@@ -68,7 +68,7 @@ dataChannel.put(key = "listener_from_host")
 
 ::: tip
 
-更多功能请参考 [YukiHookDataChannel](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel)。
+更多功能请参考 [YukiHookDataChannel](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel)。
 
 :::
 
@@ -110,7 +110,7 @@ dataChannel.checkingVersionEquals { isEquals ->
 
 ::: tip
 
-更多功能请参考 [YukiHookDataChannel](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel)。
+更多功能请参考 [YukiHookDataChannel](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel)。
 
 :::
 
@@ -184,7 +184,7 @@ class OtherActivity : AppCompatActivity() {
 
 一个相同 **key** 的回调事件只会回调当前模块正在显示的 **Activity** 中注册的回调事件，例如上述中的 **test_key**，如果 **OtherActivity** 正在显示，那么 **MainActivity** 中的 **test_key** 就不会被回调。
 
-相同的 **key** 在同一个 **Activity** 不同的 **Fragment** 中注册 **dataChannel**，它们依然会在当前 **Activity** 中同时被回调。 
+相同的 **key** 在同一个 **Activity** 不同的 **Fragment** 中注册 **dataChannel**，它们依然会在当前 **Activity** 中同时被回调。
 
 在模块中，你可以在 **Activity**、**Application** 以及 **Service** 等地方使用 **dataChannel**，在 **Activity** 以外的地方使用时每个回调事件都会即时回调，此时你可以使用 **ChannelPriority** 进行管理。
 

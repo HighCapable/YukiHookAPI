@@ -2,4 +2,4 @@
 set -eu
 
 cd ..
-./gradlew :yukihookapi-core:publishKDoc
+./gradlew :yukihook-core:publishKDoc

@@ -5,7 +5,7 @@ on:
   push:
     branches: [ master ]
     paths:
-      - 'yukihookapi-core/src/**'
+      - 'yukihook-core/src/**'
       - 'docs-source/**'
       - '.github/workflows/**'
 

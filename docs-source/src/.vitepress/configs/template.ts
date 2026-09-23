@@ -36,15 +36,15 @@ const navigationSections: NavigationGroup[] = [{
         { path: '/config/api-exception', title: { en: 'API Exception Handling', 'zh-cn': 'API 异常处理' } },
         { path: '/config/xposed-using', title: { en: 'Use as Xposed Module Configs', 'zh-cn': '作为 Xposed 模块使用的相关配置' } },
         { path: '/config/api-using', title: { en: 'Use as Hook API Configs', 'zh-cn': '作为 Hook API 使用的相关配置' } },
-        { path: '/config/move-to-api-1-2-x', title: { en: 'Migrate to YukiHookAPI 1.2.x', 'zh-cn': '迁移至 YukiHookAPI 1.2.x' } },
-        { path: '/config/move-to-api-1-3-x', title: { en: 'Migrate to YukiHookAPI 1.3.x', 'zh-cn': '迁移至 YukiHookAPI 1.3.x' } },
+        { path: '/config/move-to-api-1-2-x', title: { en: 'Migrate to YukiHook 1.2.x', 'zh-cn': '迁移至 YukiHook 1.2.x' } },
+        { path: '/config/move-to-api-1-3-x', title: { en: 'Migrate to YukiHook 1.3.x', 'zh-cn': '迁移至 YukiHook 1.3.x' } },
         { path: '/config/r8-proguard', title: { en: 'R8 & Proguard Obfuscate', 'zh-cn': 'R8 与 Proguard 混淆' } }
     ]
 }, {
     title: { en: 'Tools', 'zh-cn': '工具' },
     items: [{
-        path: '/tools/yukihookapi-projectbuilder',
-        title: { en: 'YukiHookAPI Project Builder', 'zh-cn': 'YukiHookAPI 构建工具' }
+        path: '/tools/yukihook-projectbuilder',
+        title: { en: 'YukiHook Project Builder', 'zh-cn': 'YukiHook 构建工具' }
     }]
 }, {
     title: { en: 'Special Features', 'zh-cn': '特色功能' },
@@ -104,24 +104,24 @@ export const configs = {
         port: 9000
     },
     website: {
-        base: '/YukiHookAPI/',
-        icon: '/YukiHookAPI/images/logo.png',
+        base: '/YukiHook/',
+        icon: '/YukiHook/images/logo.png',
         logo: '/images/logo.png',
-        title: 'Yuki Hook API',
+        title: 'Yuki Hook',
         locales: {
             en: {
                 lang: 'en-US',
-                description: 'An efficient Hook API and Xposed Module solution built in Kotlin'
+                description: 'A modern hook API and Xposed module solution'
             },
             'zh-cn': {
                 lang: 'zh-CN',
-                description: '一个使用 Kotlin 构建的高效 Hook API 与 Xposed 模块解决方案'
+                description: '一个现代化的 Hook API 与 Xposed 模块解决方案'
             }
         }
     },
     github: {
-        repo: 'https://github.com/HighCapable/YukiHookAPI',
-        page: 'https://highcapable.github.io/YukiHookAPI',
+        repo: 'https://github.com/HighCapable/YukiHook',
+        page: 'https://highcapable.github.io/YukiHook',
         branch: 'master',
         dir: 'docs-source/src'
     }

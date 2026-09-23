@@ -52,7 +52,7 @@ TargetClass.resolve().firstMethod {
 
 ```kotlin
 // 旧版 (1.2.x-1.3.0 (不含)) 写法
-TargetClass.method { 
+TargetClass.method {
     // Your code here.
 }.hook {
     before {
@@ -63,9 +63,9 @@ TargetClass.method {
     }
 }
 // 旧版写法
-TargetClass.hook { 
-    injectMember { 
-        method { 
+TargetClass.hook {
+    injectMember {
+        method {
             // Your code here.
         }
         beforeHook {
@@ -96,9 +96,9 @@ resources().hook {
 
 > 你可以在下方找到 API 提供的 Demo 来学习 `YukiHookAPI` 的使用方法。
 
-- 宿主 APP Demo [点击这里查看](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-app)
+- 宿主 APP Demo [点击这里查看](https://github.com/HighCapable/YukiHook/tree/master/samples/demo-app)
 
-- 模块 APP Demo [点击这里查看](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module)
+- 模块 APP Demo [点击这里查看](https://github.com/HighCapable/YukiHook/tree/master/samples/demo-module)
 
 同时安装宿主和模块 Demo，通过激活模块来测试宿主中被 Hook 的功能。
 
@@ -123,7 +123,7 @@ resources().hook {
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    Activity::class.resolve().firstMethod { 
+    Activity::class.resolve().firstMethod {
         name = "onCreate"
         parameters(Bundle::class)
     }.hook {
@@ -148,8 +148,8 @@ loadApp(name = "com.android.browser") {
 
 ```kotlin
 loadApp(name = "com.android.browser") {
-    Activity::class.resolve().apply { 
-        firstMethod { 
+    Activity::class.resolve().apply {
+        firstMethod {
             name = "onCreate"
             parameters(Bundle::class)
         }.hook {
@@ -161,7 +161,7 @@ loadApp(name = "com.android.browser") {
                     .show()
             }
         }
-        firstMethod { 
+        firstMethod {
             name = "onStart"
             emptyParameters()
         }.hook {
@@ -225,7 +225,7 @@ TestClass.resolve().firstMethod {
 
 ::: tip
 
-更多功能请参考 [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator)。
+更多功能请参考 [MemberHookCreator](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator)。
 
 :::
 
@@ -354,7 +354,7 @@ loadZygote {
 ```
 ::: tip
 
-更多功能请参考 [ResourcesHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator)。
+更多功能请参考 [ResourcesHookCreator](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator)。
 
 :::
 
@@ -368,7 +368,7 @@ loadZygote {
 
 ```kotlin
 // 设置一个变量保存当前实例
-val hookResult = 
+val hookResult =
     resolve().firstMethod {
         name = "test"
         returnType = Void.TYPE
@@ -386,7 +386,7 @@ hookResult.remove()
 > 示例如下
 
 ```kotlin
-resolve().firstMethod { 
+resolve().firstMethod {
     name = "test"
     returnType = Void.TYPE
 }.hook {
@@ -399,7 +399,7 @@ resolve().firstMethod {
 
 ::: tip
 
-更多功能请参考 [MemberHookCreator](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator)。
+更多功能请参考 [MemberHookCreator](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator)。
 
 :::
 
@@ -469,7 +469,7 @@ method {
 
 ::: tip
 
-更多功能请参考 [MemberHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-result)、[ResourcesHookCreator.Result](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator/-result)。
+更多功能请参考 [MemberHookCreator.Result](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-result)、[ResourcesHookCreator.Result](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-resources-hook-creator/-resources-hook-creator/-result)。
 
 :::
 
@@ -560,7 +560,7 @@ method {
 
 ::: tip
 
-更多功能请参考 [Throwable.throwToApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-hook-param/throw-to-app)、[YukiMemberHookCreator.MemberMookCreator.HookCallback](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-hook-callback)。
+更多功能请参考 [Throwable.throwToApp](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-hook-param/throw-to-app)、[YukiMemberHookCreator.MemberMookCreator.HookCallback](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.core/-yuki-member-hook-creator/-member-hook-creator/-hook-callback)。
 
 :::
 
@@ -585,7 +585,7 @@ loadApp(name = "com.android.phone") {
 
 ::: tip
 
-更多功能请参考 [PackageParam.loadApp](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/load-app)。
+更多功能请参考 [PackageParam.loadApp](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/load-app)。
 
 :::
 
@@ -606,7 +606,7 @@ withProcess(name = "$packageName:tool") {
 
 ::: tip
 
-更多功能请参考 [PackageParam.withProcess](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/with-process)。
+更多功能请参考 [PackageParam.withProcess](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/with-process)。
 
 :::
 
@@ -682,7 +682,7 @@ if(YukiHookAPI.Status.isModuleActive) {
 
 ::: tip
 
-更多功能请参考 [YukiHookAPI.Status](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status)。
+更多功能请参考 [YukiHookAPI.Status](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status)。
 
 :::
 
@@ -734,7 +734,7 @@ val frameworkApiLevel = YukiHookAPI.Status.Executor.apiLevel
 
 ::: tip
 
-更多功能请参考 [YukiHookAPI.Status.Executor](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status/-executor)。
+更多功能请参考 [YukiHookAPI.Status.Executor](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/-status/-executor)。
 
 :::
 

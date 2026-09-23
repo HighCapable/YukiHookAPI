@@ -16,7 +16,7 @@ fun configs(initiate: Configs.() -> Unit)
 
 ::: tip
 
-更多功能请参考 [YukiHookAPI.configs](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/configs) 方法。
+更多功能请参考 [YukiHookAPI.configs](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi/-yuki-hook-a-p-i/configs) 方法。
 
 :::
 
@@ -40,7 +40,7 @@ fun encase(initiate: PackageParam.() -> Unit)
 
 ::: tip
 
-更多功能请参考 [PackageParam](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param)。
+更多功能请参考 [PackageParam](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param)。
 
 :::
 
@@ -98,7 +98,7 @@ fun encase(vararg hooker: YukiBaseHooker)
 
 ::: tip
 
-更多功能请参考 [YukiBaseHooker](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.entity/-yuki-base-hooker)。
+更多功能请参考 [YukiBaseHooker](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.entity/-yuki-base-hooker)。
 
 :::
 
@@ -203,7 +203,7 @@ object FirstHooker : YukiBaseHooker() {
 ```kotlin
 object HookEntry : IYukiHookXposedInit {
 
-    override fun onHook() = 
+    override fun onHook() =
         YukiHookAPI.encase(FirstHooker, SecondHooker, ThirdHooker ...)
 }
 ```
@@ -439,7 +439,7 @@ object CustomHooker : YukiBaseHooker() {
 
 若你作为 Hook API 使用，那么你只需要在入口处对 `encase` 方法进行区分。
 
-::: warning 
+::: warning
 
 **encase** 方法对作为 Hook API 使用提供了两个完全一样的方法，但是比前两者仅多出一个参数 **baseContext**。
 

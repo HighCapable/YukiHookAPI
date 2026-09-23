@@ -14,10 +14,10 @@
     <string name="demo_status_hook_framework_version_summary">当前 Hook 框架版本</string>
     <string name="demo_status_xposed_api_version">Xposed API 版本：%1$d</string>
     <string name="demo_status_xposed_api_version_summary">Xposed API 版本</string>
-    <string name="demo_status_yukihookapi_version">%1$s 版本：%2$s</string>
-    <string name="demo_status_yukihookapi_version_summary">YukiHookAPI 版本</string>
-    <string name="demo_status_runtime">YukiHookAPI 运行时：%1$s</string>
-    <string name="demo_status_runtime_summary">YukiHookAPI 运行时环境</string>
+    <string name="demo_status_yukihook_version">%1$s 版本：%2$s</string>
+    <string name="demo_status_yukihook_version_summary">YukiHook 版本</string>
+    <string name="demo_status_runtime">YukiHook 运行时：%1$s</string>
+    <string name="demo_status_runtime_summary">YukiHook 运行时环境</string>
     <string name="demo_status_prefs_writable">YukiHookPreferences：%1$b</string>
     <string name="demo_status_prefs_writable_summary">YukiHookPreferences 可写状态</string>
     <string name="demo_preferences_title">偏好设置</string>

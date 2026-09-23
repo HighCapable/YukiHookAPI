@@ -57,24 +57,24 @@ gropify {
         }
     }
 
-    projects(":yukihookapi-bom") {
+    projects(":yukihook-bom") {
         jvm {
             isEnabled = false
         }
     }
     projects(
-        ":yukihookapi-core",
-        ":yukihookapi-core-lint",
-        ":yukihookapi-compiler"
+        ":yukihook-core",
+        ":yukihook-core-lint",
+        ":yukihook-compiler"
     ) {
         sourceCode {
             className = rootProject.name
         }
     }
     projects(
-        ":yukihookapi-runtime-stub",
-        ":yukihookapi-runtime-xposed82",
-        ":yukihookapi-runtime-libxposed"
+        ":yukihook-runtime-stub",
+        ":yukihook-runtime-xposed82",
+        ":yukihook-runtime-libxposed"
     ) {
         android {
             isEnabled = false
@@ -82,10 +82,10 @@ gropify {
     }
 }
 
-rootProject.name = "YukiHookAPI"
+rootProject.name = "YukiHook"
 
 include(":samples:demo-app", ":samples:demo-module-legacy", ":samples:demo-module-modern")
-include(":yukihookapi-bom")
-include(":yukihookapi-core", ":yukihookapi-compiler", ":yukihookapi-runtime-stub")
-include(":yukihookapi-core-lint")
-include(":yukihookapi-runtime-xposed82", ":yukihookapi-runtime-libxposed")
+include(":yukihook-bom")
+include(":yukihook-core", ":yukihook-compiler", ":yukihook-runtime-stub")
+include(":yukihook-core-lint")
+include(":yukihook-runtime-xposed82", ":yukihook-runtime-libxposed")

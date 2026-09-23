@@ -70,7 +70,7 @@ val testName = prefs.name("specify_file_name").getString("test_name", "default_v
 
 ```kotlin
 // <方案 1>
-prefs().edit { 
+prefs().edit {
     putString("test_name_1", "saved_value_1")
     putString("test_name_2", "saved_value_2")
     putString("test_name_3", "saved_value_3")
@@ -85,7 +85,7 @@ prefs().edit()
 
 ::: tip
 
-更多功能请参考 [YukiHookPrefsBridge](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge)、[PrefsData](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data)。
+更多功能请参考 [YukiHookPrefsBridge](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge)、[PrefsData](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data)。
 
 :::
 
@@ -103,7 +103,7 @@ prefs().edit()
 
 ::: tip
 
-更多功能请参考 [ModulePreferenceFragment](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs.ui/-module-preference-fragment)。
+更多功能请参考 [ModulePreferenceFragment](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs.ui/-module-preference-fragment)。
 
 :::
 
@@ -149,6 +149,6 @@ val publicData = prefs.getBoolean("public_data")
 
 ::: tip
 
-更多功能请参考 [YukiHookPrefsBridge](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge)。
+更多功能请参考 [YukiHookPrefsBridge](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge)。
 
 :::

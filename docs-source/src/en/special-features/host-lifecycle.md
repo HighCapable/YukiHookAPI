@@ -52,7 +52,7 @@ loadApp(name = "com.example.demo") {
 
 ::: tip
 
-For more functions, please refer to [AppLifecycle](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle).
+For more functions, please refer to [AppLifecycle](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle).
 
 :::
 
@@ -82,6 +82,6 @@ loadApp(name = "com.example.demo") {
 
 ::: tip
 
-For more functions, please refer to [AppLifecycle](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle).
+For more functions, please refer to [AppLifecycle](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.param/-package-param/-app-lifecycle).
 
 :::

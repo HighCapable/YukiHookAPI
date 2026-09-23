@@ -1,5 +1,5 @@
 ---
 layout: false
-title: Yuki Hook API
+title: YukiHook
 comment: false
 ---

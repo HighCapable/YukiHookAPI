@@ -125,7 +125,7 @@ android {
 
 ::: danger
 
-请不要在 **modulePackageName** 中填写 **BuildConfig.APPLICATION_ID**，这会在编译过程中获取到空字符串，这取决于 Android Gradle Plugin 的行为。 
+请不要在 **modulePackageName** 中填写 **BuildConfig.APPLICATION_ID**，这会在编译过程中获取到空字符串，这取决于 Android Gradle Plugin 的行为。
 
 :::
 
@@ -284,7 +284,7 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXpos
 - **assets/xposed_init**
 
 - **resources/META-INF/yukihookapi_init**
-  
+
 如果你正在使用 **Git** 代码控制系统，你可以将这两个文件添加到 **.gitignore** 文件中。
 
 :::
@@ -295,7 +295,7 @@ class _YukiHookXposedInit : IXposedHookZygoteInit, IXposedHookLoadPackage, IXpos
 
 ::: tip
 
-更多功能请参考 [IYukiHookXposedInit](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init)。
+更多功能请参考 [IYukiHookXposedInit](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init)。
 
 :::
 
@@ -340,6 +340,6 @@ object HookEntry : IYukiHookXposedInit {
 
 ::: tip
 
-更多功能请参考 [IYukiHookXposedInit.onXposedEvent](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/on-xposed-event) 方法。
+更多功能请参考 [IYukiHookXposedInit.onXposedEvent](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/on-xposed-event) 方法。
 
 :::

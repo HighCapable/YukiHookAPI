@@ -1,7 +1,7 @@
 # R8 & Proguard Obfuscate
 
 > In most scenarios, the Xposed Module can be compressed by native obfuscation.
-> 
+>
 > Here is the configuration method of obfuscation.
 
 ## R8

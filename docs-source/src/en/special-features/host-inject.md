@@ -75,7 +75,7 @@ onAppLifecycle {
 
 ::: tip
 
-For more functions, please refer to the [Context+Resources.injectModuleAppResources](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/inject-module-app-resources) method.
+For more functions, please refer to the [Context+Resources.injectModuleAppResources](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/inject-module-app-resources) method.
 
 :::
 
@@ -228,7 +228,7 @@ class HostTestActivity : BaseActivity() {
 
 ::: tip
 
-For more functions, please refer to the [Context.registerModuleAppActivities](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/register-module-app-activities) method.
+For more functions, please refer to the [Context.registerModuleAppActivities](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/register-module-app-activities) method.
 
 :::
 
@@ -305,7 +305,7 @@ This way, we can create dialogs in the Host App very simply using `MaterialAlert
 
 Because some **androidx** dependent libraries or custom themes used by some apps may interfere with the actual style of the current **MaterialAlertDialog**, such as the button style of the dialog.
 
-You can refer to the **Module App Demo** in this case and see [here is the sample code](https://github.com/HighCapable/YukiHookAPI/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) to fix this problem.
+You can refer to the **Module App Demo** in this case and see [here is the sample code](https://github.com/HighCapable/YukiHook/tree/master/samples/demo-module/src/main/java/com/highcapable/yukihookapi/demo_module/hook/factory/ComponentCompatFactory.kt) to fix this problem.
 
 **ClassCastException** may occur when some apps are created, please manually specify a new **Configuration** instance to fix.
 
@@ -313,7 +313,7 @@ You can refer to the **Module App Demo** in this case and see [here is the sampl
 
 ::: tip
 
-For more functions, please refer to the [Context.applyModuleTheme](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.factory/apply-module-theme) method.
+For more functions, please refer to the [Context.applyModuleTheme](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.factory/apply-module-theme) method.
 
 :::
 
@@ -358,6 +358,6 @@ In most cases, you will not use this function.
 
 ::: tip
 
-For more functions, please refer to [ModuleClassLoader](kdoc://yukihookapi-core/yukihookapi-core/com.highcapable.yukihookapi.hook.xposed.parasitic.reference/-module-class-loader).
+For more functions, please refer to [ModuleClassLoader](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.parasitic.reference/-module-class-loader).
 
 :::

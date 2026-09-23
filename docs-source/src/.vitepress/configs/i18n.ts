@@ -28,7 +28,7 @@ const resolveLegacyRouteRedirect = (requestUrl: string) => {
 export const defaultLocale: DocsLocale = 'en';
 
 /** Storage key used to remember the last documentation locale visited by the user. */
-export const localeStorageKey = 'yukihookapi-docs-locale';
+export const localeStorageKey = 'yukihook-docs-locale';
 
 /** Returns a supported locale when the route belongs to a localized documentation tree. */
 export const resolveRouteLocale = (path: string) => path
@@ -74,7 +74,7 @@ export const createLegacyRouteRedirect = (): HeadConfig => {
 
 /** Creates HTTP redirects for legacy routes served by the Vite development server. */
 export const createLegacyRouteRedirectPlugin = (): Plugin => ({
-    name: 'yukihookapi:legacy-route-redirects',
+    name: 'yukihook:legacy-route-redirects',
     configureServer: (server) => {
         server.middlewares.use((request, response, next) => {
             const location = request.url ? resolveLegacyRouteRedirect(request.url) : undefined;

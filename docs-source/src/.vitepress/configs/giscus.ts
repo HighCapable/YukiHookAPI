@@ -12,7 +12,7 @@ export const giscusExcludedPages = [
 
 /** Defines the GitHub Discussions repository, category, and localized Giscus behavior. */
 export const giscusOptions = {
-    repo: 'HighCapable/YukiHookAPI',
+    repo: 'HighCapable/YukiHook',
     repoId: 'R_kgDOGwbWNw',
     category: 'General',
     categoryId: 'DIC_kwDOGwbWN84CZ9XA',
