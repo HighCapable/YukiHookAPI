@@ -34,6 +34,7 @@ import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.isConstructorReference
 import com.highcapable.yukihookapi.core.lint.detector.extension.reportNode
+import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
 import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
@@ -44,14 +45,21 @@ import com.intellij.psi.PsiModifierListOwner
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UFile
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UTypeReferenceExpression
+import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
     companion object {
 
         private const val REQUIRES_RUNTIME_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.internal.RequiresRuntime"
+        private const val LIBXPOSED_ENTRY_ANNOTATION_NAME = "YukiHookLibXposedEntry"
+        private const val LIBXPOSED_ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.$LIBXPOSED_ENTRY_ANNOTATION_NAME"
+
+        private const val MIN_API_VERSION = "minApiVersion"
+        private const val DEFAULT_LIBXPOSED_MIN_API_VERSION = 101
 
         private const val LIBXPOSED_RUNTIME = "LIBXPOSED"
         private const val XPOSED_82_RUNTIME = "XPOSED_82"
@@ -68,8 +76,9 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
         val ISSUE = Issue.create(
             id = "RequiresYukiHookRuntime",
-            briefDescription = "Requires the matching YukiHook runtime.",
-            explanation = "Runtime-specific YukiHook declarations must only be used from modules using their required runtime.",
+            briefDescription = "Incompatible YukiHook runtime or Xposed API version.",
+            explanation = "YukiHook APIs require a compatible runtime. If an API specifies a minimum Xposed API version, " +
+                "the module entry must declare that version or higher.",
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
@@ -88,6 +97,8 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
     )
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
+
+        private val libXposedMinApiVersion by lazy { context.findLibXposedMinApiVersion() }
 
         override fun visitAnnotation(node: UAnnotation) {
             val declaration = node.resolve() ?: return
@@ -136,17 +147,35 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 ?: (declaration as? PsiMember)?.containingClass?.let {
                     context.evaluator.getAnnotation(it, REQUIRES_RUNTIME_ANNOTATION)
                 } ?: return
+
             val runtime = annotation.findAttributeValue("value")?.asSourceString()?.substringAfterLast('.') ?: return
             val runtimeClass = RUNTIME_CLASSES[runtime] ?: return
             val source = scope.sourcePsi ?: return
-            if (JavaPsiFacade.getInstance(source.project).findClass(runtimeClass, source.resolveScope) != null) return
+            val psiFacade = JavaPsiFacade.getInstance(source.project)
+            if (psiFacade.findClass(runtimeClass, source.resolveScope) == null) {
+                val runtimeModule = RUNTIME_MODULES.getValue(runtime)
+                context.report(
+                    issue = ISSUE,
+                    scope = scope,
+                    location = location,
+                    message = "`$apiName` requires the `$runtimeModule` runtime."
+                )
+                return
+            }
 
-            val runtimeModule = RUNTIME_MODULES.getValue(runtime)
+            if (runtime != LIBXPOSED_RUNTIME) return
+            val versionValue = annotation.javaPsi?.findAttributeValue(MIN_API_VERSION) ?: return
+            val requiredVersion = psiFacade.constantEvaluationHelper.computeConstantExpression(versionValue) as? Int ?: return
+            if (requiredVersion <= 0) return
+            val declaredVersion = libXposedMinApiVersion ?: return
+            if (declaredVersion >= requiredVersion) return
+
             context.report(
                 issue = ISSUE,
                 scope = scope,
                 location = location,
-                message = "`$apiName` requires the `$runtimeModule` runtime."
+                message = "`$apiName` requires Xposed API $requiredVersion, but " +
+                    "`@$LIBXPOSED_ENTRY_ANNOTATION_NAME` specifies `$MIN_API_VERSION = $declaredVersion`."
             )
         }
 
@@ -169,6 +198,26 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             val propertyName = nameStem.replaceFirstChar { it.lowercase() }
 
             return fields.firstOrNull { it.name == propertyName || it.name == "is$nameStem" }
+        }
+
+        private fun JavaContext.findLibXposedMinApiVersion() = project.javaSourceFolders.asSequence()
+            .flatMap { it.walkTopDown() }
+            .filter { it.isFile && (it.extension == "java" || it.extension == "kt") }
+            .filter { client.readFile(it).contains(LIBXPOSED_ENTRY_ANNOTATION_NAME) }
+            .mapNotNull { toUFile(it)?.libXposedMinApiVersion() }
+            .singleOrNull()
+
+        private fun UFile.libXposedMinApiVersion(): Int? {
+            var version: Int? = null
+            accept(object : AbstractUastVisitor() {
+                override fun visitAnnotation(node: UAnnotation): Boolean {
+                    if (node.qualifiedName != LIBXPOSED_ENTRY_ANNOTATION) return false
+                    version = (node.findAttributeValue(MIN_API_VERSION)?.evaluate() as? Int)
+                        ?: DEFAULT_LIBXPOSED_MIN_API_VERSION
+                    return true
+                }
+            })
+            return version
         }
     })
 }
