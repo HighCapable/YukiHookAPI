@@ -84,7 +84,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
 
         val ISSUE = Issue.create(
             id = "YukiHookInternalApi",
-            briefDescription = "YukiHook internal API must not be used directly.",
+            briefDescription = "YukiHook internal API must not be used directly",
             explanation = "YukiHook internal and generated declarations are public for runtime linkage only and must not be used directly.",
             category = Category.CORRECTNESS,
             priority = 10,
@@ -166,7 +166,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
                 issue = ISSUE,
                 scope = scope,
                 location = fixLocation ?: location,
-                message = "`$apiName` is an internal YukiHook's API and must not be used directly.",
+                message = "`$apiName` is an internal YukiHook's API and must not be used directly",
                 quickfixData = lintFix
             )
         }

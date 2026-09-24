@@ -46,7 +46,7 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
 
         val ISSUE = Issue.create(
             id = "UseModuleApplication",
-            briefDescription = "Inherit ModuleApplication to enable full functionality.",
+            briefDescription = "Inherit ModuleApplication to enable full functionality",
             explanation = "YukiHook module applications should inherit `ModuleApplication` to " +
                 "initialize module runtime services and enable full functionality.",
             category = Category.USABILITY,
@@ -74,7 +74,7 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
                 issue = ISSUE,
                 scope = node as UElement,
                 location = context.getNameLocation(node),
-                message = "`${node.name}` should inherit `ModuleApplication` to enable full YukiHook functionality."
+                message = "`${node.name}` should inherit `ModuleApplication` to enable full YukiHook functionality"
             )
         }
     })

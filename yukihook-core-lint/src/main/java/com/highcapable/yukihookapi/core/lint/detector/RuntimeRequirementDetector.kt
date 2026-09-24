@@ -76,7 +76,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
         val ISSUE = Issue.create(
             id = "RequiresYukiHookRuntime",
-            briefDescription = "Incompatible YukiHook runtime or Xposed API version.",
+            briefDescription = "Incompatible YukiHook runtime or Xposed API version",
             explanation = "YukiHook APIs require a compatible runtime. If an API specifies a minimum Xposed API version, " +
                 "the module entry must declare that version or higher.",
             category = Category.CORRECTNESS,
@@ -158,7 +158,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                     issue = ISSUE,
                     scope = scope,
                     location = location,
-                    message = "`$apiName` requires the `$runtimeModule` runtime."
+                    message = "`$apiName` requires the `$runtimeModule` runtime"
                 )
                 return
             }
@@ -175,7 +175,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 scope = scope,
                 location = location,
                 message = "`$apiName` requires Xposed API $requiredVersion, but " +
-                    "`@$LIBXPOSED_ENTRY_ANNOTATION_NAME` specifies `$MIN_API_VERSION = $declaredVersion`."
+                    "`@$LIBXPOSED_ENTRY_ANNOTATION_NAME` specifies `$MIN_API_VERSION = $declaredVersion`"
             )
         }
 
