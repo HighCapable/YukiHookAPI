@@ -41,12 +41,14 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
         private const val ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.YukiHookLibXposedEntry"
 
         private const val MIN_API_VERSION = "minApiVersion"
+        private const val TARGET_API_VERSION = "targetApiVersion"
         private const val LOWEST_API_VERSION = 101
 
         val ISSUE = Issue.create(
-            id = "InvalidLibXposedMinApiVersion",
-            briefDescription = "Xposed API minimum version must be at least 101.",
-            explanation = "The minimum Xposed API version for this module entry cannot be lower than 101.",
+            id = "InvalidLibXposedApiVersion",
+            briefDescription = "Invalid Xposed API version for module entry",
+            explanation = "The minimum Xposed API version must be at least 101, and the target API version " +
+                "must not be lower than the minimum version.",
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
@@ -63,19 +65,38 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
         override fun visitAnnotation(node: UAnnotation) {
             if (node.qualifiedName != ENTRY_ANNOTATION) return
-            val value = node.findAttributeValue(MIN_API_VERSION) ?: return
-            val version = value.evaluate() as? Int ?: return
-            if (version >= LOWEST_API_VERSION) return
 
-            val location = context.getLocation(value)
+            val minValue = node.findAttributeValue(MIN_API_VERSION) ?: return
+            val minVersion = minValue.evaluate() as? Int ?: return
+            if (minVersion < LOWEST_API_VERSION) {
+                val location = context.getLocation(minValue)
+                context.report(
+                    issue = ISSUE,
+                    scope = node,
+                    location = location,
+                    message = "`$MIN_API_VERSION` must be at least $LOWEST_API_VERSION",
+                    quickfixData = buildReplaceFix(
+                        name = "Change to $LOWEST_API_VERSION",
+                        replacement = "$LOWEST_API_VERSION",
+                        range = location,
+                        reformat = false
+                    )
+                )
+            }
+
+            val targetValue = node.findAttributeValue(TARGET_API_VERSION) ?: return
+            val targetVersion = targetValue.evaluate() as? Int ?: return
+            if (targetVersion >= minVersion) return
+
+            val location = context.getLocation(targetValue)
             context.report(
                 issue = ISSUE,
                 scope = node,
                 location = location,
-                message = "`$MIN_API_VERSION` must be at least $LOWEST_API_VERSION",
+                message = "`$TARGET_API_VERSION` must be at least `$MIN_API_VERSION`",
                 quickfixData = buildReplaceFix(
-                    name = "Change to $LOWEST_API_VERSION", 
-                    replacement = "$LOWEST_API_VERSION",
+                    name = "Change to $minVersion",
+                    replacement = "$minVersion",
                     range = location,
                     reformat = false
                 )
