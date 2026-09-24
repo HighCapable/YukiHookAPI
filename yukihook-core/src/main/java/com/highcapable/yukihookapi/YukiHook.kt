@@ -354,7 +354,6 @@ object YukiHook {
      * Loads the legacy standalone hook API from an [Application].
      * @param baseContext the attachment base context.
      * @param hooker the hookers.
-     * @throws IllegalStateException if [hooker] is empty.
      */
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Not recommended, use the hook framework's native API instead.")
