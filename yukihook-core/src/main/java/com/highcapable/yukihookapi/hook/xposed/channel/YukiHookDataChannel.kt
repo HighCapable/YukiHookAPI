@@ -36,7 +36,7 @@ import android.os.TransactionTooLargeException
 import androidx.core.content.getSystemService
 import androidx.core.os.use
 import com.highcapable.betterandroid.system.extension.component.BroadcastReceiver
-import com.highcapable.betterandroid.system.extension.component.getSerializableCompat
+import com.highcapable.betterandroid.system.extension.component.getParcelableCompat
 import com.highcapable.betterandroid.system.extension.component.registerReceiver
 import com.highcapable.betterandroid.system.extension.component.sendBroadcast
 import com.highcapable.betterandroid.ui.extension.component.hostActivity
@@ -51,6 +51,7 @@ import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataWrapper
 import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
+import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
 
@@ -481,7 +482,8 @@ class YukiHookDataChannel private constructor() {
          * @return [ChannelDataWrapper]<[T]> or null.
          */
         private fun <T> Intent.getDataWrapper(key: String) = runCatching {
-            extras?.getSerializableCompat<ChannelDataWrapper<T>>(key + keyNonRepeatName)
+            extras?.apply { classLoader = ModuleClassLoader.get() }
+                ?.getParcelableCompat<ChannelDataWrapper<*>>(key + keyNonRepeatName) as? ChannelDataWrapper<T>
         }.getOrNull()
 
         /**
@@ -494,30 +496,10 @@ class YukiHookDataChannel private constructor() {
         private fun <T> ChannelData<T>.toWrapper(id: String = RandomString.generate(), size: Int = -1, index: Int = -1) =
             ChannelDataWrapper(id, size > 0, size, index, this)
 
-        /**
-         * Calculates the size in bytes occupied by any supported type.
-         * @receiver [Any]
-         * @return [Int] the byte size.
-         */
-        private fun Any.calDataByteSize(): Int {
-            val key = if (this is ChannelData<*>) key else "placeholder"
-            val value = if (this is ChannelData<*>) value else this
-            val bundle = Bundle().apply {
-                // Bundle chooses the Parcel encoding from the stored value, regardless of the put overload.
-                when (value) {
-                    null -> Unit
-                    is Serializable -> putSerializable(key, value)
-                    is CharSequence -> putCharSequence(key, value)
-                    is Parcelable -> putParcelable(key, value)
-                    else -> error("Key-Value type ${value.javaClass.name} is not allowed.")
-                }
-            }
-
-            return runCatching {
-                Parcel.obtain().use { parcel -> 
-                    bundle.calDataByteSize(parcel)
-                }
-            }.getOrNull() ?: -1
+        /** Measures the payload using the same [Parcelable] wrapper sent in the broadcast. */
+        private fun ChannelDataWrapper<*>.calDataByteSize() = Parcel.obtain().use { parcel ->
+            parcel.writeValue(this)
+            parcel.dataSize()
         }
 
         /** Measures a bundle using the supplied scratch parcel. */
@@ -631,13 +613,10 @@ class YukiHookDataChannel private constructor() {
             // The current wrapper instance ID.
             val wrapperId = RandomString.generate()
             // The size in bytes of the data to send.
-            val dataByteSize = wrapper.instance.calDataByteSize()
-            if (dataByteSize < 0 && !allowSendTooLargeData) return YLog.innerE(
-                msg = "YukiHookDataChannel cannot calculate the byte size of the data key of \"${wrapper.instance.key}\" to be sent, " +
-                    "so this data cannot be sent.\n" +
-                    "If you want to lift this restriction, use the allowOversizedData function when calling, " +
-                    "but this may cause the app crash"
-            )
+            val dataByteSize = runCatching { wrapper.calDataByteSize() }.getOrElse {
+                YLog.innerE("YukiHookDataChannel cannot serialize the data key of \"${wrapper.instance.key}\" to be sent", it)
+                return
+            }
 
             /**
              * Logs a warning when data is too large. This is effective only when [YukiHook.Config.debug] is enabled.
