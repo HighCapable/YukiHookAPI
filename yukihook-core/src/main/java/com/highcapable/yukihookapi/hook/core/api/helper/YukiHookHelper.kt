@@ -86,7 +86,7 @@ internal object YukiHookHelper {
      * @param hooker the replacement hooker callback.
      * @return [YukiHookResult] a new registration snapshot for the replacement hooker.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
     fun replace(registration: YukiHookResult, hooker: HookerBridge) = YukiHookResult.from(
         target = registration.target, 
         hooker = YukiHookBridge.replace(registration.hooker, hooker)
