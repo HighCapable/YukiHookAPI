@@ -51,7 +51,8 @@ abstract class LibXposedEntry : XposedModule() {
             // Removes transport padding and trailing replacement characters from a process name.
             .substringBefore('\u0000')
             .trimEnd('\uFFFD')
-        initialized = YukiHookModuleCaller.callOnHook(createHookEntry(), moduleApplicationInfo)
+
+        initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo)
         YukiLibXposedEvent.moduleLoaded?.invoke(this, param)
     }
 

@@ -67,30 +67,32 @@ object YukiHookModuleCaller {
 
     /**
      * Calls [YukiHookXposedModule.onHook] on the user entry only after the runtime has attached its hook interface.
-     * @param entry the user entry.
+     * @param createEntry creates the user entry after the host environment is initialized.
      * @param packageName the package name of the current process.
      * @param sourceDir the current Xposed module source directory.
      * @return [Boolean] whether the initialization was successful.
      */
-    fun callOnHook(entry: YukiHookXposedModule, packageName: String, sourceDir: String) =
-        callOnHook(entry, packageName, sourceDir, null)
+    fun callOnHook(createEntry: () -> YukiHookXposedModule, packageName: String, sourceDir: String) =
+        callOnHook(createEntry, packageName, sourceDir, null)
 
     /**
      * Calls [YukiHookXposedModule.onHook] with the current Xposed module [ApplicationInfo].
-     * @param entry the user entry.
+     * @param createEntry creates the user entry after the host environment is initialized.
      * @param appInfo the current Xposed module application info.
      * @return [Boolean] whether the initialization was successful.
      */
-    fun callOnHook(entry: YukiHookXposedModule, appInfo: ApplicationInfo) =
-        callOnHook(entry, appInfo.packageName, appInfo.sourceDir, appInfo)
+    fun callOnHook(createEntry: () -> YukiHookXposedModule, appInfo: ApplicationInfo) =
+        callOnHook(createEntry, appInfo.packageName, appInfo.sourceDir, appInfo)
 
     private fun callOnHook(
-        entry: YukiHookXposedModule,
+        createEntry: () -> YukiHookXposedModule,
         packageName: String,
         sourceDir: String,
         appInfo: ApplicationInfo?
     ) = runCatching {
         XposedModuleRuntime.onStartLoadModule(packageName, sourceDir, appInfo)
+
+        val entry = createEntry()
         callOnInit(entry)
 
         check(!XposedModuleRuntime.hasEarlyHookCallback) {
