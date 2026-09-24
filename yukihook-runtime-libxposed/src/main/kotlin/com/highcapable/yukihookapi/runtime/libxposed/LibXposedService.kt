@@ -132,11 +132,9 @@ internal object LibXposedService {
     }
 
     private fun notifyListeners() {
-        val available = isAvailable
-
         listeners.forEach { subscription ->
             runCatching {
-                subscription.dispatch(available)
+                subscription.dispatch()
             }.onFailure {
                 Log.e("YukiHook-Runtime", "Service listener failed", it)
             }
@@ -144,7 +142,7 @@ internal object LibXposedService {
     }
 
     /**
-     * Independent lifecycle-aware subscription with ordered callback delivery.
+     * Independent lifecycle-aware subscription with serialized callback delivery.
      */
     private class ServiceSubscription(
         private val lifecycle: Lifecycle?,
@@ -152,7 +150,7 @@ internal object LibXposedService {
     ) : FrameworkServiceBridge, DefaultLifecycleObserver {
 
         private val callbackLock = Any()
-        private val pendingEvents = ArrayDeque<Boolean>()
+        private val pendingEvents = ArrayDeque<Unit>()
 
         private var isInitialized = false
         private var isUnregistered = false
@@ -186,18 +184,19 @@ internal object LibXposedService {
 
             isInitialized = true
             while (pendingEvents.isNotEmpty() && !isUnregistered) runCatching {
-                notifyListener(pendingEvents.removeFirst())
+                pendingEvents.removeFirst()
+                notifyListener(isAvailable)
             }.onFailure {
                 Log.e("YukiHook-Runtime", "Service listener failed", it)
             }
         }
 
-        fun dispatch(available: Boolean) = synchronized(callbackLock) {
+        fun dispatch() = synchronized(callbackLock) {
             if (isUnregistered) return@synchronized
 
             if (!isInitialized)
-                pendingEvents.addLast(available)
-            else notifyListener(available)
+                pendingEvents.addLast(Unit)
+            else notifyListener(isAvailable)
         }
 
         private fun notifyListener(available: Boolean) {

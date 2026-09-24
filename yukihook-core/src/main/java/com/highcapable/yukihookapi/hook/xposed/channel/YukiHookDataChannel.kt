@@ -89,25 +89,25 @@ class YukiHookDataChannel private constructor() {
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
 
         /**
-         * Maximum data size in bytes allowed for a system broadcast.
+         * Data-size threshold in bytes for segmenting a system broadcast.
          *
          * The standard limit is 1 MB. Tests show known limits of 1, 2, or 3 MB across different systems.
          * Tests also show that sending 900 KB in segments still fails on one Android 13 device.
-         * To accommodate system-specific limits, the default is 500 KB. Larger data is sent in segments of this size.
+         * To accommodate system-specific limits, the default is 500 KB. Supported larger values are split using a smaller target size.
          */
         private var receiverDataMaxByteSize = 500 * 1024
 
         /**
          * Maximum data-size compression factor for system broadcasts using segmented data.
          *
-         * Each segment must also remain within [receiverDataMaxByteSize].
+         * The target is not a hard limit. An indivisible collection element may produce a segment larger than [receiverDataMaxByteSize].
          * This factor is used to divide [receiverDataMaxByteSize].
          * The formula is [receiverDataMaxByteSize] / [receiverDataMaxByteCompressionFactor] = [receiverDataSegmentMaxByteSize].
          */
         private var receiverDataMaxByteCompressionFactor = 3
 
         /**
-         * Gets the maximum size in bytes allowed for one segmented system-broadcast payload.
+         * Gets the target size in bytes for one segmented system-broadcast payload.
          * @return [Int]
          */
         private val receiverDataSegmentMaxByteSize get() = receiverDataMaxByteSize / receiverDataMaxByteCompressionFactor
@@ -298,7 +298,7 @@ class YukiHookDataChannel private constructor() {
          * The minimum is 100 KB (100 * 1024). Lower values are reset to 100 KB.
          * The value applies globally until the current process ends.
          *
-         * - Data larger than this maximum is sent in segments automatically.
+         * - Supported larger values are segmented automatically, but individual segments may still exceed this value.
          * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
@@ -528,7 +528,7 @@ class YukiHookDataChannel private constructor() {
             parcel.dataSize()
         }.getOrNull() ?: -1
 
-        /** Splits a collection while preserving the existing per-element size checks and segment types. */
+        /** Splits a collection after measuring each appended element, preserving its segment type. */
         private inline fun <T, C : Serializable> Iterable<T>.toSegments(create: () -> C, append: C.(T) -> Unit): List<C> {
             val segments = mutableListOf<C>()
             val bundle = Bundle()

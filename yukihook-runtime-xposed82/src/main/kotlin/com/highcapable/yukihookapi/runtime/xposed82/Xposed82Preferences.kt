@@ -77,7 +77,10 @@ internal object Xposed82Preferences {
     }
 
     /**
-     * Applies the original fallback permission behavior around a module's private preferences.
+     * Attempts the original permission fallback for private module preferences.
+     *
+     * An asynchronous [SharedPreferences.Editor.apply] may write the file after the permission attempt
+     * and replace the file's permissions.
      */
     private class Module(
         context: Context, name: String,

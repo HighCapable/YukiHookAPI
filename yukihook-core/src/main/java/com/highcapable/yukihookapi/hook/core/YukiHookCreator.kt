@@ -603,9 +603,7 @@ class YukiHookCreator private constructor() {
 
             origin.asHookReturnType().also { o ->
                 target.asHookReturnType().also { t ->
-                    if (o isNotSubclassOf t && t isNotSubclassOf o) error(
-                        "Hooked method return type match failed, required $origin but got $target"
-                    )
+                    if (t isNotSubclassOf o) error("Hooked method return type match failed, required $origin but got $target")
                 }
             }
         }

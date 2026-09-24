@@ -461,6 +461,7 @@ internal object AppParasitism {
      * @param proxy the proxy [Activity].
      */
     @RequiresApi(AndroidVersion.N)
+    @Synchronized
     fun registerModuleActivities(context: Context, proxy: Any?) {
         fun String.toModuleActivityClassOrNull() = toClassOrNull(baseClassLoader)?.takeIf {
             it isSubclassOf Activity::class && it isSubclassOf ModuleActivity::class
@@ -485,7 +486,7 @@ internal object AppParasitism {
         if (isActivityProxyRegistered) return
         if (!XposedModuleRuntime.isHostEnvironment) return YLog.innerW("You can only register Activity proxy in host environment")
         if (context.packageName == XposedModuleRuntime.modulePackageName) return YLog.innerE("You cannot register Activity proxy into yourself")
-        if (AndroidVersion.isAtMost(AndroidVersion.N)) return YLog.innerE("Activity proxy only support for Android 7.0 (API 24) or higher")
+        if (AndroidVersion.isAtMost(AndroidVersion.M)) return YLog.innerE("Activity proxy only support for Android 7.0 (API 24) or higher")
 
         val hooked = mutableListOf<YukiHookResult>()
         runCatching {
