@@ -70,7 +70,7 @@ class YukiHookSharedFiles private constructor() {
         if (requireWritable) check(!isHostEnvironment) {
             "Shared files are read-only in a host process."
         }
-        check(!isHostEnvironment && YukiHookBridge.isModuleActive) {
+        check(isHostEnvironment || YukiHookBridge.isModuleActive) {
             "Activate the module in the hook framework to use YukiHookSharedFiles."
         }
     }
