@@ -40,13 +40,13 @@ data class Xposed82GenerateSpec(
     companion object {
 
         const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.YukiHookXposed82Entry"
-        const val LEGACY_ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.InjectYukiHookWithXposed"
         const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.xposed82.entry.Xposed82Entry"
-
         const val RUNTIME_MODULE_NAME = "yukihook-runtime-xposed82"
 
         const val INIT_FILE_PATH = "assets/xposed_init"
-        const val DEPRECATED_ASSET_INIT_FILE_PATH = "assets/yukihookapi_init"
-        const val DEPRECATED_RESOURCE_INIT_FILE_PATH = "META-INF/yukihookapi_init"
+
+        const val LEGACY_ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.InjectYukiHookWithXposed"
+        const val LEGACY_ASSET_INIT_FILE_PATH = "assets/yukihookapi_init"
+        const val LEGACY_RESOURCE_INIT_FILE_PATH = "META-INF/yukihookapi_init"
     }
 }

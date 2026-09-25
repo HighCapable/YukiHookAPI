@@ -508,10 +508,10 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
         val sourceFilePaths = listOf(
             Xposed82GenerateSpec.INIT_FILE_PATH,
-            Xposed82GenerateSpec.DEPRECATED_ASSET_INIT_FILE_PATH
+            Xposed82GenerateSpec.LEGACY_ASSET_INIT_FILE_PATH
         )
         val resourceFilePaths = listOf(
-            Xposed82GenerateSpec.DEPRECATED_RESOURCE_INIT_FILE_PATH,
+            Xposed82GenerateSpec.LEGACY_RESOURCE_INIT_FILE_PATH,
             LibXposedGenerateSpec.JAVA_INIT_FILE_PATH,
             LibXposedGenerateSpec.MODULE_PROPERTIES_FILE_PATH,
             LibXposedGenerateSpec.SCOPE_FILE_PATH,
