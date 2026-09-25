@@ -57,6 +57,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
         private const val RUNTIME_PACKAGE_NAME = "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime"
         private const val RUNTIME_BRIDGE_PACKAGE_NAME = "$RUNTIME_PACKAGE_NAME.bridge"
         private const val HOOKER_BRIDGE_PACKAGE_NAME = "$RUNTIME_BRIDGE_PACKAGE_NAME.hooker"
+        private const val LIBXPOSED_SERVICE_PACKAGE_NAME = "io.github.libxposed.service"
 
         private const val GENERATED_MODULE_STATUS_PACKAGE_NAME = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.status"
         private const val GENERATED_MODULE_STATUS_CLASS_PREFIX = "YukiHookLegacyModuleStatus_Impl_"
@@ -74,7 +75,8 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.caller.YukiHookModuleCaller",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHook_Impl",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookCompiledTimestamp",
-            "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.application.ModuleApplication_Impl"
+            "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.application.ModuleApplication_Impl",
+            "$LIBXPOSED_SERVICE_PACKAGE_NAME.YukiHookServiceBridge"
         )
 
         private val GENERATED_ENTRY_SUPER_CLASSES = setOf(

@@ -23,6 +23,7 @@
 
 package com.highcapable.yukihookapi.runtime.libxposed
 
+import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -31,6 +32,8 @@ import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
+import io.github.libxposed.service.YukiHookServiceBridge
+import java.util.IdentityHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -38,10 +41,10 @@ import java.util.concurrent.CopyOnWriteArraySet
  */
 internal object LibXposedService {
 
-    private val services = linkedSetOf<XposedService>()
+    private val services = IdentityHashMap<IBinder, XposedService>()
     private val listeners = CopyOnWriteArraySet<ServiceSubscription>()
 
-    private val service get() = synchronized(services) { services.singleOrNull() }
+    private val service get() = synchronized(services) { services.values.singleOrNull() }
 
     private var initialized = false
 
@@ -58,14 +61,23 @@ internal object LibXposedService {
         initialized = true
 
         XposedServiceHelper.registerListener(object : XposedServiceHelper.OnServiceListener {
+
             override fun onServiceBind(service: XposedService) {
-                synchronized(services) { services.add(service) }
-                notifyListeners()
+                val isAdded = synchronized(services) {
+                    val binder = YukiHookServiceBridge.asBinder(service)
+                    if (binder !in services) {
+                        services[binder] = service
+                        true
+                    } else false
+                }
+                if (isAdded) notifyListeners()
             }
 
             override fun onServiceDied(service: XposedService) {
-                synchronized(services) { services.remove(service) }
-                notifyListeners()
+                val isRemoved = synchronized(services) {
+                    services.remove(YukiHookServiceBridge.asBinder(service)) != null
+                }
+                if (isRemoved) notifyListeners()
             }
         })
     }
@@ -120,7 +132,7 @@ internal object LibXposedService {
             check(services.size <= 1) {
                 "Multiple Xposed frameworks are connected, $capabilityName have no unambiguous owner."
             }
-            services.singleOrNull()
+            services.values.singleOrNull()
         } ?: return null
 
         capability?.let {

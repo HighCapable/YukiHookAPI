@@ -19,6 +19,7 @@ android {
 
 dependencies {
     compileOnly(libs.libxposed.api)
+    compileOnly(libs.libxposed.service.api)
     implementation(libs.libxposed.service)
 
     implementation(projects.yukihookCore)
