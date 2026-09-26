@@ -4,7 +4,7 @@
 
 Join our developers group.
 
-- [Click to join Telegram group](https://t.me/YukiHookAPI)
+- [Click to join Telegram group](https://t.me/YukiHook)
 - [Click to join Telegram group (Developer)](https://t.me/HighCapable_Dev)
 
 Find me on **Twitter** [@fankesyooni](https://twitter.com/fankesyooni).
