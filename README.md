@@ -17,6 +17,12 @@ English | [简体中文](README-zh-CN.md)
 
 This project belongs to the organization above. **Click the link to follow us** and discover more awesome projects.
 
+## ✨ New Version Public Beta Recruitment
+
+YukiHook 1.5.0 is now recruiting for public beta, mainly featuring support for building Xposed modules based on the libxposed framework. The public beta will continue until around 2026.10, when the first official release will be published.
+
+To join, please follow our [Telegram Group](https://t.me/YukiHook) and [Telegram Channel](https://t.me/YukiHook_Channel).
+
 ## What's this
 
 This is an efficient Hook API rebuilt based on the Xposed API using Kotlin,
@@ -42,7 +48,7 @@ directly [click here](https://highcapable.github.io/YukiHookAPI/en/guide/support
 🚀 YukiHookAPI is using KavaRef as a powerful driver for the reflection API.
 **Click on the link above star project**, and you can also use it gracefully!
 
-## Explore New Version
+## Explore New Architecture
 
 The `2.x` version is being refactored, you can switch to the `2.x` branch below to view the current
 development progress.

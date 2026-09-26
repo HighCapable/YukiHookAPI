@@ -17,6 +17,12 @@
 
 这个项目属于上述组织，**点击上方链接关注这个组织**，发现更多好项目。
 
+## ✨ 新版本公测招募中
+
+YukiHook 1.5.0 现正在招募公测，主要包含功能为支持以 libxposed 底座构建 Xposed 模块，公测持续至 2026.10 左右并发布第一个正式版。
+
+加入方式请关注我们的 [Telegram 群组](https://t.me/YukiHook) 和 [Telegram 频道](https://t.me/YukiHook_Channel)。
+
 ## 这是什么
 
 这是一个使用 Kotlin 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展。
@@ -37,7 +43,7 @@
 
 🚀 YukiHookAPI 正使用 KavaRef 作为反射 API 强力驱动，**点击上方链接 star 这个项目**，你也可以优雅地使用它！
 
-## 探索新版本
+## 探索新架构
 
 `2.x` 版本正在重构中，你可以下方切换到 `2.x` 分支查看当前的开发进度。
 
