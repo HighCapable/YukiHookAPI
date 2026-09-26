@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.highcapable.yukihookapi.hook.factory</title>
+    <link href="../../images/logo-icon.svg" rel="icon" type="image/svg">
+        <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer="defer"></script>
+</head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../index.html" tabindex="1">
+                    yukihookapi-core
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+1.3.2        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
+                        data-filter=":yukihookapi-core/release">release</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":yukihookapi-core/release"
+                                       data-filter=":yukihookapi-core/release"/>
+                                <span class="checkbox--icon"></span>
+                                release
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    yukihookapi-core
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="package" id="content" pageIds="yukihookapi-core::com.highcapable.yukihookapi.hook.factory////PointingToDeclaration//1050610057">
+  <div class="breadcrumbs"><a href="../../index.html">yukihookapi-core</a><span class="delimiter">/</span><span class="current">com.highcapable.yukihookapi.hook.factory</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button><button class="section-tab" data-togglable="PROPERTY,EXTENSION_PROPERTY">Properties</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="-780591717%2FClasslikes%2F1050610057" anchor-label="LazyClass" id="-780591717%2FClasslikes%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-lazy-class/index.html"><span>Lazy</span><wbr></wbr><span><span>Class</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-780591717%2FClasslikes%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-lazy-class/index.html"><strike>LazyClass</strike></a><span class="token operator">&lt;</span><a href="-lazy-class/index.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Lazy loading <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instance.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-503830676%2FClasslikes%2F1050610057" anchor-label="MembersType" id="-503830676%2FClasslikes%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-members-type/index.html"><span>Members</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-503830676%2FClasslikes%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-members-type/index.html">MembersType</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-members-type/index.html">MembersType</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Defines the <a href="https://developer.android.com/reference/kotlin/java/lang/reflect/Member.html">Member</a> type in a <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-1800204473%2FProperties%2F1050610057" anchor-label="hasExtends" id="-1800204473%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-extends.html"><span>has</span><wbr></wbr><span><span>Extends</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1800204473%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="has-extends.html"><strike>hasExtends</strike></a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the current <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> has an inheritance relationship. A parent class of <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a> is treated as no inheritance.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1354229981%2FProperties%2F1050610057" anchor-label="modulePrefs" id="1354229981%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="module-prefs.html"><span>module</span><wbr></wbr><span><span>Prefs</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1354229981%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="module-prefs.html"><strike>modulePrefs</strike></a><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge/index.html">YukiHookPrefsBridge</a></div><div class="brief "><p class="paragraph">Gets the module preferences object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1843327699%2FProperties%2F1050610057" anchor-label="processName" id="1843327699%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="process-name.html"><span>process</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1843327699%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="process-name.html">processName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Gets the current process name.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="565486515%2FFunctions%2F1050610057" anchor-label="allConstructors" id="565486515%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="all-constructors.html"><span>all</span><wbr></wbr><span><span>Constructors</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="565486515%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="all-constructors.html"><span class="token function"><strike>allConstructors</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isAccessible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>constructor<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/reflect/Constructor.html">Constructor</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Iterates over all constructors in the current class.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-320955123%2FFunctions%2F1050610057" anchor-label="allFields" id="-320955123%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="all-fields.html"><span>all</span><wbr></wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-320955123%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="all-fields.html"><span class="token function"><strike>allFields</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isAccessible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>field<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/reflect/Field.html">Field</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Iterates over all fields in the current class.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1190172313%2FFunctions%2F1050610057" anchor-label="allMethods" id="-1190172313%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="all-methods.html"><span>all</span><wbr></wbr><span><span>Methods</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1190172313%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="all-methods.html"><span class="token function"><strike>allMethods</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isAccessible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>method<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/reflect/Method.html">Method</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Iterates over all methods in the current class.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2034370548%2FFunctions%2F1050610057" anchor-label="applyModuleTheme" id="-2034370548%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="apply-module-theme.html"><span>apply</span><wbr></wbr><span>Module</span><wbr></wbr><span><span>Theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2034370548%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="apply-module-theme.html"><span class="token function">applyModuleTheme</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/StyleRes.html"><span class="token annotation builtin">StyleRes</span></a> </span>theme<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">configuration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Configuration.html">Configuration</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper/-module-context-theme-wrapper/index.html">ModuleContextThemeWrapper</a></div><div class="brief "><p class="paragraph">Creates a <a href="https://developer.android.com/reference/kotlin/android/view/ContextThemeWrapper.html">ContextThemeWrapper</a> proxy that applies the current Xposed module's theme resources.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-235983134%2FFunctions%2F1050610057" anchor-label="buildOf" id="-235983134%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="build-of.html"><span>build</span><wbr></wbr><span><span>Of</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-235983134%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="build-of.html"><span class="token function"><strike>buildOf</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ConstructorConditions///PointingToDeclaration/">ConstructorConditions</span><span class="token operator"> = </span>{ emptyParam() }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Creates a new instance of any type <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a> through a constructor.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">&quot;buildOf_Generics&quot;</span></span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="build-of.html">T</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="build-of.html"><span class="token function"><strike>buildOf</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ConstructorConditions///PointingToDeclaration/">ConstructorConditions</span><span class="token operator"> = </span>{ emptyParam() }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="build-of.html">T</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Creates a new instance of type <a href="build-of.html">T</a> through a constructor.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1129433570%2FFunctions%2F1050610057" anchor-label="buildOfAny" id="-1129433570%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="build-of-any.html"><span>build</span><wbr></wbr><span>Of</span><wbr></wbr><span><span>Any</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1129433570%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="build-of-any.html"><span class="token function"><strike>buildOfAny</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ConstructorConditions///PointingToDeclaration/">ConstructorConditions</span><span class="token operator"> = </span>{ emptyParam() }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Creates a new instance of any type <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a> through a constructor.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="415612563%2FFunctions%2F1050610057" anchor-label="classOf" id="415612563%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="class-of.html"><span>class</span><wbr></wbr><span><span>Of</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="415612563%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="class-of.html">T</a><span class="token operator">&gt; </span><a href="class-of.html"><span class="token function"><strike>classOf</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">loader<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><a href="class-of.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Gets the <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instance of <a href="class-of.html">T</a> and converts it to a concrete class.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="class-of.html"><span class="token function"><strike>classOf</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">loader<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts a string class name to a concrete class in <a href="class-of.html">loader</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="314930627%2FFunctions%2F1050610057" anchor-label="configs" id="314930627%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="configs.html"><span><span>configs</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="314930627%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/index.html">IYukiHookXposedInit</a><span class="token punctuation">.</span><a href="configs.html"><span class="token function">configs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><a href="../com.highcapable.yukihookapi/-yuki-hook-a-p-i/-configs/index.html">YukiHookAPI.Configs</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Calls <a href="../com.highcapable.yukihookapi/-yuki-hook-a-p-i/configs.html">YukiHookAPI.configs</a> from <a href="../com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/index.html">IYukiHookXposedInit</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-133869938%2FFunctions%2F1050610057" anchor-label="constructor" id="-133869938%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="constructor.html"><span><span>constructor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-133869938%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="constructor.html"><span class="token function"><strike>constructor</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ConstructorConditions///PointingToDeclaration/">ConstructorConditions</span><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.core.finder.members/-constructor-finder/-result/index.html">ConstructorFinder.Result</a></div><div class="brief "><p class="paragraph">Finds and gets a constructor.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1424728414%2FFunctions%2F1050610057" anchor-label="current" id="1424728414%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current.html"><span><span>current</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1424728414%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="current.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="current.html">T</a><span class="token punctuation">.</span><a href="current.html"><span class="token function"><strike>current</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">ignored<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.bean/-current-class/index.html">CurrentClass</a></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="current.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="current.html">T</a><span class="token punctuation">.</span><a href="current.html"><span class="token function"><strike>current</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">ignored<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">initiate<span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.bean/-current-class/index.html">CurrentClass</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="current.html">T</a></div><div class="brief "><p class="paragraph">Gets the class operation object for the current instance.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-510876398%2FFunctions%2F1050610057" anchor-label="dataChannel" id="-510876398%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="data-channel.html"><span>data</span><wbr></wbr><span><span>Channel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-510876398%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="data-channel.html"><span class="token function">dataChannel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">packageName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/-name-space/index.html">YukiHookDataChannel.NameSpace</a></div><div class="brief "><p class="paragraph">Gets a <a href="../com.highcapable.yukihookapi.hook.xposed.channel/-yuki-hook-data-channel/index.html">YukiHookDataChannel</a> object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1808986995%2FFunctions%2F1050610057" anchor-label="encase" id="-1808986995%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="encase.html"><span><span>encase</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1808986995%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/index.html">IYukiHookXposedInit</a><span class="token punctuation">.</span><a href="encase.html"><span class="token function">encase</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.param/-package-param/index.html">PackageParam</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Calls <a href="../com.highcapable.yukihookapi/-yuki-hook-a-p-i/encase.html">YukiHookAPI.encase</a> from <a href="../com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/index.html">IYukiHookXposedInit</a>.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/index.html">IYukiHookXposedInit</a><span class="token punctuation">.</span><a href="encase.html"><span class="token function">encase</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>hooker<span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.entity/-yuki-base-hooker/index.html">YukiBaseHooker</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Loads <a href="../com.highcapable.yukihookapi/-yuki-hook-a-p-i/index.html">YukiHookAPI</a> from <a href="../com.highcapable.yukihookapi.hook.xposed.proxy/-i-yuki-hook-xposed-init/index.html">IYukiHookXposedInit</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="905355073%2FFunctions%2F1050610057" anchor-label="extends" id="905355073%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="extends.html"><span><span>extends</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="905355073%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">infix </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">.</span><a href="extends.html"><span class="token function"><strike>extends</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">other<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the current <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> inherits from <a href="extends.html">other</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-749654258%2FFunctions%2F1050610057" anchor-label="field" id="-749654258%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="field.html"><span><span>field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-749654258%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="field.html"><span class="token function"><strike>field</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/FieldConditions///PointingToDeclaration/">FieldConditions</span><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.core.finder.members/-field-finder/-result/index.html">FieldFinder.Result</a></div><div class="brief "><p class="paragraph">Finds and gets a field.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1593165379%2FFunctions%2F1050610057" anchor-label="generic" id="1593165379%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generic.html"><span><span>generic</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1593165379%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="generic.html"><span class="token function"><strike>generic</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.bean/-generic-class/index.html">GenericClass</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="generic.html"><span class="token function"><strike>generic</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.bean/-generic-class/index.html">GenericClass</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.bean/-generic-class/index.html">GenericClass</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Gets the generic superclass of the current <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1304977652%2FFunctions%2F1050610057" anchor-label="hasClass" id="1304977652%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-class.html"><span>has</span><wbr></wbr><span><span>Class</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1304977652%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">.</span><a href="has-class.html"><span class="token function"><strike>hasClass</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">loader<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether a string class name exists using the specified <a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2037026522%2FFunctions%2F1050610057" anchor-label="hasConstructor" id="-2037026522%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-constructor.html"><span>has</span><wbr></wbr><span><span>Constructor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2037026522%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="has-constructor.html"><span class="token function"><strike>hasConstructor</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ConstructorConditions///PointingToDeclaration/">ConstructorConditions</span><span class="token operator"> = </span>{ emptyParam() }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether a constructor exists.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1009879642%2FFunctions%2F1050610057" anchor-label="hasField" id="-1009879642%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-field.html"><span>has</span><wbr></wbr><span><span>Field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1009879642%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="has-field.html"><span class="token function"><strike>hasField</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/FieldConditions///PointingToDeclaration/">FieldConditions</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether a field exists.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1823666612%2FFunctions%2F1050610057" anchor-label="hasMethod" id="-1823666612%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-method.html"><span>has</span><wbr></wbr><span><span>Method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1823666612%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="has-method.html"><span class="token function"><strike>hasMethod</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/MethodConditions///PointingToDeclaration/">MethodConditions</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether a method exists.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1138147135%2FFunctions%2F1050610057" anchor-label="hasModifiers" id="-1138147135%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-modifiers.html"><span>has</span><wbr></wbr><span><span>Modifiers</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1138147135%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="has-modifiers.html"><span class="token function"><strike>hasModifiers</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">conditions<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ModifierConditions///PointingToDeclaration/">ModifierConditions</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether a matching modifier exists in the <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a>.</p></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/reflect/Member.html">Member</a><span class="token punctuation">.</span><a href="has-modifiers.html"><span class="token function"><strike>hasModifiers</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">conditions<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ModifierConditions///PointingToDeclaration/">ModifierConditions</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether a matching modifier exists in the <a href="https://developer.android.com/reference/kotlin/java/lang/reflect/Member.html">Member</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-344936280%2FFunctions%2F1050610057" anchor-label="implements" id="-344936280%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="implements.html"><span><span>implements</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-344936280%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">infix </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">.</span><a href="implements.html"><span class="token function"><strike>implements</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">other<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the current <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> implements the <a href="implements.html">other</a> interface.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2098656108%2FFunctions%2F1050610057" anchor-label="injectModuleAppResources" id="-2098656108%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="inject-module-app-resources.html"><span>inject</span><wbr></wbr><span>Module</span><wbr></wbr><span>App</span><wbr></wbr><span><span>Resources</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2098656108%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="inject-module-app-resources.html"><span class="token function">injectModuleAppResources</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Injects the current Xposed module's resources into the host app <a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a>.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Resources.html">Resources</a><span class="token punctuation">.</span><a href="inject-module-app-resources.html"><span class="token function">injectModuleAppResources</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Injects the current Xposed module's resources directly into the specified host app <a href="https://developer.android.com/reference/kotlin/android/content/res/Resources.html">Resources</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1474626700%2FFunctions%2F1050610057" anchor-label="lazyClass" id="1474626700%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="lazy-class.html"><span>lazy</span><wbr></wbr><span><span>Class</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1474626700%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="lazy-class.html"><span class="token function"><strike>lazyClass</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">variousClass<span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.bean/-various-class/index.html">VariousClass</a><span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">loader<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ClassLoaderInitializer///PointingToDeclaration/">ClassLoaderInitializer</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-lazy-class/-non-null/index.html">LazyClass.NonNull</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="lazy-class.html"><span class="token function"><strike>lazyClass</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">loader<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ClassLoaderInitializer///PointingToDeclaration/">ClassLoaderInitializer</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-lazy-class/-non-null/index.html">LazyClass.NonNull</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a lazily loaded non-null <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instance.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">&quot;lazyClass_Generics&quot;</span></span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="lazy-class.html">T</a><span class="token operator">&gt; </span><a href="lazy-class.html"><span class="token function"><strike>lazyClass</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>loader<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ClassLoaderInitializer///PointingToDeclaration/">ClassLoaderInitializer</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-lazy-class/-non-null/index.html">LazyClass.NonNull</a><span class="token operator">&lt;</span><a href="lazy-class.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a lazily loaded non-null <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instance of type <a href="lazy-class.html">T</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2048641268%2FFunctions%2F1050610057" anchor-label="lazyClassOrNull" id="-2048641268%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="lazy-class-or-null.html"><span>lazy</span><wbr></wbr><span>Class</span><wbr></wbr><span>Or</span><wbr></wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2048641268%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="lazy-class-or-null.html"><span class="token function"><strike>lazyClassOrNull</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">variousClass<span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.bean/-various-class/index.html">VariousClass</a><span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">loader<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ClassLoaderInitializer///PointingToDeclaration/">ClassLoaderInitializer</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-lazy-class/-nullable/index.html">LazyClass.Nullable</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="lazy-class-or-null.html"><span class="token function"><strike>lazyClassOrNull</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">loader<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ClassLoaderInitializer///PointingToDeclaration/">ClassLoaderInitializer</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-lazy-class/-nullable/index.html">LazyClass.Nullable</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a lazily loaded nullable <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instance.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">&quot;lazyClassOrNull_Generics&quot;</span></span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="lazy-class-or-null.html">T</a><span class="token operator">&gt; </span><a href="lazy-class-or-null.html"><span class="token function"><strike>lazyClassOrNull</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>loader<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ClassLoaderInitializer///PointingToDeclaration/">ClassLoaderInitializer</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-lazy-class/-nullable/index.html">LazyClass.Nullable</a><span class="token operator">&lt;</span><a href="lazy-class-or-null.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a lazily loaded nullable <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instance of type <a href="lazy-class-or-null.html">T</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="749747526%2FFunctions%2F1050610057" anchor-label="listOfClasses" id="749747526%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="list-of-classes.html"><span>list</span><wbr></wbr><span>Of</span><wbr></wbr><span><span>Classes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="749747526%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token punctuation">.</span><a href="list-of-classes.html"><span class="token function"><strike>listOfClasses</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Lists the names of all <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instances under the current <a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-855175756%2FFunctions%2F1050610057" anchor-label="method" id="-855175756%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="method.html"><span><span>method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-855175756%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="method.html"><span class="token function"><strike>method</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/MethodConditions///PointingToDeclaration/">MethodConditions</span><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.core.finder.members/-method-finder/-result/index.html">MethodFinder.Result</a></div><div class="brief "><p class="paragraph">Finds and gets a method.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1660172103%2FFunctions%2F1050610057" anchor-label="modulePrefs" id="1660172103%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="module-prefs.html"><span>module</span><wbr></wbr><span><span>Prefs</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1660172103%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="module-prefs.html"><span class="token function"><strike>modulePrefs</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge/index.html">YukiHookPrefsBridge</a></div><div class="brief "><p class="paragraph">Gets the module preferences object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="165265234%2FFunctions%2F1050610057" anchor-label="notExtends" id="165265234%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="not-extends.html"><span>not</span><wbr></wbr><span><span>Extends</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="165265234%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">infix </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">.</span><a href="not-extends.html"><span class="token function"><strike>notExtends</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">other<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the current <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> does not inherit from <a href="not-extends.html">other</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2000767735%2FFunctions%2F1050610057" anchor-label="notImplements" id="2000767735%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="not-implements.html"><span>not</span><wbr></wbr><span><span>Implements</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2000767735%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">infix </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">.</span><a href="not-implements.html"><span class="token function"><strike>notImplements</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">other<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the current <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> does not implement the <a href="not-implements.html">other</a> interface.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1025384713%2FFunctions%2F1050610057" anchor-label="onLoadClass" id="1025384713%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-load-class.html"><span>on</span><wbr></wbr><span>Load</span><wbr></wbr><span><span>Class</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1025384713%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token punctuation">.</span><a href="on-load-class.html"><span class="token function">onLoadClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">result<span class="token operator">: </span><span class="token punctuation">(</span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Listens for loading through <a href="../com.highcapable.yukihookapi.hook.xposed.parasitic.reference/-module-class-loader/index.html#1986538048%2FFunctions%2F1050610057">ClassLoader.loadClass</a> on the current <a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="487089275%2FFunctions%2F1050610057" anchor-label="prefs" id="487089275%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="prefs.html"><span><span>prefs</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="487089275%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="prefs.html"><span class="token function">prefs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge/index.html">YukiHookPrefsBridge</a></div><div class="brief "><p class="paragraph">Creates a <a href="../com.highcapable.yukihookapi.hook.xposed.prefs/-yuki-hook-prefs-bridge/index.html">YukiHookPrefsBridge</a> object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1919891062%2FFunctions%2F1050610057" anchor-label="registerModuleAppActivities" id="-1919891062%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="register-module-app-activities.html"><span>register</span><wbr></wbr><span>Module</span><wbr></wbr><span>App</span><wbr></wbr><span><span>Activities</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1919891062%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RequiresApi.html"><span class="token annotation builtin">RequiresApi</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">24</span></span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="register-module-app-activities.html"><span class="token function">registerModuleAppActivities</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">proxy<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers the current Xposed module's <a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a> in the host app.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2029951154%2FFunctions%2F1050610057" anchor-label="searchClass" id="2029951154%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="search-class.html"><span>search</span><wbr></wbr><span><span>Class</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2029951154%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token punctuation">.</span><a href="search-class.html"><span class="token function"><strike>searchClass</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter ">async<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">initiate<span class="token operator">: </span><span data-unresolved-link="com.highcapable.yukihookapi.hook.core.finder.type.factory/ClassConditions///PointingToDeclaration/">ClassConditions</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.highcapable.yukihookapi.hook.core.finder.classes/-dex-class-finder/-result/index.html">DexClassFinder.Result</a></div><div class="brief "><p class="paragraph">Finds <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> instances in the Dex through the current <a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a> using specified conditions.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="782877651%2FFunctions%2F1050610057" anchor-label="toClass" id="782877651%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-class.html"><span>to</span><wbr></wbr><span><span>Class</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="782877651%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">.</span><a href="to-class.html"><span class="token function"><strike>toClass</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">loader<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">&quot;toClass_Generics&quot;</span></span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="to-class.html">T</a><span class="token operator">&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">.</span><a href="to-class.html"><span class="token function"><strike>toClass</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">loader<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><a href="to-class.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts a string class name to a concrete class in <a href="to-class.html">loader</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-817332119%2FFunctions%2F1050610057" anchor-label="toClassOrNull" id="-817332119%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-class-or-null.html"><span>to</span><wbr></wbr><span>Class</span><wbr></wbr><span>Or</span><wbr></wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-817332119%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">.</span><a href="to-class-or-null.html"><span class="token function"><strike>toClassOrNull</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">loader<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">&quot;toClassOrNull_Generics&quot;</span></span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="to-class-or-null.html">T</a><span class="token operator">&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">.</span><a href="to-class-or-null.html"><span class="token function"><strike>toClassOrNull</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">loader<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/ClassLoader.html">ClassLoader</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">initialize<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><a href="to-class-or-null.html">T</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Converts a string class name to a concrete class in <a href="to-class-or-null.html">loader</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-638856604%2FFunctions%2F1050610057" anchor-label="toJavaPrimitiveType" id="-638856604%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-java-primitive-type.html"><span>to</span><wbr></wbr><span>Java</span><wbr></wbr><span>Primitive</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-638856604%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="to-java-primitive-type.html"><span class="token function"><strike>toJavaPrimitiveType</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts the current <a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a> to a Java primitive type automatically.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>YukiHookAPI | Apache-2.0 License | Copyright (C) 2019 HighCapable</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

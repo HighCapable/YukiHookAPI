@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>YukiHookPrefsBridge</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+        <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer="defer"></script>
+</head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../../index.html" tabindex="1">
+                    yukihookapi-core
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+1.3.2        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
+                        data-filter=":yukihookapi-core/release">release</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":yukihookapi-core/release"
+                                       data-filter=":yukihookapi-core/release"/>
+                                <span class="checkbox--icon"></span>
+                                release
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    yukihookapi-core
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="yukihookapi-core::com.highcapable.yukihookapi.hook.xposed.prefs/YukiHookPrefsBridge///PointingToDeclaration//1050610057">
+  <div class="breadcrumbs"><a href="../../../index.html">yukihookapi-core</a><span class="delimiter">/</span><a href="../index.html">com.highcapable.yukihookapi.hook.xposed.prefs</a><span class="delimiter">/</span><span class="current">YukiHookPrefsBridge</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Yuki</span><wbr></wbr><span>Hook</span><wbr></wbr><span>Prefs</span><wbr></wbr><span><span>Bridge</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">YukiHookPrefsBridge</a></div><p class="paragraph"><a href="../../com.highcapable.yukihookapi/-yuki-hook-a-p-i/index.html">YukiHookAPI</a> extended storage bridge implementation for <a href="https://developer.android.com/reference/kotlin/android/content/SharedPreferences.html">SharedPreferences</a> and <span data-unresolved-link="de.robv.android.xposed/XSharedPreferences///PointingToDeclaration/">XSharedPreferences</span>.</p><p class="paragraph">Selects the storage object intelligently for different environments.</p><ul><li><p class="paragraph">Shared data storage between the module and host is experimental. It has only been tested under LSPosed. EdXposed should theoretically work but is no longer recommended.</p></li></ul><p class="paragraph">For using <a href="https://developer.android.com/reference/kotlin/androidx/preference/PreferenceFragmentCompat.html">PreferenceFragmentCompat</a> in the module environment, <a href="../../com.highcapable.yukihookapi/-yuki-hook-a-p-i/index.html">YukiHookAPI</a> provides <a href="../../com.highcapable.yukihookapi.hook.xposed.prefs.ui/-module-preference-fragment/index.html">ModulePreferenceFragment</a> with the same functionality.</p><h4 class="tableheader">Parameters</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>context</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the context instance, null by default.</p></div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="1285147465%2FClasslikes%2F1050610057" anchor-label="Editor" id="1285147465%2FClasslikes%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-editor/index.html"><span><span>Editor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1285147465%2FClasslikes%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inner </span><span class="token keyword">class </span><a href="-editor/index.html">Editor</a></div><div class="brief "><p class="paragraph">Storage proxy for <a href="index.html">YukiHookPrefsBridge</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-302036218%2FProperties%2F1050610057" anchor-label="isPreferencesAvailable" id="-302036218%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-preferences-available.html"><span>is</span><wbr></wbr><span>Preferences</span><wbr></wbr><span><span>Available</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-302036218%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-preferences-available.html">isPreferencesAvailable</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Gets the availability state of the current <a href="index.html">YukiHookPrefsBridge</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1681112381%2FProperties%2F1050610057" anchor-label="isRunInNewXShareMode" id="1681112381%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-run-in-new-x-share-mode.html"><span>is</span><wbr></wbr><span>Run</span><wbr></wbr><span>In</span><wbr></wbr><span>New</span><wbr></wbr><span>XShare</span><wbr></wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1681112381%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-run-in-new-x-share-mode.html"><strike>isRunInNewXShareMode</strike></a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether <a href="index.html">YukiHookPrefsBridge</a> is running with the highest EdXposed or LSPosed privileges.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1654356470%2FProperties%2F1050610057" anchor-label="isXSharePrefsReadable" id="-1654356470%2FProperties%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-x-share-prefs-readable.html"><span>is</span><wbr></wbr><span>XShare</span><wbr></wbr><span>Prefs</span><wbr></wbr><span><span>Readable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1654356470%2FProperties%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-x-share-prefs-readable.html"><strike>isXSharePrefsReadable</strike></a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether <span data-unresolved-link="de.robv.android.xposed/XSharedPreferences///PointingToDeclaration/">XSharedPreferences</span> is readable.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-301653544%2FFunctions%2F1050610057" anchor-label="all" id="-301653544%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="all.html"><span><span>all</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-301653544%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="all.html"><span class="token function">all</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Gets all stored key-value data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1900116052%2FFunctions%2F1050610057" anchor-label="clear" id="-1900116052%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear.html"><span><span>clear</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1900116052%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="clear.html"><span class="token function"><strike>clear</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Removes all stored data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1100337164%2FFunctions%2F1050610057" anchor-label="clearCache" id="1100337164%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-cache.html"><span>clear</span><wbr></wbr><span><span>Cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1100337164%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="clear-cache.html"><span class="token function"><strike>clearCache</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Clears key-value data cached in <a href="index.html">YukiHookPrefsBridge</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1248669922%2FFunctions%2F1050610057" anchor-label="contains" id="1248669922%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="contains.html"><span><span>contains</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1248669922%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="contains.html"><span class="token function">contains</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether data for <a href="contains.html">key</a> exists.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1002203608%2FFunctions%2F1050610057" anchor-label="direct" id="1002203608%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="direct.html"><span><span>direct</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1002203608%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="direct.html"><span class="token function"><strike>direct</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">YukiHookPrefsBridge</a></div><div class="brief "><p class="paragraph">Reads key-value data directly without using the cache.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-996302358%2FFunctions%2F1050610057" anchor-label="edit" id="-996302358%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="edit.html"><span><span>edit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-996302358%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="edit.html"><span class="token function">edit</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-editor/index.html">YukiHookPrefsBridge.Editor</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="edit.html"><span class="token function">edit</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initiate<span class="token operator">: </span><a href="-editor/index.html">YukiHookPrefsBridge.Editor</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a new <a href="-editor/index.html">Editor</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1236534776%2FFunctions%2F1050610057" anchor-label="get" id="-1236534776%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get.html"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1236534776%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator">&gt; </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prefs<span class="token operator">: </span><a href="../../com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data/index.html">PrefsData</a><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="get.html">T</a><span class="token operator"> = </span>prefs.value</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="get.html">T</a></div><div class="brief "><p class="paragraph">Gets a value of the specified type intelligently.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-515316369%2FFunctions%2F1050610057" anchor-label="getBoolean" id="-515316369%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-boolean.html"><span>get</span><wbr></wbr><span><span>Boolean</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-515316369%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-boolean.html"><span class="token function">getBoolean</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Gets a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2018561529%2FFunctions%2F1050610057" anchor-label="getFloat" id="-2018561529%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-float.html"><span>get</span><wbr></wbr><span><span>Float</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2018561529%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-float.html"><span class="token function">getFloat</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">0.0f</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Gets a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1616727839%2FFunctions%2F1050610057" anchor-label="getInt" id="-1616727839%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-int.html"><span>get</span><wbr></wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1616727839%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-int.html"><span class="token function">getInt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Gets an <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="97503383%2FFunctions%2F1050610057" anchor-label="getLong" id="97503383%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-long.html"><span>get</span><wbr></wbr><span><span>Long</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="97503383%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-long.html"><span class="token function">getLong</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Gets a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="252451191%2FFunctions%2F1050610057" anchor-label="getString" id="252451191%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-string.html"><span>get</span><wbr></wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="252451191%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-string.html"><span class="token function">getString</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Gets a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1694808253%2FFunctions%2F1050610057" anchor-label="getStringSet" id="-1694808253%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-string-set.html"><span>get</span><wbr></wbr><span>String</span><wbr></wbr><span><span>Set</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1694808253%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-string-set.html"><span class="token function">getStringSet</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>mutableSetOf()</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Gets a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/index.html">Set</a> of <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a> values.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-832458162%2FFunctions%2F1050610057" anchor-label="name" id="-832458162%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="name.html"><span><span>name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-832458162%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="name.html"><span class="token function">name</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">YukiHookPrefsBridge</a></div><div class="brief "><p class="paragraph">Customizes the SharedPreferences storage name.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1117463914%2FFunctions%2F1050610057" anchor-label="native" id="1117463914%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="native.html"><span><span>native</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1117463914%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="native.html"><span class="token function">native</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">YukiHookPrefsBridge</a></div><div class="brief "><p class="paragraph">Ignores the current environment and uses <a href="../../com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper/-module-context-theme-wrapper/index.html#-379980348%2FFunctions%2F1050610057">Context.getSharedPreferences</a> directly to access data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-995160831%2FFunctions%2F1050610057" anchor-label="put" id="-995160831%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put.html"><span><span>put</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-995160831%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="put.html">T</a><span class="token operator">&gt; </span><a href="put.html"><span class="token function"><strike>put</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prefs<span class="token operator">: </span><a href="../../com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data/index.html">PrefsData</a><span class="token operator">&lt;</span><a href="put.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="put.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Stores a value of the specified type intelligently.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1254390360%2FFunctions%2F1050610057" anchor-label="putBoolean" id="-1254390360%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put-boolean.html"><span>put</span><wbr></wbr><span><span>Boolean</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1254390360%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="put-boolean.html"><span class="token function"><strike>putBoolean</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Stores a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-320547136%2FFunctions%2F1050610057" anchor-label="putFloat" id="-320547136%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put-float.html"><span>put</span><wbr></wbr><span><span>Float</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-320547136%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="put-float.html"><span class="token function"><strike>putFloat</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Stores a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1252943334%2FFunctions%2F1050610057" anchor-label="putInt" id="-1252943334%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put-int.html"><span>put</span><wbr></wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1252943334%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="put-int.html"><span class="token function"><strike>putInt</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Stores an <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1802061712%2FFunctions%2F1050610057" anchor-label="putLong" id="1802061712%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put-long.html"><span>put</span><wbr></wbr><span><span>Long</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1802061712%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="put-long.html"><span class="token function"><strike>putLong</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Stores a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-43289616%2FFunctions%2F1050610057" anchor-label="putString" id="-43289616%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put-string.html"><span>put</span><wbr></wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-43289616%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="put-string.html"><span class="token function"><strike>putString</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Stores a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-123721430%2FFunctions%2F1050610057" anchor-label="putStringSet" id="-123721430%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put-string-set.html"><span>put</span><wbr></wbr><span>String</span><wbr></wbr><span><span>Set</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-123721430%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="put-string-set.html"><span class="token function"><strike>putStringSet</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Stores a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/index.html">Set</a> of <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a> values.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2114923466%2FFunctions%2F1050610057" anchor-label="remove" id="2114923466%2FFunctions%2F1050610057" data-filterable-set=":yukihookapi-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":yukihookapi-core/release" data-filterable-set=":yukihookapi-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove.html"><span><span>remove</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2114923466%2FFunctions%2F1050610057"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":yukihookapi-core/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="remove.html">T</a><span class="token operator">&gt; </span><a href="remove.html"><span class="token function"><strike>remove</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prefs<span class="token operator">: </span><a href="../../com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data/index.html">PrefsData</a><span class="token operator">&lt;</span><a href="remove.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Removes the stored data for <a href="../../com.highcapable.yukihookapi.hook.xposed.prefs.data/-prefs-data/key.html">PrefsData.key</a>.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="remove.html"><span class="token function"><strike>remove</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Removes all stored data containing <a href="remove.html">key</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>YukiHookAPI | Apache-2.0 License | Copyright (C) 2019 HighCapable</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
