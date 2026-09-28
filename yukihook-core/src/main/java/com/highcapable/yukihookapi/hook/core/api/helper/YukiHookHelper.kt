@@ -47,7 +47,7 @@ internal object YukiHookHelper {
      * @return [Boolean] whether deoptimization succeeded.
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun deoptimize(member: Member) = YukiHookBridge.deoptimize(member)
+    fun deoptimize(member: Member) = YukiHookBridge.hookRegistration.deoptimize(member)
 
     /**
      * Hooks a [HookPoint].
@@ -57,7 +57,7 @@ internal object YukiHookHelper {
      * @return [YukiHookResult]
      */
     fun hook(target: HookPoint, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT): YukiHookResult {
-        val hook = YukiHookBridge.hook(
+        val hook = YukiHookBridge.hookRegistration.hook(
             target = target,
             priority = when (priority) {
                 YukiHookPriority.DEFAULT -> DEFAULT_PRIORITY
@@ -89,7 +89,7 @@ internal object YukiHookHelper {
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
     fun replace(registration: YukiHookResult, hooker: HookerBridge) = YukiHookResult.from(
         target = registration.target, 
-        hooker = YukiHookBridge.replace(registration.hooker, hooker)
+        hooker = YukiHookBridge.hookRegistration.replace(registration.hooker, hooker)
     )
 
     /**

@@ -1,5 +1,5 @@
 /*
- * YukiHook - A modern hook API and Xposed module solution.
+ * YukiHook - A modern Hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
  * https://github.com/HighCapable/YukiHook
  *
@@ -17,9 +17,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This file is created by fankes on 2026/9/6.
+ * This file is created by fankes on 2026/9/27.
  */
-package com.highcapable.yukihookapi.runtime.libxposed.entry
+package com.highcapable.yukihookapi.runtime.libxposed.entry.base
 
 import androidx.annotation.RequiresApi
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
@@ -30,38 +30,48 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 
 /**
- * LibXposed entry base used by KSP, native lifecycle details stay in this runtime.
+ * Common LibXposed entry base used by KSP, native lifecycle details stay in this runtime.
  */
-abstract class LibXposedEntry : XposedModule() {
+abstract class BaseLibXposedEntry : XposedModule() {
 
     private companion object {
         const val FRAMEWORK_PACKAGE_NAME = "android"
     }
 
+    /** Whether the user's entry initialized successfully. */
+    protected var initialized = false
+
+    /** Current process name supplied by the framework. */
+    protected var processName = ""
+
     /** Creates the user's entry only after the framework interface has been attached. */
     protected abstract fun createHookEntry(): YukiHookXposedModule
 
-    private var initialized = false
-    private var processName = ""
+    /** Attaches the runtime before loading the user's entry. */
+    protected open fun attachRuntime() = LibXposedHookApi(this).attach()
 
-    final override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
-        LibXposedHookApi(this).attach()
-
+    /** Parses the process name from the framework parameter. */
+    protected fun parseProcessName(param: XposedModuleInterface.ModuleLoadedParam) {
         processName = param.processName
             // Removes transport padding and trailing replacement characters from a process name.
             .substringBefore('\u0000')
             .trimEnd('\uFFFD')
+    }
 
+    final override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
+        attachRuntime()
+
+        parseProcessName(param)
         initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo)
         YukiLibXposedEvent.moduleLoaded?.invoke(this, param)
     }
 
     @RequiresApi(29)
-    final override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) {
+    final override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
         YukiLibXposedEvent.packageLoaded?.invoke(this, param)
     }
 
-    final override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
+    final override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
         if (initialized) YukiHookModuleCaller.callOnPackageLoaded(
             packageName = param.packageName,
             processName = processName,
@@ -74,7 +84,7 @@ abstract class LibXposedEntry : XposedModule() {
         YukiLibXposedEvent.packageReady?.invoke(this, param)
     }
 
-    final override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) {
+    final override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
         if (initialized) YukiHookModuleCaller.callOnSystemServerStarting(
             packageName = FRAMEWORK_PACKAGE_NAME,
             processName = processName,

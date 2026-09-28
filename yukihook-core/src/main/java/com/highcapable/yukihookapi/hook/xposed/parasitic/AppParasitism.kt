@@ -27,6 +27,7 @@ package com.highcapable.yukihookapi.hook.xposed.parasitic
 import android.app.Activity
 import android.app.Application
 import android.app.Instrumentation
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -59,8 +60,10 @@ import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassR
 import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleReloadable
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.config.ActivityProxyConfig
@@ -68,6 +71,8 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.proxy.ModuleAc
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
+import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
+import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
 /**
@@ -75,13 +80,46 @@ import kotlin.reflect.KClass
  *
  * These features provide [Resources] injection and [Activity] proxies for host environment.
  */
-internal object AppParasitism {
+internal object AppParasitism : ModuleReloadable {
+
+    const val RELOAD_ID = "host"
 
     /** The Android framework package name. */
     const val FRAMEWORK_PACKAGE_NAME = "android"
 
-    /** Whether [YukiHookDataChannel] has been registered. */
-    private var isDataChannelRegistered = false
+    override val requiresMainThread = true
+
+    private var events = ModuleEventDispatcher()
+
+    /**
+     * Host values retained across module instances.
+     */
+    data class HostBindingsState(
+        val packageName: String,
+        val proxyClassName: String?,
+        val hadApplication: Boolean
+    ) {
+
+        companion object : ModuleStateSpec<HostBindingsState> {
+
+            override fun encode(state: HostBindingsState) = arrayOf<Any?>(
+                state.packageName, state.proxyClassName, state.hadApplication
+            )
+
+            override fun decode(encoded: Any?): HostBindingsState {
+                val values = encoded as? Array<*> ?: error("Missing host service reload state.")
+                check(values.size == 3) {
+                    "Invalid host service reload state."
+                }
+
+                return HostBindingsState(
+                    packageName = values[0] as String,
+                    proxyClassName = values[1] as? String,
+                    hadApplication = (values[2] as? Boolean) == true
+                )
+            }
+        }
+    }
 
     /** Whether the [Activity] proxy has been registered. */
     private var isActivityProxyRegistered = false
@@ -95,12 +133,24 @@ internal object AppParasitism {
     /** Whether system server initialization is waiting for the main looper. */
     private var isSystemServerInitializationPending = false
 
+    /** Saved host bindings waiting for this module instance's lifecycle declarations. */
+    private var pendingHostBindings: HostBindingsState? = null
+
     /** Lifecycle callbacks for the current host. */
     @Volatile
     private var lifecycles = emptyList<AppLifecycleBridge>()
 
     /** Lifecycle callbacks that have already received the host [Application]. */
     private val initializedLifecycles = mutableSetOf<AppLifecycleBridge>()
+
+    /** Broadcast receivers registered for the current module instance. */
+    private val lifecycleReceivers = mutableListOf<Pair<Context, BroadcastReceiver>>()
+
+    /** Module activities tracked until they are destroyed. */
+    private val moduleActivities = mutableListOf<WeakReference<Activity>>()
+
+    /** Main-thread handler for delayed system server initialization. */
+    private val lifecycleHandler by lazy { Handler(Looper.getMainLooper()) }
 
     /** Package owning the first [Application] in this process. */
     private var lifecyclePackageName = ""
@@ -237,19 +287,21 @@ internal object AppParasitism {
     /**
      * Registers lifecycle callbacks for the first [Application] in this process.
      * @param packageName the package owning the [Application].
-     * @param lifecycle the lifecycle callbacks.
      * @param entryType the current hook entry type.
+     * @param build creates the lifecycle callbacks while this session accepts work.
      */
-    @Synchronized
-    fun registerAppLifecycle(packageName: String, lifecycle: AppLifecycleBridge, entryType: HookEntryType) {
-        if (YukiHook.isStandalone) return
+    fun registerAppLifecycle(packageName: String, entryType: HookEntryType, build: () -> AppLifecycleBridge) = events.use {
+        val lifecycle = build()
+        if (YukiHook.isStandalone) return@use
 
-        prepareLifecyclePackage(packageName)
-        lifecycles += lifecycle
+        synchronized(this) {
+            prepareLifecyclePackage(packageName)
+            lifecycles += lifecycle
 
-        installAppLifecycleHooks()
-        installApplicationOnCreateHook()
-        if (entryType == HookEntryType.SYSTEM_SERVER) scheduleSystemServerInitialization()
+            installAppLifecycleHooks()
+            installApplicationOnCreateHook()
+            if (entryType == HookEntryType.SYSTEM_SERVER && pendingHostBindings == null) scheduleSystemServerInitialization()
+        }
     }
 
     /**
@@ -261,8 +313,8 @@ internal object AppParasitism {
     fun prepareHostApplication(packageName: String, entryType: HookEntryType) {
         prepareLifecyclePackage(packageName)
 
-        if (YukiHook.Config.dataChannel) installApplicationOnCreateHook()
-        if (entryType == HookEntryType.SYSTEM_SERVER) scheduleSystemServerInitialization()
+        if (YukiHook.Config.dataChannel || events.isManaged) installApplicationOnCreateHook()
+        if (entryType == HookEntryType.SYSTEM_SERVER && pendingHostBindings == null) scheduleSystemServerInitialization()
     }
 
     /**
@@ -337,6 +389,7 @@ internal object AppParasitism {
             isAppLifecycleInstalled = true
         }.onFailure {
             hooked.forEach { result -> result.remove() }
+            events.reportFailure(it)
             YLog.innerE("App lifecycle initialization failed", it)
         }
     }
@@ -361,41 +414,52 @@ internal object AppParasitism {
             )
 
             isApplicationOnCreateInstalled = true
-        }.onFailure { YLog.innerE("Application onCreate initialization failed", it) }
+        }.onFailure {
+            events.reportFailure(it)
+            YLog.innerE("Application onCreate initialization failed", it)
+        }
     }
 
     /**
      * Initializes host-dependent features when the host [Application] is available.
      * @param application the host [Application].
      */
-    private fun initializeHostApplication(application: Application): Throwable? {
+    private fun initializeHostApplication(application: Application) = bindHostApplication(application, dispatchCreate = true).also {
+        YukiHookDataChannel.get().registerToHost(application)
+    }
+
+    /** Binds listeners to an existing [Application], only a real creation event dispatches `onCreate`. */
+    private fun bindHostApplication(application: Application, dispatchCreate: Boolean): Throwable? {
         hostApplication = application
 
         val pendingLifecycles = synchronized(this) {
             lifecycles.filter { initializedLifecycles.add(it) }
         }
-        val failureToHost = pendingLifecycles.dispatchAppLifecycle {
-            onCreate(application)
+        return pendingLifecycles.dispatchAppLifecycle {
+            if (dispatchCreate) onCreate(application)
 
             receiverActions.forEach { (actions, callback) ->
                 application.registerReceiver(
                     filter = IntentFilter().apply { actions.forEach { action -> addAction(action) } },
                     exported = true
-                ) { context, intent -> callback(context, intent) }
+                ) { context, intent ->
+                    events.dispatch { callback(context, intent) }
+                }.also { synchronized(lifecycleReceivers) { lifecycleReceivers += application to it } }
             }
             receiverFilters.forEach { (filter, callback) ->
                 application.registerReceiver(filter = filter, exported = true) { context, intent ->
-                    callback(context, intent)
-                }
+                    events.dispatch { callback(context, intent) }
+                }.also { synchronized(lifecycleReceivers) { lifecycleReceivers += application to it } }
             }
         }
+    }
 
-        if (YukiHook.Config.dataChannel && !isDataChannelRegistered) runCatching {
-            YukiHookDataChannel.get().register(application, lifecyclePackageName)
-            isDataChannelRegistered = true
-        }.onFailure { YLog.innerE("Data channel initialization failed", it) }
-
-        return failureToHost
+    /**
+     * Runs an operation with the host [Application] already bound to this module instance.
+     * @param block the operation to run with the host [Application].
+     */
+    inline fun withHostApplication(block: (Application) -> Unit) {
+        hostApplication?.let(block)
     }
 
     /** Schedules system server initialization after its services finish starting. */
@@ -404,9 +468,11 @@ internal object AppParasitism {
         if (isSystemServerInitializationPending) return
 
         isSystemServerInitializationPending = true
-        Handler(Looper.getMainLooper()).post {
-            synchronized(this) { isSystemServerInitializationPending = false }
-            initializeReadyHostApplication()
+        lifecycleHandler.post {
+            events.dispatch {
+                synchronized(this) { isSystemServerInitializationPending = false }
+                initializeReadyHostApplication()
+            }
         }
     }
 
@@ -432,6 +498,7 @@ internal object AppParasitism {
         var failureToHost: Throwable? = null
         forEach { lifecycle ->
             runCatching { lifecycle.callback() }.onFailure { failure ->
+                events.reportFailure(failure)
                 if (lifecycle.throwToHostOnFailure) {
                     if (failureToHost == null) failureToHost = failure
                 } else YLog.innerE("An exception occurred during AppLifecycle event", e = failure)
@@ -577,12 +644,17 @@ internal object AppParasitism {
             // Resolve each overload separately so a custom `Instrumentation` can override only one of them.
             YukiHookHelper.hook(newActivityResolver, object : ClassicHookerBridge {
                 override fun afterHookedMember(param: ClassicHookerBridge.Param) {
-                    if (param.instance !== instrumentation || param.throwable == null) return
-                    val className = param.args[1] as? String ?: return
+                    if (param.instance !== instrumentation) return
+                    if (param.throwable != null) {
+                        val className = param.args[1] as? String ?: return
+                        className.toModuleActivityClassOrNull()
+                            ?.createInstanceAsTypeOrNull<Activity>()
+                            ?.let { param.result = it }
+                    }
 
-                    className.toModuleActivityClassOrNull()
-                        ?.createInstanceAsTypeOrNull<Activity>()
-                        ?.let { param.result = it }
+                    // Track construction, not just onCreate: reload can arrive between the two.
+                    val activity = param.result as? Activity
+                    if (events.isManaged && activity is ModuleActivity) moduleActivities += WeakReference(activity)
                 }
             }).let(hooked::add)
             callActivityOnCreateResolvers.forEach { resolver ->
@@ -628,6 +700,65 @@ internal object AppParasitism {
         }.onFailure {
             hooked.forEach { result -> result.remove() }
             YLog.innerE("Activity proxy initialization failed because got an exception", it)
+            events.reportFailure(it)
         }
     }
+
+    override fun onAttach(events: ModuleEventDispatcher) {
+        this.events = events
+    }
+
+    override fun onPrepareReload() {
+        moduleActivities.removeAll { it.get()?.isDestroyed != false }
+        check(moduleActivities.isEmpty()) {
+            "Close module activities in the host before reloading."
+        }
+    }
+
+    override fun onSaveState() = HostBindingsState.encode(
+        HostBindingsState(
+            packageName = lifecyclePackageName,
+            proxyClassName = if (isActivityProxyRegistered) ActivityProxyConfig.proxyClassName else null,
+            hadApplication = hostApplication != null
+        )
+    )
+
+    override fun onDispose() {
+        lifecycleHandler.removeCallbacksAndMessages(null)
+
+        val receivers = synchronized(lifecycleReceivers) {
+            lifecycleReceivers.toList().also { lifecycleReceivers.clear() }
+        }
+
+        var failure: Throwable? = null
+        receivers.forEach { (context, receiver) ->
+            runCatching { context.unregisterReceiver(receiver) }.onFailure {
+                if (failure == null) failure = it else failure.addSuppressed(it)
+            }
+        }
+
+        lifecycles = emptyList()
+        synchronized(this) { initializedLifecycles.clear() }
+        hostApplication = null
+        moduleActivities.clear()
+        failure?.let { throw it }
+    }
+
+    override fun onPrepareRestore(appInfo: ApplicationInfo, state: Any?) {
+        pendingHostBindings = HostBindingsState.decode(state)
+    }
+
+    override fun onRestoreState(appInfo: ApplicationInfo, state: Any?) = runCatching {
+        val saved = checkNotNull(pendingHostBindings) {
+            "Host service bindings were not prepared."
+        }
+
+        prepareLifecyclePackage(saved.packageName)
+
+        val application = currentApplication?.takeIf { it.packageName == lifecyclePackageName }
+        if (saved.hadApplication && application != null)
+            bindHostApplication(application, dispatchCreate = false)?.let(events::reportFailure)
+        if (AndroidVersion.isAtLeast(AndroidVersion.N) && saved.proxyClassName != null && application != null)
+            registerModuleActivities(application, saved.proxyClassName)
+    }.also { pendingHostBindings = null }.getOrThrow()
 }

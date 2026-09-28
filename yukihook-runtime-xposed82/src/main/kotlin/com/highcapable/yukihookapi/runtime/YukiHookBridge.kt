@@ -30,15 +30,11 @@ import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import com.highcapable.yukihookapi.runtime.bridge.ModuleScopeBridge
 import com.highcapable.yukihookapi.runtime.bridge.SharedFilesBridge
-import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
-import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
-import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
-import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
+import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadBridge
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82ExecutableInvoker
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82HookApi
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82ModuleStatus
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82Preferences
-import java.lang.reflect.Member
 
 /**
  * The core bridge for the `YukiHook` runtime for `yukihook-runtime-xposed82`.
@@ -62,7 +58,10 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val frameworkVersionCode get() = if (attached) 0L else Xposed82ModuleStatus.frameworkVersionCode
 
     override val moduleScope: ModuleScopeBridge get() = throw UnsupportedOperationException("Module scope is unavailable in Xposed API 82.")
+    override val moduleReload: ModuleReloadBridge get() = throw UnsupportedOperationException("Module reload is unavailable in Xposed API 82.")
+
     override val executableInvoker get() = if (attached) Xposed82ExecutableInvoker else error("Xposed API is not attached to this process.")
+    override val hookRegistration get() = Xposed82HookApi
 
     fun attach() {
         attached = true
@@ -79,28 +78,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge =
         throw UnsupportedOperationException("Shared files are unavailable in Xposed API 82.")
-
-    override fun deoptimize(member: Member): Boolean =
-        throw UnsupportedOperationException("Method deoptimization is unavailable in Xposed API 82.")
-
-    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
-        if (hooker !is ClassicHookerBridge && hooker !is ChainHookerBridge)
-            throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}.")
-
-        check(attached) {
-            "Xposed API is not attached to this process."
-        }
-
-        return when (target) {
-            is HookPoint.Executable -> Xposed82HookApi.hookMember(target.value, priority, hooker)
-            is HookPoint.Initializer -> throw UnsupportedOperationException(
-                "Static initializer hooks are unavailable in Xposed API 82."
-            )
-        }
-    }
-
-    override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge =
-        throw UnsupportedOperationException("Atomic hook replacement is unavailable in Xposed API 82.")
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
         if (attached)

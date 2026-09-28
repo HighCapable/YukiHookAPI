@@ -40,7 +40,7 @@ import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.param.context.PackageContext
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
@@ -62,9 +62,9 @@ import com.highcapable.kavaref.extension.toClassOrNull as toClassOrNullGlobal
 
 /**
  * Target app entry object implementation for hooking.
- * @param wrapper the parameter wrapper instance for [PackageParam], null by default.
+ * @param context the package context for [PackageParam], null by default.
  */
-open class PackageParam internal constructor(internal var wrapper: PackageParamWrapper? = null) {
+open class PackageParam internal constructor(internal var context: PackageContext? = null) {
 
     /** The currently configured [ClassLoader]. */
     private var currentClassLoader: ClassLoader? = null
@@ -116,7 +116,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [ClassLoader] or null.
      */
     var hostClassLoader
-        get() = currentClassLoader ?: wrapper?.appClassLoader ?: AppParasitism.currentApplication?.classLoader
+        get() = currentClassLoader ?: context?.classLoader ?: AppParasitism.currentApplication?.classLoader
         set(value) {
             currentClassLoader = value
         }
@@ -125,7 +125,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * Gets the [ApplicationInfo] of the current host.
      * @return [ApplicationInfo]
      */
-    val appInfo get() = wrapper?.appInfo ?: AppParasitism.currentApplicationInfo ?: ApplicationInfo()
+    val appInfo get() = context?.appInfo ?: AppParasitism.currentApplicationInfo ?: ApplicationInfo()
 
     /**
      * Gets the user ID of the current host.
@@ -156,27 +156,27 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * The default process name is [packageName].
      * @return [String]
      */
-    val processName get() = wrapper?.processName ?: AppParasitism.currentProcessName
+    val processName get() = context?.processName ?: AppParasitism.currentProcessName
 
     /**
      * Gets the package name of the current host.
      * @return [String]
      */
-    val packageName get() = wrapper?.packageName ?: AppParasitism.currentPackageName
+    val packageName get() = context?.packageName ?: AppParasitism.currentPackageName
 
     /**
      * Whether the current host is the first [Application].
      * @return [Boolean]
      */
-    val isFirstApplication get() = wrapper?.isFirstApplication ?: false
+    val isFirstApplication get() = context?.isFirstApplication ?: false
 
     /**
      * Gets the main process name of the current host.
      *
-     * The runtime supplies the system process identity during [loadSystem]; otherwise this corresponds to [packageName].
+     * The runtime supplies the system process identity during [loadSystem], otherwise this corresponds to [packageName].
      * @return [String]
      */
-    val mainProcessName get() = wrapper?.mainProcessName ?: packageName.trim()
+    val mainProcessName get() = context?.mainProcessName ?: packageName.trim()
 
     /**
      * Gets the [ModuleSpec] of the current Xposed module.
@@ -218,18 +218,18 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @return [YukiHookDataChannel.Namespace]
      * @throws IllegalStateException if loaded in [HookEntryType.ZYGOTE].
      */
-    val dataChannel get() = if (wrapper?.type != HookEntryType.ZYGOTE)
+    val dataChannel get() = if (context?.type != HookEntryType.ZYGOTE)
         YukiHookDataChannel.get().namespace(packageName = packageName)
     else error("YukiHookDataChannel cannot used in zygote events, please use it in loadApp or loadSystem.")
 
     /**
-     * Binds the [PackageParamWrapper] to the current [PackageParam].
-     * @param wrapper the parameter wrapper instance for [PackageParam].
+     * Binds the [PackageContext] to the current [PackageParam].
+     * @param context the package context for [PackageParam].
      * @return [PackageParam]
      */
-    internal fun bind(wrapper: PackageParamWrapper?): PackageParam {
+    internal fun bind(context: PackageContext?): PackageParam {
         currentClassLoader = null
-        this.wrapper = wrapper
+        this.context = context
         return this
     }
 
@@ -243,7 +243,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param block the lifecycle block.
      */
     fun registerAppLifecycle(throwToHostOnFailure: Boolean = true, block: AppLifecycle.() -> Unit) {
-        val current = wrapper ?: return
+        val current = context ?: return
         if (current.isFirstApplication) AppLifecycle.register(
             packageName = packageName,
             throwToHostOnFailure = throwToHostOnFailure,
@@ -259,7 +259,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param block the param block.
      */
     fun loadApp(name: String, block: PackageParam.() -> Unit) {
-        if (wrapper?.type != HookEntryType.ZYGOTE && (wrapper?.matchesPackage(name) == true || name.isBlank())) block(this)
+        if (context?.type != HookEntryType.ZYGOTE && (context?.matchesPackage(name) == true || name.isBlank())) block(this)
     }
 
     /**
@@ -270,7 +270,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      */
     fun loadApp(vararg name: String, block: PackageParam.() -> Unit) {
         if (name.isEmpty()) return loadApp(block = block)
-        if (wrapper?.type != HookEntryType.ZYGOTE && name.any { wrapper?.matchesPackage(it) == true }) block(this)
+        if (context?.type != HookEntryType.ZYGOTE && name.any { context?.matchesPackage(it) == true }) block(this)
     }
 
     /**
@@ -280,7 +280,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param hookers the hookers.
      */
     fun loadApp(name: String, hookers: YukiBaseHooker) {
-        if (wrapper?.type != HookEntryType.ZYGOTE && (wrapper?.matchesPackage(name) == true || name.isBlank())) loadHooker(hookers)
+        if (context?.type != HookEntryType.ZYGOTE && (context?.matchesPackage(name) == true || name.isBlank())) loadHooker(hookers)
     }
 
     /**
@@ -294,8 +294,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             "loadApp function required \"hookers\" param."
         }
 
-        if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (wrapper?.matchesPackage(name) == true || name.isBlank())
+        if (context?.type != HookEntryType.ZYGOTE &&
+            (context?.matchesPackage(name) == true || name.isBlank())
         ) hookers.forEach { loadHooker(it) }
     }
 
@@ -306,8 +306,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param block the param block.
      */
     fun loadApp(excludeSelf: Boolean = false, block: PackageParam.() -> Unit) {
-        if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || wrapper?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
+        if (context?.type != HookEntryType.ZYGOTE &&
+            (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
         ) block(this)
     }
 
@@ -318,8 +318,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param hooker the hooker.
      */
     fun loadApp(excludeSelf: Boolean = false, hooker: YukiBaseHooker) {
-        if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || wrapper?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
+        if (context?.type != HookEntryType.ZYGOTE &&
+            (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
         ) loadHooker(hooker)
     }
 
@@ -334,8 +334,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             "loadApp function required \"hookers\" param."
         }
 
-        if (wrapper?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || wrapper?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
+        if (context?.type != HookEntryType.ZYGOTE &&
+            (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
         ) hookers.forEach { loadHooker(it) }
     }
 
@@ -345,7 +345,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param block the param block.
      */
     fun loadSystem(block: PackageParam.() -> Unit) {
-        if (wrapper?.type == HookEntryType.SYSTEM_SERVER) block(this)
+        if (context?.type == HookEntryType.SYSTEM_SERVER) block(this)
     }
 
     /**
@@ -354,7 +354,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * @param hooker the hooker.
      */
     fun loadSystem(hooker: YukiBaseHooker) {
-        if (wrapper?.type == HookEntryType.SYSTEM_SERVER) loadHooker(hooker)
+        if (context?.type == HookEntryType.SYSTEM_SERVER) loadHooker(hooker)
     }
 
     /**
@@ -367,7 +367,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             "loadSystem function required \"hookers\" param."
         }
 
-        if (wrapper?.type == HookEntryType.SYSTEM_SERVER) hookers.forEach { loadHooker(it) }
+        if (context?.type == HookEntryType.SYSTEM_SERVER) hookers.forEach { loadHooker(it) }
     }
 
     /**
@@ -383,7 +383,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(block: PackageParam.() -> Unit) {
-        if (wrapper?.type == HookEntryType.ZYGOTE) block(this)
+        if (context?.type == HookEntryType.ZYGOTE) block(this)
     }
 
     /**
@@ -399,7 +399,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(hooker: YukiBaseHooker) {
-        if (wrapper?.type == HookEntryType.ZYGOTE) loadHooker(hooker)
+        if (context?.type == HookEntryType.ZYGOTE) loadHooker(hooker)
     }
 
     /**
@@ -419,7 +419,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             "loadZygote function required \"hookers\" param."
         }
 
-        if (wrapper?.type == HookEntryType.ZYGOTE) hookers.forEach { loadHooker(it) }
+        if (context?.type == HookEntryType.ZYGOTE) hookers.forEach { loadHooker(it) }
     }
 
     /**
@@ -868,7 +868,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct chain hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
@@ -885,7 +885,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct chain hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
@@ -901,7 +901,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct chain hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
@@ -919,7 +919,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct chain hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
@@ -1112,7 +1112,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
@@ -1125,7 +1125,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
@@ -1142,7 +1142,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
@@ -1155,7 +1155,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
@@ -1171,7 +1171,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
@@ -1185,7 +1185,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - Obtain every class without initializing it. An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
@@ -1203,7 +1203,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
@@ -1217,7 +1217,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently; this operation is not atomic.
+     * - Each class is registered independently, this operation is not atomic.
      * - An already initialized class never invokes this hook.
      * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
@@ -1409,15 +1409,9 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
      * Lifecycle instance handler for the current host.
      *
      * - Use [registerAppLifecycle] to obtain [AppLifecycle].
-     * @param packageName the package name of the current host.
      * @param throwToHostOnFailure whether to throw exceptions to the host when they occur.
-     * @param entryType the current hook entry type.
      */
-    class AppLifecycle private constructor(
-        private val packageName: String,
-        private val throwToHostOnFailure: Boolean,
-        private val entryType: HookEntryType
-    ) {
+    class AppLifecycle private constructor(private val throwToHostOnFailure: Boolean) {
 
         internal companion object {
 
@@ -1432,7 +1426,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
                 throwToHostOnFailure: Boolean,
                 entryType: HookEntryType,
                 block: AppLifecycle.() -> Unit
-            ) = AppLifecycle(packageName, throwToHostOnFailure, entryType).apply(block).build()
+            ) = AppParasitism.registerAppLifecycle(packageName, entryType, AppLifecycle(throwToHostOnFailure).apply(block)::build)
         }
 
         private var attachBaseContextCallback: ((Context, Boolean) -> Unit)? = null
@@ -1511,7 +1505,7 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             onReceiverFiltersCallbacks += filter to callback
         }
 
-        private fun build() = AppParasitism.registerAppLifecycle(packageName, object : AppLifecycleBridge {
+        private fun build() = object : AppLifecycleBridge {
 
             override val throwToHostOnFailure = this@AppLifecycle.throwToHostOnFailure
             override val receiverActions = this@AppLifecycle.onReceiverActionsCallbacks
@@ -1540,8 +1534,8 @@ open class PackageParam internal constructor(internal var wrapper: PackageParamW
             override fun onConfigurationChanged(application: Application, config: Configuration) {
                 onConfigurationChangedCallback?.invoke(application, config)
             }
-        }, entryType)
+        }
     }
 
-    override fun toString() = "PackageParam(${super.toString()}) by $wrapper"
+    override fun toString() = "PackageParam(${super.toString()}) by $context"
 }

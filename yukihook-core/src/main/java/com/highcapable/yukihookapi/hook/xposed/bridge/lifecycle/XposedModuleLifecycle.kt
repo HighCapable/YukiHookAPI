@@ -22,10 +22,12 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle
 
 import android.content.pm.ApplicationInfo
+import android.os.Bundle
+import com.highcapable.yukihookapi.hook.xposed.bridge.session.state.ModuleHandoffState
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
- * Defines the Xposed module loading lifecycle.
+ * Defines the Xposed module loading and reload lifecycle.
  */
 internal interface XposedModuleLifecycle {
 
@@ -36,9 +38,6 @@ internal interface XposedModuleLifecycle {
      * @param appInfo the current Xposed module [ApplicationInfo], or null when unavailable.
      */
     fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?)
-
-    /** Called when the Xposed module finishes loading. */
-    fun onFinishLoadModule()
 
     /**
      * Called when an available host starts loading.
@@ -61,4 +60,42 @@ internal interface XposedModuleLifecycle {
         appClassLoader: ClassLoader,
         appInfo: ApplicationInfo? = null
     )
+
+    /**
+     * Saves the old module instance and retires it when the runtime accepts the handoff.
+     * @param extras the extras supplied by the runtime, or null when unavailable.
+     * @param saveState a lambda to save the old module instance's state, returning true if successful, false otherwise.
+     * @return [Boolean]
+     */
+    fun onPrepareReloadModule(extras: Bundle?, saveState: (Any) -> Boolean): Boolean
+
+    /**
+     * Restores component prerequisites before creating the new entry.
+     * @param appInfo the new Xposed module application info.
+     * @param state the old module instance's state, or null when unavailable.
+     * @return [ModuleHandoffState]
+     */
+    fun onBeginRestoreModule(appInfo: ApplicationInfo, state: Any?): ModuleHandoffState
+
+    /**
+     * Restores user state after onInit and before `onHook`.
+     * @param state the old user state.
+     */
+    fun onRestoreUserState(state: ModuleHandoffState)
+
+    /**
+     * Restores component registrations after `onHook`.
+     * @param appInfo the new Xposed module application info.
+     * @param state the old user state.
+     */
+    fun onRestoreComponents(appInfo: ApplicationInfo, state: ModuleHandoffState)
+
+    /**
+     * Finishes restoring the new module instance and reports collected failures.
+     * @param extras additional data supplied by the runtime.
+     */
+    fun onFinishRestoreModule(extras: Bundle?)
+
+    /** Aborts failure collection after an unrecoverable restore error. */
+    fun onAbortRestoreModule()
 }

@@ -29,13 +29,12 @@ import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
-import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
-import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
+import com.highcapable.yukihookapi.runtime.libxposed.LibXposedModuleReload
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedModuleScope
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedPreferences
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedService
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedSharedFiles
-import java.lang.reflect.Member
 
 /**
  * The core bridge for the `YukiHook` runtime for `yukihook-runtime-libxposed`.
@@ -50,9 +49,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
         val frameworkVersion: String = "unknown",
         val frameworkVersionCode: Long = -1L,
         val executableInvokerBridge: ExecutableInvokerBridge? = null,
-        val deoptimizeCallback: ((Member) -> Boolean)? = null,
-        val hookCallback: ((HookPoint, Int, HookerBridge) -> HookerBridge)? = null,
-        val replaceCallback: ((HookerBridge, HookerBridge) -> HookerBridge)? = null,
+        val hookRegistrationBridge: HookRegistrationBridge? = null,
         val loggerCallback: ((Int, String, String, Throwable?) -> Unit)? = null
     )
 
@@ -70,7 +67,10 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val frameworkVersionCode get() = if (isAvailable) api.frameworkVersionCode else LibXposedService.frameworkVersionCode
 
     override val moduleScope get() = LibXposedModuleScope
+    override val moduleReload get() = LibXposedModuleReload
+
     override val executableInvoker get() = checkApi(api.executableInvokerBridge)
+    override val hookRegistration get() = checkApi(api.hookRegistrationBridge)
 
     fun attach(spec: ApiSpec) {
         apiSpec = spec
@@ -85,10 +85,6 @@ internal object YukiHookBridge : FrameworkHookBridge {
         LibXposedPreferences.open(context.takeUnless { hostEnvironment }, name)
 
     override fun sharedFiles(hostEnvironment: Boolean) = LibXposedSharedFiles.open(hostEnvironment)
-
-    override fun deoptimize(member: Member) = checkApi(api.deoptimizeCallback)(member)
-    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge) = checkApi(api.hookCallback)(target, priority, hooker)
-    override fun replace(handle: HookerBridge, replacement: HookerBridge) = checkApi(api.replaceCallback)(handle, replacement)
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
         val callback = api.loggerCallback

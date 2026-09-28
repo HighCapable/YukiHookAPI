@@ -76,10 +76,12 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         val CompiledTimestampClass = ClassName(DeclaredSymbol.API_PACKAGE_NAME, DeclaredSymbol.COMPILED_TIMESTAMP_CLASS_NAME)
         val ModuleApplicationImplClass = ClassName(DeclaredSymbol.MODULE_APPLICATION_PACKAGE_NAME, DeclaredSymbol.MODULE_APPLICATION_IMPL_CLASS_NAME)
         val LegacyModuleStatusImplClass = ClassName(DeclaredSymbol.MODULE_STATUS_PACKAGE_NAME, DeclaredSymbol.LEGACY_MODULE_STATUS_IMPL_CLASS_NAME)
+
         val HookEntryClass = ClassName(DeclaredSymbol.HOOK_ENTRY_PACKAGE_NAME, DeclaredSymbol.HOOK_ENTRY_CLASS_NAME)
         val ModuleCallerClass = ClassName(DeclaredSymbol.MODULE_CALLER_PACKAGE_NAME, DeclaredSymbol.MODULE_CALLER_CLASS_NAME)
         val Xposed82EntryClass = ClassName.bestGuess(Xposed82GenerateSpec.ENTRY_CLASS_NAME)
-        val LibXposedEntryClass = ClassName.bestGuess(LibXposedGenerateSpec.ENTRY_CLASS_NAME)
+        val ReloadPolicyClass = ClassName.bestGuess(LibXposedGenerateSpec.RELOAD_POLICY_CLASS_NAME)
+
         val KeepClass = ClassName(DeclaredSymbol.ANDROIDX_ANNOTATION_PACKAGE_NAME, DeclaredSymbol.KEEP_ANNOTATION_CLASS_NAME)
         val LogClass = ClassName(DeclaredSymbol.ANDROID_UTIL_PACKAGE_NAME, DeclaredSymbol.LOG_CLASS_NAME)
     }
@@ -104,7 +106,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 "`@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}`, please remove the others."
         )
 
-        val hasLibXposedRuntime = resolver.getClassDeclarationByName(resolver.getKSNameFromString(LibXposedGenerateSpec.ENTRY_CLASS_NAME)) != null
+        val hasLibXposedRuntime = resolver.getClassDeclarationByName(resolver.getKSNameFromString(LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME)) != null
         val hasXposed82Runtime = resolver.getClassDeclarationByName(resolver.getKSNameFromString(Xposed82GenerateSpec.ENTRY_CLASS_NAME)) != null
 
         if (hasLibXposedRuntime == hasXposed82Runtime) problem(
@@ -155,9 +157,10 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         val spec = when (runtimeType) {
             YukiHookRuntime.LIBXPOSED -> LibXposedGenerateSpec(
                 minApiVersion = arguments["minApiVersion"] as? Int ?: LibXposedGenerateSpec.RUNTIME_MIN_API_VERSION,
-                targetApiVersion = arguments["targetApiVersion"] as? Int ?: LibXposedGenerateSpec.DEFAULT_TARGET_API_VERSION,
+                targetApiVersion = arguments["targetApiVersion"] as? Int ?: problem("The libxposed entry must declare targetApiVersion."),
                 scope = (arguments["scope"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
                 staticScope = arguments["staticScope"] as? Boolean ?: false,
+                hotReload = resolveHotReload(arguments["hotReload"]),
                 nativeEntries = (arguments["nativeEntries"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
             )
             YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec(
@@ -200,6 +203,16 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         )
     }
 
+    private fun resolveHotReload(value: Any?) = when (value) {
+        null -> LibXposedGenerateSpec.HotReload.NONE
+        is KSType -> value.declaration.simpleName.asString()
+        is KSClassDeclaration -> value.simpleName.asString()
+        else -> value.toString().substringAfterLast('.')
+    }.let { name ->
+        LibXposedGenerateSpec.HotReload.entries.firstOrNull { it.name == name }
+            ?: problem("Unknown hotReload policy \"$name\".")
+    }
+
     private fun resolveLibXposedJavaEntries(value: Any?, spec: LibXposedGenerateSpec): List<String> {
         val entries = when (value) {
             null -> emptyList()
@@ -221,7 +234,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 .mapNotNull { it.declaration.qualifiedName?.asString() }
                 .toSet()
 
-            if (name == LibXposedGenerateSpec.ENTRY_CLASS_NAME || LibXposedGenerateSpec.ENTRY_CLASS_NAME in superTypes)
+            if (name == LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME || LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME in superTypes)
                 problem("You should not include the YukiHook internal entry class \"$name\" in java entries.")
             if (LibXposedGenerateSpec.XPOSED_MODULE_CLASS_NAME !in superTypes)
                 problem("\"$name\" must inherits libxposed XposedModule.")
@@ -264,6 +277,12 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             }
         } else null
         if (spec is LibXposedGenerateSpec) {
+            if (spec.hotReload != LibXposedGenerateSpec.HotReload.NONE) {
+                if (spec.minApiVersion < LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION)
+                    problem("Hot reload requires minApiVersion >= ${LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION}.")
+                if (spec.javaEntries.isNotEmpty()) problem("Hot reload requires exactly one Java entry. Remove additional javaEntries.")
+            }
+
             if (spec.scope.any { it.isBlank() || it.any(Char::isWhitespace) })
                 problem("Each modern scope entry must be a nonblank package name or system.")
             if (spec.nativeEntries.any {
@@ -371,7 +390,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
           minApiVersion=$minApiVersion
           targetApiVersion=$targetApiVersion
           staticScope=$staticScope
-          autoHotReload=false
+          autoHotReload=${hotReload == LibXposedGenerateSpec.HotReload.AUTO}
         """.trimIndent()
 
     private fun GenerateSpec.createApiSource() = ApiImplClass.sourceFileBuilder().apply {
@@ -463,7 +482,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
             superclass(when (this@createXposedEntrySource) {
                 is Xposed82GenerateSpec -> Xposed82EntryClass
-                is LibXposedGenerateSpec -> LibXposedEntryClass
+                is LibXposedGenerateSpec -> ClassName.bestGuess(runtimeEntryClassName)
             })
 
             if (this@createXposedEntrySource is Xposed82GenerateSpec)
@@ -471,6 +490,14 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                     addModifiers(KModifier.OVERRIDE)
                     initializer("%S", modulePackageName)
                 }.build())
+
+            if (this@createXposedEntrySource is LibXposedGenerateSpec &&
+                minApiVersion >= LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION
+            ) addProperty(PropertySpec.builder("hotReload", ReloadPolicyClass).apply {
+                addModifiers(KModifier.OVERRIDE)
+                addKdoc("Reload policy declared by the module.\n")
+                initializer("%T.%L", ReloadPolicyClass, hotReload.name)
+            }.build())
 
             addFunction(FunSpec.builder("createHookEntry").apply {
                 addModifiers(KModifier.OVERRIDE)

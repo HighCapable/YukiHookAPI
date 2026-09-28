@@ -35,12 +35,13 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.param.context.PackageContext
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.file.YukiHookSharedFiles
 import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
+import com.highcapable.yukihookapi.hook.xposed.reload.YukiHookModuleReload
 import com.highcapable.yukihookapi.hook.xposed.scope.YukiHookModuleScope
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
@@ -277,6 +278,15 @@ object YukiHook {
     object Module {
 
         /**
+         * Gets the module-wide [YukiHookModuleReload] object.
+         *
+         * - Requires [YukiHook.Status.isXposedModuleActive].
+         * @return [YukiHookModuleReload]
+         */
+        @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+        val reload get() = YukiHookModuleReload.get()
+
+        /**
          * Gets the module-wide [YukiHookModuleScope] object.
          *
          * - Requires [YukiHook.Status.isXposedModuleActive].
@@ -397,5 +407,5 @@ object YukiHook {
      * Creates the hook entry object from the base context.
      * @return [PackageParam]
      */
-    private fun Context.createPackageParam() = PackageParam(PackageParamWrapper.from(this))
+    private fun Context.createPackageParam() = PackageParam(PackageContext.from(this))
 }

@@ -24,6 +24,7 @@ package com.highcapable.yukihookapi.runtime
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.SharedPreferences
+import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.factory.preferences
 import org.junit.Assert
 import org.junit.Test
@@ -34,6 +35,13 @@ import org.junit.Test
 class RuntimeIsolationTest {
 
     private class StorageRequested : RuntimeException()
+
+    @Test
+    fun reloadIsUnavailableAndDoesNotPretendToReturnAnEmptyTargetList() {
+        val reload = YukiHook.Module.reload
+        Assert.assertFalse(reload.isAvailable)
+        Assert.assertThrows(IllegalStateException::class.java) { reload.targets }
+    }
 
     @Test
     fun modulePreferencesUsePrivateStorageAfterReadableAccessFails() {

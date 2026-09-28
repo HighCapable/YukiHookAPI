@@ -19,9 +19,7 @@
  *
  * This file is created by fankes on 2022/2/7.
  */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
-
-package com.highcapable.yukihookapi.hook.param.wrapper
+package com.highcapable.yukihookapi.hook.param.context
 
 import android.app.Application
 import android.content.Context
@@ -29,56 +27,80 @@ import android.content.pm.ApplicationInfo
 import com.highcapable.yukihookapi.hook.factory.processName
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
+import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
 
 /**
- * Wraps [PackageParam] state for the current hook entry.
+ * Holds [PackageParam] state for the current hook entry.
  * @param type the current hook entry type.
  * @param packageName the package name.
  * @param processName the current process name.
  * @param mainProcessName the main process identity supplied by the runtime.
  * @param isFirstApplication whether this package owns the first [Application] in the current process.
- * @param appClassLoader app [ClassLoader].
- * @param appInfo app [ApplicationInfo].
+ * @param classLoader the host [ClassLoader].
+ * @param appInfo the host [ApplicationInfo].
  * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
  */
-internal data class PackageParamWrapper(
+internal data class PackageContext(
     val type: HookEntryType,
     val packageName: String,
     val processName: String,
     val mainProcessName: String = packageName.trim(),
     val isFirstApplication: Boolean,
-    val appClassLoader: ClassLoader,
+    val classLoader: ClassLoader,
     val appInfo: ApplicationInfo? = null,
-    private val packageNameForMatching: String? = packageName
+    val packageNameForMatching: String? = packageName
 ) {
 
-    companion object {
+    companion object : ModuleStateSpec<PackageContext> {
 
         /**
-         * Creates a new [PackageParamWrapper] from the current [Context].
+         * Creates a new [PackageContext] from the current [Context].
          * @param context the current context.
          * @param type the current hook entry type, defaults to [HookEntryType.PACKAGE].
-         * @return [PackageParamWrapper]
+         * @return [PackageContext]
          */
-        fun from(context: Context, type: HookEntryType = HookEntryType.PACKAGE) = PackageParamWrapper(
+        fun from(context: Context, type: HookEntryType = HookEntryType.PACKAGE) = PackageContext(
             type = type, 
             packageName = context.packageName, 
             processName = context.processName, 
             mainProcessName = context.packageName, 
             isFirstApplication = type == HookEntryType.PACKAGE,
-            appClassLoader = context.classLoader, 
+            classLoader = context.classLoader,
             appInfo = context.applicationInfo
         )
+
+        override fun encode(state: PackageContext) = arrayOf(
+            state.type.name, state.packageName, state.processName, state.mainProcessName,
+            state.isFirstApplication, state.classLoader, state.appInfo, state.packageNameForMatching
+        )
+
+        override fun decode(encoded: Any?): PackageContext {
+            val values = encoded as? Array<*> ?: error("Missing package context state.")
+            check(values.size == 8) {
+                "Invalid package context state: expected 8 values, but got ${values.size}."
+            }
+
+            return PackageContext(
+                type = HookEntryType.valueOf(values[0] as String),
+                packageName = values[1] as String,
+                processName = values[2] as String,
+                mainProcessName = values[3] as String,
+                isFirstApplication = values[4] as Boolean,
+                classLoader = values[5] as ClassLoader,
+                appInfo = values[6] as? ApplicationInfo,
+                packageNameForMatching = values[7] as? String
+            )
+        }
     }
 
     /**
-     * Gets the ID of the current wrapper.
+     * Gets the ID of the current hook entry.
      * @return [String]
      */
     val id = "$type:$packageName"
 
     /**
-     * Checks if the current wrapper matches the specified package name.
+     * Checks if the current hook entry matches the specified package name.
      * @param name the package name to check.
      * @return [Boolean]
      */

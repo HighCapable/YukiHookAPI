@@ -23,6 +23,7 @@ package com.highcapable.yukihookapi.runtime.libxposed
 
 import android.util.Log
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
@@ -33,11 +34,14 @@ import java.lang.reflect.Executable
 import java.lang.reflect.Member
 
 /**
- * All native hook API calls are compiled here against API 102.
+ * All native hook API calls are compiled here.
  */
-internal class LibXposedHookApi(private val api: XposedInterface) {
+internal class LibXposedHookApi(
+    private val api: XposedInterface,
+    private val moduleSession: LibXposedModuleSession? = null
+) : HookRegistrationBridge {
 
-    fun attach() {
+    fun attach(registrations: HookRegistrationBridge? = null) {
         YukiHookBridge.attach(
             YukiHookBridge.ApiSpec(
                 apiVersion = api.apiVersion,
@@ -45,9 +49,7 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
                 frameworkVersion = api.frameworkVersion,
                 frameworkVersionCode = api.frameworkVersionCode,
                 executableInvokerBridge = LibXposedExecutableInvoker(api),
-                deoptimizeCallback = ::deoptimize,
-                hookCallback = ::hook,
-                replaceCallback = ::replace,
+                hookRegistrationBridge = registrations ?: this,
                 loggerCallback = api::log
             )
         )
@@ -56,12 +58,15 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         LibXposedSharedFiles.attach(api)
     }
 
-    private fun deoptimize(member: Member): Boolean {
-        require(member is Executable) { "Only methods and constructors can be deoptimized." }
+    override fun deoptimize(member: Member): Boolean {
+        require(member is Executable) {
+            "Only methods and constructors can be deoptimized."
+        }
+
         return api.deoptimize(member)
     }
 
-    private fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge {
+    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge, id: String?): HookerBridge {
         val nativeHooker = createNativeHooker(hooker)
         val builder = when (target) {
             is HookPoint.Executable -> api.hook(target.value as Executable)
@@ -69,15 +74,16 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         }
         val handle = builder
             .setPriority(priority)
+            .apply { if (id != null) setId(id) }
             // Classic hookers apply their own failure policy, chain hookers must preserve
             // the interceptor's result or exception without automatic recovery.
             .setExceptionMode(XposedInterface.ExceptionMode.PASSTHROUGH)
-            .intercept(nativeHooker)
+            .intercept(use(nativeHooker))
 
         return RegistrationHandle(handle)
     }
 
-    private fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge {
+    override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge {
         require(handle is RegistrationHandle) {
             "The hook handle was not created by the libxposed runtime."
         }
@@ -99,6 +105,20 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}.")
     }
 
+    private fun use(hooker: XposedInterface.Hooker): XposedInterface.Hooker {
+        val session = moduleSession ?: return hooker
+
+        return XposedInterface.Hooker { chain ->
+            if (!session.enter()) return@Hooker chain.proceed()
+
+            try {
+                hooker.intercept(chain)
+            } finally {
+                session.leave()
+            }
+        }
+    }
+
     private inner class RegistrationHandle(
         private val nativeHandle: XposedInterface.HookHandle
     ) : HookerBridge {
@@ -110,7 +130,7 @@ internal class LibXposedHookApi(private val api: XposedInterface) {
         }
 
         fun replace(replacement: HookerBridge): HookerBridge = synchronized(lock) {
-            RegistrationHandle(nativeHandle.replaceHook(createNativeHooker(replacement)))
+            RegistrationHandle(nativeHandle.replaceHook(use(createNativeHooker(replacement))))
         }
     }
 

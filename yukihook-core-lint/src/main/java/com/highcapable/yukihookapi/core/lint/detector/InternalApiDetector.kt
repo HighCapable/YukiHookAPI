@@ -70,8 +70,13 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             "$HOOKER_BRIDGE_PACKAGE_NAME.HookPoint",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.ExecutableInvokerBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.FrameworkHookBridge",
+            "$RUNTIME_BRIDGE_PACKAGE_NAME.HookRegistrationBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.ModuleScopeBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.SharedFilesBridge",
+            "$RUNTIME_BRIDGE_PACKAGE_NAME.session.ModuleReloadBridge",
+            "$RUNTIME_BRIDGE_PACKAGE_NAME.session.ModuleReloadPolicy",
+            "$RUNTIME_BRIDGE_PACKAGE_NAME.session.ModuleSessionBridge",
+            "$RUNTIME_PACKAGE_NAME.state.ModuleStateSpec",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.caller.YukiHookModuleCaller",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHook_Impl",
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookCompiledTimestamp",
@@ -80,7 +85,9 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
         )
 
         private val GENERATED_ENTRY_SUPER_CLASSES = setOf(
-            "$RUNTIME_PACKAGE_NAME.libxposed.entry.LibXposedEntry",
+            "$RUNTIME_PACKAGE_NAME.libxposed.entry.base.BaseLibXposedEntry",
+            "$RUNTIME_PACKAGE_NAME.libxposed.entry.LibXposed101Entry",
+            "$RUNTIME_PACKAGE_NAME.libxposed.entry.LibXposed102Entry",
             "$RUNTIME_PACKAGE_NAME.xposed82.entry.Xposed82Entry"
         )
 

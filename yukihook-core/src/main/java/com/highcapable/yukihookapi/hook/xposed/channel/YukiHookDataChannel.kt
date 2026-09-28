@@ -29,6 +29,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -46,6 +47,8 @@ import com.highcapable.yukihookapi.hook.log.data.YLogData
 import com.highcapable.yukihookapi.hook.utils.RandomString
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher
+import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleReloadable
 import com.highcapable.yukihookapi.hook.xposed.channel.annotation.SendTooLargeChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataWrapper
@@ -66,7 +69,13 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class YukiHookDataChannel private constructor() {
 
-    internal companion object {
+    internal companion object : ModuleReloadable {
+
+        const val RELOAD_ID = "data-channel"
+
+        override val requiresMainThread = true
+
+        private var events = ModuleEventDispatcher()
 
         /** Whether the current environment is a host environment. */
         private val isHostEnvironment = XposedModuleRuntime.isHostEnvironment
@@ -122,6 +131,14 @@ class YukiHookDataChannel private constructor() {
          * @return [YukiHookDataChannel]
          */
         fun get() = instance
+
+        override fun onAttach(events: ModuleEventDispatcher) {
+            this.events = events
+        }
+
+        override fun onDispose() = instance.unregister()
+
+        override fun onRestoreState(appInfo: ApplicationInfo, state: Any?) = AppParasitism.withHostApplication(instance::registerToHost)
     }
 
     /**
@@ -144,15 +161,17 @@ class YukiHookDataChannel private constructor() {
 
     /** The broadcast receiver callback. */
     private val handlerReceiverCallback = BroadcastReceiver { _, intent ->
-        intent.action?.also { action ->
-            runCatching {
-                receiverCallbacks.forEach { (key, param) ->
-                    when {
-                        param.first?.hostActivity?.isDestroyed == true -> receiverCallbacks.remove(key, param)
-                        isCurrentBroadcast(param.first) -> param.second(action, intent)
+        events.dispatch {
+            intent.action?.also { action ->
+                runCatching {
+                    receiverCallbacks.forEach { (key, param) ->
+                        when {
+                            param.first?.hostActivity?.isDestroyed == true -> receiverCallbacks.remove(key, param)
+                            isCurrentBroadcast(param.first) -> param.second(action, intent)
+                        }
                     }
-                }
-            }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
+                }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
+            }
         }
     }
 
@@ -223,9 +242,23 @@ class YukiHookDataChannel private constructor() {
         }
     }
 
+    /**
+     * Registers broadcasts to host once after its [Application] is ready.
+     * @param application the host [Application] instance.
+     */
+    internal fun registerToHost(application: Application) {
+        if (!YukiHook.Config.dataChannel || handlerReceiver != null) return
+
+        runCatching { register(application) }.onFailure {
+            events.reportFailure(it)
+            YLog.innerE("Data channel initialization failed", it)
+        }
+    }
+
     /** Unregisters broadcasts. */
     internal fun unregister() {
         handlerReceiver?.let { receiverContext?.unregisterReceiver(it) }
+        handlerReceiver = null
         receiverCallbacks.clear()
         receiverContext = null
     }

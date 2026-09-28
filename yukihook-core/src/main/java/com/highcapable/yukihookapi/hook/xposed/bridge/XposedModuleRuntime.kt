@@ -26,33 +26,49 @@ package com.highcapable.yukihookapi.hook.xposed.bridge
 
 import android.content.pm.ApplicationInfo
 import android.content.res.Resources
+import android.os.Bundle
 import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.param.wrapper.PackageParamWrapper
+import com.highcapable.yukihookapi.hook.param.context.PackageContext
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.highcapable.yukihookapi.hook.xposed.bridge.component.HookRegistration
+import com.highcapable.yukihookapi.hook.xposed.bridge.component.PackageRegistration
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.XposedModuleLifecycle
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
+import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleLifecycleManager
+import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleReloadable
+import com.highcapable.yukihookapi.hook.xposed.bridge.session.state.ModuleHandoffState
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
+import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
+import com.highcapable.yukihookapi.runtime.bridge.session.ModuleSessionBridge
 
 /**
  * Core Xposed module runtime for [YukiHook].
  */
 internal object XposedModuleRuntime : XposedModuleLifecycle {
 
+    private var events = ModuleEventDispatcher()
+    private val packageRegistration = PackageRegistration(::dispatchPackage)
+    private var hookRegistration: HookRegistration? = null
+
+    private val hookEntry = ThreadLocal<YukiHookXposedModule>()
+    private val registeringFrameworkEvents = ThreadLocal<Boolean>()
+    private var isFrameworkEventsRegistered = false
+
     /** Whether the Xposed module has been loaded. */
     private var isModuleLoaded = false
-
-    /** Whether Xposed module loading has completed. */
-    private var isModuleLoadFinished = false
 
     /** Whether the current Hook process is running in Zygote. */
     private var isInitializingZygote = false
 
-    /** Hook entry IDs already loaded into [PackageParam]. */
-    private val loadedEntries = mutableSetOf<String>()
+    /** The current Xposed module resources. */
+    private var currentModuleResources: ModuleResources? = null
 
     /** The current [PackageParam] block callback. */
     var packageParamCallback: (PackageParam.() -> Unit)? = null
@@ -69,21 +85,12 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     var moduleAppInfo: ApplicationInfo? = null
         private set
 
-    /** The current Xposed module resources. */
-    private var currentModuleResources: ModuleResources? = null
-
     /**
      * Gets the current Xposed module resources synchronized with the host configuration.
      * @return [ModuleResources] or null.
      */
     val moduleResources get() = currentModuleResources
         ?.syncConfiguration(AppParasitism.currentApplication?.resources ?: Resources.getSystem())
-
-    /**
-     * Gets whether a hook callback was registered before module loading completed.
-     * @return [Boolean]
-     */
-    val hasEarlyHookCallback get() = !isModuleLoadFinished && packageParamCallback != null
 
     /**
      * Gets the identifier of the hook process currently running in the host.
@@ -98,18 +105,101 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     val isHostEnvironment get() = YukiHookBridge.isAvailable && isModuleLoaded
 
     /**
-     * Automatically ignores log-collection injection instances that may appear on MIUI.
-     * @param packageName the current package name.
-     * @return [Boolean] whether such an instance exists.
+     * Checks that registration runs inside this entry's `onInit` on the current thread.
+     * @param entry the current [YukiHookXposedModule] entry.
+     * @param name the name of the feature being registered.
+     * @throws IllegalStateException if this entry is not being initialized on the current thread.
      */
-    private fun isMiuiCatcherPatch(packageName: String?) =
-        (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") &&
-            javaClass.classLoader?.hasClass("android.miui.R") == true
+    fun checkInitializingEntry(entry: YukiHookXposedModule, name: String) = check(hookEntry.get() === entry) {
+        "You must registered $name in onInit of the current process."
+    }
+
+    /**
+     * Checks that package hooks have not been declared before `onHook` runs.
+     * @throws IllegalStateException if a package callback was already registered.
+     */
+    fun checkHookLoading() = check(packageParamCallback == null) {
+        "Do not load hookers in onInit."
+    }
+
+    /**
+     * Runs the entry's initialization with its registration context bound to this thread.
+     * @param entry the current [YukiHookXposedModule] entry.
+     * @param block the initialization block.
+     */
+    fun createHookEntry(entry: YukiHookXposedModule, block: () -> Unit) {
+        hookEntry.set(entry)
+
+        try {
+            block()
+        } finally {
+            hookEntry.remove()
+        }
+    }
+
+    /**
+     * Checks that a framework event listener is being configured inside the registration block.
+     * @throws IllegalStateException if no registration block is running on the current thread.
+     */
+    fun checkFrameworkEventsRegistration() = check(registeringFrameworkEvents.get() == true) {
+        "Framework event listeners must be configured inside `registerFrameworkEvents`."
+    }
+
+    /**
+     * Registers one framework event configuration block during entry initialization.
+     * @param entry the current [YukiHookXposedModule] entry.
+     * @param block the framework event configuration block.
+     * @throws IllegalStateException if called outside this entry's initialization or more than once.
+     */
+    fun registerFrameworkEvents(entry: YukiHookXposedModule, block: () -> Unit) {
+        checkInitializingEntry(entry, "framework events")
+        synchronized(this) {
+            check(!isFrameworkEventsRegistered) {
+                "Framework events can only be registered once per module process."
+            }
+            isFrameworkEventsRegistered = true
+        }
+        registeringFrameworkEvents.set(true)
+
+        try {
+            block()
+        } finally {
+            registeringFrameworkEvents.remove()
+        }
+    }
 
     /** Reloads the current Xposed module's [Resources]. */
     fun reloadModuleResources() {
         currentModuleResources = ModuleResources.from(moduleSourceDir)
     }
+
+    /**
+     * Attaches the runtime session and prepares hook registration before module loading.
+     * @param session the current [ModuleSessionBridge] session.
+     * @param registrations the current [HookRegistrationBridge] registrations.
+     * @return [HookRegistrationBridge] for the current session.
+     */
+    fun attachModuleSession(session: ModuleSessionBridge, registrations: HookRegistrationBridge): HookRegistrationBridge {
+        ModuleLifecycleManager.attach(session)
+
+        events = ModuleLifecycleManager.events
+        val component = HookRegistration(registrations, events)
+        hookRegistration = component
+
+        return component
+    }
+
+    /**
+     * Dispatches a framework callback while this module instance accepts work.
+     * @param block the framework callback block.
+     */
+    fun dispatchFrameworkEvent(block: () -> Unit) = ModuleLifecycleManager.events.dispatch(block)
+
+    /**
+     * Records a caught runtime callback failure.
+     * @param failure the failure to record.
+     */
+    fun recordRestoreFailure(failure: Throwable) = ModuleLifecycleManager.recordRestoreFailure(failure)
 
     override fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?) {
         isModuleLoaded = true
@@ -118,10 +208,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         moduleSourceDir = sourceDir
         moduleAppInfo = appInfo
         reloadModuleResources()
-    }
-
-    override fun onFinishLoadModule() {
-        isModuleLoadFinished = true
+        registerLifecycleComponents()
     }
 
     override fun onPackageLoaded(
@@ -135,25 +222,73 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         appInfo: ApplicationInfo?
     ) {
         if (isMiuiCatcherPatch(packageName)) return
-        val wrapper = PackageParamWrapper(
-            type = type,
-            packageName = packageName,
-            processName = processName,
-            mainProcessName = mainProcessName,
-            isFirstApplication = isFirstApplication,
-            appClassLoader = appClassLoader,
-            appInfo = appInfo,
-            packageNameForMatching = packageNameForMatching
+
+        dispatchPackage(
+            PackageContext(
+                type = type,
+                packageName = packageName,
+                processName = processName,
+                mainProcessName = mainProcessName,
+                isFirstApplication = isFirstApplication,
+                classLoader = appClassLoader,
+                appInfo = appInfo,
+                packageNameForMatching = packageNameForMatching
+            )
         )
-        if (type != HookEntryType.ZYGOTE && synchronized(loadedEntries) { !loadedEntries.add(wrapper.id) }) return
-        isInitializingZygote = type == HookEntryType.ZYGOTE
+    }
+
+    override fun onPrepareReloadModule(extras: Bundle?, saveState: (Any) -> Boolean) = ModuleLifecycleManager.prepare(extras, saveState)
+
+    override fun onBeginRestoreModule(appInfo: ApplicationInfo, state: Any?) = ModuleLifecycleManager.beginRestore(state).also {
+        ModuleLifecycleManager.prepareRestore(appInfo, it)
+        ModuleLifecycleManager.restoreComponents(appInfo, it, ModuleReloadable.RestorePhase.PREREQUISITE)
+    }
+
+    override fun onRestoreUserState(state: ModuleHandoffState) = ModuleLifecycleManager.restoreState(state)
+
+    override fun onRestoreComponents(appInfo: ApplicationInfo, state: ModuleHandoffState) =
+        ModuleLifecycleManager.restoreComponents(appInfo, state, ModuleReloadable.RestorePhase.REBUILD)
+
+    override fun onFinishRestoreModule(extras: Bundle?) = ModuleLifecycleManager.finishRestore(extras)
+
+    override fun onAbortRestoreModule() = ModuleLifecycleManager.abortRestore()
+
+    private fun registerLifecycleComponents() {
+        if (hookRegistration == null) return
+
+        // The data channel caches host identity, so registration follows onStartLoadModule's identity setup.
+        ModuleLifecycleManager.register(ModuleResources.RELOAD_ID, ModuleResources)
+        ModuleLifecycleManager.register(PackageRegistration.RELOAD_ID, packageRegistration)
+        ModuleLifecycleManager.register(AppParasitism.RELOAD_ID, AppParasitism)
+        ModuleLifecycleManager.register(YukiHookDataChannel.RELOAD_ID, YukiHookDataChannel)
+    }
+
+    /**
+     * Automatically ignores log-collection injection instances that may appear on MIUI.
+     * @param packageName the current package name.
+     * @return [Boolean] whether such an instance exists.
+     */
+    private fun isMiuiCatcherPatch(packageName: String?) =
+        (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") &&
+            javaClass.classLoader?.hasClass("android.miui.R") == true
+
+    private fun dispatchPackage(context: PackageContext) {
+        if (!packageRegistration.record(context)) return
+        isInitializingZygote = context.type == HookEntryType.ZYGOTE
 
         runCatching {
-            packageParamCallback?.invoke(PackageParam(wrapper).apply { YukiHook.sayHello() })
+            val callback = {
+                packageParamCallback?.invoke(PackageParam(context).apply { YukiHook.sayHello() })
+            }
+            val component = hookRegistration
+            if (component == null) callback() else component.withEntry(context.id, callback)
 
-            if (wrapper.type != HookEntryType.ZYGOTE && wrapper.packageName == modulePackageName)
-                AppParasitism.hookLegacyModuleRelated(wrapper.appClassLoader)
-            if (wrapper.isFirstApplication) AppParasitism.prepareHostApplication(wrapper.packageName, wrapper.type)
-        }.onFailure { YLog.innerE("An exception occurred in the hooking process of YukiHook", it) }
+            if (context.type != HookEntryType.ZYGOTE && context.packageName == modulePackageName)
+                AppParasitism.hookLegacyModuleRelated(context.classLoader)
+            if (context.isFirstApplication) AppParasitism.prepareHostApplication(context.packageName, context.type)
+        }.onFailure {
+            events.reportFailure(it)
+            YLog.innerE("An exception occurred in the hooking process of YukiHook", it)
+        }
     }
 }

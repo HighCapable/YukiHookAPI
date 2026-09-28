@@ -24,8 +24,11 @@ package com.highcapable.yukihookapi.runtime.xposed82
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.hasClass
+import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
+import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.xposed82.adapter.ChainInvocationAdapter
 import de.robv.android.xposed.XC_MethodHook
@@ -34,9 +37,9 @@ import de.robv.android.xposed.callbacks.XCallback
 import java.lang.reflect.Member
 
 /**
- * Host-only native calls, never initialized by the module application.
+ * Native Xposed API calls and hook registrations for the Xposed API 82 runtime.
  */
-internal object Xposed82HookApi {
+internal object Xposed82HookApi : HookRegistrationBridge {
 
     private val chainHooks = mutableMapOf<Member, Pair<ChainInvocationAdapter, HookerBridge>>()
 
@@ -60,7 +63,29 @@ internal object Xposed82HookApi {
         }
     }.getOrDefault("invalid")
 
-    fun hookMember(member: Member, priority: Int, hooker: HookerBridge) = when (hooker) {
+    override fun deoptimize(member: Member): Boolean =
+        throw UnsupportedOperationException("Method deoptimization is unavailable in Xposed API 82.")
+
+    override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge, id: String?): HookerBridge {
+        if (hooker !is ClassicHookerBridge && hooker !is ChainHookerBridge)
+            throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}.")
+
+        check(YukiHookBridge.isAvailable) {
+            "Xposed API is not attached to this process."
+        }
+
+        return when (target) {
+            is HookPoint.Executable -> hookMember(target.value, priority, hooker)
+            is HookPoint.Initializer -> throw UnsupportedOperationException(
+                "Static initializer hooks are unavailable in Xposed API 82."
+            )
+        }
+    }
+
+    override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge =
+        throw UnsupportedOperationException("Atomic hook replacement is unavailable in Xposed API 82.")
+
+    private fun hookMember(member: Member, priority: Int, hooker: HookerBridge) = when (hooker) {
         is ChainHookerBridge -> hookChainMember(member, priority, hooker)
         is ClassicHookerBridge -> hookClassicMember(member, priority, hooker)
         else -> throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}.")
@@ -73,7 +98,7 @@ internal object Xposed82HookApi {
             }
 
             // API 82 cannot resume native callbacks from proceed. Keep ordinary hooks outside
-            // the local chain; native hooks ordered after this entry can still be skipped.
+            // the local chain, native hooks ordered after this entry can still be skipped.
             adapter to hookClassicMember(member, XCallback.PRIORITY_LOWEST, adapter)
         }
         val handle = adapter.hookMember(priority, hooker)

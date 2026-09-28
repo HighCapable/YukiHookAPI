@@ -23,6 +23,7 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.resources
 
+import android.content.pm.ApplicationInfo
 import android.content.res.AssetManager
 import android.content.res.Resources
 import android.content.res.loader.ResourcesLoader
@@ -34,6 +35,7 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
 import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleReloadable
 import java.io.File
 
 /**
@@ -45,10 +47,18 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
     baseInstance.configuration
 ) {
 
-    internal companion object {
+    internal companion object : ModuleReloadable {
+
+        const val RELOAD_ID = "module-resources"
+
+        override val restorePhase = ModuleReloadable.RestorePhase.PREREQUISITE
+        override val requiresMainThread = true
+
+        private var hasLegacyInjection = false
 
         /**
          * Loads the module APK into a separate [AssetManager] without modifying host resources.
+         * @param path the APK path.
          * @return [ModuleResources] or null when the resources cannot be created.
          */
         fun from(path: String) = runCatching {
@@ -83,7 +93,20 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
                 runCatching {
                     Api30_Impl.inject(host, path)
                 }.notify()
-            } else host.assets.addAssetPath(path).notify()
+            } else host.assets.addAssetPath(path).onSuccess { hasLegacyInjection = true }.notify()
+        }
+
+        override fun onPrepareReload() {
+            check(!hasLegacyInjection) {
+                "Reload cannot replace resources injected through addAssetPath. Restart the host to try again."
+            }
+        }
+
+        override fun onSaveState() = if (AndroidVersion.isAtLeast(AndroidVersion.R)) Api30_Impl.loader else null
+
+        override fun onRestoreState(appInfo: ApplicationInfo, state: Any?) {
+            if (AndroidVersion.isAtLeast(AndroidVersion.R) && state != null)
+                Api30_Impl.restore(state, appInfo.sourceDir)
         }
 
         /**
@@ -113,7 +136,8 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
         @RequiresApi(AndroidVersion.R)
         private object Api30_Impl {
 
-            private var loader: ResourcesLoader? = null
+            var loader: ResourcesLoader? = null
+                private set
 
             fun inject(host: Resources, path: String) {
                 val moduleLoader = loader ?: ParcelFileDescriptor.open(File(path), ParcelFileDescriptor.MODE_READ_ONLY).use { descriptor ->
@@ -133,7 +157,27 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
                     // A framework-replaced `ResourcesImpl` may no longer have a `ResourcesManager` record.
                     // Only this registration mismatch falls back to mutating its current `AssetManager`.
                     host.assets.addAssetPath(path).getOrThrow()
+                    hasLegacyInjection = true
                 }
+            }
+
+            fun restore(state: Any, path: String) {
+                val previous = state as? ResourcesLoader ?: error("Invalid resource loader handoff.")
+                val provider = ParcelFileDescriptor.open(File(path), ParcelFileDescriptor.MODE_READ_ONLY).use {
+                    ResourcesProvider.loadFromApk(it)
+                }
+
+                val obsolete = previous.providers.toList()
+                runCatching {
+                    previous.providers = listOf(provider)
+                }.onFailure { failure ->
+                    if (provider !in previous.providers) runCatching {
+                        provider.close()
+                    }.onFailure(failure::addSuppressed)
+                }.getOrThrow()
+
+                loader = previous
+                obsolete.forEach { it.close() }
             }
         }
     }

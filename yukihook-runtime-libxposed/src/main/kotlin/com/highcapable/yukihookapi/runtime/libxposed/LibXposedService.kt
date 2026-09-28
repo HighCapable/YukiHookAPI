@@ -23,6 +23,7 @@
 
 package com.highcapable.yukihookapi.runtime.libxposed
 
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -30,6 +31,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import io.github.libxposed.api.XposedInterface
+import io.github.libxposed.service.HookedTarget
+import io.github.libxposed.service.HotReloadResult
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
 import io.github.libxposed.service.YukiHookServiceBridge
@@ -54,6 +57,17 @@ internal object LibXposedService {
     val frameworkVersion get() = runCatching { service?.frameworkVersion }.getOrNull() ?: "unknown"
     val frameworkVersionCode get() = runCatching { service?.frameworkVersionCode }.getOrNull() ?: -1L
     val isRemoteFileAccessAvailable get() = useRemoteFiles(false) { true }
+
+    class ReloadTarget(private val service: XposedService, val target: HookedTarget) {
+
+        fun request(current: XposedService, extras: Bundle?, callback: (HotReloadResult) -> Unit) {
+            check(service === current) {
+                "The target's service connection has changed. Query targets again."
+            }
+
+            current.hotReloadModule(target, extras) { _, result -> callback(result) }
+        }
+    }
 
     @Synchronized
     fun initialize() {
@@ -97,6 +111,10 @@ internal object LibXposedService {
         }
     }
 
+    fun getReloadTargets() = useModuleReload { service -> service.runningTargets.map { ReloadTarget(service, it) } }
+    fun requestReload(target: ReloadTarget, extras: Bundle?, callback: (HotReloadResult) -> Unit) =
+        useModuleReload { target.request(it, extras, callback) }
+
     fun getScope() = useModuleScope { it.scope }
     fun requestScope(packages: List<String>, callback: XposedService.OnScopeEventListener) = useModuleScope { it.requestScope(packages, callback) }
     fun removeScope(packages: List<String>) = useModuleScope { it.removeScope(packages) }
@@ -108,6 +126,15 @@ internal object LibXposedService {
     fun listRemoteFiles() = useRemoteFiles { it.listRemoteFiles().toList() }
     fun openRemoteFile(name: String) = useRemoteFiles { it.openRemoteFile(name) }
     fun deleteRemoteFile(name: String) = useRemoteFiles { it.deleteRemoteFile(name) }
+
+    private inline fun <T> useModuleReload(block: (XposedService) -> T) = checkNotNull(
+        useService("module reload") {
+            check(it.apiVersion >= XposedService.API_102) {
+                "Module reload requires libxposed service API ${XposedService.API_102}."
+            }
+            block(it)
+        }
+    ) { "libxposed services are unavailable." }
 
     private inline fun <T> useModuleScope(block: (XposedService) -> T) = checkNotNull(
         useService("module scope") {

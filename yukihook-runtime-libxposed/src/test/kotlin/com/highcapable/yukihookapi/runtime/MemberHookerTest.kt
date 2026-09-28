@@ -26,6 +26,7 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookChain
 import com.highcapable.yukihookapi.hook.param.HookParam
+import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
@@ -64,7 +65,7 @@ class MemberHookerTest {
     private val hookers = mutableListOf<HookerBridge>()
     private val removed = mutableListOf<Member>()
     private val previousEnabled = YLog.Config.enabled
-    private val registerHook = { target: HookPoint, _: Int, hooker: HookerBridge ->
+    private val registerHook = { target: HookPoint, _: Int, hooker: HookerBridge, _: String? ->
         val member = (target as HookPoint.Executable).value
         hookers += hooker
         object : HookerBridge {
@@ -72,10 +73,22 @@ class MemberHookerTest {
         }
     }
 
+    private fun registrations(
+        onHook: (HookPoint, Int, HookerBridge, String?) -> HookerBridge
+    ) = object : HookRegistrationBridge {
+        override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge, id: String?) =
+            onHook(target, priority, hooker, id)
+
+        override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge =
+            error("Unexpected hook replacement.")
+
+        override fun deoptimize(member: Member): Boolean = error("Unexpected deoptimization.")
+    }
+
     @Before
     fun installRuntime() {
         YLog.Config.enabled = false
-        YukiHookBridge.attach(YukiHookBridge.ApiSpec(hookCallback = registerHook))
+        YukiHookBridge.attach(YukiHookBridge.ApiSpec(hookRegistrationBridge = registrations(registerHook)))
     }
 
     @After
@@ -160,10 +173,10 @@ class MemberHookerTest {
         val failure = UnsupportedOperationException("unsupported hooker")
         var attempts = 0
         YukiHookBridge.attach(YukiHookBridge.ApiSpec(
-            hookCallback = { target, priority, hooker ->
+            hookRegistrationBridge = registrations { target, priority, hooker, id ->
                 attempts++
                 if (attempts == 1) throw failure
-                registerHook(target, priority, hooker)
+                registerHook(target, priority, hooker, id)
             }
         ))
         scope.run {
@@ -216,7 +229,7 @@ class MemberHookerTest {
     fun hookCanRemoveItselfWhileNativeRegistrationIsCompleting() {
         var removalReported = false
         YukiHookBridge.attach(YukiHookBridge.ApiSpec(
-            hookCallback = { target, _, hooker ->
+            hookRegistrationBridge = registrations { target, _, hooker, _ ->
                 val member = (target as HookPoint.Executable).value
                 ClassicInvocationAdapter.from(member, "value", arrayOf(1)) { throw it }
                     .intercept(hooker as ClassicHookerBridge) { "original" }

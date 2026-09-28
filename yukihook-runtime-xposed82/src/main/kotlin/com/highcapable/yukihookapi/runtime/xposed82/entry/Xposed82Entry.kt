@@ -50,7 +50,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
     final override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam) {
         YukiHookBridge.attach()
 
-        initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, modulePackageName, startupParam.modulePath)
+        initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, packageName = modulePackageName, sourceDir = startupParam.modulePath)
         if (initialized) YukiHookModuleCaller.callOnZygote(
             packageName = FRAMEWORK_PACKAGE_NAME,
             processName = FRAMEWORK_PACKAGE_NAME,

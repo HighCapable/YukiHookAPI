@@ -29,6 +29,7 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
  * @param targetApiVersion the targeted framework behavior.
  * @param scope the explicitly declared scope.
  * @param staticScope whether the scope is fixed.
+ * @param hotReload the module reload policy.
  * @param javaEntries additional native libxposed Java entry class names.
  * @param nativeEntries the native entry library filenames.
  */
@@ -41,6 +42,7 @@ data class LibXposedGenerateSpec(
     var targetApiVersion: Int,
     var scope: List<String> = emptyList(),
     var staticScope: Boolean = false,
+    var hotReload: HotReload = HotReload.NONE,
     var javaEntries: List<String> = emptyList(),
     var nativeEntries: List<String> = emptyList()
 ) : GenerateSpec {
@@ -48,18 +50,44 @@ data class LibXposedGenerateSpec(
     companion object {
 
         const val ANNOTATION_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.annotation.xposed.YukiHookLibXposedEntry"
-        const val ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.LibXposedEntry"
+
+        const val HOT_RELOAD_CLASS_NAME = "$ANNOTATION_NAME.HotReload"
+        const val RELOAD_POLICY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.bridge.session.ModuleReloadPolicy"
+
+        const val BASE_ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.base.BaseLibXposedEntry"
+        const val ENTRY_101_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.LibXposed101Entry"
+        const val ENTRY_102_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.LibXposed102Entry"
+
         const val XPOSED_MODULE_CLASS_NAME = "io.github.libxposed.api.XposedModule"
 
         const val RUNTIME_MODULE_NAME = "yukihook-runtime-libxposed"
 
         const val RUNTIME_MIN_API_VERSION = 101
-        const val DEFAULT_TARGET_API_VERSION = 102
+        const val HOT_RELOAD_MIN_API_VERSION = 102
 
         const val METADATA_DIRECTORY = "META-INF/xposed"
         const val JAVA_INIT_FILE_PATH = "$METADATA_DIRECTORY/java_init.list"
         const val MODULE_PROPERTIES_FILE_PATH = "$METADATA_DIRECTORY/module.prop"
         const val SCOPE_FILE_PATH = "$METADATA_DIRECTORY/scope.list"
         const val NATIVE_INIT_FILE_PATH = "$METADATA_DIRECTORY/native_init.list"
+    }
+
+    /**
+     * Reload policy understood by the compiler without depending on core annotation classes.
+     */
+    enum class HotReload {
+        NONE,
+        MANUAL,
+        AUTO
+    }
+
+    /**
+     * Returns runtime entry selected by the module's minimum framework API version.
+     * @return [String]
+     */
+    val runtimeEntryClassName get() = when (minApiVersion) {
+        101 -> ENTRY_101_CLASS_NAME
+        102 -> ENTRY_102_CLASS_NAME
+        else -> error("Unsupported minimum API version: $minApiVersion")
     }
 }

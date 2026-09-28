@@ -47,23 +47,23 @@ abstract class YukiBaseHooker : PackageParam() {
      */
     internal fun bindTo(param: PackageParam) {
         synchronized(contextLock) {
-            val targetWrapper = param.wrapper ?: return
+            val targetContext = param.context ?: return
 
-            val boundWrapper = wrapper
-            if (boundWrapper?.id == targetWrapper.id) return
-            if (boundWrapper != null &&
-                (boundWrapper.type != HookEntryType.ZYGOTE || targetWrapper.type == HookEntryType.ZYGOTE)
+            val boundContext = context
+            if (boundContext?.id == targetContext.id) return
+            if (boundContext != null &&
+                (boundContext.type != HookEntryType.ZYGOTE || targetContext.type == HookEntryType.ZYGOTE)
             ) {
                 YLog.innerW(
                     msg = "This hooker \"${this::class.java.name}\" is singleton or reused, " +
-                        "but it is already bound to hook entry \"${boundWrapper.id}\" while the current entry is " +
-                        "\"${targetWrapper.id}\". Make sure your hooker supports multiple instances for this situation, " +
+                        "but it is already bound to hook entry \"${boundContext.id}\" while the current entry is " +
+                        "\"${targetContext.id}\". Make sure your hooker supports multiple instances for this situation, " +
                         "the current hook entry will be ignored."
                 )
                 return
             }
 
-            bind(targetWrapper)
+            bind(targetContext)
             runCatching { onHook() }.onFailure { YLog.innerE("An exception occurred in $this", it) }
         }
     }

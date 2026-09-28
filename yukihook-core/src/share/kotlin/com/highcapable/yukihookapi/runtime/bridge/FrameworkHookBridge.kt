@@ -28,9 +28,7 @@ import android.content.SharedPreferences
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
-import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
-import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
-import java.lang.reflect.Member
+import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadBridge
 
 /**
  * Binary hook bridge contract shared by core and the selected runtime,
@@ -66,8 +64,14 @@ interface FrameworkHookBridge {
     /** Module-scope bridge. */
     val moduleScope: ModuleScopeBridge
 
+    /** Module reload service bridge. Unsupported runtimes throw when it is requested. */
+    val moduleReload: ModuleReloadBridge
+
     /** Executable invocation capabilities supplied by the selected runtime. */
     val executableInvoker: ExecutableInvokerBridge
+
+    /** Hook registration, deoptimization and replacement supplied by the selected runtime. */
+    val hookRegistration: HookRegistrationBridge
 
     /** Initializes module runtime services without loading host-only API classes. */
     fun initializeModuleServices()
@@ -104,32 +108,6 @@ interface FrameworkHookBridge {
      * @throws UnsupportedOperationException when the selected runtime does not support shared files.
      */
     fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge
-
-    /**
-     * Deoptimizes a method or constructor so its callees are invoked without runtime inlining.
-     * @param member the calling method or constructor to deoptimize.
-     * @return [Boolean] whether deoptimization succeeded.
-     * @throws UnsupportedOperationException when the selected runtime does not support deoptimization.
-     */
-    fun deoptimize(member: Member): Boolean
-
-    /**
-     * Registers a hook using the supplied hooker contract and returns an independent hook that can remove itself.
-     * @param target the point to hook.
-     * @param priority the priority of the hook.
-     * @param hooker the hooker to invoke when the hook is triggered.
-     * @return [HookerBridge]
-     */
-    fun hook(target: HookPoint, priority: Int, hooker: HookerBridge): HookerBridge
-
-    /**
-     * Replaces a registered hook with a new hooker while preserving the registration settings.
-     * @param handle the handle returned by [hook].
-     * @param replacement the replacement hooker callback.
-     * @return [HookerBridge]
-     * @throws UnsupportedOperationException when the selected runtime does not support replacement.
-     */
-    fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge
 
     /**
      * Logs using the attached framework without discarding its priority or tag.

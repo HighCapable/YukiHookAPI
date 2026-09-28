@@ -37,6 +37,7 @@ class YukiHookIssueRegistry : IssueRegistry() {
     override val issues get() = listOf(
         InternalApiDetector.ISSUE,
         LibXposedEntryDetector.ISSUE,
+        LibXposedEntryDetector.HOT_RELOAD_ISSUE,
         ModuleUsageDetector.ISSUE,
         RuntimeRequirementDetector.ISSUE
     )

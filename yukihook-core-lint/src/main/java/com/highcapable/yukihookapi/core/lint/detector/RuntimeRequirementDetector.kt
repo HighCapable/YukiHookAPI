@@ -55,17 +55,21 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
     companion object {
 
         private const val REQUIRES_RUNTIME_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.internal.RequiresRuntime"
+
         private const val LIBXPOSED_ENTRY_ANNOTATION_NAME = "YukiHookLibXposedEntry"
         private const val LIBXPOSED_ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.$LIBXPOSED_ENTRY_ANNOTATION_NAME"
 
+        private const val LIBXPOSED102_EVENT_PACKAGE = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.libxposed102"
+
         private const val MIN_API_VERSION = "minApiVersion"
         private const val DEFAULT_LIBXPOSED_MIN_API_VERSION = 101
+        private const val LIBXPOSED102_EVENT_MIN_API_VERSION = 102
 
         private const val LIBXPOSED_RUNTIME = "LIBXPOSED"
         private const val XPOSED_82_RUNTIME = "XPOSED_82"
 
         private val RUNTIME_CLASSES = mapOf(
-            LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.entry.LibXposedEntry",
+            LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.entry.base.BaseLibXposedEntry",
             XPOSED_82_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.xposed82.entry.Xposed82Entry"
         )
 
@@ -143,17 +147,12 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         }
 
         private fun reportRequirement(scope: UElement, declaration: PsiModifierListOwner, apiName: String, location: Location) {
-            val annotation = declaration.findRuntimeAnnotation()
-                ?: (declaration as? PsiMember)?.containingClass?.let {
-                    context.evaluator.getAnnotation(it, REQUIRES_RUNTIME_ANNOTATION)
-                } ?: return
-
-            val runtime = annotation.findAttributeValue("value")?.asSourceString()?.substringAfterLast('.') ?: return
-            val runtimeClass = RUNTIME_CLASSES[runtime] ?: return
+            val requirement = declaration.runtimeRequirement() ?: return
+            val runtimeClass = RUNTIME_CLASSES[requirement.runtime] ?: return
             val source = scope.sourcePsi ?: return
             val psiFacade = JavaPsiFacade.getInstance(source.project)
             if (psiFacade.findClass(runtimeClass, source.resolveScope) == null) {
-                val runtimeModule = RUNTIME_MODULES.getValue(runtime)
+                val runtimeModule = RUNTIME_MODULES.getValue(requirement.runtime)
                 context.report(
                     issue = ISSUE,
                     scope = scope,
@@ -163,20 +162,36 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 return
             }
 
-            if (runtime != LIBXPOSED_RUNTIME) return
-            val versionValue = annotation.javaPsi?.findAttributeValue(MIN_API_VERSION) ?: return
-            val requiredVersion = psiFacade.constantEvaluationHelper.computeConstantExpression(versionValue) as? Int ?: return
-            if (requiredVersion <= 0) return
+            if (requirement.runtime != LIBXPOSED_RUNTIME || requirement.minApiVersion <= 0) return
             val declaredVersion = libXposedMinApiVersion ?: return
-            if (declaredVersion >= requiredVersion) return
+            if (declaredVersion >= requirement.minApiVersion) return
 
             context.report(
                 issue = ISSUE,
                 scope = scope,
                 location = location,
-                message = "`$apiName` requires Xposed API $requiredVersion, but " +
+                message = "`$apiName` requires Xposed API ${requirement.minApiVersion}, but " +
                     "`@$LIBXPOSED_ENTRY_ANNOTATION_NAME` specifies `$MIN_API_VERSION = $declaredVersion`"
             )
+        }
+
+        private fun PsiModifierListOwner.runtimeRequirement(): RuntimeRequirement? {
+            // Runtime event extensions cannot use the core module's internal annotation.
+            val ownerPackage = (this as? PsiMethod)?.containingClass?.qualifiedName?.substringBeforeLast('.')
+            if (ownerPackage == LIBXPOSED102_EVENT_PACKAGE)
+                return RuntimeRequirement(LIBXPOSED_RUNTIME, LIBXPOSED102_EVENT_MIN_API_VERSION)
+
+            val annotation = findRuntimeAnnotation()
+                ?: (this as? PsiMember)?.containingClass?.let {
+                    context.evaluator.getAnnotation(it, REQUIRES_RUNTIME_ANNOTATION)
+                } ?: return null
+            val runtime = annotation.findAttributeValue("value")?.asSourceString()?.substringAfterLast('.') ?: return null
+            val versionValue = annotation.javaPsi?.findAttributeValue(MIN_API_VERSION)
+            val minApiVersion = versionValue?.let {
+                JavaPsiFacade.getInstance(project).constantEvaluationHelper.computeConstantExpression(it) as? Int
+            } ?: 0
+
+            return RuntimeRequirement(runtime, minApiVersion)
         }
 
         private fun PsiModifierListOwner.findRuntimeAnnotation() =
@@ -220,4 +235,9 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             return version
         }
     })
+
+    private data class RuntimeRequirement(
+        val runtime: String,
+        val minApiVersion: Int
+    )
 }
