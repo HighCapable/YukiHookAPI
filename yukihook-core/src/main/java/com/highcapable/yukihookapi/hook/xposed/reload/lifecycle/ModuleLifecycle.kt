@@ -24,7 +24,6 @@
 package com.highcapable.yukihookapi.hook.xposed.reload.lifecycle
 
 import android.os.Bundle
-import androidx.annotation.AnyThread
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
@@ -37,7 +36,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  *
  * Configuration runs immediately. Handoff callbacks use the thread chosen by the framework, marshal UI work to the main thread.
  *
- * Stop module-owned threads, native hooks and external listeners in [ModuleLifecycle.dispose].
+ * Stop module-owned threads, native hooks and external listeners in [ModuleLifecycle.onDispose].
  * Register once per module instance. A module without external resources does not need this block.
  * @param block the lifecycle configuration.
  */
@@ -78,7 +77,7 @@ class ModuleLifecycle internal constructor() {
      * Return false before changing resources to reject the request.
      * @param callback the callback that returns whether the old module instance can retire.
      */
-    fun canReload(@AnyThread callback: (extras: Bundle?) -> Boolean) {
+    fun canReload(callback: (extras: Bundle?) -> Boolean) {
         canReloadCallback = callback
     }
 
@@ -88,7 +87,7 @@ class ModuleLifecycle internal constructor() {
      * The new module instance receives it before its `onHook` runs.
      * @param callback the callback that returns a [Bundle] of state to save.
      */
-    fun saveState(@AnyThread callback: () -> Bundle?) {
+    fun onSaveState(callback: () -> Bundle?) {
         saveStateCallback = callback
     }
 
@@ -98,7 +97,7 @@ class ModuleLifecycle internal constructor() {
      * Throwing reports a failure, completed disposal is not rolled back.
      * @param callback releases resources owned by the old module instance before it retires.
      */
-    fun dispose(@AnyThread callback: () -> Unit) {
+    fun onDispose(callback: () -> Unit) {
         disposeCallback = callback
     }
 
@@ -107,7 +106,7 @@ class ModuleLifecycle internal constructor() {
      *
      * @param callback the callback that runs to restore the saved state.
      */
-    fun restoreState(@AnyThread callback: (state: Bundle?) -> Unit) {
+    fun onRestoreState(callback: (state: Bundle?) -> Unit) {
         restoreStateCallback = callback
     }
 
@@ -117,7 +116,7 @@ class ModuleLifecycle internal constructor() {
      * Use this to restart other module-owned work.
      * @param callback the callback that runs after the new module instance is fully loaded.
      */
-    fun reloaded(@AnyThread callback: (extras: Bundle?) -> Unit) {
+    fun onReloaded(callback: (extras: Bundle?) -> Unit) {
         reloadedCallback = callback
     }
 }
