@@ -39,6 +39,7 @@ import androidx.core.net.toUri
 import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
@@ -149,11 +150,16 @@ fun Resources.injectModuleResources() = AppParasitism.injectModuleResources(this
  * Registers the current Xposed module's [Activity] in the host.
  *
  * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host.
- * When an unregistered [Activity] starts in the host, this API automatically calls [injectModuleResources] to inject module resources.
+ * When an unregistered [Activity] starts in the host, this API automatically calls [Context.injectModuleResources] to inject module resources.
+ *
+ * If your module may use [YukiHookLibXposedEntry.HotReload], it is recommended to use [PackageParam.registerModuleActivitiesWhenReady]
+ * to register the module's [Activity], and avoid registering unstable callback events in the host lifecycle functions.
  *
  * - Each [Activity] that starts in the host must implement [ModuleActivity].
  * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
  * - Requires Android 7.0 (API 24) or later.
+ * - A pending [PackageParam.registerModuleActivitiesWhenReady] request takes precedence over this direct call.
+ * @see PackageParam.registerModuleActivitiesWhenReady
  * @receiver the current context.
  * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
  */

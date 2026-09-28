@@ -94,7 +94,7 @@ internal object AppParasitism : ModuleReloadable {
     /**
      * Host values retained across module instances.
      */
-    data class HostBindingsState(
+    private data class HostBindingsState(
         val packageName: String,
         val proxyClassName: String?,
         val hadApplication: Boolean
@@ -121,8 +121,16 @@ internal object AppParasitism : ModuleReloadable {
         }
     }
 
+    /**
+     * Pending module [Activity] registration until the host [Application] is available.
+     */
+    private class PendingModuleActivities(val proxy: Any?)
+
     /** Whether the [Activity] proxy has been registered. */
     private var isActivityProxyRegistered = false
+
+    /** Module [Activity] registration waiting for the host [Application]. */
+    private var pendingModuleActivities: PendingModuleActivities? = null
 
     /** Whether host lifecycle methods have been hooked. */
     private var isAppLifecycleInstalled = false
@@ -305,6 +313,38 @@ internal object AppParasitism : ModuleReloadable {
     }
 
     /**
+     * Records one module [Activity] registration until the host [Application] is available.
+     * @param packageName the package owning the [Application].
+     * @param proxy the proxy [Activity] or null.
+     */
+    fun registerModuleActivitiesWhenReady(packageName: String, proxy: Any?) = events.use {
+        if (YukiHook.isStandalone) return@use
+
+        synchronized(this) {
+            if (isActivityProxyRegistered || pendingModuleActivities != null) return@use
+            if (!canRegisterModuleActivities(packageName)) return@use
+
+            prepareLifecyclePackage(packageName)
+            pendingModuleActivities = PendingModuleActivities(proxy)
+
+            val application = currentApplication?.takeIf { it.packageName == lifecyclePackageName }
+            if (pendingHostBindings == null && application != null) {
+                hostApplication = application
+                registerPendingModuleActivities(application)
+            } else {
+                installApplicationOnCreateHook()
+                if (!isApplicationOnCreateInstalled) pendingModuleActivities = null
+                else if (pendingHostBindings == null) {
+                    currentApplication?.takeIf { it.packageName == lifecyclePackageName }?.let {
+                        hostApplication = it
+                        registerPendingModuleActivities(it)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Prepares services that require the first [Application] in this process.
      * @param packageName the package owning the [Application].
      * @param entryType the current hook entry type.
@@ -431,6 +471,7 @@ internal object AppParasitism : ModuleReloadable {
     /** Binds listeners to an existing [Application], only a real creation event dispatches `onCreate`. */
     private fun bindHostApplication(application: Application, dispatchCreate: Boolean): Throwable? {
         hostApplication = application
+        registerPendingModuleActivities(application)
 
         val pendingLifecycles = synchronized(this) {
             lifecycles.filter { initializedLifecycles.add(it) }
@@ -530,6 +571,50 @@ internal object AppParasitism : ModuleReloadable {
     @RequiresApi(AndroidVersion.N)
     @Synchronized
     fun registerModuleActivities(context: Context, proxy: Any?) {
+        if (isActivityProxyRegistered || pendingModuleActivities != null || !canRegisterModuleActivities(context.packageName)) return
+        installModuleActivities(context, proxy)
+    }
+
+    /**
+     * Registers the current Xposed module's [Activity] in the host when the host [Application] is available.
+     * @param application the host [Application].
+     */
+    @Synchronized
+    private fun registerPendingModuleActivities(application: Application) {
+        val pending = pendingModuleActivities ?: return
+        runCatching { installModuleActivities(application, pending.proxy) }
+            .also { pendingModuleActivities = null }
+            .getOrThrow()
+    }
+
+    /**
+     * Checks whether the current Xposed module's [Activity] can be registered in the host.
+     * @param packageName the package owning the [Application].
+     * @return [Boolean]
+     */
+    private fun canRegisterModuleActivities(packageName: String): Boolean {
+        if (!XposedModuleRuntime.isHostEnvironment) {
+            YLog.innerW("You can only register Activity proxy in host environment")
+            return false
+        }
+        if (packageName == XposedModuleRuntime.modulePackageName) {
+            YLog.innerE("You cannot register Activity proxy into yourself")
+            return false
+        }
+        if (AndroidVersion.isAtMost(AndroidVersion.M)) {
+            YLog.innerE("Activity proxy only support for Android 7.0 (API 24) or higher")
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Installs the current Xposed module's [Activity] in the host.
+     * @param context the current [Context].
+     * @param proxy the proxy [Activity].
+     */
+    private fun installModuleActivities(context: Context, proxy: Any?) {
         fun String.toModuleActivityClassOrNull() = toClassOrNull(baseClassLoader)?.takeIf {
             it isSubclassOf Activity::class && it isSubclassOf ModuleActivity::class
         }
@@ -549,11 +634,6 @@ internal object AppParasitism : ModuleReloadable {
                 putExtra(ActivityProxyConfig.proxyIntentName, this@wrap)
             }
         }
-
-        if (isActivityProxyRegistered) return
-        if (!XposedModuleRuntime.isHostEnvironment) return YLog.innerW("You can only register Activity proxy in host environment")
-        if (context.packageName == XposedModuleRuntime.modulePackageName) return YLog.innerE("You cannot register Activity proxy into yourself")
-        if (AndroidVersion.isAtMost(AndroidVersion.M)) return YLog.innerE("Activity proxy only support for Android 7.0 (API 24) or higher")
 
         val hooked = mutableListOf<YukiHookResult>()
         runCatching {
@@ -740,6 +820,7 @@ internal object AppParasitism : ModuleReloadable {
         lifecycles = emptyList()
         synchronized(this) { initializedLifecycles.clear() }
         hostApplication = null
+        pendingModuleActivities = null
         moduleActivities.clear()
         failure?.let { throw it }
     }
@@ -756,9 +837,14 @@ internal object AppParasitism : ModuleReloadable {
         prepareLifecyclePackage(saved.packageName)
 
         val application = currentApplication?.takeIf { it.packageName == lifecyclePackageName }
-        if (saved.hadApplication && application != null)
+        val hasNewRegistration = pendingModuleActivities != null
+
+        if (application != null && (saved.hadApplication || hasNewRegistration))
             bindHostApplication(application, dispatchCreate = false)?.let(events::reportFailure)
-        if (AndroidVersion.isAtLeast(AndroidVersion.N) && saved.proxyClassName != null && application != null)
-            registerModuleActivities(application, saved.proxyClassName)
+
+        // Register module activities if the host is running on Android N or higher.
+        if (AndroidVersion.isAtLeast(AndroidVersion.N) && !hasNewRegistration &&
+            !isActivityProxyRegistered && saved.proxyClassName != null && application != null
+        ) registerModuleActivities(application, saved.proxyClassName)
     }.also { pendingHostBindings = null }.getOrThrow()
 }

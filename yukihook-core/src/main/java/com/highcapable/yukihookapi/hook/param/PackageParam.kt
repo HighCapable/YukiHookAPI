@@ -23,6 +23,7 @@
 
 package com.highcapable.yukihookapi.hook.param
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -30,6 +31,8 @@ import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
+import androidx.annotation.RequiresApi
+import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.resolver.ConstructorResolver
 import com.highcapable.kavaref.resolver.MethodResolver
@@ -40,6 +43,8 @@ import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
+import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
 import com.highcapable.yukihookapi.hook.param.context.PackageContext
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
@@ -250,6 +255,28 @@ open class PackageParam internal constructor(internal var context: PackageContex
             entryType = current.type,
             block = block
         )
+    }
+
+    /**
+     * Registers the current Xposed module's [Activity] in the host when its [Application] is available.
+     *
+     * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host.
+     * When an unregistered [Activity] starts in the host, this API automatically calls [Context.injectModuleResources] to inject module resources.
+     *
+     * Only the first request for this host is used. A failed registration may be retried.
+     * When declared from `onHook`, package replay repeats this request after module reload.
+     *
+     * Direct registration on a [Context] remains immediate and is not replayed.
+     * This is loaded only for the package that owns the first [Application] in the current process.
+     *
+     * - Requires Android 7.0 (API 24) or later.
+     * @see Context.registerModuleActivities
+     * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
+     */
+    @RequiresApi(AndroidVersion.N)
+    fun registerModuleActivitiesWhenReady(proxy: Any? = null) {
+        if (context?.type == HookEntryType.PACKAGE && context?.isFirstApplication == true)
+            AppParasitism.registerModuleActivitiesWhenReady(packageName, proxy)
     }
 
     /**
