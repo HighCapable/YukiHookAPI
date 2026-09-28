@@ -40,14 +40,14 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  * @param block the event configuration block.
  * @throws IllegalStateException if called outside [YukiHookXposedModule.onInit] or more than once.
  */
-fun YukiHookXposedModule.registerFrameworkEvents(block: YukiXposed82Event.() -> Unit) =
-    YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiXposed82Event.block() }
+fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookXposed82Event.() -> Unit) =
+    YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiHookXposed82Event.block() }
 
 /**
  * Registers listeners for framework lifecycle events exposed by Xposed API 82.
  * Configure listeners only inside [registerFrameworkEvents]. Each lifecycle listener can be set once.
  */
-object YukiXposed82Event {
+object YukiHookXposed82Event {
 
     internal var initZygoteCallback: ((IXposedHookZygoteInit.StartupParam) -> Unit)? = null
         private set

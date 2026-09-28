@@ -40,14 +40,14 @@ import io.github.libxposed.api.XposedModuleInterface
  * @param block the event configuration block.
  * @throws IllegalStateException if called outside [YukiHookXposedModule.onInit] or more than once.
  */
-fun YukiHookXposedModule.registerFrameworkEvents(block: YukiLibXposedEvent.() -> Unit) =
-    YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiLibXposedEvent.block() }
+fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookLibXposedEvent.() -> Unit) =
+    YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiHookLibXposedEvent.block() }
 
 /**
  * Registers listeners for framework lifecycle events exposed by libxposed.
  * Configure listeners only inside [registerFrameworkEvents]. Each lifecycle listener can be set once.
  */
-object YukiLibXposedEvent {
+object YukiHookLibXposedEvent {
     internal var moduleLoaded: (XposedInterface.(XposedModuleInterface.ModuleLoadedParam) -> Unit)? = null
     internal var packageLoaded: (XposedInterface.(XposedModuleInterface.PackageLoadedParam) -> Unit)? = null
     internal var packageReady: (XposedInterface.(XposedModuleInterface.PackageReadyParam) -> Unit)? = null

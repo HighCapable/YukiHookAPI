@@ -25,7 +25,7 @@ package com.highcapable.yukihookapi.runtime.libxposed.entry
 
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
-import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiLibXposedEvent
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiHookLibXposedEvent
 import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadPolicy
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedHookApi
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedModuleSession
@@ -103,7 +103,7 @@ abstract class LibXposed102Entry : BaseLibXposedEntry() {
                 }
             }
 
-            if (YukiLibXposedEvent.hotReloading?.invoke(this, nativeParam) != false) {
+            if (YukiHookLibXposedEvent.hotReloading?.invoke(this, nativeParam) != false) {
                 param.setSavedInstanceState(HandoffState.encode(HandoffState.fromManagedState(managedState, nativeState)))
                 true
             } else false
@@ -130,7 +130,7 @@ abstract class LibXposed102Entry : BaseLibXposedEntry() {
                 override fun getOldHookHandles() = param.oldHookHandles.filterNot { it.id?.startsWith("${YukiHook.TAG}:") == true }
             }
             runCatching {
-                YukiLibXposedEvent.hotReloaded?.invoke(this, nativeParam)
+                YukiHookLibXposedEvent.hotReloaded?.invoke(this, nativeParam)
             }.onFailure(YukiHookModuleCaller::callRecordRestoreFailure)
         }.also {
             // Replaced handles are already invalidated. unhook is idempotent and removes only

@@ -24,7 +24,7 @@ package com.highcapable.yukihookapi.runtime.libxposed.entry.base
 import androidx.annotation.RequiresApi
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
-import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiLibXposedEvent
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiHookLibXposedEvent
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedHookApi
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
@@ -63,12 +63,12 @@ abstract class BaseLibXposedEntry : XposedModule() {
 
         parseProcessName(param)
         initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo)
-        YukiLibXposedEvent.moduleLoaded?.invoke(this, param)
+        YukiHookLibXposedEvent.moduleLoaded?.invoke(this, param)
     }
 
     @RequiresApi(29)
     final override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
-        YukiLibXposedEvent.packageLoaded?.invoke(this, param)
+        YukiHookLibXposedEvent.packageLoaded?.invoke(this, param)
     }
 
     final override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
@@ -81,7 +81,7 @@ abstract class BaseLibXposedEntry : XposedModule() {
             loader = param.classLoader,
             appInfo = param.applicationInfo
         )
-        YukiLibXposedEvent.packageReady?.invoke(this, param)
+        YukiHookLibXposedEvent.packageReady?.invoke(this, param)
     }
 
     final override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
@@ -92,6 +92,6 @@ abstract class BaseLibXposedEntry : XposedModule() {
             packageNameForMatching = null,
             loader = param.classLoader
         )
-        YukiLibXposedEvent.systemServerStarting?.invoke(this, param)
+        YukiHookLibXposedEvent.systemServerStarting?.invoke(this, param)
     }
 }

@@ -21,19 +21,19 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.xposed.bridge.event.libxposed101
+package com.highcapable.yukihookapi.hook.xposed.bridge.event.v101
 
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
-import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiLibXposedEvent
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiHookLibXposedEvent
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModuleInterface
 
 /**
  * Sets the `onModuleLoaded` event listener. This is process-local module loading, not zygote initialization.
- * @receiver [YukiLibXposedEvent] the framework event registry.
+ * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
-fun YukiLibXposedEvent.onModuleLoaded(callback: XposedInterface.(XposedModuleInterface.ModuleLoadedParam) -> Unit) {
+fun YukiHookLibXposedEvent.onModuleLoaded(callback: XposedInterface.(XposedModuleInterface.ModuleLoadedParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(moduleLoaded == null) {
         "onModuleLoaded is already registered."
@@ -44,10 +44,10 @@ fun YukiLibXposedEvent.onModuleLoaded(callback: XposedInterface.(XposedModuleInt
 
 /**
  * Sets the `onPackageLoaded` event listener for the default class loader on Android 10 and later.
- * @receiver [YukiLibXposedEvent] the framework event registry.
+ * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
-fun YukiLibXposedEvent.onPackageLoaded(callback: XposedInterface.(XposedModuleInterface.PackageLoadedParam) -> Unit) {
+fun YukiHookLibXposedEvent.onPackageLoaded(callback: XposedInterface.(XposedModuleInterface.PackageLoadedParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(packageLoaded == null) {
         "onPackageLoaded is already registered."
@@ -58,10 +58,10 @@ fun YukiLibXposedEvent.onPackageLoaded(callback: XposedInterface.(XposedModuleIn
 
 /**
  * Sets the `onPackageReady` event listener for the final package class loader.
- * @receiver [YukiLibXposedEvent] the framework event registry.
+ * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
-fun YukiLibXposedEvent.onPackageReady(callback: XposedInterface.(XposedModuleInterface.PackageReadyParam) -> Unit) {
+fun YukiHookLibXposedEvent.onPackageReady(callback: XposedInterface.(XposedModuleInterface.PackageReadyParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(packageReady == null) {
         "onPackageReady is already registered."
@@ -72,10 +72,10 @@ fun YukiLibXposedEvent.onPackageReady(callback: XposedInterface.(XposedModuleInt
 
 /**
  * Sets the `onSystemServerStarting` event listener, which replaces the first package lifecycle in system_server.
- * @receiver [YukiLibXposedEvent] the framework event registry.
+ * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
-fun YukiLibXposedEvent.onSystemServerStarting(callback: XposedInterface.(XposedModuleInterface.SystemServerStartingParam) -> Unit) {
+fun YukiHookLibXposedEvent.onSystemServerStarting(callback: XposedInterface.(XposedModuleInterface.SystemServerStartingParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(systemServerStarting == null) {
         "onSystemServerStarting is already registered."

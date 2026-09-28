@@ -21,19 +21,19 @@
  */
 @file:Suppress("unused")
 
-package com.highcapable.yukihookapi.hook.xposed.bridge.event.libxposed102
+package com.highcapable.yukihookapi.hook.xposed.bridge.event.v102
 
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
-import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiLibXposedEvent
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiHookLibXposedEvent
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModuleInterface
 
 /**
  * Sets the `onHotReloading` event listener for API 102 or later.
- * @receiver [YukiLibXposedEvent] the framework event registry.
+ * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the native event listener.
  */
-fun YukiLibXposedEvent.onHotReloading(callback: XposedInterface.(XposedModuleInterface.HotReloadingParam) -> Boolean) {
+fun YukiHookLibXposedEvent.onHotReloading(callback: XposedInterface.(XposedModuleInterface.HotReloadingParam) -> Boolean) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(hotReloading == null) {
         "onHotReloading is already registered."
@@ -44,10 +44,10 @@ fun YukiLibXposedEvent.onHotReloading(callback: XposedInterface.(XposedModuleInt
 
 /**
  * Sets the `onHotReloaded` event listener for API 102 or later.
- * @receiver [YukiLibXposedEvent] the framework event registry.
+ * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the native event listener.
  */
-fun YukiLibXposedEvent.onHotReloaded(callback: XposedInterface.(XposedModuleInterface.HotReloadedParam) -> Unit) {
+fun YukiHookLibXposedEvent.onHotReloaded(callback: XposedInterface.(XposedModuleInterface.HotReloadedParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(hotReloaded == null) {
         "onHotReloaded is already registered."

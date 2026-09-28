@@ -59,14 +59,15 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         private const val LIBXPOSED_ENTRY_ANNOTATION_NAME = "YukiHookLibXposedEntry"
         private const val LIBXPOSED_ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.$LIBXPOSED_ENTRY_ANNOTATION_NAME"
 
-        private const val LIBXPOSED102_EVENT_PACKAGE = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.libxposed102"
+        private const val LIBXPOSED_102_EVENT_PACKAGE = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.v102"
 
         private const val MIN_API_VERSION = "minApiVersion"
-        private const val DEFAULT_LIBXPOSED_MIN_API_VERSION = 101
-        private const val LIBXPOSED102_EVENT_MIN_API_VERSION = 102
 
         private const val LIBXPOSED_RUNTIME = "LIBXPOSED"
         private const val XPOSED_82_RUNTIME = "XPOSED_82"
+
+        private const val DEFAULT_LIBXPOSED_MIN_API_VERSION = 101
+        private const val LIBXPOSED_102_EVENT_MIN_API_VERSION = 102
 
         private val RUNTIME_CLASSES = mapOf(
             LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.entry.base.BaseLibXposedEntry",
@@ -178,8 +179,8 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         private fun PsiModifierListOwner.runtimeRequirement(): RuntimeRequirement? {
             // Runtime event extensions cannot use the core module's internal annotation.
             val ownerPackage = (this as? PsiMethod)?.containingClass?.qualifiedName?.substringBeforeLast('.')
-            if (ownerPackage == LIBXPOSED102_EVENT_PACKAGE)
-                return RuntimeRequirement(LIBXPOSED_RUNTIME, LIBXPOSED102_EVENT_MIN_API_VERSION)
+            if (ownerPackage == LIBXPOSED_102_EVENT_PACKAGE)
+                return RuntimeRequirement(LIBXPOSED_RUNTIME, LIBXPOSED_102_EVENT_MIN_API_VERSION)
 
             val annotation = findRuntimeAnnotation()
                 ?: (this as? PsiMember)?.containingClass?.let {
