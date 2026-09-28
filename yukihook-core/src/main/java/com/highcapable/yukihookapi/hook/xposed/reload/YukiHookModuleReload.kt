@@ -30,10 +30,9 @@ import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleLifecycleManager
-import com.highcapable.yukihookapi.hook.xposed.reload.entity.ReloadResult
-import com.highcapable.yukihookapi.hook.xposed.reload.entity.ReloadState
-import com.highcapable.yukihookapi.hook.xposed.reload.entity.ReloadStatus
-import com.highcapable.yukihookapi.hook.xposed.reload.entity.ReloadTarget
+import com.highcapable.yukihookapi.hook.xposed.reload.entity.ModuleReloadResult
+import com.highcapable.yukihookapi.hook.xposed.reload.entity.ModuleReloadStatus
+import com.highcapable.yukihookapi.hook.xposed.reload.entity.ModuleTarget
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
@@ -91,12 +90,12 @@ class YukiHookModuleReload private constructor() {
 
     /**
      * Queries the framework for fresh reload target snapshots on every access.
-     * @return [List]<[ReloadTarget]> the running hosts available for reload.
+     * @return [List]<[ModuleTarget]> the running hosts available for reload.
      * @throws IllegalStateException in a host process or when the framework service is unavailable.
      */
-    val targets: List<ReloadTarget> get() {
+    val targets: List<ModuleTarget> get() {
         checkApi()
-        return current.targets.map(::ReloadTarget)
+        return current.targets.map(::ModuleTarget)
     }
 
     /**
@@ -105,10 +104,10 @@ class YukiHookModuleReload private constructor() {
      * Returning from this function does not mean the reload succeeded.
      * The callback runs on the main thread, including skipped requests.
      *
-     * By default, an [ReloadState.UP_TO_DATE] snapshot returns [ReloadStatus.SKIPPED] without submitting a request.
+     * By default, an [ModuleTarget.State.UP_TO_DATE] snapshot returns [ModuleReloadStatus.SKIPPED] without submitting a request.
      * This uses the supplied snapshot, not an atomic check of the currently installed code.
      *
-     * Submission errors are reported as [ReloadStatus.FAILED] with the original diagnostic message.
+     * Submission errors are reported as [ModuleReloadStatus.FAILED] with the original diagnostic message.
      * Neither a successful submission nor a target snapshot guarantees that the old module accepts reload.
      * @param target a target from [targets].
      * @param extras primitive values, strings, arrays and nested bundles only, no module-defined objects.
@@ -117,21 +116,21 @@ class YukiHookModuleReload private constructor() {
      * @throws IllegalStateException if the module service is not connected.
      */
     fun request(
-        target: ReloadTarget,
+        target: ModuleTarget,
         extras: Bundle? = null,
         skippedIfUpToDate: Boolean = true,
-        callback: (ReloadResult) -> Unit
+        callback: (ModuleReloadResult) -> Unit
     ) {
         checkApi()
 
         ModuleLifecycleManager.checkBundle(extras)
-        if (skippedIfUpToDate && target.state == ReloadState.UP_TO_DATE) {
-            mainHandler.post { callback(ReloadResult(target, ReloadStatus.SKIPPED, null)) }
+        if (skippedIfUpToDate && target.state == ModuleTarget.State.UP_TO_DATE) {
+            mainHandler.post { callback(ModuleReloadResult(target, ModuleReloadStatus.SKIPPED, null)) }
             return
         }
 
         current.request(target.handle, extras) { status, message ->
-            callback(ReloadResult(target, ReloadStatus.valueOf(status.name), message))
+            callback(ModuleReloadResult(target, ModuleReloadStatus.valueOf(status.name), message))
         }
     }
 
@@ -140,9 +139,9 @@ class YukiHookModuleReload private constructor() {
      *
      * The process name, UID and PID are query filters, not stable target identities.
      * This query and request are not atomic. Query errors are thrown directly and do not invoke the callback.
-     * By default, an [ReloadState.UP_TO_DATE] snapshot from this query returns [ReloadStatus.SKIPPED] without submitting a request.
+     * By default, an [ModuleTarget.State.UP_TO_DATE] snapshot from this query returns [ModuleReloadStatus.SKIPPED] without submitting a request.
      *
-     * Submission errors are reported as [ReloadStatus.FAILED] with the original diagnostic message.
+     * Submission errors are reported as [ModuleReloadStatus.FAILED] with the original diagnostic message.
      * If no unique target matches, the callback receives null immediately on the main thread.
      * The reload result callback also runs on the main thread, including skipped requests and submission failures.
      * @param processName the exact process name to match.
@@ -159,7 +158,7 @@ class YukiHookModuleReload private constructor() {
         pid: Int? = null,
         extras: Bundle? = null,
         skippedIfUpToDate: Boolean = true,
-        callback: (ReloadResult?) -> Unit
+        callback: (ModuleReloadResult?) -> Unit
     ) {
         val target = targets.singleOrNull {
             it.processName == processName && (uid == null || it.uid == uid) && (pid == null || it.pid == pid)

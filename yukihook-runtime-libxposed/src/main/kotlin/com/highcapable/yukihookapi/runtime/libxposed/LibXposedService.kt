@@ -31,13 +31,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import io.github.libxposed.api.XposedInterface
-import io.github.libxposed.service.HookedTarget
 import io.github.libxposed.service.HotReloadResult
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
 import io.github.libxposed.service.YukiHookServiceBridge
 import java.util.IdentityHashMap
 import java.util.concurrent.CopyOnWriteArraySet
+import io.github.libxposed.service.HookedTarget as NativeHookedTarget
 
 /**
  * Owns the asynchronous module service connection independently of the host hook API.
@@ -58,7 +58,7 @@ internal object LibXposedService {
     val frameworkVersionCode get() = runCatching { service?.frameworkVersionCode }.getOrNull() ?: -1L
     val isRemoteFileAccessAvailable get() = useRemoteFiles(false) { true }
 
-    class ReloadTarget(private val service: XposedService, val target: HookedTarget) {
+    class HookedTarget(private val service: XposedService, val target: NativeHookedTarget) {
 
         fun request(current: XposedService, extras: Bundle?, callback: (HotReloadResult) -> Unit) {
             check(service === current) {
@@ -111,8 +111,8 @@ internal object LibXposedService {
         }
     }
 
-    fun getReloadTargets() = useModuleReload { service -> service.runningTargets.map { ReloadTarget(service, it) } }
-    fun requestReload(target: ReloadTarget, extras: Bundle?, callback: (HotReloadResult) -> Unit) =
+    fun getReloadTargets() = useModuleReload { service -> service.runningTargets.map { HookedTarget(service, it) } }
+    fun requestReload(target: HookedTarget, extras: Bundle?, callback: (HotReloadResult) -> Unit) =
         useModuleReload { target.request(it, extras, callback) }
 
     fun getScope() = useModuleScope { it.scope }

@@ -25,28 +25,15 @@ import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
- * Outcome of a reload request.
+ * A completed request.
+ * @param target the originally selected snapshot.
+ * @param status the request outcome.
+ * @param message the original diagnostic message, or null.
  */
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
-enum class ReloadStatus {
-    /** The requested module instance completed initialization. */
-    SUCCEEDED,
-
-    /**
-     * Submission failed, or the module refused or failed to reload.
-     * [ReloadResult.message] contains the original diagnostic.
-     */
-    FAILED,
-
-    /** The framework cannot reload this target. */
-    UNSUPPORTED,
-
-    /** Another request is already running for this target. */
-    IN_PROGRESS,
-
-    /** The target died before the request completed. */
-    PROCESS_DIED,
-
-    /** The request was not submitted because the target snapshot was up-to-date. */
-    SKIPPED
-}
+@ConsistentCopyVisibility
+data class ModuleReloadResult internal constructor(
+    val target: ModuleTarget,
+    val status: ModuleReloadStatus,
+    val message: String?
+)

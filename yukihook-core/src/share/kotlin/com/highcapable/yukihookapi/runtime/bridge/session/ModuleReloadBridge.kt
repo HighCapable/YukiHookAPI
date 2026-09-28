@@ -49,23 +49,23 @@ interface ModuleReloadBridge {
 
         /** Loaded module version code for display, not code identity. */
         val loadedVersionCode: Long
-    }
 
-    /**
-     * Framework-reported state of a running target.
-     */
-    enum class State {
-        /** The installed code is active. */
-        UP_TO_DATE,
+        /**
+         * Framework-reported state of a running target.
+         */
+        enum class State {
+            /** The installed code is active. */
+            UP_TO_DATE,
 
-        /** Older module code is active. */
-        STALE,
+            /** Older module code is active. */
+            STALE,
 
-        /** A reload is running. */
-        RELOADING,
+            /** A reload is running. */
+            RELOADING,
 
-        /** The last reload failed. */
-        FAILED
+            /** The last reload failed. */
+            FAILED
+        }
     }
 
     /**

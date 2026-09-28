@@ -19,38 +19,34 @@
  *
  * This file is created by fankes on 2026/9/28.
  */
-@file:Suppress("unused")
-
 package com.highcapable.yukihookapi.hook.xposed.reload.entity
 
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
-import com.highcapable.yukihookapi.hook.xposed.reload.YukiHookModuleReload
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
-import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadBridge
 
 /**
- * An immutable target snapshot.
+ * Outcome of a reload request.
  */
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
-class ReloadTarget internal constructor(internal val handle: ModuleReloadBridge.Target) {
-
-    /** Process UID. */
-    val uid by handle::uid
-
-    /** Process PID. */
-    val pid by handle::pid
-
-    /** Process name. */
-    val processName by handle::processName
+enum class ModuleReloadStatus {
+    /** The requested module instance completed initialization. */
+    SUCCEEDED,
 
     /**
-     * State at query time.
-     * Query [YukiHookModuleReload.targets] again to refresh it.
+     * Submission failed, or the module refused or failed to reload.
+     * [ModuleReloadResult.message] contains the original diagnostic.
      */
-    val state get() = ReloadState.valueOf(handle.state.name)
+    FAILED,
 
-    /** Diagnostic module version code, not a code fingerprint. */
-    val loadedVersionCode by handle::loadedVersionCode
+    /** The framework cannot reload this target. */
+    UNSUPPORTED,
 
-    override fun toString() = "ReloadTarget(uid=$uid, pid=$pid, processName='$processName', state=$state, loadedVersionCode=$loadedVersionCode)"
+    /** Another request is already running for this target. */
+    IN_PROGRESS,
+
+    /** The target died before the request completed. */
+    PROCESS_DIED,
+
+    /** The request was not submitted because the target snapshot was up-to-date. */
+    SKIPPED
 }

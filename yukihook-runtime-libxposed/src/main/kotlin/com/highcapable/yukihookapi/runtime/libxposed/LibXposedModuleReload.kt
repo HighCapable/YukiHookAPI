@@ -34,15 +34,15 @@ import io.github.libxposed.service.XposedService
  */
 internal object LibXposedModuleReload : ModuleReloadBridge {
 
-    private class TargetHandle(val handle: LibXposedService.ReloadTarget) : ModuleReloadBridge.Target {
+    private class TargetHandle(val handle: LibXposedService.HookedTarget) : ModuleReloadBridge.Target {
         override val uid get() = handle.target.uid
         override val pid get() = handle.target.pid
         override val processName get() = handle.target.processName
         override val state get() = when (handle.target.state) {
-            HookedTarget.State.UP_TO_DATE -> ModuleReloadBridge.State.UP_TO_DATE
-            HookedTarget.State.STALE -> ModuleReloadBridge.State.STALE
-            HookedTarget.State.RELOADING -> ModuleReloadBridge.State.RELOADING
-            HookedTarget.State.FAILED -> ModuleReloadBridge.State.FAILED
+            HookedTarget.State.UP_TO_DATE -> ModuleReloadBridge.Target.State.UP_TO_DATE
+            HookedTarget.State.STALE -> ModuleReloadBridge.Target.State.STALE
+            HookedTarget.State.RELOADING -> ModuleReloadBridge.Target.State.RELOADING
+            HookedTarget.State.FAILED -> ModuleReloadBridge.Target.State.FAILED
         }
         override val loadedVersionCode get() = handle.target.loadedVersionCode
     }
