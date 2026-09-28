@@ -23,7 +23,7 @@ package com.highcapable.yukihookapi.runtime.xposed82.entry
 
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
-import com.highcapable.yukihookapi.hook.xposed.bridge.event.caller.YukiXposed82EventCaller
+import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiXposed82Event
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.IXposedHookZygoteInit
@@ -58,7 +58,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
             packageNameForMatching = FRAMEWORK_PACKAGE_NAME,
             loader = XposedBridge.BOOTCLASSLOADER
         )
-        YukiXposed82EventCaller.callInitZygote(startupParam)
+        YukiXposed82Event.initZygoteCallback?.invoke(startupParam)
     }
 
     final override fun handleLoadPackage(param: XC_LoadPackage.LoadPackageParam) {
@@ -87,6 +87,6 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
             loader = param.classLoader,
             appInfo = param.appInfo
         )
-        YukiXposed82EventCaller.callHandleLoadPackage(param)
+        YukiXposed82Event.handleLoadPackageCallback?.invoke(param)
     }
 }
