@@ -69,13 +69,13 @@ interface ModuleReloadBridge {
     }
 
     /**
-     * Outcome of a submitted reload request.
+     * Outcome of a reload request.
      */
     enum class Status {
         /** The new module instance completed initialization. */
         SUCCEEDED,
 
-        /** The old module instance refused or reload failed. */
+        /** Submission failed, the old module instance refused, or reload failed. */
         FAILED,
 
         /** The target cannot be reloaded. */
@@ -96,6 +96,7 @@ interface ModuleReloadBridge {
 
     /**
      * Submits a reload request.
+     * Submission failures are reported as [Status.FAILED] with the original diagnostic message.
      * @param target an opaque target obtained from this bridge.
      * @param extras classloader-neutral request data.
      * @param callback the completion listener.

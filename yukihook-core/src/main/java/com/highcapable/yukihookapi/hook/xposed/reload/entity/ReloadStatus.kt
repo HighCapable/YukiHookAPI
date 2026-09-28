@@ -25,7 +25,7 @@ import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
- * Outcome of a submitted request.
+ * Outcome of a reload request.
  */
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
 enum class ReloadStatus {
@@ -33,7 +33,7 @@ enum class ReloadStatus {
     SUCCEEDED,
 
     /**
-     * The module refused or failed to reload.
+     * Submission failed, or the module refused or failed to reload.
      * [ReloadResult.message] contains the original diagnostic.
      */
     FAILED,
@@ -45,5 +45,8 @@ enum class ReloadStatus {
     IN_PROGRESS,
 
     /** The target died before the request completed. */
-    PROCESS_DIED
+    PROCESS_DIED,
+
+    /** The request was not submitted because the target snapshot was up-to-date. */
+    SKIPPED
 }

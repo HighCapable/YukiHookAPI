@@ -27,7 +27,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 /**
  * A completed request.
  * @param target the originally selected snapshot.
- * @param status the framework outcome.
+ * @param status the request outcome.
  * @param message the original diagnostic message, or null.
  */
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)

@@ -24,7 +24,6 @@ package com.highcapable.yukihookapi.runtime.libxposed
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadBridge
 import io.github.libxposed.service.HookedTarget
 import io.github.libxposed.service.HotReloadResult
@@ -58,19 +57,25 @@ internal object LibXposedModuleReload : ModuleReloadBridge {
             "The reload target was not issued by this runtime."
         }
 
-        LibXposedService.requestReload(target.handle, extras) { result ->
-            val status = when (result.status()) {
-                HotReloadResult.Status.SUCCEEDED -> ModuleReloadBridge.Status.SUCCEEDED
-                HotReloadResult.Status.FAILED -> ModuleReloadBridge.Status.FAILED
-                HotReloadResult.Status.UNSUPPORTED -> ModuleReloadBridge.Status.UNSUPPORTED
-                HotReloadResult.Status.IN_PROGRESS -> ModuleReloadBridge.Status.IN_PROGRESS
-                HotReloadResult.Status.PROCESS_DIED -> ModuleReloadBridge.Status.PROCESS_DIED
-            }
-            mainHandler.post {
-                runCatching { callback(status, result.message()) }.onFailure {
-                    Log.e("YukiHook-Runtime", "Module reload result listener failed", it)
+        runCatching {
+            LibXposedService.requestReload(target.handle, extras) { result ->
+                val status = when (result.status()) {
+                    HotReloadResult.Status.SUCCEEDED -> ModuleReloadBridge.Status.SUCCEEDED
+                    HotReloadResult.Status.FAILED -> ModuleReloadBridge.Status.FAILED
+                    HotReloadResult.Status.UNSUPPORTED -> ModuleReloadBridge.Status.UNSUPPORTED
+                    HotReloadResult.Status.IN_PROGRESS -> ModuleReloadBridge.Status.IN_PROGRESS
+                    HotReloadResult.Status.PROCESS_DIED -> ModuleReloadBridge.Status.PROCESS_DIED
                 }
+                dispatchResult(status, result.message(), callback)
             }
+        }.onFailure {
+            dispatchResult(ModuleReloadBridge.Status.FAILED, it.message, callback)
         }
     }
+
+    private fun dispatchResult(
+        status: ModuleReloadBridge.Status,
+        message: String?,
+        callback: (ModuleReloadBridge.Status, String?) -> Unit
+    ) = mainHandler.post { callback(status, message) }
 }
