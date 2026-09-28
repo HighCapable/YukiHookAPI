@@ -37,7 +37,6 @@ import com.highcapable.yukihookapi.demo.module.modern.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.modern.ui.MainActivity
 import com.highcapable.yukihookapi.demo.module.modern.ui.component.compatStyle
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
-import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 
 /**
@@ -128,11 +127,7 @@ object HookEntry : YukiHookXposedModule {
             loadApp(DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME) {
                 // Register Activity Proxy
                 // 注册模块 Activity 代理
-                registerAppLifecycle {
-                    onCreate {
-                        if (AndroidVersion.isAtLeast(AndroidVersion.N)) registerModuleActivities()
-                    }
-                }
+                if (AndroidVersion.isAtLeast(AndroidVersion.N)) registerModuleActivitiesWhenReady()
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
                 Activity::class.resolve()
