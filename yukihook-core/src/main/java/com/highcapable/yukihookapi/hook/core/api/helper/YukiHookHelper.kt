@@ -23,8 +23,8 @@ package com.highcapable.yukihookapi.hook.core.api.helper
 
 import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
+import com.highcapable.yukihookapi.hook.core.api.handle.YukiHookHandle
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
-import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
@@ -54,9 +54,9 @@ internal object YukiHookHelper {
      * @param target the point to hook.
      * @param hooker the hooker to register.
      * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
-     * @return [YukiHookResult]
+     * @return [YukiHookHandle] for the registered hook.
      */
-    fun hook(target: HookPoint, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT): YukiHookResult {
+    fun hook(target: HookPoint, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT): YukiHookHandle {
         val hook = YukiHookBridge.hookRegistration.hook(
             target = target,
             priority = when (priority) {
@@ -67,7 +67,7 @@ internal object YukiHookHelper {
             hooker = hooker
         )
 
-        return YukiHookResult.from(target, hook)
+        return YukiHookHandle.from(target, hook)
     }
 
     /**
@@ -75,7 +75,7 @@ internal object YukiHookHelper {
      * @param resolver the [MemberResolver] to hook.
      * @param hooker the hooker to register.
      * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
-     * @return [YukiHookResult]
+     * @return [YukiHookHandle] for the registered hook.
      */
     fun hook(resolver: MemberResolver<*, *>, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
         hook(HookPoint.Executable(resolver.self), hooker, priority)
@@ -84,10 +84,10 @@ internal object YukiHookHelper {
      * Replaces one registered hook with a new hooker.
      * @param registration the registered hook to replace.
      * @param hooker the replacement hooker callback.
-     * @return [YukiHookResult] a new registration snapshot for the replacement hooker.
+     * @return [YukiHookHandle] a new handle for the replacement hooker.
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
-    fun replace(registration: YukiHookResult, hooker: HookerBridge) = YukiHookResult.from(
+    fun replace(registration: YukiHookHandle, hooker: HookerBridge) = YukiHookHandle.from(
         target = registration.target, 
         hooker = YukiHookBridge.hookRegistration.replace(registration.hooker, hooker)
     )

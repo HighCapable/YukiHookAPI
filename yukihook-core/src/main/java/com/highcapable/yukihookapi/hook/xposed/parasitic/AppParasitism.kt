@@ -55,9 +55,9 @@ import com.highcapable.kavaref.extension.lazyClass
 import com.highcapable.kavaref.extension.toClass
 import com.highcapable.kavaref.extension.toClassOrNull
 import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.hook.core.api.handle.YukiHookHandle
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
-import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher
@@ -369,7 +369,7 @@ internal object AppParasitism : ModuleReloadable {
     private fun installAppLifecycleHooks() {
         if (isAppLifecycleInstalled) return
 
-        val hooked = mutableListOf<YukiHookResult>()
+        val hooked = mutableListOf<YukiHookHandle>()
         runCatching {
             Application::class.resolve().optional(silent = true).apply {
                 YukiHookHelper.hook(firstMethod { name = "attach"; parameters(Context::class) }, object : ClassicHookerBridge {
@@ -428,7 +428,7 @@ internal object AppParasitism : ModuleReloadable {
 
             isAppLifecycleInstalled = true
         }.onFailure {
-            hooked.forEach { result -> result.remove() }
+            hooked.forEach { handle -> handle.remove() }
             events.reportFailure(it)
             YLog.innerE("App lifecycle initialization failed", it)
         }
@@ -635,7 +635,7 @@ internal object AppParasitism : ModuleReloadable {
             }
         }
 
-        val hooked = mutableListOf<YukiHookResult>()
+        val hooked = mutableListOf<YukiHookHandle>()
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${XposedModuleRuntime.modulePackageName}.ACTIVITY_PROXY_INTENT"
@@ -778,7 +778,7 @@ internal object AppParasitism : ModuleReloadable {
 
             isActivityProxyRegistered = true
         }.onFailure {
-            hooked.forEach { result -> result.remove() }
+            hooked.forEach { handle -> handle.remove() }
             YLog.innerE("Activity proxy initialization failed because got an exception", it)
             events.reportFailure(it)
         }

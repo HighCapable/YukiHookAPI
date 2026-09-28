@@ -27,9 +27,9 @@ import android.os.Bundle
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.isNotSubclassOf
 import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.hook.core.api.handle.YukiHookHandle
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
-import com.highcapable.yukihookapi.hook.core.api.result.YukiHookResult
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookChain
 import com.highcapable.yukihookapi.hook.param.HookInvocation
@@ -82,7 +82,7 @@ class YukiHookCreator private constructor() {
     abstract class MemberHooker<I : HookInvocation> internal constructor(private val priority: YukiHookPriority) {
 
         private val registrationLock = Any()
-        private val result = Result()
+        private val handle = Handle()
 
         private var isHooked = false
         private var isRegistering = false
@@ -91,7 +91,7 @@ class YukiHookCreator private constructor() {
         private var onCallbackFailureCallback: ((I, Throwable) -> Unit)? = null
         private var onInvocationFailureCallback: ((Throwable) -> Unit)? = null
 
-        private val results = mutableSetOf<YukiHookResult>()
+        private val handles = mutableSetOf<YukiHookHandle>()
 
         /** Points selected for this registration group. */
         internal val targets = mutableSetOf<HookPoint>()
@@ -100,13 +100,13 @@ class YukiHookCreator private constructor() {
          * Removes every registered hook belonging to this hooker.
          * @param callback callback indicating whether any registrations were removed.
          */
-        fun removeSelf(callback: (Boolean) -> Unit = {}) = result.remove(callback)
+        fun removeSelf(callback: (Boolean) -> Unit = {}) = handle.remove(callback)
 
         /**
          * Registers the configured hooker.
-         * @return [Result] for removal and invocation failure listeners.
+         * @return [Handle] for removal and invocation failure listeners.
          */
-        internal fun build() = result.apply { hook() }
+        internal fun build() = handle.apply { hook() }
 
         /** Registers each point independently so one failure does not interrupt the remaining hooks. */
         internal fun hook() {
@@ -137,10 +137,10 @@ class YukiHookCreator private constructor() {
          * Stores a completed registration or removes it when removal was requested while registering.
          * @param registration the completed registration.
          */
-        private fun storeRegistration(registration: YukiHookResult) {
+        private fun storeRegistration(registration: YukiHookHandle) {
             val shouldRemove = synchronized(registrationLock) {
                 if (isRemovalPending) true else {
-                    results.add(registration)
+                    handles.add(registration)
                     false
                 }
             }
@@ -149,7 +149,7 @@ class YukiHookCreator private constructor() {
                 removeRegistration(registration)
             }.onFailure {
                 synchronized(registrationLock) {
-                    results.add(registration)
+                    handles.add(registration)
                 }
             }.getOrThrow()
         }
@@ -158,14 +158,14 @@ class YukiHookCreator private constructor() {
          * Removes one native registration outside [registrationLock].
          * @param registration the registration to remove.
          */
-        private fun removeRegistration(registration: YukiHookResult) {
+        private fun removeRegistration(registration: YukiHookHandle) {
             registration.remove()
             YLog.innerD("Removed hooker for ${registration.target}")
         }
 
         /** Replaces each currently registered point with a new callback generation. */
         internal fun replaceRegistrations() {
-            synchronized(registrationLock) { results.toList() }.forEach { registration ->
+            synchronized(registrationLock) { handles.toList() }.forEach { registration ->
                 runCatching {
                     replaceRegistration(registration)
                 }.getOrElse { throwable ->
@@ -175,13 +175,13 @@ class YukiHookCreator private constructor() {
             }
         }
 
-        private fun replaceRegistration(registration: YukiHookResult) {
+        private fun replaceRegistration(registration: YukiHookHandle) {
             synchronized(registrationLock) {
-                if (!results.contains(registration)) return
+                if (!handles.contains(registration)) return
 
                 val replacement = YukiHookHelper.replace(registration, createHooker(registration.target))
-                results.remove(registration)
-                results.add(replacement)
+                handles.remove(registration)
+                handles.add(replacement)
             }
         }
 
@@ -219,9 +219,9 @@ class YukiHookCreator private constructor() {
          *
          * Listeners observe subsequent invocation failures only.
          */
-        inner class Result internal constructor() {
+        inner class Handle internal constructor() {
 
-            /** The [MemberHooker] that owns this result. */
+            /** The [MemberHooker] that owns this handle. */
             internal val owner get() = this@MemberHooker
 
             /**
@@ -229,16 +229,16 @@ class YukiHookCreator private constructor() {
              *
              * This listener does not change the hooker's exception policy. Chain failures still propagate.
              * @param callback the listener receiving the concrete invocation and its failure.
-             * @return [Result]
+             * @return [Handle]
              */
-            fun onCallbackFailure(callback: (I, Throwable) -> Unit): Result {
+            fun onCallbackFailure(callback: (I, Throwable) -> Unit): Handle {
                 onCallbackFailureCallback = callback
                 return this
             }
 
             /**
              * Suppresses default callback failure logging without changing exception propagation.
-             * @return [Result]
+             * @return [Handle]
              */
             fun ignoreCallbackFailure() = onCallbackFailure { _, _ -> }
 
@@ -248,9 +248,9 @@ class YukiHookCreator private constructor() {
              * This listener is independent of [onCallbackFailure] and does not observe registration failures.
              * It does not change the hooker's exception policy. Chain failures still propagate.
              * @param callback the listener receiving the invocation failure.
-             * @return [Result]
+             * @return [Handle]
              */
-            fun onInvocationFailure(callback: (Throwable) -> Unit): Result {
+            fun onInvocationFailure(callback: (Throwable) -> Unit): Handle {
                 onInvocationFailureCallback = callback
                 return this
             }
@@ -259,7 +259,7 @@ class YukiHookCreator private constructor() {
              * Suppresses default invocation failure logging without changing exception propagation.
              *
              * This does not replace the listener configured through [onCallbackFailure].
-             * @return [Result]
+             * @return [Handle]
              */
             fun ignoreInvocationFailure() = onInvocationFailure {}
 
@@ -269,8 +269,8 @@ class YukiHookCreator private constructor() {
              */
             fun remove(callback: (Boolean) -> Unit = {}) {
                 val registrations = synchronized(registrationLock) {
-                    val registrations = results.toList()
-                    results.clear()
+                    val registrations = handles.toList()
+                    handles.clear()
 
                     if (isRegistering) isRemovalPending = true
                     registrations
@@ -280,7 +280,7 @@ class YukiHookCreator private constructor() {
                     registrations.forEach(::removeRegistration)
                 }.onFailure {
                     synchronized(registrationLock) {
-                        results.addAll(registrations)
+                        handles.addAll(registrations)
                     }
                 }.getOrThrow()
 
@@ -292,7 +292,7 @@ class YukiHookCreator private constructor() {
             /**
              * Listens for hooker callback failures through [onCallbackFailure].
              * @param callback the listener receiving the concrete invocation and its failure.
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "Use onCallbackFailure instead.", replaceWith = ReplaceWith("onCallbackFailure(callback)"))
             fun onConductFailure(callback: (I, Throwable) -> Unit) = onCallbackFailure(callback)
@@ -304,32 +304,32 @@ class YukiHookCreator private constructor() {
             /**
              * Listens for invocation failures through [onInvocationFailure].
              * @param callback the listener receiving the invocation failure.
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "Use onInvocationFailure instead.", replaceWith = ReplaceWith("onInvocationFailure(callback)"))
             fun onAllFailure(callback: (Throwable) -> Unit) = onInvocationFailure(callback)
 
             /**
              * Suppresses default invocation failure logging through [ignoreInvocationFailure].
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "Use ignoreInvocationFailure instead.", replaceWith = ReplaceWith("ignoreInvocationFailure()"))
             fun ignoredAllFailure() = ignoreInvocationFailure()
 
             /**
-             * Configures this result through [apply].
+             * Configures this handle through [apply].
              * @param block the configuration block.
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "Use apply instead.", replaceWith = ReplaceWith("apply(block)"))
-            inline fun result(block: Result.() -> Unit) = apply(block)
+            inline fun result(block: Handle.() -> Unit) = apply(block)
 
             /**
              * This function has no effect and does not evaluate [condition].
              *
              * - Check the condition before registering hooks instead.
              * @param condition the unused condition block.
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "This API has no effect. Check the condition before registering hooks instead.")
             inline fun by(condition: () -> Boolean) = this
@@ -337,9 +337,9 @@ class YukiHookCreator private constructor() {
             /**
              * This function has no effect and does not invoke [callback].
              *
-             * - Registration completes before this result is returned. Remove this call.
+             * - Registration completes before this handle is returned. Remove this call.
              * @param callback the unused registration success listener.
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "This API has no effect. Remove this call.")
             fun onHooked(callback: (Member) -> Unit) = this
@@ -347,9 +347,9 @@ class YukiHookCreator private constructor() {
             /**
              * This function has no effect and does not invoke [callback].
              *
-             * - Registration failures are logged before this result is returned. Remove this call.
+             * - Registration failures are logged before this handle is returned. Remove this call.
              * @param callback the unused registration failure listener.
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "This API has no effect. Remove this call.")
             fun onHookingFailure(callback: (Throwable) -> Unit) = this
@@ -358,7 +358,7 @@ class YukiHookCreator private constructor() {
              * This function has no effect and does not suppress registration failure logs.
              *
              * - Remove this call.
-             * @return [Result]
+             * @return [Handle]
              */
             @Deprecated(message = "This API has no effect. Remove this call.")
             fun ignoredHookingFailure() = this
