@@ -23,8 +23,6 @@
 
 package com.highcapable.yukihookapi.runtime.bridge
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
@@ -92,14 +90,11 @@ interface FrameworkHookBridge {
     fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge?
 
     /**
-     * Opens the storage selected by the runtime for the current environment.
-     * @param context the context to use.
-     * @param packageName the package name of the storage.
-     * @param name the name of the storage.
-     * @param hostEnvironment whether the storage is for the host environment.
-     * @return [SharedPreferences]
+     * Gets preferences storage for the current environment.
+     * @param hostEnvironment whether storage is accessed from a host environment.
+     * @return [PreferencesBridge]
      */
-    fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences
+    fun preferences(hostEnvironment: Boolean): PreferencesBridge
 
     /**
      * Gets shared-file storage for the current environment.

@@ -23,7 +23,6 @@
 
 package com.highcapable.yukihookapi.runtime
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
@@ -73,8 +72,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? =
         throw UnsupportedOperationException("Framework service unavailable in Xposed API 82.")
 
-    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
-        Xposed82Preferences.open(context.takeUnless { hostEnvironment }, packageName, name)
+    override fun preferences(hostEnvironment: Boolean) = Xposed82Preferences.open(hostEnvironment)
 
     override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge =
         throw UnsupportedOperationException("Shared files are unavailable in Xposed API 82.")

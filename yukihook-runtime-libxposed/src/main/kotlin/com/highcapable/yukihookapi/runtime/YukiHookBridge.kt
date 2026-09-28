@@ -23,7 +23,6 @@
 
 package com.highcapable.yukihookapi.runtime
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
@@ -81,9 +80,7 @@ internal object YukiHookBridge : FrameworkHookBridge {
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge) = LibXposedService.observe(lifecycle, listener)
 
-    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean) =
-        LibXposedPreferences.open(context.takeUnless { hostEnvironment }, name)
-
+    override fun preferences(hostEnvironment: Boolean) = LibXposedPreferences.open(hostEnvironment)
     override fun sharedFiles(hostEnvironment: Boolean) = LibXposedSharedFiles.open(hostEnvironment)
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {

@@ -94,11 +94,10 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
             "Native preferences require a Context"
         }.getSharedPreferences(currentPreferenceName, Context.MODE_PRIVATE)
 
-        return YukiHookBridge.preferences(
+        return YukiHookBridge.preferences(isHostEnvironment).open(
             context = context,
             packageName = XposedModuleRuntime.modulePackageName.ifBlank { context?.packageName ?: "" },
-            name = currentPreferenceName,
-            hostEnvironment = isHostEnvironment
+            name = currentPreferenceName
         )
     }
 

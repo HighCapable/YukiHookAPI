@@ -23,14 +23,13 @@
 
 package com.highcapable.yukihookapi.runtime
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
 import com.highcapable.yukihookapi.runtime.bridge.ModuleScopeBridge
+import com.highcapable.yukihookapi.runtime.bridge.PreferencesBridge
 import com.highcapable.yukihookapi.runtime.bridge.SharedFilesBridge
 import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadBridge
 
@@ -59,7 +58,7 @@ object YukiHookBridge : FrameworkHookBridge {
     override fun initializeModuleServices(): Unit = error("Stub!")
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?): Unit = error("Stub!")
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? = error("Stub!")
-    override fun preferences(context: Context?, packageName: String, name: String, hostEnvironment: Boolean): SharedPreferences = error("Stub!")
+    override fun preferences(hostEnvironment: Boolean): PreferencesBridge = error("Stub!")
     override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge = error("Stub!")
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?): Unit = error("Stub!")
 }

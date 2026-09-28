@@ -24,6 +24,7 @@ package com.highcapable.yukihookapi.runtime.xposed82
 import android.content.Context
 import android.content.SharedPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
+import com.highcapable.yukihookapi.runtime.bridge.PreferencesBridge
 import de.robv.android.xposed.XSharedPreferences
 import java.io.File
 
@@ -32,24 +33,25 @@ import java.io.File
  */
 internal object Xposed82Preferences {
 
-    private val modulePreferences = mutableMapOf<String, SharedPreferences>()
+    fun open(hostEnvironment: Boolean) = if (hostEnvironment) Host else Module
 
-    @Synchronized
-    fun open(context: Context?, packageName: String, name: String): SharedPreferences {
-        if (context != null) return modulePreferences[context.toString() + name]
-            ?: createModulePreferences(context, name).also { modulePreferences[context.toString() + name] = it }
+    private object Module : PreferencesBridge {
 
-        check(YukiHookBridge.isAvailable) {
-            "XSharedPreferences requires an attached Xposed host or a module context."
+        private val modulePreferences = mutableMapOf<String, SharedPreferences>()
+
+        @Synchronized
+        override fun open(context: Context?, packageName: String, name: String): SharedPreferences {
+            if (context == null) return Host.open(context, packageName, name)
+            return modulePreferences[context.toString() + name]
+                ?: createModulePreferences(context, name).also { modulePreferences[context.toString() + name] = it }
         }
-        return Host.open(packageName, name)
     }
 
     private fun createModulePreferences(context: Context, name: String): SharedPreferences {
         @Suppress("DEPRECATION", "WorldReadableFiles")
         val newPreferences = runCatching { context.getSharedPreferences(name, Context.MODE_WORLD_READABLE) }.getOrNull()
 
-        return Module(
+        return ModulePreferences(
             context = context,
             name = name,
             preferences = newPreferences ?: context.getSharedPreferences(name, Context.MODE_PRIVATE),
@@ -60,12 +62,15 @@ internal object Xposed82Preferences {
     /**
      * Isolated because [XSharedPreferences] is not present in an ordinary module process.
      */
-    private object Host {
+    private object Host : PreferencesBridge {
 
         private val hostPreferences = mutableMapOf<String, XSharedPreferences>()
 
         @Synchronized
-        fun open(packageName: String, name: String): SharedPreferences {
+        override fun open(context: Context?, packageName: String, name: String): SharedPreferences {
+            check(YukiHookBridge.isAvailable) {
+                "XSharedPreferences requires an attached Xposed host or a module context."
+            }
             val prefs = hostPreferences.getOrPut("$packageName/$name") { XSharedPreferences(packageName, name) }
 
             @Suppress("DEPRECATION")
@@ -82,7 +87,7 @@ internal object Xposed82Preferences {
      * An asynchronous [SharedPreferences.Editor.apply] may write the file after the permission attempt
      * and replace the file's permissions.
      */
-    private class Module(
+    private class ModulePreferences(
         context: Context, name: String,
         private val preferences: SharedPreferences,
         private val isUsingNewXSharedPreferences: Boolean
@@ -113,19 +118,19 @@ internal object Xposed82Preferences {
 
         override fun edit(): SharedPreferences.Editor = Editor(preferences.edit())
 
-        private inner class Editor(private val editor: SharedPreferences.Editor) : SharedPreferences.Editor {
+        private inner class Editor(private val base: SharedPreferences.Editor) : SharedPreferences.Editor {
 
-            override fun putString(key: String, value: String?) = apply { editor.putString(key, value) }
-            override fun putStringSet(key: String, values: Set<String>?) = apply { editor.putStringSet(key, values) }
-            override fun putInt(key: String, value: Int) = apply { editor.putInt(key, value) }
-            override fun putLong(key: String, value: Long) = apply { editor.putLong(key, value) }
-            override fun putFloat(key: String, value: Float) = apply { editor.putFloat(key, value) }
-            override fun putBoolean(key: String, value: Boolean) = apply { editor.putBoolean(key, value) }
+            override fun putString(key: String, value: String?) = apply { base.putString(key, value) }
+            override fun putStringSet(key: String, values: Set<String>?) = apply { base.putStringSet(key, values) }
+            override fun putInt(key: String, value: Int) = apply { base.putInt(key, value) }
+            override fun putLong(key: String, value: Long) = apply { base.putLong(key, value) }
+            override fun putFloat(key: String, value: Float) = apply { base.putFloat(key, value) }
+            override fun putBoolean(key: String, value: Boolean) = apply { base.putBoolean(key, value) }
 
-            override fun remove(key: String) = apply { editor.remove(key) }
-            override fun clear() = apply { editor.clear() }
-            override fun commit() = makeWorldReadable { editor.commit() }
-            override fun apply() = makeWorldReadable { editor.apply() }
+            override fun remove(key: String) = apply { base.remove(key) }
+            override fun clear() = apply { base.clear() }
+            override fun commit() = makeWorldReadable { base.commit() }
+            override fun apply() = makeWorldReadable { base.apply() }
         }
     }
 }

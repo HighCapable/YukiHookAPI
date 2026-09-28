@@ -23,6 +23,7 @@ package com.highcapable.yukihookapi.runtime.libxposed
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.highcapable.yukihookapi.runtime.bridge.PreferencesBridge
 import io.github.libxposed.api.XposedInterface
 
 /**
@@ -30,20 +31,19 @@ import io.github.libxposed.api.XposedInterface
  */
 internal object LibXposedPreferences {
 
-    fun open(context: Context?, name: String): SharedPreferences {
-        if (context == null) return Host.open(name)
-        return Module.open(context, name)
-    }
+    fun open(hostEnvironment: Boolean) = if (hostEnvironment) Host else Module
 
     fun attach(api: XposedInterface) = Host.attach(api)
 
-    private object Module {
+    private object Module : PreferencesBridge {
 
-        fun open(context: Context, name: String): SharedPreferences =
-            LibXposedService.preferencesOrNull(name) ?: context.getSharedPreferences(name, Context.MODE_PRIVATE)
+        override fun open(context: Context?, packageName: String, name: String): SharedPreferences {
+            if (context == null) return Host.open(context, packageName, name)
+            return LibXposedService.preferencesOrNull(name) ?: context.getSharedPreferences(name, Context.MODE_PRIVATE)
+        }
     }
 
-    private object Host {
+    private object Host : PreferencesBridge {
 
         private var xposedApi: XposedInterface? = null
 
@@ -55,7 +55,7 @@ internal object LibXposedPreferences {
             xposedApi = api
         }
 
-        fun open(name: String): SharedPreferences {
+        override fun open(context: Context?, packageName: String, name: String): SharedPreferences {
             check(api.frameworkProperties and XposedInterface.PROP_CAP_REMOTE != 0L) {
                 "This framework does not support remote preferences."
             }

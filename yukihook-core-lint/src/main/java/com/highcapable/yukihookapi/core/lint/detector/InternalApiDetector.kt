@@ -72,6 +72,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             "$RUNTIME_BRIDGE_PACKAGE_NAME.FrameworkHookBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.HookRegistrationBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.ModuleScopeBridge",
+            "$RUNTIME_BRIDGE_PACKAGE_NAME.PreferencesBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.SharedFilesBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.session.ModuleReloadBridge",
             "$RUNTIME_BRIDGE_PACKAGE_NAME.session.ModuleReloadPolicy",
