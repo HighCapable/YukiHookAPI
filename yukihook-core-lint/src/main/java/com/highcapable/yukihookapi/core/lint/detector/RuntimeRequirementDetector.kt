@@ -34,7 +34,6 @@ import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.isConstructorReference
 import com.highcapable.yukihookapi.core.lint.detector.extension.reportNode
-import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
 import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
@@ -45,20 +44,14 @@ import com.intellij.psi.PsiModifierListOwner
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UFile
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UTypeReferenceExpression
-import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
     companion object {
 
         private const val REQUIRES_RUNTIME_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.internal.RequiresRuntime"
-
-        private const val LIBXPOSED_ENTRY_ANNOTATION_NAME = "YukiHookLibXposedEntry"
-        private const val LIBXPOSED_ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.$LIBXPOSED_ENTRY_ANNOTATION_NAME"
-
         private const val LIBXPOSED_102_EVENT_PACKAGE = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.v102"
 
         private const val MIN_API_VERSION = "minApiVersion"
@@ -66,7 +59,6 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         private const val LIBXPOSED_RUNTIME = "LIBXPOSED"
         private const val XPOSED_82_RUNTIME = "XPOSED_82"
 
-        private const val DEFAULT_LIBXPOSED_MIN_API_VERSION = 101
         private const val LIBXPOSED_102_EVENT_MIN_API_VERSION = 102
 
         private val RUNTIME_CLASSES = mapOf(
@@ -103,10 +95,11 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
 
-        private val libXposedMinApiVersion by lazy { context.findLibXposedMinApiVersion() }
+        private val versionDetector = LibXposedEntryDetector.VersionDetector(context)
 
         override fun visitAnnotation(node: UAnnotation) {
             val declaration = node.resolve() ?: return
+
             reportRequirement(
                 scope = node,
                 declaration = declaration,
@@ -117,6 +110,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
         override fun visitCallExpression(node: UCallExpression) {
             val method = node.resolve() ?: return
+
             reportRequirement(
                 scope = node,
                 declaration = method,
@@ -129,6 +123,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression) {
             val declaration = node.resolve() as? PsiModifierListOwner ?: return
             if (declaration is PsiClass && node.isConstructorReference()) return
+
             reportRequirement(
                 scope = node,
                 declaration = declaration,
@@ -139,6 +134,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
         override fun visitTypeReferenceExpression(node: UTypeReferenceExpression) {
             val declaration = context.evaluator.getTypeClass(node.type) ?: return
+
             reportRequirement(
                 scope = node,
                 declaration = declaration,
@@ -151,6 +147,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             val requirement = declaration.runtimeRequirement() ?: return
             val runtimeClass = RUNTIME_CLASSES[requirement.runtime] ?: return
             val source = scope.sourcePsi ?: return
+
             val psiFacade = JavaPsiFacade.getInstance(source.project)
             if (psiFacade.findClass(runtimeClass, source.resolveScope) == null) {
                 val runtimeModule = RUNTIME_MODULES.getValue(requirement.runtime)
@@ -164,15 +161,16 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             }
 
             if (requirement.runtime != LIBXPOSED_RUNTIME || requirement.minApiVersion <= 0) return
-            val declaredVersion = libXposedMinApiVersion ?: return
-            if (declaredVersion >= requirement.minApiVersion) return
+            val entry = versionDetector.findLibXposedEntry() ?: return
+            if (entry.minApiVersion >= requirement.minApiVersion) return
 
             context.report(
                 issue = ISSUE,
                 scope = scope,
                 location = location,
                 message = "`$apiName` requires Xposed API ${requirement.minApiVersion}, but " +
-                    "`@$LIBXPOSED_ENTRY_ANNOTATION_NAME` specifies `$MIN_API_VERSION = $declaredVersion`"
+                    "`@${LibXposedEntryDetector.ENTRY_ANNOTATION_NAME}` specifies `$MIN_API_VERSION = ${entry.minApiVersion}`",
+                quickfixData = versionDetector.buildFix(entry, requirement.minApiVersion, outside = true)
             )
         }
 
@@ -214,26 +212,6 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             val propertyName = nameStem.replaceFirstChar { it.lowercase() }
 
             return fields.firstOrNull { it.name == propertyName || it.name == "is$nameStem" }
-        }
-
-        private fun JavaContext.findLibXposedMinApiVersion() = project.javaSourceFolders.asSequence()
-            .flatMap { it.walkTopDown() }
-            .filter { it.isFile && (it.extension == "java" || it.extension == "kt") }
-            .filter { client.readFile(it).contains(LIBXPOSED_ENTRY_ANNOTATION_NAME) }
-            .mapNotNull { toUFile(it)?.libXposedMinApiVersion() }
-            .singleOrNull()
-
-        private fun UFile.libXposedMinApiVersion(): Int? {
-            var version: Int? = null
-            accept(object : AbstractUastVisitor() {
-                override fun visitAnnotation(node: UAnnotation): Boolean {
-                    if (node.qualifiedName != LIBXPOSED_ENTRY_ANNOTATION) return false
-                    version = (node.findAttributeValue(MIN_API_VERSION)?.evaluate() as? Int)
-                        ?: DEFAULT_LIBXPOSED_MIN_API_VERSION
-                    return true
-                }
-            })
-            return version
         }
     })
 
