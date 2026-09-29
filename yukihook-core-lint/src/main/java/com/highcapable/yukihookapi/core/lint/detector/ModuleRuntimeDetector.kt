@@ -23,6 +23,7 @@ package com.highcapable.yukihookapi.core.lint.detector
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.Category
+import com.android.tools.lint.detector.api.ConstantEvaluator
 import com.android.tools.lint.detector.api.Detector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
@@ -35,12 +36,17 @@ import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOn
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunction
 import com.highcapable.yukihookapi.core.lint.detector.extension.functionTarget
 import com.intellij.psi.PsiArrayType
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiIfStatement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiWildcardType
+import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtWhenEntry
+import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UCallableReferenceExpression
@@ -52,6 +58,7 @@ import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.UReturnExpression
 import org.jetbrains.uast.visitor.AbstractUastVisitor
+import java.io.File
 
 class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
@@ -65,6 +72,8 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val YUKIHOOKAPI_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookAPI"
         private const val YUKIHOOK_FACTORY_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.factory.YukiHookFactoryKt"
         private const val MODULE_LIFECYCLE_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.reload.lifecycle.ModuleLifecycleKt"
+
+        private const val RETAINED_VALUE_METHOD_NAME = "remember"
 
         private val EVENT_REGISTRATIONS = setOf(
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.YukiHookLibXposedEventKt",
@@ -96,10 +105,29 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )
+
+        val RETAINED_VALUE_ISSUE = Issue.create(
+            id = "InvalidModuleRetainedValue",
+            briefDescription = "Invalid retained module value",
+            explanation = "Retained values must not retain objects defined by the old module class loader. " +
+                "IDs must be non-blank and unique in one module instance. Runtime validation covers values that lint cannot determine.",
+            category = Category.CORRECTNESS,
+            priority = 10,
+            severity = Severity.ERROR,
+            implementation = IMPLEMENTATION
+        )
     }
 
     private enum class Phase { INIT, HOOK, PACKAGE, OUTSIDE, UNKNOWN }
     private enum class Execution { IMMEDIATE, PACKAGE, UNKNOWN }
+
+    private data class RetentionSite(val branches: Map<PsiElement, PsiElement>) {
+
+        fun canRunWith(other: RetentionSite) = branches.none { (condition, branch) ->
+            val otherBranch = other.branches[condition]
+            otherBranch != null && otherBranch != branch
+        }
+    }
 
     private data class CallSite(
         val node: UCallExpression,
@@ -132,6 +160,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             val roots = mutableMapOf<PsiElement, Phase>()
             val functions = mutableSetOf<PsiElement>()
             val references = mutableSetOf<PsiElement>()
+            val retainedIds = mutableMapOf<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>()
 
             node.accept(object : AbstractUastVisitor() {
 
@@ -158,6 +187,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 }
 
                 override fun visitCallExpression(node: UCallExpression): Boolean {
+                    val method = node.resolve()
                     val caller = node.enclosingFunction()
                     val target = node.functionTarget(context)
                     if (caller != null) functions.add(caller)
@@ -165,13 +195,16 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
                     calls.add(CallSite(
                         node = node,
-                        method = node.resolve(),
+                        method = method,
                         caller = caller,
                         target = target,
                         execution = node.execution(caller),
                         entryOwned = node.isEntryOwned(),
                         insideEncase = node.insideEncase()
                     ))
+
+                    if (method?.name == RETAINED_VALUE_METHOD_NAME && method.containingClass?.qualifiedName == PACKAGE_PARAM_CLASS)
+                        reportRetainedValue(node, retainedIds)
 
                     return false
                 }
@@ -252,6 +285,81 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     else null
                 )
             }
+        }
+
+        private fun reportRetainedValue(
+            node: UCallExpression,
+            ids: MutableMap<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>
+        ) {
+            val id = node.getArgumentForParameter(0)
+            val resolvedId = id?.let { ConstantEvaluator.evaluate(context, it) as? String }
+            if (resolvedId != null) {
+                val message = when {
+                    resolvedId.isBlank() -> "`$RETAINED_VALUE_METHOD_NAME` ID must not be blank"
+                    else -> {
+                        val block = generateSequence(node.uastParent) { it.uastParent }
+                            .filterIsInstance<UBlockExpression>()
+                            .firstOrNull()
+                        val site = RetentionSite(node.branches())
+                        val previous = block?.let { ids.getOrPut(it) { mutableMapOf() }.getOrPut(resolvedId) { mutableListOf() } }
+                        val isDuplicate = previous?.any(site::canRunWith) == true
+                        previous?.add(site)
+
+                        if (isDuplicate)
+                            "`$RETAINED_VALUE_METHOD_NAME` ID '$resolvedId' is already used in this block"
+                        else null
+                    }
+                }
+
+                if (message != null) context.report(
+                    issue = RETAINED_VALUE_ISSUE,
+                    scope = node,
+                    location = context.getLocation(id),
+                    message = message
+                )
+            }
+
+            val type = node.getExpressionType() ?: return
+            val moduleClass = type.moduleClass() ?: return
+            val sourcePath = moduleClass.containingFile?.virtualFile?.path
+            val projectPath = context.project.dir.canonicalPath
+            val isProjectClass = sourcePath?.startsWith("$projectPath${File.separator}") == true
+            if (!isProjectClass) return
+
+            context.report(
+                issue = RETAINED_VALUE_ISSUE,
+                scope = node,
+                location = context.getLocation(node),
+                message = "`$RETAINED_VALUE_METHOD_NAME` result refers to module-defined `${moduleClass.name}`, return a classloader-neutral value"
+            )
+        }
+
+        private fun UCallExpression.branches(): Map<PsiElement, PsiElement> {
+            val source = sourcePsi ?: return emptyMap()
+            val branches = mutableMapOf<PsiElement, PsiElement>()
+
+            generateSequence(source.parent) { it.parent }.forEach { parent ->
+                when (parent) {
+                    is KtIfExpression -> listOfNotNull(parent.then, parent.`else`)
+                        .firstOrNull { it.textRange.contains(source.textRange) }
+                        ?.let { branches[parent] = it }
+                    is PsiIfStatement -> listOfNotNull(parent.thenBranch, parent.elseBranch)
+                        .firstOrNull { it.textRange.contains(source.textRange) }
+                        ?.let { branches[parent] = it }
+                    is KtWhenEntry -> (parent.parent as? KtWhenExpression)?.let { branches[it] = parent }
+                }
+            }
+
+            return branches
+        }
+
+        private fun PsiType.moduleClass(): PsiClass? = when (this) {
+            is PsiArrayType -> componentType.moduleClass()
+            is PsiClassType -> if (resolve()?.qualifiedName == "java.lang.Class")
+                parameters.firstOrNull()?.moduleClass()
+            else resolve()
+            is PsiWildcardType -> bound?.moduleClass()
+            else -> null
         }
 
         private fun UCallExpression.isEntryOwned() = generateSequence(uastParent) { it.uastParent }

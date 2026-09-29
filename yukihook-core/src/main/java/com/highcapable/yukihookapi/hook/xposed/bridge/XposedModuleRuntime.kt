@@ -35,6 +35,7 @@ import com.highcapable.yukihookapi.hook.param.context.PackageContext
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.component.HookRegistration
 import com.highcapable.yukihookapi.hook.xposed.bridge.component.PackageRegistration
+import com.highcapable.yukihookapi.hook.xposed.bridge.component.RetainedValuesStore
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.XposedModuleLifecycle
 import com.highcapable.yukihookapi.hook.xposed.bridge.resources.ModuleResources
@@ -55,6 +56,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     private var events = ModuleEventDispatcher()
     private val packageRegistration = PackageRegistration(::dispatchPackage)
+    private val retainedValues = RetainedValuesStore()
     private var hookRegistration: HookRegistration? = null
 
     private val hookEntry = ThreadLocal<YukiHookXposedModule>()
@@ -174,6 +176,16 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     }
 
     /**
+     * Retains a value across module instances, computing it if no saved value exists.
+     * @param id the versioned identity of the value.
+     * @param block computes the value when no saved result exists.
+     * @return [T]
+     * @throws IllegalArgumentException if [id] is blank or already used in this module instance.
+     * @throws IllegalStateException if the result cannot safely cross module class loaders.
+     */
+    fun <T> retainValue(id: String, block: () -> T) = retainedValues.retain(isHostEnvironment, id, block)
+
+    /**
      * Attaches the runtime session and prepares hook registration before module loading.
      * @param session the current [ModuleSessionBridge] session.
      * @param registrations the current [HookRegistrationBridge] registrations.
@@ -259,6 +271,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         // The data channel caches host identity, so registration follows onStartLoadModule's identity setup.
         ModuleLifecycleManager.register(ModuleResources.RELOAD_ID, ModuleResources)
         ModuleLifecycleManager.register(PackageRegistration.RELOAD_ID, packageRegistration)
+        ModuleLifecycleManager.register(RetainedValuesStore.RELOAD_ID, retainedValues)
         ModuleLifecycleManager.register(AppParasitism.RELOAD_ID, AppParasitism)
         ModuleLifecycleManager.register(YukiHookDataChannel.RELOAD_ID, YukiHookDataChannel)
     }

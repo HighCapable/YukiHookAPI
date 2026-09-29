@@ -38,6 +38,7 @@ import com.highcapable.kavaref.resolver.ConstructorResolver
 import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
@@ -278,6 +279,40 @@ open class PackageParam internal constructor(internal var context: PackageContex
         if (context?.type == HookEntryType.PACKAGE && context?.isFirstApplication == true)
             AppParasitism.registerModuleActivitiesWhenReady(packageName, proxy)
     }
+
+    /**
+     * Remembers a value across module hot reloads.
+     *
+     * With [YukiHookLibXposedEntry.HotReload] enabled, the same [id] reuses the saved result without running [block].
+     * IDs must be non-blank and unique per module instance.
+     *
+     * Change [id] to recompute the value. Values must not retain objects or classes owned by the module class loader.
+     * Keep hook registration and other actions that must run after reload outside [block].
+     *
+     * Examples:
+     *
+     * ```kotlin
+     * val title = remember("host-title-v1") {
+     *     "$packageName ($processName)"
+     * }
+     * val method = remember("activity-onCreate-v1") {
+     *     Activity::class.java.getDeclaredMethod("onCreate", Bundle::class.java)
+     * }
+     *
+     * method.hook {
+     *     after {
+     *         instance<Activity>().title = title
+     *     }
+     * }
+     * ```
+     * @param id the versioned identity of the value.
+     * @param block computes the value when no saved result exists.
+     * @return [T] the saved or newly computed result.
+     * @throws IllegalArgumentException if [id] is blank or already used in this module instance.
+     * @throws IllegalStateException if the result cannot safely cross module class loaders.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+    fun <T> remember(id: String, block: () -> T) = XposedModuleRuntime.retainValue(id, block)
 
     /**
      * Loads and hooks apps with the specified package name.

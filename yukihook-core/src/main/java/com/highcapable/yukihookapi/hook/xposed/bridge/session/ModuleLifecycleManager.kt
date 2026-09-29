@@ -27,10 +27,14 @@ import android.os.Handler
 import android.os.Looper
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher
 import com.highcapable.yukihookapi.hook.xposed.bridge.session.state.ModuleHandoffState
 import com.highcapable.yukihookapi.hook.xposed.reload.lifecycle.ModuleLifecycle
 import com.highcapable.yukihookapi.runtime.bridge.session.ModuleSessionBridge
+import java.lang.reflect.Constructor
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.concurrent.ExecutionException
@@ -53,6 +57,8 @@ internal object ModuleLifecycleManager {
         val id: String,
         val instance: ModuleReloadable
     )
+
+    private enum class StateKind { BUNDLE, REFERENCE }
 
     /** Entry-supplied dispatch for managed work and caught failures. */
     var events = ModuleEventDispatcher()
@@ -99,52 +105,14 @@ internal object ModuleLifecycleManager {
      * @param bundle the state to check.
      * @throws IllegalArgumentException if the state contains cycles or unsupported types.
      */
-    fun checkBundle(bundle: Bundle?) {
-        val visited = Collections.newSetFromMap(IdentityHashMap<Any, Boolean>())
+    fun checkBundle(bundle: Bundle?) = checkValue(bundle, StateKind.BUNDLE)
 
-        fun checkValue(value: Any?) {
-            if (value == null || value is String || value is Boolean || value is Byte || value is Short ||
-                value is Int || value is Long || value is Float || value is Double || value is Char ||
-                value is BooleanArray || value is ByteArray || value is ShortArray || value is IntArray ||
-                value is LongArray || value is FloatArray || value is DoubleArray || value is CharArray
-            ) return
-
-            require(visited.add(value)) {
-                "Reload state must not contain cycles."
-            }
-            when (value) {
-                is Bundle -> {
-                    // Typed Bundle getters cannot inspect unknown entries without coercion or type warnings.
-                    // Resolve the public generic getter only for this classloader-boundary validation.
-                    val getter = Bundle::class.resolve().firstMethod {
-                        name = "get"
-                        parameters(String::class)
-                        superclass()
-                    }.of(value)
-                    value.keySet().forEach { checkValue(getter.invoke<Any>(it)) }
-                }
-                is Array<*> -> {
-                    val component = value.javaClass.componentType
-                    require(component == classOf<Any>() || component == classOf<String>() || component == classOf<Bundle>()) {
-                        "Reload arrays must contain Object, String or Bundle values."
-                    }
-                    value.forEach(::checkValue)
-                }
-                is ArrayList<*> -> {
-                    require(value.javaClass == classOf<ArrayList<*>>()) {
-                        "Reload lists must not be module-defined subclasses."
-                    }
-
-                    value.forEach(::checkValue)
-                }
-                else -> error("Reload state cannot contain ${value.javaClass.name}. Use primitive values or bundles.")
-            }
-
-            visited.remove(value)
-        }
-
-        checkValue(bundle)
-    }
+    /**
+     * Checks in-process values passed between module instances.
+     * @param value the value to check.
+     * @throws IllegalStateException if the value retains module-defined types or the module class loader.
+     */
+    fun checkValue(value: Any?) = checkValue(value, StateKind.REFERENCE)
 
     /**
      * Checks and saves every component before asking the runtime to accept retirement.
@@ -270,6 +238,101 @@ internal object ModuleLifecycleManager {
      */
     fun recordRestoreFailure(failure: Throwable) {
         if (restoring) synchronized(failures) { failures.add(failure) }
+    }
+
+    private fun checkValue(value: Any?, kind: StateKind) {
+        val moduleLoader = if (kind == StateKind.REFERENCE) classOf<YukiHook>().classLoader else null
+        val visited = Collections.newSetFromMap(IdentityHashMap<Any, Boolean>())
+
+        fun checkClass(type: Class<*>) {
+            var loader = generateSequence(type) { it.componentType }.last().classLoader
+            while (loader != null) {
+                check(loader !== moduleLoader) {
+                    "Module state must not refer to a module-defined class: ${type.name}."
+                }
+
+                loader = loader.parent
+            }
+        }
+
+        fun checkObject(current: Any?) {
+            if (current == null || current is String || current is Boolean || current is Byte || current is Short ||
+                current is Int || current is Long || current is Float || current is Double || current is Char ||
+                current is BooleanArray || current is ByteArray || current is ShortArray || current is IntArray ||
+                current is LongArray || current is FloatArray || current is DoubleArray || current is CharArray
+            ) return
+
+            if (kind == StateKind.REFERENCE) checkClass(current.javaClass)
+            if (!visited.add(current)) {
+                require(kind != StateKind.BUNDLE) { "Reload state must not contain cycles." }
+                return
+            }
+            if (kind == StateKind.BUNDLE && current !is Bundle && current !is Array<*> && current !is ArrayList<*>)
+                error("Reload state cannot contain ${current.javaClass.name}. Use primitive values or bundles.")
+
+            when (current) {
+                is Bundle -> {
+                    // Typed Bundle getters cannot inspect unknown entries without coercion or type warnings.
+                    // Resolve the public generic getter only for this classloader-boundary validation.
+                    val getter = Bundle::class.resolve().firstMethod {
+                        name = "get"
+                        parameters(String::class)
+                        superclass()
+                    }.of(current)
+                    current.keySet().forEach { checkObject(getter.invoke<Any>(it)) }
+                }
+                is Array<*> -> {
+                    if (kind == StateKind.BUNDLE) {
+                        val component = current.javaClass.componentType
+                        require(component == classOf<Any>() || component == classOf<String>() || component == classOf<Bundle>()) {
+                            "Reload arrays must contain Object, String or Bundle values."
+                        }
+                    }
+                    current.forEach(::checkObject)
+                }
+                is Collection<*> -> {
+                    if (kind == StateKind.BUNDLE) require(current.javaClass == classOf<ArrayList<*>>()) {
+                        "Reload lists must not be module-defined subclasses."
+                    }
+
+                    current.forEach(::checkObject)
+                }
+                is Map<*, *> -> current.forEach { (key, value) ->
+                    checkObject(key)
+                    checkObject(value)
+                }
+                is Class<*> -> checkClass(current)
+                is Method -> {
+                    checkClass(current.declaringClass)
+                    checkClass(current.returnType)
+                    current.parameterTypes.forEach(::checkClass)
+                    current.exceptionTypes.forEach(::checkClass)
+                }
+                is Constructor<*> -> {
+                    checkClass(current.declaringClass)
+                    current.parameterTypes.forEach(::checkClass)
+                    current.exceptionTypes.forEach(::checkClass)
+                }
+                is Field -> {
+                    checkClass(current.declaringClass)
+                    checkClass(current.type)
+                }
+                is ClassLoader -> {
+                    var loader: ClassLoader? = current
+                    while (loader != null) {
+                        check(loader !== moduleLoader) {
+                            "Module state must not contain the module class loader."
+                        }
+
+                        loader = loader.parent
+                    }
+                }
+            }
+
+            if (kind == StateKind.BUNDLE) visited.remove(current)
+        }
+
+        checkObject(value)
     }
 
     private fun dispose() {

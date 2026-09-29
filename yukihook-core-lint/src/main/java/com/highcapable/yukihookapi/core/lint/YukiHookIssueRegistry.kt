@@ -43,6 +43,7 @@ class YukiHookIssueRegistry : IssueRegistry() {
         LibXposedEntryDetector.HOT_RELOAD_ISSUE,
         ModuleRuntimeDetector.REGISTRATION_ISSUE,
         ModuleRuntimeDetector.HOOK_LOADING_ISSUE,
+        ModuleRuntimeDetector.RETAINED_VALUE_ISSUE,
         ClassicHookerDetector.ISSUE,
         ModuleUsageDetector.ISSUE
     )
