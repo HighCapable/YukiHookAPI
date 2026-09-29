@@ -29,6 +29,7 @@ import com.highcapable.yukihookapi.YukiHook
  * Marks the [YukiHook] legacy Xposed entry class for code generation.
  *
  * - This annotation was deprecated, migrate to [YukiHookXposed82Entry].
+ * - [sourcePath] and [isUsingResourcesHook] are no effect, will be ignored for code generation.
  */
 @Deprecated(message = "Migrate to YukiHookXposed82Entry.", replaceWith = ReplaceWith("YukiHookXposed82Entry"))
 @Target(AnnotationTarget.CLASS)
@@ -36,5 +37,6 @@ annotation class InjectYukiHookWithXposed(
     val sourcePath: String = "src/main",
     val modulePackageName: String = "",
     val entryClassName: String = "",
-    val isUsingXposedModuleStatus: Boolean = true
+    val isUsingXposedModuleStatus: Boolean = true,
+    val isUsingResourcesHook: Boolean = false
 )

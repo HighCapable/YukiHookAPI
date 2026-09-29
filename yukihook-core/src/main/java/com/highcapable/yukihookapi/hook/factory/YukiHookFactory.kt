@@ -185,31 +185,28 @@ fun Context.applyModuleTheme(@StyleRes theme: Int, configuration: Configuration?
 // region Deprecated functions for backward compatibility
 
 /**
- * This function does nothing and does not invoke [block].
+ * Calls [YukiHookAPI.configs] from [IYukiHookXposedInit].
  *
  * - Use [YukiHookXposedModule.configure] instead.
  */
-@Deprecated(
-    message = "Use YukiHookXposedModule.configure instead.",
-    replaceWith = ReplaceWith("configure(block)")
-)
-inline fun IYukiHookXposedInit.configs(block: YukiHookAPI.Configs.() -> Unit) = Unit
+@Deprecated(message = "Use YukiHookXposedModule.configure instead.")
+inline fun IYukiHookXposedInit.configs(block: YukiHookAPI.Configs.() -> Unit) = YukiHookAPI.configs(block)
 
 /**
- * This function does nothing and does not invoke [block].
+ * Calls [YukiHook.encase] from [IYukiHookXposedInit].
  *
  * - Use [YukiHookXposedModule.encase] instead.
  */
 @Deprecated(message = "Use YukiHookXposedModule.encase instead.")
-fun IYukiHookXposedInit.encase(block: PackageParam.() -> Unit) = Unit
+fun IYukiHookXposedInit.encase(block: PackageParam.() -> Unit) = YukiHook.encase(block)
 
 /**
- * This function does nothing and does not invoke [hookers].
+ * Loads [YukiHook] from [IYukiHookXposedInit].
  *
  * - Use [YukiHookXposedModule.encase] instead.
  */
 @Deprecated(message = "Use YukiHookXposedModule.encase instead.")
-fun IYukiHookXposedInit.encase(vararg hookers: YukiBaseHooker) = Unit
+fun IYukiHookXposedInit.encase(vararg hookers: YukiBaseHooker) = YukiHook.encase(hookers = hookers)
 
 /**
  * This function does nothing and does not invoke [block].

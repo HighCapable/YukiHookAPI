@@ -39,14 +39,14 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
         imports = ["com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule"]
     )
 )
-interface IYukiHookXposedInit {
+interface IYukiHookXposedInit : YukiHookXposedModule {
 
-    @Deprecated(message = "Migrate to YukiHookXposedModule.onInit()")
-    fun onInit() = Unit
+    @Deprecated(message = "Migrate to YukiHookXposedModule.onInit")
+    override fun onInit() = Unit
 
-    @Deprecated(message = "Migrate to YukiHookXposedModule.onHook()")
-    fun onHook()
+    @Deprecated(message = "Migrate to YukiHookXposedModule.onHook")
+    override fun onHook()
 
-    @Deprecated(message = "Migrate to YukiHookXposedModule.onXposedEvent()")
-    fun onXposedEvent() = Unit
+    @Deprecated(message = "Migrate to YukiHookXposedModule.onXposedEvent")
+    override fun onXposedEvent() = Unit
 }

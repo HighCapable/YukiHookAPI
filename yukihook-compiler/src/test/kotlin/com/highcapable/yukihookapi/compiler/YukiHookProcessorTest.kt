@@ -70,6 +70,12 @@ class YukiHookProcessorTest {
     )
 
     @Test
+    fun deprecatedLegacyAnnotationRejectsModernRuntime() = assertRejected(
+        resolver(deprecatedLegacyEntries = 1, runtimes = setOf(MODERN_RUNTIME)),
+        "@InjectYukiHookWithXposed", "requires yukihook-runtime-xposed82", "but yukihook-runtime-libxposed"
+    )
+
+    @Test
     fun modernAnnotationRejectsLegacyRuntime() = assertRejected(
         resolver(modernEntries = 1, runtimes = setOf(LEGACY_RUNTIME)),
         "@YukiHookLibXposedEntry", "requires yukihook-runtime-libxposed", "but yukihook-runtime-xposed82"
@@ -106,6 +112,18 @@ class YukiHookProcessorTest {
     )
 
     @Test
+    fun deprecatedAndCurrentLegacyAnnotationsCannotCreateTwoEntries() = assertRejected(
+        resolver(deprecatedLegacyEntries = 1, legacyEntries = 1, runtimes = setOf(LEGACY_RUNTIME)),
+        "Declare exactly one hook entry"
+    )
+
+    @Test
+    fun duplicateDeprecatedLegacyEntriesFailBeforeGeneration() = assertRejected(
+        resolver(deprecatedLegacyEntries = 2, runtimes = setOf(LEGACY_RUNTIME)),
+        "Declare exactly one hook entry"
+    )
+
+    @Test
     fun duplicateModernEntriesFailBeforeGeneration() = assertRejected(
         resolver(modernEntries = 2, runtimes = setOf(MODERN_RUNTIME)),
         "Declare exactly one hook entry"
@@ -131,12 +149,17 @@ class YukiHookProcessorTest {
         Assert.assertTrue(generatedFiles.isEmpty())
     }
 
-    private fun resolver(legacyEntries: Int = 0, modernEntries: Int = 0, runtimes: Set<String> = emptySet()) =
+    private fun resolver(
+        legacyEntries: Int = 0,
+        modernEntries: Int = 0,
+        deprecatedLegacyEntries: Int = 0,
+        runtimes: Set<String> = emptySet()
+    ) =
         proxy<Resolver> { name, args ->
             when (name) {
                 "getSymbolsWithAnnotation" -> List(
                     when (args[0]) {
-                        DEPRECATED_LEGACY_ANNOTATION -> 0
+                        DEPRECATED_LEGACY_ANNOTATION -> deprecatedLegacyEntries
                         LEGACY_ANNOTATION -> legacyEntries
                         MODERN_ANNOTATION -> modernEntries
                         else -> error("Unexpected annotation: ${args[0]}")

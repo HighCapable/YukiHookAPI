@@ -91,12 +91,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     override fun startProcess(resolver: Resolver) {
         if (isGenerated) return
 
-        if (resolver.getSymbolsWithAnnotation(Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME).any()) problem(
-            "`@${Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME.substringAfterLast('.')}` is no longer supported. " +
-                "Migrate it to `@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}`."
-        )
-
-        val legacySymbols = resolver.getSymbolsWithAnnotation(Xposed82GenerateSpec.ANNOTATION_NAME).toList()
+        val deprecatedLegacySymbols = resolver.getSymbolsWithAnnotation(Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME).toList()
+        val legacySymbols = resolver.getSymbolsWithAnnotation(Xposed82GenerateSpec.ANNOTATION_NAME).toList() + deprecatedLegacySymbols
         val modernSymbols = resolver.getSymbolsWithAnnotation(LibXposedGenerateSpec.ANNOTATION_NAME).toList()
 
         if (legacySymbols.isEmpty() && modernSymbols.isEmpty()) return
@@ -117,7 +113,9 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         val runtimeType = if (hasLibXposedRuntime) YukiHookRuntime.LIBXPOSED else YukiHookRuntime.XPOSED_82
         val annotationRuntimeType = if (modernSymbols.isNotEmpty()) YukiHookRuntime.LIBXPOSED else YukiHookRuntime.XPOSED_82
         val annotationName = when (annotationRuntimeType) {
-            YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec.ANNOTATION_NAME
+            YukiHookRuntime.XPOSED_82 -> if (deprecatedLegacySymbols.isNotEmpty())
+                Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME
+            else Xposed82GenerateSpec.ANNOTATION_NAME
             YukiHookRuntime.LIBXPOSED -> LibXposedGenerateSpec.ANNOTATION_NAME
         }
 
@@ -137,14 +135,24 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             )
         }
 
+        if (annotationName == Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME) warn(
+            "`@${annotationName.substringAfterLast('.')}` will be removed in a future release. " +
+                "Migrate it to `@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}`."
+        )
+
         val entry = (legacySymbols + modernSymbols).single() as? KSClassDeclaration ?: problem(
             "The hook entry annotation must target a class or object implementing `YukiHookXposedModule`."
         )
 
         val entrySuperTypes = entry.getAllSuperTypes().mapNotNull { it.declaration.qualifiedName?.asString() }.toSet()
-        if (DeclaredSymbol.LEGACY_HOOK_ENTRY_CLASS in entrySuperTypes) problem(
+        val usesLegacyEntry = DeclaredSymbol.LEGACY_HOOK_ENTRY_CLASS in entrySuperTypes
+        if (usesLegacyEntry && runtimeType != YukiHookRuntime.XPOSED_82) problem(
+            "`IYukiHookXposedInit` requires ${Xposed82GenerateSpec.RUNTIME_MODULE_NAME}. " +
+                "Use `YukiHookXposedModule` for ${LibXposedGenerateSpec.RUNTIME_MODULE_NAME}."
+        )
+        if (usesLegacyEntry) warn(
             "The hook entry class \"${entry.simpleName.asString()}\" still implements the deprecated " +
-                "`IYukiHookXposedInit`. Migrate it to `YukiHookXposedModule`."
+                "`IYukiHookXposedInit`, which will be removed in a future release. Migrate it to `YukiHookXposedModule`."
         )
         if (DeclaredSymbol.HOOK_ENTRY_CLASS !in entrySuperTypes) problem(
             "The hook entry class \"${entry.simpleName.asString()}\" must implement `YukiHookXposedModule`."
@@ -165,7 +173,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             )
             YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec(
                 modulePackageName = (arguments["modulePackageName"] as? String).orEmpty().trim(),
-                generateModuleStatus = arguments["generateModuleStatus"] as? Boolean ?: true
+                generateModuleStatus = arguments["generateModuleStatus"] as? Boolean ?: arguments["isUsingXposedModuleStatus"] as? Boolean ?: true
             )
         }
         val entrySource = entry.containingFile ?: problem("The hook entry must be declared in a source file.")
