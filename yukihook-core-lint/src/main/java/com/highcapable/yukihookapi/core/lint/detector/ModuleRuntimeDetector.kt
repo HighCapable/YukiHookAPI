@@ -30,6 +30,7 @@ import com.android.tools.lint.detector.api.JavaContext
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
+import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunction
 import com.highcapable.yukihookapi.core.lint.detector.extension.functionTarget
@@ -40,21 +41,26 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiWildcardType
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UCallableReferenceExpression
 import org.jetbrains.uast.UClass
+import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.ULambdaExpression
 import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.UQualifiedReferenceExpression
+import org.jetbrains.uast.UReturnExpression
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
     companion object {
 
+        private const val CONTEXT_CLASS = "android.content.Context"
         private const val MODULE_ENTRY_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.YukiHookXposedModule"
         private const val PACKAGE_PARAM_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.param.PackageParam"
-        private const val CONTEXT_CLASS = "android.content.Context"
+        private const val BASE_HOOKER_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.entity.YukiBaseHooker"
         private const val YUKIHOOK_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHook"
         private const val YUKIHOOKAPI_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookAPI"
         private const val YUKIHOOK_FACTORY_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.factory.YukiHookFactoryKt"
@@ -111,7 +117,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 when (execution) {
                     Execution.IMMEDIATE -> phase
                     Execution.PACKAGE -> Phase.PACKAGE
-                    Execution.UNKNOWN -> if (phase == Phase.PACKAGE) Phase.PACKAGE else Phase.UNKNOWN
+                    Execution.UNKNOWN -> if (phase == Phase.PACKAGE || phase == Phase.OUTSIDE) phase else Phase.UNKNOWN
                 }
             }
         }
@@ -215,7 +221,8 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             calls.forEach { call ->
                 val method = call.method ?: return@forEach
                 val callPhases = call.phases(phases)
-                if (!call.entryOwned && call.caller !in reachable && Phase.PACKAGE !in callPhases && !call.insideEncase) return@forEach
+                if (!method.isHookLoading() && !call.entryOwned && call.caller !in reachable &&
+                    Phase.PACKAGE !in callPhases && !call.insideEncase) return@forEach
 
                 val message = when {
                     method.isEncase() && call.insideEncase -> "Do not nest `encase` inside another `encase`"
@@ -227,11 +234,22 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     else -> return@forEach
                 }
 
+                val expression = generateSequence(call.node as UElement) { it.uastParent as? UQualifiedReferenceExpression }.last()
+                val location = context.getLocation(expression)
+                val parent = expression.uastParent
+
+                // UAST can wrap the last statement in a Kotlin lambda in an implicit return.
+                val isStandalone = parent is UBlockExpression || (parent is UReturnExpression &&
+                    parent.sourcePsi == null && parent.uastParent is UBlockExpression)
+
                 context.report(
                     issue = if (method.isModuleRegistration()) REGISTRATION_ISSUE else HOOK_LOADING_ISSUE,
                     scope = call.node,
-                    location = context.getNameLocation(call.node),
-                    message = message
+                    location = location,
+                    message = message,
+                    quickfixData = if (isStandalone)
+                        buildReplaceFix("Delete Call Expression", "", range = location, reformat = false)
+                    else null
                 )
             }
         }
@@ -287,16 +305,19 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             context.evaluator.extendsClass(it, PACKAGE_PARAM_CLASS, false)
         } == true
 
+        private fun PsiType.isHookLoadingArgument() = containsPackageParam() ||
+            (this is PsiArrayType && componentType.canonicalText == BASE_HOOKER_CLASS)
+
         private fun PsiMethod.isModuleRegistration() =
             parameterList.parametersCount == 2 && parameterList.parameters[0].type.canonicalText == MODULE_ENTRY_CLASS &&
                 (containingClass?.qualifiedName in EVENT_REGISTRATIONS || containingClass?.qualifiedName == MODULE_LIFECYCLE_CLASS)
 
         private fun PsiMethod.isHookLoading() = when (containingClass?.qualifiedName) {
             YUKIHOOK_CLASS, YUKIHOOKAPI_CLASS -> parameterList.parametersCount == 1 &&
-                parameterList.parameters[0].type.containsPackageParam()
+                parameterList.parameters[0].type.isHookLoadingArgument()
             YUKIHOOK_FACTORY_CLASS -> parameterList.parametersCount == 2 &&
                 parameterList.parameters[0].type.canonicalText == MODULE_ENTRY_CLASS &&
-                parameterList.parameters[1].type.containsPackageParam()
+                parameterList.parameters[1].type.isHookLoadingArgument()
             else -> false
         }
 
