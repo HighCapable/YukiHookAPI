@@ -26,6 +26,7 @@ package com.highcapable.yukihookapi.core.lint
 import com.android.tools.lint.client.api.IssueRegistry
 import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
+import com.highcapable.yukihookapi.core.lint.detector.ClassicHookerDetector
 import com.highcapable.yukihookapi.core.lint.detector.InternalApiDetector
 import com.highcapable.yukihookapi.core.lint.detector.LibXposedEntryDetector
 import com.highcapable.yukihookapi.core.lint.detector.ModuleRuntimeDetector
@@ -37,12 +38,13 @@ class YukiHookIssueRegistry : IssueRegistry() {
 
     override val issues get() = listOf(
         InternalApiDetector.ISSUE,
+        RuntimeRequirementDetector.ISSUE,
         LibXposedEntryDetector.ISSUE,
         LibXposedEntryDetector.HOT_RELOAD_ISSUE,
         ModuleRuntimeDetector.REGISTRATION_ISSUE,
         ModuleRuntimeDetector.HOOK_LOADING_ISSUE,
-        ModuleUsageDetector.ISSUE,
-        RuntimeRequirementDetector.ISSUE
+        ClassicHookerDetector.ISSUE,
+        ModuleUsageDetector.ISSUE
     )
 
     override val minApi = YukiHookProperties.PROJECT_YUKIHOOK_CORE_LINT_MIN_API
