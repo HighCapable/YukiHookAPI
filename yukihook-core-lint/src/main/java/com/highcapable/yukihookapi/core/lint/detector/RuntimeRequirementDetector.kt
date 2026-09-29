@@ -116,7 +116,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 declaration = method,
                 apiName = if (method.isConstructor) method.containingClass?.name ?: method.name
                 else node.methodName ?: method.name,
-                location = context.getCallLocation(node, includeReceiver = false, includeArguments = true)
+                location = context.getCallLocation(node, includeReceiver = true, includeArguments = true)
             )
         }
 
