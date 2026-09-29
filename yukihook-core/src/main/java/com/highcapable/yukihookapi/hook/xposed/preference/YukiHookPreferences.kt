@@ -152,8 +152,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Gets a [String] value.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
+     * Detects the corresponding environment intelligently when reading key-value data.
+     * Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, "" by default.
      * @return [String]
@@ -163,8 +163,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Gets a [Set] of [String] values.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
+     * Detects the corresponding environment intelligently when reading key-value data.
+     * Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param values the default values, an empty [MutableSet] of [String] values by default.
      * @return [Set]<[String]>
@@ -174,8 +174,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Gets a [Boolean] value.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
+     * Detects the corresponding environment intelligently when reading key-value data.
+     * Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, false by default.
      * @return [Boolean]
@@ -185,8 +185,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Gets an [Int] value.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
+     * Detects the corresponding environment intelligently when reading key-value data.
+     * Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, 0 by default.
      * @return [Int]
@@ -196,8 +196,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Gets a [Float] value.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
+     * Detects the corresponding environment intelligently when reading key-value data.
+     * Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, 0f by default.
      * @return [Float]
@@ -207,8 +207,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Gets a [Long] value.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
+     * Detects the corresponding environment intelligently when reading key-value data.
+     * Using [PreferenceData] to create a template and [get] to retrieve data is recommended.
      * @param key the key name.
      * @param value the default value, 0L by default.
      * @return [Long]
@@ -242,7 +242,7 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Whether data for [key] exists.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
+     * Detects the corresponding environment intelligently when reading key-value data.
      * @return [Boolean] whether the key exists.
      */
     fun contains(key: String) = current.contains(key)
@@ -250,8 +250,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Gets all stored key-value data.
      *
-     * - Detects the corresponding environment intelligently when reading key-value data.
-     * - Each call retrieves real-time data without cache control. Do not use this in highly concurrent scenarios.
+     * Detects the corresponding environment intelligently when reading key-value data.
+     * Each call retrieves real-time data without cache control. Do not use this in highly concurrent scenarios.
      * @return [MutableMap] containing key-value data of all types.
      */
     fun all() = current.all.toMutableMap()
@@ -279,8 +279,8 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /**
      * Storage proxy for [YukiHookPreferences].
      *
-     * - Use [edit] to obtain [Editor].
-     * - Module preferences are read-only in a host process, so changes are ignored there.
+     * Use [edit] to obtain [Editor].
+     * Module preferences are read-only in a host process, so changes are ignored there.
      */
     inner class Editor internal constructor() : SharedPreferences.Editor {
 

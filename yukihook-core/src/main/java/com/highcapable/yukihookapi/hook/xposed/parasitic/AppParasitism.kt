@@ -283,7 +283,7 @@ internal object AppParasitism : ModuleReloadable {
             .firstMethodOrNull { name = "setFilePermissionsFromMode" }?.let {
                 YukiHookHelper.hook(
                     it, object : ClassicHookerBridge {
-                        override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+                        override fun beforeHooked(param: ClassicHookerBridge.Param) {
                             if ((param.args[0] as? String?)?.endsWith("preferences.xml") == true) param.args[1] = 1
                         }
                     }
@@ -373,14 +373,14 @@ internal object AppParasitism : ModuleReloadable {
         runCatching {
             Application::class.resolve().optional(silent = true).apply {
                 YukiHookHelper.hook(firstMethod { name = "attach"; parameters(Context::class) }, object : ClassicHookerBridge {
-                    override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun beforeHooked(param: ClassicHookerBridge.Param) {
                         val baseContext = param.args[0] as? Context ?: return
                         if (baseContext.packageName != lifecyclePackageName) return
 
                         param.dispatchAppLifecycle { onAttachBaseContext(baseContext, false) }
                     }
 
-                    override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun afterHooked(param: ClassicHookerBridge.Param) {
                         val baseContext = param.args[0] as? Context ?: return
                         if (baseContext.packageName != lifecyclePackageName) return
 
@@ -388,7 +388,7 @@ internal object AppParasitism : ModuleReloadable {
                     }
                 }).let(hooked::add)
                 YukiHookHelper.hook(firstMethod { name = "onTerminate" }, object : ClassicHookerBridge {
-                    override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun afterHooked(param: ClassicHookerBridge.Param) {
                         val application = param.instance as? Application ?: return
                         if (application.packageName != lifecyclePackageName) return
 
@@ -396,7 +396,7 @@ internal object AppParasitism : ModuleReloadable {
                     }
                 }).let(hooked::add)
                 YukiHookHelper.hook(firstMethod { name = "onLowMemory" }, object : ClassicHookerBridge {
-                    override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun afterHooked(param: ClassicHookerBridge.Param) {
                         val application = param.instance as? Application ?: return
                         if (application.packageName != lifecyclePackageName) return
 
@@ -404,7 +404,7 @@ internal object AppParasitism : ModuleReloadable {
                     }
                 }).let(hooked::add)
                 YukiHookHelper.hook(firstMethod { name = "onTrimMemory"; parameters(Int::class) }, object : ClassicHookerBridge {
-                    override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun afterHooked(param: ClassicHookerBridge.Param) {
                         val application = param.instance as? Application ?: return
                         if (application.packageName != lifecyclePackageName) return
                         val level = param.args[0] as? Int ?: return
@@ -415,7 +415,7 @@ internal object AppParasitism : ModuleReloadable {
                 YukiHookHelper.hook(
                     firstMethod { name = "onConfigurationChanged"; parameters(Configuration::class) },
                     object : ClassicHookerBridge {
-                        override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                        override fun afterHooked(param: ClassicHookerBridge.Param) {
                             val application = param.instance as? Application ?: return
                             if (application.packageName != lifecyclePackageName) return
                             val config = param.args[0] as? Configuration ?: return
@@ -444,7 +444,7 @@ internal object AppParasitism : ModuleReloadable {
                     name = "callApplicationOnCreate"
                     parameters(Application::class)
                 }, object : ClassicHookerBridge {
-                    override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun afterHooked(param: ClassicHookerBridge.Param) {
                         val application = param.args[0] as? Application ?: return
                         if (application.packageName != lifecyclePackageName) return
 
@@ -468,7 +468,12 @@ internal object AppParasitism : ModuleReloadable {
         YukiHookDataChannel.get().registerToHost(application)
     }
 
-    /** Binds listeners to an existing [Application], only a real creation event dispatches `onCreate`. */
+    /**
+     * Binds listeners to an existing [Application], only a real creation event dispatches `onCreate`.
+     * @param application the host [Application].
+     * @param dispatchCreate whether to dispatch the `onCreate` event.
+     * @return [Throwable] if an error occurs, or null if successful.
+     */
     private fun bindHostApplication(application: Application, dispatchCreate: Boolean): Throwable? {
         hostApplication = application
         registerPendingModuleActivities(application)
@@ -635,7 +640,7 @@ internal object AppParasitism : ModuleReloadable {
             }
         }
 
-        val hooked = mutableListOf<YukiHookHandle>()
+        val handles = mutableListOf<YukiHookHandle>()
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${XposedModuleRuntime.modulePackageName}.ACTIVITY_PROXY_INTENT"
@@ -723,7 +728,7 @@ internal object AppParasitism : ModuleReloadable {
 
             // Resolve each overload separately so a custom `Instrumentation` can override only one of them.
             YukiHookHelper.hook(newActivityResolver, object : ClassicHookerBridge {
-                override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                override fun afterHooked(param: ClassicHookerBridge.Param) {
                     if (param.instance !== instrumentation) return
                     if (param.throwable != null) {
                         val className = param.args[1] as? String ?: return
@@ -736,10 +741,10 @@ internal object AppParasitism : ModuleReloadable {
                     val activity = param.result as? Activity
                     if (events.isManaged && activity is ModuleActivity) moduleActivities += WeakReference(activity)
                 }
-            }).let(hooked::add)
+            }).let(handles::add)
             callActivityOnCreateResolvers.forEach { resolver ->
                 YukiHookHelper.hook(resolver, object : ClassicHookerBridge {
-                    override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun beforeHooked(param: ClassicHookerBridge.Param) {
                         if (param.instance !== instrumentation) return
                         val activity = param.args[0] as? Activity ?: return
                         if (activity !is ModuleActivity) return
@@ -747,10 +752,10 @@ internal object AppParasitism : ModuleReloadable {
                         (param.args[1] as? Bundle)?.classLoader = baseClassLoader
                         injectModuleResources(activity.resources)
                     }
-                }).let(hooked::add)
+                }).let(handles::add)
             }
             YukiHookHelper.hook(performLaunchActivity, object : ClassicHookerBridge {
-                override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+                override fun beforeHooked(param: ClassicHookerBridge.Param) {
                     val record = param.args[0] ?: return
 
                     val intentResolver = record.asResolver().processor(AndroidHiddenApiBypassResolver.get())
@@ -764,21 +769,21 @@ internal object AppParasitism : ModuleReloadable {
                     val original = intent.getParcelableExtraCompat<Intent>(ActivityProxyConfig.proxyIntentName) ?: return
                     intentResolver.set(original)
                 }
-            }).let(hooked::add)
+            }).let(handles::add)
             startActivityResolvers.forEach { resolver ->
                 YukiHookHelper.hook(resolver, object : ClassicHookerBridge {
-                    override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+                    override fun beforeHooked(param: ClassicHookerBridge.Param) {
                         val args = param.args
 
                         val index = args.indexOfFirst { it is Intent }
                         if (index >= 0) args[index] = (args[index] as Intent).wrap()
                     }
-                }).let(hooked::add)
+                }).let(handles::add)
             }
 
             isActivityProxyRegistered = true
         }.onFailure {
-            hooked.forEach { handle -> handle.remove() }
+            handles.forEach { handle -> handle.remove() }
             YLog.innerE("Activity proxy initialization failed because got an exception", it)
             events.reportFailure(it)
         }

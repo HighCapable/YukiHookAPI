@@ -31,6 +31,7 @@ fun interface FrameworkServiceBridge {
 
     /**
      * Called immediately on registration and when the framework service binds or dies.
+     *
      * Callbacks may run on a binder thread.
      * @param available whether the framework service is available.
      */
@@ -38,6 +39,7 @@ fun interface FrameworkServiceBridge {
 
     /**
      * Cancels this subscription without disconnecting the framework service.
+     *
      * Call this on the subscription returned by observation, not the input listener.
      * The default implementation does nothing for an unregistered listener.
      */

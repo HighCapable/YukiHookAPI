@@ -28,7 +28,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 
 /**
- * Provides [HiddenApiBypass] integration for KavaRef.
+ * Provides [HiddenApiBypass] integration for `KavaRef`.
  *
  * Implemented with [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass).
  *

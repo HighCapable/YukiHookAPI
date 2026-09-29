@@ -43,10 +43,8 @@ class YukiHookModuleScope private constructor() {
 
     internal companion object {
 
-        /** Whether the current environment is a host environment. */
         private val isHostEnvironment = XposedModuleRuntime.isHostEnvironment
 
-        /** The current [YukiHookModuleScope] singleton. */
         private val instance = YukiHookModuleScope()
 
         /**
@@ -95,6 +93,7 @@ class YukiHookModuleScope private constructor() {
      *
      * Returning from this function only means the request was submitted.
      * The callback is always invoked on the main thread.
+     *
      * Submission errors are thrown directly and do not invoke the callback.
      * @param packages package names to request, including `system` when targeting system server.
      * @param callback callback invoked with the approved packages or a failure message.
@@ -110,6 +109,7 @@ class YukiHookModuleScope private constructor() {
      *
      * Returning from this function only means the request was submitted.
      * The callback is always invoked on the main thread.
+     *
      * Submission errors are thrown directly and do not invoke the callback.
      * @param packages package names to request, including `system` when targeting system server.
      * @param callback callback invoked with the approved packages or a failure message.

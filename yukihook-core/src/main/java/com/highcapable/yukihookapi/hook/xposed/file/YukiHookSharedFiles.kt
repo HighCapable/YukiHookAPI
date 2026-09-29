@@ -46,10 +46,8 @@ class YukiHookSharedFiles private constructor() {
 
     internal companion object {
 
-        /** Whether the current environment is a host environment. */
         private val isHostEnvironment = XposedModuleRuntime.isHostEnvironment
 
-        /** The current [YukiHookSharedFiles] singleton. */
         private val instance = YukiHookSharedFiles()
 
         /**
@@ -59,7 +57,6 @@ class YukiHookSharedFiles private constructor() {
         fun get() = instance
     }
 
-    /** The storage supplied by the selected runtime. */
     private val current get() = YukiHookBridge.sharedFiles(isHostEnvironment)
 
     /** Checks the API loading state and access mode. */
@@ -105,8 +102,8 @@ class YukiHookSharedFiles private constructor() {
     /**
      * Opens a shared file.
      *
-     * - In the module environment, a missing file is created and the descriptor is writable.
-     * - In a host environment, the descriptor is read-only and the file must already exist.
+     * In the module environment, a missing file is created and the descriptor is writable.
+     * In a host environment, the descriptor is read-only and the file must already exist.
      *
      * The caller must close the returned descriptor.
      * @param name the file name without path separators and not equal to `.` or `..`.

@@ -33,6 +33,7 @@ fun interface ChainHookerBridge : HookerBridge {
 
     /**
      * Intercepts an invocation, returning a result or throwing an exception to the caller.
+     *
      * Return [Chain.proceed] to continue without changing the result, omit it to short-circuit.
      * Return values are ignored for void methods and constructors.
      * @param chain the current invocation chain.
@@ -43,12 +44,14 @@ fun interface ChainHookerBridge : HookerBridge {
 
     /**
      * The remaining interceptor chain for a single invocation.
+     *
      * Must not be shared across threads or used after [intercept] returns or throws.
      */
     interface Chain : HookerBridge.Invocation {
 
         /**
          * Read-only invocation arguments.
+         *
          * Pass a new array to [proceed] to change them.
          */
         val args: List<Any?>
@@ -70,6 +73,7 @@ fun interface ChainHookerBridge : HookerBridge {
 
         /**
          * Continues the remaining chain with a new receiver and the current arguments.
+         *
          * Must not be used for static methods.
          * @param instance the receiver to pass downstream.
          * @return [Any] the downstream result, or null for void methods and constructors.
@@ -79,6 +83,7 @@ fun interface ChainHookerBridge : HookerBridge {
 
         /**
          * Continues the remaining chain with a new receiver and arguments.
+         *
          * Must not be used for static methods.
          * @param instance the receiver to pass downstream.
          * @param args the arguments to pass downstream.

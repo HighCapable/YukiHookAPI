@@ -139,10 +139,10 @@ class YukiHookCreator private constructor() {
          */
         private fun storeRegistration(registration: YukiHookHandle) {
             val shouldRemove = synchronized(registrationLock) {
-                if (isRemovalPending) true else {
+                if (!isRemovalPending) {
                     handles.add(registration)
                     false
-                }
+                } else true
             }
 
             if (shouldRemove) runCatching {
@@ -449,7 +449,7 @@ class YukiHookCreator private constructor() {
         /**
          * Hooks before [Member] execution completes.
          *
-         * - Cannot be used together with [intercept].
+         * Cannot be used together with [intercept].
          * @param callback the [HookParam] function body.
          * @return [HookCallback]
          */
@@ -464,7 +464,7 @@ class YukiHookCreator private constructor() {
         /**
          * Hooks after [Member] execution completes.
          *
-         * - Cannot be used together with [intercept].
+         * Cannot be used together with [intercept].
          * @param callback the [HookParam] function body.
          * @return [HookCallback]
          */
@@ -479,8 +479,8 @@ class YukiHookCreator private constructor() {
         /**
          * Intercepts this [Member] with the callback return value.
          *
-         * - The callback return value is ignored for void methods and constructors.
-         * - Cannot be used together with [before] or [after].
+         * The callback return value is ignored for void methods and constructors.
+         * Cannot be used together with [before] or [after].
          * @param callback the [HookParam] function body.
          */
         fun intercept(callback: HookParam.() -> Any?) {
@@ -492,10 +492,11 @@ class YukiHookCreator private constructor() {
         /**
          * Intercepts this [Member] with a constant return value.
          *
-         * - The [value] is ignored for void methods and constructors.
-         * - Note: Setting a [Member] with a constant return value such as [Int], [Long],
-         *   or [Boolean] to null may cause the host to throw an exception.
-         * - Cannot be used together with [before] or [after].
+         * The [value] is ignored for void methods and constructors.
+         *
+         * Setting a [Member] with a constant return value such as [Int], [Long],
+         * or [Boolean] to null may cause the host to throw an exception.
+         * Cannot be used together with [before] or [after].
          * @param value the replacement constant value, null by default.
          */
         fun intercept(value: Any? = null) = intercept { value }
@@ -538,7 +539,7 @@ class YukiHookCreator private constructor() {
                 private val beforeInvocationCount = AtomicLong()
                 private val afterInvocationCount = AtomicLong()
 
-                override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+                override fun beforeHooked(param: ClassicHookerBridge.Param) {
                     val invocation = HookParam.from(
                         dataExtraStorage = if (isInterception) state.interceptDataExtra else state.beforeDataExtra,
                         this@ClassicMemberHooker, param
@@ -564,15 +565,15 @@ class YukiHookCreator private constructor() {
                         notifyCallbackFailure(invocation, it)
 
                         // A failed interception invokes the original unhooked `Member` to keep the host running normally.
-                        if (isInterception) invocation.callOriginal() else {
+                        if (!isInterception) {
                             if (state.throwToHostOnFailure) param.throwable = it
                             null
-                        }
+                        } else invocation.callOriginal()
                     }
                     if (isInterception) param.result = result
                 }
 
-                override fun afterHookedMember(param: ClassicHookerBridge.Param) {
+                override fun afterHooked(param: ClassicHookerBridge.Param) {
                     if (isInterception) return
 
                     HookParam.from(state.afterDataExtra, this@ClassicMemberHooker, param).also { invocation ->

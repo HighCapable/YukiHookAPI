@@ -44,7 +44,7 @@ class ChainInvocationAdapterTest {
         member: Member = this@ChainInvocationAdapterTest.member,
         instance: Any? = "value",
         args: Array<Any?> = arrayOf(1)
-    ) = Invocation(member, instance, args).also { beforeHookedMember(it) }
+    ) = Invocation(member, instance, args).also { beforeHooked(it) }
 
     @Test
     fun priorityNestsInterceptorsAndForwardsNewReceiverAndArguments() {

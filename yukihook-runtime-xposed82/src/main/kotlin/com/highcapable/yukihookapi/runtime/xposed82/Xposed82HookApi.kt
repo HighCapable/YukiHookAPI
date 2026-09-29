@@ -118,8 +118,8 @@ internal object Xposed82HookApi : HookRegistrationBridge {
 
     private fun hookClassicMember(member: Member, priority: Int, hooker: ClassicHookerBridge): HookerBridge {
         val handle = XposedBridge.hookMethod(member, object : XC_MethodHook(priority) {
-            override fun beforeHookedMethod(param: MethodHookParam) = hooker.beforeHookedMember(param.toBridge())
-            override fun afterHookedMethod(param: MethodHookParam) = hooker.afterHookedMember(param.toBridge())
+            override fun beforeHookedMethod(param: MethodHookParam) = hooker.beforeHooked(param.toBridge())
+            override fun afterHookedMethod(param: MethodHookParam) = hooker.afterHooked(param.toBridge())
         })
 
         return object : HookerBridge by hooker {

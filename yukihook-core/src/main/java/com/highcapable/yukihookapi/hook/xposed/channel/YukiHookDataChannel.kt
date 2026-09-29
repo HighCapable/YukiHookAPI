@@ -62,10 +62,9 @@ import java.util.concurrent.ConcurrentHashMap
  * Data channel between the Xposed module and host.
  *
  * Exchanges data by registering [BroadcastReceiver] instances in both the module and host.
- *
  * The module's [Application] must inherit [ModuleApplication] to use this feature.
  *
- * - Require both the module and host remain alive.
+ * - Note: Require both the module and host remain alive.
  */
 class YukiHookDataChannel private constructor() {
 
@@ -77,26 +76,16 @@ class YukiHookDataChannel private constructor() {
 
         private var events = ModuleEventDispatcher()
 
-        /** Whether the current environment is a host environment. */
         private val isHostEnvironment = XposedModuleRuntime.isHostEnvironment
-
-        /** Automatically generated Xposed module build version. */
         private val moduleGeneratedVersion = YukiHook.Status.compiledTimestamp.toString()
 
-        /** Tag for requesting the module build version. */
         private const val GET_MODULE_GENERATED_VERSION = "module_generated_version_get"
-
-        /** Tag for the module build version result. */
+        private const val GET_YUKI_LOGGER_IN_MEMORY_DATA = "yuki_logger_in_memory_data_get"
         private const val RESULT_MODULE_GENERATED_VERSION = "module_generated_version_result"
 
-        /** Tag for requesting debug log data. */
-        private const val GET_YUKI_LOGGER_IN_MEMORY_DATA = "yuki_logger_in_memory_data_get"
-
-        /** Tag for the debug log data result. */
-        private val RESULT_YUKI_LOGGER_IN_MEMORY_DATA = ChannelData<List<YLogData>>("yuki_logger_in_memory_data_result")
-
-        /** Value used for listener-only results. */
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
+
+        private val loggerInMemoryDataResult = ChannelData<List<YLogData>>("yuki_logger_in_memory_data_result")
 
         /**
          * Data-size threshold in bytes for segmenting a system broadcast.
@@ -122,7 +111,6 @@ class YukiHookDataChannel private constructor() {
          */
         private val receiverDataSegmentMaxByteSize get() = receiverDataMaxByteSize / receiverDataMaxByteCompressionFactor
 
-        /** The current [YukiHookDataChannel] singleton. */
         @Suppress("StaticFieldLeak")
         private val instance = YukiHookDataChannel()
 
@@ -150,13 +138,8 @@ class YukiHookDataChannel private constructor() {
         WAIT_FOR_LISTENER
     }
 
-    /** Registered broadcast callbacks. */
     private val receiverCallbacks = ConcurrentHashMap<String, Pair<Context?, (String, Intent) -> Unit>>()
-
-    /** The [Context] currently used to register broadcasts. */
     private var receiverContext: Context? = null
-
-    /** The broadcast receiver. */
     private var handlerReceiver: BroadcastReceiver? = null
 
     /** The broadcast receiver callback. */
@@ -237,7 +220,7 @@ class YukiHookDataChannel private constructor() {
             }
             // Registers a listener for debug log data exchanged between the module and host.
             wait<String>(GET_YUKI_LOGGER_IN_MEMORY_DATA) { fromPackageName ->
-                namespace(context, fromPackageName).put(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, YLog.createSnapshot())
+                namespace(context, fromPackageName).put(loggerInMemoryDataResult, YLog.createSnapshot())
             }
         }
     }
@@ -291,7 +274,7 @@ class YukiHookDataChannel private constructor() {
     /**
      * [YukiHookDataChannel] namespace.
      *
-     * - Use [namespace] to obtain [Namespace].
+     * Use [namespace] to obtain [Namespace].
      * @param context the context instance.
      * @param packageName the target host package name.
      */
@@ -332,7 +315,8 @@ class YukiHookDataChannel private constructor() {
          * The minimum is 100 KB (100 * 1024). Lower values are reset to 100 KB.
          * The value applies globally until the current process ends.
          *
-         * - Supported larger values are segmented automatically, but individual segments may still exceed this value.
+         * Supported larger values are segmented automatically, but individual segments may still exceed this value.
+         *
          * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
@@ -349,7 +333,8 @@ class YukiHookDataChannel private constructor() {
          * The minimum is 2. Lower values are reset to 2.
          * The value applies globally until the current process ends.
          *
-         * - [receiverDataMaxByteSize] is divided by this value to determine the target size of each segment.
+         * [receiverDataMaxByteSize] is divided by this value to determine the target size of each segment.
+         *
          * - Warning: adjust this value carefully. Exceeding the system limit causes [TransactionTooLargeException].
          * @return [Int]
          */
@@ -366,7 +351,7 @@ class YukiHookDataChannel private constructor() {
          * Obtain a new [Namespace] instance to restore the data-size limit.
          * Declare [SendTooLargeChannelData] across the invocation scope to suppress the warning.
          *
-         * - Do not use this feature unless you understand its consequences.
+         * - Note: Do not use this feature unless you understand its consequences.
          * @return [Namespace]
          */
         @SendTooLargeChannelData
@@ -440,7 +425,7 @@ class YukiHookDataChannel private constructor() {
         /**
          * Receives only a listener result without key-value data.
          *
-         * - Only listeners sent with [VALUE_WAIT_FOR_LISTENER] can be received.
+         * Only listeners sent with [VALUE_WAIT_FOR_LISTENER] can be received.
          * @param key the key name.
          * @param priority the response priority, unset by default.
          * @param callback the result callback.
@@ -456,7 +441,7 @@ class YukiHookDataChannel private constructor() {
         /**
          * Checks whether the module and host versions match.
          *
-         * This method detects a mismatch caused when the Xposed module is updated but the host has not reloaded it.
+         * This function detects a mismatch caused when the Xposed module is updated but the host has not reloaded it.
          * @param priority the response priority, unset by default.
          * @param result the callback receiving whether the versions match.
          */
@@ -470,13 +455,13 @@ class YukiHookDataChannel private constructor() {
          *
          * Because the module and host run in different processes, this bridge provides access to each process's debug log data.
          *
-         * - Both the module and host must enable [YLog.Config.recording] to obtain debug log data.
-         * - Android limits transfer size. Large debug logs are sent in segments automatically, and larger data transfers more slowly.
+         * Both the module and host must enable [YLog.Config.recording] to obtain debug log data.
+         * Android limits transfer size. Large debug logs are sent in segments automatically, and larger data transfers more slowly.
          * @param priority the response priority, unset by default.
          * @param result the [List]<[YLogData]> callback.
          */
         fun obtainLoggerInMemoryData(priority: ChannelPriority? = null, result: (List<YLogData>) -> Unit) {
-            wait(RESULT_YUKI_LOGGER_IN_MEMORY_DATA, priority) { result(it) }
+            wait(loggerInMemoryDataResult, priority) { result(it) }
             put(GET_YUKI_LOGGER_IN_MEMORY_DATA, packageName)
         }
 

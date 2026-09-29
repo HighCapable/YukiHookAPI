@@ -65,7 +65,7 @@ internal class ChainInvocationAdapter(
         }
     }
 
-    override fun beforeHookedMember(param: ClassicHookerBridge.Param) {
+    override fun beforeHooked(param: ClassicHookerBridge.Param) {
         val snapshot = registrations
         // An already captured native callback may still run after the last interceptor is removed.
         if (snapshot.isEmpty()) return

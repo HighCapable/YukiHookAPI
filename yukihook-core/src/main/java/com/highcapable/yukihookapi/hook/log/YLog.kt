@@ -100,9 +100,8 @@ object YLog {
         /**
          * Whether debug log output is enabled, true by default.
          *
-         * - Disabling this stops all log output from [YukiHook].
-         *
-         * It does not affect logs printed manually through the following methods.
+         * Disabling this stops all log output from [YukiHook].
+         * It does not affect logs printed manually through the following methods:
          *
          * [debug]、[info]、[warn]、[error]
          *
@@ -121,8 +120,7 @@ object YLog {
          *
          * [enabled] must also be enabled.
          *
-         * - Excessive logging may slow down the host or cause frequent garbage collection.
-         *
+         * Excessive logging may slow down the host or cause frequent garbage collection.
          * Once enabled, call [saveToFile] to save logs to a file in real time or use [contents] to obtain the current log contents.
          */
         var recording = false
@@ -157,7 +155,7 @@ object YLog {
         /**
          * Customizes the elements displayed in debug logs.
          *
-         * This applies only to recorded logs and logs in the (Xposed) host environment.
+         * This applies only to recorded logs and logs in the host environment.
          * Log elements are displayed in the order specified by [item].
          * Leave [item] empty to hide every element except the log message.
          *
@@ -177,7 +175,7 @@ object YLog {
     /**
      * All currently recorded log data.
      *
-     * - Log data is isolated between host and module processes.
+     * Log data is isolated between host and module processes.
      */
     val inMemoryData: MutableList<YLogData> = Collections.synchronizedList(mutableListOf())
 
@@ -186,7 +184,7 @@ object YLog {
      *
      * Returns an empty string when no logs have been recorded.
      *
-     * - Log data is isolated between host and module processes.
+     * Log data is isolated between host and module processes.
      * @return [String]
      */
     val contents get() = contents()
@@ -202,7 +200,7 @@ object YLog {
      *
      * Returns an empty string when no logs have been recorded and [data] is empty.
      *
-     * - Log data is isolated between host and module processes.
+     * Log data is isolated between host and module processes.
      * @param data the log data, [inMemoryData] by default.
      * @return [String]
      */
@@ -225,7 +223,7 @@ object YLog {
      *
      * You can also clear [inMemoryData] directly.
      *
-     * - Log data is isolated between host and module processes.
+     * Log data is isolated between host and module processes.
      */
     fun clear() = inMemoryData.clear()
 
@@ -235,7 +233,7 @@ object YLog {
      * Performs no operation when [Config.recording] is disabled or no logs have been recorded.
      * Logs are appended to [fileName], which is created automatically when it does not exist.
      *
-     * - File access depends on the permissions granted to the current host or module.
+     * File access depends on the permissions granted to the current host or module.
      * @param fileName the full file name, for example `/data/data/.../files/xxx.log`.
      * @param data the log data, [inMemoryData] by default.
      * @throws ErrnoException if the target path is not writable.
@@ -377,9 +375,10 @@ object YLog {
             )
         }
 
+        @Suppress("DEPRECATION")
         when (env) {
             EnvType.LOGD -> logByLogd()
-            EnvType.XPOSED_ENVIRONMENT -> logByHooker()
+            EnvType.XPOSED, EnvType.XPOSED_ENVIRONMENT -> logByHooker()
             EnvType.SCOPE -> if (XposedModuleRuntime.isHostEnvironment) logByHooker() else logByLogd()
             EnvType.BOTH -> {
                 logByLogd()
@@ -444,14 +443,14 @@ object YLog {
         /**
          * Uses only the host environment.
          *
-         * - Available only in the host environment and has no effect in the module environment.
+         * Available only in the host environment and has no effect in the module environment.
          */
-        XPOSED_ENVIRONMENT,
+        XPOSED,
 
         /**
          * Uses environment-specific output.
          *
-         * The host environment uses only [XPOSED_ENVIRONMENT].
+         * The host environment uses only [XPOSED].
          *
          * The module environment uses only [LOGD].
          */
@@ -460,10 +459,18 @@ object YLog {
         /**
          * Uses both outputs.
          *
-         * The host environment uses [LOGD] and [XPOSED_ENVIRONMENT].
+         * The host environment uses [LOGD] and [XPOSED].
          *
          * The module environment uses only [LOGD].
          */
-        BOTH
+        BOTH,
+
+        // region Deprecated properties for backward compatibility
+
+        /** Uses only the host environment. */
+        @Deprecated("Use XPOSED instead.", ReplaceWith("XPOSED"))
+        XPOSED_ENVIRONMENT
+
+        // endregion
     }
 }

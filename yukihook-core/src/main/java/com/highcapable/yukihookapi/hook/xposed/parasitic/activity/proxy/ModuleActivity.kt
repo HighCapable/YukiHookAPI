@@ -38,8 +38,8 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  *
  * An [Activity] implementing this interface can launch in both host and module environments.
  *
- * - In the host environment, call [Context.registerModuleActivities] when the host starts,
- *   an [AppCompatActivity] must override [moduleTheme] with an AppCompat theme.
+ * In the host environment, call [Context.registerModuleActivities] when the host starts,
+ * an [AppCompatActivity] must override [moduleTheme] with an AppCompat theme.
  *
  * The example below forwards the required lifecycle methods to [delegate]. Implement this interface in a custom `BaseActivity`,
  * override the forwarded methods, and inherit that `BaseActivity` from module activities.
@@ -116,7 +116,7 @@ interface ModuleActivity {
      *
      * When empty, uses the class configured by [Context.registerModuleActivities].
      *
-     * - The proxied [Activity] class must be declared in the host's AndroidManifest.
+     * The proxied [Activity] class must be declared in the host's AndroidManifest.
      * @return [String]
      */
     val proxyClassName get() = ""

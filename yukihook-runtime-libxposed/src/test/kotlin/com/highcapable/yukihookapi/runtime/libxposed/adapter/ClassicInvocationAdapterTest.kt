@@ -43,8 +43,8 @@ class ClassicInvocationAdapterTest {
         after: (ClassicHookerBridge.Param) -> Unit,
         proceed: (Array<Any?>) -> Any?
     ) = intercept(object : ClassicHookerBridge {
-        override fun beforeHookedMember(param: ClassicHookerBridge.Param) = before(param)
-        override fun afterHookedMember(param: ClassicHookerBridge.Param) = after(param)
+        override fun beforeHooked(param: ClassicHookerBridge.Param) = before(param)
+        override fun afterHooked(param: ClassicHookerBridge.Param) = after(param)
     }, proceed)
 
     @Test

@@ -33,7 +33,7 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import java.lang.reflect.Member
 
 /**
- * Target object implementation for hooked methods and constructors.
+ * Invocation context for a classic hook callback.
  * @param dataExtraStorage the storage shared by the current callback scope.
  * @param hooker the hooker owning this invocation's registrations.
  * @param param the hook result callback interface.
@@ -96,11 +96,11 @@ class HookParam private constructor(
     /**
      * Throws an exception to the current host.
      *
-     * - Use [hasThrowable] to check whether an exception is currently set.
-     * - Use [throwable] to get the exception set for the invocation.
+     * Use [hasThrowable] to check whether an exception is currently set,
+     * and [throwable] to get the exception set for the invocation.
      *
-     * - This API is effective only in [YukiHookCreator.ClassicMemberHooker.before] or [YukiHookCreator.ClassicMemberHooker.after] callbacks.
-     * - Setting the exception also calls [result] to null and throws it to the current host.
+     * This API is effective only in [YukiHookCreator.ClassicMemberHooker.before] or [YukiHookCreator.ClassicMemberHooker.after] callbacks.
+     * Setting the exception also calls [result] to null and throws it to the current host.
      * @receiver the exception to throw to the current host.
      * @return [Throwable] or null.
      * @throws Throwable
@@ -230,8 +230,6 @@ class HookParam private constructor(
 
     /**
      * Argument editor for the currently hooked method or constructor.
-     *
-     * - Use the second [args] overload to obtain [ArgumentEditor].
      * @param index the argument array index.
      */
     inner class ArgumentEditor internal constructor(private val index: Int) {

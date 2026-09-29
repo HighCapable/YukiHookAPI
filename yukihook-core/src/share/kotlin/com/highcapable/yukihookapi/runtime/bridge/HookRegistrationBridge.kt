@@ -36,7 +36,6 @@ interface HookRegistrationBridge {
      * Deoptimizes a method or constructor so its callees are invoked without runtime inlining.
      * @param member the calling method or constructor to deoptimize.
      * @return [Boolean] whether deoptimization succeeded.
-     * @throws UnsupportedOperationException when the selected runtime does not support deoptimization.
      */
     fun deoptimize(member: Member): Boolean
 

@@ -35,13 +35,13 @@ interface ClassicHookerBridge : HookerBridge {
      * Called before the intercepted member executes.
      * @param param the current invocation parameters.
      */
-    fun beforeHookedMember(param: Param) = Unit
+    fun beforeHooked(param: Param) = Unit
 
     /**
      * Called after execution, including a skipped call or a thrown exception.
      * @param param the current invocation parameters.
      */
-    fun afterHookedMember(param: Param) = Unit
+    fun afterHooked(param: Param) = Unit
 
     /**
      * Mutable state belonging to a single intercepted invocation.

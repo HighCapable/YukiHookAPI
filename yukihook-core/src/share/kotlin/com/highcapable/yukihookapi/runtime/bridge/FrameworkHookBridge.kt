@@ -62,7 +62,7 @@ interface FrameworkHookBridge {
     /** Module-scope bridge. */
     val moduleScope: ModuleScopeBridge
 
-    /** Module reload service bridge. Unsupported runtimes throw when it is requested. */
+    /** Module-reload bridge. */
     val moduleReload: ModuleReloadBridge
 
     /** Executable invocation capabilities supplied by the selected runtime. */
@@ -85,7 +85,6 @@ interface FrameworkHookBridge {
      * @param lifecycle the optional lifecycle for automatic cancellation, or null for manual cancellation only.
      * @param listener the listener to observe service readiness.
      * @return [FrameworkServiceBridge] or null.
-     * @throws UnsupportedOperationException when the selected runtime does not support framework services.
      */
     fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge?
 
@@ -100,7 +99,6 @@ interface FrameworkHookBridge {
      * Gets shared-file storage for the current environment.
      * @param hostEnvironment whether storage is accessed from a host environment.
      * @return [SharedFilesBridge]
-     * @throws UnsupportedOperationException when the selected runtime does not support shared files.
      */
     fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge
 

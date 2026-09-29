@@ -70,7 +70,7 @@ internal class ClassicInvocationAdapter private constructor(
 
     fun intercept(hooker: ClassicHookerBridge, proceed: (Array<Any?>) -> Any?): Any? {
         try {
-            hooker.beforeHookedMember(this)
+            hooker.beforeHooked(this)
         } catch (e: Throwable) {
             onFailure(e)
             currentResult = null
@@ -88,7 +88,7 @@ internal class ClassicInvocationAdapter private constructor(
         val proceededResult = currentResult
         val proceededThrowable = currentThrowable
         try {
-            hooker.afterHookedMember(this)
+            hooker.afterHooked(this)
         } catch (e: Throwable) {
             onFailure(e)
             currentResult = proceededResult

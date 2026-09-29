@@ -30,7 +30,10 @@ import androidx.annotation.RestrictTo
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 interface ModuleSessionBridge {
 
-    /** Acquires one use of this module instance, or returns false when it is retiring. */
+    /**
+     * Acquires one use of this module instance, or returns false when it is retiring.
+     * @return [Boolean] true if the use was acquired, false if the module instance is retiring.
+     */
     fun enter(): Boolean
 
     /** Releases one acquired use. */
@@ -38,7 +41,9 @@ interface ModuleSessionBridge {
 
     /**
      * Stops new uses if no managed callback is running.
+     *
      * A busy module instance remains active.
+     * @return [Boolean] true if the module instance is now retiring, false if it is busy and remains active.
      */
     fun freeze(): Boolean
 

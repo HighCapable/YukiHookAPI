@@ -92,8 +92,8 @@ object YukiHook {
          *
          * Once enabled, module startup forces [SharedPreferences] file permissions to [Context.MODE_WORLD_READABLE] (0664).
          *
-         * - This optional experimental feature is disabled by default.
-         * - Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
+         * This optional experimental feature is disabled by default.
+         * Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
          *
          * Do not enable it when [YukiHookPreferences] already works correctly.
          */
@@ -105,7 +105,7 @@ object YukiHook {
          *
          * The Xposed module's [Application] must inherit [ModuleApplication].
          *
-         * - This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
+         * This feature is enabled by default. When disabled, initialization does not load [YukiHookDataChannel].
          */
         var dataChannel = true
 
@@ -175,10 +175,10 @@ object YukiHook {
         /**
          * Checks whether module activation is detected through Xposed, TaiChi/Wuji.
          *
-         * - Includes both Xposed runtimes through [isXposedModuleActive]. Its runtime-specific
-         *   initialization requirements and asynchronous service behavior apply.
+         * Includes both Xposed runtimes through [isXposedModuleActive]. Its runtime-specific
+         * initialization requirements and asynchronous service behavior apply.
          *
-         * - Also checks [isTaiChiModuleActive], which requires [ModuleApplication] in the module.
+         * Also checks [isTaiChiModuleActive], which requires [ModuleApplication] in the module.
          * @return [Boolean] whether activation is currently detected.
          */
         val isModuleActive get() = isXposedModuleActive || isTaiChiModuleActive
@@ -186,17 +186,18 @@ object YukiHook {
         /**
          * Checks whether module activation is detected through the selected Xposed runtime.
          *
-         * - Returns true when [isHostEnvironment] is true, independently of module services.
+         * Returns true when [isHostEnvironment] is true, independently of module services.
          *
-         * - With [YukiHookRuntime.XPOSED_82], module detection uses self-hook status. It requires
+         * With [YukiHookRuntime.XPOSED_82], module detection uses self-hook status. It requires
          *   [YukiHookXposed82Entry.generateModuleStatus] and framework injection into the module's own process.
-         * - With [YukiHookRuntime.LIBXPOSED], module detection requires a single compatible framework service connection.
+         *
+         * With [YukiHookRuntime.LIBXPOSED], module detection requires a single compatible framework service connection.
          *   [ModuleApplication] initializes it automatically. [observeFrameworkService] can also initialize it and observe changes.
          *   Binding is asynchronous: false before connection or after disconnection does not necessarily mean the module is disabled.
          *   The framework may keep the service connected after the module is disabled, so true does not guarantee
          *   that the module is still enabled in the manager. This is not a real-time query of the manager's enable/disable state.
          *
-         * - This does not verify the scope or whether hooks are installed in a particular target app.
+         * This does not verify the scope or whether hooks are installed in a particular target app.
          * @return [Boolean] whether activation is currently detected.
          */
         val isXposedModuleActive get() = isHostEnvironment || YukiHookBridge.isModuleActive
@@ -204,8 +205,8 @@ object YukiHook {
         /**
          * Checks only whether the module is active in TaiChi/Wuji.
          *
-         * - In the module environment, [Application] must inherit [ModuleApplication].
-         * - Always returns false in a host environment.
+         * In the module environment, [Application] must inherit [ModuleApplication].
+         * Always returns false in a host environment.
          * @return [Boolean] whether the module is active.
          */
         val isTaiChiModuleActive get() = !isHostEnvironment && (ModuleApplication.current?.isTaiChiModuleActive ?: false)
@@ -221,8 +222,8 @@ object YukiHook {
         /**
          * Information about the hook framework used by the current [YukiHook].
          *
-         * - In a legacy module, [YukiHookXposed82Entry.generateModuleStatus] must be enabled.
-         * - In a modern module, these values follow framework-service availability.
+         * In a legacy module, [YukiHookXposed82Entry.generateModuleStatus] must be enabled.
+         * In a modern module, these values follow framework-service availability.
          */
         object Executor {
 

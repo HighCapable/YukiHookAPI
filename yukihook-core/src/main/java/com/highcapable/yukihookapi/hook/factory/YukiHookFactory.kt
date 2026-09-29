@@ -77,7 +77,7 @@ fun YukiHookXposedModule.encase(vararg hookers: YukiBaseHooker) = YukiHook.encas
 /**
  * Creates a [YukiHookPreferences] object.
  *
- * - This API is available in both module and host environments.
+ * This API is available in both module and host environments.
  *
  * To store data in the current host's private storage from a host environment, use [YukiHookPreferences.native].
  * Without any explicit conditions, the host environment reads module data by default.
@@ -90,7 +90,7 @@ fun Context.preferences(name: String = "") = YukiHookPreferences.from(this).let 
 /**
  * Gets a [YukiHookDataChannel] object.
  *
- * - This API is available only in the module environment and has no effect elsewhere.
+ * This API is available only in the module environment and has no effect elsewhere.
  * @receiver the current context.
  * @param packageName the target host package name.
  * @return [YukiHookDataChannel.Namespace]
@@ -122,8 +122,8 @@ val Context.processName
  * Injected resources are scoped to the current [Context], so call this function for every host [Context] that needs them.
  * Injection completes synchronously.
  *
- * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
- * - On Android 11 (API 30) or later, call this function on the main thread.
+ * This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
+ * On Android 11 (API 30) or later, call this function on the main thread.
  * @see Resources.injectModuleResources
  * @receiver the current context.
  */
@@ -138,8 +138,8 @@ fun Context.injectModuleResources() = resources?.injectModuleResources()
  * Injected resources are scoped to the current [Resources], so call this function for every host [Resources] instance that needs them.
  * Injection completes synchronously.
  *
- * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
- * - On Android 11 (API 30) or later, call this function on the main thread.
+ * This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
+ * On Android 11 (API 30) or later, call this function on the main thread.
  * @see Context.injectModuleResources
  * @receiver the current resources.
  */
@@ -155,10 +155,12 @@ fun Resources.injectModuleResources() = AppParasitism.injectModuleResources(this
  * If your module may use [YukiHookLibXposedEntry.HotReload], it is recommended to use [PackageParam.registerModuleActivitiesWhenReady]
  * to register the module's [Activity], and avoid registering unstable callback events in the host lifecycle functions.
  *
- * - Each [Activity] that starts in the host must implement [ModuleActivity].
- * - This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
+ * Each [Activity] that starts in the host must implement [ModuleActivity].
+ * This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
+ *
+ * A pending [PackageParam.registerModuleActivitiesWhenReady] request takes precedence over this direct call.
+ *
  * - Requires Android 7.0 (API 24) or later.
- * - A pending [PackageParam.registerModuleActivitiesWhenReady] request takes precedence over this direct call.
  * @see PackageParam.registerModuleActivitiesWhenReady
  * @receiver the current context.
  * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
@@ -171,7 +173,7 @@ fun Context.registerModuleActivities(proxy: Any? = null) = AppParasitism.registe
  *
  * In a host, this API automatically calls [injectModuleResources] to inject the current module's resources.
  *
- * - If this API throws [ClassCastException] in a host, set a new [configuration] manually.
+ * If this API throws [ClassCastException] in a host, set a new [configuration] manually.
  * @receiver the current context.
  * @param theme the theme resource ID.
  * @param configuration the [Configuration] to use, null by default.

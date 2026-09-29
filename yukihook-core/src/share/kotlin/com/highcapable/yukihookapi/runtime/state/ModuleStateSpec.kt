@@ -26,7 +26,7 @@ import androidx.annotation.RestrictTo
 /**
  * Defines how a module-owned state is represented across module instances.
  *
- * - Note: Only the encoded value crosses module instances, it must not retain old module objects.
+ * Only the encoded value crosses module instances, it must not retain old module objects.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 interface ModuleStateSpec<T : Any> {

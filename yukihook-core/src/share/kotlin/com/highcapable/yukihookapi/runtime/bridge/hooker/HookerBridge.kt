@@ -35,8 +35,8 @@ interface HookerBridge {
 
     /**
      * Removes this hook without removing other registrations for the same member.
-     * Call this on the hook returned by registration, not the input hooker.
      *
+     * Call this on the hook returned by registration, not the input hooker.
      * The default implementation does nothing for an unregistered hooker.
      */
     fun remove() = Unit

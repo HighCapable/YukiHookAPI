@@ -31,23 +31,23 @@ import com.highcapable.yukihookapi.hook.factory.encase
 /**
  * Xposed module entry point for [YukiHook].
  *
- * - Annotate the implementation with [YukiHookLibXposedEntry] for modern or
- *   [YukiHookXposed82Entry] for legacy to match the selected runtime.
+ * Annotate the implementation with [YukiHookLibXposedEntry] for modern or
+ * [YukiHookXposed82Entry] for legacy to match the selected runtime.
  *
- * - [onInit] is called automatically while [YukiHook] initializes.
- * - [onHook] is called automatically when hook loading starts.
+ * [onInit] is called automatically while [YukiHook] initializes,
+ * and [onHook] is called automatically when hook loading starts.
  *
- * - Call [YukiHook.configure] or `configure` from [onInit].
- * - Call [YukiHook.encase] or [encase] from [onHook].
+ * Call [YukiHook.configure] or `configure` from [onInit],
+ * and [YukiHook.encase] or [encase] from [onHook].
  */
 interface YukiHookXposedModule {
 
     /**
      * Configures [YukiHook.Config] during initialization.
      *
-     * - Perform initialization only. Do not run hook operations here.
-     * - Register framework events once with the selected runtime's `registerFrameworkEvents { ... }` extension.
-     *   Call native APIs inside the event callbacks, not the registration block.
+     * Perform initialization only. Do not run hook operations here.
+     * Register framework events once with the selected runtime's `registerFrameworkEvents { ... }` extension.
+     * Call native APIs inside the event callbacks, not the registration block.
      *
      * This function is optional when no custom initialization is required.
      */

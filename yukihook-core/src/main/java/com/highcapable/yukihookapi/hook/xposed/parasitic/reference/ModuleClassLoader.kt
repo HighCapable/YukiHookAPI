@@ -35,7 +35,6 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
 
     companion object {
 
-        /** Current [ModuleClassLoader] singleton. */
         private var instance: ModuleClassLoader? = null
 
         /** Host [Class] names that must bypass the module-first lookup. */
@@ -84,7 +83,6 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
         }
     }
 
-    /** Default module [ClassLoader]. */
     private val baseLoader get() = AppParasitism.baseClassLoader
 
     @CallSuper

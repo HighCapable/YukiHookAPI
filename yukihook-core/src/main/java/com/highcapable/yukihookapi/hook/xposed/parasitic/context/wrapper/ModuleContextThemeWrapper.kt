@@ -60,7 +60,6 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
         else error("ModuleContextThemeWrapper already loaded.")
     }
 
-    /** Replacement [Resources] instance. */
     private var baseResources: Resources? = null
 
     init {

@@ -66,7 +66,7 @@ import com.highcapable.kavaref.extension.toClass as toClassGlobal
 import com.highcapable.kavaref.extension.toClassOrNull as toClassOrNullGlobal
 
 /**
- * Target app entry object implementation for hooking.
+ * Target host entry object implementation for hooking.
  * @param context the package context for [PackageParam], null by default.
  */
 open class PackageParam internal constructor(internal var context: PackageContext? = null) {
@@ -83,7 +83,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Module specification for the current Xposed module.
      *
-     * - This is unavailable when loaded as a standalone hook API.
+     * This is unavailable when loaded as a standalone hook API.
      */
     class ModuleSpec internal constructor() {
 
@@ -117,7 +117,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      *
      * You can manually set the [ClassLoader] of the current host here. It is obtained automatically by default.
      *
-     * - Setting an incorrect or invalid [ClassLoader] causes feature failures. Use this carefully.
+     * Setting an incorrect or invalid [ClassLoader] causes feature failures. Use this carefully.
      * @return [ClassLoader] or null.
      */
     var hostClassLoader
@@ -143,7 +143,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Gets the [Application] instance of the current host.
      *
-     * - It may be null during initial loading. Retrieve it later or configure a [registerAppLifecycle] listener.
+     * It may be null during initial loading. Retrieve it later or configure a [registerAppLifecycle] listener.
      * @return [Application] or null.
      */
     val hostApplication get() = AppParasitism.hostApplication ?: AppParasitism.currentApplication
@@ -186,14 +186,14 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Gets the [ModuleSpec] of the current Xposed module.
      *
-     * - This is unavailable when loaded as a standalone hook API.
+     * This is unavailable when loaded as a standalone hook API.
      */
     val module = ModuleSpec()
 
     /**
      * Creates a [YukiHookPreferences] object.
      *
-     * - This is unavailable when loaded as a standalone hook API and throws an exception.
+     * This is unavailable when loaded as a standalone hook API and throws an exception.
      * @return [YukiHookPreferences]
      */
     val preferences get() = YukiHookPreferences.from()
@@ -201,7 +201,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a [YukiHookPreferences] object.
      *
-     * - This is unavailable when loaded as a standalone hook API and throws an exception.
+     * This is unavailable when loaded as a standalone hook API and throws an exception.
      * @param name the custom shared preferences storage name.
      * @return [YukiHookPreferences]
      */
@@ -210,7 +210,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Gets the [YukiHookSharedFiles] object.
      *
-     * - This is unavailable when loaded as a standalone hook API and throws an exception.
+     * This is unavailable when loaded as a standalone hook API and throws an exception.
      * @return [YukiHookSharedFiles]
      */
     @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
@@ -219,7 +219,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Gets the [YukiHookDataChannel] object.
      *
-     * - This is unavailable when loaded as a standalone hook API and throws an exception.
+     * This is unavailable when loaded as a standalone hook API and throws an exception.
      * @return [YukiHookDataChannel.Namespace]
      * @throws IllegalStateException if loaded in [HookEntryType.ZYGOTE].
      */
@@ -402,7 +402,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
      *
      * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
      *   and cannot preserve parent-zygote execution or fork inheritance.
-     *
      * @see loadApp
      * @see loadSystem
      * @param block the param block.
@@ -418,7 +417,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
      *
      * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
      *   and cannot preserve parent-zygote execution or fork inheritance.
-     *
      * @see loadApp
      * @see loadSystem
      * @param hooker the hooker.
@@ -434,7 +432,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
      *
      * - Migrate app hooks to [loadApp] and system server hooks to [loadSystem]. These run later
      *   and cannot preserve parent-zygote execution or fork inheritance.
-     *
      * @see loadApp
      * @see loadSystem
      * @param hookers the hookers.
@@ -601,7 +598,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Invokes this method non-virtually on its instance with the given arguments.
      *
      * This action directly invokes the method declared by this resolver without hook or subclass overrides.
-     * - An instance must be set using [MethodResolver.of].
+     * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invoke
      * @receiver [MethodResolver]
      * @return [T] or null.
@@ -615,7 +612,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Invokes this method non-virtually on its instance with the given arguments and ignore any exceptions.
      *
      * This action directly invokes the method declared by this resolver without hook or subclass overrides.
-     * - An instance must be set using [MethodResolver.of].
+     * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invokeQuietly
      * @receiver [MethodResolver]
      * @return [T] or null.
@@ -629,7 +626,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Invokes this method non-virtually on its instance with the given arguments.
      *
      * This action directly invokes the method declared by this resolver without hook or subclass overrides.
-     * - An instance must be set using [MethodResolver.of].
+     * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invoke
      * @receiver [MethodResolver]
      * @return [Any] or null.
@@ -642,7 +639,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Invokes this method non-virtually on its instance with the given arguments and ignore any exceptions.
      *
      * This action directly invokes the method declared by this resolver without hook or subclass overrides.
-     * - An instance must be set using [MethodResolver.of].
+     * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invokeQuietly
      * @receiver [MethodResolver]
      * @return [Any] or null.
@@ -864,8 +861,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct chain hook for the static initializer of this class.
      *
-     * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
-     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
+     * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
@@ -880,8 +877,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct chain hook for the static initializer of this [KClass].
      *
-     * - If the class is already initialized, this hook is never invoked.
-     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * If the class is already initialized, this hook is never invoked.
+     * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Handle]
@@ -895,9 +892,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct chain hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
-     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
@@ -912,9 +909,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct chain hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - An already initialized class never invokes this hook.
-     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * An already initialized class never invokes this hook.
+     * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Handle]
@@ -928,9 +925,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct chain hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
-     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
@@ -946,9 +943,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct chain hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - An already initialized class never invokes this hook.
-     * - Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * An already initialized class never invokes this hook.
+     * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
      * @return [YukiHookCreator.MemberHooker.Handle]
@@ -1051,9 +1048,10 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Replaces a chain hook registration with a new chain callback.
      *
-     * - The returned handle remains the same registration group.
-     * - Each target in a batch is replaced independently.
-     * - An invocation already in progress continues with the previous callback.
+     * The returned handle remains the same registration group.
+     * Each target in a batch is replaced independently.
+     *
+     * An invocation already in progress continues with the previous callback.
      * @receiver the chain hook registration handle.
      * @param invocation the replacement chain callback.
      * @return [YukiHookCreator.MemberHooker.Handle]
@@ -1067,11 +1065,12 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Replaces a classic hook registration with a new classic callback configuration.
      *
-     * - The returned handle remains the same registration group.
-     * - The block may configure [YukiHookCreator.ClassicMemberHooker.before], [YukiHookCreator.ClassicMemberHooker.after]
-     *   or [YukiHookCreator.ClassicMemberHooker.intercept].
-     * - Each target in a batch is replaced independently.
-     * - An invocation already in progress continues with the previous callback.
+     * The returned handle remains the same registration group.
+     * The block may configure [YukiHookCreator.ClassicMemberHooker.before], [YukiHookCreator.ClassicMemberHooker.after]
+     * or [YukiHookCreator.ClassicMemberHooker.intercept].
+     * Each target in a batch is replaced independently.
+     *
+     * An invocation already in progress continues with the previous callback.
      * @receiver the classic hook registration handle.
      * @param hooker the replacement classic callback configuration.
      * @return [YukiHookCreator.MemberHooker.Handle]
@@ -1085,8 +1084,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct hook for the static initializer of this class.
      *
-     * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
-     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
+     * Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
@@ -1097,8 +1096,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct hook for the static initializer of this class.
      *
-     * - Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
-     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * Obtain the class without initializing it. If the class is already initialized, this hook is never invoked.
+     * Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
@@ -1113,8 +1112,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct hook for the static initializer of this [KClass].
      *
-     * - If the class is already initialized, this hook is never invoked.
-     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * If the class is already initialized, this hook is never invoked.
+     * Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
@@ -1124,8 +1123,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct hook for the static initializer of this [KClass].
      *
-     * - If the class is already initialized, this hook is never invoked.
-     * - Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
+     * If the class is already initialized, this hook is never invoked.
+     * Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Handle]
@@ -1139,9 +1138,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
@@ -1152,9 +1151,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
@@ -1169,9 +1168,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
@@ -1182,9 +1181,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Handle]
@@ -1198,9 +1197,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
@@ -1212,9 +1211,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these classes.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - Obtain every class without initializing it. An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * Obtain every class without initializing it. An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
@@ -1230,9 +1229,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
@@ -1244,9 +1243,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates direct hooks for the static initializers of these [KClass] instances.
      *
-     * - Each class is registered independently, this operation is not atomic.
-     * - An already initialized class never invokes this hook.
-     * - Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
+     * Each class is registered independently, this operation is not atomic.
+     * An already initialized class never invokes this hook.
+     * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
      * @return [YukiHookCreator.MemberHooker.Handle]

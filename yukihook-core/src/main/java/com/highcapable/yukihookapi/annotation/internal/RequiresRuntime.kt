@@ -27,7 +27,6 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * Marks an API that requires a specific [YukiHookRuntime].
  * @param value the required runtime.
  * @param minApiVersion the minimum Xposed API version, or 0 to check only the runtime.
- * Runtimes without version checks ignore this value.
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(
