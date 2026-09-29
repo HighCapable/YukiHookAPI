@@ -28,6 +28,7 @@ import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.highcapable.yukihookapi.core.lint.detector.InternalApiDetector
 import com.highcapable.yukihookapi.core.lint.detector.LibXposedEntryDetector
+import com.highcapable.yukihookapi.core.lint.detector.ModuleRuntimeDetector
 import com.highcapable.yukihookapi.core.lint.detector.ModuleUsageDetector
 import com.highcapable.yukihookapi.core.lint.detector.RuntimeRequirementDetector
 import com.highcapable.yukihookapi.generated.YukiHookProperties
@@ -38,6 +39,8 @@ class YukiHookIssueRegistry : IssueRegistry() {
         InternalApiDetector.ISSUE,
         LibXposedEntryDetector.ISSUE,
         LibXposedEntryDetector.HOT_RELOAD_ISSUE,
+        ModuleRuntimeDetector.REGISTRATION_ISSUE,
+        ModuleRuntimeDetector.HOOK_LOADING_ISSUE,
         ModuleUsageDetector.ISSUE,
         RuntimeRequirementDetector.ISSUE
     )

@@ -23,10 +23,16 @@ package com.highcapable.yukihookapi.core.lint.detector.extension
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.JavaContext
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethod
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.uast.UBinaryExpression
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UCallableReferenceExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UFile
+import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UastCallKind
@@ -67,6 +73,27 @@ internal fun USimpleNameReferenceExpression.isConstructorReference(): Boolean {
     var parent = uastParent
     while (parent is UQualifiedReferenceExpression) parent = parent.uastParent
     return (parent as? UCallExpression)?.kind == UastCallKind.CONSTRUCTOR_CALL
+}
+
+internal fun UCallExpression.enclosingFunction() =
+    generateSequence(sourcePsi) { it.parent }.filterIsInstance<KtNamedFunction>().firstOrNull()
+        ?: generateSequence(uastParent) { it.uastParent }.filterIsInstance<UMethod>().firstOrNull()
+            ?.let { it.sourcePsi ?: it.javaPsi.navigationElement }
+
+internal fun UCallExpression.functionTarget(context: JavaContext): PsiElement? {
+    // UAST may resolve a local Kotlin function to a synthetic method instead of its declaration.
+    return (sourcePsi as? KtCallExpression)?.calleeExpression?.references
+        ?.firstNotNullOfOrNull { it.resolve().localFunction(context) }
+        ?: resolve()?.navigationElement.localFunction(context)
+}
+
+internal fun UCallableReferenceExpression.functionTarget(context: JavaContext) =
+    sourcePsi?.references?.firstNotNullOfOrNull { it.resolve().localFunction(context) }
+        ?: resolve()?.navigationElement.localFunction(context)
+
+internal fun PsiElement?.localFunction(context: JavaContext): PsiElement? {
+    if (this !is KtNamedFunction && this !is PsiMethod) return null
+    return takeIf { it.containingFile?.virtualFile?.path == context.file.path }
 }
 
 internal fun JavaContext.toUFile(source: File): UFile? {
