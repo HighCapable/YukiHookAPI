@@ -19,8 +19,6 @@
  *
  * This file is created by fankes on 2026/9/29.
  */
-@file:Suppress("UNCHECKED_CAST")
-
 package com.highcapable.yukihookapi.hook.xposed.bridge.component
 
 import android.content.pm.ApplicationInfo
@@ -30,6 +28,8 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleReloadable
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * Keeps classloader-neutral values across module instances without retaining module-owned objects.
@@ -40,35 +40,35 @@ internal class RetainedValuesStore : ModuleReloadable {
         const val RELOAD_ID = "retained-values-store"
     }
 
-    private data class SavedResult(val id: String, val value: Any?) {
+    private data class SavedResult(val key: String, val type: String, val value: Any?) {
 
         companion object : ModuleStateSpec<SavedResult> {
 
-            override fun encode(state: SavedResult) = arrayOf(state.id, state.value)
+            override fun encode(state: SavedResult) = arrayOf(state.key, state.type, state.value)
 
             override fun decode(encoded: Any?): SavedResult {
                 val values = encoded as? Array<*> ?: error("Invalid retained value state.")
-                check(values.size == 2 && values[0] is String) {
+                check(values.size == 3 && values[0] is String && values[1] is String) {
                     "Invalid retained value state."
                 }
 
-                return SavedResult(values[0] as String, values[1])
+                return SavedResult(values[0] as String, values[1] as String, values[2])
             }
         }
     }
 
     private var events = ModuleEventDispatcher()
 
-    private val usedIds = mutableSetOf<String>()
-    private val results = linkedMapOf<String, Any?>()
-    private var restored = emptyMap<String, Any?>()
+    private val usedKeys = mutableSetOf<String>()
+    private val results = linkedMapOf<String, SavedResult>()
+    private var restored = emptyMap<String, SavedResult>()
 
     override fun onAttach(events: ModuleEventDispatcher) {
         this.events = events
     }
 
     override fun onSaveState(recovery: Boolean) = synchronized(this) {
-        results.map { (id, value) -> SavedResult.encode(SavedResult(id, value)) }.toTypedArray()
+        results.values.map { SavedResult.encode(it) }.toTypedArray()
     }
 
     override fun onPrepareRestore(appInfo: ApplicationInfo, state: Any?) {
@@ -77,48 +77,72 @@ internal class RetainedValuesStore : ModuleReloadable {
         restored = buildMap {
             values.forEach {
                 val result = SavedResult.decode(it)
-                check(result.id !in this) {
-                    "Duplicate retained value '${result.id}'."
+                check(result.key !in this) {
+                    "Duplicate retained value key '${result.key}'."
                 }
 
-                put(result.id, result.value)
+                put(result.key, result)
             }
         }
     }
 
     /**
-     * Retains a saved or newly computed value for this module instance.
+     * Retains a saved value with the same declared type or computes a new value for this module instance.
      * @param hostEnvironment whether the runtime has loaded a host environment.
-     * @param id the versioned identity of the value.
-     * @param block computes the value when no saved result exists.
+     * @param type the declared result type, including type arguments and nullability.
+     * @param key the versioned key of the result value.
+     * @param block computes the value when no saved result has the same type.
      * @return [T]
-     * @throws IllegalArgumentException if [id] is blank or already used in this module instance.
+     * @throws IllegalArgumentException if [key] is blank or already used in this module instance.
      * @throws IllegalStateException if the result cannot safely cross module class loaders.
      */
-    fun <T> retain(hostEnvironment: Boolean, id: String, block: () -> T): T {
+    fun <T> retain(hostEnvironment: Boolean, type: KType, key: String, block: () -> T): T {
         check(hostEnvironment && YukiHookBridge.runtime == YukiHookRuntime.LIBXPOSED && YukiHookBridge.apiVersion >= 102) {
             "RetainedValuesStore requires host environment on Xposed API 102 or later."
         }
 
         return events.use {
-            require(id.isNotBlank()) {
-                "Retained result ID must not be blank."
+            require(key.isNotBlank()) {
+                "Retained result key must not be blank."
             }
 
             synchronized(this) {
-                require(usedIds.add(id)) { "Retained result ID '$id' is already used in this module instance." }
+                require(usedKeys.add(key)) { "Retained result key '$key' is already used in this module instance." }
             }
 
             runCatching {
-                val value = if (restored.containsKey(id)) restored[id] else block()
-                ModuleLifecycleManager.checkValue(value)
-                if (events.isManaged) synchronized(this) { results[id] = value }
+                val typeSignature = type.toCacheType()
+                val saved = restored[key]
+                val value = if (typeSignature != null && saved?.type == typeSignature) saved.value else block()
 
+                ModuleLifecycleManager.checkValue(value)
+                if (events.isManaged && typeSignature != null) synchronized(this) {
+                    results[key] = SavedResult(key, typeSignature, value)
+                }
+
+                @Suppress("UNCHECKED_CAST")
                 value as T
             }.getOrElse {
-                synchronized(this) { usedIds.remove(id) }
+                synchronized(this) { usedKeys.remove(key) }
                 throw it
             }
+        }
+    }
+
+    private fun KType.toCacheType(): String? {
+        val name = (classifier as? KClass<*>)?.qualifiedName ?: return null
+        val parameters = arguments.map { argument ->
+            val nestedType = argument.type ?: return@map "*"
+            val nested = nestedType.toCacheType() ?: return null
+            "${argument.variance}:${nested.length}:$nested"
+        }
+
+        return buildString {
+            append("1:").append(name.length).append(':').append(name)
+            append(if (isMarkedNullable) '?' else '!')
+            append('<').append(parameters.size).append(':')
+            parameters.forEach { append(it.length).append(':').append(it) }
+            append('>')
         }
     }
 }

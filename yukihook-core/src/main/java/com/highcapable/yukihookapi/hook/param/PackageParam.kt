@@ -61,6 +61,8 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import com.highcapable.kavaref.extension.lazyClass as lazyClassGlobal
 import com.highcapable.kavaref.extension.lazyClassOrNull as lazyClassOrNullGlobal
 import com.highcapable.kavaref.extension.toClass as toClassGlobal
@@ -281,12 +283,18 @@ open class PackageParam internal constructor(internal var context: PackageContex
     }
 
     /**
-     * Remembers a value across module hot reloads.
+     * Retains a value across module instances.
      *
-     * With [YukiHookLibXposedEntry.HotReload] enabled, the same [id] reuses the saved result without running [block].
-     * IDs must be non-blank and unique per module instance.
+     * With [YukiHookLibXposedEntry.HotReload] enabled, the same [key] and declared result type reuse the saved result without running [block].
+     * Keys must be non-blank and unique per module instance.
      *
-     * Change [id] to recompute the value. Values must not retain objects or classes owned by the module class loader.
+     * A change to the declared result type, its type arguments or nullability invalidates the saved result and runs [block] again.
+     *
+     * For example, changing `Int` to `String` or `List<Int>` to `List<String>` recomputes the value even with the same [key].
+     * The cache type is the inferred or explicit [T], not the runtime class of the value.
+     *
+     * Change [key] when the calculation changes but the declared result type stays the same.
+     * Values must not retain objects or classes owned by the module class loader.
      * Keep hook registration and other actions that must run after reload outside [block].
      *
      * Examples:
@@ -305,14 +313,38 @@ open class PackageParam internal constructor(internal var context: PackageContex
      *     }
      * }
      * ```
-     * @param id the versioned identity of the value.
-     * @param block computes the value when no saved result exists.
+     * @param key the versioned key of the result value.
+     * @param block computes the value when no saved result has the same declared type.
      * @return [T] the saved or newly computed result.
-     * @throws IllegalArgumentException if [id] is blank or already used in this module instance.
+     * @throws IllegalArgumentException if [key] is blank or already used in this module instance.
      * @throws IllegalStateException if the result cannot safely cross module class loaders.
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
-    fun <T> remember(id: String, block: () -> T) = XposedModuleRuntime.retainValue(id, block)
+    inline fun <reified T> remember(key: String, noinline block: () -> T) = remember(typeOf<T>(), key, block)
+
+    /**
+     * Retains a value across module instances.
+     *
+     * With [YukiHookLibXposedEntry.HotReload] enabled, the same [key] and declared result type reuse the saved result without running [block].
+     * Keys must be non-blank and unique per module instance.
+     *
+     * A change to the declared result type, its type arguments or nullability invalidates the saved result and runs [block] again.
+     *
+     * For example, changing `Int` to `String` or `List<Int>` to `List<String>` recomputes the value even with the same [key].
+     * The cache type is the inferred or explicit [T], not the runtime class of the value.
+     *
+     * Change [key] when the calculation changes but the declared result type stays the same.
+     * Values must not retain objects or classes owned by the module class loader.
+     * Keep hook registration and other actions that must run after reload outside [block].
+     * @param type the declared result type, including type arguments and nullability.
+     * @param key the versioned key of the result value.
+     * @param block computes the value when no saved result has the same declared type.
+     * @return [T] the saved or newly computed result.
+     * @throws IllegalArgumentException if [key] is blank or already used in this module instance.
+     * @throws IllegalStateException if the result cannot safely cross module class loaders.
+     */
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+    fun <T> remember(type: KType, key: String, block: () -> T) = XposedModuleRuntime.retainValue(type, key, block)
 
     /**
      * Loads and hooks apps with the specified package name.

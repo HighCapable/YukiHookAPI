@@ -110,7 +110,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             id = "InvalidModuleRetainedValue",
             briefDescription = "Invalid retained module value",
             explanation = "Retained values must not retain objects defined by the old module class loader. " +
-                "IDs must be non-blank and unique in one module instance. Runtime validation covers values that lint cannot determine.",
+                "Keys must be non-blank and unique in one module instance. Runtime validation covers values that lint cannot determine.",
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
@@ -160,7 +160,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             val roots = mutableMapOf<PsiElement, Phase>()
             val functions = mutableSetOf<PsiElement>()
             val references = mutableSetOf<PsiElement>()
-            val retainedIds = mutableMapOf<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>()
+            val retainedKeys = mutableMapOf<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>()
 
             node.accept(object : AbstractUastVisitor() {
 
@@ -204,7 +204,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     ))
 
                     if (method?.name == RETAINED_VALUE_METHOD_NAME && method.containingClass?.qualifiedName == PACKAGE_PARAM_CLASS)
-                        reportRetainedValue(node, retainedIds)
+                        reportRetainedValue(node, retainedKeys)
 
                     return false
                 }
@@ -289,24 +289,24 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
         private fun reportRetainedValue(
             node: UCallExpression,
-            ids: MutableMap<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>
+            keys: MutableMap<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>
         ) {
-            val id = node.getArgumentForParameter(0)
-            val resolvedId = id?.let { ConstantEvaluator.evaluate(context, it) as? String }
-            if (resolvedId != null) {
+            val key = node.getArgumentForParameter(0)
+            val resolvedKey = key?.let { ConstantEvaluator.evaluate(context, it) as? String }
+            if (resolvedKey != null) {
                 val message = when {
-                    resolvedId.isBlank() -> "`$RETAINED_VALUE_METHOD_NAME` ID must not be blank"
+                    resolvedKey.isBlank() -> "`$RETAINED_VALUE_METHOD_NAME` key must not be blank"
                     else -> {
                         val block = generateSequence(node.uastParent) { it.uastParent }
                             .filterIsInstance<UBlockExpression>()
                             .firstOrNull()
                         val site = RetentionSite(node.branches())
-                        val previous = block?.let { ids.getOrPut(it) { mutableMapOf() }.getOrPut(resolvedId) { mutableListOf() } }
+                        val previous = block?.let { keys.getOrPut(it) { mutableMapOf() }.getOrPut(resolvedKey) { mutableListOf() } }
                         val isDuplicate = previous?.any(site::canRunWith) == true
                         previous?.add(site)
 
                         if (isDuplicate)
-                            "`$RETAINED_VALUE_METHOD_NAME` ID '$resolvedId' is already used in this block"
+                            "`$RETAINED_VALUE_METHOD_NAME` key '$resolvedKey' is already used in this block"
                         else null
                     }
                 }
@@ -314,7 +314,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 if (message != null) context.report(
                     issue = RETAINED_VALUE_ISSUE,
                     scope = node,
-                    location = context.getLocation(id),
+                    location = context.getLocation(key),
                     message = message
                 )
             }

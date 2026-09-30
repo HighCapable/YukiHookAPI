@@ -48,6 +48,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
 import com.highcapable.yukihookapi.runtime.bridge.session.ModuleSessionBridge
+import kotlin.reflect.KType
 
 /**
  * Core Xposed module runtime for [YukiHook].
@@ -176,14 +177,15 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     }
 
     /**
-     * Retains a value across module instances, computing it if no saved value exists.
-     * @param id the versioned identity of the value.
-     * @param block computes the value when no saved result exists.
+     * Retains a value across module instances, computing it if no saved value has the same declared type.
+     * @param type the declared result type, including type arguments and nullability.
+     * @param key the versioned key of the result value.
+     * @param block computes the value when no saved result has the same type.
      * @return [T]
-     * @throws IllegalArgumentException if [id] is blank or already used in this module instance.
+     * @throws IllegalArgumentException if [key] is blank or already used in this module instance.
      * @throws IllegalStateException if the result cannot safely cross module class loaders.
      */
-    fun <T> retainValue(id: String, block: () -> T) = retainedValues.retain(isHostEnvironment, id, block)
+    fun <T> retainValue(type: KType, key: String, block: () -> T) = retainedValues.retain(isHostEnvironment, type, key, block)
 
     /**
      * Attaches the runtime session and prepares hook registration before module loading.
