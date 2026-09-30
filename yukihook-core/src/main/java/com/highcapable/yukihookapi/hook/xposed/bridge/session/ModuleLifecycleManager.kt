@@ -76,11 +76,15 @@ internal object ModuleLifecycleManager {
     /**
      * Adds a component after host identity is established.
      * Events follow registration order.
+     *
+     * Retrying the same instance keeps its existing registration.
      * @param id the unique identifier for the component.
      * @param component the component instance to register.
      */
     fun register(id: String, component: ModuleReloadable) {
-        check(components.none { it.id == id }) {
+        val registered = components.firstOrNull { it.id == id }
+        if (registered?.instance === component) return
+        check(registered == null) {
             "Reload component '$id' is already registered."
         }
 
@@ -135,7 +139,7 @@ internal object ModuleLifecycleManager {
             components.forEach { it.call { onPrepareReload() } }
 
             val componentStates = components.associate { component ->
-                component.id to component.call { onSaveState() }
+                component.id to component.call { onSaveState(recovery = false) }
             }
             val state = ModuleHandoffState(userState, componentStates)
             if (!saveState(ModuleHandoffState.encode(state))) {
@@ -151,6 +155,28 @@ internal object ModuleLifecycleManager {
             // Once module-owned disposal starts it cannot be rolled back automatically.
             if (!disposing) current.resume()
         }.getOrThrow()
+    }
+
+    /**
+     * Saves the internal state available after entry initialization failed and retires the instance.
+     * @param saveState the callback to save the handoff state.
+     * @return [Boolean] true if the failed instance can retire, false while it is still busy.
+     */
+    fun prepareFailed(saveState: (Any) -> Boolean): Boolean {
+        val current = session
+        components.forEach { it.call { onPrepareReload() } }
+        if (current != null && !current.freeze()) return false
+
+        components.forEach { it.call { onPrepareReload() } }
+        val componentStates = components.associate { component ->
+            component.id to component.call { onSaveState(recovery = true) }
+        }
+        val state = ModuleHandoffState(userState = null, components = componentStates)
+        if (!saveState(ModuleHandoffState.encode(state))) return false
+
+        // A failed entry stays closed when saving or disposal fails; only a new instance may resume work.
+        dispose()
+        return true
     }
 
     /**
@@ -226,10 +252,23 @@ internal object ModuleLifecycleManager {
         ).apply { errors.drop(1).forEach(::addSuppressed) }
     }
 
-    /** Ends restoration after an unrecoverable initialization failure. */
+    /** Closes a failed restore instance so it cannot receive new work before its retirement. */
     fun abortRestore() {
         restoring = false
         synchronized(failures) { failures.clear() }
+        session?.close()
+    }
+
+    /**
+     * Retires a failed restore instance once no managed callback is running.
+     * @return [Boolean] true when the instance was retired, false while it is still busy.
+     */
+    fun retire(): Boolean {
+        val current = session
+        if (current != null && !current.freeze()) return false
+        dispose()
+
+        return true
     }
 
     /**

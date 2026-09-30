@@ -800,13 +800,21 @@ internal object AppParasitism : ModuleReloadable {
         }
     }
 
-    override fun onSaveState() = HostBindingsState.encode(
-        HostBindingsState(
-            packageName = lifecyclePackageName,
-            proxyClassName = if (isActivityProxyRegistered) ActivityProxyConfig.proxyClassName else null,
-            hadApplication = hostApplication != null
+    override fun onSaveState(recovery: Boolean): Any {
+        val application = if (recovery) currentApplication else hostApplication
+
+        return HostBindingsState.encode(
+            HostBindingsState(
+                packageName = if (recovery)
+                    lifecyclePackageName.ifEmpty { application?.packageName.orEmpty() }
+                else lifecyclePackageName,
+                proxyClassName = if (isActivityProxyRegistered)
+                    ActivityProxyConfig.proxyClassName
+                else null,
+                hadApplication = application != null
+            )
         )
-    )
+    }
 
     override fun onDispose() {
         lifecycleHandler.removeCallbacksAndMessages(null)
@@ -844,7 +852,8 @@ internal object AppParasitism : ModuleReloadable {
         val application = currentApplication?.takeIf { it.packageName == lifecyclePackageName }
         val hasNewRegistration = pendingModuleActivities != null
 
-        if (application != null && (saved.hadApplication || hasNewRegistration))
+        // An initial-load failure may have missed Application creation; bind the real instance without replaying onCreate.
+        if (application != null)
             bindHostApplication(application, dispatchCreate = false)?.let(events::reportFailure)
 
         // Register module activities if the host is running on Android N or higher.

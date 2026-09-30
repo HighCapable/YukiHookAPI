@@ -67,7 +67,7 @@ internal class RetainedValuesStore : ModuleReloadable {
         this.events = events
     }
 
-    override fun onSaveState() = synchronized(this) {
+    override fun onSaveState(recovery: Boolean) = synchronized(this) {
         results.map { (id, value) -> SavedResult.encode(SavedResult(id, value)) }.toTypedArray()
     }
 

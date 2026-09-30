@@ -69,9 +69,11 @@ internal interface ModuleReloadable {
      * Saves only values that can cross module class loaders.
      *
      * The manager transports this value without inspecting it.
+     * Recovery saves the state available after entry initialization failed, without requesting user lifecycle state.
+     * @param recovery whether the state is saved for recovery after entry initialization failed.
      * @return [Any] the value to transport to the new module instance.
      */
-    fun onSaveState(): Any? = null
+    fun onSaveState(recovery: Boolean): Any? = null
 
     /** Releases this module instance's resources after the framework has accepted the saved state. */
     fun onDispose() = Unit

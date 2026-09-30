@@ -102,7 +102,7 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
             }
         }
 
-        override fun onSaveState() = if (AndroidVersion.isAtLeast(AndroidVersion.R)) Api30_Impl.loader else null
+        override fun onSaveState(recovery: Boolean) = if (AndroidVersion.isAtLeast(AndroidVersion.R)) Api30_Impl.loader else null
 
         override fun onRestoreState(appInfo: ApplicationInfo, state: Any?) {
             if (AndroidVersion.isAtLeast(AndroidVersion.R) && state != null)

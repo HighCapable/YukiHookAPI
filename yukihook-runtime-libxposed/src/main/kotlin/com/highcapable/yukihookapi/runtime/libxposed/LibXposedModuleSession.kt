@@ -47,7 +47,7 @@ internal class LibXposedModuleSession : ModuleSessionBridge {
     }
 
     override fun freeze() = synchronized(lock) {
-        if (!frozen && uses == 0) {
+        if (uses == 0) {
             frozen = true
             true
         } else false
@@ -55,5 +55,9 @@ internal class LibXposedModuleSession : ModuleSessionBridge {
 
     override fun resume() {
         synchronized(lock) { frozen = false }
+    }
+
+    override fun close() {
+        synchronized(lock) { frozen = true }
     }
 }

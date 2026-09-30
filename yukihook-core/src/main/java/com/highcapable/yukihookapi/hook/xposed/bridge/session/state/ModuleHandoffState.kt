@@ -38,9 +38,9 @@ internal data class ModuleHandoffState(
         private const val VERSION = YukiHook.VERSION
 
         override fun decode(encoded: Any?): ModuleHandoffState {
-            val values = encoded as? Array<*> ?: error("Missing YukiHook reload state. Restart the host to try again.")
+            val values = encoded as? Array<*> ?: error("Missing YukiHook reload state.")
             check(values.size == 3 && values[0] == VERSION) {
-                "Unsupported YukiHook reload state. Restart the host to try again."
+                "Unsupported YukiHook reload state."
             }
 
             val userState = values[1]

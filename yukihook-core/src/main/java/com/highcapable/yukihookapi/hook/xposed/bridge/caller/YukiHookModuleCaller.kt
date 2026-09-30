@@ -106,6 +106,15 @@ object YukiHookModuleCaller {
         XposedModuleRuntime.onPrepareReloadModule(extras, saveState)
 
     /**
+     * Saves internal state after entry initialization failed and retires the instance.
+     * @param appInfo the framework-provided module application info.
+     * @param saveState publishes the state, or returns false to refuse the request.
+     * @return [Boolean] whether the failed instance accepted retirement.
+     */
+    fun callPrepareFailedModule(appInfo: ApplicationInfo, saveState: (Any) -> Boolean) =
+        XposedModuleRuntime.onPrepareFailedModule(appInfo, saveState)
+
+    /**
      * Runs a framework callback only while this module instance is accepting work.
      * @param block the callback to run.
      */
@@ -155,6 +164,13 @@ object YukiHookModuleCaller {
         XposedModuleRuntime.onAbortRestoreModule()
 
     /**
+     * Retires a failed restore instance so the next module instance can retry its original handoff.
+     * @return [Boolean] whether the failed instance was retired.
+     */
+    fun callRetireFailedRestore() =
+        XposedModuleRuntime.onRetireFailedRestore()
+
+    /**
      * Records a native event or cleanup failure without stopping other reload work.
      * @param failure the failure to record.
      */
@@ -192,13 +208,15 @@ object YukiHookModuleCaller {
      * @param mainProcessName the main process identity supplied by the runtime.
      * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
      * @param loader the class loader of the system server.
+     * @param dispatch whether to run declarations, false to retain only the observed context.
      */
     fun callOnSystemServerStarting(
         packageName: String,
         processName: String,
         mainProcessName: String,
         packageNameForMatching: String?,
-        loader: ClassLoader
+        loader: ClassLoader,
+        dispatch: Boolean = true
     ) = XposedModuleRuntime.onPackageLoaded(
         type = HookEntryType.SYSTEM_SERVER,
         packageName = packageName,
@@ -206,7 +224,8 @@ object YukiHookModuleCaller {
         mainProcessName = mainProcessName,
         isFirstApplication = true,
         packageNameForMatching = packageNameForMatching,
-        appClassLoader = loader
+        appClassLoader = loader,
+        dispatch = dispatch
     )
 
     /**
@@ -218,6 +237,7 @@ object YukiHookModuleCaller {
      * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
      * @param loader the class loader of the package.
      * @param appInfo the application info of the package.
+     * @param dispatch whether to run declarations, false to retain only the observed context.
      */
     fun callOnPackageLoaded(
         packageName: String,
@@ -226,7 +246,8 @@ object YukiHookModuleCaller {
         isFirstApplication: Boolean,
         packageNameForMatching: String?,
         loader: ClassLoader,
-        appInfo: ApplicationInfo?
+        appInfo: ApplicationInfo?,
+        dispatch: Boolean = true
     ) = XposedModuleRuntime.onPackageLoaded(
         type = HookEntryType.PACKAGE,
         packageName = packageName,
@@ -235,6 +256,7 @@ object YukiHookModuleCaller {
         isFirstApplication = isFirstApplication,
         packageNameForMatching = packageNameForMatching,
         appClassLoader = loader,
-        appInfo = appInfo
+        appInfo = appInfo,
+        dispatch = dispatch
     )
 }

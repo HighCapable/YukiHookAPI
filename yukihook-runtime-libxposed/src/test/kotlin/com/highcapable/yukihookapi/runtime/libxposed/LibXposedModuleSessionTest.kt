@@ -79,6 +79,27 @@ class LibXposedModuleSessionTest {
     }
 
     @Test
+    fun closedInstanceRejectsNewWorkAndRetiresWhenIdle() {
+        val session: ModuleSessionBridge = LibXposedModuleSession()
+        session.close()
+
+        Assert.assertFalse(session.enter())
+        Assert.assertTrue(session.freeze())
+    }
+
+    @Test
+    fun closeLeavesInFlightCallbacksRunningAndStillRetiresAfterTheyLeave() {
+        val session: ModuleSessionBridge = LibXposedModuleSession()
+        Assert.assertTrue(session.enter())
+
+        session.close()
+
+        Assert.assertFalse(session.freeze())
+        session.leave()
+        Assert.assertTrue(session.freeze())
+    }
+
+    @Test
     fun concurrentAcquireAndRetireNeverBothSucceed() {
         val executor = Executors.newFixedThreadPool(2)
         try {

@@ -49,6 +49,7 @@ internal interface XposedModuleLifecycle {
      * @param packageNameForMatching the package name eligible for explicit matching, or null to exclude this event.
      * @param appClassLoader the host [ClassLoader].
      * @param appInfo the host [android.content.pm.ApplicationInfo].
+     * @param dispatch whether to run declarations, false to retain only the observed context.
      */
     fun onPackageLoaded(
         type: HookEntryType,
@@ -58,7 +59,8 @@ internal interface XposedModuleLifecycle {
         isFirstApplication: Boolean,
         packageNameForMatching: String?,
         appClassLoader: ClassLoader,
-        appInfo: ApplicationInfo? = null
+        appInfo: ApplicationInfo? = null,
+        dispatch: Boolean = true
     )
 
     /**
@@ -68,6 +70,14 @@ internal interface XposedModuleLifecycle {
      * @return [Boolean]
      */
     fun onPrepareReloadModule(extras: Bundle?, saveState: (Any) -> Boolean): Boolean
+
+    /**
+     * Saves internal state after entry initialization failed and retires the instance.
+     * @param appInfo the framework-provided module application info.
+     * @param saveState a lambda to save the available state.
+     * @return [Boolean] whether the failed instance accepted retirement.
+     */
+    fun onPrepareFailedModule(appInfo: ApplicationInfo, saveState: (Any) -> Boolean): Boolean
 
     /**
      * Restores component prerequisites before creating the new entry.
@@ -98,4 +108,10 @@ internal interface XposedModuleLifecycle {
 
     /** Aborts failure collection after an unrecoverable restore error. */
     fun onAbortRestoreModule()
+
+    /**
+     * Retires a failed restore so the next module instance can retry its original handoff.
+     * @return [Boolean] whether the instance was retired, false while it is still busy.
+     */
+    fun onRetireFailedRestore(): Boolean
 }

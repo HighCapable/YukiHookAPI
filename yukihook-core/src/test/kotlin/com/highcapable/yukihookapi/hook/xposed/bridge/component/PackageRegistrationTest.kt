@@ -41,6 +41,7 @@ class PackageRegistrationTest {
         override fun leave() = Unit
         override fun freeze() = true
         override fun resume() = Unit
+        override fun close() = Unit
     })
 
     @Test
@@ -61,7 +62,7 @@ class PackageRegistrationTest {
             current.record(context)
         }
         current.onAttach(managedEvents)
-        current.onRestoreState(moduleAppInfo, previous.onSaveState())
+        current.onRestoreState(moduleAppInfo, previous.onSaveState(recovery = false))
 
         Assert.assertEquals(
             listOf(HookEntryType.PACKAGE to "example.host", HookEntryType.SYSTEM_SERVER to "android"),
@@ -74,7 +75,7 @@ class PackageRegistrationTest {
         val nextReplay = mutableListOf<PackageContext>()
         PackageRegistration { nextReplay += it }.apply {
             onAttach(managedEvents)
-            onRestoreState(moduleAppInfo, current.onSaveState())
+            onRestoreState(moduleAppInfo, current.onSaveState(recovery = false))
         }
         Assert.assertEquals(listOf("example.host", "android"), nextReplay.map { it.packageName })
     }
@@ -89,8 +90,43 @@ class PackageRegistrationTest {
         Assert.assertTrue(previous.record(zygote))
 
         val replayed = mutableListOf<PackageContext>()
-        PackageRegistration { replayed += it }.onRestoreState(moduleAppInfo, previous.onSaveState())
+        PackageRegistration { replayed += it }.onRestoreState(moduleAppInfo, previous.onSaveState(recovery = false))
         Assert.assertTrue(replayed.isEmpty())
+    }
+
+    @Test
+    fun contextsObservedBeforeRuntimeBindingReplayInTheNextInstance() {
+        val failed = PackageRegistration { error("A failed entry must only record host contexts.") }
+        val host = packageEntry(HookEntryType.PACKAGE, "example.host")
+        val secondary = packageEntry(HookEntryType.PACKAGE, "example.secondary")
+        val system = packageEntry(HookEntryType.SYSTEM_SERVER, "android")
+        failed.record(host, retain = true)
+        failed.record(secondary, retain = true)
+        failed.record(system, retain = true)
+        failed.record(host.copy(processName = "ignored.duplicate"), retain = true)
+
+        val replayed = mutableListOf<PackageContext>()
+        PackageRegistration { replayed += it }.apply {
+            onAttach(managedEvents)
+            onRestoreState(moduleAppInfo, failed.onSaveState(recovery = true))
+        }
+
+        Assert.assertEquals(listOf("example.host", "example.secondary", "android"), replayed.map { it.packageName })
+        Assert.assertEquals("example.host", replayed.first().processName)
+        Assert.assertSame(loader, replayed.last().classLoader)
+    }
+
+    @Test
+    fun aPreviouslyObservedContextCanBeRetainedWithoutDispatchingItAgain() {
+        val previous = PackageRegistration { error("Recording must not execute declarations.") }
+        val host = packageEntry(HookEntryType.PACKAGE, "example.host")
+        previous.record(host)
+
+        Assert.assertFalse(previous.record(host, retain = true))
+        val replayed = mutableListOf<PackageContext>()
+        PackageRegistration { replayed += it }.onRestoreState(moduleAppInfo, previous.onSaveState(recovery = false))
+
+        Assert.assertEquals(listOf("example.host"), replayed.map { it.packageName })
     }
 
     private fun packageEntry(type: HookEntryType, packageName: String) = PackageContext(

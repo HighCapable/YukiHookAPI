@@ -214,13 +214,9 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     fun recordRestoreFailure(failure: Throwable) = ModuleLifecycleManager.recordRestoreFailure(failure)
 
     override fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?) {
-        isModuleLoaded = true
-
-        modulePackageName = packageName
-        moduleSourceDir = sourceDir
-        moduleAppInfo = appInfo
+        attachModuleInfo(packageName, sourceDir, appInfo)
         reloadModuleResources()
-        registerLifecycleComponents()
+        if (hookRegistration != null) registerLifecycleComponents()
     }
 
     override fun onPackageLoaded(
@@ -231,25 +227,34 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         isFirstApplication: Boolean,
         packageNameForMatching: String?,
         appClassLoader: ClassLoader,
-        appInfo: ApplicationInfo?
+        appInfo: ApplicationInfo?,
+        dispatch: Boolean
     ) {
         if (isMiuiCatcherPatch(packageName)) return
 
-        dispatchPackage(
-            PackageContext(
-                type = type,
-                packageName = packageName,
-                processName = processName,
-                mainProcessName = mainProcessName,
-                isFirstApplication = isFirstApplication,
-                classLoader = appClassLoader,
-                appInfo = appInfo,
-                packageNameForMatching = packageNameForMatching
-            )
+        val context = PackageContext(
+            type = type,
+            packageName = packageName,
+            processName = processName,
+            mainProcessName = mainProcessName,
+            isFirstApplication = isFirstApplication,
+            classLoader = appClassLoader,
+            appInfo = appInfo,
+            packageNameForMatching = packageNameForMatching
         )
+        if (dispatch) events.dispatch { dispatchPackage(context) }
+        else packageRegistration.record(context, retain = true)
     }
 
     override fun onPrepareReloadModule(extras: Bundle?, saveState: (Any) -> Boolean) = ModuleLifecycleManager.prepare(extras, saveState)
+
+    override fun onPrepareFailedModule(appInfo: ApplicationInfo, saveState: (Any) -> Boolean): Boolean {
+        // Binding may have failed before the entry established module identity or registered its components.
+        attachModuleInfo(appInfo.packageName, appInfo.sourceDir, appInfo)
+        registerLifecycleComponents()
+
+        return ModuleLifecycleManager.prepareFailed(saveState)
+    }
 
     override fun onBeginRestoreModule(appInfo: ApplicationInfo, state: Any?) = ModuleLifecycleManager.beginRestore(state).also {
         ModuleLifecycleManager.prepareRestore(appInfo, it)
@@ -265,10 +270,17 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     override fun onAbortRestoreModule() = ModuleLifecycleManager.abortRestore()
 
-    private fun registerLifecycleComponents() {
-        if (hookRegistration == null) return
+    override fun onRetireFailedRestore() = ModuleLifecycleManager.retire()
 
-        // The data channel caches host identity, so registration follows onStartLoadModule's identity setup.
+    private fun attachModuleInfo(packageName: String, sourceDir: String, appInfo: ApplicationInfo?) {
+        isModuleLoaded = true
+        modulePackageName = packageName
+        moduleSourceDir = sourceDir
+        moduleAppInfo = appInfo
+    }
+
+    private fun registerLifecycleComponents() {
+        // The data channel caches host identity, so registration follows attachModuleInfo.
         ModuleLifecycleManager.register(ModuleResources.RELOAD_ID, ModuleResources)
         ModuleLifecycleManager.register(PackageRegistration.RELOAD_ID, packageRegistration)
         ModuleLifecycleManager.register(RetainedValuesStore.RELOAD_ID, retainedValues)

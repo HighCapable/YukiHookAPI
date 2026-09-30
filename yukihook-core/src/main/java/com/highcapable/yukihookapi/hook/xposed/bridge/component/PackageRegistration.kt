@@ -46,7 +46,7 @@ internal class PackageRegistration(private val callback: (PackageContext) -> Uni
         this.events = events
     }
 
-    override fun onSaveState() = synchronized(loadedEntries) {
+    override fun onSaveState(recovery: Boolean) = synchronized(loadedEntries) {
         reloadPackages.values.map(PackageContext::encode).toTypedArray()
     }
 
@@ -58,17 +58,17 @@ internal class PackageRegistration(private val callback: (PackageContext) -> Uni
     /**
      * Records a package and returns whether its callback should run.
      * @param context the package context to record.
+     * @param retain whether to keep the context for a later module instance, even before runtime binding succeeds.
      * @return [Boolean] whether the package context callback should run.
      */
-    fun record(context: PackageContext): Boolean {
+    fun record(context: PackageContext, retain: Boolean = events.isManaged): Boolean {
         // Legacy event supports, run callback for zygote entry type.
         if (context.type == HookEntryType.ZYGOTE) return true
 
         return synchronized(loadedEntries) {
-            if (loadedEntries.add(context.id)) {
-                if (events.isManaged) reloadPackages[context.id] = context
-                true
-            } else false
+            val added = loadedEntries.add(context.id)
+            if (retain) reloadPackages.getOrPut(context.id) { context }
+            added
         }
     }
 }

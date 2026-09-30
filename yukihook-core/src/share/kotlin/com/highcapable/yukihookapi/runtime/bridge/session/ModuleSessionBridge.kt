@@ -40,13 +40,20 @@ interface ModuleSessionBridge {
     fun leave()
 
     /**
-     * Stops new uses if no managed callback is running.
+     * Confirms that this module instance can retire, stopping new uses when no managed callback is running.
      *
      * A busy module instance remains active.
-     * @return [Boolean] true if the module instance is now retiring, false if it is busy and remains active.
+     * @return [Boolean] true if no managed callback is running, false if the instance is busy.
      */
     fun freeze(): Boolean
 
     /** Reopens a module instance after a refused request, before disposal has started. */
     fun resume()
+
+    /**
+     * Rejects new uses permanently, leaving in-flight callbacks to finish.
+     *
+     * A failed restore closes its session before its retirement is scheduled.
+     */
+    fun close()
 }

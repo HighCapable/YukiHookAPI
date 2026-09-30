@@ -44,11 +44,17 @@ abstract class BaseLibXposedEntry : XposedModule() {
     /** Current process name supplied by the framework. */
     protected var processName = ""
 
+    /** Whether observed package contexts are retained even when entry initialization failed. */
+    protected open val retainPackageContexts = false
+
     /** Creates the user's entry only after the framework interface has been attached. */
     protected abstract fun createHookEntry(): YukiHookXposedModule
 
     /** Attaches the runtime before loading the user's entry. */
     protected open fun attachRuntime() = LibXposedHookApi(this).attach()
+
+    /** Stops managed work after initial loading failed, without discarding observed package contexts. */
+    protected open fun onInitializationFailed() = Unit
 
     /** Parses the process name from the framework parameter. */
     protected fun parseProcessName(param: XposedModuleInterface.ModuleLoadedParam) {
@@ -59,39 +65,54 @@ abstract class BaseLibXposedEntry : XposedModule() {
     }
 
     final override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
-        attachRuntime()
+        runCatching {
+            parseProcessName(param)
+            attachRuntime()
 
-        parseProcessName(param)
-        initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo)
-        YukiHookLibXposedEvent.moduleLoaded?.invoke(this, param)
+            initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo)
+            if (initialized) YukiHookLibXposedEvent.moduleLoaded?.invoke(this, param)
+        }.also {
+            if (it.isFailure || !initialized) {
+                initialized = false
+                onInitializationFailed()
+            }
+        }.getOrThrow()
     }
 
     @RequiresApi(29)
     final override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
-        YukiHookLibXposedEvent.packageLoaded?.invoke(this, param)
+        if (initialized) YukiHookLibXposedEvent.packageLoaded?.invoke(this, param)
     }
 
-    final override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
-        if (initialized) YukiHookModuleCaller.callOnPackageLoaded(
+    final override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
+        if (initialized || retainPackageContexts) YukiHookModuleCaller.callOnPackageLoaded(
             packageName = param.packageName,
             processName = processName,
             mainProcessName = param.packageName.trim(),
             isFirstApplication = param.isFirstPackage,
             packageNameForMatching = param.packageName,
             loader = param.classLoader,
-            appInfo = param.applicationInfo
+            appInfo = param.applicationInfo,
+            dispatch = initialized
         )
-        YukiHookLibXposedEvent.packageReady?.invoke(this, param)
+
+        YukiHookModuleCaller.callDispatchFrameworkEvent {
+            if (initialized) YukiHookLibXposedEvent.packageReady?.invoke(this, param)
+        }
     }
 
-    final override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) = YukiHookModuleCaller.callDispatchFrameworkEvent {
-        if (initialized) YukiHookModuleCaller.callOnSystemServerStarting(
+    final override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) {
+        if (initialized || retainPackageContexts) YukiHookModuleCaller.callOnSystemServerStarting(
             packageName = FRAMEWORK_PACKAGE_NAME,
             processName = processName,
             mainProcessName = processName.trim(),
             packageNameForMatching = null,
-            loader = param.classLoader
+            loader = param.classLoader,
+            dispatch = initialized
         )
-        YukiHookLibXposedEvent.systemServerStarting?.invoke(this, param)
+
+        YukiHookModuleCaller.callDispatchFrameworkEvent {
+            if (initialized) YukiHookLibXposedEvent.systemServerStarting?.invoke(this, param)
+        }
     }
 }

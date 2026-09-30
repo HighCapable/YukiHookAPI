@@ -56,12 +56,12 @@ abstract class LibXposed102Entry : BaseLibXposedEntry() {
             )
 
             override fun decode(encoded: Any?): HandoffState {
-                val values = encoded as? Array<*> ?: error("Missing module reload state. Restart the host to try again.")
+                val values = encoded as? Array<*> ?: error("Missing module reload state.")
                 check(values.size == 3 && values[0] == VERSION) {
-                    "Unsupported module reload state. Restart the host to try again."
+                    "Unsupported module reload state."
                 }
 
-                val managedState = values[1] as? Array<*> ?: error("Missing YukiHook reload state. Restart the host to try again.")
+                val managedState = values[1] as? Array<*> ?: error("Missing YukiHook reload state.")
                 return HandoffState(managedState, values[2])
             }
 
@@ -90,8 +90,33 @@ abstract class LibXposed102Entry : BaseLibXposedEntry() {
     /** Reload policy supplied by the generated entry. */
     protected open val hotReload = ModuleReloadPolicy.NONE
 
+    /** The original handoff kept for a later module instance after a failed restore. */
+    private var pendingHandoff: Any? = null
+
+    /** Whether [pendingHandoff] was received by this module instance. */
+    private var hasPendingHandoff = false
+
+    override val retainPackageContexts get() = hotReload != ModuleReloadPolicy.NONE
+
     final override fun onHotReloading(param: XposedModuleInterface.HotReloadingParam): Boolean {
-        if (!initialized || hotReload == ModuleReloadPolicy.NONE) return false
+        if (hotReload == ModuleReloadPolicy.NONE) return false
+        if (hasPendingHandoff) {
+            // A failed restore cannot run user save callbacks again; retire this instance and forward the original handoff.
+            if (!YukiHookModuleCaller.callRetireFailedRestore()) return false
+
+            param.setSavedInstanceState(pendingHandoff)
+            hasPendingHandoff = false
+            pendingHandoff = null
+            return true
+        }
+        if (!initialized) return YukiHookModuleCaller.callPrepareFailedModule(moduleApplicationInfo) { managedState ->
+            // The first load has no incoming handoff. Keep its available state if retirement needs another attempt.
+            val encoded = HandoffState.encode(HandoffState.fromManagedState(managedState, nativeState = null))
+            param.setSavedInstanceState(encoded)
+            pendingHandoff = encoded
+            hasPendingHandoff = true
+            true
+        }
 
         return YukiHookModuleCaller.callPrepareReloadModule(param.extras) { managedState ->
             var nativeState: Any? = null
@@ -112,12 +137,15 @@ abstract class LibXposed102Entry : BaseLibXposedEntry() {
 
     final override fun onHotReloaded(param: XposedModuleInterface.HotReloadedParam) {
         // NONE rejects the next request, it must still complete an incoming handoff.
-        attachRuntime(restoring = true)
-        parseProcessName(param)
+        // Keep the framework-owned handoff so a later module instance can retry a failed restore.
+        pendingHandoff = param.savedInstanceState
+        hasPendingHandoff = true
 
         var restoreFailure: Throwable? = null
         runCatching {
-            val saved = HandoffState.decode(param.savedInstanceState)
+            attachRuntime(restoring = true)
+            parseProcessName(param)
+            val saved = HandoffState.decode(pendingHandoff)
             initialized = YukiHookModuleCaller.callRestoreModule(::createHookEntry, moduleApplicationInfo, saved.managedState) {
                 restoreFailure = it
             }
@@ -132,20 +160,30 @@ abstract class LibXposed102Entry : BaseLibXposedEntry() {
             runCatching {
                 YukiHookLibXposedEvent.hotReloaded?.invoke(this, nativeParam)
             }.onFailure(YukiHookModuleCaller::callRecordRestoreFailure)
+
+            YukiHookModuleCaller.callFinishRestoreModule(param.extras)
         }.also {
             // Replaced handles are already invalidated. unhook is idempotent and removes only
             // old registrations, including declarations omitted from this module instance.
             param.oldHookHandles.forEach { handle ->
-                runCatching { handle.unhook() }.onFailure(YukiHookModuleCaller::callRecordRestoreFailure)
+                runCatching {
+                    handle.unhook()
+                }.onFailure(YukiHookModuleCaller::callRecordRestoreFailure)
             }
         }.onFailure {
+            initialized = false
             YukiHookModuleCaller.callAbortRestoreModule()
         }.getOrThrow()
 
-        YukiHookModuleCaller.callFinishRestoreModule(param.extras)
+        hasPendingHandoff = false
+        pendingHandoff = null
     }
 
     final override fun attachRuntime() = attachRuntime(restoring = false)
+
+    final override fun onInitializationFailed() {
+        if (hotReload != ModuleReloadPolicy.NONE) YukiHookModuleCaller.callAbortRestoreModule()
+    }
 
     private fun attachRuntime(restoring: Boolean) {
         val session = if (restoring || hotReload != ModuleReloadPolicy.NONE)
