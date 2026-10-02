@@ -31,32 +31,62 @@ import com.android.tools.lint.detector.api.JavaContext
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
+import com.highcapable.yukihookapi.core.lint.detector.extension.analyzeOrNull
+import com.highcapable.yukihookapi.core.lint.detector.extension.branches
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
+import com.highcapable.yukihookapi.core.lint.detector.extension.displayName
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunction
 import com.highcapable.yukihookapi.core.lint.detector.extension.functionTarget
+import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
+import com.intellij.psi.PsiAnonymousClass
 import com.intellij.psi.PsiArrayType
+import com.intellij.psi.PsiCapturedWildcardType
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiIfStatement
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiModifier
+import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiType
+import com.intellij.psi.PsiTypeParameter
+import com.intellij.psi.PsiVariable
 import com.intellij.psi.PsiWildcardType
-import org.jetbrains.kotlin.psi.KtIfExpression
+import com.intellij.psi.util.InheritanceUtil
+import com.intellij.psi.util.PsiUtil
+import org.jetbrains.kotlin.analysis.api.resolution.singleFunctionCallOrNull
+import org.jetbrains.kotlin.analysis.api.resolution.symbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaNamedFunctionSymbol
+import org.jetbrains.kotlin.analysis.api.types.KaClassType
+import org.jetbrains.kotlin.analysis.api.types.KaFlexibleType
+import org.jetbrains.kotlin.analysis.api.types.KaFunctionType
+import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.KtCallElement
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtLabeledExpression
+import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtWhenEntry
-import org.jetbrains.kotlin.psi.KtWhenExpression
+import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtParenthesizedExpression
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtValueArgument
+import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UCallableReferenceExpression
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.ULambdaExpression
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.UReturnExpression
+import org.jetbrains.uast.USimpleNameReferenceExpression
+import org.jetbrains.uast.skipParenthesizedExprDown
+import org.jetbrains.uast.toUElement
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 import java.io.File
 
@@ -74,6 +104,38 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val MODULE_LIFECYCLE_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.reload.lifecycle.ModuleLifecycleKt"
 
         private const val RETAINED_VALUE_METHOD_NAME = "remember"
+        private const val HOOKER_ENTRY_METHOD_NAME = "onHook"
+
+        private const val STRING_CLASS = "java.lang.String"
+        private const val CLASS_CLASS = "java.lang.Class"
+        private const val ITERABLE_CLASS = "java.lang.Iterable"
+        private const val COLLECTION_CLASS = "java.util.Collection"
+        private const val MAP_CLASS = "java.util.Map"
+        private const val BUNDLE_CLASS = "android.os.Bundle"
+
+        private val IMPLICIT_RECEIVER = Any()
+
+        private const val MODULE_VALUE_ADVICE = "return a classloader-neutral value"
+        private const val SNAPSHOT_TYPE_ADVICE = "declare it as read-only `List`, `Set`, `Map`, `Collection` or `Iterable`"
+
+        private val SNAPSHOT_CLASSES = setOf(ITERABLE_CLASS, COLLECTION_CLASS, "java.util.List", "java.util.Set", MAP_CLASS)
+
+        private val REFERENCE_HOLDER_CLASSES = setOf(
+            "java.lang.ref.Reference", "java.util.concurrent.atomic.AtomicReference",
+            "java.util.concurrent.atomic.AtomicReferenceArray", "java.lang.ThreadLocal"
+        )
+
+        private val PACKAGE_PARAM_CLASS_ID = ClassId.topLevel(FqName(PACKAGE_PARAM_CLASS))
+
+        private val READ_ONLY_SNAPSHOT_TYPES = setOf(
+            "kotlin.collections.Iterable", "kotlin.collections.Collection", "kotlin.collections.List",
+            "kotlin.collections.Set", "kotlin.collections.Map"
+        )
+
+        private val MUTABLE_SNAPSHOT_TYPES = mapOf(
+            "kotlin.collections.MutableIterable" to "Iterable", "kotlin.collections.MutableCollection" to "Collection",
+            "kotlin.collections.MutableList" to "List", "kotlin.collections.MutableSet" to "Set", "kotlin.collections.MutableMap" to "Map"
+        )
 
         private val EVENT_REGISTRATIONS = setOf(
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.YukiHookLibXposedEventKt",
@@ -109,8 +171,12 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         val RETAINED_VALUE_ISSUE = Issue.create(
             id = "InvalidModuleRetainedValue",
             briefDescription = "Invalid retained module value",
-            explanation = "Retained values must not retain objects defined by the old module class loader. " +
-                "Keys must be non-blank and unique in one module instance. Runtime validation covers values that lint cannot determine.",
+            explanation = "Retained values must not refer to classes compiled into the module, including its packaged dependencies " +
+                "such as the Kotlin standard library, either directly or inside iterables, maps and class values. " +
+                "Iterable and map results are frozen into read-only snapshots, declare them as read-only List, Set, Map, Collection or Iterable. " +
+                "Arrays and Bundle cannot be frozen and are rejected. " +
+                "Keys must be non-blank and unique in the current package scope, the same key can be used in different package scopes. " +
+                "Runtime validation covers values that lint cannot determine.",
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
@@ -120,6 +186,38 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
     private enum class Phase { INIT, HOOK, PACKAGE, OUTSIDE, UNKNOWN }
     private enum class Execution { IMMEDIATE, PACKAGE, UNKNOWN }
+
+    private enum class LoadKind { ALWAYS, PACKAGE, ANY_PACKAGE, SYSTEM, ZYGOTE }
+    private enum class LambdaExecution { DECLARATION, INLINE, DEFERRED }
+
+    private data class RetainedProblem(val subject: String, val advice: String, val isIndirect: Boolean = false) {
+
+        fun indirect() = copy(isIndirect = true)
+
+        override fun toString() = "${if (isIndirect) "refers to" else "is"} $subject, $advice"
+    }
+
+    private data class LoadGuard(val kind: LoadKind, val target: Any? = Unit) {
+
+        fun canRunWith(other: LoadGuard) = kind == LoadKind.ALWAYS || other.kind == LoadKind.ALWAYS || (this == other && target != null)
+    }
+
+    private data class RetainedKey(val key: String, val element: UElement, val owner: String?)
+
+    private class KeyContribution(
+        val anchor: UElement,
+        val guard: LoadGuard,
+        val site: RetentionSite,
+        val hooker: PsiClass?,
+        val keys: List<RetainedKey>
+    )
+
+    private data class KeyConflict(val retained: RetainedKey, val previous: RetainedKey) {
+
+        val loadSites = mutableListOf<UElement>()
+    }
+
+    private data class RetentionScope(val block: UBlockExpression, val receiver: Any)
 
     private data class RetentionSite(val branches: Map<PsiElement, PsiElement>) {
 
@@ -155,12 +253,19 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
 
+        private val packagedLibraries by lazy {
+            context.evaluator.dependencies?.packageDependencies?.getAllLibraries().orEmpty().mapTo(mutableSetOf()) { it.identifier }
+        }
+
+        private val hookerKeys = mutableMapOf<PsiClass, List<RetainedKey>>()
+
         override fun visitFile(node: UFile) {
             val calls = mutableListOf<CallSite>()
             val roots = mutableMapOf<PsiElement, Phase>()
             val functions = mutableSetOf<PsiElement>()
             val references = mutableSetOf<PsiElement>()
-            val retainedKeys = mutableMapOf<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>()
+            val retainedKeys = mutableMapOf<RetentionScope, MutableMap<String, MutableList<RetentionSite>>>()
+            val contributions = mutableMapOf<UBlockExpression, MutableList<KeyContribution>>()
 
             node.accept(object : AbstractUastVisitor() {
 
@@ -203,8 +308,9 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                         insideEncase = node.insideEncase()
                     ))
 
-                    if (method?.name == RETAINED_VALUE_METHOD_NAME && method.containingClass?.qualifiedName == PACKAGE_PARAM_CLASS)
+                    if (method.isRetainedValue())
                         reportRetainedValue(node, retainedKeys)
+                    collectKeyContributions(node, method, contributions)
 
                     return false
                 }
@@ -217,6 +323,8 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     return false
                 }
             })
+
+            reportHookerKeyConflicts(node, contributions)
 
             val phases = roots.mapValuesTo(mutableMapOf()) { mutableSetOf(it.value) }
             references.forEach { phases.getOrPut(it) { mutableSetOf() }.add(Phase.UNKNOWN) }
@@ -289,9 +397,18 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
         private fun reportRetainedValue(
             node: UCallExpression,
-            keys: MutableMap<UBlockExpression, MutableMap<String, MutableList<RetentionSite>>>
+            keys: MutableMap<RetentionScope, MutableMap<String, MutableList<RetentionSite>>>
         ) {
-            val key = node.getArgumentForParameter(0)
+            node.deferredRetention()?.let { owner ->
+                context.report(
+                    issue = RETAINED_VALUE_ISSUE,
+                    scope = node,
+                    location = context.getNameLocation(node),
+                    message = "`$RETAINED_VALUE_METHOD_NAME` must be called while declaring hooks, not in $owner"
+                )
+            }
+
+            val key = node.retainedKeyArgument()
             val resolvedKey = key?.let { ConstantEvaluator.evaluate(context, it) as? String }
             if (resolvedKey != null) {
                 val message = when {
@@ -300,8 +417,11 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                         val block = generateSequence(node.uastParent) { it.uastParent }
                             .filterIsInstance<UBlockExpression>()
                             .firstOrNull()
+                        val receiver = node.retentionReceiver()
                         val site = RetentionSite(node.branches())
-                        val previous = block?.let { keys.getOrPut(it) { mutableMapOf() }.getOrPut(resolvedKey) { mutableListOf() } }
+                        val previous = if (block != null && receiver != null)
+                            keys.getOrPut(RetentionScope(block, receiver)) { mutableMapOf() }.getOrPut(resolvedKey) { mutableListOf() }
+                        else null
                         val isDuplicate = previous?.any(site::canRunWith) == true
                         previous?.add(site)
 
@@ -319,47 +439,370 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 )
             }
 
-            val type = node.getExpressionType() ?: return
-            val moduleClass = type.moduleClass() ?: return
-            val sourcePath = moduleClass.containingFile?.virtualFile?.path
-            val projectPath = context.project.dir.canonicalPath
-            val isProjectClass = sourcePath?.startsWith("$projectPath${File.separator}") == true
-            if (!isProjectClass) return
+            // Mark the returned values, or the block itself when it is not a lambda with results, the call is not the cause.
+            // A problem in the declared type already covers every result, check the narrower result types only when it has none.
+            val results = node.retainedResults()
+            (node.getExpressionType()?.retainedProblem(declared = true) ?: node.mutableSnapshotProblem())?.let { problem ->
+                if (results.isEmpty()) reportRetainedProblem(node.valueArguments.lastOrNull() ?: node, problem)
+                else results.forEach { reportRetainedProblem(it, problem) }
+                return
+            }
+            results.forEach { result ->
+                result.getExpressionType()?.retainedProblem(declared = false)?.let { reportRetainedProblem(result, it) }
+            }
+        }
+
+        private fun reportRetainedProblem(node: UElement, problem: RetainedProblem) = context.report(
+            issue = RETAINED_VALUE_ISSUE,
+            scope = node,
+            location = context.getLocation(node),
+            message = "`$RETAINED_VALUE_METHOD_NAME` result $problem"
+        )
+
+        private fun UCallExpression.retainedKeyArgument(): UExpression? {
+            val index = resolve()?.parameterList?.parameters?.indexOfFirst { it.type.canonicalText == STRING_CLASS } ?: -1
+            return getArgumentForParameter(index.coerceAtLeast(0))
+        }
+
+        private fun UCallExpression.retainedKey() = retainedKeyArgument()?.let { argument ->
+            (ConstantEvaluator.evaluate(context, argument) as? String)?.takeIf { it.isNotBlank() }?.let { it to argument }
+        }
+
+        private fun UCallExpression.hasImplicitReceiver() = receiver?.skipParenthesizedExprDown()?.sourcePsi == null
+
+        private fun PsiMethod?.isRetainedValue() =
+            this?.name == RETAINED_VALUE_METHOD_NAME && containingClass?.qualifiedName == PACKAGE_PARAM_CLASS
+
+        private fun PsiMethod.loadGuard(node: UCallExpression): LoadGuard? {
+            if (containingClass?.qualifiedName != PACKAGE_PARAM_CLASS) return null
+            val argument = node.getArgumentForParameter(0)
+
+            return when (name) {
+                "loadHooker" -> LoadGuard(LoadKind.ALWAYS)
+                "loadSystem" -> LoadGuard(LoadKind.SYSTEM)
+                "loadZygote" -> LoadGuard(LoadKind.ZYGOTE)
+                "loadApp" -> if (parameterList.parameters.firstOrNull()?.type?.canonicalText == STRING_CLASS)
+                    LoadGuard(LoadKind.PACKAGE, argument?.let { ConstantEvaluator.evaluate(context, it) as? String })
+                else LoadGuard(LoadKind.ANY_PACKAGE, argument?.let { ConstantEvaluator.evaluate(context, it) as? Boolean } ?: false.takeIf { argument == null })
+                else -> null
+            }
+        }
+
+        private fun UCallExpression.loadedHookers() = valueArguments.mapNotNull { argument ->
+            val type = (argument.getExpressionType() as? PsiClassType)?.resolve() ?: return@mapNotNull null
+            type.takeIf { context.evaluator.extendsClass(it, BASE_HOOKER_CLASS, false) }?.let { argument to it }
+        }
+
+        private fun collectKeyContributions(
+            node: UCallExpression,
+            method: PsiMethod?,
+            contributions: MutableMap<UBlockExpression, MutableList<KeyContribution>>
+        ) {
+            if (method == null || !node.hasImplicitReceiver()) return
+            val block = generateSequence(node.uastParent) { it.uastParent }.filterIsInstance<UBlockExpression>().firstOrNull() ?: return
+            val site = RetentionSite(node.branches())
+
+            if (method.isRetainedValue()) node.retainedKey()?.let { (key, argument) ->
+                contributions.getOrPut(block) { mutableListOf() } +=
+                    KeyContribution(argument, LoadGuard(LoadKind.ALWAYS), site, hooker = null, listOf(RetainedKey(key, argument, owner = null)))
+            }
+
+            val guard = method.loadGuard(node) ?: return
+            node.loadedHookers().forEach { (argument, hooker) ->
+                contributions.getOrPut(block) { mutableListOf() } += KeyContribution(argument, guard, site, hooker, hooker.hookerKeys())
+            }
+        }
+
+        private fun PsiClass.hookerKeys(visiting: MutableSet<PsiClass> = mutableSetOf()): List<RetainedKey> {
+            hookerKeys[this]?.let { return it }
+            if (!visiting.add(this)) return emptyList()
+
+            val owner = displayName()
+            val keys = mutableListOf<RetainedKey>()
+            val onHook = (toUElement() as? UClass)?.methods?.firstOrNull { it.name == HOOKER_ENTRY_METHOD_NAME && it.uastParameters.isEmpty() }
+            onHook?.uastBody?.accept(object : AbstractUastVisitor() {
+
+                override fun visitClass(node: UClass) = true
+
+                override fun visitLambdaExpression(node: ULambdaExpression) = true
+
+                override fun visitCallExpression(node: UCallExpression): Boolean {
+                    val method = node.resolve()
+                    if (method != null && node.hasImplicitReceiver()) when {
+                        method.isRetainedValue() -> node.retainedKey()?.let { (key, argument) -> keys += RetainedKey(key, argument, owner) }
+                        method.loadGuard(node)?.kind == LoadKind.ALWAYS -> node.loadedHookers().forEach { (_, hooker) ->
+                            keys += hooker.hookerKeys(visiting)
+                        }
+                    }
+
+                    return super.visitCallExpression(node)
+                }
+            })
+
+            visiting.remove(this)
+            return keys.also { hookerKeys[this] = it }
+        }
+
+        private fun reportHookerKeyConflicts(file: UFile, contributions: Map<UBlockExpression, List<KeyContribution>>) {
+            val conflicts = linkedMapOf<Pair<PsiElement?, PsiElement?>, KeyConflict>()
+            contributions.values.forEach { collectHookerKeyConflicts(it, conflicts) }
+            file.hookerLoaderFiles().forEach { loader -> loader.keyContributions().values.forEach { collectHookerKeyConflicts(it, conflicts) } }
+
+            conflicts.values
+                .filter { it.retained.element.sourcePsi?.containingFile?.virtualFile?.path == context.file.path }
+                .forEach(::reportHookerKeyConflict)
+        }
+
+        private fun UFile.keyContributions(): Map<UBlockExpression, List<KeyContribution>> {
+            val contributions = mutableMapOf<UBlockExpression, MutableList<KeyContribution>>()
+            accept(object : AbstractUastVisitor() {
+
+                override fun visitCallExpression(node: UCallExpression): Boolean {
+                    collectKeyContributions(node, node.resolve(), contributions)
+                    return false
+                }
+            })
+
+            return contributions
+        }
+
+        private fun UFile.hookerLoaderFiles(): List<UFile> {
+            val names = allClasses().filter { it.isHooker() }.mapNotNullTo(mutableSetOf()) { it.name }
+            if (names.isEmpty()) return emptyList()
+
+            val sources = context.project.javaSourceFolders.asSequence()
+                .flatMap { it.walkTopDown() }
+                .filter { it.isFile && (it.extension == "java" || it.extension == "kt") && it.path != context.file.path }
+                .toList()
+            val loaders = linkedMapOf<File, UFile>()
+            var pending = names.toSet()
+            while (pending.isNotEmpty()) {
+                val found = mutableSetOf<String>()
+                sources.filter { it !in loaders }
+                    .filter { source -> context.client.readFile(source).let { text -> pending.any { it in text } } }
+                    .forEach { source ->
+                        val loader = context.toUFile(source) ?: return@forEach
+                        loaders[source] = loader
+                        loader.allClasses().filter { it.isHooker() && it.loadedHookerNames().any(names::contains) }
+                            .mapNotNullTo(found) { it.name }
+                    }
+                pending = found - names
+                names += found
+            }
+
+            return loaders.values.toList()
+        }
+
+        private fun UFile.allClasses() = classes.flatMap { clazz ->
+            generateSequence(listOf(clazz)) { level ->
+                level.flatMap {
+                    it.innerClasses.toList()
+                }.ifEmpty { null }
+            }.flatten()
+        }
+
+        private fun UClass.isHooker() = context.evaluator.extendsClass(javaPsi, BASE_HOOKER_CLASS, false)
+
+        private fun UClass.loadedHookerNames(): Set<String> {
+            val names = mutableSetOf<String>()
+            methods.firstOrNull { it.name == HOOKER_ENTRY_METHOD_NAME && it.uastParameters.isEmpty() }?.uastBody?.accept(object : AbstractUastVisitor() {
+
+                override fun visitClass(node: UClass) = true
+                override fun visitLambdaExpression(node: ULambdaExpression) = true
+
+                override fun visitCallExpression(node: UCallExpression): Boolean {
+                    val method = node.resolve()
+                    if (method != null && node.hasImplicitReceiver() && method.loadGuard(node)?.kind == LoadKind.ALWAYS)
+                        node.loadedHookers().mapNotNullTo(names) { it.second.name }
+                    return super.visitCallExpression(node)
+                }
+            })
+
+            return names
+        }
+
+        private fun collectHookerKeyConflicts(contributions: List<KeyContribution>, conflicts: MutableMap<Pair<PsiElement?, PsiElement?>, KeyConflict>) {
+            val ordered = contributions.sortedBy { it.anchor.sourcePsi?.textRange?.startOffset ?: 0 }
+            ordered.forEachIndexed { index, current ->
+                current.keys.forEach { retained ->
+                    val previous = ordered.subList(0, index).asSequence()
+                        .filter { it.hooker != null || current.hooker != null }
+                        .filter { it.hooker == null || current.hooker == null || it.hooker != current.hooker }
+                        .filter { it.guard.canRunWith(current.guard) && it.site.canRunWith(current.site) }
+                        .firstNotNullOfOrNull { other -> other.keys.firstOrNull { it.key == retained.key } }
+                        ?: return@forEach
+
+                    val conflict = conflicts.getOrPut(retained.element.sourcePsi to previous.element.sourcePsi) { KeyConflict(retained, previous) }
+                    if (current.hooker != null) conflict.loadSites += current.anchor
+                }
+            }
+        }
+
+        private fun reportHookerKeyConflict(conflict: KeyConflict) {
+            val (retained, previous) = conflict
+            val usage = when {
+                previous.owner != null -> "by `${previous.owner}` in this package scope"
+                retained.owner != null -> "where this hooker is loaded"
+                else -> "in this block"
+            }
+            val location = context.getLocation(retained.element)
+            val secondaries = listOf(context.getLocation(previous.element).apply { message = "Previous usage" }) +
+                conflict.loadSites.map { site -> context.getLocation(site).apply { message = "Loaded here" } }
+            secondaries.reduceRight { secondary, next -> secondary.apply { this.secondary = next } }
+            location.secondary = secondaries.first()
 
             context.report(
                 issue = RETAINED_VALUE_ISSUE,
-                scope = node,
-                location = context.getLocation(node),
-                message = "`$RETAINED_VALUE_METHOD_NAME` result refers to module-defined `${moduleClass.name}`, return a classloader-neutral value"
+                scope = retained.element,
+                location = location,
+                message = "`$RETAINED_VALUE_METHOD_NAME` key '${retained.key}' is already used $usage"
             )
         }
 
-        private fun UCallExpression.branches(): Map<PsiElement, PsiElement> {
-            val source = sourcePsi ?: return emptyMap()
-            val branches = mutableMapOf<PsiElement, PsiElement>()
+        private fun UCallExpression.retentionReceiver(): Any? {
+            // UAST may supply a synthetic receiver without source for implicit receivers.
+            val receiver = receiver?.skipParenthesizedExprDown()?.takeIf { it.sourcePsi != null } ?: return IMPLICIT_RECEIVER
+            val declaration = (receiver as? USimpleNameReferenceExpression)?.resolve() ?: return null
+            return when (val source = declaration.navigationElement) {
+                is KtParameter -> source.takeUnless { it.hasValOrVar() && it.isMutable }
+                is KtProperty -> source.takeUnless { it.isVar }
+                is PsiParameter -> source
+                is PsiVariable -> source.takeIf { it.hasModifierProperty(PsiModifier.FINAL) }
+                else -> null
+            }
+        }
 
-            generateSequence(source.parent) { it.parent }.forEach { parent ->
-                when (parent) {
-                    is KtIfExpression -> listOfNotNull(parent.then, parent.`else`)
-                        .firstOrNull { it.textRange.contains(source.textRange) }
-                        ?.let { branches[parent] = it }
-                    is PsiIfStatement -> listOfNotNull(parent.thenBranch, parent.elseBranch)
-                        .firstOrNull { it.textRange.contains(source.textRange) }
-                        ?.let { branches[parent] = it }
-                    is KtWhenEntry -> (parent.parent as? KtWhenExpression)?.let { branches[it] = parent }
+        private fun UCallExpression.retainedResults(): List<UExpression> {
+            val block = valueArguments.lastOrNull()?.skipParenthesizedExprDown() as? ULambdaExpression ?: return emptyList()
+            val results = mutableListOf<UExpression>()
+            block.body.accept(object : AbstractUastVisitor() {
+
+                override fun visitClass(node: UClass) = true
+
+                override fun visitReturnExpression(node: UReturnExpression): Boolean {
+                    if (node.jumpTarget == block) node.returnExpression?.let(results::add)
+                    return super.visitReturnExpression(node)
+                }
+            })
+
+            return results
+        }
+
+        private fun PsiType.retainedProblem(declared: Boolean): RetainedProblem? = when (this) {
+            is PsiArrayType -> RetainedProblem("an array", "return a `List` instead")
+            is PsiCapturedWildcardType -> wildcard.retainedProblem(declared)
+            is PsiWildcardType -> if (isExtends) extendsBound.retainedProblem(declared) else null
+            is PsiClassType -> resolve()?.takeUnless { it is PsiTypeParameter }?.let { type ->
+                when {
+                    type.qualifiedName == CLASS_CLASS -> parameters.firstOrNull()?.classTarget()?.let {
+                        RetainedProblem("module-defined `${it.displayName()}`", MODULE_VALUE_ADVICE, isIndirect = true)
+                    }
+                    InheritanceUtil.isInheritor(type, BUNDLE_CLASS) ->
+                        RetainedProblem("a `Bundle`", "retain its values instead")
+                    REFERENCE_HOLDER_CLASSES.any { InheritanceUtil.isInheritor(type, it) } ->
+                        RetainedProblem("`${type.displayName()}`", "retain the referenced value instead")
+                    // Other iterable types, such as paths, are values unless they are declared as an Iterable.
+                    InheritanceUtil.isInheritor(type, COLLECTION_CLASS) ||
+                        InheritanceUtil.isInheritor(type, MAP_CLASS) ||
+                        (declared && type.qualifiedName == ITERABLE_CLASS) ->
+                        if (declared && type.qualifiedName !in SNAPSHOT_CLASSES)
+                            RetainedProblem("`${type.displayName()}`", SNAPSHOT_TYPE_ADVICE)
+                        else snapshotElementTypes(type).firstNotNullOfOrNull { it.retainedProblem(declared) }?.indirect()
+                    type.isModuleDefined() -> RetainedProblem("module-defined `${type.displayName()}`", MODULE_VALUE_ADVICE)
+                    else -> null
+                }
+            }
+            else -> null
+        }
+
+        private fun PsiType.classTarget(): PsiClass? = when (this) {
+            is PsiArrayType -> componentType.classTarget()
+            is PsiCapturedWildcardType -> wildcard.classTarget()
+            is PsiWildcardType -> if (isExtends) extendsBound.classTarget() else null
+            is PsiClassType -> resolve()?.takeUnless { it is PsiTypeParameter || !it.isModuleDefined() }
+            else -> null
+        }
+
+        private fun PsiClassType.snapshotElementTypes(type: PsiClass) = when {
+            InheritanceUtil.isInheritor(type, MAP_CLASS) -> listOfNotNull(
+                PsiUtil.substituteTypeParameter(this, MAP_CLASS, 0, true),
+                PsiUtil.substituteTypeParameter(this, MAP_CLASS, 1, true)
+            )
+            else -> listOfNotNull(PsiUtil.substituteTypeParameter(this, ITERABLE_CLASS, 0, true))
+        }
+
+        private fun UCallExpression.deferredRetention(): String? {
+            for (parent in generateSequence(uastParent) { it.uastParent }) when (parent) {
+                is ULambdaExpression -> return when (parent.lambdaExecution()) {
+                    LambdaExecution.DECLARATION -> null
+                    LambdaExecution.INLINE -> continue
+                    LambdaExecution.DEFERRED -> (parent.enclosingCall()?.methodName?.let { "`$it`" } ?: "a lambda") + " that may run later"
+                    null -> null
+                }
+                is UMethod -> return "a local class that may run later".takeIf { parent.isLocal() }
+                is UClass -> return "a property initializer that runs before the hooker is loaded".takeIf {
+                    hasImplicitReceiver() && context.evaluator.extendsClass(parent.javaPsi, PACKAGE_PARAM_CLASS, false)
                 }
             }
 
-            return branches
+            return null
         }
 
-        private fun PsiType.moduleClass(): PsiClass? = when (this) {
-            is PsiArrayType -> componentType.moduleClass()
-            is PsiClassType -> if (resolve()?.qualifiedName == "java.lang.Class")
-                parameters.firstOrNull()?.moduleClass()
-            else resolve()
-            is PsiWildcardType -> bound?.moduleClass()
-            else -> null
+        private fun UMethod.isLocal() = generateSequence(uastParent) { it.uastParent }
+            .takeWhile { it !is UFile }
+            .any { it is UMethod || it is ULambdaExpression || (it is UClass && it.javaPsi is PsiAnonymousClass) }
+
+        private fun ULambdaExpression.enclosingCall() = generateSequence(uastParent) { it.uastParent }
+            .filterIsInstance<UCallExpression>().firstOrNull()
+
+        private fun ULambdaExpression.lambdaExecution(): LambdaExecution? {
+            val lambda = sourcePsi as? KtLambdaExpression ?: return null
+            return lambda.analyzeOrNull {
+                val type = lambda.expressionType as? KaFunctionType
+                if ((type?.receiverType as? KaClassType)?.classId == PACKAGE_PARAM_CLASS_ID) return@analyzeOrNull LambdaExecution.DECLARATION
+
+                // Labels and parentheses wrap the lambda inside its argument.
+                val argument = generateSequence(lambda.parent) { it.parent }
+                    .firstOrNull { it !is KtLabeledExpression && it !is KtParenthesizedExpression } as? KtValueArgument
+                    ?: return@analyzeOrNull LambdaExecution.DEFERRED
+                val call = argument.getStrictParentOfType<KtCallElement>()?.resolveToCall()?.singleFunctionCallOrNull()
+                    ?: return@analyzeOrNull null
+                val parameter = (call.valueArgumentMapping[lambda]
+                    ?: argument.getArgumentExpression()?.let { call.valueArgumentMapping[it] })?.symbol
+                val function = call.symbol as? KaNamedFunctionSymbol
+                if (function?.isInline == true && parameter != null && !parameter.isNoinline && !parameter.isCrossinline)
+                    LambdaExecution.INLINE
+                else LambdaExecution.DEFERRED
+            }
+        }
+
+        private fun UCallExpression.mutableSnapshotProblem(): RetainedProblem? {
+            val expression = sourcePsi as? KtExpression ?: return null
+
+            // Java types cannot tell mutable Kotlin containers from read-only ones, platform types use their read-only bound.
+            return expression.analyzeOrNull {
+                fun KaType.problem(): RetainedProblem? {
+                    val type = (if (this is KaFlexibleType) upperBound else this) as? KaClassType ?: return null
+                    val name = type.classId.asSingleFqName().asString()
+                    MUTABLE_SNAPSHOT_TYPES[name]?.let {
+                        return RetainedProblem("`${type.classId.shortClassName.asString()}`", "declare it as read-only `$it`")
+                    }
+                    if (name !in READ_ONLY_SNAPSHOT_TYPES) return null
+
+                    return type.typeArguments.firstNotNullOfOrNull { it.type?.problem() }?.indirect()
+                }
+
+                expression.expressionType?.problem()
+            }
+        }
+
+        private fun PsiClass.isModuleDefined(): Boolean {
+            // Platform classes and dependencies that are not packaged, such as compileOnly, are supplied by other class loaders.
+            val evaluator = context.evaluator
+            if (evaluator.getProject(this) != null) return true
+
+            val library = evaluator.findJarPath(this)?.let(evaluator::findOwnerLibrary) ?: return false
+            return library.identifier in packagedLibraries
         }
 
         private fun UCallExpression.isEntryOwned() = generateSequence(uastParent) { it.uastParent }

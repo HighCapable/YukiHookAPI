@@ -356,7 +356,9 @@ object YukiHook {
 
         isStandalone = true
         when {
-            YukiHookBridge.isStandaloneAvailable && baseContext != null -> block(baseContext.createPackageParam().apply { sayHello() })
+            YukiHookBridge.isStandaloneAvailable && baseContext != null -> PackageContext.from(baseContext).let { context ->
+                context.declare { block(PackageParam(context).apply { sayHello() }) }
+            }
             else -> logNotFoundHookApiError()
         }
     }
@@ -376,8 +378,10 @@ object YukiHook {
             if (baseContext != null)
                 if (hooker.isNotEmpty()) {
                     sayHello()
-                    val param = baseContext.createPackageParam()
-                    hooker.forEach { param.loadHooker(it) }
+
+                    val context = PackageContext.from(baseContext)
+                    val param = PackageParam(context)
+                    context.declare { hooker.forEach { param.loadHooker(it) } }
                 } else YLog.innerE("Failed to passing \"encase\" function because your hookers param is empty", isImplicit = true)
         } else logNotFoundHookApiError()
     }
@@ -403,10 +407,4 @@ object YukiHook {
         "Could not found any available hook APIs in current environment. Aborted",
         isImplicit = true
     )
-
-    /**
-     * Creates the hook entry object from the base context.
-     * @return [PackageParam]
-     */
-    private fun Context.createPackageParam() = PackageParam(PackageContext.from(this))
 }

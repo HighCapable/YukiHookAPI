@@ -53,6 +53,9 @@ internal data class PackageContext(
 
     companion object : ModuleStateSpec<PackageContext> {
 
+        /** The ID of the hook entry being declared on the current thread. */
+        private val declaringEntry = ThreadLocal<String>()
+
         /**
          * Creates a new [PackageContext] from the current [Context].
          * @param context the current context.
@@ -98,6 +101,30 @@ internal data class PackageContext(
      * @return [String]
      */
     val id = "$type:$packageName"
+
+    /**
+     * Gets whether this hook entry is being declared on the current thread.
+     * @return [Boolean]
+     */
+    val isDeclaring get() = declaringEntry.get() == id
+
+    /**
+     * Runs the declarations of this hook entry with it bound to the current thread.
+     * @param block the declarations.
+     * @return [T]
+     */
+    fun <T> declare(block: () -> T): T {
+        val previous = declaringEntry.get()
+        declaringEntry.set(id)
+
+        return try {
+            block()
+        } finally {
+            if (previous == null)
+                declaringEntry.remove()
+            else declaringEntry.set(previous)
+        }
+    }
 
     /**
      * Checks if the current hook entry matches the specified package name.

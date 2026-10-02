@@ -23,10 +23,20 @@ package com.highcapable.yukihookapi.core.lint.detector.extension
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.JavaContext
+import com.intellij.openapi.diagnostic.ControlFlowException
+import com.intellij.psi.PsiAnonymousClass
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiIfStatement
 import com.intellij.psi.PsiMethod
+import org.jetbrains.kotlin.analysis.api.KaSession
+import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtWhenEntry
+import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.uast.UBinaryExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UCallableReferenceExpression
@@ -37,6 +47,7 @@ import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UastCallKind
 import java.io.File
+import java.util.concurrent.CancellationException
 
 private const val YUKIHOOK_MODULE_NAME_PREFIX = "yukihook-"
 
@@ -104,4 +115,32 @@ internal fun JavaContext.toUFile(source: File): UFile? {
     }
 
     return uastParser.parse(sourceContext)
+}
+
+internal fun UCallExpression.branches(): Map<PsiElement, PsiElement> {
+    val source = sourcePsi ?: return emptyMap()
+    val branches = mutableMapOf<PsiElement, PsiElement>()
+
+    generateSequence(source.parent) { it.parent }.forEach { parent ->
+        when (parent) {
+            is KtIfExpression -> listOfNotNull(parent.then, parent.`else`)
+                .firstOrNull { it.textRange.contains(source.textRange) }
+                ?.let { branches[parent] = it }
+            is PsiIfStatement -> listOfNotNull(parent.thenBranch, parent.elseBranch)
+                .firstOrNull { it.textRange.contains(source.textRange) }
+                ?.let { branches[parent] = it }
+            is KtWhenEntry -> (parent.parent as? KtWhenExpression)?.let { branches[it] = parent }
+        }
+    }
+
+    return branches
+}
+
+internal fun PsiClass.displayName() = name ?: (this as? PsiAnonymousClass)?.baseClassType?.className?.let { "anonymous $it" } ?: "anonymous"
+
+internal fun <R> KtElement.analyzeOrNull(block: KaSession.() -> R): R? = try {
+    analyze(this, block)
+} catch (failure: Throwable) {
+    if (failure is ControlFlowException || failure is CancellationException) throw failure
+    null
 }

@@ -31,6 +31,7 @@ import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.Bundle
 import androidx.annotation.RequiresApi
 import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.kavaref.extension.VariousClass
@@ -57,9 +58,11 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
+import java.lang.ref.WeakReference
 import java.lang.reflect.Constructor
 import java.lang.reflect.Member
 import java.lang.reflect.Method
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -286,16 +289,25 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Retains a value across module instances.
      *
      * With [YukiHookLibXposedEntry.HotReload] enabled, the same [key] and declared result type reuse the saved result without running [block].
-     * Keys must be non-blank and unique per module instance.
+     * Otherwise [block] runs every time and nothing is retained, so the same declarations work on every runtime.
+     * Keys must be non-blank and unique in the current package scope, the same key can be used in different package scopes.
      *
      * A change to the declared result type, its type arguments or nullability invalidates the saved result and runs [block] again.
      *
-     * For example, changing `Int` to `String` or `List<Int>` to `List<String>` recomputes the value even with the same [key].
+     * For example, changing [Int] to [String] or [List]<[Int]> to [List]<[String]> recomputes the value even with the same [key].
      * The cache type is the inferred or explicit [T], not the runtime class of the value.
      *
      * Change [key] when the calculation changes but the declared result type stays the same.
-     * Values must not retain objects or classes owned by the module class loader.
+     * Values must not refer to classes compiled into the module, including its packaged dependencies such as the Kotlin standard library,
+     * e.g. module classes, [Pair], [Unit] or function types, either directly or inside collections, maps and [Class] values.
+     * Platform, host and `compileOnly` dependency classes are supplied by other class loaders and can be retained.
+     *
+     * Collection and map results, including nested ones, are frozen into read-only snapshots, only their elements are checked.
+     * Declare them as read-only [List], [Set], [Map], [Collection] or [Iterable], and do not modify them after they are returned.
+     * Arrays, [Bundle] and reference holders such as [WeakReference], [AtomicReference] or [ThreadLocal] cannot be frozen and are rejected.
      * Keep hook registration and other actions that must run after reload outside [block].
+     *
+     * Call it only while declaring hooks, e.g. in `onHook` or [loadApp], not in hook callbacks, lifecycle callbacks or other threads.
      *
      * Examples:
      *
@@ -316,35 +328,52 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param key the versioned key of the result value.
      * @param block computes the value when no saved result has the same declared type.
      * @return [T] the saved or newly computed result.
-     * @throws IllegalArgumentException if [key] is blank or already used in this module instance.
-     * @throws IllegalStateException if the result cannot safely cross module class loaders.
+     * @throws IllegalArgumentException if [key] is blank or already used in the same package scope.
+     * @throws IllegalStateException if called outside hook declarations, the result cannot be retained or the module instance is retiring.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
     inline fun <reified T> remember(key: String, noinline block: () -> T) = remember(typeOf<T>(), key, block)
 
     /**
      * Retains a value across module instances.
      *
      * With [YukiHookLibXposedEntry.HotReload] enabled, the same [key] and declared result type reuse the saved result without running [block].
-     * Keys must be non-blank and unique per module instance.
+     * Otherwise [block] runs every time and nothing is retained, so the same declarations work on every runtime.
+     * Keys must be non-blank and unique in the current package scope, the same key can be used in different package scopes.
      *
      * A change to the declared result type, its type arguments or nullability invalidates the saved result and runs [block] again.
      *
-     * For example, changing `Int` to `String` or `List<Int>` to `List<String>` recomputes the value even with the same [key].
+     * For example, changing [Int] to [String] or [List]<[Int]> to [List]<[String]> recomputes the value even with the same [key].
      * The cache type is the inferred or explicit [T], not the runtime class of the value.
      *
      * Change [key] when the calculation changes but the declared result type stays the same.
-     * Values must not retain objects or classes owned by the module class loader.
+     * Values must not refer to classes compiled into the module, including its packaged dependencies such as the Kotlin standard library,
+     * e.g. module classes, [Pair], [Unit] or function types, either directly or inside collections, maps and [Class] values.
+     * Platform, host and `compileOnly` dependency classes are supplied by other class loaders and can be retained.
+     *
+     * Collection and map results, including nested ones, are frozen into read-only snapshots, only their elements are checked.
+     * Declare them as read-only [List], [Set], [Map], [Collection] or [Iterable], and do not modify them after they are returned.
+     * Arrays, [Bundle] and reference holders such as [WeakReference], [AtomicReference] or [ThreadLocal] cannot be frozen and are rejected.
      * Keep hook registration and other actions that must run after reload outside [block].
+     *
+     * Call it only while declaring hooks, e.g. in `onHook` or [loadApp], not in hook callbacks, lifecycle callbacks or other threads.
      * @param type the declared result type, including type arguments and nullability.
      * @param key the versioned key of the result value.
      * @param block computes the value when no saved result has the same declared type.
      * @return [T] the saved or newly computed result.
-     * @throws IllegalArgumentException if [key] is blank or already used in this module instance.
-     * @throws IllegalStateException if the result cannot safely cross module class loaders.
+     * @throws IllegalArgumentException if [key] is blank or already used in the same package scope.
+     * @throws IllegalStateException if called outside hook declarations, the result cannot be retained or the module instance is retiring.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
-    fun <T> remember(type: KType, key: String, block: () -> T) = XposedModuleRuntime.retainValue(type, key, block)
+    fun <T> remember(type: KType, key: String, block: () -> T): T {
+        val current = checkNotNull(context) {
+            "remember can only be used after the hooker is loaded, call it in onHook instead of property initializers or init blocks."
+        }
+        // Callbacks and other threads may run repeatedly or after retirement, a key belongs to one declaration of its package.
+        check(current.isDeclaring) {
+            "remember can only be used while declaring hooks of the current package, do not call it in callbacks or other threads."
+        }
+
+        return XposedModuleRuntime.retainValue(current, type, key, block)
+    }
 
     /**
      * Loads and hooks apps with the specified package name.

@@ -178,14 +178,15 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     /**
      * Retains a value across module instances, computing it if no saved value has the same declared type.
+     * @param context the hook entry that owns [key].
      * @param type the declared result type, including type arguments and nullability.
      * @param key the versioned key of the result value.
      * @param block computes the value when no saved result has the same type.
      * @return [T]
-     * @throws IllegalArgumentException if [key] is blank or already used in this module instance.
-     * @throws IllegalStateException if the result cannot safely cross module class loaders.
+     * @throws IllegalArgumentException if [key] is blank or already used in the same package scope.
+     * @throws IllegalStateException if the result cannot be retained or the module instance is retiring.
      */
-    fun <T> retainValue(type: KType, key: String, block: () -> T) = retainedValues.retain(isHostEnvironment, type, key, block)
+    fun <T> retainValue(context: PackageContext, type: KType, key: String, block: () -> T) = retainedValues.retain(context, type, key, block)
 
     /**
      * Attaches the runtime session and prepares hook registration before module loading.
@@ -305,7 +306,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
         runCatching {
             val callback = {
-                packageParamCallback?.invoke(PackageParam(context).apply { YukiHook.sayHello() })
+                context.declare { packageParamCallback?.invoke(PackageParam(context).apply { YukiHook.sayHello() }) }
             }
             val component = hookRegistration
             if (component == null) callback() else component.withEntry(context.id, callback)
