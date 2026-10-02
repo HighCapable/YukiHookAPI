@@ -62,7 +62,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         private const val LIBXPOSED_102_EVENT_MIN_API_VERSION = 102
 
         private val RUNTIME_CLASSES = mapOf(
-            LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.entry.base.BaseLibXposedEntry",
+            LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.entry.base.LibXposedBaseEntry",
             XPOSED_82_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.xposed82.entry.Xposed82Entry"
         )
 

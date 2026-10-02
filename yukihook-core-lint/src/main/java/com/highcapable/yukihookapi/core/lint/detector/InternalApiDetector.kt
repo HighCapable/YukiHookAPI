@@ -86,7 +86,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
         )
 
         private val GENERATED_ENTRY_SUPER_CLASSES = setOf(
-            "$RUNTIME_PACKAGE_NAME.libxposed.entry.base.BaseLibXposedEntry",
+            "$RUNTIME_PACKAGE_NAME.libxposed.entry.base.LibXposedBaseEntry",
             "$RUNTIME_PACKAGE_NAME.libxposed.entry.LibXposed101Entry",
             "$RUNTIME_PACKAGE_NAME.libxposed.entry.LibXposed102Entry",
             "$RUNTIME_PACKAGE_NAME.xposed82.entry.Xposed82Entry"

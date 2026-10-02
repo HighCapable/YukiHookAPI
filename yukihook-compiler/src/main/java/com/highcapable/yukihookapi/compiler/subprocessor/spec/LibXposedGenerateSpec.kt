@@ -54,7 +54,7 @@ data class LibXposedGenerateSpec(
         const val HOT_RELOAD_CLASS_NAME = "$ANNOTATION_NAME.HotReload"
         const val RELOAD_POLICY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.bridge.session.ModuleReloadPolicy"
 
-        const val BASE_ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.base.BaseLibXposedEntry"
+        const val BASE_ENTRY_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.base.LibXposedBaseEntry"
         const val ENTRY_101_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.LibXposed101Entry"
         const val ENTRY_102_CLASS_NAME = "${DeclaredSymbol.API_PACKAGE_NAME}.runtime.libxposed.entry.LibXposed102Entry"
 

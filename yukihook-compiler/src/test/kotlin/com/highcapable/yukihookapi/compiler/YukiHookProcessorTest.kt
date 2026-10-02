@@ -42,7 +42,7 @@ class YukiHookProcessorTest {
         const val LEGACY_ANNOTATION = "com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry"
         const val MODERN_ANNOTATION = "com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry"
         const val LEGACY_RUNTIME = "com.highcapable.yukihookapi.runtime.xposed82.entry.Xposed82Entry"
-        const val MODERN_RUNTIME = "com.highcapable.yukihookapi.runtime.libxposed.entry.base.BaseLibXposedEntry"
+        const val MODERN_RUNTIME = "com.highcapable.yukihookapi.runtime.libxposed.entry.base.LibXposedBaseEntry"
     }
 
     private val generatedFiles = mutableListOf<String>()

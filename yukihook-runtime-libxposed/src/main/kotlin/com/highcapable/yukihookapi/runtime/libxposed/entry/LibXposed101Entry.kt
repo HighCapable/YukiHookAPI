@@ -23,9 +23,9 @@
 
 package com.highcapable.yukihookapi.runtime.libxposed.entry
 
-import com.highcapable.yukihookapi.runtime.libxposed.entry.base.BaseLibXposedEntry
+import com.highcapable.yukihookapi.runtime.libxposed.entry.base.LibXposedBaseEntry
 
 /**
  * Libxposed API 101 entry for `libxposed:api` 101 version.
  */
-abstract class LibXposed101Entry : BaseLibXposedEntry()
+abstract class LibXposed101Entry : LibXposedBaseEntry()

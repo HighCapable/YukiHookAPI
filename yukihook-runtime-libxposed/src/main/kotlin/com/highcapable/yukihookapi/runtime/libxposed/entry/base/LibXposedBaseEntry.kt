@@ -32,7 +32,7 @@ import io.github.libxposed.api.XposedModuleInterface
 /**
  * Common LibXposed entry base used by KSP, native lifecycle details stay in this runtime.
  */
-abstract class BaseLibXposedEntry : XposedModule() {
+abstract class LibXposedBaseEntry : XposedModule() {
 
     private companion object {
         const val FRAMEWORK_PACKAGE_NAME = "android"

@@ -29,14 +29,14 @@ import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiHookLibXposedEve
 import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadPolicy
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedHookApi
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedModuleSession
-import com.highcapable.yukihookapi.runtime.libxposed.entry.base.BaseLibXposedEntry
+import com.highcapable.yukihookapi.runtime.libxposed.entry.base.LibXposedBaseEntry
 import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
 import io.github.libxposed.api.XposedModuleInterface
 
 /**
  * Libxposed API 102 entry for `libxposed:api` 102 version.
  */
-abstract class LibXposed102Entry : BaseLibXposedEntry() {
+abstract class LibXposed102Entry : LibXposedBaseEntry() {
 
     /**
      * Keeps managed and native reload states separate across module instances.
