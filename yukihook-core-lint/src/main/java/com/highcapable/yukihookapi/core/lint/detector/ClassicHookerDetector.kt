@@ -30,22 +30,20 @@ import com.android.tools.lint.detector.api.JavaContext
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
+import com.highcapable.yukihookapi.core.lint.detector.extension.branches
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
+import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingCall
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunction
 import com.intellij.psi.PsiArrayType
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiIfStatement
 import com.intellij.psi.PsiLocalVariable
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiWildcardType
-import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.KtWhenEntry
-import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
@@ -166,9 +164,6 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
             return scope?.sourcePsi?.let { HookerGroup(null, it) }
         }
 
-        private fun ULambdaExpression.enclosingCall() = generateSequence(uastParent) { it.uastParent }
-            .filterIsInstance<UCallExpression>().firstOrNull()
-
         private fun ULambdaExpression.isClassicScope(): Boolean {
             val call = enclosingCall() ?: return false
             if (call.resolve()?.containingClass?.qualifiedName == CLASSIC_HOOKER) return false
@@ -181,25 +176,6 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
             is PsiClassType -> resolve()?.qualifiedName == CLASSIC_HOOKER || parameters.any { it.containsClassicHooker() }
             is PsiWildcardType -> bound.containsClassicHooker()
             else -> false
-        }
-
-        private fun UCallExpression.branches(): Map<PsiElement, PsiElement> {
-            val source = sourcePsi ?: return emptyMap()
-            val branches = mutableMapOf<PsiElement, PsiElement>()
-
-            generateSequence(source.parent) { it.parent }.forEach { parent ->
-                when (parent) {
-                    is KtIfExpression -> listOfNotNull(parent.then, parent.`else`)
-                        .firstOrNull { it.textRange.contains(source.textRange) }
-                        ?.let { branches[parent] = it }
-                    is PsiIfStatement -> listOfNotNull(parent.thenBranch, parent.elseBranch)
-                        .firstOrNull { it.textRange.contains(source.textRange) }
-                        ?.let { branches[parent] = it }
-                    is KtWhenEntry -> (parent.parent as? KtWhenExpression)?.let { branches[it] = parent }
-                }
-            }
-
-            return branches
         }
     })
 }

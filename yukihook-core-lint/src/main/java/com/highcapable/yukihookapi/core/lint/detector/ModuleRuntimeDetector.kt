@@ -31,15 +31,19 @@ import com.android.tools.lint.detector.api.JavaContext
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
+import com.highcapable.yukihookapi.core.lint.detector.extension.allClasses
 import com.highcapable.yukihookapi.core.lint.detector.extension.analyzeOrNull
 import com.highcapable.yukihookapi.core.lint.detector.extension.branches
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.displayName
+import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingCall
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunction
 import com.highcapable.yukihookapi.core.lint.detector.extension.functionTarget
+import com.highcapable.yukihookapi.core.lint.detector.extension.hasImplicitReceiver
+import com.highcapable.yukihookapi.core.lint.detector.extension.isLocal
+import com.highcapable.yukihookapi.core.lint.detector.extension.returnedExpressions
 import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
-import com.intellij.psi.PsiAnonymousClass
 import com.intellij.psi.PsiArrayType
 import com.intellij.psi.PsiCapturedWildcardType
 import com.intellij.psi.PsiClass
@@ -468,8 +472,6 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             (ConstantEvaluator.evaluate(context, argument) as? String)?.takeIf { it.isNotBlank() }?.let { it to argument }
         }
 
-        private fun UCallExpression.hasImplicitReceiver() = receiver?.skipParenthesizedExprDown()?.sourcePsi == null
-
         private fun PsiMethod?.isRetainedValue() =
             this?.name == RETAINED_VALUE_METHOD_NAME && containingClass?.qualifiedName == PACKAGE_PARAM_CLASS
 
@@ -593,14 +595,6 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             return loaders.values.toList()
         }
 
-        private fun UFile.allClasses() = classes.flatMap { clazz ->
-            generateSequence(listOf(clazz)) { level ->
-                level.flatMap {
-                    it.innerClasses.toList()
-                }.ifEmpty { null }
-            }.flatten()
-        }
-
         private fun UClass.isHooker() = context.evaluator.extendsClass(javaPsi, BASE_HOOKER_CLASS, false)
 
         private fun UClass.loadedHookerNames(): Set<String> {
@@ -672,21 +666,8 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             }
         }
 
-        private fun UCallExpression.retainedResults(): List<UExpression> {
-            val block = valueArguments.lastOrNull()?.skipParenthesizedExprDown() as? ULambdaExpression ?: return emptyList()
-            val results = mutableListOf<UExpression>()
-            block.body.accept(object : AbstractUastVisitor() {
-
-                override fun visitClass(node: UClass) = true
-
-                override fun visitReturnExpression(node: UReturnExpression): Boolean {
-                    if (node.jumpTarget == block) node.returnExpression?.let(results::add)
-                    return super.visitReturnExpression(node)
-                }
-            })
-
-            return results
-        }
+        private fun UCallExpression.retainedResults() =
+            (valueArguments.lastOrNull()?.skipParenthesizedExprDown() as? ULambdaExpression)?.returnedExpressions().orEmpty()
 
         private fun PsiType.retainedProblem(declared: Boolean): RetainedProblem? = when (this) {
             is PsiArrayType -> RetainedProblem("an array", "return a `List` instead")
@@ -747,13 +728,6 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
             return null
         }
-
-        private fun UMethod.isLocal() = generateSequence(uastParent) { it.uastParent }
-            .takeWhile { it !is UFile }
-            .any { it is UMethod || it is ULambdaExpression || (it is UClass && it.javaPsi is PsiAnonymousClass) }
-
-        private fun ULambdaExpression.enclosingCall() = generateSequence(uastParent) { it.uastParent }
-            .filterIsInstance<UCallExpression>().firstOrNull()
 
         private fun ULambdaExpression.lambdaExecution(): LambdaExecution? {
             val lambda = sourcePsi as? KtLambdaExpression ?: return null

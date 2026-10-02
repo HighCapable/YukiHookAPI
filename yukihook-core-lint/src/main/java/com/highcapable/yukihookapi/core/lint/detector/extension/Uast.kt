@@ -23,29 +23,47 @@ package com.highcapable.yukihookapi.core.lint.detector.extension
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.JavaContext
+import com.android.tools.lint.detector.api.Location
 import com.intellij.openapi.diagnostic.ControlFlowException
+import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiAnonymousClass
+import com.intellij.psi.PsiArrayInitializerMemberValue
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiField
 import com.intellij.psi.PsiIfStatement
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiNameValuePair
+import com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtCollectionLiteralExpression
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtUserType
+import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.KtWhenEntry
 import org.jetbrains.kotlin.psi.KtWhenExpression
+import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UBinaryExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UCallableReferenceExpression
+import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UFile
+import org.jetbrains.uast.ULambdaExpression
 import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.UNamedExpression
 import org.jetbrains.uast.UQualifiedReferenceExpression
+import org.jetbrains.uast.UReturnExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UastCallKind
+import org.jetbrains.uast.skipParenthesizedExprDown
+import org.jetbrains.uast.visitor.AbstractUastVisitor
 import java.io.File
 import java.util.concurrent.CancellationException
 
@@ -143,4 +161,85 @@ internal fun <R> KtElement.analyzeOrNull(block: KaSession.() -> R): R? = try {
 } catch (failure: Throwable) {
     if (failure is ControlFlowException || failure is CancellationException) throw failure
     null
+}
+
+internal fun ULambdaExpression.enclosingCall() = generateSequence(uastParent) { it.uastParent }
+    .filterIsInstance<UCallExpression>().firstOrNull()
+
+internal fun UCallExpression.hasImplicitReceiver() = receiver?.skipParenthesizedExprDown()?.sourcePsi == null
+
+internal fun UMethod.isLocal() = generateSequence(uastParent) { it.uastParent }
+    .takeWhile { it !is UFile }
+    .any { it is UMethod || it is ULambdaExpression || (it is UClass && it.javaPsi is PsiAnonymousClass) }
+
+internal fun UFile.allClasses() = classes.flatMap { clazz ->
+    generateSequence(listOf(clazz)) { level ->
+        level.flatMap {
+            it.innerClasses.toList()
+        }.ifEmpty { null }
+    }.flatten()
+}
+
+internal fun UNamedExpression.isEmptyArray() = when (val source = expression.sourcePsi) {
+    is KtCollectionLiteralExpression -> source.innerExpressions.isEmpty()
+    is PsiArrayInitializerMemberValue -> source.initializers.isEmpty()
+    else -> false
+}
+
+internal fun UNamedExpression.argumentSource() = generateSequence(sourcePsi ?: expression.sourcePsi) { it.parent }
+    .firstOrNull { it is KtValueArgument || it is PsiNameValuePair }
+
+internal fun PsiMethod.findPropertyField(): PsiField? {
+    val fields = containingClass?.fields ?: return null
+    fields.firstOrNull { it.navigationElement == navigationElement }?.let { return it }
+
+    val nameStem = when (parameterList.parametersCount) {
+        0 if name.startsWith("get") -> name.removePrefix("get")
+        0 if name.startsWith("is") -> return fields.firstOrNull { it.name == name }
+        1 if name.startsWith("set") -> name.removePrefix("set")
+        else -> return null
+    }
+    val propertyName = nameStem.replaceFirstChar { it.lowercase() }
+
+    return fields.firstOrNull { it.name == propertyName || it.name == "is$nameStem" }
+}
+
+internal fun JavaContext.annotationNameLocation(node: UAnnotation): Location {
+    // UAST's annotation name location can cover the full Kotlin annotation, including arguments.
+    val name = when (val source = node.sourcePsi) {
+        is KtAnnotationEntry -> (source.typeReference?.typeElement as? KtUserType)?.referenceExpression
+        is PsiAnnotation -> source.nameReferenceElement?.referenceNameElement
+        else -> null
+    }
+    return name?.let { getLocation(it) } ?: getNameLocation(node)
+}
+
+internal fun JavaContext.deletionLocation(source: PsiElement): Location {
+    val nextComma = generateSequence(source.nextSibling) { it.nextSibling }
+        .firstOrNull { it !is PsiWhiteSpace }
+        ?.takeIf { it.text == "," }
+    if (nextComma != null)
+        return Location.create(file, getContents(), source.textRange.startOffset, nextComma.textRange.endOffset)
+
+    val previousComma = generateSequence(source.prevSibling) { it.prevSibling }
+        .firstOrNull { it !is PsiWhiteSpace }
+        ?.takeIf { it.text == "," }
+    val start = previousComma?.textRange?.startOffset ?: source.textRange.startOffset
+
+    return Location.create(file, getContents(), start, source.textRange.endOffset)
+}
+
+internal fun ULambdaExpression.returnedExpressions(): List<UExpression> {
+    val results = mutableListOf<UExpression>()
+    body.accept(object : AbstractUastVisitor() {
+
+        override fun visitClass(node: UClass) = true
+
+        override fun visitReturnExpression(node: UReturnExpression): Boolean {
+            if (node.jumpTarget == this@returnedExpressions) node.returnExpression?.let(results::add)
+            return super.visitReturnExpression(node)
+        }
+    })
+
+    return results
 }

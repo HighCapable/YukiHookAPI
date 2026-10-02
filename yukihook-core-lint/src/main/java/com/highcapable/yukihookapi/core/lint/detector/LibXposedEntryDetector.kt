@@ -32,22 +32,18 @@ import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
+import com.highcapable.yukihookapi.core.lint.detector.extension.annotationNameLocation
+import com.highcapable.yukihookapi.core.lint.detector.extension.argumentSource
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
+import com.highcapable.yukihookapi.core.lint.detector.extension.deletionLocation
+import com.highcapable.yukihookapi.core.lint.detector.extension.isEmptyArray
 import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
 import com.intellij.psi.PsiAnnotation
-import com.intellij.psi.PsiArrayInitializerMemberValue
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiEnumConstant
-import com.intellij.psi.PsiNameValuePair
-import com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
-import org.jetbrains.kotlin.psi.KtCollectionLiteralExpression
-import org.jetbrains.kotlin.psi.KtUserType
-import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UFile
-import org.jetbrains.uast.UNamedExpression
 import org.jetbrains.uast.UResolvable
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 import java.io.File
@@ -198,7 +194,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             val requiredVersion = if (usesReload) RELOAD_API_VERSION else LOWEST_API_VERSION
 
             if (minVersion < requiredVersion) {
-                val location = if (declaredMin != null) context.getLocation(declaredMin) else annotationNameLocation(context, node)
+                val location = if (declaredMin != null) context.getLocation(declaredMin) else context.annotationNameLocation(node)
                 context.report(
                     issue = ISSUE,
                     scope = node,
@@ -220,7 +216,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
                     quickfixData = buildReplaceFix(
                         name = "Delete Call Expression",
                         replacement = "",
-                        range = deletionLocation(context, source),
+                        range = context.deletionLocation(source),
                         reformat = false
                     )
                 )
@@ -243,40 +239,6 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
                     reformat = false
                 )
             )
-        }
-
-        private fun annotationNameLocation(context: JavaContext, node: UAnnotation): Location {
-            // UAST's annotation name location can cover the full Kotlin annotation, including arguments.
-            val name = when (val source = node.sourcePsi) {
-                is KtAnnotationEntry -> (source.typeReference?.typeElement as? KtUserType)?.referenceExpression
-                is PsiAnnotation -> source.nameReferenceElement?.referenceNameElement
-                else -> null
-            }
-            return name?.let(context::getLocation) ?: context.getNameLocation(node)
-        }
-
-        private fun UNamedExpression.isEmptyArray() = when (val source = expression.sourcePsi) {
-            is KtCollectionLiteralExpression -> source.innerExpressions.isEmpty()
-            is PsiArrayInitializerMemberValue -> source.initializers.isEmpty()
-            else -> false
-        }
-
-        private fun UNamedExpression.argumentSource() = generateSequence(sourcePsi ?: expression.sourcePsi) { it.parent }
-            .firstOrNull { it is KtValueArgument || it is PsiNameValuePair }
-
-        private fun deletionLocation(context: JavaContext, source: PsiElement): Location {
-            val nextComma = generateSequence(source.nextSibling) { it.nextSibling }
-                .firstOrNull { it !is PsiWhiteSpace }
-                ?.takeIf { it.text == "," }
-            if (nextComma != null)
-                return Location.create(context.file, context.getContents(), source.textRange.startOffset, nextComma.textRange.endOffset)
-
-            val previousComma = generateSequence(source.prevSibling) { it.prevSibling }
-                .firstOrNull { it !is PsiWhiteSpace }
-                ?.takeIf { it.text == "," }
-            val start = previousComma?.textRange?.startOffset ?: source.textRange.startOffset
-
-            return Location.create(context.file, context.getContents(), start, source.textRange.endOffset)
         }
     })
 }

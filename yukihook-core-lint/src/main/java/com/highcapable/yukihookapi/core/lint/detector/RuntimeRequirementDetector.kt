@@ -32,12 +32,12 @@ import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
+import com.highcapable.yukihookapi.core.lint.detector.extension.findPropertyField
 import com.highcapable.yukihookapi.core.lint.detector.extension.isConstructorReference
 import com.highcapable.yukihookapi.core.lint.detector.extension.reportNode
 import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifierListOwner
@@ -198,21 +198,6 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 ?: (this as? PsiMethod)?.findPropertyField()?.let {
                     context.evaluator.getAnnotation(it, REQUIRES_RUNTIME_ANNOTATION)
                 }
-
-        private fun PsiMethod.findPropertyField(): PsiField? {
-            val fields = containingClass?.fields ?: return null
-            fields.firstOrNull { it.navigationElement == navigationElement }?.let { return it }
-
-            val nameStem = when (parameterList.parametersCount) {
-                0 if name.startsWith("get") -> name.removePrefix("get")
-                0 if name.startsWith("is") -> return fields.firstOrNull { it.name == name }
-                1 if name.startsWith("set") -> name.removePrefix("set")
-                else -> return null
-            }
-            val propertyName = nameStem.replaceFirstChar { it.lowercase() }
-
-            return fields.firstOrNull { it.name == propertyName || it.name == "is$nameStem" }
-        }
     })
 
     private data class RuntimeRequirement(
