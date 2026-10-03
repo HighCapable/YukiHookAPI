@@ -85,16 +85,18 @@ abstract class LibXposedBaseEntry : XposedModule() {
     }
 
     final override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
-        if (initialized || retainPackageContexts) YukiHookModuleCaller.callOnPackageLoaded(
-            packageName = param.packageName,
-            processName = processName,
-            mainProcessName = param.packageName.trim(),
-            isFirstApplication = param.isFirstPackage,
-            packageNameForMatching = param.packageName,
-            loader = param.classLoader,
-            appInfo = param.applicationInfo,
-            dispatch = initialized
-        )
+        // The framework package outside system_server is not an app entry, the system server has its own callback.
+        if ((initialized || retainPackageContexts) && param.packageName != FRAMEWORK_PACKAGE_NAME)
+            YukiHookModuleCaller.callOnPackageLoaded(
+                packageName = param.packageName,
+                processName = processName,
+                mainProcessName = param.packageName.trim(),
+                isFirstApplication = param.isFirstPackage,
+                packageNameForMatching = param.packageName,
+                loader = param.classLoader,
+                appInfo = param.applicationInfo,
+                dispatch = initialized
+            )
 
         YukiHookModuleCaller.callDispatchFrameworkEvent {
             if (initialized) YukiHookLibXposedEvent.packageReady?.invoke(this, param)

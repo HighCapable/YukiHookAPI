@@ -28,6 +28,8 @@ import com.android.tools.lint.detector.api.Detector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
 import com.android.tools.lint.detector.api.JavaContext
+import com.android.tools.lint.detector.api.LintFix
+import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
@@ -68,6 +70,7 @@ import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtCallElement
+import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtLabeledExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
@@ -109,6 +112,13 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
         private const val RETAINED_VALUE_METHOD_NAME = "remember"
         private const val HOOKER_ENTRY_METHOD_NAME = "onHook"
+        private const val LOAD_APP_METHOD_NAME = "loadApp"
+        private const val LOAD_SYSTEM_METHOD_NAME = "loadSystem"
+        private const val LOAD_APP_NAME_PARAMETER = "name"
+        private const val DATA_CHANNEL_METHOD_NAME = "dataChannel"
+        private const val SYSTEM_DATA_CHANNEL_METHOD_NAME = "systemDataChannel"
+
+        private val SYSTEM_FRAMEWORK_NAMES = setOf("android", "system")
 
         private const val STRING_CLASS = "java.lang.String"
         private const val CLASS_CLASS = "java.lang.Class"
@@ -184,6 +194,28 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
+            implementation = IMPLEMENTATION
+        )
+
+        val SYSTEM_FRAMEWORK_ISSUE = Issue.create(
+            id = "LoadAppForSystemFramework",
+            briefDescription = "System framework loaded through loadApp",
+            explanation = "The system server is a dedicated hook entry on every runtime. Passing \"android\" or \"system\" " +
+                "to loadApp is redirected to loadSystem at runtime, use loadSystem directly instead.",
+            category = Category.CORRECTNESS,
+            priority = 6,
+            severity = Severity.WARNING,
+            implementation = IMPLEMENTATION
+        )
+
+        val SYSTEM_DATA_CHANNEL_ISSUE = Issue.create(
+            id = "DataChannelForSystemFramework",
+            briefDescription = "System framework connected through dataChannel",
+            explanation = "Passing \"android\" or \"system\" to dataChannel is redirected to systemDataChannel at runtime, " +
+                "use systemDataChannel directly instead.",
+            category = Category.CORRECTNESS,
+            priority = 6,
+            severity = Severity.WARNING,
             implementation = IMPLEMENTATION
         )
     }
@@ -314,6 +346,10 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
                     if (method.isRetainedValue())
                         reportRetainedValue(node, retainedKeys)
+                    if (method != null) {
+                        reportSystemFrameworkLoading(node, method)
+                        reportSystemDataChannel(node, method)
+                    }
                     collectKeyContributions(node, method, contributions)
 
                     return false
@@ -475,6 +511,76 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private fun PsiMethod?.isRetainedValue() =
             this?.name == RETAINED_VALUE_METHOD_NAME && containingClass?.qualifiedName == PACKAGE_PARAM_CLASS
 
+        private fun reportSystemFrameworkLoading(node: UCallExpression, method: PsiMethod) {
+            if (method.name != LOAD_APP_METHOD_NAME || method.containingClass?.qualifiedName != PACKAGE_PARAM_CLASS) return
+            val names = context.evaluator.computeArgumentMapping(node, method)
+                .filterValues { it.name == LOAD_APP_NAME_PARAMETER }.keys
+            val framework = names.firstNotNullOfOrNull { name ->
+                (ConstantEvaluator.evaluate(context, name) as? String)?.takeIf { it in SYSTEM_FRAMEWORK_NAMES }
+            } ?: return
+
+            context.report(
+                issue = SYSTEM_FRAMEWORK_ISSUE,
+                scope = node,
+                location = node.callWithoutLambdaLocation(),
+                message = "\"$framework\" refers to the system framework, use `$LOAD_SYSTEM_METHOD_NAME` instead",
+                quickfixData = node.loadSystemFix(names.singleOrNull())
+            )
+        }
+
+        private fun reportSystemDataChannel(node: UCallExpression, method: PsiMethod) {
+            if (method.name != DATA_CHANNEL_METHOD_NAME || method.containingClass?.qualifiedName != YUKIHOOK_FACTORY_CLASS) return
+            val packageName = node.valueArguments.singleOrNull() ?: return
+            val framework = (ConstantEvaluator.evaluate(context, packageName) as? String)?.takeIf { it in SYSTEM_FRAMEWORK_NAMES } ?: return
+            val callee = (node.sourcePsi as? KtCallExpression)?.calleeExpression
+            val arguments = (node.sourcePsi as? KtCallExpression)?.valueArgumentList
+
+            context.report(
+                issue = SYSTEM_DATA_CHANNEL_ISSUE,
+                scope = node,
+                location = context.getCallLocation(node, includeReceiver = false, includeArguments = true),
+                message = "\"$framework\" refers to the system framework, use `$SYSTEM_DATA_CHANNEL_METHOD_NAME` instead",
+                quickfixData = if (callee != null && arguments != null) buildReplaceFix(
+                    name = "Replace with '$SYSTEM_DATA_CHANNEL_METHOD_NAME'",
+                    replacement = "$SYSTEM_DATA_CHANNEL_METHOD_NAME()",
+                    imports = arrayOf("${YUKIHOOK_FACTORY_CLASS.substringBeforeLast('.')}.$SYSTEM_DATA_CHANNEL_METHOD_NAME"),
+                    range = context.getRangeLocation(callee, 0, arguments, 0),
+                    reformat = false
+                ) else null
+            )
+        }
+
+        private fun UCallExpression.callWithoutLambdaLocation(): Location {
+            // Trailing lambdas carry the hook body, keep them out of the call location.
+            val source = sourcePsi as? KtCallExpression
+                ?: return context.getCallLocation(this, includeReceiver = false, includeArguments = true)
+            val callee = source.calleeExpression ?: return context.getNameLocation(this)
+
+            return context.getRangeLocation(callee, 0, source.valueArgumentList ?: callee, 0)
+        }
+
+        private fun UCallExpression.loadSystemFix(name: UExpression?): LintFix? {
+            // Only a call loading the system framework alone keeps its behavior after migrating.
+            val source = sourcePsi as? KtCallExpression ?: return null
+            val callee = source.calleeExpression ?: return null
+            val arguments = source.valueArgumentList ?: return null
+            val nameArgument = name?.sourcePsi?.getStrictParentOfType<KtValueArgument>() ?: return null
+            if (nameArgument.isSpread) return null
+
+            val remaining = arguments.arguments.filter { it != nameArgument }.map { argument ->
+                (if (argument.isSpread) "*" else "") + (argument.getArgumentExpression()?.text ?: return null)
+            }
+            val replacement = LOAD_SYSTEM_METHOD_NAME +
+                if (remaining.isEmpty() && source.lambdaArguments.isNotEmpty()) "" else remaining.joinToString(prefix = "(", postfix = ")")
+
+            return buildReplaceFix(
+                name = "Replace with '$LOAD_SYSTEM_METHOD_NAME'",
+                replacement = replacement,
+                range = context.getRangeLocation(callee, 0, arguments, 0),
+                reformat = false
+            )
+        }
+
         private fun PsiMethod.loadGuard(node: UCallExpression): LoadGuard? {
             if (containingClass?.qualifiedName != PACKAGE_PARAM_CLASS) return null
             val argument = node.getArgumentForParameter(0)
@@ -483,9 +589,11 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 "loadHooker" -> LoadGuard(LoadKind.ALWAYS)
                 "loadSystem" -> LoadGuard(LoadKind.SYSTEM)
                 "loadZygote" -> LoadGuard(LoadKind.ZYGOTE)
-                "loadApp" -> if (parameterList.parameters.firstOrNull()?.type?.canonicalText == STRING_CLASS)
-                    LoadGuard(LoadKind.PACKAGE, argument?.let { ConstantEvaluator.evaluate(context, it) as? String })
-                else LoadGuard(LoadKind.ANY_PACKAGE, argument?.let { ConstantEvaluator.evaluate(context, it) as? Boolean } ?: false.takeIf { argument == null })
+                "loadApp" -> if (parameterList.parameters.firstOrNull()?.type?.canonicalText == STRING_CLASS) {
+                    val name = argument?.let { ConstantEvaluator.evaluate(context, it) as? String }
+                    // The system framework names are redirected to loadSystem at runtime.
+                    if (name in SYSTEM_FRAMEWORK_NAMES) LoadGuard(LoadKind.SYSTEM) else LoadGuard(LoadKind.PACKAGE, name)
+                } else LoadGuard(LoadKind.ANY_PACKAGE, argument?.let { ConstantEvaluator.evaluate(context, it) as? Boolean } ?: false.takeIf { argument == null })
                 else -> null
             }
         }

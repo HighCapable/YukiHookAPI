@@ -37,6 +37,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
     private companion object {
         const val FRAMEWORK_PACKAGE_NAME = "android"
+        const val FRAMEWORK_SCOPE_NAME = "system"
     }
 
     /** Module application ID emitted by KSP. */
@@ -69,24 +70,26 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
             .substringBefore('\u0000')
             .trimEnd('\uFFFD')
 
-        // Xposed 82 reports system_server as the android package without `ApplicationInfo`.
-        if (param.packageName == FRAMEWORK_PACKAGE_NAME && param.appInfo == null)
-            YukiHookModuleCaller.callOnSystemServerStarting(
+        when {
+            // Xposed 82 reports system_server as the android package without `ApplicationInfo`.
+            param.packageName == FRAMEWORK_PACKAGE_NAME && param.appInfo == null -> YukiHookModuleCaller.callOnSystemServerStarting(
                 packageName = param.packageName,
                 processName = processName,
                 mainProcessName = param.packageName.trim(),
                 packageNameForMatching = param.packageName,
                 loader = param.classLoader
             )
-        else YukiHookModuleCaller.callOnPackageLoaded(
-            packageName = param.packageName,
-            processName = processName,
-            mainProcessName = param.packageName.trim(),
-            isFirstApplication = param.isFirstApplication,
-            packageNameForMatching = param.packageName,
-            loader = param.classLoader,
-            appInfo = param.appInfo
-        )
+            // The framework package outside system_server is not an app entry, the system server is reported above.
+            param.packageName != FRAMEWORK_PACKAGE_NAME && param.packageName != FRAMEWORK_SCOPE_NAME -> YukiHookModuleCaller.callOnPackageLoaded(
+                packageName = param.packageName,
+                processName = processName,
+                mainProcessName = param.packageName.trim(),
+                isFirstApplication = param.isFirstApplication,
+                packageNameForMatching = param.packageName,
+                loader = param.classLoader,
+                appInfo = param.appInfo
+            )
+        }
         YukiHookXposed82Event.handleLoadPackageCallback?.invoke(param)
     }
 }

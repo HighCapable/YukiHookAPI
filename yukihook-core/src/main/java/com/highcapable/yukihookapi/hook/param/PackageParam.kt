@@ -378,31 +378,39 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Loads and hooks apps with the specified package name.
      * @see loadSystem
-     * @param name the package name.
+     * @param name the package name. "android" or "system" refers to the system framework and works as [loadSystem].
      * @param block the param block.
      */
     fun loadApp(name: String, block: PackageParam.() -> Unit) {
+        if (AppParasitism.isSystemFramework(name)) return loadSystem(block)
         if (context?.type != HookEntryType.ZYGOTE && (context?.matchesPackage(name) == true || name.isBlank())) block(this)
     }
 
     /**
      * Loads and hooks apps with the specified package names.
      * @see loadSystem
-     * @param name the package names.
+     * @param name the package names. "android" or "system" refers to the system framework and works as [loadSystem].
      * @param block the param block.
      */
     fun loadApp(vararg name: String, block: PackageParam.() -> Unit) {
+        fun matches(name: String) = when (context?.type) {
+            null, HookEntryType.ZYGOTE -> false
+            HookEntryType.SYSTEM_SERVER -> AppParasitism.isSystemFramework(name)
+            else -> !AppParasitism.isSystemFramework(name) && context?.matchesPackage(name) == true
+        }
+
         if (name.isEmpty()) return loadApp(block = block)
-        if (context?.type != HookEntryType.ZYGOTE && name.any { context?.matchesPackage(it) == true }) block(this)
+        if (name.any(::matches)) block(this)
     }
 
     /**
      * Loads and hooks apps with the specified package name.
      * @see loadSystem
-     * @param name the package name.
+     * @param name the package name. "android" or "system" refers to the system framework and works as [loadSystem].
      * @param hookers the hookers.
      */
     fun loadApp(name: String, hookers: YukiBaseHooker) {
+        if (AppParasitism.isSystemFramework(name)) return loadSystem(hookers)
         if (context?.type != HookEntryType.ZYGOTE && (context?.matchesPackage(name) == true || name.isBlank())) loadHooker(hookers)
     }
 
@@ -410,12 +418,14 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Loads and hooks apps with the specified package name.
      * @see loadSystem
      * @param name the package name. An empty name matches all apps except [loadZygote] events.
+     *   "android" or "system" refers to the system framework and works as [loadSystem].
      * @param hookers the hookers.
      */
     fun loadApp(name: String, vararg hookers: YukiBaseHooker) {
         require(hookers.isNotEmpty()) {
             "loadApp requires at least one hooker."
         }
+        if (AppParasitism.isSystemFramework(name)) return loadSystem(*hookers)
 
         if (context?.type != HookEntryType.ZYGOTE &&
             (context?.matchesPackage(name) == true || name.isBlank())

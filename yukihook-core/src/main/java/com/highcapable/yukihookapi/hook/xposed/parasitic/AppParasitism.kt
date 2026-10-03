@@ -87,6 +87,9 @@ internal object AppParasitism : ModuleReloadable {
     /** The Android framework package name. */
     const val FRAMEWORK_PACKAGE_NAME = "android"
 
+    /** The scope name of the system framework used by Xposed frameworks. */
+    const val FRAMEWORK_SCOPE_NAME = "system"
+
     override val requiresMainThread = true
 
     private var events = ModuleEventDispatcher()
@@ -230,6 +233,13 @@ internal object AppParasitism : ModuleReloadable {
 
         appScope?.firstFieldOrNull { name = "appInfo" }?.get<ApplicationInfo>()
     }
+
+    /**
+     * Checks whether [name] refers to the system framework.
+     * @param name the package or scope name.
+     * @return [Boolean]
+     */
+    fun isSystemFramework(name: String) = name == FRAMEWORK_PACKAGE_NAME || name == FRAMEWORK_SCOPE_NAME
 
     /**
      * Gets the current host package name.

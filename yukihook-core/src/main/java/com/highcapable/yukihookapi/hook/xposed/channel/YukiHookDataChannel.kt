@@ -254,6 +254,10 @@ class YukiHookDataChannel private constructor() {
      */
     internal fun namespace(context: Context? = null, packageName: String): Namespace {
         checkApi()
+
+        val packageName = if (AppParasitism.isSystemFramework(packageName))
+            AppParasitism.FRAMEWORK_PACKAGE_NAME
+        else packageName
         return Namespace(context = context ?: receiverContext, packageName)
     }
 
@@ -724,10 +728,7 @@ class YukiHookDataChannel private constructor() {
         private fun sendBroadcast(wrapper: ChannelDataWrapper<*>) {
             (context ?: AppParasitism.currentApplication)?.sendBroadcast {
                 action = if (isHostEnvironment) moduleActionName() else hostActionName(packageName)
-
-                // The system server package name may not be unique, so its broadcasts do not set a recipient package.
-                if (packageName != AppParasitism.FRAMEWORK_PACKAGE_NAME)
-                    setPackage(if (isHostEnvironment) XposedModuleRuntime.modulePackageName else packageName)
+                setPackage(if (isHostEnvironment) XposedModuleRuntime.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
             } ?: YLog.innerE("Failed to send broadcast for data key \"${wrapper.instance.key}\" because the context of \"$packageName\" is null")
         }

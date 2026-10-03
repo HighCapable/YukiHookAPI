@@ -91,11 +91,22 @@ fun Context.preferences(name: String = "") = YukiHookPreferences.from(this).let 
  * Gets a [YukiHookDataChannel] object.
  *
  * This API is available only in the module environment and has no effect elsewhere.
+ * @see systemDataChannel
  * @receiver the current context.
- * @param packageName the target host package name.
+ * @param packageName the target host package name. "android" or "system" refers to the system framework and works as [systemDataChannel].
  * @return [YukiHookDataChannel.Namespace]
  */
 fun Context.dataChannel(packageName: String) = YukiHookDataChannel.get().namespace(this, packageName)
+
+/**
+ * Gets a [YukiHookDataChannel] object connected to the system server.
+ *
+ * This API is available only in the module environment and has no effect elsewhere.
+ * @see dataChannel
+ * @receiver the current context.
+ * @return [YukiHookDataChannel.Namespace]
+ */
+fun Context.systemDataChannel() = dataChannel(AppParasitism.FRAMEWORK_PACKAGE_NAME)
 
 /**
  * Gets the current process name.
