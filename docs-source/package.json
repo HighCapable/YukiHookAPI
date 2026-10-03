@@ -8,7 +8,7 @@
     "@nolebase/vitepress-plugin-git-changelog": "^2.18.2",
     "@types/markdown-it": "14.1.2",
     "@types/node": "^22.0.0",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^14.3.1",
     "sass": "^1.89.2",
     "vitepress": "^1.6.4",
     "vitepress-plugin-comment-with-giscus": "^1.1.15",
