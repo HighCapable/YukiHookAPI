@@ -70,7 +70,7 @@ abstract class HookInvocation internal constructor(
      * @return [Method]
      * @throws IllegalStateException if the member is not a method.
      */
-    val method get() = member as? Method ?: error("Current member is not a type of Method.")
+    val method get() = member as? Method ?: error("The current member is not a Method.")
 
     /**
      * Gets the currently hooked constructor.
@@ -79,7 +79,7 @@ abstract class HookInvocation internal constructor(
      * @return [Constructor]
      * @throws IllegalStateException if the member is not a constructor.
      */
-    val constructor get() = member as? Constructor<*> ?: error("Current member is not a type of Constructor.")
+    val constructor get() = member as? Constructor<*> ?: error("The current member is not a Constructor.")
 
     /**
      * Gets the current receiver instance.
@@ -90,8 +90,8 @@ abstract class HookInvocation internal constructor(
      * @throws IllegalStateException if the invocation has no receiver.
      */
     val instance get() = instanceOrNull ?: error(
-        "Invocation instance got null, check whether the hooked member is static or not, " +
-            "or use instanceOrNull to get nullable instance."
+        "The invocation instance is null, check whether the hooked member is static, " +
+            "or use instanceOrNull instead."
     )
 
     /**

@@ -59,7 +59,7 @@ class YukiHookModuleScope private constructor() {
     /** Checks that this API is used from the module process. */
     private fun checkApi() {
         require(!YukiHook.isStandalone) {
-            "YukiHookModuleScope not allowed in standalone hook API."
+            "YukiHookModuleScope is not available in the standalone hook API."
         }
         check(!isHostEnvironment) {
             "YukiHookModuleScope is only available in a module process."

@@ -114,7 +114,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
      * @throws IllegalStateException if this entry is not being initialized on the current thread.
      */
     fun checkInitializingEntry(entry: YukiHookXposedModule, name: String) = check(hookEntry.get() === entry) {
-        "You must registered $name in onInit of the current process."
+        "$name must be registered in onInit of the current process."
     }
 
     /**

@@ -68,7 +68,7 @@ class YukiHookModuleReload private constructor() {
     /** Checks that this API is used from the module process. */
     private fun checkApi() {
         require(!YukiHook.isStandalone) {
-            "YukiHookModuleReload not allowed in standalone hook API."
+            "YukiHookModuleReload is not available in the standalone hook API."
         }
         check(!isHostEnvironment) {
             "YukiHookModuleReload is only available in a module process."

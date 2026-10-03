@@ -97,9 +97,9 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
         if (legacySymbols.isEmpty() && modernSymbols.isEmpty()) return
         if (legacySymbols.size + modernSymbols.size != 1) problem(
-            "Declare exactly one hook entry using either " +
+            "Declare exactly one hook entry with either " +
                 "`@${LibXposedGenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}` or " +
-                "`@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}`, please remove the others."
+                "`@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}` and remove the others."
         )
 
         val hasLibXposedRuntime = resolver.getClassDeclarationByName(resolver.getKSNameFromString(LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME)) != null
@@ -137,7 +137,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
         if (annotationName == Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME) warn(
             "`@${annotationName.substringAfterLast('.')}` will be removed in a future release. " +
-                "Migrate it to `@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}`."
+                "Migrate it to `@${Xposed82GenerateSpec.ANNOTATION_NAME.substringAfterLast('.')}`"
         )
 
         val entry = (legacySymbols + modernSymbols).single() as? KSClassDeclaration ?: problem(
@@ -148,11 +148,11 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         val usesLegacyEntry = DeclaredSymbol.LEGACY_HOOK_ENTRY_CLASS in entrySuperTypes
         if (usesLegacyEntry && runtimeType != YukiHookRuntime.XPOSED_82) problem(
             "`IYukiHookXposedInit` requires ${Xposed82GenerateSpec.RUNTIME_MODULE_NAME}. " +
-                "Use `YukiHookXposedModule` for ${LibXposedGenerateSpec.RUNTIME_MODULE_NAME}."
+                "Use `YukiHookXposedModule` for ${LibXposedGenerateSpec.RUNTIME_MODULE_NAME}"
         )
         if (usesLegacyEntry) warn(
             "The hook entry class \"${entry.simpleName.asString()}\" still implements the deprecated " +
-                "`IYukiHookXposedInit`, which will be removed in a future release. Migrate it to `YukiHookXposedModule`."
+                "`IYukiHookXposedInit`, which will be removed in a future release. Migrate it to `YukiHookXposedModule`"
         )
         if (DeclaredSymbol.HOOK_ENTRY_CLASS !in entrySuperTypes) problem(
             "The hook entry class \"${entry.simpleName.asString()}\" must implement `YukiHookXposedModule`."
@@ -181,17 +181,17 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         spec.initClassName = (arguments["entryClassName"] as? String).orEmpty().trim()
         if (spec is Xposed82GenerateSpec && spec.modulePackageName.isNotEmpty() &&
             !MODULE_PACKAGE_NAME_REGEX.matches(spec.modulePackageName)
-        ) problem("Invalid module package name \"${spec.modulePackageName}\".")
+        ) problem("Invalid module package name \"${spec.modulePackageName}\"")
 
         if (("[^\\p{L}\\p{N}_]".toRegex().containsMatchIn(spec.initClassName) ||
                 true.let { for (i in 0..9) if (spec.initClassName.startsWith(i.toString())) return@let true; false }) &&
             spec.initClassName.isNotEmpty()
-        ) problem("Invalid hook entry class name \"${spec.initClassName}\".")
+        ) problem("Invalid hook entry class name \"${spec.initClassName}\"")
 
         if ((entry.primaryConstructor?.parameters?.size ?: 0) > 0)
             problem("The hook entry class \"${entry.simpleName.asString()}\" must not have constructor parameters.")
         if (spec.initClassName == entry.simpleName.asString())
-            problem("Duplicate hook entry class name \"${spec.initClassName}\".")
+            problem("Duplicate hook entry class name \"${spec.initClassName}\"")
 
         spec.entryPackageName = entry.packageName.asString()
         spec.entryClassName = entry.simpleName.asString()
@@ -199,7 +199,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         spec.isObjectEntry = when (entry.classKind) {
             ClassKind.CLASS -> false
             ClassKind.OBJECT -> true
-            else -> problem("Invalid hook entry class \"${spec.entryClassName}\" kind `${entry.classKind}`.")
+            else -> problem("Unsupported class kind `${entry.classKind}` for hook entry class \"${spec.entryClassName}\"")
         }
         if (spec is LibXposedGenerateSpec) spec.javaEntries = resolveLibXposedJavaEntries(arguments["javaEntries"], spec)
 
@@ -218,7 +218,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         else -> value.toString().substringAfterLast('.')
     }.let { name ->
         LibXposedGenerateSpec.HotReload.entries.firstOrNull { it.name == name }
-            ?: problem("Unknown hotReload policy \"$name\".")
+            ?: problem("Unknown hotReload policy \"$name\"")
     }
 
     private fun resolveLibXposedJavaEntries(value: Any?, spec: LibXposedGenerateSpec): List<String> {
@@ -226,16 +226,16 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             null -> emptyList()
             is List<*> -> value
             is Array<*> -> value.toList()
-            else -> problem("Invalid java entries annotation argument.")
+            else -> problem("Invalid `javaEntries` annotation argument.")
         }
 
         val generatedEntryName = "${spec.entryPackageName}.${spec.initClassName}"
         val names = entries.map { value ->
             val declaration = (value as? KSType)?.declaration as? KSClassDeclaration
-                ?: problem("Each java entries item must reference a libxposed entry class.")
+                ?: problem("Each item in `javaEntries` must reference a libxposed entry class.")
             val name = declaration.toClassName().reflectionName()
             if (name == generatedEntryName) problem(
-                "You should not include the generated entry class \"$generatedEntryName\" in java entries."
+                "Do not include the generated entry class \"$generatedEntryName\" in `javaEntries`."
             )
 
             val superTypes = declaration.getAllSuperTypes()
@@ -243,14 +243,14 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 .toSet()
 
             if (name == LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME || LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME in superTypes)
-                problem("You should not include the YukiHook internal entry class \"$name\" in java entries.")
+                problem("Do not include the YukiHook internal entry class \"$name\" in `javaEntries`.")
             if (LibXposedGenerateSpec.XPOSED_MODULE_CLASS_NAME !in superTypes)
-                problem("\"$name\" must inherits libxposed XposedModule.")
+                problem("\"$name\" must extend libxposed `XposedModule`.")
 
             name
         }
 
-        if (names.size != names.toSet().size) problem("Java entries contains duplicate libxposed entry classes.")
+        if (names.size != names.toSet().size) problem("`javaEntries` contains duplicate libxposed entry classes.")
         return names
     }
 
@@ -276,7 +276,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             if (spec.modulePackageName.isNotBlank()) {
                 warn(
                     "The module package name is explicitly set to \"${spec.modulePackageName}\". " +
-                        "Please verify that it matches the application ID."
+                        "Please verify that it matches the application ID"
                 )
                 null
             } else parseModulePackageName(resolver).let { (packageName, source) ->
@@ -287,12 +287,12 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         if (spec is LibXposedGenerateSpec) {
             if (spec.hotReload != LibXposedGenerateSpec.HotReload.NONE) {
                 if (spec.minApiVersion < LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION)
-                    problem("Hot reload requires minApiVersion >= ${LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION}.")
+                    problem("Hot reload requires minApiVersion >= ${LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION}")
                 if (spec.javaEntries.isNotEmpty()) problem("Hot reload requires exactly one Java entry. Remove additional javaEntries.")
             }
 
             if (spec.scope.any { it.isBlank() || it.any(Char::isWhitespace) })
-                problem("Each modern scope entry must be a nonblank package name or system.")
+                problem("Each `scope` entry must be a package name or `system`, without whitespace.")
             if (spec.nativeEntries.any {
                     it.isBlank() || it.any(Char::isWhitespace) || '/' in it || '\\' in it || !it.endsWith(".so")
                 }) problem(
@@ -521,10 +521,10 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
      * @return [File] the Gradle module directory.
      */
     private fun findProjectDir(codePath: String): File {
-        if (codePath.isBlank()) problem("Project code path not available.")
+        if (codePath.isBlank()) problem("The project code path is unavailable.")
         return generateSequence(File(codePath).parentFile) { it.parentFile }
             .firstOrNull { it.resolve("build.gradle").isFile || it.resolve("build.gradle.kts").isFile }
-            ?: problem("Cannot find a Gradle module containing \"$codePath\".")
+            ?: problem("Cannot find a Gradle module containing \"$codePath\"")
     }
 
     /**
@@ -538,7 +538,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             .mapNotNull { it.parentFile }
             .toList()
         if (sourceDirectories.isEmpty()) problem(
-            "Cannot find an AndroidManifest.xml source file in Gradle module \"${projectDir.path}\"."
+            "Cannot find an AndroidManifest.xml source file in Gradle module \"${projectDir.path}\""
         )
 
         val sourceFilePaths = listOf(

@@ -77,10 +77,10 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     /** Checks the API loading state. */
     private fun checkApi() {
         require(!YukiHook.isStandalone) {
-            "YukiHookPreferences not allowed in standalone hook API."
+            "YukiHookPreferences is not available in the standalone hook API."
         }
         if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
-            "Xposed modulePackageName load failed, please reset and rebuild it."
+            "Failed to load the Xposed modulePackageName, check its configuration and rebuild the project."
         }
     }
 
@@ -91,7 +91,7 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
     internal val current: SharedPreferences get() {
         checkApi()
         if (isUsingNativeStorage) return checkNotNull(context) {
-            "Native preferences require a Context"
+            "Native preferences require a Context."
         }.getSharedPreferences(currentPreferenceName, Context.MODE_PRIVATE)
 
         return YukiHookBridge.preferences(isHostEnvironment).open(
@@ -143,7 +143,7 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
      */
     fun native(): YukiHookPreferences {
         if (isHostEnvironment && context == null) context = AppParasitism.currentApplication
-            ?: error("The host's context has not yet initialized successfully, the native function cannot be used at this time.")
+            ?: error("The host context has not been initialized yet, native storage cannot be used at this time.")
         isUsingNativeStorage = true
 
         return this

@@ -102,7 +102,7 @@ internal class LibXposedHookApi(
                 api.log(Log.ERROR, "YukiHook", "An exception occurred in a classic hook callback.", failure)
             }.intercept(hooker) { chain.proceed(it) }
         }
-        else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}.")
+        else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}")
     }
 
     private fun use(hooker: XposedInterface.Hooker): XposedInterface.Hooker {

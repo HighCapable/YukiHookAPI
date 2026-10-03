@@ -106,7 +106,7 @@ internal class RetainedValuesStore : ModuleReloadable {
             values.forEach {
                 val result = SavedResult.decode(it)
                 check(result.slot !in this) {
-                    "Duplicate retained value key '${result.slot.key}' in scope '${result.slot.scope}'."
+                    "Duplicate retained value key '${result.slot.key}' in scope '${result.slot.scope}'"
                 }
 
                 put(result.slot, result)
@@ -148,7 +148,7 @@ internal class RetainedValuesStore : ModuleReloadable {
                     null -> YLog.innerW(
                         "Retained result key '$key' in scope '$scope' has no stable declared type \"$type\", " +
                             "the value will be computed again after module reload. " +
-                            "Declare a named type instead of local, anonymous or generic types."
+                            "Declare a named type instead of local, anonymous or generic types"
                     )
                     else -> synchronized(this) { results[slot] = SavedResult(slot, typeSignature, value) }
                 }
@@ -171,7 +171,7 @@ internal class RetainedValuesStore : ModuleReloadable {
             if (current == null) return null
 
             check(!current.javaClass.isArray) {
-                "Retained results must not contain arrays, use List instead of ${current.javaClass.simpleName}."
+                "Retained results must not contain arrays, use List instead of ${current.javaClass.simpleName}"
             }
             check(current !is Bundle) {
                 "Retained results must not contain Bundle, retain its values instead."
@@ -219,7 +219,7 @@ internal class RetainedValuesStore : ModuleReloadable {
 
             check(declaredClass == null || declaredClass.isInstance(snapshot)) {
                 "Retained ${current.javaClass.simpleName} is kept as a read-only snapshot, " +
-                    "declare it as List, Set, Map, Collection or Iterable instead of ${declaredClass?.simpleName}."
+                    "declare it as List, Set, Map, Collection or Iterable instead of ${declaredClass?.simpleName}"
             }
             return snapshot
         }

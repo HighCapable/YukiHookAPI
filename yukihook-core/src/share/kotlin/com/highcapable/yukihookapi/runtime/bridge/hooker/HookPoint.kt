@@ -41,7 +41,7 @@ sealed interface HookPoint {
 
         init {
             require(value is Method || value is Constructor<*>) {
-                "This type $value not support to hook, supported are constructor and method."
+                "Unsupported hook target type $value, only constructors and methods can be hooked."
             }
         }
 

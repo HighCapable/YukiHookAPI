@@ -80,7 +80,7 @@ internal data class PackageContext(
         override fun decode(encoded: Any?): PackageContext {
             val values = encoded as? Array<*> ?: error("Missing package context state.")
             check(values.size == 8) {
-                "Invalid package context state: expected 8 values, but got ${values.size}."
+                "Invalid package context state: expected 8 values, but got ${values.size}"
             }
 
             return PackageContext(

@@ -339,7 +339,7 @@ object YukiHook {
             XposedModuleRuntime.packageParamCallback = {
                 if (hookers.isNotEmpty())
                     hookers.forEach { loadHooker(it) }
-                else YLog.innerE("Failed to passing \"encase\" function because your hookers param is empty", isImplicit = true)
+                else YLog.innerE("Failed to call \"encase\" because the hookers parameter is empty", isImplicit = true)
             }
         else logNotFoundHookApiError()
     }
@@ -382,7 +382,7 @@ object YukiHook {
                     val context = PackageContext.from(baseContext)
                     val param = PackageParam(context)
                     context.declare { hooker.forEach { param.loadHooker(it) } }
-                } else YLog.innerE("Failed to passing \"encase\" function because your hookers param is empty", isImplicit = true)
+                } else YLog.innerE("Failed to call \"encase\" because the hookers parameter is empty", isImplicit = true)
         } else logNotFoundHookApiError()
     }
 
@@ -404,7 +404,7 @@ object YukiHook {
 
     /** Logs an error when no hook API can be found. */
     private fun logNotFoundHookApiError() = YLog.innerE(
-        "Could not found any available hook APIs in current environment. Aborted",
+        "No available hook API was found in the current environment, aborting",
         isImplicit = true
     )
 }

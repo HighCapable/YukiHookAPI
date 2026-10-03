@@ -59,7 +59,7 @@ open class ModuleApplication : Application() {
          * @return [ModuleApplication]
          * @throws IllegalStateException if the [Application] has not finished loading correctly.
          */
-        fun requireContext() = current ?: error("ModuleApplication not attached to a context.")
+        fun requireContext() = current ?: error("ModuleApplication is not attached to a context.")
 
         /** Gets the module-wide static [Application] instance. */
         @Deprecated(message = "Use requireContext instead.", replaceWith = ReplaceWith("requireContext()"))

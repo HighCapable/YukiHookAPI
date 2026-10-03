@@ -99,7 +99,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
          * @throws IllegalStateException if the current hook framework does not support this feature.
          */
         @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-        val appInfo get() = XposedModuleRuntime.moduleAppInfo ?: error("Current hook framework not support module application info.")
+        val appInfo get() = XposedModuleRuntime.moduleAppInfo ?: error("The current hook framework does not support module application info.")
 
         /**
          * Gets the source directory of the current Xposed module.
@@ -112,7 +112,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
          * @return [ModuleResources]
          * @throws IllegalStateException if the current hook framework does not support this feature.
          */
-        val resources get() = XposedModuleRuntime.moduleResources ?: error("Current hook framework not support module resources.")
+        val resources get() = XposedModuleRuntime.moduleResources ?: error("The current hook framework does not support module resources.")
 
         /** Reloads the [Resources] of the current Xposed module. */
         fun reloadResources() = XposedModuleRuntime.reloadModuleResources()
@@ -159,7 +159,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [Context] the `ContextImpl` instance.
      * @throws IllegalStateException if the [Context] of the system server cannot be obtained.
      */
-    val systemContext get() = AppParasitism.systemContext ?: error("Failed to got system context.")
+    val systemContext get() = AppParasitism.systemContext ?: error("Failed to get the system context.")
 
     /**
      * Gets the process name of the current host.
@@ -231,7 +231,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     val dataChannel get() = if (context?.type != HookEntryType.ZYGOTE)
         YukiHookDataChannel.get().namespace(packageName = packageName)
-    else error("YukiHookDataChannel cannot used in zygote events, please use it in loadApp or loadSystem.")
+    else error("YukiHookDataChannel cannot be used in zygote events, use it in loadApp or loadSystem instead.")
 
     /**
      * Binds the [PackageContext] to the current [PackageParam].
@@ -414,7 +414,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     fun loadApp(name: String, vararg hookers: YukiBaseHooker) {
         require(hookers.isNotEmpty()) {
-            "loadApp function required \"hookers\" param."
+            "loadApp requires at least one hooker."
         }
 
         if (context?.type != HookEntryType.ZYGOTE &&
@@ -454,7 +454,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     fun loadApp(excludeSelf: Boolean = false, vararg hookers: YukiBaseHooker) {
         require(hookers.isNotEmpty()) {
-            "loadApp function required \"hookers\" param."
+            "loadApp requires at least one hooker."
         }
 
         if (context?.type != HookEntryType.ZYGOTE &&
@@ -487,7 +487,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     fun loadSystem(vararg hookers: YukiBaseHooker) {
         require(hookers.isNotEmpty()) {
-            "loadSystem function required \"hookers\" param."
+            "loadSystem requires at least one hooker."
         }
 
         if (context?.type == HookEntryType.SYSTEM_SERVER) hookers.forEach { loadHooker(it) }
@@ -536,7 +536,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(vararg hookers: YukiBaseHooker) {
         require(hookers.isNotEmpty()) {
-            "loadZygote function required \"hookers\" param."
+            "loadZygote requires at least one hooker."
         }
 
         if (context?.type == HookEntryType.ZYGOTE) hookers.forEach { loadHooker(it) }
@@ -558,7 +558,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     fun withProcess(vararg names: String, block: PackageParam.() -> Unit) {
         require(names.isNotEmpty()) {
-            "withProcess function required \"names\" param."
+            "withProcess requires at least one process name."
         }
 
         if (names.any { it == processName }) block(this)
@@ -580,7 +580,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     fun withProcess(name: String, vararg hookers: YukiBaseHooker) {
         require(hookers.isNotEmpty()) {
-            "withProcess function required \"hookers\" param."
+            "withProcess requires at least one hooker."
         }
 
         if (processName == name) hookers.forEach { loadHooker(it) }

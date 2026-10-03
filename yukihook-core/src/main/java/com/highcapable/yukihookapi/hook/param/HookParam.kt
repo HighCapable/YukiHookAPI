@@ -254,9 +254,9 @@ class HookParam private constructor(
          * @throws IllegalStateException if the target argument array is empty or [index] does not exist.
          */
         fun <T> set(any: T?) {
-            require(args.isNotEmpty()) { "Method args is empty, maybe not have args." }
-            require(index >= 0) { "Method args index must be >= 0." }
-            require(index <= args.lastIndex) { "Method args index out of bounds, max is ${args.lastIndex}." }
+            require(args.isNotEmpty()) { "The method has no arguments." }
+            require(index >= 0) { "Argument index must be >= 0" }
+            require(index <= args.lastIndex) { "Argument index out of bounds, the maximum is ${args.lastIndex}" }
 
             param.args[index] = any
         }

@@ -103,7 +103,7 @@ internal data class ChannelDataWrapper<T>(
                 dest.writeInt(PARCELABLE)
                 dest.writeParcelable(value, flags)
             }
-            else -> error("Key-Value type ${value.javaClass.name} is not allowed.")
+            else -> error("Key-value type ${value.javaClass.name} is not allowed.")
         }
     }
 }

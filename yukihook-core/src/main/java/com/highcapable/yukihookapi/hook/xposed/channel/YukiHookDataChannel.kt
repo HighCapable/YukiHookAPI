@@ -153,7 +153,7 @@ class YukiHookDataChannel private constructor() {
                             isCurrentBroadcast(param.first) -> param.second(action, intent)
                         }
                     }
-                }.onFailure { YLog.innerE("Received action \"$action\" failed", it) }
+                }.onFailure { YLog.innerE("Failed to handle received action \"$action\"", it) }
             }
         }
     }
@@ -161,10 +161,10 @@ class YukiHookDataChannel private constructor() {
     /** Checks the API loading state. */
     private fun checkApi() {
         require(!YukiHook.isStandalone) {
-            "YukiHookDataChannel not allowed in standalone hook API."
+            "YukiHookDataChannel is not available in the standalone hook API."
         }
         if (isHostEnvironment) require(XposedModuleRuntime.modulePackageName.isNotBlank()) {
-            "Xposed modulePackageName load failed, please reset and rebuild it."
+            "Failed to load the Xposed modulePackageName, check its configuration and rebuild the project."
         }
     }
 
@@ -178,7 +178,7 @@ class YukiHookDataChannel private constructor() {
         context is Application || isHostEnvironment || ((context ?: receiverContext)
             ?.getSystemService<ActivityManager>()
             ?.getRunningTasks(9999)?.any { context?.javaClass?.name == it?.topActivity?.className } == true)
-    }.getOrNull() ?: YLog.innerW("Couldn't got current Activity status because a SecurityException blocked it").let { false }
+    }.getOrNull() ?: YLog.innerW("Failed to get the current Activity status because of a SecurityException").let { false }
 
     /**
      * Gets the host broadcast action name.
@@ -595,10 +595,10 @@ class YukiHookDataChannel private constructor() {
                             }
                         }
                     }
-                    else -> YLog.innerE("Unsupported segments data key of \"${wrapper.instance.key}\"'s type")
+                    else -> YLog.innerE("Unsupported type for segmented data key \"${wrapper.instance.key}\"")
                 }
             }.onFailure {
-                YLog.innerE("YukiHookDataChannel cannot merge this segments data key of \"${wrapper.instance.key}\"", it)
+                YLog.innerE("YukiHookDataChannel cannot merge segmented data key \"${wrapper.instance.key}\"", it)
             } else wrapper.instance.value?.let { e -> result(e) }
         }
 
@@ -632,7 +632,7 @@ class YukiHookDataChannel private constructor() {
             val wrapperId = RandomString.generate()
             // The size in bytes of the data to send.
             val dataByteSize = runCatching { wrapper.calDataByteSize() }.getOrElse {
-                YLog.innerE("YukiHookDataChannel cannot serialize the data key of \"${wrapper.instance.key}\" to be sent", it)
+                YLog.innerE("YukiHookDataChannel cannot serialize data key \"${wrapper.instance.key}\" for sending", it)
                 return
             }
 
@@ -643,8 +643,8 @@ class YukiHookDataChannel private constructor() {
              */
             fun logForTooLargeData(name: String, size: Int) {
                 if (YukiHook.Config.debug) YLog.innerW(
-                    msg = "This data key of \"${wrapper.instance.key}\" type $name is too large (total ${dataByteSize / 1024f} KB, " +
-                        "limit ${receiverDataMaxByteSize / 1024f} KB), will be segmented to $size piece to send"
+                    msg = "Data key \"${wrapper.instance.key}\" of type $name is too large (total ${dataByteSize / 1024f} KB, " +
+                        "limit ${receiverDataMaxByteSize / 1024f} KB) and will be split into $size segments"
                 )
             }
 
@@ -653,12 +653,12 @@ class YukiHookDataChannel private constructor() {
              * @param suggestionMessage the optional suggestion, empty by default.
              */
             fun logForUnprocessableData(suggestionMessage: String = "") = YLog.innerE(
-                msg = "YukiHookDataChannel cannot send this data key of \"${wrapper.instance.key}\" type ${wrapper.instance.value?.javaClass}, " +
+                msg = "YukiHookDataChannel cannot send data key \"${wrapper.instance.key}\" of type ${wrapper.instance.value?.javaClass} " +
                     "because it is too large (total ${dataByteSize / 1024f} KB, " +
                     "limit ${receiverDataMaxByteSize / 1024f} KB) and cannot be segmented.\n" +
                     (if (suggestionMessage.isNotBlank()) "$suggestionMessage\n" else "") +
-                    "If you want to lift this restriction, use the allowOversizedData function when calling, " +
-                    "but this may cause the app crash"
+                    "To lift this restriction, call allowOversizedData when sending, " +
+                    "but this may crash the app"
             )
 
             /**
@@ -666,7 +666,7 @@ class YukiHookDataChannel private constructor() {
              * @param name the data type name.
              */
             fun logForUnprocessableDataByFirstElement(name: String) = logForUnprocessableData(
-                suggestionMessage = "Failed to segment $name type because the size of its first element has exceeded the maximum limit"
+                suggestionMessage = "Failed to segment $name because its first element exceeds the size limit"
             )
             when {
                 wrapper.isSegmented || allowSendTooLargeData -> sendBroadcast(wrapper)
@@ -729,7 +729,7 @@ class YukiHookDataChannel private constructor() {
                 if (packageName != AppParasitism.FRAMEWORK_PACKAGE_NAME)
                     setPackage(if (isHostEnvironment) XposedModuleRuntime.modulePackageName else packageName)
                 putExtra(wrapper.instance.key + keyNonRepeatName, wrapper)
-            } ?: YLog.innerE("Failed to sendBroadcast like \"${wrapper.instance.key}\", because got null context in \"$packageName\"")
+            } ?: YLog.innerE("Failed to send broadcast for data key \"${wrapper.instance.key}\" because the context of \"$packageName\" is null")
         }
     }
 }

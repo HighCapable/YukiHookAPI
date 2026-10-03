@@ -47,7 +47,7 @@ internal class LibXposedExecutableInvoker(private val api: XposedInterface) : Ex
     private fun getInvoker(member: Member) = when (member) {
         is Method -> api.getInvoker(member).original()
         is Constructor<*> -> getInvoker(member)
-        else -> error("Only methods and constructors have invocation.")
+        else -> error("Only methods and constructors can be invoked.")
     }
 
     private fun <T> getInvoker(constructor: Constructor<T>) = api.getInvoker(constructor).original()

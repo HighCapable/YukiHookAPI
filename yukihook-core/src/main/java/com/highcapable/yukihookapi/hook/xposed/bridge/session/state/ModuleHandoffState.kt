@@ -53,7 +53,7 @@ internal data class ModuleHandoffState(
                 saved.forEach { value ->
                     val component = ComponentState.decode(value)
                     check(component.id !in this) {
-                        "Duplicate reload component '${component.id}'."
+                        "Duplicate reload component '${component.id}'"
                     }
 
                     put(component.id, component.state)

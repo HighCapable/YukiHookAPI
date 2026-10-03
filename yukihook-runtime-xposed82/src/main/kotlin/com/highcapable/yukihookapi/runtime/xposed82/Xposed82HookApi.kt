@@ -68,7 +68,7 @@ internal object Xposed82HookApi : HookRegistrationBridge {
 
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge, id: String?): HookerBridge {
         if (hooker !is ClassicHookerBridge && hooker !is ChainHookerBridge)
-            throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}.")
+            throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}")
 
         check(YukiHookBridge.isAvailable) {
             "Xposed API is not attached to this process."
@@ -88,7 +88,7 @@ internal object Xposed82HookApi : HookRegistrationBridge {
     private fun hookMember(member: Member, priority: Int, hooker: HookerBridge) = when (hooker) {
         is ChainHookerBridge -> hookChainMember(member, priority, hooker)
         is ClassicHookerBridge -> hookClassicMember(member, priority, hooker)
-        else -> throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}.")
+        else -> throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}")
     }
 
     private fun hookChainMember(member: Member, priority: Int, hooker: ChainHookerBridge): HookerBridge = synchronized(chainHooks) {

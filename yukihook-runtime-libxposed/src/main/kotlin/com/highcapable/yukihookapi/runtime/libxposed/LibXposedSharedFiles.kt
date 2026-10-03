@@ -68,6 +68,6 @@ internal object LibXposedSharedFiles {
 
         override fun list() = api.listRemoteFiles().toList()
         override fun open(name: String) = api.openRemoteFile(name)
-        override fun delete(name: String) = throw UnsupportedOperationException("delete is not supported in host.")
+        override fun delete(name: String) = throw UnsupportedOperationException("delete is not supported in the host.")
     }
 }

@@ -188,7 +188,7 @@ internal object ModuleLifecycleManager {
         val restored = ModuleHandoffState.decode(state)
         components.forEach {
             check(it.id in restored.components) {
-                "Missing reload component '${it.id}'."
+                "Missing reload component '${it.id}'"
             }
         }
         synchronized(failures) { failures.clear() }
@@ -287,7 +287,7 @@ internal object ModuleLifecycleManager {
             var loader = generateSequence(type) { it.componentType }.last().classLoader
             while (loader != null) {
                 check(loader !== moduleLoader) {
-                    "Module state must not refer to a module-defined class: ${type.name}."
+                    "Module state must not refer to a module-defined class: ${type.name}"
                 }
 
                 loader = loader.parent

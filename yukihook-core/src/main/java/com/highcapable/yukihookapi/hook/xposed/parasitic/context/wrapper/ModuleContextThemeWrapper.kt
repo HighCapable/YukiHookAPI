@@ -57,7 +57,7 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
          */
         fun from(baseContext: Context, theme: Int, configuration: Configuration?) = if (baseContext !is ModuleContextThemeWrapper)
             ModuleContextThemeWrapper(baseContext, theme, configuration)
-        else error("ModuleContextThemeWrapper already loaded.")
+        else error("ModuleContextThemeWrapper is already loaded.")
     }
 
     private var baseResources: Resources? = null

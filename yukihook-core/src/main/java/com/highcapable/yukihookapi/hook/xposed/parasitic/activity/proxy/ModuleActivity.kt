@@ -77,7 +77,7 @@ interface ModuleActivity {
      */
     class Delegate internal constructor(private val self: ModuleActivity) {
 
-        private val selfActivity get() = self as? Activity ?: error("ModuleActivity must be implemented an Activity.")
+        private val selfActivity get() = self as? Activity ?: error("ModuleActivity must be implemented by an Activity.")
 
         /** @see Activity.getClassLoader */
         fun getClassLoader() = ModuleClassLoader.get()

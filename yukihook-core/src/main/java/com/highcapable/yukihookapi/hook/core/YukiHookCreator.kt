@@ -197,7 +197,7 @@ class YukiHookCreator private constructor() {
          * @return [T]
          * @throws IllegalStateException if this hooker is not of the required type.
          */
-        internal inline fun <reified T : MemberHooker<*>> asType() = this as? T ?: error("Current hooker is not a type of ${classOf<T>().name}.")
+        internal inline fun <reified T : MemberHooker<*>> asType() = this as? T ?: error("The current hooker is not an instance of ${classOf<T>().name}")
 
         /**
          * Notifies hooker callback failure listeners without choosing a recovery policy.
@@ -210,7 +210,7 @@ class YukiHookCreator private constructor() {
             if (onCallbackFailureCallback == null && onInvocationFailureCallback == null) logError(throwable, invocation.member)
         }
 
-        private fun logError(throwable: Throwable, target: Any) = YLog.innerE("Try to hook $target got an exception", throwable)
+        private fun logError(throwable: Throwable, target: Any) = YLog.innerE("Failed to hook $target", throwable)
 
         override fun toString() = "${javaClass.simpleName}(members=$targets, priority=$priority, isHooked=$isHooked)"
 
@@ -604,7 +604,7 @@ class YukiHookCreator private constructor() {
 
             origin.asHookReturnType().also { o ->
                 target.asHookReturnType().also { t ->
-                    if (t isNotSubclassOf o) error("Hooked method return type match failed, required $origin but got $target")
+                    if (t isNotSubclassOf o) error("Hooked method return type mismatch, expected $origin but got $target")
                 }
             }
         }

@@ -88,7 +88,7 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
             fun Result<*>.notify() = onSuccess { callback(null) }.onFailure { callback(it) }
 
             if (AndroidVersion.isAtLeast(AndroidVersion.R)) {
-                require(path.isNotBlank()) { "APK path is unavailable." }
+                require(path.isNotBlank()) { "The APK path is unavailable." }
 
                 runCatching {
                     Api30_Impl.inject(host, path)
@@ -116,7 +116,7 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
          * @return [Result]
          */
         private fun AssetManager.addAssetPath(path: String) = runCatching {
-            require(path.isNotBlank()) { "APK path is unavailable." }
+            require(path.isNotBlank()) { "The APK path is unavailable." }
 
             // `addAssetPath` is hidden on Android. Use the existing hidden-API resolver rather
             // than `XModuleResources`, which is unavailable to modern modules.

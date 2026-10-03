@@ -55,10 +55,9 @@ abstract class YukiBaseHooker : PackageParam() {
                 (boundContext.type != HookEntryType.ZYGOTE || targetContext.type == HookEntryType.ZYGOTE)
             ) {
                 YLog.innerW(
-                    msg = "This hooker \"${this::class.java.name}\" is singleton or reused, " +
-                        "but it is already bound to hook entry \"${boundContext.id}\" while the current entry is " +
-                        "\"${targetContext.id}\". Make sure your hooker supports multiple instances for this situation, " +
-                        "the current hook entry will be ignored."
+                    msg = "Hooker \"${this::class.java.name}\" is a singleton or reused instance already bound to hook entry " +
+                        "\"${boundContext.id}\", but the current entry is \"${targetContext.id}\". " +
+                        "Make sure the hooker supports multiple instances, the current hook entry will be ignored"
                 )
                 return
             }

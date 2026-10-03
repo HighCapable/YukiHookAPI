@@ -130,7 +130,7 @@ internal object LibXposedService {
     private inline fun <T> useModuleReload(block: (XposedService) -> T) = checkNotNull(
         useService("module reload") {
             check(it.apiVersion >= XposedService.API_102) {
-                "Module reload requires libxposed service API ${XposedService.API_102}."
+                "Module reload requires libxposed service API ${XposedService.API_102}"
             }
             block(it)
         }
@@ -139,7 +139,7 @@ internal object LibXposedService {
     private inline fun <T> useModuleScope(block: (XposedService) -> T) = checkNotNull(
         useService("module scope") {
             check(it.apiVersion >= XposedService.API_101) {
-                "Module scope requires libxposed service API ${XposedService.API_101}."
+                "Module scope requires libxposed service API ${XposedService.API_101}"
             }
             block(it)
         }
@@ -157,14 +157,14 @@ internal object LibXposedService {
         initialize()
         val current = synchronized(services) {
             check(services.size <= 1) {
-                "Multiple Xposed frameworks are connected, $capabilityName have no unambiguous owner."
+                "Multiple Xposed frameworks are connected, so the owner of $capabilityName is ambiguous."
             }
             services.values.singleOrNull()
         } ?: return null
 
         capability?.let {
             check(current.frameworkProperties and it != 0L) {
-                "This framework does not support $capabilityName."
+                "This framework does not support $capabilityName"
             }
         }
         return block(current)

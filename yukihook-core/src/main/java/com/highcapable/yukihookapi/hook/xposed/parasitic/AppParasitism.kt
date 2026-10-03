@@ -180,7 +180,7 @@ internal object AppParasitism : ModuleReloadable {
      * @return [ClassLoader]
      * @throws IllegalStateException if the [ClassLoader] is null.
      */
-    val baseClassLoader get() = classOf<YukiHook>().classLoader ?: error("Operating system not supported.")
+    val baseClassLoader get() = classOf<YukiHook>().classLoader ?: error("The operating system is not supported.")
 
     /**
      * Gets the current system server [Context].
@@ -527,7 +527,7 @@ internal object AppParasitism : ModuleReloadable {
         currentApplication
             ?.takeIf { it.packageName == lifecyclePackageName }
             ?.let(::initializeHostApplication)
-            ?.let { YLog.innerE("An exception occurred during AppLifecycle event", e = it) }
+            ?.let { YLog.innerE("An exception occurred while dispatching an AppLifecycle event", e = it) }
     }
 
     /** Dispatches one lifecycle event without letting one registration interrupt the others. */
@@ -547,7 +547,7 @@ internal object AppParasitism : ModuleReloadable {
                 events.reportFailure(failure)
                 if (lifecycle.throwToHostOnFailure) {
                     if (failureToHost == null) failureToHost = failure
-                } else YLog.innerE("An exception occurred during AppLifecycle event", e = failure)
+                } else YLog.innerE("An exception occurred while dispatching an AppLifecycle event", e = failure)
             }
         }
         return failureToHost
@@ -559,9 +559,9 @@ internal object AppParasitism : ModuleReloadable {
      */
     fun injectModuleResources(hostResources: Resources) {
         if (!XposedModuleRuntime.isHostEnvironment)
-            return YLog.innerW("You can only inject module resources in host environment")
+            return YLog.innerW("Module resources can only be injected in the host environment")
         if (currentPackageName == XposedModuleRuntime.modulePackageName)
-            return YLog.innerE("You cannot inject module resources into yourself")
+            return YLog.innerE("Module resources cannot be injected into the module itself")
 
         ModuleResources.inject(hostResources, XposedModuleRuntime.moduleSourceDir) { throwable ->
             throwable?.let { YLog.innerE("Failed to inject module resources into $hostResources", it) }
@@ -599,15 +599,15 @@ internal object AppParasitism : ModuleReloadable {
      */
     private fun canRegisterModuleActivities(packageName: String): Boolean {
         if (!XposedModuleRuntime.isHostEnvironment) {
-            YLog.innerW("You can only register Activity proxy in host environment")
+            YLog.innerW("The Activity proxy can only be registered in the host environment")
             return false
         }
         if (packageName == XposedModuleRuntime.modulePackageName) {
-            YLog.innerE("You cannot register Activity proxy into yourself")
+            YLog.innerE("The Activity proxy cannot be registered in the module itself")
             return false
         }
         if (AndroidVersion.isAtMost(AndroidVersion.M)) {
-            YLog.innerE("Activity proxy only support for Android 7.0 (API 24) or higher")
+            YLog.innerE("The Activity proxy requires Android 7.0 (API 24) or higher")
             return false
         }
 
@@ -648,7 +648,7 @@ internal object AppParasitism : ModuleReloadable {
                     when (it) {
                         is String, is CharSequence -> it.toString()
                         is Class<*> -> it.name
-                        else -> error("This proxy $it which is not allowed.")
+                        else -> error("Unsupported Activity proxy type: ${it.javaClass.name}")
                     }
                 }?.takeIf { it.isNotBlank() } ?: context.packageManager?.runCatching {
                     queryIntentActivities(getLaunchIntentForPackage(context.packageName)!!, 0)
@@ -666,8 +666,8 @@ internal object AppParasitism : ModuleReloadable {
 
                 if (!checkIsActivity) {
                     if (proxyClassName.isBlank())
-                        error("Cound not got launch intent for package \"${context.packageName}\".")
-                    else error("Could not found \"$proxyClassName\" or class is not a type of Activity.")
+                        error("Could not get the launch intent for package \"${context.packageName}\"")
+                    else error("Could not find \"$proxyClassName\", or it is not an Activity.")
                 }
             }
 
@@ -680,7 +680,7 @@ internal object AppParasitism : ModuleReloadable {
                 ?.processor(AndroidHiddenApiBypassResolver.get())
                 ?.optional(silent = true)
                 ?.firstMethodOrNull { name = "getInstrumentation" }
-                ?.invoke<Instrumentation>() ?: error("Could not found Instrumentation in ActivityThread.")
+                ?.invoke<Instrumentation>() ?: error("Could not find Instrumentation in ActivityThread.")
             val instrumentationResolver = instrumentation.asResolver().processor(AndroidHiddenApiBypassResolver.get())
 
             val performLaunchActivity = ActivityThreadClass.resolve()
@@ -784,7 +784,7 @@ internal object AppParasitism : ModuleReloadable {
             isActivityProxyRegistered = true
         }.onFailure {
             handles.forEach { handle -> handle.remove() }
-            YLog.innerE("Activity proxy initialization failed because got an exception", it)
+            YLog.innerE("Failed to initialize the Activity proxy", it)
             events.reportFailure(it)
         }
     }
