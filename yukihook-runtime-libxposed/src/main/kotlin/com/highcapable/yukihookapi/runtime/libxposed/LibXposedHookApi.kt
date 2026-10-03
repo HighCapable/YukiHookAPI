@@ -29,6 +29,7 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import com.highcapable.yukihookapi.runtime.libxposed.adapter.ClassicInvocationAdapter
+import com.highcapable.yukihookapi.runtime.libxposed.generated.YukiHookProperties
 import io.github.libxposed.api.XposedInterface
 import java.lang.reflect.Executable
 import java.lang.reflect.Member
@@ -99,7 +100,12 @@ internal class LibXposedHookApi(
                 instance = chain.thisObject,
                 args = chain.args.toTypedArray()
             ) { failure ->
-                api.log(Log.ERROR, "YukiHook", "An exception occurred in a classic hook callback.", failure)
+                api.log(
+                    Log.ERROR,
+                    YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME,
+                    "An exception occurred in a classic hook callback",
+                    failure
+                )
             }.intercept(hooker) { chain.proceed(it) }
         }
         else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}")

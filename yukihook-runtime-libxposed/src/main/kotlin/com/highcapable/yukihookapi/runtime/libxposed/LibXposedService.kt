@@ -30,6 +30,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
+import com.highcapable.yukihookapi.runtime.libxposed.generated.YukiHookProperties
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.service.HotReloadResult
 import io.github.libxposed.service.XposedService
@@ -175,7 +176,7 @@ internal object LibXposedService {
             runCatching {
                 subscription.dispatch()
             }.onFailure {
-                Log.e("YukiHook-Runtime", "Service listener failed", it)
+                Log.e(YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME, "Service listener failed", it)
             }
         }
     }
@@ -226,7 +227,7 @@ internal object LibXposedService {
                 pendingEvents.removeFirst()
                 notifyListener(isAvailable)
             }.onFailure {
-                Log.e("YukiHook-Runtime", "Service listener failed", it)
+                Log.e(YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME, "Service listener failed", it)
             }
         }
 
