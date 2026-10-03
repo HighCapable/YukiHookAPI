@@ -23,6 +23,7 @@ package com.highcapable.yukihookapi.hook.xposed.bridge.session.state
 
 import android.os.Bundle
 import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
 
 /**
@@ -35,12 +36,17 @@ internal data class ModuleHandoffState(
 
     companion object : ModuleStateSpec<ModuleHandoffState> {
 
-        private const val VERSION = YukiHook.VERSION
+        private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_SCHEMA_VERSION
 
         override fun decode(encoded: Any?): ModuleHandoffState {
             val values = encoded as? Array<*> ?: error("Missing YukiHook reload state.")
-            check(values.size == 3 && values[0] == VERSION) {
-                "Unsupported YukiHook reload state."
+            // States saved before the schema version start with the YukiHook version, so their schema is unknown.
+            check(values.getOrNull(0) == SCHEMA_VERSION) {
+                "Unsupported YukiHook reload state schema ${values.getOrNull(0) as? Int ?: "unknown"}, the current schema is " +
+                    "$SCHEMA_VERSION. Restart the host to apply this module update."
+            }
+            check(values.size == 3) {
+                "Invalid YukiHook reload state."
             }
 
             val userState = values[1]
@@ -64,7 +70,7 @@ internal data class ModuleHandoffState(
         }
 
         override fun encode(state: ModuleHandoffState) = arrayOf(
-            VERSION, state.userState,
+            SCHEMA_VERSION, state.userState,
             state.components.map { (id, value) -> ComponentState.encode(ComponentState(id, value)) }.toTypedArray()
         )
     }

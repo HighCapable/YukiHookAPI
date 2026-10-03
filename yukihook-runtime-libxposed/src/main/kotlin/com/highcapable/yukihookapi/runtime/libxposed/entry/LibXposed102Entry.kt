@@ -30,6 +30,7 @@ import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadPolicy
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedHookApi
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedModuleSession
 import com.highcapable.yukihookapi.runtime.libxposed.entry.base.LibXposedBaseEntry
+import com.highcapable.yukihookapi.runtime.libxposed.generated.YukiHookProperties
 import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
 import io.github.libxposed.api.XposedModuleInterface
 
@@ -48,7 +49,7 @@ abstract class LibXposed102Entry : LibXposedBaseEntry() {
 
         companion object : ModuleStateSpec<HandoffState> {
 
-            private const val VERSION = YukiHook.VERSION
+            private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_SCHEMA_VERSION
 
             /** Wraps the state produced by the core reload manager. */
             fun fromManagedState(managedState: Any, nativeState: Any?) = HandoffState(
@@ -57,15 +58,20 @@ abstract class LibXposed102Entry : LibXposedBaseEntry() {
 
             override fun decode(encoded: Any?): HandoffState {
                 val values = encoded as? Array<*> ?: error("Missing module reload state.")
-                check(values.size == 3 && values[0] == VERSION) {
-                    "Unsupported module reload state."
+                // States saved before the schema version start with the YukiHook version, so their schema is unknown.
+                check(values.getOrNull(0) == SCHEMA_VERSION) {
+                    "Unsupported YukiHook reload state schema ${values.getOrNull(0) as? Int ?: "unknown"}, the current schema is " +
+                        "$SCHEMA_VERSION. Restart the host to apply this module update."
+                }
+                check(values.size == 3) {
+                    "Invalid module reload state."
                 }
 
                 val managedState = values[1] as? Array<*> ?: error("Missing YukiHook reload state.")
                 return HandoffState(managedState, values[2])
             }
 
-            override fun encode(state: HandoffState) = arrayOf(VERSION, state.managedState, state.nativeState)
+            override fun encode(state: HandoffState) = arrayOf(SCHEMA_VERSION, state.managedState, state.nativeState)
         }
 
         override fun equals(other: Any?): Boolean {

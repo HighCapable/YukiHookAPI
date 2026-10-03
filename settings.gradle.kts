@@ -65,17 +65,15 @@ gropify {
     projects(
         ":yukihook-core",
         ":yukihook-core-lint",
-        ":yukihook-compiler"
+        ":yukihook-compiler",
+        ":yukihook-runtime-xposed82",
+        ":yukihook-runtime-libxposed"
     ) {
         sourceCode {
             className = rootProject.name
         }
     }
-    projects(
-        ":yukihook-runtime-stub",
-        ":yukihook-runtime-xposed82",
-        ":yukihook-runtime-libxposed"
-    ) {
+    projects(":yukihook-runtime-stub") {
         android {
             isEnabled = false
         }

@@ -21,7 +21,7 @@
  */
 package com.highcapable.yukihookapi.hook.xposed.bridge.session
 
-import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.highcapable.yukihookapi.hook.xposed.bridge.session.state.ModuleHandoffState
 import org.junit.Assert
 import org.junit.Test
@@ -41,20 +41,33 @@ class ModuleHandoffStateTest {
         val transferred = ModuleHandoffState.encode(previous)
         val restored = ModuleHandoffState.decode(transferred)
 
-        Assert.assertEquals(YukiHook.VERSION, transferred[0])
+        Assert.assertEquals(YukiHookProperties.PROJECT_SCHEMA_VERSION, transferred[0])
         Assert.assertEquals(listOf("resources", "packages"), restored.components.keys.toList())
         Assert.assertNull(restored.components["resources"])
         Assert.assertEquals(listOf("host", "secondary"), (restored.components["packages"] as Array<*>).toList())
     }
 
     @Test
-    fun anotherProjectVersionCannotRestoreThisGeneration() {
+    fun anotherSchemaCannotRestoreThisGeneration() {
+        val previous = arrayOf<Any?>(YukiHookProperties.PROJECT_SCHEMA_VERSION + 1, null, emptyArray<Any>())
+
+        val failure = Assert.assertThrows(IllegalStateException::class.java) {
+            ModuleHandoffState.decode(previous)
+        }
+
+        Assert.assertTrue(failure.message.orEmpty().startsWith(
+            "Unsupported YukiHook reload state schema ${YukiHookProperties.PROJECT_SCHEMA_VERSION + 1},"
+        ))
+    }
+
+    @Test
+    fun stateBeforeTheSchemaVersionCannotRestoreThisGeneration() {
         val previous = arrayOf<Any?>("1.4.0", null, emptyArray<Any>())
 
         val failure = Assert.assertThrows(IllegalStateException::class.java) {
             ModuleHandoffState.decode(previous)
         }
 
-        Assert.assertTrue(failure.message.orEmpty().contains("Unsupported YukiHook reload state"))
+        Assert.assertTrue(failure.message.orEmpty().startsWith("Unsupported YukiHook reload state schema unknown,"))
     }
 }

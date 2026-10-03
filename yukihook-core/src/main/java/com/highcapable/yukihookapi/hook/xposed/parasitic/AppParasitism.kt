@@ -111,14 +111,14 @@ internal object AppParasitism : ModuleReloadable {
 
             override fun decode(encoded: Any?): HostBindingsState {
                 val values = encoded as? Array<*> ?: error("Missing host service reload state.")
-                check(values.size == 3) {
+                check(values.size == 3 && values[0] is String && (values[1] == null || values[1] is String) && values[2] is Boolean) {
                     "Invalid host service reload state."
                 }
 
                 return HostBindingsState(
                     packageName = values[0] as String,
-                    proxyClassName = values[1] as? String,
-                    hadApplication = (values[2] as? Boolean) == true
+                    proxyClassName = values[1] as String?,
+                    hadApplication = values[2] as Boolean
                 )
             }
         }
