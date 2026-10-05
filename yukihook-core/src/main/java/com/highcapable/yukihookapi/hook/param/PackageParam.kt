@@ -626,7 +626,16 @@ open class PackageParam internal constructor(internal var context: PackageContex
     fun VariousClass.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = load(loader, initialize)
 
     /** @see toClassGlobal */
+    @JvmName("toClassTyped")
+    fun <T : Any> VariousClass.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = load<T>(loader, initialize)
+
+    /** @see toClassGlobal */
     fun VariousClass.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = loadOrNull(loader, initialize)
+
+    /** @see toClassGlobal */
+    @JvmName("toClassOrNullTyped")
+    fun <T : Any> VariousClass.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
+        loadOrNull<T>(loader, initialize)
 
     /** @see lazyClassGlobal */
     fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
