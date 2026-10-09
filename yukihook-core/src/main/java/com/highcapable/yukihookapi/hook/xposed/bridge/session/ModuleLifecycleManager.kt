@@ -39,11 +39,16 @@ import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.FutureTask
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * Manages module lifecycle callbacks and transports component-owned state between module instances.
  */
 internal object ModuleLifecycleManager {
+
+    /** How long a reload operation waits for the host main thread, in seconds. */
+    private const val MAIN_THREAD_TIMEOUT_SECONDS = 15L
 
     private var session: ModuleSessionBridge? = null
     private var lifecycle: ModuleLifecycle? = null
@@ -400,9 +405,13 @@ internal object ModuleLifecycleManager {
         }
 
         return try {
-            task.get()
+            task.get(MAIN_THREAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         } catch (failure: ExecutionException) {
             throw failure.cause ?: failure
+        } catch (failure: TimeoutException) {
+            // A busy main thread must not block the reload thread forever, drop the task if it has not started yet.
+            task.cancel(false)
+            throw IllegalStateException("The host main thread did not respond within $MAIN_THREAD_TIMEOUT_SECONDS seconds.", failure)
         }
     }
 }
