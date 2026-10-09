@@ -89,12 +89,10 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
     override fun loadClass(name: String, resolve: Boolean): Class<*> {
         if (!XposedModuleRuntime.isHostEnvironment) return baseLoader.loadClass(name)
 
-        return AppParasitism.currentApplication?.classLoader?.let { hostLoader ->
-            if (name in excludeHostClasses) runCatching { hostLoader.loadClass(name) }.getOrNull()?.let { return@let it }
-            if (name in excludeModuleClasses) runCatching { baseLoader.loadClass(name) }.getOrNull()?.let { return@let it }
+        val hostLoader = AppParasitism.currentApplication?.classLoader ?: return super.loadClass(name, resolve)
+        if (name in excludeHostClasses) runCatching { hostLoader.loadClass(name) }.getOrNull()?.let { return it }
+        if (name in excludeModuleClasses) runCatching { baseLoader.loadClass(name) }.getOrNull()?.let { return it }
 
-            runCatching { return@let baseLoader.loadClass(name) }
-            runCatching { baseLoader.loadClass(name) }.getOrNull() ?: hostLoader.loadClass(name)
-        } ?: super.loadClass(name, resolve)
+        return runCatching { baseLoader.loadClass(name) }.getOrNull() ?: hostLoader.loadClass(name)
     }
 }
