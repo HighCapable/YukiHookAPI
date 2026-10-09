@@ -303,6 +303,16 @@ object YLog {
     }
 
     /**
+     * Prints an internal debug-level [YukiHook] log, building [lazyMsg] only when it will be printed.
+     * @param e the optional exception stack trace, printed in full automatically.
+     * @param isImplicit whether to print implicitly without recording or displaying the package name and user ID.
+     * @param lazyMsg builds the log message.
+     */
+    internal inline fun innerD(e: Throwable? = null, isImplicit: Boolean = false, lazyMsg: () -> Any?) {
+        if (Config.enabled && YukiHook.Config.debug) innerD(lazyMsg(), e, isImplicit)
+    }
+
+    /**
      * Prints an internal info-level [YukiHook] log.
      * @param msg the log message, empty by default. Set only [e] to print just an exception stack trace.
      * @param e the optional exception stack trace, printed in full automatically.

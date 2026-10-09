@@ -398,7 +398,7 @@ class YukiHookCreator private constructor() {
                 val invocation = HookChain.from(dataExtraStorage, this@ChainMemberHooker, chain)
 
                 runCatching {
-                    YLog.innerD("Invoking intercept callback #${invocationCount.incrementAndGet()} for $target")
+                    YLog.innerD { "Invoking intercept callback #${invocationCount.incrementAndGet()} for $target" }
                     callback(invocation)
                 }.getOrElse { throwable ->
                     notifyCallbackFailure(invocation, throwable)
@@ -547,10 +547,10 @@ class YukiHookCreator private constructor() {
 
                     val result = runCatching {
                         val callback = if (isInterception) state.interceptHookCallback else state.beforeHookCallback
-                        if (callback != null) YLog.innerD(
+                        if (callback != null) YLog.innerD {
                             "Invoking ${if (isInterception) "intercept" else "before"} callback " +
                                 "#${beforeInvocationCount.incrementAndGet()} for $target"
-                        )
+                        }
 
                         val value = callback?.invoke(invocation)
                         val returnType = (param.member as? Method?)?.returnType
@@ -580,7 +580,7 @@ class YukiHookCreator private constructor() {
                         runCatching {
                             val callback = state.afterHookCallback
                             if (callback != null) {
-                                YLog.innerD("Invoking after callback #${afterInvocationCount.incrementAndGet()} for $target")
+                                YLog.innerD { "Invoking after callback #${afterInvocationCount.incrementAndGet()} for $target" }
                                 callback(invocation)
                             }
                         }.onFailure {
