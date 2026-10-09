@@ -59,7 +59,7 @@ data class YLogData internal constructor(
         timestamp = System.currentTimeMillis()
         time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT).format(Date(timestamp))
         packageName = if (XposedModuleRuntime.isHostEnvironment) XposedModuleRuntime.hostProcessName else AppParasitism.currentPackageName
-        userId = AppParasitism.findUserId(AppParasitism.currentPackageName)
+        userId = AppParasitism.currentUserId
     }
 
     /**

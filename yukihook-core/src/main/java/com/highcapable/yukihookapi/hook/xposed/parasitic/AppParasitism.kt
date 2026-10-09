@@ -33,14 +33,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PersistableBundle
-import android.os.UserHandle
+import android.os.Process
 import androidx.annotation.RequiresApi
 import com.highcapable.betterandroid.system.extension.component.getParcelableExtraCompat
 import com.highcapable.betterandroid.system.extension.component.registerReceiver
@@ -89,6 +88,9 @@ internal object AppParasitism : ModuleReloadable {
 
     /** The scope name of the system framework used by Xposed frameworks. */
     const val FRAMEWORK_SCOPE_NAME = "system"
+
+    /** The range of UIDs allocated to each user, matching the hidden `UserHandle.PER_USER_RANGE`. */
+    private const val PER_USER_RANGE = 100000
 
     override val requiresMainThread = true
 
@@ -260,25 +262,12 @@ internal object AppParasitism : ModuleReloadable {
         ?: FRAMEWORK_PACKAGE_NAME
 
     /**
-     * Gets the user ID for [packageName].
+     * Gets the user ID of the current process.
      *
      * The owner is 0. Cloned apps and work profiles have environment-dependent IDs.
-     * @param packageName the current package name.
      * @return [Int]
      */
-    fun findUserId(packageName: String): Int {
-        val uid = systemContext?.packageManager
-            ?.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES)
-            ?.uid ?: return 0
-
-        return UserHandle::class.resolve()
-            .processor(AndroidHiddenApiBypassResolver.get())
-            .optional(silent = true)
-            .firstMethodOrNull {
-                name = "getUserId"
-                parameters(Int::class)
-            }?.invoke<Int>(uid) ?: 0
-    }
+    val currentUserId get() = Process.myUid() / PER_USER_RANGE
 
     /**
      * Hooks legacy module activation status and [SharedPreferences].

@@ -146,7 +146,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * The owner is 0. Cloned apps and work profiles have different IDs depending on the system environment.
      * @return [Int]
      */
-    val userId get() = AppParasitism.findUserId(packageName)
+    val userId get() = AppParasitism.currentUserId
 
     /**
      * Gets the [Application] instance of the current host.
