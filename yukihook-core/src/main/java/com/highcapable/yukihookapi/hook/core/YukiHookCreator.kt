@@ -25,7 +25,6 @@ package com.highcapable.yukihookapi.hook.core
 
 import android.os.Bundle
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.isNotSubclassOf
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.core.api.handle.YukiHookHandle
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
@@ -73,6 +72,24 @@ class YukiHookCreator private constructor() {
         fun createClassicHooker(targets: Collection<HookPoint>, priority: YukiHookPriority, isLazyMode: Boolean) =
             ClassicMemberHooker(priority, if (isLazyMode) HookMode.LAZY else HookMode.IMMEDIATE)
                 .also { it.targets.addAll(targets) }
+
+        /**
+         * Checks that [value] can be returned by the method hooked in [invocation].
+         *
+         * Constructors, void methods, null values and [Any] return types are not checked.
+         * @param invocation the current invocation.
+         * @param value the result to return.
+         * @throws IllegalStateException if [value] does not match the method return type.
+         */
+        fun checkReturnType(invocation: HookInvocation, value: Any?) {
+            val returnType = (invocation.member as? Method)?.returnType ?: return
+            if (value == null || returnType == Void.TYPE || returnType == classOf<Any>()) return
+
+            val expectedType = returnType.kotlin.javaObjectType
+            check(expectedType.isInstance(value)) {
+                "Hooked method return type mismatch, expected $returnType but got ${value.javaClass}"
+            }
+        }
     }
 
     /**
@@ -399,7 +416,7 @@ class YukiHookCreator private constructor() {
 
                 runCatching {
                     YLog.innerD { "Invoking intercept callback #${invocationCount.incrementAndGet()} for $target" }
-                    callback(invocation)
+                    callback(invocation).also { checkReturnType(invocation, it) }
                 }.getOrElse { throwable ->
                     notifyCallbackFailure(invocation, throwable)
 
@@ -553,14 +570,11 @@ class YukiHookCreator private constructor() {
                         }
 
                         val value = callback?.invoke(invocation)
-                        val returnType = (param.member as? Method?)?.returnType
-                        val isReturnIgnored = param.member is Constructor<*> || returnType == Void.TYPE
-                        val interceptedValue = if (isInterception && isReturnIgnored) null else value
-                        val target = (if (isInterception) interceptedValue else param.result)?.javaClass
+                        if (!isInterception) return@runCatching null
 
-                        checkingReturnType(returnType, target)
-
-                        interceptedValue
+                        val isReturnIgnored = param.member is Constructor<*> || (param.member as? Method)?.returnType == Void.TYPE
+                        // Results set through `HookParam.result` are checked on assignment, only the returned value remains.
+                        if (isReturnIgnored) null else value.also { checkReturnType(invocation, it) }
                     }.getOrElse {
                         notifyCallbackFailure(invocation, it)
 
@@ -591,26 +605,6 @@ class YukiHookCreator private constructor() {
                 }
             }
         }
-
-        /**
-         * Checks the return value of the hooked [Member].
-         * @param origin the original return value.
-         * @param target the target return value.
-         * @throws IllegalStateException if the return value is incorrect.
-         */
-        private fun checkingReturnType(origin: Class<*>?, target: Class<*>?) {
-            if (origin == null || target == null) return
-            if (origin == classOf<Any>()) return
-
-            origin.asHookReturnType().also { o ->
-                target.asHookReturnType().also { t ->
-                    if (t isNotSubclassOf o) error("Hooked method return type mismatch, expected $origin but got $target")
-                }
-            }
-        }
-
-        /** Normalizes boxed primitives and Kotlin [Unit] to their JVM hook return types. */
-        private fun Class<*>.asHookReturnType() = if (this == classOf<Unit>()) Void.TYPE else kotlin.javaPrimitiveType ?: this
 
         /**
          * Hook callback body implementation.

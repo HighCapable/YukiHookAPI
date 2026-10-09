@@ -188,7 +188,7 @@ class MemberHookerTest {
         }
         Assert.assertEquals(3, attempts)
         Assert.assertEquals(2, hookers.size)
-        val chain = RecordingChain(otherMethod)
+        val chain = RecordingChain(otherMethod, downstreamResult = 5)
         (hookers.first() as ChainHookerBridge).intercept(chain)
         Assert.assertEquals(listOf(otherMethod), removed)
         Assert.assertTrue(hookers.last() is ClassicHookerBridge)
@@ -223,6 +223,23 @@ class MemberHookerTest {
         Assert.assertSame(method, checkNotNull(observed).member)
         Assert.assertEquals(listOf(method), removed)
         registration.remove { Assert.assertFalse(it) }
+    }
+
+    @Test
+    fun classicResultsWithMismatchedTypesAreRejectedWithoutReplacingTheResult() {
+        val failures = mutableListOf<Throwable>()
+        scope.run {
+            method.hook {
+                before { result = 1 }
+                after { result = 2 }
+            }.onCallbackFailure { _, throwable -> failures += throwable }
+        }
+        val invocation = ClassicInvocationAdapter.from(method, "value", arrayOf(1)) { throw it }
+        Assert.assertEquals("alue", invocation.intercept(hookers.single() as ClassicHookerBridge) {
+            "value".substring(it[0] as Int)
+        })
+        Assert.assertEquals(2, failures.size)
+        failures.forEach { Assert.assertTrue(it is IllegalStateException) }
     }
 
     @Test
@@ -319,7 +336,10 @@ class MemberHookerTest {
         }
     }
 
-    private class RecordingChain(override val member: Member) : ChainHookerBridge.Chain {
+    private class RecordingChain(
+        override val member: Member,
+        private val downstreamResult: Any? = "downstream"
+    ) : ChainHookerBridge.Chain {
 
         override val instance = "value"
         override val args = listOf(1)
@@ -333,11 +353,11 @@ class MemberHookerTest {
         override fun proceedWith(instance: Any) = record(instance, null)
         override fun proceedWith(instance: Any, args: Array<out Any?>) = record(instance, args)
 
-        private fun record(instance: Any?, args: Array<out Any?>?): String {
+        private fun record(instance: Any?, args: Array<out Any?>?): Any? {
             calls++
             forwardedInstance = instance
             forwardedArgs = args
-            return "downstream"
+            return downstreamResult
         }
     }
 }

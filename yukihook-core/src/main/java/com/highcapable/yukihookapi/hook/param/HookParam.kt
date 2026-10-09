@@ -73,11 +73,15 @@ class HookParam private constructor(
 
     /**
      * Gets or sets the result of the currently hooked method or constructor.
+     *
+     * A value that does not match the method return type is rejected and the current result is kept.
      * @return [Any] or null.
+     * @throws IllegalStateException if the assigned value does not match the method return type.
      */
     var result: Any?
         get() = param.result
         set(value) {
+            YukiHookCreator.checkReturnType(invocation = this, value)
             param.result = value
         }
 
