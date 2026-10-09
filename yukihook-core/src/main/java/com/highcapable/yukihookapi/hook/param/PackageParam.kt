@@ -906,7 +906,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [T]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun <T : Any> Constructor<T>.newInstanceOriginal(vararg args: Any?) =
+    fun <T> Constructor<T>.newInstanceOriginal(vararg args: Any?) =
         YukiHookHelper.newInstanceOriginal(this, args) as T
 
     /**

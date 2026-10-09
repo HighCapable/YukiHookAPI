@@ -91,5 +91,5 @@ internal object YukiHookBridge : FrameworkHookBridge {
         else Log.println(priority, tag, message + (throwable?.let { "\n${Log.getStackTraceString(it)}" } ?: ""))
     }
 
-    private inline fun <reified T : Any> checkApi(value: T?) = checkNotNull(value) { NOT_ATTACHED_ERROR }
+    private fun <T> checkApi(value: T?) = checkNotNull(value) { NOT_ATTACHED_ERROR }
 }

@@ -112,10 +112,9 @@ class HookParam private constructor(
 
     /**
      * Gets the result [T] of the currently hooked method or constructor.
-     * @return [T] or null.
-     * @throws ClassCastException if the result cannot be used as [T].
+     * @return [T] or null when the result is absent or has a different type.
      */
-    inline fun <reified T : Any> result() = result as T?
+    inline fun <reified T> result() = result as? T
 
     /**
      * Gets an argument editor for the currently hooked method or constructor.

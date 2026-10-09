@@ -107,15 +107,14 @@ abstract class HookInvocation internal constructor(
      * @return [T]
      * @throws ClassCastException if the instance cannot be used as [T].
      */
-    inline fun <reified T : Any> instance() = instance as T
+    inline fun <reified T> instance() = instance as T
 
     /**
      * Gets the current receiver instance as [T].
      * @see instance
      * @return [T] or null when the receiver is absent or has a different type.
-     * @throws ClassCastException if the instance cannot be used as [T].
      */
-    inline fun <reified T : Any> instanceOrNull() = instanceOrNull as T?
+    inline fun <reified T> instanceOrNull() = instanceOrNull as? T
 
     /**
      * Removes all registrations belonging to this invocation's hooker.
