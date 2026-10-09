@@ -88,7 +88,7 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
             id = "VariousClassWithoutHostClassLoader",
             briefDescription = "VariousClass loaded without the host class loader",
             explanation = "In a `PackageParam` scope, `String.toClass` uses `hostClassLoader` by default, but `VariousClass.load` " +
-                "and `VariousClass.loadOrNull` are KavaRef functions that use the module or system class loader when no loader is passed. " +
+                "and `VariousClass.loadOrNull` are KavaRef functions that use the module class loader when no loader is passed. " +
                 "Use `toClass` or `toClassOrNull` to load the class from the host.",
             category = Category.USABILITY,
             priority = 6,

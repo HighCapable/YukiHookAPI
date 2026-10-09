@@ -77,7 +77,7 @@ internal object YukiHookHelper {
      * @param priority the hook priority, defaults to [YukiHookPriority.DEFAULT].
      * @return [YukiHookHandle] for the registered hook.
      */
-    fun hook(resolver: MemberResolver<*, *>, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
+    fun hook(resolver: MemberResolver<*, *, *>, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT) =
         hook(HookPoint.Executable(resolver.self), hooker, priority)
 
     /**

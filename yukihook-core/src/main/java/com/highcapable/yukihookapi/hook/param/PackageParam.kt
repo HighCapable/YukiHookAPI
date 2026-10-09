@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2022/2/2.
  */
-@file:Suppress("unused", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "UNCHECKED_CAST")
+@file:Suppress("unused", "UNCHECKED_CAST")
 
 package com.highcapable.yukihookapi.hook.param
 
@@ -44,6 +44,8 @@ import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
+import com.highcapable.yukihookapi.hook.core.api.reflect.HookConstructorHandler
+import com.highcapable.yukihookapi.hook.core.api.reflect.HookMethodHandler
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
@@ -673,7 +675,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     @JvmName("invokeOriginalTyped")
     fun <T> MethodResolver<*>.invokeOriginal(vararg args: Any?) =
-        YukiHookHelper.invokeOriginal(self, instance, args) as T?
+        invokeOriginal(*args) as T?
 
     /**
      * Invokes the method with the given arguments and ignore any exceptions.
@@ -696,7 +698,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [Any] or null.
      */
     fun MethodResolver<*>.invokeOriginal(vararg args: Any?) =
-        YukiHookHelper.invokeOriginal(self, instance, args)
+        withHandler(HookMethodHandler.Original).invoke(*args)
 
     /**
      * Invokes the method with the given arguments and ignore any exceptions.
@@ -721,7 +723,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("invokeSpecialTyped")
     fun <T> MethodResolver<*>.invokeSpecial(vararg args: Any?) =
-        YukiHookHelper.invokeSpecial(self, checkNotNull(instance) { "An instance is required for special invocation." }, args) as T
+        invokeSpecial(*args) as T
 
     /**
      * Invokes this method non-virtually on its instance with the given arguments and ignore any exceptions.
@@ -748,7 +750,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun MethodResolver<*>.invokeSpecial(vararg args: Any?) =
-        YukiHookHelper.invokeSpecial(self, checkNotNull(instance) { "An instance is required for special invocation." }, args)
+        withHandler(HookMethodHandler.Special).invoke(*args)
 
     /**
      * Invokes this method non-virtually on its instance with the given arguments and ignore any exceptions.
@@ -795,7 +797,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun <T : Any> ConstructorResolver<T>.createOriginal(vararg args: Any?) =
-        YukiHookHelper.newInstanceOriginal(self, args) as T
+        withHandler(HookConstructorHandler.Original).create(*args)
 
     /**
      * Creates a new instance with this original constructor and the given arguments, and ignore any exceptions.
@@ -821,7 +823,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun <T : Any> ConstructorResolver<*>.createSpecial(subclass: Class<T>, vararg args: Any?) =
-        YukiHookHelper.newInstanceSpecial(self, subclass, args) as T
+        withHandler(HookConstructorHandler.Special(subclass)).create(*args) as T
 
     /**
      * Creates a [subclass] instance initialized by this parent constructor and the given arguments, and ignore any exceptions.
@@ -939,7 +941,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [Boolean] whether deoptimization succeeded.
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun MemberResolver<*, *>.deoptimize() = YukiHookHelper.deoptimize(self)
+    fun MemberResolver<*, *, *>.deoptimize() = YukiHookHelper.deoptimize(self)
 
     /**
      * Deoptimizes these calling methods and constructors through a [Collection] of [MemberResolver] instances.
@@ -950,7 +952,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("deoptimizeAllByMemberResolver")
-    fun Collection<MemberResolver<*, *>>.deoptimizeAll() = deoptimizeAll { it.self }
+    fun Collection<MemberResolver<*, *, *>>.deoptimizeAll() = deoptimizeAll { it.self }
 
     /**
      * Deoptimizes these calling methods and constructors so their callees are invoked without runtime inlining.
@@ -1102,7 +1104,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [YukiHookCreator.MemberHooker.Handle]
      */
     @JvmName("interceptByMemberResolver")
-    fun MemberResolver<*, *>.intercept(
+    fun MemberResolver<*, *, *>.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
     ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Executable(self)), priority, invocation).build()
@@ -1120,7 +1122,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [YukiHookCreator.MemberHooker.Handle]
      */
     @JvmName("interceptAllByMemberResolver")
-    fun Collection<MemberResolver<*, *>>.interceptAll(
+    fun Collection<MemberResolver<*, *, *>>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
     ) = YukiHookCreator.createChainHooker(map { HookPoint.Executable(it.self) }, priority, invocation).build()
@@ -1398,7 +1400,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
-    fun MemberResolver<*, *>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
+    fun MemberResolver<*, *, *>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
 
     /**
      * Creates a direct hook for methods and constructors through [MemberResolver].
@@ -1408,7 +1410,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [YukiHookCreator.MemberHooker.Handle]
      */
     @JvmName("hookByMemberResolver")
-    fun MemberResolver<*, *>.hook(
+    fun MemberResolver<*, *, *>.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
     ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
@@ -1419,7 +1421,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @return [YukiHookCreator.ClassicMemberHooker]
      */
-    fun Collection<MemberResolver<*, *>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
+    fun Collection<MemberResolver<*, *, *>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
 
     /**
      * Creates a direct hook for methods and constructors through a [List] of [MemberResolver] instances.
@@ -1429,7 +1431,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [YukiHookCreator.MemberHooker.Handle]
      */
     @JvmName("hookAllByMemberResolver")
-    fun Collection<MemberResolver<*, *>>.hookAll(
+    fun Collection<MemberResolver<*, *, *>>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
     ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
@@ -1481,10 +1483,10 @@ open class PackageParam internal constructor(internal var context: PackageContex
         return isSuccessful
     }
 
-    private fun MemberResolver<*, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
+    private fun MemberResolver<*, *, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
         YukiHookCreator.createClassicHooker(listOf(HookPoint.Executable(self)), priority, isLazyMode)
 
-    private fun Collection<MemberResolver<*, *>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
+    private fun Collection<MemberResolver<*, *, *>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
         YukiHookCreator.createClassicHooker(map { HookPoint.Executable(it.self) }, priority, isLazyMode)
 
     @JvmName("createHookerByClass")
