@@ -30,10 +30,10 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 /**
  * Xposed module entry point for [YukiHook].
  *
- * - This entry was deprecated, migrate to [YukiHookXposedModule].
+ * - This entry is deprecated. Migrate to [YukiHookXposedModule].
  */
 @Deprecated(
-    message = "This entry was deprecated, migrate to YukiHookXposedModule.",
+    message = "This entry is deprecated. Migrate to YukiHookXposedModule.",
     replaceWith = ReplaceWith(
         expression = "YukiHookXposedModule",
         imports = ["com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule"]

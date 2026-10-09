@@ -1,5 +1,5 @@
 /*
- * YukiHook - A modern Hook API and Xposed module solution.
+ * YukiHook - A modern hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
  * https://github.com/HighCapable/YukiHook
  *
@@ -62,7 +62,7 @@ internal class PackageRegistration(private val callback: (PackageContext) -> Uni
      * @return [Boolean] whether the package context callback should run.
      */
     fun record(context: PackageContext, retain: Boolean = events.isManaged): Boolean {
-        // Legacy event supports, run callback for zygote entry type.
+        // Legacy zygote events always run their callback.
         if (context.type == HookEntryType.ZYGOTE) return true
 
         return synchronized(loadedEntries) {

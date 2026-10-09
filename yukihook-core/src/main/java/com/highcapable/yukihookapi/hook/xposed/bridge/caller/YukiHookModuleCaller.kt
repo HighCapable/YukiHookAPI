@@ -69,7 +69,7 @@ object YukiHookModuleCaller {
      * @param createHookEntry creates the user entry after the host environment is initialized.
      * @param appInfo the current Xposed module application info.
      * @param packageName the package name of the current process.
-     * @param sourceDir the current Xposed module source directory
+     * @param sourceDir the current Xposed module source directory.
      * @return [Boolean] whether the initialization was successful.
      */
     fun callOnHook(

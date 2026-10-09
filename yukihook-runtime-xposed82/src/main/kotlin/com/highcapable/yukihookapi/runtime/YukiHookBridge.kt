@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.runtime.xposed82.Xposed82ModuleStatus
 import com.highcapable.yukihookapi.runtime.xposed82.Xposed82Preferences
 
 /**
- * The core bridge for the `YukiHook` runtime for `yukihook-runtime-xposed82`.
+ * The core `YukiHook` runtime bridge for `yukihook-runtime-xposed82`.
  */
 internal object YukiHookBridge : FrameworkHookBridge {
 

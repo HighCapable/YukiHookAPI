@@ -609,7 +609,7 @@ class YukiHookCreator private constructor() {
             }
         }
 
-        /** Normalizes boxed primitives and Kotlin [Unit] to their JVM Hook return types. */
+        /** Normalizes boxed primitives and Kotlin [Unit] to their JVM hook return types. */
         private fun Class<*>.asHookReturnType() = if (this == classOf<Unit>()) Void.TYPE else kotlin.javaPrimitiveType ?: this
 
         /**

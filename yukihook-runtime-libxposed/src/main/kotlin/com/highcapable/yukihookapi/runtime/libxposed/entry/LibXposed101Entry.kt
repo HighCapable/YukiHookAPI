@@ -1,5 +1,5 @@
 /*
- * YukiHook - A modern Hook API and Xposed module solution.
+ * YukiHook - A modern hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
  * https://github.com/HighCapable/YukiHook
  *
@@ -26,6 +26,6 @@ package com.highcapable.yukihookapi.runtime.libxposed.entry
 import com.highcapable.yukihookapi.runtime.libxposed.entry.base.LibXposedBaseEntry
 
 /**
- * Libxposed API 101 entry for `libxposed:api` 101 version.
+ * Entry for `libxposed:api` version 101.
  */
 abstract class LibXposed101Entry : LibXposedBaseEntry()

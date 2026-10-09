@@ -103,7 +103,7 @@ object YLog {
          * Disabling this stops all log output from [YukiHook].
          * It does not affect logs printed manually through the following methods:
          *
-         * [debug]、[info]、[warn]、[error]
+         * [debug], [info], [warn], [error]
          *
          * Disabling [enabled] also disables [YukiHook.Config.debug].
          */
@@ -190,7 +190,7 @@ object YLog {
     val contents get() = contents()
 
     /**
-     * Returns a stable snapshot of the currently [inMemoryData].
+     * Returns a stable snapshot of the current [inMemoryData].
      * @return [List]<[YLogData]>
      */
     internal fun createSnapshot() = synchronized(inMemoryData) { inMemoryData.toList() }

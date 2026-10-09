@@ -78,7 +78,7 @@ import kotlin.reflect.KClass
 /**
  * Controller for app parasitism features.
  *
- * These features provide [Resources] injection and [Activity] proxies for host environment.
+ * These features provide [Resources] injection and [Activity] proxies for the host environment.
  */
 internal object AppParasitism : ModuleReloadable {
 

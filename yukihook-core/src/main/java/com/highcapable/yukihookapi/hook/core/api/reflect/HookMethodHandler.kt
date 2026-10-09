@@ -33,7 +33,7 @@ internal sealed class HookMethodHandler : MethodResolver.Handler() {
     override fun requireAccessible(member: Method) = Unit
 
     /**
-     * Invokes the original method without hook.
+     * Invokes the original method without hooks.
      */
     object Original : HookMethodHandler() {
 
@@ -42,7 +42,7 @@ internal sealed class HookMethodHandler : MethodResolver.Handler() {
     }
 
     /**
-     * Invokes the method non-virtually on its instance without hook or subclass overrides.
+     * Invokes the method non-virtually on its instance without hooks or subclass overrides.
      */
     object Special : HookMethodHandler() {
 

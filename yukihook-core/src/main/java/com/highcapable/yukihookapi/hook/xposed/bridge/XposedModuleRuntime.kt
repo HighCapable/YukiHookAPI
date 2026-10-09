@@ -67,7 +67,7 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     /** Whether the Xposed module has been loaded. */
     private var isModuleLoaded = false
 
-    /** Whether the current Hook process is running in Zygote. */
+    /** Whether the current hook process is running in Zygote. */
     private var isInitializingZygote = false
 
     /** The current Xposed module resources. */

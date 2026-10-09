@@ -1,5 +1,5 @@
 /*
- * YukiHook - A modern Hook API and Xposed module solution.
+ * YukiHook - A modern hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
  * https://github.com/HighCapable/YukiHook
  *

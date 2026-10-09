@@ -34,7 +34,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 /**
  * Configures module-owned state and resource handoff from [onInit].
  *
- * Configuration runs immediately. Handoff callbacks use the thread chosen by the framework, marshal UI work to the main thread.
+ * Configuration runs immediately. Handoff callbacks use the thread chosen by the framework. Marshal UI work to the main thread.
  *
  * Stop module-owned threads, native hooks and external listeners in [ModuleLifecycle.onDispose].
  * Register once per module instance. A module without external resources does not need this block.
@@ -94,7 +94,7 @@ class ModuleLifecycle internal constructor() {
     /**
      * Stops and releases module-owned work.
      *
-     * Throwing reports a failure, completed disposal is not rolled back.
+     * Throwing reports a failure. Completed disposal is not rolled back.
      * @param callback releases resources owned by the old module instance before it retires.
      */
     fun onDispose(callback: () -> Unit) {

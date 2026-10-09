@@ -52,7 +52,7 @@ interface SharedFilesBridge {
     /**
      * Deletes the shared file named [name].
      * @param name the name of the shared file to delete.
-     * @return [Boolean] if the file was successfully deleted.
+     * @return [Boolean] whether the file was deleted.
      */
     fun delete(name: String): Boolean
 }

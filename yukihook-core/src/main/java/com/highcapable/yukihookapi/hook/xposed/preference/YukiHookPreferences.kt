@@ -38,11 +38,11 @@ import com.highcapable.yukihookapi.runtime.YukiHookBridge
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
- * [YukiHook] storage bridge implementation for [SharedPreferences] with additional store proposal.
+ * [YukiHook] storage bridge implementation for [SharedPreferences] with extended storage options.
  *
  * Uses the storage selected by the current [YukiHookRuntime].
  *
- * For using [PreferenceFragmentCompat] in the module environment, [YukiHook] provides [ModulePreferenceFragment] with the same functionality.
+ * To use [PreferenceFragmentCompat] in the module environment, [YukiHook] provides [ModulePreferenceFragment] with the same functionality.
  * @param context the context instance, null by default.
  */
 class YukiHookPreferences private constructor(private var context: Context? = null) {

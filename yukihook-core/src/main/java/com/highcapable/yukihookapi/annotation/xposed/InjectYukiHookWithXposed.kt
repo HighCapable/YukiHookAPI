@@ -28,8 +28,8 @@ import com.highcapable.yukihookapi.YukiHook
 /**
  * Marks the [YukiHook] legacy Xposed entry class for code generation.
  *
- * - This annotation was deprecated, migrate to [YukiHookXposed82Entry].
- * - [sourcePath] and [isUsingResourcesHook] are no effect, will be ignored for code generation.
+ * - This annotation is deprecated. Migrate to [YukiHookXposed82Entry].
+ * - [sourcePath] and [isUsingResourcesHook] have no effect and are ignored during code generation.
  */
 @Deprecated(message = "Migrate to YukiHookXposed82Entry.", replaceWith = ReplaceWith("YukiHookXposed82Entry"))
 @Target(AnnotationTarget.CLASS)

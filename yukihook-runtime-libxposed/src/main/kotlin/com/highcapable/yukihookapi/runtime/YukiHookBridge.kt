@@ -36,7 +36,7 @@ import com.highcapable.yukihookapi.runtime.libxposed.LibXposedService
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedSharedFiles
 
 /**
- * The core bridge for the `YukiHook` runtime for `yukihook-runtime-libxposed`.
+ * The core `YukiHook` runtime bridge for `yukihook-runtime-libxposed`.
  */
 internal object YukiHookBridge : FrameworkHookBridge {
 

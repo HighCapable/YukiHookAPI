@@ -37,7 +37,7 @@ internal class ClassicInvocationAdapter private constructor(
     companion object {
 
         /**
-         * Create a new invocation for the given member, instance, and arguments.
+         * Creates a new invocation for the given member, instance, and arguments.
          * @param member the member being invoked.
          * @param instance the instance the method is invoked on, or null for static methods.
          * @param args the arguments to the method call.

@@ -1,5 +1,5 @@
 /*
- * YukiHook - A modern Hook API and Xposed module solution.
+ * YukiHook - A modern hook API and Xposed module solution.
  * Copyright (C) 2019 HighCapable
  * https://github.com/HighCapable/YukiHook
  *
@@ -59,7 +59,7 @@ internal interface ModuleReloadable {
     fun onAttach(events: ModuleEventDispatcher) = Unit
 
     /**
-     * Checks whether retirement is safe without releasing resources
+     * Checks whether retirement is safe without releasing resources.
      *
      * - Note: May run again after callbacks are frozen.
      */

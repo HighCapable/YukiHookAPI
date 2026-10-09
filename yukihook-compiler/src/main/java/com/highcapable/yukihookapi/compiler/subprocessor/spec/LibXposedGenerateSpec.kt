@@ -82,7 +82,7 @@ data class LibXposedGenerateSpec(
     }
 
     /**
-     * Returns runtime entry selected by the module's minimum framework API version.
+     * Returns the runtime entry selected by the module's minimum framework API version.
      * @return [String]
      */
     val runtimeEntryClassName get() = when (minApiVersion) {

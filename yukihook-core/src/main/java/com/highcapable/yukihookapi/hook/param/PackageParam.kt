@@ -250,7 +250,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Registers a lifecycle listener for the current host [Application].
      *
      * This is loaded only for the package that owns the first [Application] in the current process.
-     * In system server, [AppLifecycle.onCreate] is dispatched after system services start because its [Application]
+     * In the system server, [AppLifecycle.onCreate] is dispatched after system services start because its [Application]
      * has already completed creation, while [AppLifecycle.attachBaseContext] cannot observe the completed event.
      * @param throwToHostOnFailure whether to throw exceptions to the host when they occur, true by default.
      * @param block the lifecycle block.
@@ -381,7 +381,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Loads and hooks apps with the specified package name.
      * @see loadSystem
      * @param name the package name. "android" or "system" refers to the system framework and works as [loadSystem].
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     fun loadApp(name: String, block: PackageParam.() -> Unit) {
         if (AppParasitism.isSystemFramework(name)) return loadSystem(block)
@@ -392,7 +392,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Loads and hooks apps with the specified package names.
      * @see loadSystem
      * @param name the package names. "android" or "system" refers to the system framework and works as [loadSystem].
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     fun loadApp(vararg name: String, block: PackageParam.() -> Unit) {
         fun matches(name: String) = when (context?.type) {
@@ -438,7 +438,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Loads and hooks all apps.
      * @see loadSystem
      * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     fun loadApp(excludeSelf: Boolean = false, block: PackageParam.() -> Unit) {
         if (context?.type != HookEntryType.ZYGOTE &&
@@ -477,7 +477,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Loads and hooks the system server.
      * @see loadApp
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     fun loadSystem(block: PackageParam.() -> Unit) {
         if (context?.type == HookEntryType.SYSTEM_SERVER) block(this)
@@ -512,7 +512,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      *   and cannot preserve parent-zygote execution or fork inheritance.
      * @see loadApp
      * @see loadSystem
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
@@ -557,7 +557,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Loads and hooks a specified app process.
      * @param name the process name. Use [mainProcessName] to specify the main process.
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     fun withProcess(name: String, block: PackageParam.() -> Unit) {
         if (processName == name) block(this)
@@ -566,7 +566,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Loads and hooks specified app processes.
      * @param names the process names. Use [mainProcessName] to specify the main process.
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     fun withProcess(vararg names: String, block: PackageParam.() -> Unit) {
         require(names.isNotEmpty()) {
@@ -668,7 +668,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes the method with the given arguments.
      *
-     * This action calls the original method without hook.
+     * This action calls the original method without hooks.
      * @see MethodResolver.invoke
      * @receiver [MethodResolver]
      * @return [T] or null.
@@ -678,9 +678,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
         invokeOriginal(*args) as T?
 
     /**
-     * Invokes the method with the given arguments and ignore any exceptions.
+     * Invokes the method with the given arguments, ignoring any exceptions.
      *
-     * This action calls the original method without hook.
+     * This action calls the original method without hooks.
      * @see MethodResolver.invokeQuietly
      * @receiver [MethodResolver]
      * @return [T] or null.
@@ -692,7 +692,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes the method with the given arguments.
      *
-     * This action calls the original method without hook.
+     * This action calls the original method without hooks.
      * @see MethodResolver.invoke
      * @receiver [MethodResolver]
      * @return [Any] or null.
@@ -701,9 +701,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
         withHandler(HookMethodHandler.Original).invoke(*args)
 
     /**
-     * Invokes the method with the given arguments and ignore any exceptions.
+     * Invokes the method with the given arguments, ignoring any exceptions.
      *
-     * This action calls the original method without hook.
+     * This action calls the original method without hooks.
      * @see MethodResolver.invokeQuietly
      * @receiver [MethodResolver]
      * @return [Any] or null.
@@ -714,7 +714,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes this method non-virtually on its instance with the given arguments.
      *
-     * This action directly invokes the method declared by this resolver without hook or subclass overrides.
+     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
      * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invoke
      * @receiver [MethodResolver]
@@ -726,9 +726,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
         invokeSpecial(*args) as T
 
     /**
-     * Invokes this method non-virtually on its instance with the given arguments and ignore any exceptions.
+     * Invokes this method non-virtually on its instance with the given arguments, ignoring any exceptions.
      *
-     * This action directly invokes the method declared by this resolver without hook or subclass overrides.
+     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
      * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invokeQuietly
      * @receiver [MethodResolver]
@@ -742,7 +742,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes this method non-virtually on its instance with the given arguments.
      *
-     * This action directly invokes the method declared by this resolver without hook or subclass overrides.
+     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
      * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invoke
      * @receiver [MethodResolver]
@@ -753,9 +753,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
         withHandler(HookMethodHandler.Special).invoke(*args)
 
     /**
-     * Invokes this method non-virtually on its instance with the given arguments and ignore any exceptions.
+     * Invokes this method non-virtually on its instance with the given arguments, ignoring any exceptions.
      *
-     * This action directly invokes the method declared by this resolver without hook or subclass overrides.
+     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
      * An instance must be set using [MethodResolver.of].
      * @see MethodResolver.invokeQuietly
      * @receiver [MethodResolver]
@@ -766,7 +766,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
         runCatching { invokeSpecial(*args) }.getOrNull()
 
     /**
-     * Initialize an existing [instance] non-virtually with this constructor and the given arguments.
+     * Initializes an existing [instance] non-virtually with this constructor and the given arguments.
      *
      * This action initializes the existing instance and does not create a new one.
      * @receiver [ConstructorResolver]
@@ -777,7 +777,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
         YukiHookHelper.invokeSpecial(self, instance, args)
 
     /**
-     * Initialize an existing [instance] non-virtually with this constructor and the given arguments and ignore any exceptions.
+     * Initializes an existing [instance] non-virtually with this constructor and the given arguments, ignoring any exceptions.
      *
      * This action initializes the existing instance and does not create a new one.
      * @receiver [ConstructorResolver]
@@ -800,7 +800,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
         withHandler(HookConstructorHandler.Original).create(*args)
 
     /**
-     * Creates a new instance with this original constructor and the given arguments, and ignore any exceptions.
+     * Creates a new instance with this original constructor and the given arguments, ignoring any exceptions.
      *
      * This action skips all hooks registered for the constructor.
      * @receiver [ConstructorResolver]
@@ -826,7 +826,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
         withHandler(HookConstructorHandler.Special(subclass)).create(*args) as T
 
     /**
-     * Creates a [subclass] instance initialized by this parent constructor and the given arguments, and ignore any exceptions.
+     * Creates a [subclass] instance initialized by this parent constructor and the given arguments, ignoring any exceptions.
      *
      * This action skips all hooks registered for the constructor. The subclass constructor is not invoked,
      * so subclass fields can remain uninitialized.
@@ -842,7 +842,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes this method on the given [instance] with the given arguments.
      *
-     * This action calls the original method without hook.
+     * This action calls the original method without hooks.
      * @receiver [Method]
      * @param instance the instance to invoke the method on, or null for a static method.
      * @return [T] or null.
@@ -854,7 +854,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes this method on the given [instance] with the given arguments.
      *
-     * This action calls the original method without hook.
+     * This action calls the original method without hooks.
      * @receiver [Method]
      * @param instance the instance to invoke the method on, or null for a static method.
      * @return [Any] or null.
@@ -865,7 +865,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes this method non-virtually on the given [instance] with the given arguments.
      *
-     * This action directly invokes this method without hook or subclass overrides.
+     * This action directly invokes this method without hooks or subclass overrides.
      * @receiver [Method]
      * @param instance the instance to invoke the method on.
      * @return [T] or null.
@@ -878,7 +878,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Invokes this method non-virtually on the given [instance] with the given arguments.
      *
-     * This action directly invokes this method without hook or subclass overrides.
+     * This action directly invokes this method without hooks or subclass overrides.
      * @receiver [Method]
      * @param instance the instance to invoke the method on.
      * @return [Any] or null.
@@ -888,7 +888,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
         YukiHookHelper.invokeSpecial(this, instance, args)
 
     /**
-     * Initialize an existing [instance] non-virtually with this constructor and the given arguments.
+     * Initializes an existing [instance] non-virtually with this constructor and the given arguments.
      *
      * This action initializes the existing instance and does not create a new one.
      * @receiver [Constructor]

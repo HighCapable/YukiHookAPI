@@ -31,7 +31,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  *
  * Requires `yukihook-runtime-xposed82`. Missing, conflicting, or mismatched runtimes will cause KSP to reject the build.
  *
- * Looking for modern libxposed, please use [YukiHookLibXposedEntry] with `yukihook-runtime-libxposed` instead.
+ * For modern libxposed, use [YukiHookLibXposedEntry] with `yukihook-runtime-libxposed` instead.
  *
  * - KSP generates `assets/xposed_init` as a build resource.
  * - The runtime AndroidManifest supplies `xposedmodule=true` and `xposedminversion=82`.

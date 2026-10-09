@@ -36,10 +36,10 @@ enum class ExecutorType(val explicitName: String) {
     /** Original or third-party Xposed. */
     XPOSED("Xposed"),
 
-    /** LSPosed、LSPatch */
+    /** LSPosed, LSPatch. */
     LSPOSED_LSPATCH("LSPosed"),
 
-    /** EdXposed */
+    /** EdXposed. */
     ED_XPOSED("EdXposed"),
 
     /** TaiChi. */

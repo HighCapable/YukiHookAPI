@@ -32,10 +32,10 @@ import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 /**
  * Extends preference support for Xposed modules built with [YukiHook].
  *
- * Inherits [PreferenceFragmentCompat] to provides a [PreferenceDataStore] that
+ * Inherits [PreferenceFragmentCompat] to provide a [PreferenceDataStore] that
  * uses [YukiHookPreferences] to store preferences in the module's app.
  *
- * Inherits this class instead of [PreferenceFragmentCompat].
+ * Inherit this class instead of [PreferenceFragmentCompat].
  */
 abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -69,7 +69,7 @@ abstract class ModulePreferenceFragment : PreferenceFragmentCompat(), SharedPref
 
     // region Deprecated functions for backward compatibility
 
-    /** This function was deprecated, please use [onCreatePreferences] directly. */
+    /** This function is deprecated. Use [onCreatePreferences] directly. */
     @Deprecated(message = "Use onCreatePreferences directly.")
     open fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?) = Unit
 

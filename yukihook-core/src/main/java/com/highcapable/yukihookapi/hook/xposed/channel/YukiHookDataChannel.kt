@@ -64,7 +64,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Exchanges data by registering [BroadcastReceiver] instances in both the module and host.
  * The module's [Application] must inherit [ModuleApplication] to use this feature.
  *
- * - Note: Require both the module and host remain alive.
+ * - Note: Requires both the module and host to remain alive.
  */
 class YukiHookDataChannel private constructor() {
 
@@ -226,7 +226,7 @@ class YukiHookDataChannel private constructor() {
     }
 
     /**
-     * Registers broadcasts to host once after its [Application] is ready.
+     * Registers broadcasts to the host once after its [Application] is ready.
      * @param application the host [Application] instance.
      */
     internal fun registerToHost(application: Application) {

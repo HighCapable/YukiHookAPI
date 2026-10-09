@@ -35,7 +35,7 @@ internal sealed class HookConstructorHandler : ConstructorResolver.Handler() {
     override fun requireAccessible(member: Constructor<*>) = Unit
 
     /**
-     * Creates an instance with the original constructor without hook.
+     * Creates an instance with the original constructor without hooks.
      */
     object Original : HookConstructorHandler() {
 
@@ -44,7 +44,7 @@ internal sealed class HookConstructorHandler : ConstructorResolver.Handler() {
     }
 
     /**
-     * Creates a [subclass] instance initialized by the parent constructor without hook.
+     * Creates a [subclass] instance initialized by the parent constructor without hooks.
      * @param subclass the subclass to instantiate.
      */
     class Special(private val subclass: Class<*>) : HookConstructorHandler() {

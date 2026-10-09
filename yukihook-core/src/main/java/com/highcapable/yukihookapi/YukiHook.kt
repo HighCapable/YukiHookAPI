@@ -80,7 +80,7 @@ object YukiHook {
         /**
          * Whether debug mode is enabled, false by default.
          *
-         * Once enabled, the log manager prints detailed Hook logs to the console.
+         * Once enabled, the log manager prints detailed hook logs to the console.
          *
          * Disabling [YLog.Config.enabled] also disables [debug].
          */
@@ -93,7 +93,7 @@ object YukiHook {
          * Once enabled, module startup forces [SharedPreferences] file permissions to [Context.MODE_WORLD_READABLE] (0664).
          *
          * This optional experimental feature is disabled by default.
-         * Use this only to fix file-permission errors that may remain on some systems after enabling legacy new `XSharedPreferences`.
+         * Use this only to fix file-permission errors that may remain on some systems after enabling the new `XSharedPreferences` in the legacy API.
          *
          * Do not enable it when [YukiHookPreferences] already works correctly.
          */
@@ -128,7 +128,7 @@ object YukiHook {
             }
 
         /** Whether caching the current Xposed module resources is enabled. */
-        @Deprecated(message = "This property was deprecated and no longer has any effect, removed it directly.")
+        @Deprecated(message = "This property is deprecated and has no effect. Remove it.")
         var isEnableModuleAppResourcesCache = true
 
         // endregion
@@ -316,8 +316,8 @@ object YukiHook {
     inline fun configure(block: Config.() -> Unit) = Config.apply(block).let {}
 
     /**
-     * Loads entry point for a Xposed module.
-     * @param block the param block.
+     * Loads the entry point for an Xposed module.
+     * @param block the [PackageParam] hook block.
      */
     fun encase(block: PackageParam.() -> Unit) {
         isStandalone = false
@@ -328,7 +328,7 @@ object YukiHook {
     }
 
     /**
-     * Loads entry point for a Xposed module.
+     * Loads the entry point for an Xposed module.
      * @param hookers the hookers.
      * @throws IllegalStateException if [hookers] is empty.
      */
@@ -347,7 +347,7 @@ object YukiHook {
     /**
      * Loads the legacy standalone hook API from an [Application].
      * @param baseContext the attachment base context.
-     * @param block the param block.
+     * @param block the [PackageParam] hook block.
      */
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Not recommended, use the hook framework's native API instead.")
@@ -366,7 +366,7 @@ object YukiHook {
     /**
      * Loads the legacy standalone hook API from an [Application].
      * @param baseContext the attachment base context.
-     * @param hooker the hookers.
+     * @param hooker the hooker.
      */
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Not recommended, use the hook framework's native API instead.")

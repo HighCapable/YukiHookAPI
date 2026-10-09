@@ -63,7 +63,7 @@ class HookParam private constructor(
     /**
      * Gets the argument array of the currently hooked method or constructor.
      *
-     * Each array element has the default type [Any]. Use [args] to access [ArgumentEditor.cast].
+     * Each array element has the default type [Any]. Use [args] to access [ArgumentEditor.get].
      * @see arg
      * @see firstArg
      * @see lastArg
@@ -100,7 +100,7 @@ class HookParam private constructor(
      * and [throwable] to get the exception set for the invocation.
      *
      * This API is effective only in [YukiHookCreator.ClassicMemberHooker.before] or [YukiHookCreator.ClassicMemberHooker.after] callbacks.
-     * Setting the exception also calls [result] to null and throws it to the current host.
+     * Setting the exception also sets [result] to null and throws it to the current host.
      * @receiver the exception to throw to the current host.
      * @return [Throwable] or null.
      * @throws Throwable
@@ -126,14 +126,14 @@ class HookParam private constructor(
     fun arg(index: Int) = ArgumentEditor(index)
 
     /**
-     * Gets the first index argument editor for the currently hooked method or constructor.
+     * Gets the argument editor for the first argument of the currently hooked method or constructor.
      * @see arg
      * @return [ArgumentEditor]
      */
     fun firstArg() = arg(0)
 
     /**
-     * Gets the last index argument editor for the currently hooked method or constructor.
+     * Gets the argument editor for the last argument of the currently hooked method or constructor.
      * @see arg
      * @return [ArgumentEditor]
      */
@@ -184,7 +184,7 @@ class HookParam private constructor(
     /**
      * Invokes the current [Member] non-virtually.
      *
-     * Invokes the current [Member] without hook or subclass overrides using its current arguments.
+     * Invokes the current [Member] without hooks or subclass overrides using its current arguments.
      * @see invokeSpecial
      * @return [Any] or null.
      */
@@ -194,7 +194,7 @@ class HookParam private constructor(
     /**
      * Invokes the current [Member] non-virtually.
      *
-     * Invokes the current [Member] without hook or subclass overrides using its current arguments.
+     * Invokes the current [Member] without hooks or subclass overrides using its current arguments.
      * @see invokeSpecial
      * @return [T] or null.
      * @throws ClassCastException if the result cannot be used as [T].
@@ -206,7 +206,7 @@ class HookParam private constructor(
     /**
      * Invokes the current [Member] non-virtually.
      *
-     * Invokes the current [Member] without hook or subclass overrides using custom [args].
+     * Invokes the current [Member] without hooks or subclass overrides using custom [args].
      * @see callSpecial
      * @param args the argument instances.
      * @return [Any] or null.
@@ -217,7 +217,7 @@ class HookParam private constructor(
     /**
      * Invokes the current [Member] non-virtually.
      *
-     * Invokes the current [Member] without hook or subclass overrides using custom [args].
+     * Invokes the current [Member] without hooks or subclass overrides using custom [args].
      * @see callSpecial
      * @param args the argument instances.
      * @return [T] or null.

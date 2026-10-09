@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
  *
  * Requires `yukihook-runtime-libxposed`. Missing, conflicting, or mismatched runtimes will cause KSP to reject the build.
  *
- * Looking for legacy Xposed 82, please use [YukiHookXposed82Entry] with `yukihook-runtime-xposed82` instead.
+ * For legacy Xposed API 82, use [YukiHookXposed82Entry] with `yukihook-runtime-xposed82` instead.
  *
  * - KSP generates `java_init.list`, `module.prop`, and `scope.list` under `META-INF/xposed` as build resources.
  *   `native_init.list` is also generated when [nativeEntries] is not empty.

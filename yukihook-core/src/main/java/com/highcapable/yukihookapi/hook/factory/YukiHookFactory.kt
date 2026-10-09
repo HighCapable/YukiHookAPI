@@ -62,7 +62,7 @@ inline fun YukiHookXposedModule.configure(block: YukiHook.Config.() -> Unit) = Y
 /**
  * Calls [YukiHook.encase] from [YukiHookXposedModule].
  * @receiver [YukiHookXposedModule]
- * @param block the param block.
+ * @param block the [PackageParam] hook block.
  */
 fun YukiHookXposedModule.encase(block: PackageParam.() -> Unit) = YukiHook.encase(block)
 
