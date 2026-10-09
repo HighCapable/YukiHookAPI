@@ -33,6 +33,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.os.SystemClock
 import android.os.TransactionTooLargeException
 import androidx.core.content.getSystemService
 import androidx.core.os.use
@@ -84,6 +85,9 @@ class YukiHookDataChannel private constructor() {
         private const val RESULT_MODULE_GENERATED_VERSION = "module_generated_version_result"
 
         private const val VALUE_WAIT_FOR_LISTENER = "wait_for_listener_value"
+
+        /** How long incomplete segmented data is kept before it is discarded, in milliseconds. */
+        private const val SEGMENTS_EXPIRATION_MILLIS = 60_000L
 
         private val loggerInMemoryDataResult = ChannelData<List<YLogData>>("yuki_logger_in_memory_data_result")
 
@@ -273,7 +277,11 @@ class YukiHookDataChannel private constructor() {
         var mapData: MutableList<Map<*, *>>? = null,
         var setData: MutableList<Set<*>>? = null,
         var stringData: MutableList<String>? = null
-    )
+    ) {
+
+        /** The time this data was created, used to discard transfers that lost segments. */
+        val createdAt = SystemClock.elapsedRealtime()
+    }
 
     /**
      * [YukiHookDataChannel] namespace.
@@ -565,6 +573,12 @@ class YukiHookDataChannel private constructor() {
             if (wrapper == null) return
 
             if (wrapper.isSegmented) runCatching {
+                // A transfer that lost segments never completes, discard it once it expires.
+                val now = SystemClock.elapsedRealtime()
+                segmentsTempData.entries.iterator().apply {
+                    while (hasNext()) if (now - next().value.createdAt > SEGMENTS_EXPIRATION_MILLIS) remove()
+                }
+
                 val tempData = segmentsTempData[wrapper.wrapperId] ?: SegmentsTempData().apply { segmentsTempData[wrapper.wrapperId] = this }
                 when (val value = wrapper.instance.value) {
                     is List<*> -> {
@@ -602,6 +616,7 @@ class YukiHookDataChannel private constructor() {
                     else -> YLog.innerE("Unsupported type for segmented data key \"${wrapper.instance.key}\"")
                 }
             }.onFailure {
+                segmentsTempData.remove(wrapper.wrapperId)
                 YLog.innerE("YukiHookDataChannel cannot merge segmented data key \"${wrapper.instance.key}\"", it)
             } else wrapper.instance.value?.let { e -> result(e) }
         }
