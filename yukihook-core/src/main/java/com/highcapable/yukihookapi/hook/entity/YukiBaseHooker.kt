@@ -26,6 +26,7 @@ import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.type.HookEntryType
 
 /**
@@ -63,7 +64,11 @@ abstract class YukiBaseHooker : PackageParam() {
             }
 
             bind(targetContext)
-            runCatching { onHook() }.onFailure { YLog.innerE("An exception occurred in $this", it) }
+            runCatching { onHook() }.onFailure {
+                // Report it as a reload failure as well, the same as an exception from the encase block.
+                XposedModuleRuntime.recordRestoreFailure(it)
+                YLog.innerE("An exception occurred in $this", it)
+            }
         }
     }
 
