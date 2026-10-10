@@ -47,6 +47,7 @@ import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
+import com.highcapable.kavaref.extension.createInstanceAsType
 import com.highcapable.kavaref.extension.createInstanceAsTypeOrNull
 import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.kavaref.extension.isSubclassOf
@@ -623,15 +624,25 @@ internal object AppParasitism : ModuleReloadable {
             it isSubclassOf Activity::class && it isSubclassOf ModuleActivity::class
         }
 
+        fun Class<*>.declaredProxyClassName(): String? {
+            val declared = runCatching { createInstanceAsType<ModuleActivity>().proxyClassName }.getOrElse {
+                YLog.innerW("Failed to read the proxy Activity declared by \"$name\", the default proxy is used instead", it)
+                return null
+            }.takeIf { it.isNotBlank() } ?: return null
+
+            // The host [Application] may not be bound yet when activities are registered directly on a [Context].
+            if ((hostApplication?.classLoader ?: context.classLoader).hasClass(declared)) return declared
+
+            YLog.innerW("The proxy Activity \"$declared\" declared by \"$name\" was not found in the host, the default proxy is used instead")
+            return null
+        }
+
         fun Intent.wrap(): Intent {
             val component = this.component ?: return this
             if (component.packageName != currentPackageName) return this
             val activityClass = component.className.toModuleActivityClassOrNull() ?: return this
 
-            val proxyClassName = activityClass.runCatching {
-                createInstanceAsTypeOrNull<ModuleActivity>()?.proxyClassName
-                    ?.takeIf { hostApplication?.classLoader?.hasClass(it) == true }
-            }.getOrNull() ?: ActivityProxyConfig.proxyClassName
+            val proxyClassName = activityClass.declaredProxyClassName() ?: ActivityProxyConfig.proxyClassName
 
             return Intent().apply {
                 setClassName(component.packageName, proxyClassName)
