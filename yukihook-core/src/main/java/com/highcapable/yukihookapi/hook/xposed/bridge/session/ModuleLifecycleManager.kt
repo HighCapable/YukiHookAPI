@@ -53,6 +53,7 @@ internal object ModuleLifecycleManager {
     private var session: ModuleSessionBridge? = null
     private var lifecycle: ModuleLifecycle? = null
 
+    @Volatile
     private var restoring = false
 
     private val components = mutableListOf<Component>()
