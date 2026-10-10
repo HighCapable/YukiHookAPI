@@ -183,9 +183,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             !MODULE_PACKAGE_NAME_REGEX.matches(spec.modulePackageName)
         ) problem("Invalid module package name \"${spec.modulePackageName}\"")
 
-        if (("[^\\p{L}\\p{N}_]".toRegex().containsMatchIn(spec.initClassName) ||
-                true.let { for (i in 0..9) if (spec.initClassName.startsWith(i.toString())) return@let true; false }) &&
-            spec.initClassName.isNotEmpty()
+        if (spec.initClassName.isNotEmpty() &&
+            ("[^\\p{L}\\p{N}_]".toRegex().containsMatchIn(spec.initClassName) || spec.initClassName.first().isDigit())
         ) problem("Invalid hook entry class name \"${spec.initClassName}\"")
 
         if ((entry.primaryConstructor?.parameters?.size ?: 0) > 0)
