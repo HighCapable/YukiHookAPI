@@ -30,7 +30,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
-import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.SystemClock
@@ -56,6 +55,8 @@ import com.highcapable.yukihookapi.hook.xposed.channel.data.wrapper.ChannelDataW
 import com.highcapable.yukihookapi.hook.xposed.channel.priority.ChannelPriority
 import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLoader
+import java.io.ObjectOutputStream
+import java.io.OutputStream
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
 
@@ -281,6 +282,24 @@ class YukiHookDataChannel private constructor() {
 
         /** The time this data was created, used to discard transfers that lost segments. */
         val createdAt = SystemClock.elapsedRealtime()
+    }
+
+    /**
+     * Counts the bytes written to it without storing them.
+     */
+    private class ByteCounter : OutputStream() {
+
+        /** The number of bytes written. */
+        var count = 0L
+            private set
+
+        override fun write(b: Int) {
+            count++
+        }
+
+        override fun write(b: ByteArray, off: Int, len: Int) {
+            count += len
+        }
     }
 
     /**
@@ -532,34 +551,37 @@ class YukiHookDataChannel private constructor() {
             parcel.dataSize()
         }
 
-        /** Measures a bundle using the supplied scratch parcel. */
-        private fun Bundle.calDataByteSize(parcel: Parcel) = runCatching {
-            parcel.setDataPosition(0)
-            parcel.setDataSize(0)
-            parcel.writeBundle(this)
-            parcel.dataSize()
-        }.getOrNull() ?: -1
-
-        /** Splits a collection after measuring each appended element, preserving its segment type. */
-        private inline fun <T, C : Serializable> Iterable<T>.toSegments(create: () -> C, append: C.(T) -> Unit): List<C> {
+        /**
+         * Splits a collection after measuring each appended element, preserving its segment type.
+         *
+         * Segments are sent through [Parcel.writeSerializable], so each element is written once into the
+         * object stream of its segment and the counted bytes match the serialized segment.
+         */
+        private inline fun <T, C : Serializable> Iterable<T>.toSegments(
+            create: () -> C,
+            append: C.(T) -> Unit,
+            write: ObjectOutputStream.(T) -> Unit
+        ): List<C> {
             val segments = mutableListOf<C>()
-            val bundle = Bundle()
+            var segment: C? = null
+            var counter = ByteCounter()
+            var stream: ObjectOutputStream? = null
 
-            Parcel.obtain().use { parcel ->
-                var segment: C? = null
-                for (element in this) {
-                    val current = segment ?: create().also {
-                        segment = it
-                        bundle.putSerializable("placeholder", it)
-                    }
-                    current.append(element)
-                    if (bundle.calDataByteSize(parcel) >= receiverDataSegmentMaxByteSize) {
-                        segments.add(current)
-                        segment = null
-                    }
+            forEach { element ->
+                val current = segment ?: create().also { segment = it }
+                val currentStream = stream ?: ObjectOutputStream(ByteCounter().also { counter = it }).also { stream = it }
+                current.append(element)
+                currentStream.write(element)
+                currentStream.flush()
+
+                if (counter.count >= receiverDataSegmentMaxByteSize) {
+                    segments.add(current)
+                    segment = null
+                    stream = null
                 }
-                segment?.let(segments::add)
             }
+            segment?.let(segments::add)
+
             return segments
         }
 
@@ -694,15 +716,30 @@ class YukiHookDataChannel private constructor() {
                     val segments = when (val value = wrapper.instance.value) {
                         is List<*> -> {
                             name = "List"
-                            value.toSegments(create = { ArrayList<Any?>() }) { add(it) }
+                            value.toSegments(
+                                create = { ArrayList<Any?>() },
+                                append = { add(it) },
+                                write = { writeObject(it) }
+                            )
                         }
                         is Map<*, *> -> {
                             name = "Map"
-                            value.entries.toSegments(create = { LinkedHashMap<Any?, Any?>() }) { put(it.key, it.value) }
+                            value.entries.toSegments(
+                                create = { LinkedHashMap<Any?, Any?>() },
+                                append = { put(it.key, it.value) },
+                                write = {
+                                    writeObject(it.key)
+                                    writeObject(it.value)
+                                }
+                            )
                         }
                         is Set<*> -> {
                             name = "Set"
-                            value.toSegments(create = { LinkedHashSet<Any?>() }) { add(it) }
+                            value.toSegments(
+                                create = { LinkedHashSet<Any?>() },
+                                append = { add(it) },
+                                write = { writeObject(it) }
+                            )
                         }
                         is String -> {
                             // Preserve the existing character boundaries, including the trailing empty segment.
