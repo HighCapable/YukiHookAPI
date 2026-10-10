@@ -224,7 +224,9 @@ class YukiHookCreator private constructor() {
         protected fun notifyCallbackFailure(invocation: I, throwable: Throwable) {
             onCallbackFailureCallback?.invoke(invocation, throwable)
             onInvocationFailureCallback?.invoke(throwable)
-            if (onCallbackFailureCallback == null && onInvocationFailureCallback == null) logError(throwable, invocation.member)
+
+            if (onCallbackFailureCallback == null && onInvocationFailureCallback == null)
+                YLog.innerE("Hook callback failed for ${invocation.member}", throwable)
         }
 
         private fun logError(throwable: Throwable, target: Any) = YLog.innerE("Failed to hook $target", throwable)

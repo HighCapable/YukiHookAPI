@@ -26,6 +26,7 @@ package com.highcapable.yukihookapi.hook.xposed.application
 import android.app.Application
 import androidx.annotation.CallSuper
 import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.channel.YukiHookDataChannel
 import com.highcapable.yukihookapi.runtime.YukiHookBridge
 
@@ -52,6 +53,7 @@ open class ModuleApplication : Application() {
          * @see requireContext
          */
         var current: ModuleApplication? = null
+            private set
 
         /**
          * Requires the module-wide static [Application] instance.
@@ -73,7 +75,11 @@ open class ModuleApplication : Application() {
 
         YukiHookBridge.initializeModuleServices()
         // Calls [YukiHookXposedModule.onInit] on the hook entry class.
-        runCatching { ModuleApplication_Impl.callHookEntryInit() }
+        runCatching {
+            ModuleApplication_Impl.callHookEntryInit()
+        }.onFailure {
+            YLog.innerE("Failed to initialize the hook entry in the module process", it)
+        }
         YukiHookDataChannel.get().register(this)
     }
 
