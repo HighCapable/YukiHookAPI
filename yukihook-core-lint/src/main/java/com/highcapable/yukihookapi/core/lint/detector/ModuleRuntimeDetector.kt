@@ -285,6 +285,11 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         }
     }
 
+    private var projectSources: List<File>? = null
+    private val sourceTexts = mutableMapOf<File, String>()
+    private val parsedSources = mutableMapOf<File, UFile?>()
+    private val sourceHookerLoads = mutableMapOf<File, List<Pair<String?, Set<String>>>>()
+
     override fun getApplicableUastTypes() = listOf(UFile::class.java)
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
@@ -656,6 +661,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private fun reportHookerKeyConflicts(file: UFile, contributions: Map<UBlockExpression, List<KeyContribution>>) {
             val conflicts = linkedMapOf<Pair<PsiElement?, PsiElement?>, KeyConflict>()
             contributions.values.forEach { collectHookerKeyConflicts(it, conflicts) }
+            // Key contributions depend on the hookers visited from this file, so they are not cached.
             file.hookerLoaderFiles().forEach { loader -> loader.keyContributions().values.forEach { collectHookerKeyConflicts(it, conflicts) } }
 
             conflicts.values
@@ -680,21 +686,31 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             val names = allClasses().filter { it.isHooker() }.mapNotNullTo(mutableSetOf()) { it.name }
             if (names.isEmpty()) return emptyList()
 
-            val sources = context.project.javaSourceFolders.asSequence()
+            val sources = (projectSources ?: context.project.javaSourceFolders.asSequence()
                 .flatMap { it.walkTopDown() }
-                .filter { it.isFile && (it.extension == "java" || it.extension == "kt") && it.path != context.file.path }
+                .filter { it.isFile && (it.extension == "java" || it.extension == "kt") }
                 .toList()
+                .also { projectSources = it }).filter { it.path != context.file.path }
             val loaders = linkedMapOf<File, UFile>()
             var pending = names.toSet()
             while (pending.isNotEmpty()) {
                 val found = mutableSetOf<String>()
                 sources.filter { it !in loaders }
-                    .filter { source -> context.client.readFile(source).let { text -> pending.any { it in text } } }
+                    .filter { source ->
+                        sourceTexts.getOrPut(source) {
+                            context.client.readFile(source).toString() }.let { text ->
+                            pending.any { it in text }
+                        }
+                    }
                     .forEach { source ->
-                        val loader = context.toUFile(source) ?: return@forEach
+                        val loader = parsedSources.getOrPut(source) { context.toUFile(source) } ?: return@forEach
                         loaders[source] = loader
-                        loader.allClasses().filter { it.isHooker() && it.loadedHookerNames().any(names::contains) }
-                            .mapNotNullTo(found) { it.name }
+                        val hookerLoads = sourceHookerLoads.getOrPut(source) {
+                            loader.allClasses().filter { it.isHooker() }.map { it.name to it.loadedHookerNames() }
+                        }
+                        hookerLoads.filter { (_, loaded) ->
+                            loaded.any(names::contains)
+                        }.mapNotNullTo(found) { it.first }
                     }
                 pending = found - names
                 names += found
@@ -707,18 +723,20 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
         private fun UClass.loadedHookerNames(): Set<String> {
             val names = mutableSetOf<String>()
-            methods.firstOrNull { it.name == HOOKER_ENTRY_METHOD_NAME && it.uastParameters.isEmpty() }?.uastBody?.accept(object : AbstractUastVisitor() {
+            methods.firstOrNull { it.name == HOOKER_ENTRY_METHOD_NAME && it.uastParameters.isEmpty() }
+                ?.uastBody
+                ?.accept(object : AbstractUastVisitor() {
 
-                override fun visitClass(node: UClass) = true
-                override fun visitLambdaExpression(node: ULambdaExpression) = true
+                    override fun visitClass(node: UClass) = true
+                    override fun visitLambdaExpression(node: ULambdaExpression) = true
 
-                override fun visitCallExpression(node: UCallExpression): Boolean {
-                    val method = node.resolve()
-                    if (method != null && node.hasImplicitReceiver() && method.loadGuard(node)?.kind == LoadKind.ALWAYS)
-                        node.loadedHookers().mapNotNullTo(names) { it.second.name }
-                    return super.visitCallExpression(node)
-                }
-            })
+                    override fun visitCallExpression(node: UCallExpression): Boolean {
+                        val method = node.resolve()
+                        if (method != null && node.hasImplicitReceiver() && method.loadGuard(node)?.kind == LoadKind.ALWAYS)
+                            node.loadedHookers().mapNotNullTo(names) { it.second.name }
+                        return super.visitCallExpression(node)
+                    }
+                })
 
             return names
         }
