@@ -218,8 +218,12 @@ internal fun JavaContext.deletionLocation(source: PsiElement): Location {
     val nextComma = generateSequence(source.nextSibling) { it.nextSibling }
         .firstOrNull { it !is PsiWhiteSpace }
         ?.takeIf { it.text == "," }
-    if (nextComma != null)
-        return Location.create(file, getContents(), source.textRange.startOffset, nextComma.textRange.endOffset)
+    if (nextComma != null) {
+        // Also remove the space after the comma, but keep line breaks so the following arguments stay in place.
+        val end = (nextComma.nextSibling as? PsiWhiteSpace)?.takeUnless { '\n' in it.text }?.textRange?.endOffset
+            ?: nextComma.textRange.endOffset
+        return Location.create(file, getContents(), source.textRange.startOffset, end)
+    }
 
     val previousComma = generateSequence(source.prevSibling) { it.prevSibling }
         .firstOrNull { it !is PsiWhiteSpace }

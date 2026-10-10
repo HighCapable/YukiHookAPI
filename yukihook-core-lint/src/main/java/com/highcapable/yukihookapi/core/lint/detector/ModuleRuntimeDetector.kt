@@ -38,6 +38,7 @@ import com.highcapable.yukihookapi.core.lint.detector.extension.analyzeOrNull
 import com.highcapable.yukihookapi.core.lint.detector.extension.branches
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
+import com.highcapable.yukihookapi.core.lint.detector.extension.deletionLocation
 import com.highcapable.yukihookapi.core.lint.detector.extension.displayName
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingCall
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunction
@@ -205,6 +206,17 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             category = Category.CORRECTNESS,
             priority = 6,
             severity = Severity.WARNING,
+            implementation = IMPLEMENTATION
+        )
+
+        val SYSTEM_FRAMEWORK_IN_PACKAGES_ISSUE = Issue.create(
+            id = "SystemFrameworkInLoadAppPackages",
+            briefDescription = "System framework mixed into loadApp package names",
+            explanation = "loadApp with multiple package names only loads apps and throws at runtime when they contain \"android\" " +
+                "or \"system\". Load the system server separately with loadSystem.",
+            category = Category.CORRECTNESS,
+            priority = 8,
+            severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )
 
@@ -518,11 +530,31 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
         private fun reportSystemFrameworkLoading(node: UCallExpression, method: PsiMethod) {
             if (method.name != LOAD_APP_METHOD_NAME || method.containingClass?.qualifiedName != PACKAGE_PARAM_CLASS) return
-            val names = context.evaluator.computeArgumentMapping(node, method)
-                .filterValues { it.name == LOAD_APP_NAME_PARAMETER }.keys
-            val framework = names.firstNotNullOfOrNull { name ->
-                (ConstantEvaluator.evaluate(context, name) as? String)?.takeIf { it in SYSTEM_FRAMEWORK_NAMES }
-            } ?: return
+            val mapping = context.evaluator.computeArgumentMapping(node, method).filterValues { it.name == LOAD_APP_NAME_PARAMETER }
+            val names = mapping.keys
+            val frameworks = names.mapNotNull { name ->
+                (ConstantEvaluator.evaluate(context, name) as? String)?.takeIf { it in SYSTEM_FRAMEWORK_NAMES }?.let { name to it }
+            }
+
+            // Multiple package names cannot be redirected to loadSystem as a whole, the runtime rejects them.
+            // A Kotlin vararg followed by the hook block compiles to a plain array parameter, not a Java varargs one.
+            if (mapping.values.any { it.type is PsiArrayType }) return frameworks.forEach { (name, framework) ->
+                val argument = name.sourcePsi?.getStrictParentOfType<KtValueArgument>()
+                context.report(
+                    issue = SYSTEM_FRAMEWORK_IN_PACKAGES_ISSUE,
+                    scope = name,
+                    location = context.getLocation(name),
+                    message = "\"$framework\" cannot be loaded together with app package names, use `$LOAD_SYSTEM_METHOD_NAME` separately",
+                    // Removing every name would turn the call into loading all apps, so keep at least one app package name.
+                    quickfixData = if (argument != null && names.size > frameworks.size) buildReplaceFix(
+                        name = "Delete Call Expression",
+                        replacement = "",
+                        range = context.deletionLocation(argument),
+                        reformat = false
+                    ) else null
+                )
+            }
+            val framework = frameworks.firstOrNull()?.second ?: return
 
             context.report(
                 issue = SYSTEM_FRAMEWORK_ISSUE,

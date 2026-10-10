@@ -45,6 +45,7 @@ class YukiHookIssueRegistry : IssueRegistry() {
         ModuleRuntimeDetector.HOOK_LOADING_ISSUE,
         ModuleRuntimeDetector.RETAINED_VALUE_ISSUE,
         ModuleRuntimeDetector.SYSTEM_FRAMEWORK_ISSUE,
+        ModuleRuntimeDetector.SYSTEM_FRAMEWORK_IN_PACKAGES_ISSUE,
         ModuleRuntimeDetector.SYSTEM_DATA_CHANNEL_ISSUE,
         ClassicHookerDetector.ISSUE,
         ModuleUsageDetector.MODULE_APPLICATION_ISSUE,
