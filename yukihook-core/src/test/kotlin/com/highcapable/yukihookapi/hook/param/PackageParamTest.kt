@@ -57,8 +57,11 @@ class PackageParamTest {
         ).forEach { param ->
             Assert.assertTrue(param.loads { loadApp("android") { it() } })
             Assert.assertTrue(param.loads { loadApp("system") { it() } })
-            Assert.assertTrue(param.loads { loadApp("com.example", "system") { it() } })
             Assert.assertFalse(param.loads { loadApp("com.example") { it() } })
+            // Loading all apps does not include the system server.
+            Assert.assertFalse(param.loads { loadApp("") { it() } })
+            Assert.assertFalse(param.loads { loadApp("", "") { it() } })
+            Assert.assertFalse(param.loads { loadApp { it() } })
         }
     }
 
@@ -68,7 +71,17 @@ class PackageParamTest {
 
         Assert.assertFalse(param.loads { loadApp("android") { it() } })
         Assert.assertFalse(param.loads { loadApp("system") { it() } })
-        Assert.assertTrue(param.loads { loadApp("android", "com.example") { it() } })
+        Assert.assertThrows(IllegalArgumentException::class.java) { param.loads { loadApp("android", "com.example") { it() } } }
+    }
+
+    @Test
+    fun loadsAllAppsWithBlankNames() {
+        val param = param(HookEntryType.PACKAGE, "com.example")
+
+        Assert.assertTrue(param.loads { loadApp("") { it() } })
+        Assert.assertTrue(param.loads { loadApp("", " ") { it() } })
+        Assert.assertTrue(param.loads { loadApp("com.other", "com.example") { it() } })
+        Assert.assertFalse(param.loads { loadApp("com.other", "") { it() } })
     }
 
     @Test
@@ -76,6 +89,8 @@ class PackageParamTest {
         val param = PackageParam()
 
         Assert.assertFalse(param.loads { loadApp("android") { it() } })
-        Assert.assertFalse(param.loads { loadApp("com.example", "system") { it() } })
+        Assert.assertFalse(param.loads { loadApp("") { it() } })
+        Assert.assertFalse(param.loads { loadApp { it() } })
+        Assert.assertThrows(IllegalArgumentException::class.java) { param.loads { loadApp("com.example", "system") { it() } } }
     }
 }

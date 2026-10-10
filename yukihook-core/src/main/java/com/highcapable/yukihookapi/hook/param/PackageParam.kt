@@ -79,6 +79,10 @@ import com.highcapable.kavaref.extension.toClassOrNull as toClassOrNullGlobal
  */
 open class PackageParam internal constructor(internal var context: PackageContext? = null) {
 
+    private val isZygoteEntry get() = context?.type == HookEntryType.ZYGOTE
+    private val isAppEntry get() = context?.type == HookEntryType.PACKAGE
+    private val isSystemServerEntry get() = context?.type == HookEntryType.SYSTEM_SERVER
+
     /** The currently configured [ClassLoader]. */
     private var currentClassLoader: ClassLoader? = null
 
@@ -231,7 +235,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @return [YukiHookDataChannel.Namespace]
      * @throws IllegalStateException if loaded in [HookEntryType.ZYGOTE].
      */
-    val dataChannel get() = if (context?.type != HookEntryType.ZYGOTE)
+    val dataChannel get() = if (!isZygoteEntry)
         YukiHookDataChannel.get().namespace(packageName = packageName)
     else error("YukiHookDataChannel cannot be used in zygote events, use it in loadApp or loadSystem instead.")
 
@@ -283,7 +287,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     @RequiresApi(AndroidVersion.N)
     fun registerModuleActivitiesWhenReady(proxy: Any? = null) {
-        if (context?.type == HookEntryType.PACKAGE && context?.isFirstApplication == true)
+        if (isAppEntry && context?.isFirstApplication == true)
             AppParasitism.registerModuleActivitiesWhenReady(packageName, proxy)
     }
 
@@ -380,47 +384,49 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Loads and hooks apps with the specified package name.
      * @see loadSystem
-     * @param name the package name. "android" or "system" refers to the system framework and works as [loadSystem].
+     * @param name the package name. An empty name matches all apps, the system server is not included.
+     * "android" or "system" refers to the system framework and works as [loadSystem].
      * @param block the [PackageParam] hook block.
      */
     fun loadApp(name: String, block: PackageParam.() -> Unit) {
         if (AppParasitism.isSystemFramework(name)) return loadSystem(block)
-        if (context?.type != HookEntryType.ZYGOTE && (context?.matchesPackage(name) == true || name.isBlank())) block(this)
+        if (isAppEntry && (context?.matchesPackage(name) == true || name.isBlank())) block(this)
     }
 
     /**
      * Loads and hooks apps with the specified package names.
      * @see loadSystem
-     * @param name the package names. "android" or "system" refers to the system framework and works as [loadSystem].
+     * @param name the package names. Empty names match all apps, the system server is not included.
+     * "android" and "system" are not allowed here, use [loadSystem] for the system framework.
      * @param block the [PackageParam] hook block.
+     * @throws IllegalArgumentException if [name] contains "android" or "system".
      */
     fun loadApp(vararg name: String, block: PackageParam.() -> Unit) {
-        fun matches(name: String) = when (context?.type) {
-            null, HookEntryType.ZYGOTE -> false
-            HookEntryType.SYSTEM_SERVER -> AppParasitism.isSystemFramework(name)
-            else -> !AppParasitism.isSystemFramework(name) && context?.matchesPackage(name) == true
+        require(name.none(AppParasitism::isSystemFramework)) {
+            "loadApp cannot load \"android\" or \"system\" together with app package names, use loadSystem separately."
         }
 
-        if (name.isEmpty()) return loadApp(block = block)
-        if (name.any(::matches)) block(this)
+        if (name.all { it.isBlank() }) return loadApp(block = block)
+        if (isAppEntry && name.any { context?.matchesPackage(it) == true }) block(this)
     }
 
     /**
      * Loads and hooks apps with the specified package name.
      * @see loadSystem
-     * @param name the package name. "android" or "system" refers to the system framework and works as [loadSystem].
+     * @param name the package name. An empty name matches all apps, the system server is not included.
+     * "android" or "system" refers to the system framework and works as [loadSystem].
      * @param hookers the hookers.
      */
     fun loadApp(name: String, hookers: YukiBaseHooker) {
         if (AppParasitism.isSystemFramework(name)) return loadSystem(hookers)
-        if (context?.type != HookEntryType.ZYGOTE && (context?.matchesPackage(name) == true || name.isBlank())) loadHooker(hookers)
+        if (isAppEntry && (context?.matchesPackage(name) == true || name.isBlank())) loadHooker(hookers)
     }
 
     /**
      * Loads and hooks apps with the specified package name.
      * @see loadSystem
-     * @param name the package name. An empty name matches all apps except [loadZygote] events.
-     *   "android" or "system" refers to the system framework and works as [loadSystem].
+     * @param name the package name. An empty name matches all apps, the system server is not included.
+     * "android" or "system" refers to the system framework and works as [loadSystem].
      * @param hookers the hookers.
      */
     fun loadApp(name: String, vararg hookers: YukiBaseHooker) {
@@ -429,37 +435,31 @@ open class PackageParam internal constructor(internal var context: PackageContex
         }
         if (AppParasitism.isSystemFramework(name)) return loadSystem(*hookers)
 
-        if (context?.type != HookEntryType.ZYGOTE &&
-            (context?.matchesPackage(name) == true || name.isBlank())
-        ) hookers.forEach { loadHooker(it) }
+        if (isAppEntry && (context?.matchesPackage(name) == true || name.isBlank())) hookers.forEach { loadHooker(it) }
     }
 
     /**
-     * Loads and hooks all apps.
+     * Loads and hooks all apps, the system server is not included.
      * @see loadSystem
      * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
      * @param block the [PackageParam] hook block.
      */
     fun loadApp(excludeSelf: Boolean = false, block: PackageParam.() -> Unit) {
-        if (context?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
-        ) block(this)
+        if (isAppEntry && (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)) block(this)
     }
 
     /**
-     * Loads and hooks all apps.
+     * Loads and hooks all apps, the system server is not included.
      * @see loadSystem
      * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
      * @param hooker the hooker.
      */
     fun loadApp(excludeSelf: Boolean = false, hooker: YukiBaseHooker) {
-        if (context?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
-        ) loadHooker(hooker)
+        if (isAppEntry && (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)) loadHooker(hooker)
     }
 
     /**
-     * Loads and hooks all apps.
+     * Loads and hooks all apps, the system server is not included.
      * @see loadSystem
      * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
      * @param hookers the hookers.
@@ -469,9 +469,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
             "loadApp requires at least one hooker."
         }
 
-        if (context?.type != HookEntryType.ZYGOTE &&
-            (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true)
-        ) hookers.forEach { loadHooker(it) }
+        if (isAppEntry && (!excludeSelf || context?.matchesPackage(XposedModuleRuntime.modulePackageName) != true))
+            hookers.forEach { loadHooker(it) }
     }
 
     /**
@@ -480,7 +479,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param block the [PackageParam] hook block.
      */
     fun loadSystem(block: PackageParam.() -> Unit) {
-        if (context?.type == HookEntryType.SYSTEM_SERVER) block(this)
+        if (isSystemServerEntry) block(this)
     }
 
     /**
@@ -489,7 +488,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param hooker the hooker.
      */
     fun loadSystem(hooker: YukiBaseHooker) {
-        if (context?.type == HookEntryType.SYSTEM_SERVER) loadHooker(hooker)
+        if (isSystemServerEntry) loadHooker(hooker)
     }
 
     /**
@@ -502,7 +501,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
             "loadSystem requires at least one hooker."
         }
 
-        if (context?.type == HookEntryType.SYSTEM_SERVER) hookers.forEach { loadHooker(it) }
+        if (isSystemServerEntry) hookers.forEach { loadHooker(it) }
     }
 
     /**
@@ -517,7 +516,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(block: PackageParam.() -> Unit) {
-        if (context?.type == HookEntryType.ZYGOTE) block(this)
+        if (isZygoteEntry) block(this)
     }
 
     /**
@@ -532,7 +531,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     @RequiresRuntime(YukiHookRuntime.XPOSED_82)
     @Deprecated(message = "Use loadApp or loadSystem instead.")
     fun loadZygote(hooker: YukiBaseHooker) {
-        if (context?.type == HookEntryType.ZYGOTE) loadHooker(hooker)
+        if (isZygoteEntry) loadHooker(hooker)
     }
 
     /**
@@ -551,7 +550,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
             "loadZygote requires at least one hooker."
         }
 
-        if (context?.type == HookEntryType.ZYGOTE) hookers.forEach { loadHooker(it) }
+        if (isZygoteEntry) hookers.forEach { loadHooker(it) }
     }
 
     /**
