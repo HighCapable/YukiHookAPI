@@ -134,7 +134,13 @@ class YukiHookSharedFiles private constructor() {
      */
     fun outputStream(name: String): FileOutputStream {
         checkApi(requireWritable = true)
-        return ParcelFileDescriptor.AutoCloseOutputStream(current.open(name)).apply { channel.truncate(0) }
+
+        val stream = ParcelFileDescriptor.AutoCloseOutputStream(current.open(name))
+        return runCatching {
+            stream.apply { channel.truncate(0) }
+        }.onFailure {
+            stream.close()
+        }.getOrThrow()
     }
 
     /**
