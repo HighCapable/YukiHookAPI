@@ -83,7 +83,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
             param.packageName != FRAMEWORK_PACKAGE_NAME && param.packageName != FRAMEWORK_SCOPE_NAME -> YukiHookModuleCaller.callOnPackageLoaded(
                 packageName = param.packageName,
                 processName = processName,
-                mainProcessName = param.packageName.trim(),
+                mainProcessName = param.appInfo?.processName ?: param.packageName.trim(),
                 isFirstApplication = param.isFirstApplication,
                 packageNameForMatching = param.packageName,
                 loader = param.classLoader,

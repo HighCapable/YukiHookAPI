@@ -90,7 +90,7 @@ abstract class LibXposedBaseEntry : XposedModule() {
             YukiHookModuleCaller.callOnPackageLoaded(
                 packageName = param.packageName,
                 processName = processName,
-                mainProcessName = param.packageName.trim(),
+                mainProcessName = param.applicationInfo.processName ?: param.packageName.trim(),
                 isFirstApplication = param.isFirstPackage,
                 packageNameForMatching = param.packageName,
                 loader = param.classLoader,

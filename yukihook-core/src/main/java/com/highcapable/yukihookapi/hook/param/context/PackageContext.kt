@@ -66,7 +66,7 @@ internal data class PackageContext(
             type = type, 
             packageName = context.packageName, 
             processName = context.processName, 
-            mainProcessName = context.packageName, 
+            mainProcessName = context.applicationInfo.processName ?: context.packageName,
             isFirstApplication = type == HookEntryType.PACKAGE,
             classLoader = context.classLoader,
             appInfo = context.applicationInfo
