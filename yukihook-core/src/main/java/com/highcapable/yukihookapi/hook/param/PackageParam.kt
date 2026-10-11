@@ -116,9 +116,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
         /**
          * Gets the [Resources] of the current Xposed module.
          * @return [ModuleResources]
-         * @throws IllegalStateException if the current hook framework does not support this feature.
+         * @throws IllegalStateException if the module resources cannot be created.
          */
-        val resources get() = XposedModuleRuntime.moduleResources ?: error("The current hook framework does not support module resources.")
+        val resources get() = XposedModuleRuntime.moduleResources ?: error("Failed to create the module resources, see the log for details.")
 
         /** Reloads the [Resources] of the current Xposed module. */
         fun reloadResources() = XposedModuleRuntime.reloadModuleResources()
