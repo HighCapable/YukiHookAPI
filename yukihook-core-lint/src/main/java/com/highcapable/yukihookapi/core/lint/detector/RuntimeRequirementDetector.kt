@@ -23,14 +23,18 @@ package com.highcapable.yukihookapi.core.lint.detector
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.Category
+import com.android.tools.lint.detector.api.ConstantEvaluator
 import com.android.tools.lint.detector.api.Detector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
 import com.android.tools.lint.detector.api.JavaContext
+import com.android.tools.lint.detector.api.LintFix
 import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
+import com.highcapable.yukihookapi.core.lint.detector.extension.analyzeOrNull
+import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.findPropertyField
 import com.highcapable.yukihookapi.core.lint.detector.extension.isConstructorReference
@@ -38,28 +42,49 @@ import com.highcapable.yukihookapi.core.lint.detector.extension.reportNode
 import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtClassInitializer
+import org.jetbrains.kotlin.psi.KtContainerNode
+import org.jetbrains.kotlin.psi.KtDestructuringDeclaration
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import org.jetbrains.kotlin.psi.KtReturnExpression
+import org.jetbrains.kotlin.psi.KtWhenEntry
+import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.uast.UAnnotation
+import org.jetbrains.uast.UBinaryExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UExpression
+import org.jetbrains.uast.UIfExpression
+import org.jetbrains.uast.UResolvable
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UTypeReferenceExpression
+import org.jetbrains.uast.UastBinaryOperator
+import org.jetbrains.uast.skipParenthesizedExprDown
 
 class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
     companion object {
 
         private const val REQUIRES_RUNTIME_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.internal.RequiresRuntime"
-        private const val LIBXPOSED_102_EVENT_PACKAGE = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.v102"
 
-        private const val MIN_API_VERSION = "minApiVersion"
+        private const val API_VERSION = "apiVersion"
+
+        private const val YUKIHOOK_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHook"
+        private const val EXECUTOR_CLASS = "$YUKIHOOK_CLASS.Status.Executor"
+        private const val EXECUTOR_API_VERSION_GETTER = "getApiVersion"
+        private const val EXECUTOR_API_VERSION = "YukiHook.Status.Executor.apiVersion"
 
         private const val LIBXPOSED_RUNTIME = "LIBXPOSED"
         private const val XPOSED_82_RUNTIME = "XPOSED_82"
-
-        private const val LIBXPOSED_102_EVENT_MIN_API_VERSION = 102
 
         private val RUNTIME_CLASSES = mapOf(
             LIBXPOSED_RUNTIME to "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.libxposed.entry.base.LibXposedBaseEntry",
@@ -74,11 +99,26 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         val ISSUE = Issue.create(
             id = "RequiresYukiHookRuntime",
             briefDescription = "Incompatible YukiHook runtime or Xposed API version",
-            explanation = "YukiHook APIs require a compatible runtime. If an API specifies a minimum Xposed API version, " +
-                "the module entry must declare that version or higher.",
+            explanation = "YukiHook APIs require a compatible runtime. If an API specifies an Xposed API version, " +
+                "the target API version of the module entry must be that version or higher.",
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
+            implementation = Implementation(
+                RuntimeRequirementDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
+        )
+
+        val NEW_XPOSED_API_ISSUE = Issue.create(
+            id = "NewXposedApi",
+            briefDescription = "Using a YukiHook API newer than the module's minimum Xposed API version",
+            explanation = "The API requires a newer Xposed API version than the minimum API version of the module entry. " +
+                "It has no effect when the module runs on an older framework. Check `$EXECUTOR_API_VERSION` before the call, " +
+                "or raise the minimum API version.",
+            category = Category.CORRECTNESS,
+            priority = 6,
+            severity = Severity.WARNING,
             implementation = Implementation(
                 RuntimeRequirementDetector::class.java,
                 Scope.JAVA_FILE_SCOPE
@@ -116,7 +156,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 declaration = method,
                 apiName = if (method.isConstructor) method.containingClass?.name ?: method.name
                 else node.methodName ?: method.name,
-                location = context.getCallLocation(node, includeReceiver = true, includeArguments = true)
+                location = context.getCallLocation(node, includeReceiver = false, includeArguments = true)
             )
         }
 
@@ -160,37 +200,106 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 return
             }
 
-            if (requirement.runtime != LIBXPOSED_RUNTIME || requirement.minApiVersion <= 0) return
+            if (requirement.runtime != LIBXPOSED_RUNTIME || requirement.apiVersion <= 0) return
             val entry = versionDetector.findLibXposedEntry() ?: return
-            if (entry.minApiVersion >= requirement.minApiVersion) return
+            val isNewApi = entry.minApiVersion < requirement.apiVersion &&
+                (entry.targetApiVersion == null || entry.targetApiVersion >= requirement.apiVersion)
+            if (isNewApi && scope.isGuardedBy(requirement.apiVersion)) return
+            val (issue, attribute, declaredVersion) = when {
+                entry.targetApiVersion != null && entry.targetApiVersion < requirement.apiVersion ->
+                    Triple(ISSUE, LibXposedEntryDetector.TARGET_API_VERSION, entry.targetApiVersion)
+                entry.minApiVersion < requirement.apiVersion ->
+                    Triple(NEW_XPOSED_API_ISSUE, LibXposedEntryDetector.MIN_API_VERSION, entry.minApiVersion)
+                else -> return
+            }
 
             context.report(
-                issue = ISSUE,
+                issue = issue,
                 scope = scope,
                 location = location,
-                message = "`$apiName` requires Xposed API ${requirement.minApiVersion}, but " +
-                    "`@${LibXposedEntryDetector.ENTRY_ANNOTATION_NAME}` specifies `$MIN_API_VERSION = ${entry.minApiVersion}`",
-                quickfixData = versionDetector.buildFix(entry, requirement.minApiVersion, outside = true)
+                message = "`$apiName` requires Xposed API ${requirement.apiVersion}, but " +
+                    "`@${LibXposedEntryDetector.ENTRY_ANNOTATION_NAME}` specifies `$attribute = $declaredVersion`",
+                quickfixData = if (issue == NEW_XPOSED_API_ISSUE) scope.versionCheckFix(requirement.apiVersion)
+                else versionDetector.buildFix(entry, requirement.apiVersion, attribute, outside = true)
             )
         }
 
-        private fun PsiModifierListOwner.runtimeRequirement(): RuntimeRequirement? {
-            // Runtime event extensions cannot use the core module's internal annotation.
-            val ownerPackage = (this as? PsiMethod)?.containingClass?.qualifiedName?.substringBeforeLast('.')
-            if (ownerPackage == LIBXPOSED_102_EVENT_PACKAGE)
-                return RuntimeRequirement(LIBXPOSED_RUNTIME, LIBXPOSED_102_EVENT_MIN_API_VERSION)
+        private fun UElement.isGuardedBy(apiVersion: Int) = generateSequence(this) { it.uastParent }.zipWithNext().any { (child, parent) ->
+            parent is UIfExpression && parent.thenExpression == child && parent.condition.requiresApiVersion(apiVersion)
+        }
 
+        private fun UExpression.requiresApiVersion(apiVersion: Int): Boolean {
+            val expression = skipParenthesizedExprDown() as? UBinaryExpression ?: return false
+            if (expression.operator == UastBinaryOperator.LOGICAL_AND)
+                return expression.leftOperand.requiresApiVersion(apiVersion) || expression.rightOperand.requiresApiVersion(apiVersion)
+
+            val left = expression.leftOperand
+            val right = expression.rightOperand
+            val (version, operator) = when {
+                left.isExecutorApiVersion() -> right.constantInt() to expression.operator
+                right.isExecutorApiVersion() -> left.constantInt() to when (expression.operator) {
+                    UastBinaryOperator.LESS_OR_EQUALS -> UastBinaryOperator.GREATER_OR_EQUALS
+                    UastBinaryOperator.LESS -> UastBinaryOperator.GREATER
+                    else -> return false
+                }
+                else -> return false
+            }
+            version ?: return false
+
+            return when (operator) {
+                UastBinaryOperator.GREATER_OR_EQUALS -> version >= apiVersion
+                UastBinaryOperator.GREATER -> version + 1 >= apiVersion
+                else -> false
+            }
+        }
+
+        private fun UExpression.isExecutorApiVersion(): Boolean {
+            val getter = (skipParenthesizedExprDown() as? UResolvable)?.resolve() as? PsiMethod ?: return false
+            return getter.name == EXECUTOR_API_VERSION_GETTER && getter.containingClass?.qualifiedName == EXECUTOR_CLASS
+        }
+
+        private fun UExpression.constantInt() = ConstantEvaluator.evaluate(context, this) as? Int
+
+        private fun UElement.versionCheckFix(apiVersion: Int): LintFix? {
+            val target = (sourcePsi as? KtElement)?.versionCheckTarget() ?: return null
+            val isUsed = target.analyzeOrNull { target.isUsedAsExpression } ?: return null
+            val condition = "$EXECUTOR_API_VERSION >= $apiVersion"
+            val replacement = "if ($condition) {\n${target.text}\n}" +
+                if (isUsed) " else {\nTODO(\"$EXECUTOR_API_VERSION < $apiVersion\")\n}" else ""
+
+            return buildReplaceFix(
+                name = "Surround with if ($condition) { ... }",
+                replacement = replacement,
+                YUKIHOOK_CLASS,
+                range = context.getLocation(target)
+            )
+        }
+
+        private fun KtElement.versionCheckTarget(): KtExpression? {
+            var target = this as? KtExpression ?: getStrictParentOfType<KtExpression>() ?: return null
+            while (true) {
+                val parent = target.parent ?: return target
+                if (parent.isInvalidVersionCheckTarget()) return target
+                target = target.getStrictParentOfType<KtExpression>() ?: return target
+            }
+        }
+
+        private fun PsiElement.isInvalidVersionCheckTarget() = this is KtBlockExpression || this is KtContainerNode ||
+            this is KtWhenEntry || this is KtFunction || this is KtPropertyAccessor || this is KtProperty ||
+            this is KtReturnExpression || this is KtDestructuringDeclaration || this is KtClassInitializer
+
+        private fun PsiModifierListOwner.runtimeRequirement(): RuntimeRequirement? {
             val annotation = findRuntimeAnnotation()
                 ?: (this as? PsiMember)?.containingClass?.let {
                     context.evaluator.getAnnotation(it, REQUIRES_RUNTIME_ANNOTATION)
                 } ?: return null
             val runtime = annotation.findAttributeValue("value")?.asSourceString()?.substringAfterLast('.') ?: return null
-            val versionValue = annotation.javaPsi?.findAttributeValue(MIN_API_VERSION)
-            val minApiVersion = versionValue?.let {
+            val versionValue = annotation.javaPsi?.findAttributeValue(API_VERSION)
+            val apiVersion = versionValue?.let {
                 JavaPsiFacade.getInstance(project).constantEvaluationHelper.computeConstantExpression(it) as? Int
             } ?: 0
 
-            return RuntimeRequirement(runtime, minApiVersion)
+            return RuntimeRequirement(runtime, apiVersion)
         }
 
         private fun PsiModifierListOwner.findRuntimeAnnotation() =
@@ -202,6 +311,6 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
     private data class RuntimeRequirement(
         val runtime: String,
-        val minApiVersion: Int
+        val apiVersion: Int
     )
 }

@@ -58,8 +58,8 @@ import kotlin.reflect.KClass
  * @param scope scope packages. An empty array declares no recommended scope. Use `system` explicitly for system_server.
  * @param staticScope whether scope selection is restricted to the declared list.
  * @param hotReload the module reload policy, [HotReload.NONE] by default. [HotReload.MANUAL] and [HotReload.AUTO] require
- * [minApiVersion] at least 102 and an empty [javaEntries] list. An incoming reload is completed when the new module instance
- * declares [HotReload.NONE] with [minApiVersion] at least 102.
+ * [targetApiVersion] at least 102 and an empty [javaEntries] list. An incoming reload is completed when the new module instance
+ * declares [HotReload.NONE] with [targetApiVersion] at least 102.
  * @param javaEntries additional native libxposed Java entries extending `XposedModule`.
  * These entries use their own framework callbacks and must keep their class names when R8 obfuscation is enabled.
  * @param nativeEntries native entry library filenames, such as `libexample.so`, one per generated line.

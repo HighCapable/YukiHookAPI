@@ -27,7 +27,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 /**
  * Outcome of a reload request.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 enum class ModuleReloadStatus {
     /** The requested module instance completed initialization. */
     SUCCEEDED,

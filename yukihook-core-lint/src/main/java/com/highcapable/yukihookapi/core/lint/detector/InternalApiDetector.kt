@@ -160,7 +160,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             val standaloneReference = generateSequence(source) { it.parent }
                 .filterIsInstance<KtNameReferenceExpression>().firstOrNull { it.parent is KtBlockExpression }
 
-            val expression = (scope as? UCallExpression)?.outermostQualifiedReference()
+            val expression = scope.takeIf { it is UCallExpression || it is UQualifiedReferenceExpression }?.outermostQualifiedReference()
             val fixLocation = when {
                 objectLiteral != null -> context.getLocation(objectLiteral)
                 classLiteral != null -> classLiteral.deletionLocation()

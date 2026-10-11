@@ -44,7 +44,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * Obtain this facade from [YukiHook.Module.reload] in the module process.
  * Use preferences to propagate configuration changes instead of reloading code.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 class YukiHookModuleReload private constructor() {
 
     internal companion object {

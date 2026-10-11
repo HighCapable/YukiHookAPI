@@ -1172,7 +1172,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param invocation the replacement chain callback.
      * @return [YukiHookCreator.MemberHooker.Handle]
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, apiVersion = 102)
     @JvmName("replaceChain")
     fun YukiHookCreator.MemberHooker<HookChain>.Handle.replace(
         invocation: HookChain.() -> Any?
@@ -1191,7 +1191,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param hooker the replacement classic callback configuration.
      * @return [YukiHookCreator.MemberHooker.Handle]
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, apiVersion = 102)
     @JvmName("replaceClassic")
     fun YukiHookCreator.MemberHooker<HookParam>.Handle.replace(
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit

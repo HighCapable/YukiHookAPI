@@ -39,6 +39,10 @@ import io.github.libxposed.api.XposedModuleInterface
  */
 abstract class LibXposed102Entry : LibXposedBaseEntry() {
 
+    private companion object {
+        const val HOT_RELOAD_API_VERSION = API_102
+    }
+
     /**
      * Keeps managed and native reload states separate across module instances.
      */
@@ -96,16 +100,19 @@ abstract class LibXposed102Entry : LibXposedBaseEntry() {
     /** Reload policy supplied by the generated entry. */
     protected open val hotReload = ModuleReloadPolicy.NONE
 
+    /** Reload policy in effect, frameworks before API 102 cannot reload modules. */
+    private val activeHotReload get() = if (apiVersion >= HOT_RELOAD_API_VERSION) hotReload else ModuleReloadPolicy.NONE
+
     /** The original handoff kept for a later module instance after a failed restore. */
     private var pendingHandoff: Any? = null
 
     /** Whether [pendingHandoff] was received by this module instance. */
     private var hasPendingHandoff = false
 
-    override val retainPackageContexts get() = hotReload != ModuleReloadPolicy.NONE
+    override val retainPackageContexts get() = activeHotReload != ModuleReloadPolicy.NONE
 
     final override fun onHotReloading(param: XposedModuleInterface.HotReloadingParam): Boolean {
-        if (hotReload == ModuleReloadPolicy.NONE) return false
+        if (activeHotReload == ModuleReloadPolicy.NONE) return false
         if (hasPendingHandoff) {
             // A failed restore cannot run user save callbacks again; retire this instance and forward the original handoff.
             if (!YukiHookModuleCaller.callRetireFailedRestore()) return false
@@ -188,11 +195,11 @@ abstract class LibXposed102Entry : LibXposedBaseEntry() {
     final override fun attachRuntime() = attachRuntime(restoring = false)
 
     final override fun onInitializationFailed() {
-        if (hotReload != ModuleReloadPolicy.NONE) YukiHookModuleCaller.callAbortRestoreModule()
+        if (activeHotReload != ModuleReloadPolicy.NONE) YukiHookModuleCaller.callAbortRestoreModule()
     }
 
     private fun attachRuntime(restoring: Boolean) {
-        val session = if (restoring || hotReload != ModuleReloadPolicy.NONE)
+        val session = if (restoring || activeHotReload != ModuleReloadPolicy.NONE)
             LibXposedModuleSession()
         else null
 

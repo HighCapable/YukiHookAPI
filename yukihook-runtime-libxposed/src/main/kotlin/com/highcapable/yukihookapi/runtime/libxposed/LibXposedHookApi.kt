@@ -42,6 +42,10 @@ internal class LibXposedHookApi(
     private val moduleSession: LibXposedModuleSession? = null
 ) : HookRegistrationBridge {
 
+    private companion object {
+        const val HOOK_REPLACEMENT_API_VERSION = XposedInterface.API_102
+    }
+
     fun attach(registrations: HookRegistrationBridge? = null) {
         YukiHookBridge.attach(
             YukiHookBridge.ApiSpec(
@@ -87,6 +91,16 @@ internal class LibXposedHookApi(
     override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge {
         require(handle is RegistrationHandle) {
             "The hook handle was not created by the libxposed runtime."
+        }
+
+        // The runtime supports replacement, only an older framework lacks it, so keep the current hook instead of failing.
+        if (api.apiVersion < HOOK_REPLACEMENT_API_VERSION) {
+            api.log(
+                Log.WARN, YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME,
+                "Atomic hook replacement is unavailable in Xposed API ${api.apiVersion}, the hook keeps its current callback",
+                null
+            )
+            return handle
         }
 
         return handle.replace(replacement)

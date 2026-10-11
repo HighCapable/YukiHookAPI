@@ -26,7 +26,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 /**
  * Marks an API that requires a specific [YukiHookRuntime].
  * @param value the required runtime.
- * @param minApiVersion the minimum Xposed API version, or 0 to check only the runtime.
+ * @param apiVersion the Xposed API version required by the API, or 0 to check only the runtime.
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(
@@ -37,5 +37,5 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 )
 internal annotation class RequiresRuntime(
     val value: YukiHookRuntime,
-    val minApiVersion: Int = 0
+    val apiVersion: Int = 0
 )

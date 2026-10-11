@@ -86,7 +86,7 @@ internal object YukiHookHelper {
      * @param hooker the replacement hooker callback.
      * @return [YukiHookHandle] a new handle for the replacement hooker.
      */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+    @RequiresRuntime(YukiHookRuntime.LIBXPOSED, apiVersion = 102)
     fun replace(registration: YukiHookHandle, hooker: HookerBridge) = YukiHookHandle.from(
         target = registration.target, 
         hooker = YukiHookBridge.hookRegistration.replace(registration.hooker, hooker)

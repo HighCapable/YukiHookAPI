@@ -70,6 +70,7 @@ import org.jetbrains.kotlin.analysis.api.types.KaFunctionType
 import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallElement
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
@@ -112,9 +113,13 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val MODULE_LIFECYCLE_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.reload.lifecycle.ModuleLifecycleKt"
 
         private const val RETAINED_VALUE_METHOD_NAME = "remember"
+        private const val MODULE_INIT_METHOD_NAME = "onInit"
+        private const val MODULE_HOOK_METHOD_NAME = "onHook"
         private const val HOOKER_ENTRY_METHOD_NAME = "onHook"
         private const val LOAD_APP_METHOD_NAME = "loadApp"
         private const val LOAD_SYSTEM_METHOD_NAME = "loadSystem"
+        private const val LOAD_ZYGOTE_METHOD_NAME = "loadZygote"
+        private const val LOAD_HOOKER_METHOD_NAME = "loadHooker"
         private const val LOAD_APP_NAME_PARAMETER = "name"
         private const val DATA_CHANNEL_METHOD_NAME = "dataChannel"
         private const val SYSTEM_DATA_CHANNEL_METHOD_NAME = "systemDataChannel"
@@ -127,6 +132,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val COLLECTION_CLASS = "java.util.Collection"
         private const val MAP_CLASS = "java.util.Map"
         private const val BUNDLE_CLASS = "android.os.Bundle"
+        private const val UNIT_CLASS = "kotlin.Unit"
 
         private val IMPLICIT_RECEIVER = Any()
 
@@ -330,8 +336,8 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                             node.javaPsi.parameterList.parameters.firstOrNull()?.type.isPackageParam() -> Phase.PACKAGE
                         node.javaPsi.parameterList.parametersCount == 0 &&
                             context.evaluator.extendsClass(owner, MODULE_ENTRY_CLASS, false) -> when (node.name) {
-                            "onInit" -> Phase.INIT
-                            "onHook" -> Phase.HOOK
+                            MODULE_INIT_METHOD_NAME -> Phase.INIT
+                            MODULE_HOOK_METHOD_NAME -> Phase.HOOK
                             else -> return false
                         }
                         else -> return false
@@ -436,9 +442,10 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 val location = context.getLocation(expression)
                 val parent = expression.uastParent
 
-                // UAST can wrap the last statement in a Kotlin lambda in an implicit return.
+                // UAST can wrap the last statement in a Kotlin lambda in an implicit return,
+                // an expression body is wrapped the same way but is not a statement that can be deleted.
                 val isStandalone = parent is UBlockExpression || (parent is UReturnExpression &&
-                    parent.sourcePsi == null && parent.uastParent is UBlockExpression)
+                    parent.sourcePsi == null && expression.sourcePsi?.parent is KtBlockExpression)
 
                 context.report(
                     issue = if (method.isModuleRegistration()) REGISTRATION_ISSUE else HOOK_LOADING_ISSUE,
@@ -499,7 +506,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             // Mark the returned values, or the block itself when it is not a lambda with results, the call is not the cause.
             // A problem in the declared type already covers every result, check the narrower result types only when it has none.
             val results = node.retainedResults()
-            (node.getExpressionType()?.retainedProblem(declared = true) ?: node.mutableSnapshotProblem())?.let { problem ->
+            (node.getExpressionType()?.let { it.unitProblem() ?: it.retainedProblem(declared = true) } ?: node.mutableSnapshotProblem())?.let { problem ->
                 if (results.isEmpty()) reportRetainedProblem(node.valueArguments.lastOrNull() ?: node, problem)
                 else results.forEach { reportRetainedProblem(it, problem) }
                 return
@@ -623,10 +630,10 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             val argument = node.getArgumentForParameter(0)
 
             return when (name) {
-                "loadHooker" -> LoadGuard(LoadKind.ALWAYS)
-                "loadSystem" -> LoadGuard(LoadKind.SYSTEM)
-                "loadZygote" -> LoadGuard(LoadKind.ZYGOTE)
-                "loadApp" -> if (parameterList.parameters.firstOrNull()?.type?.canonicalText == STRING_CLASS) {
+                LOAD_HOOKER_METHOD_NAME -> LoadGuard(LoadKind.ALWAYS)
+                LOAD_SYSTEM_METHOD_NAME -> LoadGuard(LoadKind.SYSTEM)
+                LOAD_ZYGOTE_METHOD_NAME -> LoadGuard(LoadKind.ZYGOTE)
+                LOAD_APP_METHOD_NAME -> if (parameterList.parameters.firstOrNull()?.type?.canonicalText == STRING_CLASS) {
                     val name = argument?.let { ConstantEvaluator.evaluate(context, it) as? String }
                     // The system framework names are redirected to loadSystem at runtime.
                     if (name in SYSTEM_FRAMEWORK_NAMES) LoadGuard(LoadKind.SYSTEM) else LoadGuard(LoadKind.PACKAGE, name)
@@ -826,6 +833,9 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
 
         private fun UCallExpression.retainedResults() =
             (valueArguments.lastOrNull()?.skipParenthesizedExprDown() as? ULambdaExpression)?.returnedExpressions().orEmpty()
+
+        private fun PsiType.unitProblem() =
+            RetainedProblem("inferred as `Unit`", "declare the type explicitly").takeIf { canonicalText == UNIT_CLASS }
 
         private fun PsiType.retainedProblem(declared: Boolean): RetainedProblem? = when (this) {
             is PsiArrayType -> RetainedProblem("an array", "return a `List` instead")

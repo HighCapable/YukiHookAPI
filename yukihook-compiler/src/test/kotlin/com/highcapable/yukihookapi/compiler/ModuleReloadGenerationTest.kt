@@ -67,8 +67,8 @@ class ModuleReloadGenerationTest {
     @Test
     fun automaticReloadIsOnlyRequestedByAuto() {
         val disabled = generate(EntryConfig())
-        val manual = generate(EntryConfig(minApiVersion = 102, hotReload = LibXposedGenerateSpec.HotReload.MANUAL))
-        val automatic = generate(EntryConfig(minApiVersion = 102, hotReload = LibXposedGenerateSpec.HotReload.AUTO))
+        val manual = generate(EntryConfig(hotReload = LibXposedGenerateSpec.HotReload.MANUAL))
+        val automatic = generate(EntryConfig(hotReload = LibXposedGenerateSpec.HotReload.AUTO))
 
         Assert.assertTrue(disabled.getValue("META-INF/xposed/module.prop").contains("minApiVersion=101"))
         Assert.assertTrue(disabled.getValue("META-INF/xposed/module.prop").contains("autoHotReload=false"))
@@ -78,9 +78,9 @@ class ModuleReloadGenerationTest {
     }
 
     @Test
-    fun minimumApiVersionSelectsTheSupportedEntry() {
-        val api101 = generate(EntryConfig()).getValue("example.module.HookEntry_YukiHookXposedInit.kt")
-        val api102 = generate(EntryConfig(minApiVersion = 102)).getValue("example.module.HookEntry_YukiHookXposedInit.kt")
+    fun targetApiVersionSelectsTheSupportedEntry() {
+        val api101 = generate(EntryConfig(targetApiVersion = 101)).getValue("example.module.HookEntry_YukiHookXposedInit.kt")
+        val api102 = generate(EntryConfig()).getValue("example.module.HookEntry_YukiHookXposedInit.kt")
 
         Assert.assertTrue(api101.contains("LibXposed101Entry()"))
         Assert.assertFalse(api101.contains("ModuleReloadPolicy"))
@@ -89,12 +89,12 @@ class ModuleReloadGenerationTest {
     }
 
     @Test
-    fun reloadCannotBeAdvertisedToApi101() {
+    fun reloadCannotBeAdvertisedToTargetApi101() {
         listOf(LibXposedGenerateSpec.HotReload.MANUAL, LibXposedGenerateSpec.HotReload.AUTO).forEach { policy ->
             val failure = Assert.assertThrows(RuntimeException::class.java) {
-                generate(EntryConfig(hotReload = policy))
+                generate(EntryConfig(targetApiVersion = 101, hotReload = policy))
             }
-            Assert.assertTrue(failure.message.orEmpty().contains("minApiVersion >= 102"))
+            Assert.assertTrue(failure.message.orEmpty().contains("targetApiVersion >= 102"))
         }
     }
 
@@ -102,7 +102,7 @@ class ModuleReloadGenerationTest {
     fun reloadRejectsAdditionalJavaEntriesBeforeWritingMetadata() {
         val failure = Assert.assertThrows(RuntimeException::class.java) {
             generate(
-                EntryConfig(minApiVersion = 102, hotReload = LibXposedGenerateSpec.HotReload.MANUAL, hasJavaEntry = true)
+                EntryConfig(hotReload = LibXposedGenerateSpec.HotReload.MANUAL, hasJavaEntry = true)
             )
         }
         Assert.assertTrue(failure.message.orEmpty().contains("exactly one Java entry"))

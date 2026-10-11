@@ -63,7 +63,7 @@ data class LibXposedGenerateSpec(
         const val RUNTIME_MODULE_NAME = "yukihook-runtime-libxposed"
 
         const val RUNTIME_MIN_API_VERSION = 101
-        const val HOT_RELOAD_MIN_API_VERSION = 102
+        const val HOT_RELOAD_API_VERSION = 102
 
         const val METADATA_DIRECTORY = "META-INF/xposed"
         const val JAVA_INIT_FILE_PATH = "$METADATA_DIRECTORY/java_init.list"
@@ -82,12 +82,8 @@ data class LibXposedGenerateSpec(
     }
 
     /**
-     * Returns the runtime entry selected by the module's minimum framework API version.
+     * Returns the runtime entry selected by the module's target framework API version.
      * @return [String]
      */
-    val runtimeEntryClassName get() = when (minApiVersion) {
-        101 -> ENTRY_101_CLASS_NAME
-        102 -> ENTRY_102_CLASS_NAME
-        else -> error("Unsupported minimum API version: $minApiVersion")
-    }
+    val runtimeEntryClassName get() = if (targetApiVersion >= HOT_RELOAD_API_VERSION) ENTRY_102_CLASS_NAME else ENTRY_101_CLASS_NAME
 }

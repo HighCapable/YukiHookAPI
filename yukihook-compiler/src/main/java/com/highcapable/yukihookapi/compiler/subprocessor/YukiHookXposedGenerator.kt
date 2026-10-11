@@ -285,8 +285,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         } else null
         if (spec is LibXposedGenerateSpec) {
             if (spec.hotReload != LibXposedGenerateSpec.HotReload.NONE) {
-                if (spec.minApiVersion < LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION)
-                    problem("Hot reload requires minApiVersion >= ${LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION}")
+                if (spec.targetApiVersion < LibXposedGenerateSpec.HOT_RELOAD_API_VERSION)
+                    problem("Hot reload requires targetApiVersion >= ${LibXposedGenerateSpec.HOT_RELOAD_API_VERSION}")
                 if (spec.javaEntries.isNotEmpty()) problem("Hot reload requires exactly one Java entry. Remove additional javaEntries.")
             }
 
@@ -499,7 +499,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 }.build())
 
             if (this@createXposedEntrySource is LibXposedGenerateSpec &&
-                minApiVersion >= LibXposedGenerateSpec.HOT_RELOAD_MIN_API_VERSION
+                targetApiVersion >= LibXposedGenerateSpec.HOT_RELOAD_API_VERSION
             ) addProperty(PropertySpec.builder("hotReload", ReloadPolicyClass).apply {
                 addModifiers(KModifier.OVERRIDE)
                 addKdoc("Reload policy declared by the module.\n")

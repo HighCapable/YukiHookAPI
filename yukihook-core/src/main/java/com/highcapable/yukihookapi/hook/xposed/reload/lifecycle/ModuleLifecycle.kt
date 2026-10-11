@@ -40,7 +40,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * Register once per module instance. A module without external resources does not need this block.
  * @param block the lifecycle configuration.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookXposedModule.registerModuleLifecycle(block: ModuleLifecycle.() -> Unit) {
     check(YukiHookBridge.runtime == YukiHookRuntime.LIBXPOSED) {
         "Module lifecycle is unavailable in Xposed API 82."
@@ -57,7 +57,7 @@ fun YukiHookXposedModule.registerModuleLifecycle(block: ModuleLifecycle.() -> Un
  *
  * - Note: Do not transfer module-defined objects.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 class ModuleLifecycle internal constructor() {
 
     internal var canReloadCallback: (Bundle?) -> Boolean = { true }

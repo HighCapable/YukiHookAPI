@@ -55,10 +55,12 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
         const val ENTRY_ANNOTATION_NAME = "YukiHookLibXposedEntry"
         const val ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.$ENTRY_ANNOTATION_NAME"
 
-        private const val HOT_RELOAD_ENUM = "$ENTRY_ANNOTATION.HotReload"
+        const val MIN_API_VERSION = "minApiVersion"
+        const val TARGET_API_VERSION = "targetApiVersion"
 
-        private const val MIN_API_VERSION = "minApiVersion"
-        private const val TARGET_API_VERSION = "targetApiVersion"
+        private const val HOT_RELOAD_ENUM = "$ENTRY_ANNOTATION.HotReload"
+        private const val HOT_RELOAD_NONE = "NONE"
+
         private const val HOT_RELOAD = "hotReload"
         private const val JAVA_ENTRIES = "javaEntries"
 
@@ -73,8 +75,8 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
         val ISSUE = Issue.create(
             id = "InvalidLibXposedApiVersion",
             briefDescription = "Invalid Xposed API version for module entry",
-            explanation = "The minimum Xposed API version must be at least 101, and the target API version " +
-                "must not be lower than the minimum version. Hot reload requires a minimum API version of 102.",
+            explanation = "The minimum Xposed API version must be at least $LOWEST_API_VERSION, and the target API version " +
+                "must not be lower than the minimum version. Hot reload requires a target API version of $RELOAD_API_VERSION.",
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
@@ -98,7 +100,8 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
         data class Entry(
             val annotation: UAnnotation,
             val sourceFile: File,
-            val minApiVersion: Int
+            val minApiVersion: Int,
+            val targetApiVersion: Int?
         )
 
         fun findLibXposedEntry() = context.project.javaSourceFolders.asSequence()
@@ -110,27 +113,29 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
         fun buildFix(
             entry: Entry,
-            requiredVersion: Int = entry.minApiVersion,
+            requiredVersion: Int,
+            attribute: String = MIN_API_VERSION,
             outside: Boolean = false
-        ) = buildFix(entry.annotation, requiredVersion, entry.sourceFile, outside)
+        ) = buildFix(entry.annotation, requiredVersion, attribute, entry.sourceFile, outside)
 
         fun buildFix(
             annotation: UAnnotation,
             requiredVersion: Int,
+            attribute: String = MIN_API_VERSION,
             sourceFile: File = context.file,
             outside: Boolean = false
         ): LintFix? {
             val contents = if (sourceFile == context.file) context.getContents() else context.client.readFile(sourceFile)
-            val declared = annotation.findDeclaredAttributeValue(MIN_API_VERSION)?.sourcePsi
+            val declared = annotation.findDeclaredAttributeValue(attribute)?.sourcePsi
             if (declared != null) return buildReplaceFix(
-                name = if (outside) "Change $MIN_API_VERSION to $requiredVersion" else "Change to $requiredVersion",
+                name = if (outside) "Change $attribute to $requiredVersion" else "Change to $requiredVersion",
                 replacement = requiredVersion.toString(),
                 range = Location.create(sourceFile, contents, declared.textRange.startOffset, declared.textRange.endOffset),
                 reformat = false
             )
 
             val source = annotation.sourcePsi ?: return null
-            val argument = "$MIN_API_VERSION = $requiredVersion"
+            val argument = "$attribute = $requiredVersion"
             val (offset, insertion) = when (source) {
                 is KtAnnotationEntry -> {
                     val arguments = source.valueArgumentList
@@ -167,7 +172,8 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
                     if (node.qualifiedName != ENTRY_ANNOTATION) return false
                     val minApiVersion = (node.findAttributeValue(MIN_API_VERSION)?.evaluate() as? Int)
                         ?: LOWEST_API_VERSION
-                    entry = Entry(node, sourceFile, minApiVersion)
+                    val targetApiVersion = node.findAttributeValue(TARGET_API_VERSION)?.evaluate() as? Int
+                    entry = Entry(node, sourceFile, minApiVersion, targetApiVersion)
                     return true
                 }
             })
@@ -190,18 +196,16 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
             val reload = node.findAttributeValue(HOT_RELOAD) as? UResolvable
             val policy = reload?.resolve() as? PsiEnumConstant
-            val usesReload = policy?.containingClass?.qualifiedName == HOT_RELOAD_ENUM && policy.name in setOf("MANUAL", "AUTO")
-            val requiredVersion = if (usesReload) RELOAD_API_VERSION else LOWEST_API_VERSION
+            val usesReload = policy?.containingClass?.qualifiedName == HOT_RELOAD_ENUM && policy.name != HOT_RELOAD_NONE
 
-            if (minVersion < requiredVersion) {
+            if (minVersion < LOWEST_API_VERSION) {
                 val location = if (declaredMin != null) context.getLocation(declaredMin) else context.annotationNameLocation(node)
                 context.report(
                     issue = ISSUE,
                     scope = node,
                     location = location,
-                    message = if (usesReload) "Hot reload requires `$MIN_API_VERSION` to be at least $RELOAD_API_VERSION"
-                    else "`$MIN_API_VERSION` must be at least $LOWEST_API_VERSION",
-                    quickfixData = versionDetector.buildFix(node, requiredVersion)
+                    message = "`$MIN_API_VERSION` must be at least $LOWEST_API_VERSION",
+                    quickfixData = versionDetector.buildFix(node, LOWEST_API_VERSION)
                 )
             }
 
@@ -224,6 +228,15 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
             val targetValue = node.findAttributeValue(TARGET_API_VERSION) ?: return
             val targetVersion = targetValue.evaluate() as? Int ?: return
+
+            // Hot reload degrades to disabled on older frameworks, so only the target version has to support it.
+            if (usesReload && targetVersion < RELOAD_API_VERSION) context.report(
+                issue = ISSUE,
+                scope = node,
+                location = context.getLocation(targetValue),
+                message = "Hot reload requires `$TARGET_API_VERSION` to be at least $RELOAD_API_VERSION",
+                quickfixData = versionDetector.buildFix(node, RELOAD_API_VERSION, TARGET_API_VERSION)
+            )
             if (targetVersion >= minVersion) return
 
             val location = context.getLocation(targetValue)

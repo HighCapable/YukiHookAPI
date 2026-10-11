@@ -31,7 +31,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
 import com.highcapable.yukihookapi.runtime.libxposed.generated.YukiHookProperties
-import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.service.HotReloadResult
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
@@ -45,6 +44,9 @@ import io.github.libxposed.service.HookedTarget as NativeHookedTarget
  */
 internal object LibXposedService {
 
+    private const val RUNTIME_API_VERSION = XposedService.API_101
+    private const val HOT_RELOAD_API_VERSION = XposedService.API_102
+
     private val services = IdentityHashMap<IBinder, XposedService>()
     private val listeners = CopyOnWriteArraySet<ServiceSubscription>()
 
@@ -52,7 +54,7 @@ internal object LibXposedService {
 
     private var initialized = false
 
-    val isAvailable get() = runCatching { service?.apiVersion?.let { it >= XposedInterface.API_101 } ?: false }.getOrDefault(false)
+    val isAvailable get() = runCatching { service?.apiVersion?.let { it >= RUNTIME_API_VERSION } ?: false }.getOrDefault(false)
     val apiVersion get() = runCatching { service?.apiVersion }.getOrNull() ?: -1
     val frameworkName get() = runCatching { service?.frameworkName }.getOrNull() ?: "unknown"
     val frameworkVersion get() = runCatching { service?.frameworkVersion }.getOrNull() ?: "unknown"
@@ -130,8 +132,8 @@ internal object LibXposedService {
 
     private inline fun <T> useModuleReload(block: (XposedService) -> T) = checkNotNull(
         useService("module reload") {
-            check(it.apiVersion >= XposedService.API_102) {
-                "Module reload requires libxposed service API ${XposedService.API_102}"
+            check(it.apiVersion >= HOT_RELOAD_API_VERSION) {
+                "Module reload requires libxposed service API $HOT_RELOAD_API_VERSION"
             }
             block(it)
         }
@@ -139,8 +141,8 @@ internal object LibXposedService {
 
     private inline fun <T> useModuleScope(block: (XposedService) -> T) = checkNotNull(
         useService("module scope") {
-            check(it.apiVersion >= XposedService.API_101) {
-                "Module scope requires libxposed service API ${XposedService.API_101}"
+            check(it.apiVersion >= RUNTIME_API_VERSION) {
+                "Module scope requires libxposed service API $RUNTIME_API_VERSION"
             }
             block(it)
         }

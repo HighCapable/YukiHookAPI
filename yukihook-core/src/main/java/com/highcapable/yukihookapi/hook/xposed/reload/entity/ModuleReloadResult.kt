@@ -30,7 +30,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * @param status the request outcome.
  * @param message the original diagnostic message, or null.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 @ConsistentCopyVisibility
 data class ModuleReloadResult internal constructor(
     val target: ModuleTarget,

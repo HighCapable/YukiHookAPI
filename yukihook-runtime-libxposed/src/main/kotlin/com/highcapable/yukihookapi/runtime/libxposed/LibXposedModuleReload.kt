@@ -34,6 +34,8 @@ import io.github.libxposed.service.XposedService
  */
 internal object LibXposedModuleReload : ModuleReloadBridge {
 
+    private const val HOT_RELOAD_API_VERSION = XposedService.API_102
+
     private class TargetHandle(val handle: LibXposedService.HookedTarget) : ModuleReloadBridge.Target {
         override val uid get() = handle.target.uid
         override val pid get() = handle.target.pid
@@ -49,7 +51,7 @@ internal object LibXposedModuleReload : ModuleReloadBridge {
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    override val isAvailable get() = LibXposedService.apiVersion >= XposedService.API_102
+    override val isAvailable get() = LibXposedService.apiVersion >= HOT_RELOAD_API_VERSION
     override val targets: List<ModuleReloadBridge.Target> get() = LibXposedService.getReloadTargets().map(::TargetHandle)
 
     override fun request(target: ModuleReloadBridge.Target, extras: Bundle?, callback: (ModuleReloadBridge.Status, String?) -> Unit) {

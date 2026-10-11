@@ -31,7 +31,7 @@ import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadBridge
 /**
  * An immutable target snapshot.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 class ModuleTarget internal constructor(internal val handle: ModuleReloadBridge.Target) {
 
     /** Process UID. */

@@ -284,7 +284,7 @@ object YukiHook {
          * - Requires [YukiHook.Status.isXposedModuleActive].
          * @return [YukiHookModuleReload]
          */
-        @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED, minApiVersion = 102)
+        @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
         val reload get() = YukiHookModuleReload.get()
 
         /**

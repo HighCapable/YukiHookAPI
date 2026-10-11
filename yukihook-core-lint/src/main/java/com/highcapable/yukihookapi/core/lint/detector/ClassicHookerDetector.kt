@@ -43,6 +43,7 @@ import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiWildcardType
+import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
@@ -60,6 +61,11 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
     companion object {
 
         private const val CLASSIC_HOOKER = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.core.YukiHookCreator.ClassicMemberHooker"
+
+        private const val BEFORE_METHOD_NAME = "before"
+        private const val AFTER_METHOD_NAME = "after"
+
+        private val INTERCEPT_METHOD_NAMES = setOf("intercept", "replaceAny", "replaceUnit", "replaceTo", "replaceToTrue", "replaceToFalse")
 
         val ISSUE = Issue.create(
             id = "ConflictingClassicHookCallbacks",
@@ -101,10 +107,9 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
                     if (method.containingClass?.qualifiedName != CLASSIC_HOOKER) return false
 
                     val callback = when (method.name) {
-                        "before" -> Callback.BEFORE
-                        "after" -> Callback.AFTER
-                        "intercept", "replaceAny", "replaceUnit",
-                        "replaceTo", "replaceToTrue", "replaceToFalse" -> Callback.INTERCEPT
+                        BEFORE_METHOD_NAME -> Callback.BEFORE
+                        AFTER_METHOD_NAME -> Callback.AFTER
+                        in INTERCEPT_METHOD_NAMES -> Callback.INTERCEPT
                         else -> return false
                     }
                     val group = node.hookerGroup() ?: return false
@@ -127,8 +132,8 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
                         val expression = generateSequence(call.node as UElement) { it.uastParent as? UQualifiedReferenceExpression }.last()
                         val location = context.getLocation(expression)
                         val parent = expression.uastParent
-                        val isStandalone = parent is UBlockExpression || (parent is UReturnExpression && 
-                            parent.sourcePsi == null && parent.uastParent is UBlockExpression)
+                        val isStandalone = parent is UBlockExpression || (parent is UReturnExpression &&
+                            parent.sourcePsi == null && expression.sourcePsi?.parent is KtBlockExpression)
 
                         context.report(
                             issue = ISSUE,
