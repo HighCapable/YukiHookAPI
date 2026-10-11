@@ -23,7 +23,6 @@
 
 package com.highcapable.yukihookapi.hook.log
 
-import android.system.ErrnoException
 import android.util.Log
 import com.highcapable.kavaref.KavaRef
 import com.highcapable.kavaref.runtime.KavaRefRuntime
@@ -32,6 +31,7 @@ import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.log.data.YLogData
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import java.io.File
+import java.io.IOException
 import java.util.Collections
 
 /**
@@ -230,13 +230,13 @@ object YLog {
     /**
      * Saves the current logs to a file.
      *
-     * Performs no operation when [Config.recording] is disabled or no logs have been recorded.
+     * Performs no operation when [data] is empty, [inMemoryData] stays empty while [Config.recording] is disabled.
      * Logs are appended to [fileName], which is created automatically when it does not exist.
      *
      * File access depends on the permissions granted to the current host or module.
      * @param fileName the full file name, for example `/data/data/.../files/xxx.log`.
      * @param data the log data, [inMemoryData] by default.
-     * @throws ErrnoException if the target path is not writable.
+     * @throws IOException if the target path is not writable.
      */
     fun saveToFile(fileName: String, data: List<YLogData> = inMemoryData) {
         val currentData = if (data === inMemoryData) createSnapshot() else data

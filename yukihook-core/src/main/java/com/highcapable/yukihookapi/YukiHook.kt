@@ -96,6 +96,8 @@ object YukiHook {
          * Use this only to fix file-permission errors that may remain on some systems after enabling the new `XSharedPreferences` in the legacy API.
          *
          * Do not enable it when [YukiHookPreferences] already works correctly.
+         *
+         * Requires framework injection into the module's own process.
          */
         @RequiresRuntime(YukiHookRuntime.XPOSED_82)
         var hookSharedPreferences = false
