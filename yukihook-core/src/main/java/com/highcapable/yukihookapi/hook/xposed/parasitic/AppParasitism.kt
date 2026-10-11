@@ -90,6 +90,12 @@ internal object AppParasitism : ModuleReloadable {
     /** The scope name of the system framework used by Xposed frameworks. */
     const val FRAMEWORK_SCOPE_NAME = "system"
 
+    /** The process name of the system server, declared by the framework package. */
+    const val SYSTEM_PROCESS_NAME = "system"
+
+    /** The zygote nice name of the system server, also its command line. */
+    const val SYSTEM_SERVER_NICE_NAME = "system_server"
+
     /** The range of UIDs allocated to each user, matching the hidden `UserHandle.PER_USER_RANGE`. */
     private const val PER_USER_RANGE = 100000
 
@@ -260,7 +266,8 @@ internal object AppParasitism : ModuleReloadable {
         .firstMethodOrNull { name = "currentProcessName" }
         ?.invoke<String>()
         ?.takeIf { it.isNotBlank() }
-        ?: FRAMEWORK_PACKAGE_NAME
+        // The system server never binds an application, so it has no process name here.
+        ?: SYSTEM_PROCESS_NAME
 
     /**
      * Gets the user ID of the current process.

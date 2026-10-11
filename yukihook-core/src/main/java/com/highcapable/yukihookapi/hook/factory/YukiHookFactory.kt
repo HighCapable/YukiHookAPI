@@ -110,6 +110,8 @@ fun Context.systemDataChannel() = dataChannel(AppParasitism.FRAMEWORK_PACKAGE_NA
 
 /**
  * Gets the current process name.
+ *
+ * In the system server, this is `system`.
  * @receiver the current context.
  * @return [String]
  */
@@ -123,7 +125,12 @@ val Context.processName
         // Removes transport padding and trailing replacement characters from a process name.
         ?.substringBefore('\u0000')
         ?.trimEnd('\uFFFD')
-        ?: packageName ?: ""
+        // The system server has no bound application and its command line is the zygote nice name,
+        // use the process name declared by the framework package instead.
+        ?.takeIf { it != AppParasitism.SYSTEM_SERVER_NICE_NAME }
+        ?: (if (packageName == AppParasitism.FRAMEWORK_PACKAGE_NAME)
+            AppParasitism.SYSTEM_PROCESS_NAME
+        else packageName ?: "")
 
 /**
  * Injects the current Xposed module's resources into the host [Context].

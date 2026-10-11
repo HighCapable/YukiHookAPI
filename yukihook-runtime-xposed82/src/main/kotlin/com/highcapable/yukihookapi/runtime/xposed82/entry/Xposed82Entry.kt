@@ -38,6 +38,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
     private companion object {
         const val FRAMEWORK_PACKAGE_NAME = "android"
         const val FRAMEWORK_SCOPE_NAME = "system"
+        const val SYSTEM_PROCESS_NAME = "system"
     }
 
     /** Module application ID emitted by KSP. */
@@ -72,10 +73,11 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
         when {
             // Xposed 82 reports system_server as the android package without `ApplicationInfo`.
+            // It also reports "android" as the process name, the system uses the framework package's process name instead.
             param.packageName == FRAMEWORK_PACKAGE_NAME && param.appInfo == null -> YukiHookModuleCaller.callOnSystemServerStarting(
                 packageName = param.packageName,
-                processName = processName,
-                mainProcessName = param.packageName.trim(),
+                processName = SYSTEM_PROCESS_NAME,
+                mainProcessName = SYSTEM_PROCESS_NAME,
                 packageNameForMatching = param.packageName,
                 loader = param.classLoader
             )

@@ -171,6 +171,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Gets the process name of the current host.
      *
      * The default process name is [packageName].
+     * In [loadSystem], this is `system`, the process name of the system server.
      * @return [String]
      */
     val processName get() = context?.processName ?: AppParasitism.currentProcessName
@@ -190,7 +191,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Gets the main process name of the current host.
      *
-     * The runtime supplies the system process identity during [loadSystem], otherwise this corresponds to [packageName].
+     * In [loadSystem], this is `system`, the process name of the system server. Otherwise, this corresponds to [packageName].
      * @return [String]
      */
     val mainProcessName get() = context?.mainProcessName ?: packageName.trim()
