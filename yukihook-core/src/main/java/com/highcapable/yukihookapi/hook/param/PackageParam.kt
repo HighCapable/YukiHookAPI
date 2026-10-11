@@ -1076,6 +1076,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct chain hook for methods and constructors.
      *
+     * Intercepting without [HookChain.proceed] skips the original member. The default [invocation] returns null without calling it.
+     *
      * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
      *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
      *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
@@ -1092,6 +1094,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
     /**
      * Creates a direct chain hook for methods and constructors through [MemberResolver].
+     *
+     * Intercepting without [HookChain.proceed] skips the original member. The default [invocation] returns null without calling it.
      *
      * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
      *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
@@ -1111,6 +1115,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct chain hook for methods and constructors through a [List] of [MemberResolver] instances.
      *
+     * Intercepting without [HookChain.proceed] skips the original member. The default [invocation] returns null without calling it.
+     *
      * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
      *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
      *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
@@ -1129,6 +1135,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Creates a direct chain hook for methods and constructors through an [Array] of [Member] instances.
      *
+     * Intercepting without [HookChain.proceed] skips the original member. The default [invocation] returns null without calling it.
+     *
      * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
      *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
      *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
@@ -1145,6 +1153,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
     /**
      * Creates a direct chain hook for methods and constructors through a [List] of [Member] instances.
+     *
+     * Intercepting without [HookChain.proceed] skips the original member. The default [invocation] returns null without calling it.
      *
      * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
      *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
