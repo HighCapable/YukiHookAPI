@@ -45,6 +45,7 @@ import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunctio
 import com.highcapable.yukihookapi.core.lint.detector.extension.functionTarget
 import com.highcapable.yukihookapi.core.lint.detector.extension.hasImplicitReceiver
 import com.highcapable.yukihookapi.core.lint.detector.extension.isLocal
+import com.highcapable.yukihookapi.core.lint.detector.extension.isStringLiteral
 import com.highcapable.yukihookapi.core.lint.detector.extension.returnedExpressions
 import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
 import com.intellij.psi.PsiArrayType
@@ -82,6 +83,7 @@ import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
+import org.jetbrains.uast.UBinaryExpression
 import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UCallableReferenceExpression
@@ -92,8 +94,10 @@ import org.jetbrains.uast.UFile
 import org.jetbrains.uast.ULambdaExpression
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.UQualifiedReferenceExpression
+import org.jetbrains.uast.UResolvable
 import org.jetbrains.uast.UReturnExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
+import org.jetbrains.uast.UastBinaryOperator
 import org.jetbrains.uast.skipParenthesizedExprDown
 import org.jetbrains.uast.toUElement
 import org.jetbrains.uast.visitor.AbstractUastVisitor
@@ -123,6 +127,18 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val LOAD_APP_NAME_PARAMETER = "name"
         private const val DATA_CHANNEL_METHOD_NAME = "dataChannel"
         private const val SYSTEM_DATA_CHANNEL_METHOD_NAME = "systemDataChannel"
+        private const val WITH_PROCESS_METHOD_NAME = "withProcess"
+        private const val EQUALS_METHOD_NAME = "equals"
+
+        private const val FRAMEWORK_PACKAGE_NAME = "android"
+        private const val SYSTEM_PROCESS_NAME = "system"
+
+        private val PROCESS_NAME_GETTERS = setOf("getProcessName", "getMainProcessName")
+
+        private val PROCESS_NAME_COMPARISONS = setOf(
+            UastBinaryOperator.EQUALS, UastBinaryOperator.NOT_EQUALS,
+            UastBinaryOperator.IDENTITY_EQUALS, UastBinaryOperator.IDENTITY_NOT_EQUALS
+        )
 
         private val SYSTEM_FRAMEWORK_NAMES = setOf("android", "system")
 
@@ -223,6 +239,18 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             category = Category.CORRECTNESS,
             priority = 8,
             severity = Severity.ERROR,
+            implementation = IMPLEMENTATION
+        )
+
+        val SYSTEM_PROCESS_NAME_ISSUE = Issue.create(
+            id = "ProcessNameForSystemFramework",
+            briefDescription = "Framework package name used as the system server process name",
+            explanation = "The system server process is named \"$SYSTEM_PROCESS_NAME\" on every runtime, " +
+                "\"$FRAMEWORK_PACKAGE_NAME\" is the framework package name. A process name never matches \"$FRAMEWORK_PACKAGE_NAME\", " +
+                "use \"$SYSTEM_PROCESS_NAME\" for the system server instead.",
+            category = Category.CORRECTNESS,
+            priority = 6,
+            severity = Severity.WARNING,
             implementation = IMPLEMENTATION
         )
 
@@ -372,9 +400,15 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     if (method != null) {
                         reportSystemFrameworkLoading(node, method)
                         reportSystemDataChannel(node, method)
+                        reportSystemProcessName(node, method)
                     }
                     collectKeyContributions(node, method, contributions)
 
+                    return false
+                }
+
+                override fun visitBinaryExpression(node: UBinaryExpression): Boolean {
+                    if (node.operator in PROCESS_NAME_COMPARISONS) reportSystemProcessName(node.leftOperand, node.rightOperand)
                     return false
                 }
 
@@ -570,6 +604,60 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 message = "\"$framework\" refers to the system framework, use `$LOAD_SYSTEM_METHOD_NAME` instead",
                 quickfixData = node.loadSystemFix(names.singleOrNull())
             )
+        }
+
+        private fun reportSystemProcessName(node: UCallExpression, method: PsiMethod) = when (method.name) {
+            WITH_PROCESS_METHOD_NAME if method.containingClass?.qualifiedName == PACKAGE_PARAM_CLASS -> {
+                // Replacing every framework name would duplicate "system", only the first one is replaced if it is missing.
+                var hasSystem = node.valueArguments.any { it.evaluate() == SYSTEM_PROCESS_NAME }
+                node.valueArguments.filter { it.evaluate() == FRAMEWORK_PACKAGE_NAME }.forEach { name ->
+                    reportSystemProcessName(name, isDuplicate = hasSystem)
+                    if (name.isStringLiteral()) hasSystem = true
+                }
+            }
+            EQUALS_METHOD_NAME -> node.valueArguments.singleOrNull()?.let { argument ->
+                node.receiver?.let { reportSystemProcessName(it, argument) }
+            } ?: Unit
+            else -> Unit
+        }
+
+        private fun reportSystemProcessName(left: UExpression, right: UExpression) = when {
+            left.isProcessName() && right.evaluate() == FRAMEWORK_PACKAGE_NAME -> reportSystemProcessName(right)
+            right.isProcessName() && left.evaluate() == FRAMEWORK_PACKAGE_NAME -> reportSystemProcessName(left)
+            else -> Unit
+        }
+
+        private fun reportSystemProcessName(name: UExpression, isDuplicate: Boolean = false) {
+            val location = context.getLocation(name)
+            val argument = name.sourcePsi?.getStrictParentOfType<KtValueArgument>()
+            context.report(
+                issue = SYSTEM_PROCESS_NAME_ISSUE,
+                scope = name,
+                location = location,
+                message = "\"$FRAMEWORK_PACKAGE_NAME\" is not a process name, the system server process is \"$SYSTEM_PROCESS_NAME\"",
+                // A referenced constant may be shared with other code, only a literal is changed.
+                quickfixData = when {
+                    !name.isStringLiteral() -> null
+                    isDuplicate -> argument?.let {
+                        buildReplaceFix("Delete Call Expression", "", range = context.deletionLocation(it), reformat = false)
+                    }
+                    else -> buildReplaceFix(
+                        name = "Replace with \"$SYSTEM_PROCESS_NAME\"",
+                        replacement = "\"$SYSTEM_PROCESS_NAME\"",
+                        range = location,
+                        reformat = false
+                    )
+                }
+            )
+        }
+
+        private fun UExpression.isProcessName(): Boolean {
+            val getter = (skipParenthesizedExprDown() as? UResolvable)?.resolve() as? PsiMethod ?: return false
+            return when (getter.containingClass?.qualifiedName) {
+                PACKAGE_PARAM_CLASS -> getter.name in PROCESS_NAME_GETTERS
+                YUKIHOOK_FACTORY_CLASS -> getter.name == PROCESS_NAME_GETTERS.first()
+                else -> false
+            }
         }
 
         private fun reportSystemDataChannel(node: UCallExpression, method: PsiMethod) {

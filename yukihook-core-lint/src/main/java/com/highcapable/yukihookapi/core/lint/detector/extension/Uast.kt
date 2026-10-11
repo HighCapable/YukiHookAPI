@@ -32,6 +32,7 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiField
 import com.intellij.psi.PsiIfStatement
+import com.intellij.psi.PsiLiteralExpression
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiNameValuePair
 import com.intellij.psi.PsiWhiteSpace
@@ -43,6 +44,7 @@ import org.jetbrains.kotlin.psi.KtCollectionLiteralExpression
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.KtWhenEntry
@@ -212,6 +214,12 @@ internal fun JavaContext.annotationNameLocation(node: UAnnotation): Location {
         else -> null
     }
     return name?.let { getLocation(it) } ?: getNameLocation(node)
+}
+
+internal fun UExpression.isStringLiteral() = when (val source = skipParenthesizedExprDown().sourcePsi) {
+    is KtStringTemplateExpression -> !source.hasInterpolation()
+    is PsiLiteralExpression -> true
+    else -> false
 }
 
 internal fun JavaContext.deletionLocation(source: PsiElement): Location {

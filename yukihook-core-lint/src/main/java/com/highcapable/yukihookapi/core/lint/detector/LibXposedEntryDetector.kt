@@ -38,19 +38,16 @@ import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.deletionLocation
 import com.highcapable.yukihookapi.core.lint.detector.extension.isEmptyArray
+import com.highcapable.yukihookapi.core.lint.detector.extension.isStringLiteral
 import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
 import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiEnumConstant
-import com.intellij.psi.PsiLiteralExpression
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
-import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UCallExpression
-import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.UNamedExpression
 import org.jetbrains.uast.UResolvable
-import org.jetbrains.uast.skipParenthesizedExprDown
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 import java.io.File
 
@@ -282,28 +279,32 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             val expression = scope.expression
             // A Java annotation can declare a single array element without braces.
             val entries = (expression as? UCallExpression)?.valueArguments ?: listOf(expression)
+            // Replacing every framework package would duplicate "system", only the first one is replaced if it is missing.
+            var hasSystem = entries.any { it.evaluate() == FRAMEWORK_SCOPE_NAME }
             entries.filter { it.evaluate() == FRAMEWORK_PACKAGE_NAME }.forEach { entry ->
                 val location = context.getLocation(entry)
+                val isDuplicate = hasSystem
+                if (entry.isStringLiteral()) hasSystem = true
                 context.report(
                     issue = SYSTEM_FRAMEWORK_IN_SCOPE_ISSUE,
                     scope = entry,
                     location = location,
                     message = "\"$FRAMEWORK_PACKAGE_NAME\" is not the system framework in `$SCOPE`, use \"$FRAMEWORK_SCOPE_NAME\" instead",
-                    // A referenced constant may be shared with other code, only a literal is replaced.
-                    quickfixData = if (entry.isStringLiteral()) buildReplaceFix(
-                        name = "Replace with \"$FRAMEWORK_SCOPE_NAME\"",
-                        replacement = "\"$FRAMEWORK_SCOPE_NAME\"",
-                        range = location,
-                        reformat = false
-                    ) else null
+                    // A referenced constant may be shared with other code, only a literal is changed.
+                    quickfixData = when {
+                        !entry.isStringLiteral() -> null
+                        isDuplicate -> entry.sourcePsi?.let {
+                            buildReplaceFix("Delete Call Expression", "", range = context.deletionLocation(it), reformat = false)
+                        }
+                        else -> buildReplaceFix(
+                            name = "Replace with \"$FRAMEWORK_SCOPE_NAME\"",
+                            replacement = "\"$FRAMEWORK_SCOPE_NAME\"",
+                            range = location,
+                            reformat = false
+                        )
+                    }
                 )
             }
-        }
-
-        private fun UExpression.isStringLiteral() = when (val source = skipParenthesizedExprDown().sourcePsi) {
-            is KtStringTemplateExpression -> !source.hasInterpolation()
-            is PsiLiteralExpression -> true
-            else -> false
         }
     })
 }
