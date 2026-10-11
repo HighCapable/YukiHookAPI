@@ -26,6 +26,7 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.HookChain
 import com.highcapable.yukihookapi.hook.param.HookParam
+import com.highcapable.yukihookapi.runtime.bridge.ExecutableInvokerBridge
 import com.highcapable.yukihookapi.runtime.bridge.HookRegistrationBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
@@ -36,7 +37,9 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.lang.reflect.Constructor
 import java.lang.reflect.Member
+import java.lang.reflect.Method
 
 /**
  * Exercises the user-facing classic and chain APIs through the runtime registration boundary.
@@ -243,6 +246,33 @@ class MemberHookerTest {
         })
         Assert.assertEquals(2, failures.size)
         failures.forEach { Assert.assertTrue(it is IllegalStateException) }
+    }
+
+    @Test
+    fun nullResultsForPrimitiveReturnTypesAreRejected() {
+        YukiHookBridge.attach(YukiHookBridge.ApiSpec(
+            hookRegistrationBridge = registrations(registerHook),
+            executableInvokerBridge = object : ExecutableInvokerBridge {
+                override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>) = (member as Method).invoke(instance, *args)
+                override fun invokeSpecial(member: Member, instance: Any, args: Array<out Any?>) = error("Unexpected special invocation.")
+                override fun newInstanceOriginal(constructor: Constructor<*>, args: Array<out Any?>) = error("Unexpected construction.")
+                override fun newInstanceSpecial(constructor: Constructor<*>, subclass: Class<*>, args: Array<out Any?>) =
+                    error("Unexpected construction.")
+            }
+        ))
+        val failures = mutableListOf<Throwable>()
+        scope.run {
+            otherMethod.hook { intercept { null } }.onCallbackFailure { _, throwable -> failures += throwable }
+            otherMethod.intercept { null }
+        }
+
+        // A failed classic interception falls back to the original member instead of returning null to the framework.
+        val invocation = ClassicInvocationAdapter.from(otherMethod, "value", emptyArray()) { throw it }
+        Assert.assertEquals(5, invocation.intercept(hookers[0] as ClassicHookerBridge) { "value".length })
+        Assert.assertTrue(failures.single() is IllegalStateException)
+        Assert.assertThrows(IllegalStateException::class.java) {
+            (hookers[1] as ChainHookerBridge).intercept(RecordingChain(otherMethod, downstreamResult = 5))
+        }
     }
 
     @Test

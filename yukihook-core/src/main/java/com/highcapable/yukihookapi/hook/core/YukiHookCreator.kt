@@ -76,14 +76,20 @@ class YukiHookCreator private constructor() {
         /**
          * Checks that [value] can be returned by the method hooked in [invocation].
          *
-         * Constructors, void methods, null values and [Any] return types are not checked.
+         * Constructors, void methods and [Any] return types are not checked.
+         * Null is accepted unless the method returns a primitive type, which the framework cannot unbox.
          * @param invocation the current invocation.
          * @param value the result to return.
          * @throws IllegalStateException if [value] does not match the method return type.
          */
         fun checkReturnType(invocation: HookInvocation, value: Any?) {
             val returnType = (invocation.member as? Method)?.returnType ?: return
-            if (value == null || returnType == Void.TYPE || returnType == classOf<Any>()) return
+            if (returnType == Void.TYPE || returnType == classOf<Any>()) return
+
+            check(value != null || !returnType.isPrimitive) {
+                "Hooked method return type mismatch, expected $returnType but got null"
+            }
+            if (value == null) return
 
             val expectedType = returnType.kotlin.javaObjectType
             check(expectedType.isInstance(value)) {
