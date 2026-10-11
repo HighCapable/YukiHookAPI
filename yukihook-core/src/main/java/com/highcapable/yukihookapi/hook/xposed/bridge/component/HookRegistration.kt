@@ -44,6 +44,10 @@ internal class HookRegistration(
         val target: HookPoint
     )
 
+    override val defaultPriority get() = base.defaultPriority
+    override val lowestPriority get() = base.lowestPriority
+    override val highestPriority get() = base.highestPriority
+
     override fun deoptimize(member: Member) = events.use {
         runCatching {
             base.deoptimize(member)

@@ -37,10 +37,6 @@ import java.lang.reflect.Member
  */
 internal object YukiHookHelper {
 
-    private const val DEFAULT_PRIORITY = 50
-    private const val LOWEST_PRIORITY = -10000
-    private const val HIGHEST_PRIORITY = 10000
-
     /**
      * Deoptimizes a calling [Member] so its callees are invoked without runtime inlining.
      * @param member the calling method or constructor to deoptimize.
@@ -57,12 +53,13 @@ internal object YukiHookHelper {
      * @return [YukiHookHandle] for the registered hook.
      */
     fun hook(target: HookPoint, hooker: HookerBridge, priority: YukiHookPriority = YukiHookPriority.DEFAULT): YukiHookHandle {
-        val hook = YukiHookBridge.hookRegistration.hook(
+        val registration = YukiHookBridge.hookRegistration
+        val hook = registration.hook(
             target = target,
             priority = when (priority) {
-                YukiHookPriority.DEFAULT -> DEFAULT_PRIORITY
-                YukiHookPriority.LOWEST -> LOWEST_PRIORITY
-                YukiHookPriority.HIGHEST -> HIGHEST_PRIORITY
+                YukiHookPriority.DEFAULT -> registration.defaultPriority
+                YukiHookPriority.LOWEST -> registration.lowestPriority
+                YukiHookPriority.HIGHEST -> registration.highestPriority
             },
             hooker = hooker
         )

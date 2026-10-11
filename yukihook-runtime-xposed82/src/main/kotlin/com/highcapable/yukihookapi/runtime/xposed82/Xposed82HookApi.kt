@@ -63,6 +63,10 @@ internal object Xposed82HookApi : HookRegistrationBridge {
         }
     }.getOrDefault("invalid")
 
+    override val defaultPriority get() = XCallback.PRIORITY_DEFAULT
+    override val lowestPriority get() = XCallback.PRIORITY_LOWEST
+    override val highestPriority get() = XCallback.PRIORITY_HIGHEST
+
     override fun deoptimize(member: Member): Boolean =
         throw UnsupportedOperationException("Method deoptimization is unavailable in Xposed API 82.")
 

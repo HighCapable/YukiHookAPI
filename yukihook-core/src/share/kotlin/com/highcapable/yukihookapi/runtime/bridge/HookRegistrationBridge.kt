@@ -32,6 +32,15 @@ import java.lang.reflect.Member
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 interface HookRegistrationBridge {
 
+    /** The framework's default hook priority. */
+    val defaultPriority: Int
+
+    /** The framework's lowest hook priority. */
+    val lowestPriority: Int
+
+    /** The framework's highest hook priority. */
+    val highestPriority: Int
+
     /**
      * Deoptimizes a method or constructor so its callees are invoked without runtime inlining.
      * @param member the calling method or constructor to deoptimize.

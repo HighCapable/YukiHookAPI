@@ -46,6 +46,10 @@ internal class LibXposedHookApi(
         const val HOOK_REPLACEMENT_API_VERSION = XposedInterface.API_102
     }
 
+    override val defaultPriority get() = XposedInterface.PRIORITY_DEFAULT
+    override val lowestPriority get() = XposedInterface.PRIORITY_LOWEST
+    override val highestPriority get() = XposedInterface.PRIORITY_HIGHEST
+
     fun attach(registrations: HookRegistrationBridge? = null) {
         YukiHookBridge.attach(
             YukiHookBridge.ApiSpec(

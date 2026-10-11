@@ -76,6 +76,9 @@ class MemberHookerTest {
     private fun registrations(
         onHook: (HookPoint, Int, HookerBridge, String?) -> HookerBridge
     ) = object : HookRegistrationBridge {
+        override val defaultPriority = 50
+        override val lowestPriority = -10000
+        override val highestPriority = 10000
         override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge, id: String?) =
             onHook(target, priority, hooker, id)
 

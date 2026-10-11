@@ -85,6 +85,9 @@ class HookRegistrationTest {
     fun registrationFailureIsReportedEvenWhenTheCallerCatchesIt() {
         val failure = IllegalStateException("Runtime rejected hook")
         val runtime = object : HookRegistrationBridge {
+            override val defaultPriority = 50
+            override val lowestPriority = -10000
+            override val highestPriority = 10000
             override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge, id: String?): HookerBridge = throw failure
             override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge = error("No hook was registered")
             override fun deoptimize(member: Member): Boolean = error("Unexpected deoptimization")
@@ -99,6 +102,10 @@ class HookRegistrationTest {
     }
 
     private class RecordingRuntime : HookRegistrationBridge {
+
+        override val defaultPriority = 50
+        override val lowestPriority = -10000
+        override val highestPriority = 10000
 
         val ids = mutableListOf<String?>()
         val removed = mutableListOf<HookerBridge>()
