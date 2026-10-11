@@ -34,8 +34,6 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
  */
 internal object Xposed82ModuleStatus {
 
-    private const val DEFAULT_PRIORITY = 50
-
     private const val IS_ACTIVE_METHOD_NAME = "__--"
     private const val GET_EXECUTOR_API_VERSION_METHOD_NAME = "-__-"
     private const val GET_EXECUTOR_NAME_METHOD_NAME = "_-_-"
@@ -89,7 +87,8 @@ internal object Xposed82ModuleStatus {
                 emptyParameters()
             }?.self ?: return
 
-        YukiHookBridge.hookRegistration.hook(HookPoint.Executable(method), DEFAULT_PRIORITY, object : ClassicHookerBridge {
+        val registration = YukiHookBridge.hookRegistration
+        registration.hook(HookPoint.Executable(method), registration.defaultPriority, object : ClassicHookerBridge {
             override fun beforeHooked(param: ClassicHookerBridge.Param) {
                 param.result = result()
             }
