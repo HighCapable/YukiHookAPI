@@ -49,6 +49,9 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
     private var initialized = false
 
+    /** Whether the current process is the system server, known once its entry has been reported. */
+    private var isSystemServer = false
+
     final override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam) {
         YukiHookBridge.attach()
 
@@ -66,18 +69,22 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
     final override fun handleLoadPackage(param: XC_LoadPackage.LoadPackageParam) {
         if (!initialized) return
 
-        val processName = param.processName
+        // Xposed 82 reports system_server as the android package without `ApplicationInfo`.
+        val isSystemServerEntry = param.packageName == FRAMEWORK_PACKAGE_NAME && param.appInfo == null
+        if (isSystemServerEntry) isSystemServer = true
+
+        // Frameworks report "android" or no process name at all for packages loaded later in system_server,
+        // the system uses the framework package's process name instead.
+        val processName = if (isSystemServer) SYSTEM_PROCESS_NAME else param.processName
             // Removes transport padding and trailing replacement characters from a process name.
             .substringBefore('\u0000')
             .trimEnd('\uFFFD')
 
         when {
-            // Xposed 82 reports system_server as the android package without `ApplicationInfo`.
-            // It also reports "android" as the process name, the system uses the framework package's process name instead.
-            param.packageName == FRAMEWORK_PACKAGE_NAME && param.appInfo == null -> YukiHookModuleCaller.callOnSystemServerStarting(
+            isSystemServerEntry -> YukiHookModuleCaller.callOnSystemServerStarting(
                 packageName = param.packageName,
-                processName = SYSTEM_PROCESS_NAME,
-                mainProcessName = SYSTEM_PROCESS_NAME,
+                processName = processName,
+                mainProcessName = processName,
                 packageNameForMatching = param.packageName,
                 loader = param.classLoader
             )
