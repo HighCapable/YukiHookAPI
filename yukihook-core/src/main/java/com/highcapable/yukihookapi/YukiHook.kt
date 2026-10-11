@@ -255,7 +255,7 @@ object YukiHook {
 
             /**
              * Gets the current hook framework version code.
-             * @return [Int] -1 when unavailable or 0 when unsupported.
+             * @return [Long] -1 when unavailable or 0 when unsupported.
              */
             val versionCode get() = YukiHookBridge.frameworkVersionCode
 
@@ -281,7 +281,7 @@ object YukiHook {
         /**
          * Gets the module-wide [YukiHookModuleReload] object.
          *
-         * - Requires [YukiHook.Status.isXposedModuleActive].
+         * - Requires [YukiHookModuleReload.isAvailable].
          * @return [YukiHookModuleReload]
          */
         @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
@@ -290,7 +290,7 @@ object YukiHook {
         /**
          * Gets the module-wide [YukiHookModuleScope] object.
          *
-         * - Requires [YukiHook.Status.isXposedModuleActive].
+         * - Requires [YukiHookModuleScope.isAvailable].
          * @return [YukiHookModuleScope]
          */
         @get:RequiresRuntime(YukiHookRuntime.LIBXPOSED)
@@ -329,8 +329,9 @@ object YukiHook {
 
     /**
      * Loads the entry point for an Xposed module.
+     *
+     * An empty [hookers] logs an error and loads nothing.
      * @param hookers the hookers.
-     * @throws IllegalStateException if [hookers] is empty.
      */
     fun encase(vararg hookers: YukiBaseHooker) {
         isStandalone = false

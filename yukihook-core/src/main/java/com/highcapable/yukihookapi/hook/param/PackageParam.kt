@@ -161,7 +161,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     val hostApplication get() = AppParasitism.hostApplication ?: AppParasitism.currentApplication
 
     /**
-     * Gets the [Context] of the current system server.
+     * Gets the [Context] of the system framework in the current process.
      * @return [Context] the `ContextImpl` instance.
      * @throws IllegalStateException if the [Context] of the system server cannot be obtained.
      */

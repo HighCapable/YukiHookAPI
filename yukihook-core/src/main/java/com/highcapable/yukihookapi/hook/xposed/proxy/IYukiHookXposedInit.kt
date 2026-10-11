@@ -47,6 +47,9 @@ interface IYukiHookXposedInit : YukiHookXposedModule {
     @Deprecated(message = "Migrate to YukiHookXposedModule.onHook")
     override fun onHook()
 
-    @Deprecated(message = "Migrate to YukiHookXposedModule.onXposedEvent")
+    @Deprecated(
+        message = "This callback is no longer invoked and has no effect. " +
+            "Use the runtime's registerFrameworkEvents { ... } extension in onInit instead."
+    )
     override fun onXposedEvent() = Unit
 }
