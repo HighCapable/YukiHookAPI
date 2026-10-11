@@ -109,7 +109,7 @@ class YukiHookPreferences private constructor(private var context: Context? = nu
      * - Migrate to [isAvailable] or [isWritable].
      * @return [Boolean]
      */
-    @Deprecated(message = "Use isAvailable or isWritable instead.")
+    @Deprecated(message = "Use isAvailable or isWritable instead.", level = DeprecationLevel.ERROR)
     val isPreferencesAvailable get() = false
 
     // endregion
