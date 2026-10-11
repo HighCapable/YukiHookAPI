@@ -161,7 +161,7 @@ object YukiHook {
             YukiHookBridge.observeService(lifecycle, listener)
 
         /**
-         * Gets the project compilation timestamp in local time.
+         * Gets the project compilation timestamp in milliseconds since the Unix epoch.
          * @return [Long]
          */
         val compiledTimestamp get() = runCatching { YukiHook_Impl.compiledTimestamp }.getOrNull() ?: 0L

@@ -90,7 +90,7 @@ fun Context.preferences(name: String = "") = YukiHookPreferences.from(this).let 
 /**
  * Gets a [YukiHookDataChannel] object.
  *
- * This API is available only in the module environment and has no effect elsewhere.
+ * In a host environment, [packageName] must be the current host package name to receive data from the module.
  * @see systemDataChannel
  * @receiver the current context.
  * @param packageName the target host package name. "android" or "system" refers to the system framework and works as [systemDataChannel].
@@ -101,7 +101,7 @@ fun Context.dataChannel(packageName: String) = YukiHookDataChannel.get().namespa
 /**
  * Gets a [YukiHookDataChannel] object connected to the system server.
  *
- * This API is available only in the module environment and has no effect elsewhere.
+ * In a host environment, data from the module is received only in the system server.
  * @see dataChannel
  * @receiver the current context.
  * @return [YukiHookDataChannel.Namespace]

@@ -104,10 +104,8 @@ class HookParam private constructor(
      * and [throwable] to get the exception set for the invocation.
      *
      * This API is effective only in [YukiHookCreator.ClassicMemberHooker.before] or [YukiHookCreator.ClassicMemberHooker.after] callbacks.
-     * Setting the exception also sets [result] to null and throws it to the current host.
+     * Setting the exception also sets [result] to null, the framework throws it to the current host after the callback returns.
      * @receiver the exception to throw to the current host.
-     * @return [Throwable] or null.
-     * @throws Throwable
      */
     fun Throwable.throwToHost() {
         param.throwable = this
@@ -257,9 +255,9 @@ class HookParam private constructor(
          * @throws IllegalStateException if the target argument array is empty or [index] does not exist.
          */
         fun <T> set(any: T?) {
-            require(args.isNotEmpty()) { "The method has no arguments." }
-            require(index >= 0) { "Argument index must be >= 0" }
-            require(index <= args.lastIndex) { "Argument index out of bounds, the maximum is ${args.lastIndex}" }
+            check(args.isNotEmpty()) { "The method has no arguments." }
+            check(index >= 0) { "Argument index must be >= 0" }
+            check(index <= args.lastIndex) { "Argument index out of bounds, the maximum is ${args.lastIndex}" }
 
             param.args[index] = any
         }

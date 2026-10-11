@@ -396,7 +396,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
     /**
      * Loads and hooks apps with the specified package names.
      * @see loadSystem
-     * @param name the package names. Empty names match all apps, the system server is not included.
+     * @param name the package names. If every name is empty, all apps are matched, otherwise empty names are ignored.
+     * The system server is not included.
      * "android" and "system" are not allowed here, use [loadSystem] for the system framework.
      * @param block the [PackageParam] hook block.
      * @throws IllegalArgumentException if [name] contains "android" or "system".
