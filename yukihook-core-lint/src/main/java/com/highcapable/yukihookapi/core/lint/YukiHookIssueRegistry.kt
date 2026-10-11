@@ -42,6 +42,7 @@ class YukiHookIssueRegistry : IssueRegistry() {
         RuntimeRequirementDetector.NEW_XPOSED_API_ISSUE,
         LibXposedEntryDetector.ISSUE,
         LibXposedEntryDetector.HOT_RELOAD_ISSUE,
+        LibXposedEntryDetector.SYSTEM_FRAMEWORK_IN_SCOPE_ISSUE,
         ModuleRuntimeDetector.REGISTRATION_ISSUE,
         ModuleRuntimeDetector.HOOK_LOADING_ISSUE,
         ModuleRuntimeDetector.RETAINED_VALUE_ISSUE,

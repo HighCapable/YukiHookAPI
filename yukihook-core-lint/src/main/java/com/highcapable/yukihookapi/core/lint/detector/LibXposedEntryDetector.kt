@@ -41,10 +41,16 @@ import com.highcapable.yukihookapi.core.lint.detector.extension.isEmptyArray
 import com.highcapable.yukihookapi.core.lint.detector.extension.toUFile
 import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiEnumConstant
+import com.intellij.psi.PsiLiteralExpression
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.uast.UAnnotation
+import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UFile
+import org.jetbrains.uast.UNamedExpression
 import org.jetbrains.uast.UResolvable
+import org.jetbrains.uast.skipParenthesizedExprDown
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 import java.io.File
 
@@ -63,6 +69,10 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
         private const val HOT_RELOAD = "hotReload"
         private const val JAVA_ENTRIES = "javaEntries"
+        private const val SCOPE = "scope"
+
+        private const val FRAMEWORK_PACKAGE_NAME = "android"
+        private const val FRAMEWORK_SCOPE_NAME = "system"
 
         private const val LOWEST_API_VERSION = 101
         private const val RELOAD_API_VERSION = 102
@@ -91,6 +101,18 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
+            implementation = IMPLEMENTATION
+        )
+
+        val SYSTEM_FRAMEWORK_IN_SCOPE_ISSUE = Issue.create(
+            id = "SystemFrameworkInScope",
+            briefDescription = "Framework package used as the system framework scope",
+            explanation = "In the module scope, the system server is the virtual package \"$FRAMEWORK_SCOPE_NAME\". " +
+                "\"$FRAMEWORK_PACKAGE_NAME\" only selects the framework package outside the system server, " +
+                "which YukiHook does not load as an app. Use \"$FRAMEWORK_SCOPE_NAME\" for the system framework.",
+            category = Category.CORRECTNESS,
+            priority = 6,
+            severity = Severity.WARNING,
             implementation = IMPLEMENTATION
         )
     }
@@ -188,6 +210,8 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
         override fun visitAnnotation(node: UAnnotation) {
             if (node.qualifiedName != ENTRY_ANNOTATION) return
 
+            node.attributeValues.firstOrNull { it.name == SCOPE }?.let(::reportFrameworkScope)
+
             val versionDetector = VersionDetector(context)
 
             val declaredMin = node.findDeclaredAttributeValue(MIN_API_VERSION)
@@ -252,6 +276,34 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
                     reformat = false
                 )
             )
+        }
+
+        private fun reportFrameworkScope(scope: UNamedExpression) {
+            val expression = scope.expression
+            // A Java annotation can declare a single array element without braces.
+            val entries = (expression as? UCallExpression)?.valueArguments ?: listOf(expression)
+            entries.filter { it.evaluate() == FRAMEWORK_PACKAGE_NAME }.forEach { entry ->
+                val location = context.getLocation(entry)
+                context.report(
+                    issue = SYSTEM_FRAMEWORK_IN_SCOPE_ISSUE,
+                    scope = entry,
+                    location = location,
+                    message = "\"$FRAMEWORK_PACKAGE_NAME\" is not the system framework in `$SCOPE`, use \"$FRAMEWORK_SCOPE_NAME\" instead",
+                    // A referenced constant may be shared with other code, only a literal is replaced.
+                    quickfixData = if (entry.isStringLiteral()) buildReplaceFix(
+                        name = "Replace with \"$FRAMEWORK_SCOPE_NAME\"",
+                        replacement = "\"$FRAMEWORK_SCOPE_NAME\"",
+                        range = location,
+                        reformat = false
+                    ) else null
+                )
+            }
+        }
+
+        private fun UExpression.isStringLiteral() = when (val source = skipParenthesizedExprDown().sourcePsi) {
+            is KtStringTemplateExpression -> !source.hasInterpolation()
+            is PsiLiteralExpression -> true
+            else -> false
         }
     })
 }
