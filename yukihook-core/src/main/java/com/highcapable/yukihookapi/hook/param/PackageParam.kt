@@ -184,6 +184,10 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
     /**
      * Whether the current host is the first [Application].
+     *
+     * This means the package owns the first [Application] in the current process, not that the process is the main one.
+     * It is also true in a sub-process such as `com.example:remote`.
+     * Use `processName == mainProcessName` to check for the main process.
      * @return [Boolean]
      */
     val isFirstApplication get() = context?.isFirstApplication ?: false

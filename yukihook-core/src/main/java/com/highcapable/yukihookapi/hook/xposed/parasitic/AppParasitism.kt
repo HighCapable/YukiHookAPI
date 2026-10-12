@@ -195,7 +195,7 @@ internal object AppParasitism : ModuleReloadable {
     val baseClassLoader get() = classOf<YukiHook>().classLoader ?: error("The operating system is not supported.")
 
     /**
-     * Gets the current system server [Context].
+     * Gets the [Context] of the system framework in the current process.
      * @return [Context] a `ContextImpl` instance or null.
      */
     val systemContext get(): Context? {
