@@ -598,8 +598,8 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
     private fun problem(msg: String): Nothing {
         val helpMsg = """
           Looking for help? Please see the documentation link below.
-          English: https://highcapable.github.io/YukiHook/en/config/xposed-using
-          简体中文: https://highcapable.github.io/YukiHook/zh-cn/config/xposed-using
+          English: https://highcapable.github.io/YukiHook/en/library/yukihook-compiler
+          简体中文: https://highcapable.github.io/YukiHook/zh-cn/library/yukihook-compiler
         """.trimIndent()
 
         logger.error(message = "[$TAG] $msg\n\n$helpMsg")
