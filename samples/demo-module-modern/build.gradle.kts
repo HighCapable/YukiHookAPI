@@ -34,6 +34,7 @@ dependencies {
     compileOnly(libs.libxposed.api)
     implementation(projects.yukihookRuntimeLibxposed)
     implementation(projects.yukihookCore)
+    implementation(projects.yukihookExtensionKavaref)
     ksp(projects.yukihookCompiler)
 
     implementation(platform(libs.kavaref.bom))

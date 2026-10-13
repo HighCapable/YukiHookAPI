@@ -36,6 +36,10 @@ import com.highcapable.yukihookapi.demo.module.legacy.data.DataConst
 import com.highcapable.yukihookapi.demo.module.legacy.generated.DemoProperties
 import com.highcapable.yukihookapi.demo.module.legacy.ui.MainActivity
 import com.highcapable.yukihookapi.demo.module.legacy.ui.component.compatStyle
+import com.highcapable.yukihookapi.extension.kavaref.hook
+import com.highcapable.yukihookapi.extension.kavaref.hookAll
+import com.highcapable.yukihookapi.extension.kavaref.intercept
+import com.highcapable.yukihookapi.extension.kavaref.toClass
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 

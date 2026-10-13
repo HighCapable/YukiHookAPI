@@ -34,6 +34,7 @@ dependencies {
     compileOnly(libs.rovo89.xposed.api)
     implementation(projects.yukihookRuntimeXposed82)
     implementation(projects.yukihookCore)
+    implementation(projects.yukihookExtensionKavaref)
     ksp(projects.yukihookCompiler)
 
     implementation(platform(libs.kavaref.bom))
