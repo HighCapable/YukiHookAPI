@@ -57,7 +57,7 @@ import com.highcapable.kavaref.extension.toClassOrNull
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.core.api.handle.YukiHookHandle
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
-import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
+import com.highcapable.yukihookapi.hook.core.internal.HiddenApiBypassResolver
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher
@@ -100,6 +100,8 @@ internal object AppParasitism : ModuleReloadable {
     private const val PER_USER_RANGE = 100000
 
     override val requiresMainThread = true
+
+    private val resolver = HiddenApiBypassResolver()
 
     private var events = ModuleEventDispatcher()
 
@@ -200,7 +202,7 @@ internal object AppParasitism : ModuleReloadable {
      */
     val systemContext get(): Context? {
         val scope = ActivityThreadClass.resolve()
-            .processor(AndroidHiddenApiBypassResolver.get())
+            .processor(resolver)
             .optional(silent = true)
         val current = scope.firstMethodOrNull {
             name = "currentActivityThread"
@@ -218,7 +220,7 @@ internal object AppParasitism : ModuleReloadable {
      * @return [Application] or null.
      */
     val currentApplication get() = hostApplication ?: ActivityThreadClass.resolve()
-        .processor(AndroidHiddenApiBypassResolver.get())
+        .processor(resolver)
         .optional(silent = true)
         .firstMethodOrNull { name = "currentApplication" }
         ?.invoke<Application>()
@@ -229,7 +231,7 @@ internal object AppParasitism : ModuleReloadable {
      */
     val currentApplicationInfo get() = currentApplication?.applicationInfo ?: run {
         val scope = ActivityThreadClass.resolve()
-            .processor(AndroidHiddenApiBypassResolver.get())
+            .processor(resolver)
             .optional(silent = true)
         val current = scope.firstMethodOrNull {
             name = "currentActivityThread"
@@ -261,7 +263,7 @@ internal object AppParasitism : ModuleReloadable {
      * @return [String]
      */
     val currentProcessName get() = ActivityThreadClass.resolve()
-        .processor(AndroidHiddenApiBypassResolver.get())
+        .processor(resolver)
         .optional(silent = true)
         .firstMethodOrNull { name = "currentProcessName" }
         ?.invoke<String>()
@@ -285,7 +287,7 @@ internal object AppParasitism : ModuleReloadable {
         if (YukiHookBridge.runtime != YukiHookRuntime.XPOSED_82) return
 
         if (YukiHook.Config.hookSharedPreferences) ContextImplClass.resolve()
-            .processor(AndroidHiddenApiBypassResolver.get())
+            .processor(resolver)
             .optional(silent = true)
             .firstMethodOrNull { name = "setFilePermissionsFromMode" }?.let {
                 YukiHookHelper.hook(
@@ -689,19 +691,19 @@ internal object AppParasitism : ModuleReloadable {
             }
 
             val sCurrentActivityThread = ActivityThreadClass.resolve()
-                .processor(AndroidHiddenApiBypassResolver.get())
+                .processor(resolver)
                 .optional(silent = true)
                 .firstFieldOrNull { name = "sCurrentActivityThread" }
                 ?.get()
             val instrumentation = sCurrentActivityThread?.asResolver()
-                ?.processor(AndroidHiddenApiBypassResolver.get())
+                ?.processor(resolver)
                 ?.optional(silent = true)
                 ?.firstMethodOrNull { name = "getInstrumentation" }
                 ?.invoke<Instrumentation>() ?: error("Could not find Instrumentation in ActivityThread.")
-            val instrumentationResolver = instrumentation.asResolver().processor(AndroidHiddenApiBypassResolver.get())
+            val instrumentationResolver = instrumentation.asResolver().processor(resolver)
 
             val performLaunchActivity = ActivityThreadClass.resolve()
-                .processor(AndroidHiddenApiBypassResolver.get())
+                .processor(resolver)
                 .firstMethod {
                     name = "performLaunchActivity"
                     parameters($$"android.app.ActivityThread$ActivityClientRecord", Intent::class)
@@ -732,7 +734,7 @@ internal object AppParasitism : ModuleReloadable {
             }
             val startActivityResolvers = managerClasses.flatMap {
                 it.toClass().resolve()
-                    .processor(AndroidHiddenApiBypassResolver.get())
+                    .processor(resolver)
                     .optional(silent = true)
                     .method {
                         name = "startActivity"
@@ -775,7 +777,7 @@ internal object AppParasitism : ModuleReloadable {
                 override fun beforeHooked(param: ClassicHookerBridge.Param) {
                     val record = param.args[0] ?: return
 
-                    val intentResolver = record.asResolver().processor(AndroidHiddenApiBypassResolver.get())
+                    val intentResolver = record.asResolver().processor(resolver)
                         .firstField { name = "intent" }
                     val intent = intentResolver.get<Intent>() ?: return
                     intent.setExtrasClassLoader(currentApplication?.classLoader)

@@ -43,6 +43,7 @@ import org.jetbrains.kotlin.psi.KtClassLiteralExpression
 import org.jetbrains.kotlin.psi.KtCollectionLiteralExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtObjectLiteralExpression
+import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UBlockExpression
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
@@ -54,6 +55,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
 
     companion object {
 
+        private const val ANNOTATION_PACKAGE_NAME = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation"
         private const val RUNTIME_PACKAGE_NAME = "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime"
         private const val RUNTIME_BRIDGE_PACKAGE_NAME = "$RUNTIME_PACKAGE_NAME.bridge"
         private const val HOOKER_BRIDGE_PACKAGE_NAME = "$RUNTIME_BRIDGE_PACKAGE_NAME.hooker"
@@ -63,6 +65,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
         private const val GENERATED_MODULE_STATUS_CLASS_PREFIX = "YukiHookLegacyModuleStatus_Impl_"
 
         private val INTERNAL_API_CLASSES = setOf(
+            "$ANNOTATION_PACKAGE_NAME.internal.RequiresRuntime",
             "$RUNTIME_PACKAGE_NAME.YukiHookBridge",
             "$HOOKER_BRIDGE_PACKAGE_NAME.ChainHookerBridge",
             "$HOOKER_BRIDGE_PACKAGE_NAME.ClassicHookerBridge",
@@ -107,12 +110,27 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
     }
 
     override fun getApplicableUastTypes() = listOf(
+        UAnnotation::class.java,
         UCallExpression::class.java,
         USimpleNameReferenceExpression::class.java,
         UTypeReferenceExpression::class.java
     )
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
+
+        override fun visitAnnotation(node: UAnnotation) {
+            val declaration = node.resolve() ?: return
+            if (!declaration.isInternalApi()) return
+
+            val location = context.getLocation(node)
+            context.report(
+                issue = ISSUE,
+                scope = node,
+                location = location,
+                message = "`${declaration.name}` is an internal YukiHook's API and must not be used directly",
+                quickfixData = buildReplaceFix("Delete Annotation", "", range = location)
+            )
+        }
 
         override fun visitCallExpression(node: UCallExpression) {
             val method = node.resolve() ?: return

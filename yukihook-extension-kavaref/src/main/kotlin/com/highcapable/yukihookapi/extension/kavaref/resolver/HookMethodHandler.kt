@@ -19,36 +19,41 @@
  *
  * This file is created by fankes on 2026/10/9.
  */
-package com.highcapable.yukihookapi.hook.core.api.reflect
+package com.highcapable.yukihookapi.extension.kavaref.resolver
 
 import com.highcapable.kavaref.resolver.MethodResolver
-import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
+import com.highcapable.yukihookapi.hook.param.PackageParam
 import java.lang.reflect.Method
 
 /**
  * Provides a [MethodResolver.Handler] for `KavaRef` that invokes methods through the hook framework.
+ * @param param the current [PackageParam].
  */
-internal sealed class HookMethodHandler : MethodResolver.Handler() {
+internal sealed class HookMethodHandler(protected val param: PackageParam) : MethodResolver.Handler() {
 
     override fun requireAccessible(member: Method) = Unit
 
     /**
      * Invokes the original method without hooks.
+     * @param param the current [PackageParam].
      */
-    object Original : HookMethodHandler() {
+    class Original(param: PackageParam) : HookMethodHandler(param) {
 
-        override fun invoke(method: Method, instance: Any?, args: Array<out Any?>) =
-            YukiHookHelper.invokeOriginal(method, instance, args)
+        override fun invoke(method: Method, instance: Any?, args: Array<out Any?>) = with(param) {
+            method.invokeOriginal(instance, *args)
+        }
     }
 
     /**
      * Invokes the method non-virtually on its instance without hooks or subclass overrides.
+     * @param param the current [PackageParam].
      */
-    object Special : HookMethodHandler() {
+    class Special(param: PackageParam) : HookMethodHandler(param) {
 
-        override fun invoke(method: Method, instance: Any?, args: Array<out Any?>) =
-            YukiHookHelper.invokeSpecial(method, checkNotNull(instance) { 
+        override fun invoke(method: Method, instance: Any?, args: Array<out Any?>) = with(param) {
+            method.invokeSpecial(checkNotNull(instance) {
                 "An instance is required for special invocation."
-            }, args)
+            }, *args)
+        }
     }
 }

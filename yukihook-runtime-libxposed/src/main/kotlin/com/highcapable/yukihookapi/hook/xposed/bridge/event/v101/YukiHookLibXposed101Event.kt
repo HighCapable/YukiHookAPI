@@ -23,8 +23,10 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event.v101
 
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiHookLibXposedEvent
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModuleInterface
 
@@ -33,6 +35,7 @@ import io.github.libxposed.api.XposedModuleInterface
  * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookLibXposedEvent.onModuleLoaded(callback: XposedInterface.(XposedModuleInterface.ModuleLoadedParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(moduleLoaded == null) {
@@ -47,6 +50,7 @@ fun YukiHookLibXposedEvent.onModuleLoaded(callback: XposedInterface.(XposedModul
  * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookLibXposedEvent.onPackageLoaded(callback: XposedInterface.(XposedModuleInterface.PackageLoadedParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(packageLoaded == null) {
@@ -61,6 +65,7 @@ fun YukiHookLibXposedEvent.onPackageLoaded(callback: XposedInterface.(XposedModu
  * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookLibXposedEvent.onPackageReady(callback: XposedInterface.(XposedModuleInterface.PackageReadyParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(packageReady == null) {
@@ -75,6 +80,7 @@ fun YukiHookLibXposedEvent.onPackageReady(callback: XposedInterface.(XposedModul
  * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the event callback with the attached API as its receiver.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookLibXposedEvent.onSystemServerStarting(callback: XposedInterface.(XposedModuleInterface.SystemServerStartingParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(systemServerStarting == null) {

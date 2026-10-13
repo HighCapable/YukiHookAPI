@@ -51,9 +51,7 @@ class YukiHookIssueRegistry : IssueRegistry() {
         ModuleRuntimeDetector.SYSTEM_PROCESS_NAME_ISSUE,
         ModuleRuntimeDetector.SYSTEM_DATA_CHANNEL_ISSUE,
         ClassicHookerDetector.ISSUE,
-        ModuleUsageDetector.MODULE_APPLICATION_ISSUE,
-        ModuleUsageDetector.VARIOUS_CLASS_MISSING_LOADER_ISSUE,
-        ModuleUsageDetector.VARIOUS_CLASS_HOST_LOADER_ISSUE
+        ModuleUsageDetector.MODULE_APPLICATION_ISSUE
     )
 
     override val minApi = YukiHookProperties.PROJECT_YUKIHOOK_CORE_LINT_MIN_API

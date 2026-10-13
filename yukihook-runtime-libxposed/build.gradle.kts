@@ -28,6 +28,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.androidx.lifecycle.runtime)
 
+    testImplementation(projects.yukihookExtensionKavaref)
     testImplementation(platform(libs.kavaref.bom))
     testImplementation(libs.kavaref.core)
     testImplementation(libs.kavaref.extension)

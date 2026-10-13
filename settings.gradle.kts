@@ -64,10 +64,11 @@ gropify {
     }
     projects(
         ":yukihook-core",
-        ":yukihook-core-lint",
         ":yukihook-compiler",
         ":yukihook-runtime-xposed82",
-        ":yukihook-runtime-libxposed"
+        ":yukihook-runtime-libxposed",
+        ":yukihook-core-lint",
+        ":yukihook-extension-kavaref-lint"
     ) {
         sourceCode {
             className = rootProject.name
@@ -85,5 +86,6 @@ rootProject.name = "YukiHook"
 include(":samples:demo-app", ":samples:demo-module-legacy", ":samples:demo-module-modern")
 include(":yukihook-bom")
 include(":yukihook-core", ":yukihook-compiler", ":yukihook-runtime-stub")
-include(":yukihook-core-lint")
+include(":yukihook-extension-kavaref")
 include(":yukihook-runtime-xposed82", ":yukihook-runtime-libxposed")
+include(":yukihook-core-lint", ":yukihook-extension-kavaref-lint")

@@ -23,8 +23,10 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event
 
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModuleInterface
 
@@ -40,6 +42,7 @@ import io.github.libxposed.api.XposedModuleInterface
  * @param block the event configuration block.
  * @throws IllegalStateException if called outside [YukiHookXposedModule.onInit] or more than once.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookLibXposedEvent.() -> Unit) =
     YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiHookLibXposedEvent.block() }
 
@@ -47,6 +50,7 @@ fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookLibXposedEvent.(
  * Registers listeners for framework lifecycle events exposed by libxposed.
  * Configure listeners only inside [registerFrameworkEvents]. Each lifecycle listener can be set once.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 object YukiHookLibXposedEvent {
     internal var moduleLoaded: (XposedInterface.(XposedModuleInterface.ModuleLoadedParam) -> Unit)? = null
     internal var packageLoaded: (XposedInterface.(XposedModuleInterface.PackageLoadedParam) -> Unit)? = null

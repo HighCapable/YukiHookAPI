@@ -23,8 +23,10 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event.v102
 
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.YukiHookLibXposedEvent
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModuleInterface
 
@@ -33,6 +35,7 @@ import io.github.libxposed.api.XposedModuleInterface
  * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the native event listener.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED, apiVersion = 102)
 fun YukiHookLibXposedEvent.onHotReloading(callback: XposedInterface.(XposedModuleInterface.HotReloadingParam) -> Boolean) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(hotReloading == null) {
@@ -47,6 +50,7 @@ fun YukiHookLibXposedEvent.onHotReloading(callback: XposedInterface.(XposedModul
  * @receiver [YukiHookLibXposedEvent] the framework event registry.
  * @param callback the native event listener.
  */
+@RequiresRuntime(YukiHookRuntime.LIBXPOSED, apiVersion = 102)
 fun YukiHookLibXposedEvent.onHotReloaded(callback: XposedInterface.(XposedModuleInterface.HotReloadedParam) -> Unit) {
     YukiHookModuleCaller.checkFrameworkEventsRegistration()
     check(hotReloaded == null) {

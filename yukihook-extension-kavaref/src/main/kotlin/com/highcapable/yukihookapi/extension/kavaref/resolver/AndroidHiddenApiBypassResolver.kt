@@ -19,7 +19,9 @@
  *
  * This file is created by fankes on 2025/6/15.
  */
-package com.highcapable.yukihookapi.hook.core.api.reflect
+@file:Suppress("unused")
+
+package com.highcapable.yukihookapi.extension.kavaref.resolver
 
 import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.kavaref.resolver.processor.MemberProcessor
@@ -32,22 +34,9 @@ import java.lang.reflect.Method
  *
  * Implemented with [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass).
  *
- * Call [AndroidHiddenApiBypassResolver.get] wherever access to Android hidden APIs is required.
- *
- * - This feature is experimental in 1.x and will move to a new module in 2.x.
+ * Create an instance and pass it to `processor` wherever access to Android hidden APIs is required.
  */
-class AndroidHiddenApiBypassResolver private constructor() : MemberProcessor.Resolver() {
-
-    companion object {
-
-        private val self by lazy { AndroidHiddenApiBypassResolver() }
-
-        /**
-         * Gets the [AndroidHiddenApiBypassResolver] instance.
-         * @return [AndroidHiddenApiBypassResolver]
-         */
-        fun get() = self
-    }
+class AndroidHiddenApiBypassResolver : MemberProcessor.Resolver() {
 
     override fun <T : Any> getDeclaredConstructors(declaringClass: Class<T>): List<Constructor<T>> =
         AndroidVersion.require(AndroidVersion.P, super.getDeclaredConstructors(declaringClass)) {

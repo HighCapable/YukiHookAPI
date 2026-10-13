@@ -55,6 +55,12 @@ allprojects {
                 "-Xno-call-assertions",
                 "-Xno-receiver-assertions"
             )
+
+            // Workaround for Android Studio / IntelliJ IDEA,
+            // to avoid red squiggles in the IDE for context parameters.
+            val isIdea = System.getProperty("idea.active") == "true" ||
+                project.hasProperty("android.injected.invoked.from.ide")
+            if (isIdea) freeCompilerArgs.add("-Xcontext-parameters")
         }
     }
 }
@@ -160,6 +166,7 @@ object Libraries {
     const val YUKIHOOK_BOM = "yukihook-bom"
     const val YUKIHOOK_CORE = "yukihook-core"
     const val YUKIHOOK_COMPILER = "yukihook-compiler"
+    const val YUKIHOOK_EXTENSION_KAVAREF = "yukihook-extension-kavaref"
     const val YUKIHOOK_RUNTIME_LIBXPOSED = "yukihook-runtime-libxposed"
     const val YUKIHOOK_RUNTIME_XPOSED82 = "yukihook-runtime-xposed82"
 
@@ -167,6 +174,7 @@ object Libraries {
         YUKIHOOK_BOM,
         YUKIHOOK_CORE,
         YUKIHOOK_COMPILER,
+        YUKIHOOK_EXTENSION_KAVAREF,
         YUKIHOOK_RUNTIME_LIBXPOSED,
         YUKIHOOK_RUNTIME_XPOSED82
     )

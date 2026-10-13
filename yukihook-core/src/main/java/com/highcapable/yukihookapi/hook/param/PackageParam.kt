@@ -34,18 +34,11 @@ import android.content.res.Resources
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
-import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.resolver.ConstructorResolver
-import com.highcapable.kavaref.resolver.MethodResolver
-import com.highcapable.kavaref.resolver.base.MemberResolver
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
-import com.highcapable.yukihookapi.hook.core.api.reflect.ClassLoaderInitializer
-import com.highcapable.yukihookapi.hook.core.api.reflect.HookConstructorHandler
-import com.highcapable.yukihookapi.hook.core.api.reflect.HookMethodHandler
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
@@ -68,10 +61,6 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
-import com.highcapable.kavaref.extension.lazyClass as lazyClassGlobal
-import com.highcapable.kavaref.extension.lazyClassOrNull as lazyClassOrNullGlobal
-import com.highcapable.kavaref.extension.toClass as toClassGlobal
-import com.highcapable.kavaref.extension.toClassOrNull as toClassOrNullGlobal
 
 /**
  * Target host entry object implementation for hooking.
@@ -85,12 +74,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
     /** The currently configured [ClassLoader]. */
     private var currentClassLoader: ClassLoader? = null
-
-    /**
-     * Gets the [hostClassLoader] initializer.
-     * @return [ClassLoaderInitializer]
-     */
-    private val hostClassLoaderInit get(): ClassLoaderInitializer = { hostClassLoader }
 
     /**
      * Module specification for the current Xposed module.
@@ -611,239 +594,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     fun loadHooker(hooker: YukiBaseHooker) = hooker.bindTo(param = this)
 
-    /** @see toClassGlobal */
-    fun String.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
-        toClassGlobal(loader, initialize)
-
-    /** @see toClassGlobal */
-    @JvmName("toClassTyped")
-    fun <T : Any> String.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
-        toClassGlobal<T>(loader, initialize)
-
-    /** @see toClassOrNullGlobal */
-    fun String.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
-        toClassOrNullGlobal(loader, initialize)
-
-    /** @see toClassOrNullGlobal */
-    @JvmName("toClassOrNullTyped")
-    fun <T : Any> String.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
-        toClassOrNullGlobal<T>(loader, initialize)
-
-    /** @see toClassGlobal */
-    fun VariousClass.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = load(loader, initialize)
-
-    /** @see toClassGlobal */
-    @JvmName("toClassTyped")
-    fun <T : Any> VariousClass.toClass(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = load<T>(loader, initialize)
-
-    /** @see toClassGlobal */
-    fun VariousClass.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) = loadOrNull(loader, initialize)
-
-    /** @see toClassGlobal */
-    @JvmName("toClassOrNullTyped")
-    fun <T : Any> VariousClass.toClassOrNull(loader: ClassLoader? = hostClassLoader, initialize: Boolean = false) =
-        loadOrNull<T>(loader, initialize)
-
-    /** @see lazyClassGlobal */
-    fun lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
-        lazyClassGlobal(name, initialize, loader)
-
-    /** @see lazyClassGlobal */
-    @JvmName("lazyClassTyped")
-    fun <T : Any> lazyClass(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
-        lazyClassGlobal<T>(name, initialize, loader)
-
-    /** @see lazyClassGlobal */
-    fun lazyClass(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
-        lazyClassGlobal(variousClass, initialize, loader)
-
-    /** @see lazyClassOrNullGlobal */
-    fun lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
-        lazyClassOrNullGlobal(name, initialize, loader)
-
-    /** @see lazyClassOrNullGlobal */
-    @JvmName("lazyClassOrNullTyped")
-    fun <T : Any> lazyClassOrNull(name: String, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
-        lazyClassOrNullGlobal<T>(name, initialize, loader)
-
-    /** @see lazyClassOrNullGlobal */
-    fun lazyClassOrNull(variousClass: VariousClass, initialize: Boolean = false, loader: ClassLoaderInitializer? = hostClassLoaderInit) =
-        lazyClassOrNullGlobal(variousClass, initialize, loader)
-
-    /**
-     * Invokes the method with the given arguments.
-     *
-     * This action calls the original method without hooks.
-     * @see MethodResolver.invoke
-     * @receiver [MethodResolver]
-     * @return [T] or null.
-     */
-    @JvmName("invokeOriginalTyped")
-    fun <T> MethodResolver<*>.invokeOriginal(vararg args: Any?) =
-        invokeOriginal(*args) as T?
-
-    /**
-     * Invokes the method with the given arguments, ignoring any exceptions.
-     *
-     * This action calls the original method without hooks.
-     * @see MethodResolver.invokeQuietly
-     * @receiver [MethodResolver]
-     * @return [T] or null.
-     */
-    @JvmName("invokeOriginalQuietlyTyped")
-    fun <T> MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) =
-        runCatching { invokeOriginal<T>(*args) }.getOrNull()
-
-    /**
-     * Invokes the method with the given arguments.
-     *
-     * This action calls the original method without hooks.
-     * @see MethodResolver.invoke
-     * @receiver [MethodResolver]
-     * @return [Any] or null.
-     */
-    fun MethodResolver<*>.invokeOriginal(vararg args: Any?) =
-        withHandler(HookMethodHandler.Original).invoke(*args)
-
-    /**
-     * Invokes the method with the given arguments, ignoring any exceptions.
-     *
-     * This action calls the original method without hooks.
-     * @see MethodResolver.invokeQuietly
-     * @receiver [MethodResolver]
-     * @return [Any] or null.
-     */
-    fun MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) =
-        runCatching { invokeOriginal(*args) }.getOrNull()
-
-    /**
-     * Invokes this method non-virtually on its instance with the given arguments.
-     *
-     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
-     * An instance must be set using [MethodResolver.of].
-     * @see MethodResolver.invoke
-     * @receiver [MethodResolver]
-     * @return [T] or null.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    @JvmName("invokeSpecialTyped")
-    fun <T> MethodResolver<*>.invokeSpecial(vararg args: Any?) =
-        invokeSpecial(*args) as T
-
-    /**
-     * Invokes this method non-virtually on its instance with the given arguments, ignoring any exceptions.
-     *
-     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
-     * An instance must be set using [MethodResolver.of].
-     * @see MethodResolver.invokeQuietly
-     * @receiver [MethodResolver]
-     * @return [T] or null.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    @JvmName("invokeSpecialQuietlyTyped")
-    fun <T> MethodResolver<*>.invokeSpecialQuietly(vararg args: Any?) =
-        runCatching { invokeSpecial<T>(*args) }.getOrNull()
-
-    /**
-     * Invokes this method non-virtually on its instance with the given arguments.
-     *
-     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
-     * An instance must be set using [MethodResolver.of].
-     * @see MethodResolver.invoke
-     * @receiver [MethodResolver]
-     * @return [Any] or null.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun MethodResolver<*>.invokeSpecial(vararg args: Any?) =
-        withHandler(HookMethodHandler.Special).invoke(*args)
-
-    /**
-     * Invokes this method non-virtually on its instance with the given arguments, ignoring any exceptions.
-     *
-     * This action directly invokes the method declared by this resolver without hooks or subclass overrides.
-     * An instance must be set using [MethodResolver.of].
-     * @see MethodResolver.invokeQuietly
-     * @receiver [MethodResolver]
-     * @return [Any] or null.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun MethodResolver<*>.invokeSpecialQuietly(vararg args: Any?) =
-        runCatching { invokeSpecial(*args) }.getOrNull()
-
-    /**
-     * Initializes an existing [instance] non-virtually with this constructor and the given arguments.
-     *
-     * This action initializes the existing instance and does not create a new one.
-     * @receiver [ConstructorResolver]
-     * @param instance the instance to initialize.
-     * @return [Any] null after the constructor completes.
-     */
-    fun ConstructorResolver<*>.initializeSpecial(instance: Any, vararg args: Any?) =
-        YukiHookHelper.invokeSpecial(self, instance, args)
-
-    /**
-     * Initializes an existing [instance] non-virtually with this constructor and the given arguments, ignoring any exceptions.
-     *
-     * This action initializes the existing instance and does not create a new one.
-     * @receiver [ConstructorResolver]
-     * @param instance the instance to initialize.
-     * @return [Any] or null.
-     */
-    fun ConstructorResolver<*>.initializeSpecialQuietly(instance: Any, vararg args: Any?) =
-        runCatching { initializeSpecial(instance, *args) }.getOrNull()
-
-    /**
-     * Creates a new instance with this original constructor and the given arguments.
-     *
-     * This action skips all hooks registered for the constructor.
-     * @receiver [ConstructorResolver]
-     * @see ConstructorResolver.create
-     * @return [T]
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun <T : Any> ConstructorResolver<T>.createOriginal(vararg args: Any?) =
-        withHandler(HookConstructorHandler.Original).create(*args)
-
-    /**
-     * Creates a new instance with this original constructor and the given arguments, ignoring any exceptions.
-     *
-     * This action skips all hooks registered for the constructor.
-     * @receiver [ConstructorResolver]
-     * @see ConstructorResolver.createQuietly
-     * @return [T] or null.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun <T : Any> ConstructorResolver<T>.createOriginalQuietly(vararg args: Any?) =
-        runCatching { createOriginal(*args) }.getOrNull()
-
-    /**
-     * Creates a [subclass] instance initialized by this parent constructor and the given arguments.
-     *
-     * This action skips all hooks registered for the constructor. The subclass constructor is not invoked,
-     * so subclass fields can remain uninitialized.
-     * @receiver [ConstructorResolver]
-     * @see ConstructorResolver.create
-     * @param subclass the subclass to instantiate.
-     * @return [T]
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun <T : Any> ConstructorResolver<*>.createSpecial(subclass: Class<T>, vararg args: Any?) =
-        withHandler(HookConstructorHandler.Special(subclass)).create(*args) as T
-
-    /**
-     * Creates a [subclass] instance initialized by this parent constructor and the given arguments, ignoring any exceptions.
-     *
-     * This action skips all hooks registered for the constructor. The subclass constructor is not invoked,
-     * so subclass fields can remain uninitialized.
-     * @receiver [ConstructorResolver]
-     * @see ConstructorResolver.createQuietly
-     * @param subclass the subclass to instantiate.
-     * @return [T] or null.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun <T : Any> ConstructorResolver<*>.createSpecialQuietly(subclass: Class<T>, vararg args: Any?) =
-        runCatching { createSpecial(subclass, *args) }.getOrNull()
-
     /**
      * Invokes this method on the given [instance] with the given arguments.
      *
@@ -936,28 +686,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Member.deoptimize() = YukiHookHelper.deoptimize(this)
-
-    /**
-     * Deoptimizes this calling method or constructor through [MemberResolver] so its callees are invoked
-     * without runtime inlining.
-     *
-     * Use this on the caller containing an inlined call, not on the hooked callee.
-     * @receiver the calling method or constructor to deoptimize.
-     * @return [Boolean] whether deoptimization succeeded.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    fun MemberResolver<*, *, *>.deoptimize() = YukiHookHelper.deoptimize(self)
-
-    /**
-     * Deoptimizes these calling methods and constructors through a [Collection] of [MemberResolver] instances.
-     *
-     * A false result does not stop the remaining members. Use these on callers containing inlined calls, not on hooked callees.
-     * @receiver the calling methods and constructors to deoptimize.
-     * @return [Boolean] whether every deoptimization succeeded.
-     */
-    @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
-    @JvmName("deoptimizeAllByMemberResolver")
-    fun Collection<MemberResolver<*, *, *>>.deoptimizeAll() = deoptimizeAll { it.self }
 
     /**
      * Deoptimizes these calling methods and constructors so their callees are invoked without runtime inlining.
@@ -1097,46 +825,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         invocation: HookChain.() -> Any? = { null }
     ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Executable(this)), priority, invocation).build()
-
-    /**
-     * Creates a direct chain hook for methods and constructors through [MemberResolver].
-     *
-     * Intercepting without [HookChain.proceed] skips the original member. The default [invocation] returns null without calling it.
-     *
-     * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
-     *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
-     *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
-     *   [priority] orders the local chain and does not preserve framework-wide hook ordering.
-     * @receiver the current member to hook.
-     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
-     */
-    @JvmName("interceptByMemberResolver")
-    fun MemberResolver<*, *, *>.intercept(
-        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(listOf(HookPoint.Executable(self)), priority, invocation).build()
-
-    /**
-     * Creates a direct chain hook for methods and constructors through a [List] of [MemberResolver] instances.
-     *
-     * Intercepting without [HookChain.proceed] skips the original member. The default [invocation] returns null without calling it.
-     *
-     * - Note: [YukiHookRuntime.XPOSED_82] simulates a module-local chain through a low-priority native hook.
-     *   [HookChain.proceed] runs this runtime's remaining chain hooks and then the original member.
-     *   Classic hooks and other modules are not part of this chain, later native hooks may be skipped.
-     *   [priority] orders the local chain and does not preserve framework-wide hook ordering.
-     * @receiver the current members to hook.
-     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
-     */
-    @JvmName("interceptAllByMemberResolver")
-    fun Collection<MemberResolver<*, *, *>>.interceptAll(
-        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        invocation: HookChain.() -> Any? = { null }
-    ) = YukiHookCreator.createChainHooker(map { HookPoint.Executable(it.self) }, priority, invocation).build()
 
     /**
      * Creates a direct chain hook for methods and constructors through an [Array] of [Member] instances.
@@ -1410,48 +1098,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
     ) = listOf(this).createHooker(priority, isLazyMode = true).apply(hooker).build()
 
     /**
-     * Creates a direct hook for methods and constructors through [MemberResolver].
-     * @receiver the current member to hook.
-     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiHookCreator.ClassicMemberHooker]
-     */
-    fun MemberResolver<*, *, *>.hook(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
-
-    /**
-     * Creates a direct hook for methods and constructors through [MemberResolver].
-     * @receiver the current member to hook.
-     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
-     */
-    @JvmName("hookByMemberResolver")
-    fun MemberResolver<*, *, *>.hook(
-        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
-    ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
-
-    /**
-     * Creates a direct hook for methods and constructors through a [List] of [MemberResolver] instances.
-     * @receiver the current members to hook.
-     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @return [YukiHookCreator.ClassicMemberHooker]
-     */
-    fun Collection<MemberResolver<*, *, *>>.hookAll(priority: YukiHookPriority = YukiHookPriority.DEFAULT) = createHooker(priority)
-
-    /**
-     * Creates a direct hook for methods and constructors through a [List] of [MemberResolver] instances.
-     * @receiver the current members to hook.
-     * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
-     * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
-     */
-    @JvmName("hookAllByMemberResolver")
-    fun Collection<MemberResolver<*, *, *>>.hookAll(
-        priority: YukiHookPriority = YukiHookPriority.DEFAULT,
-        hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
-    ) = createHooker(priority, isLazyMode = true).apply(hooker).build()
-
-    /**
      * Creates a direct hook for methods and constructors through an [Array] of [Member] instances.
      * @receiver the current members to hook.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
@@ -1497,12 +1143,6 @@ open class PackageParam internal constructor(internal var context: PackageContex
         forEach { if (!YukiHookHelper.deoptimize(member(it))) isSuccessful = false }
         return isSuccessful
     }
-
-    private fun MemberResolver<*, *, *>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiHookCreator.createClassicHooker(listOf(HookPoint.Executable(self)), priority, isLazyMode)
-
-    private fun Collection<MemberResolver<*, *, *>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =
-        YukiHookCreator.createClassicHooker(map { HookPoint.Executable(it.self) }, priority, isLazyMode)
 
     @JvmName("createHookerByClass")
     private fun Collection<Class<*>>.createHooker(priority: YukiHookPriority, isLazyMode: Boolean = false) =

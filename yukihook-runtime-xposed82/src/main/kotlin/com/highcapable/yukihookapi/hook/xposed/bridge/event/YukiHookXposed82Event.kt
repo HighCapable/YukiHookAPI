@@ -24,8 +24,10 @@
 
 package com.highcapable.yukihookapi.hook.xposed.bridge.event
 
+import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.caller.YukiHookModuleCaller
+import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import de.robv.android.xposed.IXposedHookZygoteInit
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
@@ -40,6 +42,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  * @param block the event configuration block.
  * @throws IllegalStateException if called outside [YukiHookXposedModule.onInit] or more than once.
  */
+@RequiresRuntime(YukiHookRuntime.XPOSED_82)
 fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookXposed82Event.() -> Unit) =
     YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiHookXposed82Event.block() }
 
@@ -47,6 +50,7 @@ fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookXposed82Event.()
  * Registers listeners for framework lifecycle events exposed by Xposed API 82.
  * Configure listeners only inside [registerFrameworkEvents]. Each lifecycle listener can be set once.
  */
+@RequiresRuntime(YukiHookRuntime.XPOSED_82)
 object YukiHookXposed82Event {
 
     internal var initZygoteCallback: ((IXposedHookZygoteInit.StartupParam) -> Unit)? = null

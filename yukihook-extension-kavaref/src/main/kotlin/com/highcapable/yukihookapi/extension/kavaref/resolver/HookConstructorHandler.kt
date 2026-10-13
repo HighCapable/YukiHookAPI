@@ -21,35 +21,40 @@
  */
 @file:Suppress("UNCHECKED_CAST")
 
-package com.highcapable.yukihookapi.hook.core.api.reflect
+package com.highcapable.yukihookapi.extension.kavaref.resolver
 
 import com.highcapable.kavaref.resolver.ConstructorResolver
-import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
+import com.highcapable.yukihookapi.hook.param.PackageParam
 import java.lang.reflect.Constructor
 
 /**
  * Provides a [ConstructorResolver.Handler] for `KavaRef` that creates instances through the hook framework.
+ * @param param the current [PackageParam].
  */
-internal sealed class HookConstructorHandler : ConstructorResolver.Handler() {
+internal sealed class HookConstructorHandler(protected val param: PackageParam) : ConstructorResolver.Handler() {
 
     override fun requireAccessible(member: Constructor<*>) = Unit
 
     /**
      * Creates an instance with the original constructor without hooks.
+     * @param param the current [PackageParam].
      */
-    object Original : HookConstructorHandler() {
+    class Original(param: PackageParam) : HookConstructorHandler(param) {
 
-        override fun <T> newInstance(constructor: Constructor<T>, args: Array<out Any?>) =
-            YukiHookHelper.newInstanceOriginal(constructor, args) as T
+        override fun <T> newInstance(constructor: Constructor<T>, args: Array<out Any?>) = with(param) {
+            constructor.newInstanceOriginal(*args)
+        }
     }
 
     /**
      * Creates a [subclass] instance initialized by the parent constructor without hooks.
+     * @param param the current [PackageParam].
      * @param subclass the subclass to instantiate.
      */
-    class Special(private val subclass: Class<*>) : HookConstructorHandler() {
+    class Special(param: PackageParam, private val subclass: Class<*>) : HookConstructorHandler(param) {
 
-        override fun <T> newInstance(constructor: Constructor<T>, args: Array<out Any?>) =
-            YukiHookHelper.newInstanceSpecial(constructor, subclass, args) as T
+        override fun <T> newInstance(constructor: Constructor<T>, args: Array<out Any?>) = with(param) {
+            (constructor as Constructor<Any>).newInstanceSpecial(subclass as Class<Any>, *args) as T
+        }
     }
 }

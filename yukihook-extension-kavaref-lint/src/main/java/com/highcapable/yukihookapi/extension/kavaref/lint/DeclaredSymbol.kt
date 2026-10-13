@@ -17,9 +17,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This file is created by fankes on 2026/9/17.
+ * This file is created by fankes on 2026/10/13.
  */
-package com.highcapable.yukihookapi.hook.core.api.reflect
+package com.highcapable.yukihookapi.extension.kavaref.lint
 
-/** Defines an initializer for a [ClassLoader] instance. */
-internal typealias ClassLoaderInitializer = () -> ClassLoader?
+import com.highcapable.yukihookapi.generated.YukiHookProperties
+
+object DeclaredSymbol {
+    const val CORE_PACKAGE_NAME = YukiHookProperties.PROJECT_GROUP_NAME
+    const val EXTENSION_PACKAGE_NAME = YukiHookProperties.PROJECT_YUKIHOOK_EXTENSION_KAVAREF_NAMESPACE
+}

@@ -21,6 +21,7 @@
  */
 package com.highcapable.yukihookapi.annotation.internal
 
+import androidx.annotation.RestrictTo
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
@@ -28,6 +29,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * @param value the required runtime.
  * @param apiVersion the Xposed API version required by the API, or 0 to check only the runtime.
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Retention(AnnotationRetention.BINARY)
 @Target(
     AnnotationTarget.CLASS,
@@ -35,7 +37,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.FUNCTION
 )
-internal annotation class RequiresRuntime(
+annotation class RequiresRuntime(
     val value: YukiHookRuntime,
     val apiVersion: Int = 0
 )

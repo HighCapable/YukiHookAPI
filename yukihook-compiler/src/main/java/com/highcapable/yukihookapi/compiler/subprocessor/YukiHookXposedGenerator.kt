@@ -38,7 +38,6 @@ import com.highcapable.yukihookapi.compiler.subprocessor.spec.GenerateSpec
 import com.highcapable.yukihookapi.compiler.subprocessor.spec.LibXposedGenerateSpec
 import com.highcapable.yukihookapi.compiler.subprocessor.spec.Xposed82GenerateSpec
 import com.highcapable.yukihookapi.generated.YukiHookProperties
-import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
@@ -110,30 +109,22 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
                 "or `${Xposed82GenerateSpec.RUNTIME_MODULE_NAME}`."
         )
 
-        val runtimeType = if (hasLibXposedRuntime) YukiHookRuntime.LIBXPOSED else YukiHookRuntime.XPOSED_82
-        val annotationRuntimeType = if (modernSymbols.isNotEmpty()) YukiHookRuntime.LIBXPOSED else YukiHookRuntime.XPOSED_82
-        val annotationName = when (annotationRuntimeType) {
-            YukiHookRuntime.XPOSED_82 -> if (deprecatedLegacySymbols.isNotEmpty())
-                Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME
-            else Xposed82GenerateSpec.ANNOTATION_NAME
-            YukiHookRuntime.LIBXPOSED -> LibXposedGenerateSpec.ANNOTATION_NAME
+        val runtimeModuleName = if (hasLibXposedRuntime)
+            LibXposedGenerateSpec.RUNTIME_MODULE_NAME
+        else Xposed82GenerateSpec.RUNTIME_MODULE_NAME
+        val annotationRuntimeModuleName = if (modernSymbols.isNotEmpty())
+            LibXposedGenerateSpec.RUNTIME_MODULE_NAME
+        else Xposed82GenerateSpec.RUNTIME_MODULE_NAME
+        val annotationName = when {
+            modernSymbols.isNotEmpty() -> LibXposedGenerateSpec.ANNOTATION_NAME
+            deprecatedLegacySymbols.isNotEmpty() -> Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME
+            else -> Xposed82GenerateSpec.ANNOTATION_NAME
         }
 
-        if (annotationRuntimeType != runtimeType) {
-            val expectedRuntime = when (annotationRuntimeType) {
-                YukiHookRuntime.LIBXPOSED -> LibXposedGenerateSpec.RUNTIME_MODULE_NAME
-                YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec.RUNTIME_MODULE_NAME
-            }
-            val actualRuntime = when (runtimeType) {
-                YukiHookRuntime.LIBXPOSED -> LibXposedGenerateSpec.RUNTIME_MODULE_NAME
-                YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec.RUNTIME_MODULE_NAME
-            }
-
-            problem(
-                "`@${annotationName.substringAfterLast('.')}` requires $expectedRuntime, " +
-                    "but $actualRuntime is on the compile classpath."
-            )
-        }
+        if (annotationRuntimeModuleName != runtimeModuleName) problem(
+            "`@${annotationName.substringAfterLast('.')}` requires $annotationRuntimeModuleName, " +
+                "but $runtimeModuleName is on the compile classpath."
+        )
 
         if (annotationName == Xposed82GenerateSpec.LEGACY_ANNOTATION_NAME) warn(
             "`@${annotationName.substringAfterLast('.')}` will be removed in a future release. " +
@@ -146,7 +137,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
         val entrySuperTypes = entry.getAllSuperTypes().mapNotNull { it.declaration.qualifiedName?.asString() }.toSet()
         val usesLegacyEntry = DeclaredSymbol.LEGACY_HOOK_ENTRY_CLASS in entrySuperTypes
-        if (usesLegacyEntry && runtimeType != YukiHookRuntime.XPOSED_82) problem(
+        if (usesLegacyEntry && hasLibXposedRuntime) problem(
             "`IYukiHookXposedInit` requires ${Xposed82GenerateSpec.RUNTIME_MODULE_NAME}. " +
                 "Use `YukiHookXposedModule` for ${LibXposedGenerateSpec.RUNTIME_MODULE_NAME}"
         )
@@ -162,20 +153,17 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             it.annotationType.resolve().declaration.qualifiedName?.asString() == annotationName
         }
         val arguments = annotation.arguments.associate { it.name?.asString() to it.value }
-        val spec = when (runtimeType) {
-            YukiHookRuntime.LIBXPOSED -> LibXposedGenerateSpec(
-                minApiVersion = arguments["minApiVersion"] as? Int ?: LibXposedGenerateSpec.RUNTIME_MIN_API_VERSION,
-                targetApiVersion = arguments["targetApiVersion"] as? Int ?: problem("The libxposed entry must declare targetApiVersion."),
-                scope = (arguments["scope"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
-                staticScope = arguments["staticScope"] as? Boolean ?: false,
-                hotReload = resolveHotReload(arguments["hotReload"]),
-                nativeEntries = (arguments["nativeEntries"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
-            )
-            YukiHookRuntime.XPOSED_82 -> Xposed82GenerateSpec(
-                modulePackageName = (arguments["modulePackageName"] as? String).orEmpty().trim(),
-                generateModuleStatus = arguments["generateModuleStatus"] as? Boolean ?: arguments["isUsingXposedModuleStatus"] as? Boolean ?: true
-            )
-        }
+        val spec = if (hasLibXposedRuntime) LibXposedGenerateSpec(
+            minApiVersion = arguments["minApiVersion"] as? Int ?: LibXposedGenerateSpec.RUNTIME_MIN_API_VERSION,
+            targetApiVersion = arguments["targetApiVersion"] as? Int ?: problem("The libxposed entry must declare targetApiVersion."),
+            scope = (arguments["scope"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+            staticScope = arguments["staticScope"] as? Boolean ?: false,
+            hotReload = resolveHotReload(arguments["hotReload"]),
+            nativeEntries = (arguments["nativeEntries"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+        ) else Xposed82GenerateSpec(
+            modulePackageName = (arguments["modulePackageName"] as? String).orEmpty().trim(),
+            generateModuleStatus = arguments["generateModuleStatus"] as? Boolean ?: arguments["isUsingXposedModuleStatus"] as? Boolean ?: true
+        )
         val entrySource = entry.containingFile ?: problem("The hook entry must be declared in a source file.")
 
         spec.initClassName = (arguments["entryClassName"] as? String).orEmpty().trim()

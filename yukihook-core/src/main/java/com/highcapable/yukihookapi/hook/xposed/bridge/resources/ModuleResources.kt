@@ -33,7 +33,7 @@ import androidx.annotation.RequiresApi
 import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.core.api.reflect.AndroidHiddenApiBypassResolver
+import com.highcapable.yukihookapi.hook.core.internal.HiddenApiBypassResolver
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleReloadable
 import java.io.File
@@ -55,6 +55,8 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
         override val requiresMainThread = true
 
         private var hasLegacyInjection = false
+
+        private val resolver = HiddenApiBypassResolver()
 
         /**
          * Loads the module APK into a separate [AssetManager] without modifying host resources.
@@ -121,7 +123,7 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
             // `addAssetPath` is hidden on Android. Use the existing hidden-API resolver rather
             // than `XModuleResources`, which is unavailable to modern modules.
             val cookie = this.asResolver()
-                .processor(AndroidHiddenApiBypassResolver.get())
+                .processor(resolver)
                 .optional(silent = true)
                 .firstMethodOrNull {
                     name = "addAssetPath"
