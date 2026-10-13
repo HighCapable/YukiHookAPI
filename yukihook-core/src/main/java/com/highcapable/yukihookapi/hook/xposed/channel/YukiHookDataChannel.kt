@@ -42,9 +42,9 @@ import com.highcapable.betterandroid.system.extension.component.registerReceiver
 import com.highcapable.betterandroid.system.extension.component.sendBroadcast
 import com.highcapable.betterandroid.ui.extension.component.hostActivity
 import com.highcapable.yukihookapi.YukiHook
+import com.highcapable.yukihookapi.hook.core.internal.utils.RandomString
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.log.data.YLogData
-import com.highcapable.yukihookapi.hook.utils.RandomString
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.ModuleEventDispatcher

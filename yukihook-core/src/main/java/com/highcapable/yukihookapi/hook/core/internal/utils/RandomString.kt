@@ -19,7 +19,7 @@
  *
  * This file is created by fankes on 2023/9/23.
  */
-package com.highcapable.yukihookapi.hook.utils
+package com.highcapable.yukihookapi.hook.core.internal.utils
 
 /**
  * Random string generator.
