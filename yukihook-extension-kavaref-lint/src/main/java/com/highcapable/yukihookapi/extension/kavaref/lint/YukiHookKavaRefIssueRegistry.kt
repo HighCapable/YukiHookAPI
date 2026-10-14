@@ -32,12 +32,8 @@ import com.highcapable.yukihookapi.generated.YukiHookProperties
 class YukiHookKavaRefIssueRegistry : IssueRegistry() {
 
     override val issues get() = listOf(
-        PackageParamDetector.VARIOUS_CLASS_MISSING_LOADER_ISSUE,
-        PackageParamDetector.VARIOUS_CLASS_HOST_LOADER_ISSUE,
-        PackageParamDetector.TO_CLASS_MISSING_LOADER_ISSUE,
-        PackageParamDetector.TO_CLASS_HOST_LOADER_ISSUE,
-        PackageParamDetector.LAZY_CLASS_MISSING_LOADER_ISSUE,
-        PackageParamDetector.LAZY_CLASS_HOST_LOADER_ISSUE
+        PackageParamDetector.CLASS_LOADING_WITHOUT_HOST_CLASS_LOADER_ISSUE,
+        PackageParamDetector.CLASS_LOADING_WITH_HOST_CLASS_LOADER_ISSUE
     )
 
     override val minApi = YukiHookProperties.PROJECT_YUKIHOOK_EXTENSION_KAVAREF_LINT_MIN_API

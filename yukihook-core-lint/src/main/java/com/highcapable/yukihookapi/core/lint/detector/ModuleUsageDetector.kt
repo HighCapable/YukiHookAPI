@@ -72,65 +72,84 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
         private const val METHOD_CLASS = "java.lang.reflect.Method"
         private const val STAR_CONSTRUCTOR_TYPE = "java.lang.reflect.Constructor<?>"
 
-        private val IMPLEMENTATION = Implementation(
-            ModuleUsageDetector::class.java,
-            Scope.JAVA_FILE_SCOPE
-        )
-
-        val MODULE_APPLICATION_ISSUE = Issue.create(
+        val USE_MODULE_APPLICATION_ISSUE = Issue.create(
             id = "UseModuleApplication",
             briefDescription = "Inherit ModuleApplication to enable full functionality",
-            explanation = "YukiHook module applications should inherit `ModuleApplication` to " +
-                "initialize module runtime services and enable full functionality.",
+            explanation = """
+                YukiHook module apps should make their `Application` inherit `ModuleApplication` to initialize \
+                the features of the base module and enable full functionality.
+
+                See the documentation for more details:
+                - English: https://highcapable.github.io/YukiHook/en/library/yukihook-core
+                - 简体中文: https://highcapable.github.io/YukiHook/zh-cn/library/yukihook-core
+
+                The `ModuleApplication` provides:
+                - Initialization of the features of the base module in the module process
+                - Globally available `ModuleApplication.current` and `ModuleApplication.requireContext()`
+
+                Examples:
+                ```kotlin
+                // Before
+                class YourApplication : Application()
+
+                // After
+                class YourApplication : ModuleApplication()
+                ```
+            """.trimIndent(),
             category = Category.CORRECTNESS,
             priority = 5,
             severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleUsageDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val TYPED_INSTANCE_ISSUE = Issue.create(
-            id = "UseTypedInstance",
-            briefDescription = "Casting instance instead of using instance()",
-            explanation = "`HookInvocation` provides `instance<T>()` to get the receiver instance as `T`, " +
-                "casting `instance` or `instanceOrNull` to a non-null type with `as` is not needed.",
-            category = Category.PRODUCTIVITY,
-            priority = 3,
-            severity = Severity.INFORMATIONAL,
-            implementation = IMPLEMENTATION
-        )
+        val USE_HOOK_INVOCATION_API_ISSUE = Issue.create(
+            id = "UseHookInvocationApi",
+            briefDescription = "Use HookInvocation's API instead of casting",
+            explanation = """
+                Casting the instance or the member in a hook callback can be simplified by using the APIs \
+                provided by `HookInvocation`.
 
-        val TYPED_INSTANCE_OR_NULL_ISSUE = Issue.create(
-            id = "UseTypedInstanceOrNull",
-            briefDescription = "Casting the instance instead of using instanceOrNull()",
-            explanation = "`HookInvocation` provides `instanceOrNull<T>()` to get the receiver instance as `T`, " +
-                "or null when the receiver is absent or has a different type. " +
-                "`instance as? T` still throws for a static method, and casting `instanceOrNull` to a nullable type is not needed.",
-            category = Category.PRODUCTIVITY,
-            priority = 3,
-            severity = Severity.INFORMATIONAL,
-            implementation = IMPLEMENTATION
-        )
+                See the documentation for more details:
+                - English: https://highcapable.github.io/YukiHook/en/library/yukihook-core
+                - 简体中文: https://highcapable.github.io/YukiHook/zh-cn/library/yukihook-core
 
-        val METHOD_PROPERTY_ISSUE = Issue.create(
-            id = "UseMethodProperty",
-            briefDescription = "Casting member to Method instead of using method",
-            explanation = "`HookInvocation` provides `method` to get the currently hooked method, " +
-                "casting `member` to `Method` is not needed.",
-            category = Category.PRODUCTIVITY,
-            priority = 3,
-            severity = Severity.INFORMATIONAL,
-            implementation = IMPLEMENTATION
-        )
+                The `HookInvocation` provides:
+                - `instance<T>()` to get the instance as `T`
+                - `instanceOrNull<T>()` to get the instance as `T`, or null when it is absent or has a different type
+                - `method` to get the hooked method
+                - `constructor` to get the hooked constructor
 
-        val CONSTRUCTOR_PROPERTY_ISSUE = Issue.create(
-            id = "UseConstructorProperty",
-            briefDescription = "Casting member to Constructor instead of using constructor",
-            explanation = "`HookInvocation` provides `constructor` to get the currently hooked constructor, " +
-                "casting `member` to `Constructor<*>` is not needed.",
+                Examples:
+                ```kotlin
+                // Before
+                instance as Activity
+                instanceOrNull as Activity
+                instance as? Activity
+                instanceOrNull as? Activity
+                instanceOrNull as Activity?
+                member as Method
+                member as Constructor<*>
+
+                // After
+                instance<Activity>()
+                instance<Activity>()
+                instanceOrNull<Activity>()
+                instanceOrNull<Activity>()
+                instanceOrNull<Activity>()
+                method
+                constructor
+                ```
+            """.trimIndent(),
             category = Category.PRODUCTIVITY,
-            priority = 3,
+            priority = 5,
             severity = Severity.INFORMATIONAL,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleUsageDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
     }
 
@@ -146,7 +165,7 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
             if (context.evaluator.extendsClass(node.javaPsi, MODULE_APPLICATION, false)) return
 
             context.report(
-                issue = MODULE_APPLICATION_ISSUE,
+                issue = USE_MODULE_APPLICATION_ISSUE,
                 scope = node as UElement,
                 location = context.getNameLocation(node),
                 message = "`${node.name}` should inherit `ModuleApplication` to enable full YukiHook functionality"
@@ -165,14 +184,14 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
 
             // Casting the instance to Any is already redundant.
             if (getter.name != MEMBER_GETTER && castType == CommonClassNames.JAVA_LANG_OBJECT) return
-            val (issue, replacementName) = when (getter.name) {
-                INSTANCE_GETTER if !isSafeCast -> TYPED_INSTANCE_ISSUE to "instance"
+            val replacementName = when (getter.name) {
+                INSTANCE_GETTER if !isSafeCast -> "instance"
                 // A non-null cast already throws when the instance is absent, the same as instance<T>().
-                INSTANCE_OR_NULL_GETTER if !isSafeCast && typeReference.typeElement !is KtNullableType -> TYPED_INSTANCE_ISSUE to "instance"
-                INSTANCE_GETTER, INSTANCE_OR_NULL_GETTER -> TYPED_INSTANCE_OR_NULL_ISSUE to "instanceOrNull"
+                INSTANCE_OR_NULL_GETTER if !isSafeCast && typeReference.typeElement !is KtNullableType -> "instance"
+                INSTANCE_GETTER, INSTANCE_OR_NULL_GETTER -> "instanceOrNull"
                 MEMBER_GETTER if isSafeCast -> return
-                MEMBER_GETTER if castType == METHOD_CLASS -> METHOD_PROPERTY_ISSUE to "method"
-                MEMBER_GETTER if castType == STAR_CONSTRUCTOR_TYPE -> CONSTRUCTOR_PROPERTY_ISSUE to "constructor"
+                MEMBER_GETTER if castType == METHOD_CLASS -> "method"
+                MEMBER_GETTER if castType == STAR_CONSTRUCTOR_TYPE -> "constructor"
                 else -> return
             }
             val replacement = if (getter.name == MEMBER_GETTER) replacementName else "$replacementName<${typeReference.text}>()"
@@ -191,7 +210,7 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
                 .lastOrNull() ?: source
 
             context.report(
-                issue = issue,
+                issue = USE_HOOK_INVOCATION_API_ISSUE,
                 scope = node as UElement,
                 location = context.getLocation(source),
                 message = "Can be replaced with `$fixedText`",

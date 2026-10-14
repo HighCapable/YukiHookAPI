@@ -67,78 +67,97 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
 
         private val PACKAGE_PARAM_CLASS_ID = ClassId.topLevel(FqName(PACKAGE_PARAM_CLASS))
 
-        private val IMPLEMENTATION = Implementation(
-            PackageParamDetector::class.java,
-            Scope.JAVA_FILE_SCOPE
-        )
+        val CLASS_LOADING_WITHOUT_HOST_CLASS_LOADER_ISSUE = Issue.create(
+            id = "ClassLoadingWithoutHostClassLoader",
+            briefDescription = "KavaRef class loaded without the host class loader",
+            explanation = """
+                In a `PackageParam` scope, `toClass`, `lazyClass`, `VariousClass.load` and other class loading functions \
+                from KavaRef use the module class loader when no loader is passed. Use the functions \
+                from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` to load the class from the host.
 
-        val VARIOUS_CLASS_MISSING_LOADER_ISSUE = Issue.create(
-            id = "VariousClassWithoutHostClassLoader",
-            briefDescription = "VariousClass loaded without the host class loader",
-            explanation = "In a `PackageParam` scope, `String.toClass` uses `hostClassLoader` by default, but `VariousClass.load` " +
-                "and `VariousClass.loadOrNull` are KavaRef functions that use the module class loader when no loader is passed. " +
-                "Use `toClass` or `toClassOrNull` to load the class from the host.",
+                See the documentation for more details:
+                - English: https://highcapable.github.io/YukiHook/en/library/yukihook-extension-kavaref
+                - 简体中文: https://highcapable.github.io/YukiHook/zh-cn/library/yukihook-extension-kavaref
+
+                The `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` provides:
+                - `toClass` and `toClassOrNull` for `String` and `VariousClass` that use `hostClassLoader` by default
+                - `lazyClass` and `lazyClassOrNull` that use `hostClassLoader` by default
+
+                These functions have the same names as the KavaRef functions, importing both versions \
+                in the same file causes an overload resolution ambiguity.
+
+                Examples:
+                ```kotlin
+                // Before
+                import com.highcapable.kavaref.extension.lazyClass
+                import com.highcapable.kavaref.extension.toClass
+
+                "com.example.Test".toClass()
+                VariousClass("com.example.Test").load()
+                lazyClass("com.example.Test")
+
+                // After
+                import com.highcapable.yukihookapi.extension.kavaref.lazyClass
+                import com.highcapable.yukihookapi.extension.kavaref.toClass
+
+                "com.example.Test".toClass()
+                VariousClass("com.example.Test").toClass()
+                lazyClass("com.example.Test")
+                ```
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 5,
             severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                PackageParamDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val VARIOUS_CLASS_HOST_LOADER_ISSUE = Issue.create(
-            id = "VariousClassWithHostClassLoader",
-            briefDescription = "VariousClass loaded with an explicit host class loader",
-            explanation = "In a `PackageParam` scope, `VariousClass.toClass` and `VariousClass.toClassOrNull` use `hostClassLoader` " +
-                "by default, passing it to `load` or `loadOrNull` is unnecessary.",
+        val CLASS_LOADING_WITH_HOST_CLASS_LOADER_ISSUE = Issue.create(
+            id = "ClassLoadingWithHostClassLoader",
+            briefDescription = "KavaRef class loaded with an explicit host class loader",
+            explanation = """
+                In a `PackageParam` scope, the class loading functions from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` \
+                use `hostClassLoader` by default, passing it to the KavaRef functions is unnecessary.
+
+                See the documentation for more details:
+                - English: https://highcapable.github.io/YukiHook/en/library/yukihook-extension-kavaref
+                - 简体中文: https://highcapable.github.io/YukiHook/zh-cn/library/yukihook-extension-kavaref
+
+                The `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` provides:
+                - `toClass` and `toClassOrNull` for `String` and `VariousClass` that use `hostClassLoader` by default
+                - `lazyClass` and `lazyClassOrNull` that use `hostClassLoader` by default
+
+                These functions have the same names as the KavaRef functions, importing both versions \
+                in the same file causes an overload resolution ambiguity.
+
+                Examples:
+                ```kotlin
+                // Before
+                import com.highcapable.kavaref.extension.lazyClass
+                import com.highcapable.kavaref.extension.toClass
+
+                "com.example.Test".toClass(hostClassLoader)
+                VariousClass("com.example.Test").load(hostClassLoader)
+                lazyClass("com.example.Test") { hostClassLoader }
+
+                // After
+                import com.highcapable.yukihookapi.extension.kavaref.lazyClass
+                import com.highcapable.yukihookapi.extension.kavaref.toClass
+
+                "com.example.Test".toClass()
+                VariousClass("com.example.Test").toClass()
+                lazyClass("com.example.Test")
+                ```
+            """.trimIndent(),
             category = Category.PRODUCTIVITY,
-            priority = 3,
+            priority = 5,
             severity = Severity.INFORMATIONAL,
-            implementation = IMPLEMENTATION
-        )
-
-        val TO_CLASS_MISSING_LOADER_ISSUE = Issue.create(
-            id = "ToClassWithoutHostClassLoader",
-            briefDescription = "KavaRef toClass loaded without the host class loader",
-            explanation = "In a `PackageParam` scope, `toClass` and `toClassOrNull` from KavaRef use the module class loader " +
-                "when no loader is passed. Import them from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` to load the class from the host. " +
-                "Importing both versions in the same file causes an overload resolution ambiguity.",
-            category = Category.CORRECTNESS,
-            priority = 6,
-            severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
-        )
-
-        val TO_CLASS_HOST_LOADER_ISSUE = Issue.create(
-            id = "ToClassWithHostClassLoader",
-            briefDescription = "KavaRef toClass loaded with an explicit host class loader",
-            explanation = "In a `PackageParam` scope, `toClass` and `toClassOrNull` from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` " +
-                "use `hostClassLoader` by default, passing it to the KavaRef functions is unnecessary.",
-            category = Category.PRODUCTIVITY,
-            priority = 3,
-            severity = Severity.INFORMATIONAL,
-            implementation = IMPLEMENTATION
-        )
-
-        val LAZY_CLASS_MISSING_LOADER_ISSUE = Issue.create(
-            id = "LazyClassWithoutHostClassLoader",
-            briefDescription = "KavaRef lazyClass loaded without the host class loader",
-            explanation = "In a `PackageParam` scope, `lazyClass` and `lazyClassOrNull` from KavaRef use the module class loader " +
-                "when no loader is passed. Import them from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` to load the class from the host. " +
-                "Importing both versions in the same file causes an overload resolution ambiguity.",
-            category = Category.CORRECTNESS,
-            priority = 6,
-            severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
-        )
-
-        val LAZY_CLASS_HOST_LOADER_ISSUE = Issue.create(
-            id = "LazyClassWithHostClassLoader",
-            briefDescription = "KavaRef lazyClass loaded with an explicit host class loader",
-            explanation = "In a `PackageParam` scope, `lazyClass` and `lazyClassOrNull` from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` " +
-                "use `hostClassLoader` by default, passing it to the KavaRef functions is unnecessary.",
-            category = Category.PRODUCTIVITY,
-            priority = 3,
-            severity = Severity.INFORMATIONAL,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                PackageParamDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
     }
 
@@ -150,12 +169,8 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             val methodName = node.methodName ?: return
             when (methodName) {
                 in VARIOUS_CLASS_LOADING_FUNCTIONS -> checkVariousClass(node)
-                in TO_CLASS_FUNCTIONS -> checkKavaRefFunction(
-                    node, TO_CLASS_MISSING_LOADER_ISSUE, TO_CLASS_HOST_LOADER_ISSUE
-                ) { isHostClassLoader() }
-                in LAZY_CLASS_FUNCTIONS -> checkKavaRefFunction(
-                    node, LAZY_CLASS_MISSING_LOADER_ISSUE, LAZY_CLASS_HOST_LOADER_ISSUE
-                ) { isHostClassLoaderInitializer() }
+                in TO_CLASS_FUNCTIONS -> checkKavaRefFunction(node) { isHostClassLoader() }
+                in LAZY_CLASS_FUNCTIONS -> checkKavaRefFunction(node) { isHostClassLoaderInitializer() }
             }
         }
 
@@ -173,14 +188,14 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
 
             when {
                 loader == null -> context.report(
-                    issue = VARIOUS_CLASS_MISSING_LOADER_ISSUE,
+                    issue = CLASS_LOADING_WITHOUT_HOST_CLASS_LOADER_ISSUE,
                     scope = node,
                     location = location,
                     message = "`${node.methodName}` does not use `$HOST_CLASS_LOADER`, use `$replacementName` instead",
                     quickfixData = replaceFix(source, method, location, replacementName)
                 )
                 loader.isHostClassLoader() -> context.report(
-                    issue = VARIOUS_CLASS_HOST_LOADER_ISSUE,
+                    issue = CLASS_LOADING_WITH_HOST_CLASS_LOADER_ISSUE,
                     scope = node,
                     location = location,
                     message = "`$replacementName` uses `$HOST_CLASS_LOADER` by default, use it instead",
@@ -189,12 +204,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             }
         }
 
-        private fun checkKavaRefFunction(
-            node: UCallExpression,
-            missingLoaderIssue: Issue,
-            hostLoaderIssue: Issue,
-            isHostLoader: UExpression.() -> Boolean
-        ) {
+        private fun checkKavaRefFunction(node: UCallExpression, isHostLoader: UExpression.() -> Boolean) {
             val source = node.sourcePsi as? KtCallExpression ?: return
             val callee = source.calleeExpression ?: return
             val arguments = source.valueArgumentList ?: return
@@ -210,14 +220,14 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
 
             when {
                 loader == null -> context.report(
-                    issue = missingLoaderIssue,
+                    issue = CLASS_LOADING_WITHOUT_HOST_CLASS_LOADER_ISSUE,
                     scope = node,
                     location = location,
                     message = "`${node.methodName}` from KavaRef does not use `$HOST_CLASS_LOADER`, import `$replacement` instead",
                     quickfixData = importFix
                 )
                 loader.isHostLoader() -> context.report(
-                    issue = hostLoaderIssue,
+                    issue = CLASS_LOADING_WITH_HOST_CLASS_LOADER_ISSUE,
                     scope = node,
                     location = location,
                     message = "`$replacement` uses `$HOST_CLASS_LOADER` by default, import it instead",
@@ -271,7 +281,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             val typeArguments = source.typeArgumentList?.text.orEmpty()
 
             return buildReplaceFix(
-                "Remove the loader argument",
+                "Delete Loader Argument",
                 methodName + typeArguments + remaining.joinToString(prefix = "(", postfix = ")"),
                 range = location,
                 reformat = false

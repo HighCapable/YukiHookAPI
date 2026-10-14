@@ -54,30 +54,56 @@ class KavaRefFallbackDetector : Detector(), Detector.UastScanner {
          *
          * Those checks report the same calls with quick fixes, so this check turns itself off when the ID is registered.
          */
-        private const val EXTENSION_ISSUE_ID = "ToClassWithoutHostClassLoader"
+        private const val EXTENSION_ISSUE_ID = "ClassLoadingWithoutHostClassLoader"
 
         private val VARIOUS_CLASS_LOADING_FUNCTIONS = setOf("load", "loadOrNull")
         private val CLASS_LOADING_FUNCTIONS = setOf("toClass", "toClassOrNull", "lazyClass", "lazyClassOrNull")
 
         private val PACKAGE_PARAM_CLASS_ID = ClassId.topLevel(FqName(PACKAGE_PARAM_CLASS))
 
-        private val IMPLEMENTATION = Implementation(
-            KavaRefFallbackDetector::class.java,
-            Scope.JAVA_FILE_SCOPE
-        )
-
         val ISSUE = Issue.create(
             id = "KavaRefWithoutHostClassLoader",
             briefDescription = "KavaRef class loaded without the host class loader",
-            explanation = "In a `PackageParam` scope, `toClass`, `lazyClass`, `VariousClass.load` and other class loading " +
-                "functions from KavaRef use the module class loader when no loader is passed. " +
-                "Add the `${YukiHookProperties.PROJECT_YUKIHOOK_EXTENSION_KAVAREF_MODULE_NAME}` dependency, " +
-                "its functions load the class from the host by default and its lint checks provide quick fixes for these calls. " +
-                "You can also pass `hostClassLoader` to the KavaRef functions explicitly.",
+            explanation = """
+                In a `PackageParam` scope, `toClass`, `lazyClass`, `VariousClass.load` and other class loading functions \
+                from KavaRef use the module class loader when no loader is passed. Add the \
+                `${YukiHookProperties.PROJECT_YUKIHOOK_EXTENSION_KAVAREF_MODULE_NAME}` dependency to load the class from the host \
+                by default, its lint checks provide quick fixes for these calls.
+
+                See the documentation for more details:
+                - English: https://highcapable.github.io/YukiHook/en/library/yukihook-extension-kavaref
+                - 简体中文: https://highcapable.github.io/YukiHook/zh-cn/library/yukihook-extension-kavaref
+
+                The `${YukiHookProperties.PROJECT_YUKIHOOK_EXTENSION_KAVAREF_MODULE_NAME}` provides:
+                - `toClass` and `toClassOrNull` for `String` and `VariousClass` that use `hostClassLoader` by default
+                - `lazyClass` and `lazyClassOrNull` that use `hostClassLoader` by default
+
+                Examples:
+                ```kotlin
+                // Before
+                import com.highcapable.kavaref.extension.lazyClass
+                import com.highcapable.kavaref.extension.toClass
+
+                "com.example.Test".toClass()
+                VariousClass("com.example.Test").load()
+                lazyClass("com.example.Test")
+
+                // After
+                import com.highcapable.yukihookapi.extension.kavaref.lazyClass
+                import com.highcapable.yukihookapi.extension.kavaref.toClass
+
+                "com.example.Test".toClass()
+                VariousClass("com.example.Test").toClass()
+                lazyClass("com.example.Test")
+                ```
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 5,
             severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                KavaRefFallbackDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
     }
 

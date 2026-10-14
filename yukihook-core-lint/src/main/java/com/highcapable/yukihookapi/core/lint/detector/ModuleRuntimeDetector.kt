@@ -36,6 +36,7 @@ import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
 import com.highcapable.yukihookapi.core.lint.detector.extension.allClasses
 import com.highcapable.yukihookapi.core.lint.detector.extension.analyzeOrNull
 import com.highcapable.yukihookapi.core.lint.detector.extension.branches
+import com.highcapable.yukihookapi.core.lint.detector.extension.buildDeleteFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.deletionLocation
@@ -179,90 +180,117 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.bridge.event.YukiHookXposed82EventKt"
         )
 
-        private val IMPLEMENTATION = Implementation(
-            ModuleRuntimeDetector::class.java,
-            Scope.JAVA_FILE_SCOPE
-        )
-
-        val REGISTRATION_ISSUE = Issue.create(
+        val MODULE_REGISTRATION_OUTSIDE_ON_INIT_ISSUE = Issue.create(
             id = "ModuleRegistrationOutsideOnInit",
             briefDescription = "Module registration must run during onInit",
-            explanation = "Framework events and module lifecycle callbacks must be registered while the current module entry runs onInit.",
+            explanation = "Framework events and module lifecycle callbacks must be registered while the current module entry runs `onInit`.",
             category = Category.CORRECTNESS,
-            priority = 8,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val HOOK_LOADING_ISSUE = Issue.create(
+        val INVALID_MODULE_HOOK_LOADING_ISSUE = Issue.create(
             id = "InvalidModuleHookLoading",
             briefDescription = "Invalid module hook loading",
-            explanation = "Register package hook callbacks from the module's onHook. " +
-                "Do not call encase from a PackageParam context or inside another encase block.",
+            explanation = """
+                Register package hook callbacks from the module's `onHook`. \
+                Do not call `encase` from a `PackageParam` context or inside another `encase` block.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 8,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val RETAINED_VALUE_ISSUE = Issue.create(
+        val INVALID_MODULE_RETAINED_VALUE_ISSUE = Issue.create(
             id = "InvalidModuleRetainedValue",
             briefDescription = "Invalid retained module value",
-            explanation = "Retained values must not refer to classes compiled into the module, including its packaged dependencies " +
-                "such as the Kotlin standard library, either directly or inside iterables, maps and class values. " +
-                "Iterable and map results are frozen into read-only snapshots, declare them as read-only List, Set, Map, Collection or Iterable. " +
-                "Arrays and Bundle cannot be frozen and are rejected. " +
-                "Keys must be non-blank and unique in the current package scope, the same key can be used in different package scopes. " +
-                "Runtime validation covers values that lint cannot determine.",
+            explanation = """
+                Retained values must not refer to classes compiled into the module, including its packaged dependencies \
+                such as the Kotlin standard library, either directly or inside iterables, maps and class values. \
+                Iterable and map results are frozen into read-only snapshots, declare them as read-only `List`, `Set`, `Map`, \
+                `Collection` or `Iterable`. Arrays and `Bundle` cannot be frozen and are rejected. \
+                Keys must be non-blank and unique in the current package scope, the same key can be used in different package scopes. \
+                Runtime validation covers values that lint cannot determine.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val SYSTEM_FRAMEWORK_ISSUE = Issue.create(
+        val LOAD_APP_FOR_SYSTEM_FRAMEWORK_ISSUE = Issue.create(
             id = "LoadAppForSystemFramework",
             briefDescription = "System framework loaded through loadApp",
-            explanation = "The system server is a dedicated hook entry on every runtime. Passing \"android\" or \"system\" " +
-                "to loadApp is redirected to loadSystem at runtime, use loadSystem directly instead.",
+            explanation = """
+                The system server is a dedicated hook entry on every runtime. Passing "android" or "system" \
+                to `loadApp` is redirected to `loadSystem` at runtime, use `loadSystem` directly instead.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 5,
             severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val SYSTEM_FRAMEWORK_IN_PACKAGES_ISSUE = Issue.create(
+        val SYSTEM_FRAMEWORK_IN_LOAD_APP_PACKAGES_ISSUE = Issue.create(
             id = "SystemFrameworkInLoadAppPackages",
             briefDescription = "System framework mixed into loadApp package names",
-            explanation = "loadApp with multiple package names only loads apps and throws at runtime when they contain \"android\" " +
-                "or \"system\". Load the system server separately with loadSystem.",
+            explanation = """
+                `loadApp` with multiple package names only loads apps and throws at runtime when they contain "android" \
+                or "system". Load the system server separately with `loadSystem`.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 8,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val SYSTEM_PROCESS_NAME_ISSUE = Issue.create(
+        val PROCESS_NAME_FOR_SYSTEM_FRAMEWORK_ISSUE = Issue.create(
             id = "ProcessNameForSystemFramework",
             briefDescription = "Framework package name used as the system server process name",
-            explanation = "The system server process is named \"$SYSTEM_PROCESS_NAME\" on every runtime, " +
-                "\"$FRAMEWORK_PACKAGE_NAME\" is the framework package name. A process name never matches \"$FRAMEWORK_PACKAGE_NAME\", " +
-                "use \"$SYSTEM_PROCESS_NAME\" for the system server instead.",
+            explanation = """
+                The system server process is named "$SYSTEM_PROCESS_NAME" on every runtime, "$FRAMEWORK_PACKAGE_NAME" is the framework package name. \
+                A process name never matches "$FRAMEWORK_PACKAGE_NAME", use "$SYSTEM_PROCESS_NAME" for the system server instead.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val SYSTEM_DATA_CHANNEL_ISSUE = Issue.create(
+        val DATA_CHANNEL_FOR_SYSTEM_FRAMEWORK_ISSUE = Issue.create(
             id = "DataChannelForSystemFramework",
             briefDescription = "System framework connected through dataChannel",
-            explanation = "Passing \"android\" or \"system\" to dataChannel is redirected to systemDataChannel at runtime, " +
-                "use systemDataChannel directly instead.",
+            explanation = """
+                Passing "android" or "system" to `dataChannel` is redirected to `systemDataChannel` at runtime, \
+                use `systemDataChannel` directly instead.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 5,
             severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
     }
 
@@ -482,13 +510,11 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     parent.sourcePsi == null && expression.sourcePsi?.parent is KtBlockExpression)
 
                 context.report(
-                    issue = if (method.isModuleRegistration()) REGISTRATION_ISSUE else HOOK_LOADING_ISSUE,
+                    issue = if (method.isModuleRegistration()) MODULE_REGISTRATION_OUTSIDE_ON_INIT_ISSUE else INVALID_MODULE_HOOK_LOADING_ISSUE,
                     scope = call.node,
                     location = location,
                     message = message,
-                    quickfixData = if (isStandalone)
-                        buildReplaceFix("Delete Call Expression", "", range = location, reformat = false)
-                    else null
+                    quickfixData = if (isStandalone) buildDeleteFix("Delete Call Expression", location) else null
                 )
             }
         }
@@ -499,7 +525,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         ) {
             node.deferredRetention()?.let { owner ->
                 context.report(
-                    issue = RETAINED_VALUE_ISSUE,
+                    issue = INVALID_MODULE_RETAINED_VALUE_ISSUE,
                     scope = node,
                     location = context.getNameLocation(node),
                     message = "`$RETAINED_VALUE_METHOD_NAME` must be called while declaring hooks, not in $owner"
@@ -530,7 +556,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 }
 
                 if (message != null) context.report(
-                    issue = RETAINED_VALUE_ISSUE,
+                    issue = INVALID_MODULE_RETAINED_VALUE_ISSUE,
                     scope = node,
                     location = context.getLocation(key),
                     message = message
@@ -551,7 +577,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         }
 
         private fun reportRetainedProblem(node: UElement, problem: RetainedProblem) = context.report(
-            issue = RETAINED_VALUE_ISSUE,
+            issue = INVALID_MODULE_RETAINED_VALUE_ISSUE,
             scope = node,
             location = context.getLocation(node),
             message = "`$RETAINED_VALUE_METHOD_NAME` result $problem"
@@ -582,23 +608,20 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             if (mapping.values.any { it.type is PsiArrayType }) return frameworks.forEach { (name, framework) ->
                 val argument = name.sourcePsi?.getStrictParentOfType<KtValueArgument>()
                 context.report(
-                    issue = SYSTEM_FRAMEWORK_IN_PACKAGES_ISSUE,
+                    issue = SYSTEM_FRAMEWORK_IN_LOAD_APP_PACKAGES_ISSUE,
                     scope = name,
                     location = context.getLocation(name),
                     message = "\"$framework\" cannot be loaded together with app package names, use `$LOAD_SYSTEM_METHOD_NAME` separately",
                     // Removing every name would turn the call into loading all apps, so keep at least one app package name.
-                    quickfixData = if (argument != null && names.size > frameworks.size) buildReplaceFix(
-                        name = "Delete Call Expression",
-                        replacement = "",
-                        range = context.deletionLocation(argument),
-                        reformat = false
-                    ) else null
+                    quickfixData = if (argument != null && names.size > frameworks.size)
+                        buildDeleteFix("Delete Argument", context.deletionLocation(argument))
+                    else null
                 )
             }
             val framework = frameworks.firstOrNull()?.second ?: return
 
             context.report(
-                issue = SYSTEM_FRAMEWORK_ISSUE,
+                issue = LOAD_APP_FOR_SYSTEM_FRAMEWORK_ISSUE,
                 scope = node,
                 location = node.callWithoutLambdaLocation(),
                 message = "\"$framework\" refers to the system framework, use `$LOAD_SYSTEM_METHOD_NAME` instead",
@@ -631,16 +654,14 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             val location = context.getLocation(name)
             val argument = name.sourcePsi?.getStrictParentOfType<KtValueArgument>()
             context.report(
-                issue = SYSTEM_PROCESS_NAME_ISSUE,
+                issue = PROCESS_NAME_FOR_SYSTEM_FRAMEWORK_ISSUE,
                 scope = name,
                 location = location,
                 message = "\"$FRAMEWORK_PACKAGE_NAME\" is not a process name, the system server process is \"$SYSTEM_PROCESS_NAME\"",
                 // A referenced constant may be shared with other code, only a literal is changed.
                 quickfixData = when {
                     !name.isStringLiteral() -> null
-                    isDuplicate -> argument?.let {
-                        buildReplaceFix("Delete Call Expression", "", range = context.deletionLocation(it), reformat = false)
-                    }
+                    isDuplicate -> argument?.let { buildDeleteFix("Delete Argument", context.deletionLocation(it)) }
                     else -> buildReplaceFix(
                         name = "Replace with \"$SYSTEM_PROCESS_NAME\"",
                         replacement = "\"$SYSTEM_PROCESS_NAME\"",
@@ -668,7 +689,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             val arguments = (node.sourcePsi as? KtCallExpression)?.valueArgumentList
 
             context.report(
-                issue = SYSTEM_DATA_CHANNEL_ISSUE,
+                issue = DATA_CHANNEL_FOR_SYSTEM_FRAMEWORK_ISSUE,
                 scope = node,
                 location = context.getCallLocation(node, includeReceiver = false, includeArguments = true),
                 message = "\"$framework\" refers to the system framework, use `$SYSTEM_DATA_CHANNEL_METHOD_NAME` instead",
@@ -899,7 +920,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             location.secondary = secondaries.first()
 
             context.report(
-                issue = RETAINED_VALUE_ISSUE,
+                issue = INVALID_MODULE_RETAINED_VALUE_ISSUE,
                 scope = retained.element,
                 location = location,
                 message = "`$RETAINED_VALUE_METHOD_NAME` key '${retained.key}' is already used $usage"

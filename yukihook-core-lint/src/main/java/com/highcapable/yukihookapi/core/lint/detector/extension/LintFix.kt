@@ -34,3 +34,12 @@ internal fun buildReplaceFix(name: String, replacement: String, vararg imports: 
         .shortenNames()
         .imports(*imports)
         .build()
+
+internal fun buildDeleteFix(name: String, range: Location, reformat: Boolean = false) =
+    LintFix.create()
+        .name(name)
+        .replace()
+        .range(range)
+        .with("")
+        .reformat(reformat)
+        .build()

@@ -31,7 +31,7 @@ import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
-import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
+import com.highcapable.yukihookapi.core.lint.detector.extension.buildDeleteFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.isConstructorReference
 import com.highcapable.yukihookapi.core.lint.detector.extension.outermostQualifiedReference
@@ -100,7 +100,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             briefDescription = "YukiHook internal API must not be used directly",
             explanation = "YukiHook internal and generated declarations are public for runtime linkage only and must not be used directly.",
             category = Category.CORRECTNESS,
-            priority = 4,
+            priority = 10,
             severity = Severity.ERROR,
             implementation = Implementation(
                 InternalApiDetector::class.java,
@@ -127,8 +127,8 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
                 issue = ISSUE,
                 scope = node,
                 location = location,
-                message = "`${declaration.name}` is an internal YukiHook's API and must not be used directly",
-                quickfixData = buildReplaceFix("Delete Annotation", "", range = location)
+                message = "`${declaration.name}` is an internal YukiHook API and must not be used directly",
+                quickfixData = buildDeleteFix("Delete Annotation", location, reformat = true)
             )
         }
 
@@ -179,22 +179,22 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
                 .filterIsInstance<KtNameReferenceExpression>().firstOrNull { it.parent is KtBlockExpression }
 
             val expression = scope.takeIf { it is UCallExpression || it is UQualifiedReferenceExpression }?.outermostQualifiedReference()
-            val fixLocation = when {
-                objectLiteral != null -> context.getLocation(objectLiteral)
-                classLiteral != null -> classLiteral.deletionLocation()
-                standaloneReference != null -> context.getLocation(standaloneReference)
-                expression?.uastParent is UBlockExpression -> context.getLocation(expression)
-                else -> null
+            val (fixName, fixLocation) = when {
+                objectLiteral != null -> "Delete Object Expression" to context.getLocation(objectLiteral)
+                classLiteral != null -> "Delete Class Literal" to classLiteral.deletionLocation()
+                standaloneReference != null -> "Delete Reference Expression" to context.getLocation(standaloneReference)
+                expression?.uastParent is UBlockExpression -> (if (scope is UCallExpression)
+                    "Delete Call Expression"
+                else "Delete Reference Expression") to context.getLocation(expression)
+                else -> null to null
             }
-            val lintFix = fixLocation?.let {
-                buildReplaceFix("Delete Call Expression", "", range = it, reformat = false)
-            }
+            val lintFix = if (fixName != null && fixLocation != null) buildDeleteFix(fixName, fixLocation) else null
 
             context.report(
                 issue = ISSUE,
                 scope = scope,
                 location = fixLocation ?: location,
-                message = "`$apiName` is an internal YukiHook's API and must not be used directly",
+                message = "`$apiName` is an internal YukiHook API and must not be used directly",
                 quickfixData = lintFix
             )
         }

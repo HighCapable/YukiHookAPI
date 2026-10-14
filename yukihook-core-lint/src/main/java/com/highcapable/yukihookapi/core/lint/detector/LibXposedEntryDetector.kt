@@ -34,6 +34,7 @@ import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
 import com.highcapable.yukihookapi.core.lint.detector.extension.annotationNameLocation
 import com.highcapable.yukihookapi.core.lint.detector.extension.argumentSource
+import com.highcapable.yukihookapi.core.lint.detector.extension.buildDeleteFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.deletionLocation
@@ -74,43 +75,53 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
         private const val LOWEST_API_VERSION = 101
         private const val RELOAD_API_VERSION = 102
 
-        private val IMPLEMENTATION = Implementation(
-            LibXposedEntryDetector::class.java,
-            Scope.JAVA_FILE_SCOPE
-        )
-
-        val ISSUE = Issue.create(
+        val INVALID_LIBXPOSED_API_VERSION_ISSUE = Issue.create(
             id = "InvalidLibXposedApiVersion",
             briefDescription = "Invalid Xposed API version for module entry",
-            explanation = "The minimum Xposed API version must be at least $LOWEST_API_VERSION, and the target API version " +
-                "must not be lower than the minimum version. Hot reload requires a target API version of $RELOAD_API_VERSION.",
+            explanation = """
+                The minimum Xposed API version must be at least $LOWEST_API_VERSION, and the target API version \
+                must not be lower than the minimum version. Hot reload requires a target API version of $RELOAD_API_VERSION.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 8,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                LibXposedEntryDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
-        val HOT_RELOAD_ISSUE = Issue.create(
+        val INVALID_LIBXPOSED_HOT_RELOAD_ISSUE = Issue.create(
             id = "InvalidLibXposedHotReload",
             briefDescription = "Invalid hot reload configuration for module entry",
-            explanation = "Hot reload replaces the YukiHook module entry as one generation. Additional libxposed " +
-                "Java entries cannot participate in that lifecycle and must not be declared when hot reload is enabled.",
+            explanation = """
+                Hot reload replaces the YukiHook module entry as one generation. Additional libxposed Java entries \
+                cannot participate in that lifecycle, `$JAVA_ENTRIES` must not be declared when hot reload is enabled.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 8,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                LibXposedEntryDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
 
         val SYSTEM_FRAMEWORK_IN_SCOPE_ISSUE = Issue.create(
             id = "SystemFrameworkInScope",
             briefDescription = "Framework package used as the system framework scope",
-            explanation = "In the module scope, the system server is the virtual package \"$FRAMEWORK_SCOPE_NAME\". " +
-                "\"$FRAMEWORK_PACKAGE_NAME\" only selects the framework package outside the system server, " +
-                "which YukiHook does not load as an app. Use \"$FRAMEWORK_SCOPE_NAME\" for the system framework.",
+            explanation = """
+                In the module scope, the system server is the virtual package "$FRAMEWORK_SCOPE_NAME". \
+                "$FRAMEWORK_PACKAGE_NAME" only selects the framework package outside the system server, \
+                which YukiHook does not load as an app. Use "$FRAMEWORK_SCOPE_NAME" for the system framework.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 5,
             severity = Severity.WARNING,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(
+                LibXposedEntryDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
     }
 
@@ -222,7 +233,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             if (minVersion < LOWEST_API_VERSION) {
                 val location = if (declaredMin != null) context.getLocation(declaredMin) else context.annotationNameLocation(node)
                 context.report(
-                    issue = ISSUE,
+                    issue = INVALID_LIBXPOSED_API_VERSION_ISSUE,
                     scope = node,
                     location = location,
                     message = "`$MIN_API_VERSION` must be at least $LOWEST_API_VERSION",
@@ -234,16 +245,11 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             if (usesReload && javaEntries != null && !javaEntries.isEmptyArray()) {
                 val source = javaEntries.argumentSource() ?: javaEntries.expression.sourcePsi ?: return
                 context.report(
-                    issue = HOT_RELOAD_ISSUE,
+                    issue = INVALID_LIBXPOSED_HOT_RELOAD_ISSUE,
                     scope = javaEntries,
                     location = context.getLocation(source),
                     message = "`$JAVA_ENTRIES` must be empty when hot reload is enabled",
-                    quickfixData = buildReplaceFix(
-                        name = "Delete Call Expression",
-                        replacement = "",
-                        range = context.deletionLocation(source),
-                        reformat = false
-                    )
+                    quickfixData = buildDeleteFix("Delete Argument", context.deletionLocation(source))
                 )
             }
 
@@ -252,7 +258,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
             // Hot reload degrades to disabled on older frameworks, so only the target version has to support it.
             if (usesReload && targetVersion < RELOAD_API_VERSION) context.report(
-                issue = ISSUE,
+                issue = INVALID_LIBXPOSED_API_VERSION_ISSUE,
                 scope = node,
                 location = context.getLocation(targetValue),
                 message = "Hot reload requires `$TARGET_API_VERSION` to be at least $RELOAD_API_VERSION",
@@ -262,7 +268,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
             val location = context.getLocation(targetValue)
             context.report(
-                issue = ISSUE,
+                issue = INVALID_LIBXPOSED_API_VERSION_ISSUE,
                 scope = node,
                 location = location,
                 message = "`$TARGET_API_VERSION` must be at least `$MIN_API_VERSION`",
@@ -293,9 +299,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
                     // A referenced constant may be shared with other code, only a literal is changed.
                     quickfixData = when {
                         !entry.isStringLiteral() -> null
-                        isDuplicate -> entry.sourcePsi?.let {
-                            buildReplaceFix("Delete Call Expression", "", range = context.deletionLocation(it), reformat = false)
-                        }
+                        isDuplicate -> entry.sourcePsi?.let { buildDeleteFix("Delete Element", context.deletionLocation(it)) }
                         else -> buildReplaceFix(
                             name = "Replace with \"$FRAMEWORK_SCOPE_NAME\"",
                             replacement = "\"$FRAMEWORK_SCOPE_NAME\"",

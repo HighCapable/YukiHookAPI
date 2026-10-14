@@ -31,7 +31,7 @@ import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.highcapable.yukihookapi.core.lint.DeclaredSymbol
 import com.highcapable.yukihookapi.core.lint.detector.extension.branches
-import com.highcapable.yukihookapi.core.lint.detector.extension.buildReplaceFix
+import com.highcapable.yukihookapi.core.lint.detector.extension.buildDeleteFix
 import com.highcapable.yukihookapi.core.lint.detector.extension.createExternalOnlyUastHandler
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingCall
 import com.highcapable.yukihookapi.core.lint.detector.extension.enclosingFunction
@@ -70,12 +70,17 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
         val ISSUE = Issue.create(
             id = "ConflictingClassicHookCallbacks",
             briefDescription = "Conflicting classic hook callbacks",
-            explanation = "A classic hooker may use before and after together, but intercept replaces their callbacks. " +
-                "Do not configure them with intercept on the same hooker.",
+            explanation = """
+                A classic hooker may use `before` and `after` together, but `intercept` replaces their callbacks. \
+                Do not configure them with `intercept` on the same hooker.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 10,
             severity = Severity.ERROR,
-            implementation = Implementation(ClassicHookerDetector::class.java, Scope.JAVA_FILE_SCOPE)
+            implementation = Implementation(
+                ClassicHookerDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
     }
 
@@ -140,9 +145,7 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
                             scope = call.node,
                             location = location,
                             message = "`intercept` cannot be used with $callbacks on the same classic hooker",
-                            quickfixData = if (isStandalone)
-                                buildReplaceFix("Delete Call Expression", "", range = location, reformat = false)
-                            else null
+                            quickfixData = if (isStandalone) buildDeleteFix("Delete Call Expression", location) else null
                         )
                     }
 

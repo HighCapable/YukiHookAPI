@@ -96,13 +96,15 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             XPOSED_82_RUNTIME to YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_XPOSED82_MODULE_NAME
         )
 
-        val ISSUE = Issue.create(
+        val REQUIRES_YUKIHOOK_RUNTIME_ISSUE = Issue.create(
             id = "RequiresYukiHookRuntime",
             briefDescription = "Incompatible YukiHook runtime or Xposed API version",
-            explanation = "YukiHook APIs require a compatible runtime. If an API specifies an Xposed API version, " +
-                "the target API version of the module entry must be that version or higher.",
+            explanation = """
+                YukiHook APIs require a compatible runtime. If an API specifies an Xposed API version, \
+                the target API version of the module entry must be that version or higher.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 10,
             severity = Severity.ERROR,
             implementation = Implementation(
                 RuntimeRequirementDetector::class.java,
@@ -113,11 +115,13 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         val NEW_XPOSED_API_ISSUE = Issue.create(
             id = "NewXposedApi",
             briefDescription = "Using a YukiHook API newer than the module's minimum Xposed API version",
-            explanation = "The API requires a newer Xposed API version than the minimum API version of the module entry. " +
-                "It has no effect when the module runs on an older framework. Check `$EXECUTOR_API_VERSION` before the call, " +
-                "or raise the minimum API version.",
+            explanation = """
+                The API requires a newer Xposed API version than the minimum API version of the module entry. \
+                It has no effect when the module runs on an older framework. Check `$EXECUTOR_API_VERSION` before the call, \
+                or raise the minimum API version.
+            """.trimIndent(),
             category = Category.CORRECTNESS,
-            priority = 6,
+            priority = 5,
             severity = Severity.WARNING,
             implementation = Implementation(
                 RuntimeRequirementDetector::class.java,
@@ -192,7 +196,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             if (psiFacade.findClass(runtimeClass, source.resolveScope) == null) {
                 val runtimeModule = RUNTIME_MODULES.getValue(requirement.runtime)
                 context.report(
-                    issue = ISSUE,
+                    issue = REQUIRES_YUKIHOOK_RUNTIME_ISSUE,
                     scope = scope,
                     location = location,
                     message = "`$apiName` requires the `$runtimeModule` runtime"
@@ -207,7 +211,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             if (isNewApi && scope.isGuardedBy(requirement.apiVersion)) return
             val (issue, attribute, declaredVersion) = when {
                 entry.targetApiVersion != null && entry.targetApiVersion < requirement.apiVersion ->
-                    Triple(ISSUE, LibXposedEntryDetector.TARGET_API_VERSION, entry.targetApiVersion)
+                    Triple(REQUIRES_YUKIHOOK_RUNTIME_ISSUE, LibXposedEntryDetector.TARGET_API_VERSION, entry.targetApiVersion)
                 entry.minApiVersion < requirement.apiVersion ->
                     Triple(NEW_XPOSED_API_ISSUE, LibXposedEntryDetector.MIN_API_VERSION, entry.minApiVersion)
                 else -> return
