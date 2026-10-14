@@ -42,7 +42,6 @@ import com.highcapable.yukihookapi.runtime.YukiHookBridge
  * - Exposes the module-wide static [current], you can also call [requireContext].
  * - Loads [YukiHook.Config] in both module and host environments to avoid duplicate configuration.
  * - Enables [YukiHookDataChannel] communication between the module and host.
- * - Exposes [YukiHook.Status.isTaiChiModuleActive] for TaiChi/Wuji activation checks.
  */
 open class ModuleApplication : Application() {
 
