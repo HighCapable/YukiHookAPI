@@ -65,6 +65,7 @@ gropify {
     projects(
         ":yukihook-core",
         ":yukihook-compiler",
+        ":yukihook-extension-kavaref",
         ":yukihook-runtime-xposed82",
         ":yukihook-runtime-libxposed",
         ":yukihook-core-lint",
