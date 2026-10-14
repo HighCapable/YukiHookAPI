@@ -147,8 +147,10 @@ object YukiHook {
         val runtime get() = YukiHookBridge.runtime
 
         /**
-         * Observes framework service availability. The listener is invoked immediately and on bind/death.
-         * Callbacks may run on a binder thread. Call [FrameworkServiceBridge.unregister] on the returned subscription to cancel it.
+         * Observes framework service availability. The listener is invoked on registration and on bind/death.
+         *
+         * Callbacks run on the main thread, the first one runs immediately when registered from the main thread.
+         * Call [FrameworkServiceBridge.unregister] on the returned subscription to cancel it.
          *
          * Optionally pass a [Lifecycle] to automatically cancel the subscription when it is destroyed.
          * When provided, the subscription remains active while the lifecycle is stopped,

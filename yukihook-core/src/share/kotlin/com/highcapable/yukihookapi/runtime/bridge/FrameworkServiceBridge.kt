@@ -23,6 +23,8 @@
 
 package com.highcapable.yukihookapi.runtime.bridge
 
+import androidx.annotation.MainThread
+
 /**
  * Receives framework service availability changes.
  * Each successful observation returns an independent subscription that can unregister itself.
@@ -30,11 +32,13 @@ package com.highcapable.yukihookapi.runtime.bridge
 fun interface FrameworkServiceBridge {
 
     /**
-     * Called immediately on registration and when the framework service binds or dies.
+     * Called on registration and when the framework service binds or dies.
      *
-     * Callbacks may run on a binder thread.
+     * Callbacks run on the main thread. When registered from the main thread, the first callback runs immediately,
+     * otherwise it is posted to the main thread.
      * @param available whether the framework service is available.
      */
+    @MainThread
     fun onServiceChanged(available: Boolean)
 
     /**

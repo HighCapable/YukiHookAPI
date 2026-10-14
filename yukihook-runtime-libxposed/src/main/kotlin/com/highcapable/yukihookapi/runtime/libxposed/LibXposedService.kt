@@ -24,7 +24,9 @@
 package com.highcapable.yukihookapi.runtime.libxposed
 
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -46,6 +48,8 @@ internal object LibXposedService {
 
     private const val RUNTIME_API_VERSION = XposedService.API_101
     private const val HOT_RELOAD_API_VERSION = XposedService.API_102
+
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private val services = IdentityHashMap<IBinder, XposedService>()
     private val listeners = CopyOnWriteArraySet<ServiceSubscription>()
@@ -173,72 +177,51 @@ internal object LibXposedService {
         return block(current)
     }
 
-    private fun notifyListeners() {
-        listeners.forEach { subscription ->
-            runCatching {
-                subscription.dispatch()
-            }.onFailure {
-                Log.e(YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME, "Service listener failed", it)
-            }
-        }
-    }
+    private fun notifyListeners() = listeners.forEach { it.dispatch() }
 
     /**
-     * Independent lifecycle-aware subscription with serialized callback delivery.
+     * Independent lifecycle-aware subscription with callbacks delivered on the main thread.
+     *
+     * Every callback reads the service state when it runs on the main thread,
+     * so the last callback always matches the current state.
      */
     private class ServiceSubscription(
         private val lifecycle: Lifecycle?,
         private val listener: FrameworkServiceBridge
     ) : FrameworkServiceBridge, DefaultLifecycleObserver {
 
-        private val callbackLock = Any()
-        private val pendingEvents = ArrayDeque<Unit>()
-
-        private var isInitialized = false
+        @Volatile
         private var isUnregistered = false
 
-        override fun onServiceChanged(available: Boolean) = synchronized(callbackLock) {
-            notifyListener(available)
-        }
-
+        override fun onServiceChanged(available: Boolean) = notifyListener(available)
         override fun onDestroy(owner: LifecycleOwner) = unregister()
 
         override fun unregister() {
-            synchronized(callbackLock) {
-                if (isUnregistered) return
-                isUnregistered = true
-                pendingEvents.clear()
-            }
+            if (isUnregistered) return
+            isUnregistered = true
 
             listeners.remove(this)
             lifecycle?.removeObserver(this)
         }
 
-        fun register() = synchronized(callbackLock) {
-            if (isUnregistered) return@synchronized
+        fun register() {
+            if (isUnregistered) return
 
             listeners.add(this)
-            notifyListener(isAvailable)
-            if (isUnregistered) {
-                pendingEvents.clear()
-                return@synchronized
-            }
-
-            isInitialized = true
-            while (pendingEvents.isNotEmpty() && !isUnregistered) runCatching {
-                pendingEvents.removeFirst()
+            // Run the first callback directly on the main thread so a failing listener is thrown to the caller.
+            if (Looper.myLooper() == Looper.getMainLooper())
                 notifyListener(isAvailable)
-            }.onFailure {
-                Log.e(YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME, "Service listener failed", it)
-            }
+            else dispatch()
         }
 
-        fun dispatch() = synchronized(callbackLock) {
-            if (isUnregistered) return@synchronized
-
-            if (!isInitialized)
-                pendingEvents.addLast(Unit)
-            else notifyListener(isAvailable)
+        fun dispatch() {
+            mainHandler.post {
+                runCatching {
+                    notifyListener(isAvailable)
+                }.onFailure {
+                    Log.e(YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME, "Service listener failed", it)
+                }
+            }
         }
 
         private fun notifyListener(available: Boolean) {
