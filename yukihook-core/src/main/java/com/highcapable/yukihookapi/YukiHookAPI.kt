@@ -139,14 +139,8 @@ object YukiHookAPI {
             )
             val name get() = YukiHook.Status.Executor.name
 
-            @Deprecated(
-                message = "Use YukiHook.Status.Executor.type instead.",
-                replaceWith = ReplaceWith(
-                    "YukiHook.Status.Executor.type",
-                    "com.highcapable.yukihookapi.YukiHook"
-                )
-            )
-            val type get() = YukiHook.Status.Executor.type
+            @Deprecated(message = "Hook framework type detection is no longer supported.", level = DeprecationLevel.ERROR)
+            val type: Any get() = Unit
 
             @Deprecated(
                 message = "Use YukiHook.Status.Executor.apiVersion instead.",

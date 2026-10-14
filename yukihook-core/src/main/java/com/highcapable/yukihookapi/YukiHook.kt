@@ -30,7 +30,6 @@ import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.generated.YukiHookProperties
-import com.highcapable.yukihookapi.hook.core.api.type.ExecutorType
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -219,12 +218,6 @@ object YukiHook {
              * @return [String] `unknown` when unavailable or `invalid` when resolution fails.
              */
             val name get() = YukiHookBridge.frameworkName
-
-            /**
-             * Gets the current hook framework type.
-             * @return [ExecutorType]
-             */
-            val type get() = ExecutorType.from(name)
 
             /**
              * Gets the current hook framework API version.
