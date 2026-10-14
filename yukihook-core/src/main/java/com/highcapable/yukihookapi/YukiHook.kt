@@ -32,7 +32,6 @@ import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
 import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.highcapable.yukihookapi.hook.core.api.type.ExecutorType
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.isTaiChiModuleActive
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.param.context.PackageContext
@@ -175,17 +174,6 @@ object YukiHook {
         val isHostEnvironment get() = XposedModuleRuntime.isHostEnvironment
 
         /**
-         * Checks whether module activation is detected through Xposed, TaiChi/Wuji.
-         *
-         * Includes both Xposed runtimes through [isXposedModuleActive]. Its runtime-specific
-         * initialization requirements and asynchronous service behavior apply.
-         *
-         * Also checks [isTaiChiModuleActive], which requires [ModuleApplication] in the module.
-         * @return [Boolean] whether activation is currently detected.
-         */
-        val isModuleActive get() = isXposedModuleActive || isTaiChiModuleActive
-
-        /**
          * Checks whether module activation is detected through the selected Xposed runtime.
          *
          * Returns true when [isHostEnvironment] is true, independently of module services.
@@ -202,18 +190,13 @@ object YukiHook {
          * This does not verify the scope or whether hooks are installed in a particular target app.
          * @return [Boolean] whether activation is currently detected.
          */
-        val isXposedModuleActive get() = isHostEnvironment || YukiHookBridge.isModuleActive
-
-        /**
-         * Checks only whether the module is active in TaiChi/Wuji.
-         *
-         * In the module environment, [Application] must inherit [ModuleApplication].
-         * Always returns false in a host environment.
-         * @return [Boolean] whether the module is active.
-         */
-        val isTaiChiModuleActive get() = !isHostEnvironment && (ModuleApplication.current?.isTaiChiModuleActive ?: false)
+        val isModuleActive get() = isHostEnvironment || YukiHookBridge.isModuleActive
 
         // region Deprecated properties for backward compatibility
+
+        /** Gets whether module activation is detected through the selected Xposed runtime. */
+        @Deprecated(message = "Use isModuleActive instead.", replaceWith = ReplaceWith("isModuleActive"))
+        val isXposedModuleActive get() = isModuleActive
 
         /** Gets whether the current environment is a host environment. */
         @Deprecated(message = "Use isHostEnvironment instead.", replaceWith = ReplaceWith("isHostEnvironment"))
@@ -233,9 +216,7 @@ object YukiHook {
              * Gets the current hook framework name.
              * @return [String] `unknown` when unavailable or `invalid` when resolution fails.
              */
-            val name get() = if (isTaiChiModuleActive && !isXposedModuleActive)
-                ExecutorType.TAICHI_XPOSED.explicitName
-            else YukiHookBridge.frameworkName
+            val name get() = YukiHookBridge.frameworkName
 
             /**
              * Gets the current hook framework type.

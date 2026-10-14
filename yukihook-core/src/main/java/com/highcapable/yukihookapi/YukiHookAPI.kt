@@ -110,24 +110,18 @@ object YukiHookAPI {
         val isModuleActive get() = YukiHook.Status.isModuleActive
 
         @Deprecated(
-            message = "Use YukiHook.Status.isXposedModuleActive instead.",
+            message = "Use YukiHook.Status.isModuleActive instead.",
             replaceWith = ReplaceWith(
-                "YukiHook.Status.isXposedModuleActive",
+                "YukiHook.Status.isModuleActive",
                 "com.highcapable.yukihookapi.YukiHook"
             )
         )
-        val isXposedModuleActive get() = YukiHook.Status.isXposedModuleActive
+        val isXposedModuleActive get() = YukiHook.Status.isModuleActive
 
-        @Deprecated(
-            message = "Use YukiHook.Status.isTaiChiModuleActive instead.",
-            replaceWith = ReplaceWith(
-                "YukiHook.Status.isTaiChiModuleActive",
-                "com.highcapable.yukihookapi.YukiHook"
-            )
-        )
-        val isTaiChiModuleActive get() = YukiHook.Status.isTaiChiModuleActive
+        @Deprecated(message = "TaiChi module detection is no longer supported.", level = DeprecationLevel.ERROR)
+        val isTaiChiModuleActive get() = false
 
-        @Deprecated(message = "Resource hooks are no longer supported.")
+        @Deprecated(message = "Resource hooks are no longer supported.", level = DeprecationLevel.ERROR)
         val isSupportResourcesHook get() = false
 
         @Deprecated(

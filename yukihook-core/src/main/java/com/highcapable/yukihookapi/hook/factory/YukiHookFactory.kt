@@ -26,7 +26,6 @@ package com.highcapable.yukihookapi.hook.factory
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Process
@@ -35,7 +34,6 @@ import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
-import androidx.core.net.toUri
 import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.YukiHookAPI
@@ -262,27 +260,3 @@ fun Context.injectModuleAppResources() = injectModuleResources()
 fun Resources.injectModuleAppResources() = injectModuleResources()
 
 // endregion
-
-/**
- * Checks only whether the module is active in TaiChi/Wuji.
- *
- * This implementation wraps and improves the example from the official TaiChi documentation.
- * @receiver the current context.
- * @return [Boolean] whether the module is active.
- */
-internal val Context.isTaiChiModuleActive: Boolean get() {
-    /**
-     * Gets whether the module is active.
-     * @return [Boolean] or null.
-     */
-    fun isModuleActive() = contentResolver?.call(
-        "content://me.weishu.exposed.CP/".toUri(),
-        "active",
-        null, null
-    )?.getBoolean("active", false)
-
-    return runCatching { isModuleActive() }.getOrNull() ?: runCatching {
-        startActivity(Intent("me.weishu.exp.ACTION_ACTIVE").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
-        isModuleActive()
-    }.getOrNull() ?: false
-}
