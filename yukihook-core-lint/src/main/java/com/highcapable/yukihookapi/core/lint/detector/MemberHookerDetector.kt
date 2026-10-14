@@ -43,6 +43,7 @@ import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiWildcardType
+import com.intellij.psi.util.InheritanceUtil
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.uast.UBlockExpression
@@ -54,9 +55,10 @@ import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.UReturnExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.UThisExpression
+import org.jetbrains.uast.skipParenthesizedExprDown
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 
-class ClassicHookerDetector : Detector(), Detector.UastScanner {
+class MemberHookerDetector : Detector(), Detector.UastScanner {
 
     companion object {
 
@@ -67,7 +69,20 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
 
         private val INTERCEPT_METHOD_NAMES = setOf("intercept", "replaceAny", "replaceUnit", "replaceTo", "replaceToTrue", "replaceToFalse")
 
-        val ISSUE = Issue.create(
+        private const val PACKAGE_PARAM_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.param.PackageParam"
+        private const val MEMBER_CLASS = "java.lang.reflect.Member"
+        private const val FIELD_CLASS = "java.lang.reflect.Field"
+        private const val COLLECTION_CLASS = "java.util.Collection"
+
+        private val MEMBER_HOOK_METHOD_NAMES = setOf("hook", "intercept")
+        private val MEMBERS_HOOK_METHOD_NAMES = setOf("hookAll", "interceptAll")
+
+        private val COLLECTION_FACTORY_NAMES = setOf(
+            "arrayOf", "listOf", "listOfNotNull", "mutableListOf", "arrayListOf",
+            "setOf", "setOfNotNull", "mutableSetOf", "hashSetOf", "linkedSetOf"
+        )
+
+        val CONFLICTING_CLASSIC_HOOK_CALLBACKS_ISSUE = Issue.create(
             id = "ConflictingClassicHookCallbacks",
             briefDescription = "Conflicting classic hook callbacks",
             explanation = """
@@ -78,7 +93,23 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
             priority = 10,
             severity = Severity.ERROR,
             implementation = Implementation(
-                ClassicHookerDetector::class.java,
+                MemberHookerDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
+        )
+
+        val INVALID_FIELD_HOOK_TARGET_ISSUE = Issue.create(
+            id = "InvalidFieldHookTarget",
+            briefDescription = "Field used as a hook target",
+            explanation = """
+                Only methods and constructors can be hooked. Passing a `Field` to `hook`, `intercept`, \
+                `hookAll` or `interceptAll` throws an `IllegalArgumentException` at runtime.
+            """.trimIndent(),
+            category = Category.CORRECTNESS,
+            priority = 10,
+            severity = Severity.ERROR,
+            implementation = Implementation(
+                MemberHookerDetector::class.java,
                 Scope.JAVA_FILE_SCOPE
             )
         )
@@ -98,9 +129,50 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
             branches.none { (condition, branch) -> other.branches[condition]?.let { it != branch } == true }
     }
 
-    override fun getApplicableUastTypes() = listOf(UFile::class.java)
+    override fun getApplicableUastTypes() = listOf(UFile::class.java, UCallExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
+
+        override fun visitCallExpression(node: UCallExpression) {
+            val method = node.resolve() ?: return
+            if (method.containingClass?.qualifiedName != PACKAGE_PARAM_CLASS) return
+            // Use the source name, some overloads have a different JVM name such as "hookAllByMember".
+            val methodName = node.methodName ?: return
+            val isMultiple = when (methodName) {
+                in MEMBER_HOOK_METHOD_NAMES -> false
+                in MEMBERS_HOOK_METHOD_NAMES -> true
+                else -> return
+            }
+            // The extension receiver is the first parameter, only the Member overloads accept a field.
+            val receiverType = method.parameterList.parameters.firstOrNull()?.type ?: return
+            if ((if (isMultiple) receiverType.elementType() else receiverType).qualifiedName() != MEMBER_CLASS) return
+            val receiver = node.receiver?.skipParenthesizedExprDown() ?: return
+
+            fun report(target: UElement, message: String) = context.report(
+                issue = INVALID_FIELD_HOOK_TARGET_ISSUE,
+                scope = target,
+                location = context.getLocation(target),
+                message = message
+            )
+
+            val hookName = "`$methodName`"
+            if (!isMultiple) {
+                if (receiver.getExpressionType().qualifiedName() == FIELD_CLASS)
+                    report(receiver, "$hookName cannot be used with a `Field`, only methods and constructors can be hooked")
+                return
+            }
+            if (receiver.getExpressionType().elementType().qualifiedName() == FIELD_CLASS) {
+                report(receiver, "$hookName cannot be used with `Field` elements, only methods and constructors can be hooked")
+                return
+            }
+            // A factory call such as "arrayOf<Member>(field)" widens the element type, so check its arguments.
+            val factory = receiver as? UCallExpression ?: return
+            if (factory.methodName !in COLLECTION_FACTORY_NAMES) return
+            factory.valueArguments.forEach { argument ->
+                if (argument.getExpressionType().qualifiedName() == FIELD_CLASS)
+                    report(argument, "$hookName cannot be used with a `Field`, only methods and constructors can be hooked")
+            }
+        }
 
         override fun visitFile(node: UFile) {
             val callbacks = mutableMapOf<HookerGroup, MutableList<CallbackCall>>()
@@ -141,7 +213,7 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
                             parent.sourcePsi == null && expression.sourcePsi?.parent is KtBlockExpression)
 
                         context.report(
-                            issue = ISSUE,
+                            issue = CONFLICTING_CLASSIC_HOOK_CALLBACKS_ISSUE,
                             scope = call.node,
                             location = location,
                             message = "`intercept` cannot be used with $callbacks on the same classic hooker",
@@ -185,5 +257,12 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
             is PsiWildcardType -> bound.containsClassicHooker()
             else -> false
         }
+
+        private fun PsiType?.qualifiedName() = (this as? PsiClassType)?.resolve()?.qualifiedName
+        private fun PsiType?.elementType() = when (this) {
+            is PsiArrayType -> componentType
+            is PsiClassType -> parameters.singleOrNull()?.takeIf { InheritanceUtil.isInheritor(this, COLLECTION_CLASS) }
+            else -> null
+        }.let { if (it is PsiWildcardType) it.bound else it }
     })
 }

@@ -26,10 +26,10 @@ package com.highcapable.yukihookapi.core.lint
 import com.android.tools.lint.client.api.IssueRegistry
 import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
-import com.highcapable.yukihookapi.core.lint.detector.ClassicHookerDetector
 import com.highcapable.yukihookapi.core.lint.detector.InternalApiDetector
 import com.highcapable.yukihookapi.core.lint.detector.KavaRefFallbackDetector
 import com.highcapable.yukihookapi.core.lint.detector.LibXposedEntryDetector
+import com.highcapable.yukihookapi.core.lint.detector.MemberHookerDetector
 import com.highcapable.yukihookapi.core.lint.detector.ModuleRuntimeDetector
 import com.highcapable.yukihookapi.core.lint.detector.ModuleUsageDetector
 import com.highcapable.yukihookapi.core.lint.detector.RuntimeRequirementDetector
@@ -51,7 +51,8 @@ class YukiHookIssueRegistry : IssueRegistry() {
         ModuleRuntimeDetector.SYSTEM_FRAMEWORK_IN_LOAD_APP_PACKAGES_ISSUE,
         ModuleRuntimeDetector.PROCESS_NAME_FOR_SYSTEM_FRAMEWORK_ISSUE,
         ModuleRuntimeDetector.DATA_CHANNEL_FOR_SYSTEM_FRAMEWORK_ISSUE,
-        ClassicHookerDetector.ISSUE,
+        MemberHookerDetector.CONFLICTING_CLASSIC_HOOK_CALLBACKS_ISSUE,
+        MemberHookerDetector.INVALID_FIELD_HOOK_TARGET_ISSUE,
         ModuleUsageDetector.USE_MODULE_APPLICATION_ISSUE,
         ModuleUsageDetector.USE_HOOK_INVOCATION_API_ISSUE,
         KavaRefFallbackDetector.ISSUE
