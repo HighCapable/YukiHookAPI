@@ -100,7 +100,7 @@ class InternalApiDetector : Detector(), Detector.UastScanner {
             briefDescription = "YukiHook internal API must not be used directly",
             explanation = "YukiHook internal and generated declarations are public for runtime linkage only and must not be used directly.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 4,
             severity = Severity.ERROR,
             implementation = Implementation(
                 InternalApiDetector::class.java,

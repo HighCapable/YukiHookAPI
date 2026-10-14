@@ -85,7 +85,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             explanation = "The minimum Xposed API version must be at least $LOWEST_API_VERSION, and the target API version " +
                 "must not be lower than the minimum version. Hot reload requires a target API version of $RELOAD_API_VERSION.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 8,
             severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )
@@ -96,7 +96,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             explanation = "Hot reload replaces the YukiHook module entry as one generation. Additional libxposed " +
                 "Java entries cannot participate in that lifecycle and must not be declared when hot reload is enabled.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 8,
             severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )

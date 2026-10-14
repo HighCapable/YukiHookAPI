@@ -189,7 +189,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             briefDescription = "Module registration must run during onInit",
             explanation = "Framework events and module lifecycle callbacks must be registered while the current module entry runs onInit.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 8,
             severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )
@@ -200,7 +200,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             explanation = "Register package hook callbacks from the module's onHook. " +
                 "Do not call encase from a PackageParam context or inside another encase block.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 8,
             severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )
@@ -215,7 +215,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 "Keys must be non-blank and unique in the current package scope, the same key can be used in different package scopes. " +
                 "Runtime validation covers values that lint cannot determine.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 6,
             severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )
@@ -250,7 +250,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                 "use \"$SYSTEM_PROCESS_NAME\" for the system server instead.",
             category = Category.CORRECTNESS,
             priority = 6,
-            severity = Severity.WARNING,
+            severity = Severity.ERROR,
             implementation = IMPLEMENTATION
         )
 

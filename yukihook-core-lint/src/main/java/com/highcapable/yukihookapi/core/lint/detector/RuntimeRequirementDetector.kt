@@ -102,7 +102,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             explanation = "YukiHook APIs require a compatible runtime. If an API specifies an Xposed API version, " +
                 "the target API version of the module entry must be that version or higher.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 6,
             severity = Severity.ERROR,
             implementation = Implementation(
                 RuntimeRequirementDetector::class.java,

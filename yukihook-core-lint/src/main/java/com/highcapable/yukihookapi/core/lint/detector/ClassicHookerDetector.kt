@@ -73,7 +73,7 @@ class ClassicHookerDetector : Detector(), Detector.UastScanner {
             explanation = "A classic hooker may use before and after together, but intercept replaces their callbacks. " +
                 "Do not configure them with intercept on the same hooker.",
             category = Category.CORRECTNESS,
-            priority = 10,
+            priority = 6,
             severity = Severity.ERROR,
             implementation = Implementation(ClassicHookerDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

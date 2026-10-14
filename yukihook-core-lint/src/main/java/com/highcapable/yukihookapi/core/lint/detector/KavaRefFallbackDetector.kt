@@ -74,7 +74,7 @@ class KavaRefFallbackDetector : Detector(), Detector.UastScanner {
                 "Add the `${YukiHookProperties.PROJECT_YUKIHOOK_EXTENSION_KAVAREF_MODULE_NAME}` dependency, " +
                 "its functions load the class from the host by default and its lint checks provide quick fixes for these calls. " +
                 "You can also pass `hostClassLoader` to the KavaRef functions explicitly.",
-            category = Category.USABILITY,
+            category = Category.CORRECTNESS,
             priority = 6,
             severity = Severity.WARNING,
             implementation = IMPLEMENTATION

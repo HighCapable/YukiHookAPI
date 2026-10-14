@@ -54,7 +54,7 @@ class ModuleUsageDetector : Detector(), Detector.UastScanner {
             briefDescription = "Inherit ModuleApplication to enable full functionality",
             explanation = "YukiHook module applications should inherit `ModuleApplication` to " +
                 "initialize module runtime services and enable full functionality.",
-            category = Category.USABILITY,
+            category = Category.CORRECTNESS,
             priority = 5,
             severity = Severity.WARNING,
             implementation = IMPLEMENTATION

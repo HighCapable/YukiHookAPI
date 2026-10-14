@@ -78,7 +78,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             explanation = "In a `PackageParam` scope, `String.toClass` uses `hostClassLoader` by default, but `VariousClass.load` " +
                 "and `VariousClass.loadOrNull` are KavaRef functions that use the module class loader when no loader is passed. " +
                 "Use `toClass` or `toClassOrNull` to load the class from the host.",
-            category = Category.USABILITY,
+            category = Category.CORRECTNESS,
             priority = 6,
             severity = Severity.WARNING,
             implementation = IMPLEMENTATION
@@ -89,7 +89,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             briefDescription = "VariousClass loaded with an explicit host class loader",
             explanation = "In a `PackageParam` scope, `VariousClass.toClass` and `VariousClass.toClassOrNull` use `hostClassLoader` " +
                 "by default, passing it to `load` or `loadOrNull` is unnecessary.",
-            category = Category.USABILITY,
+            category = Category.PRODUCTIVITY,
             priority = 3,
             severity = Severity.INFORMATIONAL,
             implementation = IMPLEMENTATION
@@ -101,7 +101,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             explanation = "In a `PackageParam` scope, `toClass` and `toClassOrNull` from KavaRef use the module class loader " +
                 "when no loader is passed. Import them from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` to load the class from the host. " +
                 "Importing both versions in the same file causes an overload resolution ambiguity.",
-            category = Category.USABILITY,
+            category = Category.CORRECTNESS,
             priority = 6,
             severity = Severity.WARNING,
             implementation = IMPLEMENTATION
@@ -112,7 +112,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             briefDescription = "KavaRef toClass loaded with an explicit host class loader",
             explanation = "In a `PackageParam` scope, `toClass` and `toClassOrNull` from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` " +
                 "use `hostClassLoader` by default, passing it to the KavaRef functions is unnecessary.",
-            category = Category.USABILITY,
+            category = Category.PRODUCTIVITY,
             priority = 3,
             severity = Severity.INFORMATIONAL,
             implementation = IMPLEMENTATION
@@ -124,7 +124,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             explanation = "In a `PackageParam` scope, `lazyClass` and `lazyClassOrNull` from KavaRef use the module class loader " +
                 "when no loader is passed. Import them from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` to load the class from the host. " +
                 "Importing both versions in the same file causes an overload resolution ambiguity.",
-            category = Category.USABILITY,
+            category = Category.CORRECTNESS,
             priority = 6,
             severity = Severity.WARNING,
             implementation = IMPLEMENTATION
@@ -135,7 +135,7 @@ class PackageParamDetector : Detector(), Detector.UastScanner {
             briefDescription = "KavaRef lazyClass loaded with an explicit host class loader",
             explanation = "In a `PackageParam` scope, `lazyClass` and `lazyClassOrNull` from `${DeclaredSymbol.EXTENSION_PACKAGE_NAME}` " +
                 "use `hostClassLoader` by default, passing it to the KavaRef functions is unnecessary.",
-            category = Category.USABILITY,
+            category = Category.PRODUCTIVITY,
             priority = 3,
             severity = Severity.INFORMATIONAL,
             implementation = IMPLEMENTATION
