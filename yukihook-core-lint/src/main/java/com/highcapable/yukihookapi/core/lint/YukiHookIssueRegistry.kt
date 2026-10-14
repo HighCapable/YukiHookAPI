@@ -53,6 +53,10 @@ class YukiHookIssueRegistry : IssueRegistry() {
         ModuleRuntimeDetector.SYSTEM_DATA_CHANNEL_ISSUE,
         ClassicHookerDetector.ISSUE,
         ModuleUsageDetector.MODULE_APPLICATION_ISSUE,
+        ModuleUsageDetector.TYPED_INSTANCE_ISSUE,
+        ModuleUsageDetector.TYPED_INSTANCE_OR_NULL_ISSUE,
+        ModuleUsageDetector.METHOD_PROPERTY_ISSUE,
+        ModuleUsageDetector.CONSTRUCTOR_PROPERTY_ISSUE,
         KavaRefFallbackDetector.ISSUE
     )
 
