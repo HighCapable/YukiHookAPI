@@ -20,6 +20,7 @@
  * This file is created by fankes on 2026/10/13.
  */
 @file:Suppress("unused")
+@file:JvmName("MemberResolverUtils")
 
 package com.highcapable.yukihookapi.extension.kavaref
 
