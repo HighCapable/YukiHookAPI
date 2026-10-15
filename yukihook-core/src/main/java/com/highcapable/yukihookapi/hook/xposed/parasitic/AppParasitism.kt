@@ -582,13 +582,13 @@ internal object AppParasitism : ModuleReloadable {
     /**
      * Registers the current Xposed module's [Activity] in the host.
      * @param context the current [Context].
-     * @param proxy the proxy [Activity].
+     * @param proxyClass the proxy class of [Activity].
      */
     @RequiresApi(AndroidVersion.N)
     @Synchronized
-    fun registerModuleActivities(context: Context, proxy: Any?) {
+    fun registerModuleActivities(context: Context, proxyClass: String?) {
         if (isActivityProxyRegistered || !canRegisterModuleActivities(context.packageName)) return
-        installModuleActivities(context, proxy)
+        installModuleActivities(context, proxyClass)
     }
 
     /**
@@ -631,9 +631,9 @@ internal object AppParasitism : ModuleReloadable {
     /**
      * Installs the current Xposed module's [Activity] in the host.
      * @param context the current [Context].
-     * @param proxy the proxy [Activity].
+     * @param proxyClass the proxy class of [Activity].
      */
-    private fun installModuleActivities(context: Context, proxy: Any?) {
+    private fun installModuleActivities(context: Context, proxyClass: String?) {
         fun String.toModuleActivityClassOrNull() = toClassOrNull(baseClassLoader)?.takeIf {
             it isSubclassOf Activity::class && it isSubclassOf ModuleActivity::class
         }
@@ -668,13 +668,7 @@ internal object AppParasitism : ModuleReloadable {
         runCatching {
             ActivityProxyConfig.apply {
                 proxyIntentName = "${XposedModuleRuntime.modulePackageName}.ACTIVITY_PROXY_INTENT"
-                proxyClassName = proxy?.let {
-                    when (it) {
-                        is String, is CharSequence -> it.toString()
-                        is Class<*> -> it.name
-                        else -> error("Unsupported Activity proxy type: ${it.javaClass.name}")
-                    }
-                }?.takeIf { it.isNotBlank() } ?: context.packageManager?.runCatching {
+                proxyClassName = proxyClass?.takeIf { it.isNotBlank() } ?: context.packageManager?.runCatching {
                     queryIntentActivities(getLaunchIntentForPackage(context.packageName)!!, 0)
                         .first()
                         .activityInfo.name

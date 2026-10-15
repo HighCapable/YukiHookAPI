@@ -49,6 +49,7 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.context.wrapper.ModuleC
 import com.highcapable.yukihookapi.hook.xposed.preference.YukiHookPreferences
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.io.File
+import kotlin.reflect.KClass
 
 /**
  * Calls [YukiHook.configure] from [YukiHookXposedModule].
@@ -177,10 +178,10 @@ fun Resources.injectModuleResources() = AppParasitism.injectModuleResources(this
  * - Requires Android 7.0 (API 24) or later.
  * @see PackageParam.withApplicationReady
  * @receiver the current context.
- * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
+ * @param proxyClass the proxy class of [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
  */
 @RequiresApi(AndroidVersion.N)
-fun Context.registerModuleActivities(proxy: Any? = null) = AppParasitism.registerModuleActivities(this, proxy)
+fun Context.registerModuleActivities(proxyClass: String? = null) = AppParasitism.registerModuleActivities(this, proxyClass)
 
 /**
  * Creates a [ContextThemeWrapper] proxy that applies the current Xposed module's theme resources.
@@ -245,7 +246,11 @@ fun Context.prefs(name: String = "") = preferences(name)
 /** Registers the current Xposed module's [Activity] in the host. */
 @Deprecated(message = "Use registerModuleActivities instead.", replaceWith = ReplaceWith("registerModuleActivities(proxy)"))
 @RequiresApi(AndroidVersion.N)
-fun Context.registerModuleAppActivities(proxy: Any? = null) = registerModuleActivities(proxy)
+fun Context.registerModuleAppActivities(proxy: Any? = null) = registerModuleActivities(when (proxy) {
+    is KClass<*> -> proxy.qualifiedName
+    is Class<*> -> proxy.name
+    else -> proxy?.toString()
+})
 
 /** Injects the current Xposed module's resources into the host [Context]. */
 @Deprecated(message = "Use injectModuleResources instead.", replaceWith = ReplaceWith("injectModuleResources()"))
