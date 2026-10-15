@@ -277,7 +277,7 @@ object YukiHook {
         /**
          * Gets the module-wide [YukiHookSharedFiles] object.
          *
-         * - Requires [YukiHook.Status.isXposedModuleActive].
+         * - Requires [YukiHook.Status.isModuleActive].
          *
          * Files are writable from the module environment and read-only from a host environment.
          * This storage is independent of the module application's private file directory.
