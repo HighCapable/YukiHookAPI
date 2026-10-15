@@ -73,13 +73,20 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
         if (XposedModuleRuntime.isHostEnvironment) resources?.injectModuleResources()
     }
 
+    @CallSuper
+    override fun getClassLoader(): ClassLoader = ModuleClassLoader.get()
+
+    @CallSuper
+    override fun getResources(): Resources? = baseResources ?: super.getResources()
+
+    // region Deprecated functions for backward compatibility
+
     /**
      * Applies a [Configuration] to the current [ModuleContextThemeWrapper].
      *
-     * Calls [Resources.updateConfiguration] after applying the configuration block.
-     * @param block the [Configuration] block.
-     * @return [ModuleContextThemeWrapper]
+     * - This function is deprecated, implement it yourself.
      */
+    @Deprecated(message = "This function is deprecated, implement it yourself.")
     fun applyConfiguration(block: Configuration.() -> Unit): ModuleContextThemeWrapper {
         resources?.configuration?.apply(block)
         @Suppress("DEPRECATION")
@@ -87,10 +94,6 @@ class ModuleContextThemeWrapper private constructor(baseContext: Context, theme:
 
         return this
     }
-
-    @CallSuper
-    override fun getClassLoader(): ClassLoader = ModuleClassLoader.get()
-
-    @CallSuper
-    override fun getResources(): Resources? = baseResources ?: super.getResources()
+    
+    // endregion
 }
