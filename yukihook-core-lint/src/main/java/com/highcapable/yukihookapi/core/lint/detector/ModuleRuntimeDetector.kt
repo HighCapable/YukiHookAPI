@@ -63,6 +63,7 @@ import com.intellij.psi.PsiVariable
 import com.intellij.psi.PsiWildcardType
 import com.intellij.psi.util.InheritanceUtil
 import com.intellij.psi.util.PsiUtil
+import org.jetbrains.kotlin.analysis.api.resolution.KaFunctionCall
 import org.jetbrains.kotlin.analysis.api.resolution.singleFunctionCallOrNull
 import org.jetbrains.kotlin.analysis.api.resolution.symbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaNamedFunctionSymbol
@@ -131,7 +132,18 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val SYSTEM_DATA_CHANNEL_METHOD_NAME = "systemDataChannel"
         private const val WITH_PROCESS_METHOD_NAME = "withProcess"
         private const val REGISTER_MODULE_ACTIVITIES_METHOD_NAME = "registerModuleActivities"
+        private const val REGISTER_APP_LIFECYCLE_METHOD_NAME = "registerAppLifecycle"
         private const val WITH_APPLICATION_READY_METHOD_NAME = "withApplicationReady"
+
+        private const val KAVAREF_EXTENSION_PACKAGE_NAME = "${DeclaredSymbol.CORE_PACKAGE_NAME}.extension.kavaref"
+
+        private val HOOK_METHOD_NAMES = setOf("hook", "hookAll", "intercept", "interceptAll")
+
+        // `remember` in a lifecycle callback is already reported by INVALID_MODULE_RETAINED_VALUE_ISSUE.
+        private val NON_REPLAYABLE_METHOD_NAMES = HOOK_METHOD_NAMES + setOf(
+            LOAD_APP_METHOD_NAME, LOAD_SYSTEM_METHOD_NAME, LOAD_ZYGOTE_METHOD_NAME, LOAD_HOOKER_METHOD_NAME, WITH_PROCESS_METHOD_NAME,
+            REGISTER_MODULE_ACTIVITIES_METHOD_NAME
+        )
         private const val EQUALS_METHOD_NAME = "equals"
 
         private const val FRAMEWORK_PACKAGE_NAME = "android"
@@ -280,18 +292,36 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             )
         )
 
-        val MODULE_ACTIVITIES_IN_APP_LIFECYCLE_ISSUE = Issue.create(
-            id = "ModuleActivitiesInAppLifecycle",
-            briefDescription = "Module activities registered in an app lifecycle callback",
+        val NON_REPLAYABLE_CALL_IN_APP_LIFECYCLE_ISSUE = Issue.create(
+            id = "NonReplayableCallInAppLifecycle",
+            briefDescription = "Non-replayable call in an app lifecycle callback",
             explanation = """
                 `AppLifecycle` callbacks registered by `registerAppLifecycle` are not called again after module hot reload, \
-                because completed host lifecycle events are never replayed. A registration added or changed in these callbacks \
-                does not take effect until the host restarts. Register module activities in `$WITH_APPLICATION_READY_METHOD_NAME` instead, \
-                it runs again with the existing `Application` after module reload.
+                because completed host lifecycle events are never replayed. Hooks, package loading, process checks and module \
+                activity registration declared in these callbacks are not declared again until the host restarts. \
+                Declare them in `onHook`, or in `$WITH_APPLICATION_READY_METHOD_NAME` when they need the host `Application`.
             """.trimIndent(),
             category = Category.CORRECTNESS,
             priority = 5,
             severity = Severity.WARNING,
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
+        )
+
+        val INVALID_APPLICATION_READY_NESTING_ISSUE = Issue.create(
+            id = "InvalidApplicationReadyNesting",
+            briefDescription = "Invalid withApplicationReady nesting",
+            explanation = """
+                `$WITH_APPLICATION_READY_METHOD_NAME` must be declared outside `AppLifecycle` callbacks, which are not called again \
+                after module hot reload, and outside another `$WITH_APPLICATION_READY_METHOD_NAME` block, where the host `Application` \
+                is already available. `$REGISTER_APP_LIFECYCLE_METHOD_NAME` must not be declared in `$WITH_APPLICATION_READY_METHOD_NAME`, \
+                because the host `Application` has already been created when the block runs.
+            """.trimIndent(),
+            category = Category.CORRECTNESS,
+            priority = 10,
+            severity = Severity.ERROR,
             implementation = Implementation(
                 ModuleRuntimeDetector::class.java,
                 Scope.JAVA_FILE_SCOPE
@@ -449,9 +479,10 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     if (method != null) {
                         reportSystemFrameworkLoading(node, method)
                         reportSystemDataChannel(node, method)
-                        reportModuleActivitiesInAppLifecycle(node, method)
+                        reportApplicationReadyNesting(node, method)
                         reportSystemProcessName(node, method)
                     }
+                    reportNonReplayableInAppLifecycle(node, method)
                     collectKeyContributions(node, method, contributions)
 
                     return false
@@ -522,21 +553,12 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     else -> return@forEach
                 }
 
-                val expression = generateSequence(call.node as UElement) { it.uastParent as? UQualifiedReferenceExpression }.last()
-                val location = context.getLocation(expression)
-                val parent = expression.uastParent
-
-                // UAST can wrap the last statement in a Kotlin lambda in an implicit return,
-                // an expression body is wrapped the same way but is not a statement that can be deleted.
-                val isStandalone = parent is UBlockExpression || (parent is UReturnExpression &&
-                    parent.sourcePsi == null && expression.sourcePsi?.parent is KtBlockExpression)
-
                 context.report(
                     issue = if (method.isModuleRegistration()) MODULE_REGISTRATION_OUTSIDE_ON_INIT_ISSUE else INVALID_MODULE_HOOK_LOADING_ISSUE,
                     scope = call.node,
-                    location = location,
+                    location = context.getLocation(call.node.outermostQualifiedExpression()),
                     message = message,
-                    quickfixData = if (isStandalone) buildDeleteFix("Delete Call Expression", location) else null
+                    quickfixData = call.node.deleteCallFix()
                 )
             }
         }
@@ -725,22 +747,89 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             )
         }
 
-        private fun reportModuleActivitiesInAppLifecycle(node: UCallExpression, method: PsiMethod) {
-            if (method.name != REGISTER_MODULE_ACTIVITIES_METHOD_NAME || method.containingClass?.qualifiedName != YUKIHOOK_FACTORY_CLASS) return
-            val callback = generateSequence(node.uastParent) { it.uastParent }
-                .takeWhile { it !is UMethod }
-                .filterIsInstance<ULambdaExpression>()
-                .mapNotNull { it.enclosingCall()?.resolve() }
-                .firstOrNull { it.containingClass?.qualifiedName == APP_LIFECYCLE_CLASS } ?: return
+        private fun reportNonReplayableInAppLifecycle(node: UCallExpression, method: PsiMethod?) {
+            // UAST gives no method name to unresolved calls such as functions with context parameters, use the identifier instead.
+            val name = (node.methodName ?: node.methodIdentifier?.name)?.takeIf { it in NON_REPLAYABLE_METHOD_NAMES } ?: return
+            val isNonReplayable = method?.isPackageParamMethod(name) == true ||
+                (name == REGISTER_MODULE_ACTIVITIES_METHOD_NAME && method?.containingClass?.qualifiedName == YUKIHOOK_FACTORY_CLASS) ||
+                (name in HOOK_METHOD_NAMES && node.isKavaRefExtensionCall())
+            if (!isNonReplayable) return
+            val callback = node.enclosingLambdaCall { it.isAppLifecycleCallback() } ?: return
 
             context.report(
-                issue = MODULE_ACTIVITIES_IN_APP_LIFECYCLE_ISSUE,
+                issue = NON_REPLAYABLE_CALL_IN_APP_LIFECYCLE_ISSUE,
                 scope = node,
-                location = context.getCallLocation(node, includeReceiver = false, includeArguments = true),
-                message = "`${callback.name}` is not called again after module hot reload, " +
-                    "register module activities in `$WITH_APPLICATION_READY_METHOD_NAME` instead"
+                location = node.callWithoutLambdaLocation(),
+                message = "`$name` in `${callback.name}` is not called again after module hot reload, " + when (name) {
+                    // Registering module activities needs the host Application, which onHook does not have.
+                    REGISTER_MODULE_ACTIVITIES_METHOD_NAME -> "call it in `$WITH_APPLICATION_READY_METHOD_NAME` instead"
+                    else -> "declare it in `onHook` or `$WITH_APPLICATION_READY_METHOD_NAME` instead"
+                }
             )
         }
+
+        private fun reportApplicationReadyNesting(node: UCallExpression, method: PsiMethod) {
+            val message = when {
+                method.isPackageParamMethod(WITH_APPLICATION_READY_METHOD_NAME) ->
+                    node.enclosingLambdaCall { it.isAppLifecycleCallback() }?.let {
+                        "`${it.name}` is not called again after module hot reload, " +
+                            "declare `$WITH_APPLICATION_READY_METHOD_NAME` outside `$REGISTER_APP_LIFECYCLE_METHOD_NAME`"
+                    } ?: node.enclosingLambdaCall { it.isPackageParamMethod(WITH_APPLICATION_READY_METHOD_NAME) }?.let {
+                        "The host `Application` is already available in `$WITH_APPLICATION_READY_METHOD_NAME`, " +
+                            "do not nest `$WITH_APPLICATION_READY_METHOD_NAME`"
+                    }
+                method.isPackageParamMethod(REGISTER_APP_LIFECYCLE_METHOD_NAME) ->
+                    node.enclosingLambdaCall { it.isPackageParamMethod(WITH_APPLICATION_READY_METHOD_NAME) }?.let {
+                        "The host `Application` has already been created in `$WITH_APPLICATION_READY_METHOD_NAME`, " +
+                            "declare `$REGISTER_APP_LIFECYCLE_METHOD_NAME` outside it"
+                    }
+                else -> null
+            } ?: return
+
+            // The fix deletes the whole call including its lambda, so the location covers it too.
+            context.report(
+                issue = INVALID_APPLICATION_READY_NESTING_ISSUE,
+                scope = node,
+                location = context.getLocation(node.outermostQualifiedExpression()),
+                message = message,
+                quickfixData = node.deleteCallFix()
+            )
+        }
+
+        private fun UCallExpression.outermostQualifiedExpression() =
+            generateSequence(this as UElement) { it.uastParent as? UQualifiedReferenceExpression }.last()
+
+        private fun UCallExpression.deleteCallFix(): LintFix? {
+            val expression = outermostQualifiedExpression()
+            val parent = expression.uastParent
+
+            // UAST can wrap the last statement in a Kotlin lambda in an implicit return,
+            // an expression body is wrapped the same way but is not a statement that can be deleted.
+            val isStandalone = parent is UBlockExpression || (parent is UReturnExpression &&
+                parent.sourcePsi == null && expression.sourcePsi?.parent is KtBlockExpression)
+            return if (isStandalone) buildDeleteFix("Delete Call Expression", context.getLocation(expression)) else null
+        }
+
+        private fun UElement.enclosingLambdaCall(predicate: (PsiMethod) -> Boolean) = generateSequence(uastParent) { it.uastParent }
+            .takeWhile { it !is UMethod }
+            .filterIsInstance<ULambdaExpression>()
+            .mapNotNull { it.enclosingCall()?.resolve() }
+            .firstOrNull(predicate)
+
+        private fun UCallExpression.isKavaRefExtensionCall() = (sourcePsi as? KtCallElement)?.let { call ->
+            // Lint cannot resolve calls to functions with context parameters, check their best candidates with the Analysis API instead.
+            call.analyzeOrNull {
+                call.resolveToCallCandidates().any { candidate ->
+                    candidate.isInBestCandidates &&
+                        (candidate.candidate as? KaFunctionCall<*>)?.symbol?.callableId?.packageName == FqName(KAVAREF_EXTENSION_PACKAGE_NAME)
+                }
+            }
+        } == true
+
+        private fun PsiMethod.isAppLifecycleCallback() = containingClass?.qualifiedName == APP_LIFECYCLE_CLASS
+
+        private fun PsiMethod.isPackageParamMethod(name: String) =
+            this.name == name && context.evaluator.extendsClass(containingClass, PACKAGE_PARAM_CLASS, false)
 
         private fun UCallExpression.callWithoutLambdaLocation(): Location {
             // Trailing lambdas carry the hook body, keep them out of the call location.
