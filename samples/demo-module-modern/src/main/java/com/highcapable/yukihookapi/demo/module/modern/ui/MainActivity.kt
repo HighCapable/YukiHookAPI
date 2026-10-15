@@ -272,7 +272,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showModuleScopeDialog() {
-        if (!YukiHook.Status.isXposedModuleActive) {
+        if (!YukiHook.Status.isModuleActive) {
             toast(getString(R.string.demo_module_scope_not_active))
             return
         }
