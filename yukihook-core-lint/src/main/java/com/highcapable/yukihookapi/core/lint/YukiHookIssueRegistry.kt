@@ -51,6 +51,7 @@ class YukiHookIssueRegistry : IssueRegistry() {
         ModuleRuntimeDetector.SYSTEM_FRAMEWORK_IN_LOAD_APP_PACKAGES_ISSUE,
         ModuleRuntimeDetector.PROCESS_NAME_FOR_SYSTEM_FRAMEWORK_ISSUE,
         ModuleRuntimeDetector.DATA_CHANNEL_FOR_SYSTEM_FRAMEWORK_ISSUE,
+        ModuleRuntimeDetector.MODULE_ACTIVITIES_IN_APP_LIFECYCLE_ISSUE,
         MemberHookerDetector.CONFLICTING_CLASSIC_HOOK_CALLBACKS_ISSUE,
         MemberHookerDetector.INVALID_FIELD_HOOK_TARGET_ISSUE,
         ModuleUsageDetector.USE_MODULE_APPLICATION_ISSUE,

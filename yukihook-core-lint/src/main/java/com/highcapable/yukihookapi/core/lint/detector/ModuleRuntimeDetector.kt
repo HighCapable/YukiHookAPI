@@ -116,6 +116,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val YUKIHOOKAPI_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHookAPI"
         private const val YUKIHOOK_FACTORY_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.factory.YukiHookFactoryKt"
         private const val MODULE_LIFECYCLE_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.hook.xposed.reload.lifecycle.ModuleLifecycleKt"
+        private const val APP_LIFECYCLE_CLASS = "$PACKAGE_PARAM_CLASS.AppLifecycle"
 
         private const val RETAINED_VALUE_METHOD_NAME = "remember"
         private const val MODULE_INIT_METHOD_NAME = "onInit"
@@ -129,6 +130,8 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
         private const val DATA_CHANNEL_METHOD_NAME = "dataChannel"
         private const val SYSTEM_DATA_CHANNEL_METHOD_NAME = "systemDataChannel"
         private const val WITH_PROCESS_METHOD_NAME = "withProcess"
+        private const val REGISTER_MODULE_ACTIVITIES_METHOD_NAME = "registerModuleActivities"
+        private const val WITH_APPLICATION_READY_METHOD_NAME = "withApplicationReady"
         private const val EQUALS_METHOD_NAME = "equals"
 
         private const val FRAMEWORK_PACKAGE_NAME = "android"
@@ -271,6 +274,24 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
+            implementation = Implementation(
+                ModuleRuntimeDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
+        )
+
+        val MODULE_ACTIVITIES_IN_APP_LIFECYCLE_ISSUE = Issue.create(
+            id = "ModuleActivitiesInAppLifecycle",
+            briefDescription = "Module activities registered in an app lifecycle callback",
+            explanation = """
+                `AppLifecycle` callbacks registered by `registerAppLifecycle` are not called again after module hot reload, \
+                because completed host lifecycle events are never replayed. A registration added or changed in these callbacks \
+                does not take effect until the host restarts. Register module activities in `$WITH_APPLICATION_READY_METHOD_NAME` instead, \
+                it runs again with the existing `Application` after module reload.
+            """.trimIndent(),
+            category = Category.CORRECTNESS,
+            priority = 5,
+            severity = Severity.WARNING,
             implementation = Implementation(
                 ModuleRuntimeDetector::class.java,
                 Scope.JAVA_FILE_SCOPE
@@ -428,6 +449,7 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     if (method != null) {
                         reportSystemFrameworkLoading(node, method)
                         reportSystemDataChannel(node, method)
+                        reportModuleActivitiesInAppLifecycle(node, method)
                         reportSystemProcessName(node, method)
                     }
                     collectKeyContributions(node, method, contributions)
@@ -700,6 +722,23 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                     range = context.getRangeLocation(callee, 0, arguments, 0),
                     reformat = false
                 ) else null
+            )
+        }
+
+        private fun reportModuleActivitiesInAppLifecycle(node: UCallExpression, method: PsiMethod) {
+            if (method.name != REGISTER_MODULE_ACTIVITIES_METHOD_NAME || method.containingClass?.qualifiedName != YUKIHOOK_FACTORY_CLASS) return
+            val callback = generateSequence(node.uastParent) { it.uastParent }
+                .takeWhile { it !is UMethod }
+                .filterIsInstance<ULambdaExpression>()
+                .mapNotNull { it.enclosingCall()?.resolve() }
+                .firstOrNull { it.containingClass?.qualifiedName == APP_LIFECYCLE_CLASS } ?: return
+
+            context.report(
+                issue = MODULE_ACTIVITIES_IN_APP_LIFECYCLE_ISSUE,
+                scope = node,
+                location = context.getCallLocation(node, includeReceiver = false, includeArguments = true),
+                message = "`${callback.name}` is not called again after module hot reload, " +
+                    "register module activities in `$WITH_APPLICATION_READY_METHOD_NAME` instead"
             )
         }
 
