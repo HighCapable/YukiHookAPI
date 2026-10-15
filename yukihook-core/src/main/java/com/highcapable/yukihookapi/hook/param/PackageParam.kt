@@ -1219,8 +1219,8 @@ open class PackageParam internal constructor(internal var context: PackageContex
         private var onTrimMemoryCallback: ((Application, Int) -> Unit)? = null
         private var onConfigurationChangedCallback: ((Application, Configuration) -> Unit)? = null
 
-        private val onReceiverActionsCallbacks = mutableListOf<Pair<Array<out String>, (Context, Intent) -> Unit>>()
-        private val onReceiverFiltersCallbacks = mutableListOf<Pair<IntentFilter, (Context, Intent) -> Unit>>()
+        private val onReceiverActionsCallbacks = mutableListOf<Triple<Array<out String>, Boolean, (Context, Intent) -> Unit>>()
+        private val onReceiverFiltersCallbacks = mutableListOf<Triple<IntentFilter, Boolean, (Context, Intent) -> Unit>>()
 
         /**
          * Listens for the current host loading [Application.attachBaseContext].
@@ -1272,20 +1272,28 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
         /**
          * Registers a system broadcast listener.
+         *
+         * The receiver is registered when the host [Application] is available,
+         * and is unregistered automatically when the module is hot reloaded.
          * @param actions the system broadcast actions.
+         * @param exported whether the receiver can receive broadcasts from other apps, true by default.
          * @param callback callback with the current [Context] and [Intent].
          */
-        fun registerReceiver(vararg actions: String, callback: (context: Context, intent: Intent) -> Unit) {
-            if (actions.isNotEmpty()) onReceiverActionsCallbacks += actions to callback
+        fun registerReceiver(vararg actions: String, exported: Boolean = true, callback: (context: Context, intent: Intent) -> Unit) {
+            if (actions.isNotEmpty()) onReceiverActionsCallbacks += Triple(actions, exported, callback)
         }
 
         /**
          * Registers a system broadcast listener.
+         *
+         * The receiver is registered when the host [Application] is available,
+         * and is unregistered automatically when the module is hot reloaded.
          * @param filter the broadcast intent filter.
+         * @param exported whether the receiver can receive broadcasts from other apps, true by default.
          * @param callback callback with the current [Context] and [Intent].
          */
-        fun registerReceiver(filter: IntentFilter, callback: (context: Context, intent: Intent) -> Unit) {
-            onReceiverFiltersCallbacks += filter to callback
+        fun registerReceiver(filter: IntentFilter, exported: Boolean = true, callback: (context: Context, intent: Intent) -> Unit) {
+            onReceiverFiltersCallbacks += Triple(filter, exported, callback)
         }
 
         private fun build() = object : AppLifecycleBridge {

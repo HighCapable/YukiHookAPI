@@ -35,11 +35,11 @@ internal interface AppLifecycleBridge {
     /** Whether callback failures should be thrown to the current host. */
     val throwToHostOnFailure: Boolean
 
-    /** Broadcast listeners registered from action names. */
-    val receiverActions: List<Pair<Array<out String>, (Context, Intent) -> Unit>>
+    /** Broadcast listeners registered from action names, with whether each receiver is exported. */
+    val receiverActions: List<Triple<Array<out String>, Boolean, (Context, Intent) -> Unit>>
 
-    /** Broadcast listeners registered from intent filters. */
-    val receiverFilters: List<Pair<IntentFilter, (Context, Intent) -> Unit>>
+    /** Broadcast listeners registered from intent filters, with whether each receiver is exported. */
+    val receiverFilters: List<Triple<IntentFilter, Boolean, (Context, Intent) -> Unit>>
 
     /** Called around [Application.attachBaseContext]. */
     fun onAttachBaseContext(baseContext: Context, hasCalledSuper: Boolean) = Unit

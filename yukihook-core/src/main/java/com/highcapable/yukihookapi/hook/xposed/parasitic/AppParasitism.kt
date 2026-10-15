@@ -41,6 +41,7 @@ import android.os.Looper
 import android.os.PersistableBundle
 import android.os.Process
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.highcapable.betterandroid.system.extension.component.getParcelableExtraCompat
 import com.highcapable.betterandroid.system.extension.component.registerReceiver
 import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
@@ -496,16 +497,14 @@ internal object AppParasitism : ModuleReloadable {
         return pendingLifecycles.dispatchAppLifecycle {
             if (dispatchCreate) onCreate(application)
 
-            receiverActions.forEach { (actions, callback) ->
-                application.registerReceiver(
-                    filter = IntentFilter().apply { actions.forEach { action -> addAction(action) } },
-                    exported = true
-                ) { context, intent ->
-                    events.dispatch { callback(context, intent) }
-                }.also { synchronized(lifecycleReceivers) { lifecycleReceivers += application to it } }
+            val actionFilters = receiverActions.map { (actions, exported, callback) ->
+                Triple(IntentFilter().apply { actions.forEach { action -> addAction(action) } }, exported, callback)
             }
-            receiverFilters.forEach { (filter, callback) ->
-                application.registerReceiver(filter = filter, exported = true) { context, intent ->
+            (actionFilters + receiverFilters).forEach { (filter, exported, callback) ->
+                // Workaround: Android 14+ requires one of the export flags
+                // for non-system broadcasts, so RECEIVER_NOT_EXPORTED must be passed explicitly here.
+                val flags = if (exported) null else ContextCompat.RECEIVER_NOT_EXPORTED
+                application.registerReceiver(filter, flags, exported) { context, intent ->
                     events.dispatch { callback(context, intent) }
                 }.also { synchronized(lifecycleReceivers) { lifecycleReceivers += application to it } }
             }
