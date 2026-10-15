@@ -482,7 +482,6 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
                         reportApplicationReadyNesting(node, method)
                         reportSystemProcessName(node, method)
                     }
-                    reportNonReplayableInAppLifecycle(node, method)
                     collectKeyContributions(node, method, contributions)
 
                     return false
@@ -503,6 +502,25 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             })
 
             reportHookerKeyConflicts(node, contributions)
+
+            // `AppLifecycle` callbacks are not replayed after hot reload. A hook can be declared in a
+            // helper function called from such a callback, so trace reachable functions instead of only
+            // checking calls lexically inside the callback.
+            val appLifecycleRoots = mutableSetOf<PsiElement>()
+            calls.forEach { call ->
+                if (call.target != null && call.node.enclosingLambdaCall { it.isAppLifecycleCallback() } != null)
+                    appLifecycleRoots.add(call.target)
+            }
+            val appLifecycleReachable = appLifecycleRoots.toMutableSet()
+            var appLifecycleChanged = true
+            while (appLifecycleChanged) {
+                appLifecycleChanged = false
+                calls.forEach { call ->
+                    val target = call.target ?: return@forEach
+                    if (call.caller in appLifecycleReachable && appLifecycleReachable.add(target)) appLifecycleChanged = true
+                }
+            }
+            calls.forEach { call -> reportNonReplayableInAppLifecycle(call.node, call.method, call.caller, appLifecycleReachable) }
 
             val phases = roots.mapValuesTo(mutableMapOf()) { mutableSetOf(it.value) }
             references.forEach { phases.getOrPut(it) { mutableSetOf() }.add(Phase.UNKNOWN) }
@@ -747,20 +765,27 @@ class ModuleRuntimeDetector : Detector(), Detector.UastScanner {
             )
         }
 
-        private fun reportNonReplayableInAppLifecycle(node: UCallExpression, method: PsiMethod?) {
+        private fun reportNonReplayableInAppLifecycle(
+            node: UCallExpression,
+            method: PsiMethod?,
+            caller: PsiElement?,
+            appLifecycleReachable: Set<PsiElement>
+        ) {
             // UAST gives no method name to unresolved calls such as functions with context parameters, use the identifier instead.
             val name = (node.methodName ?: node.methodIdentifier?.name)?.takeIf { it in NON_REPLAYABLE_METHOD_NAMES } ?: return
             val isNonReplayable = method?.isPackageParamMethod(name) == true ||
                 (name == REGISTER_MODULE_ACTIVITIES_METHOD_NAME && method?.containingClass?.qualifiedName == YUKIHOOK_FACTORY_CLASS) ||
                 (name in HOOK_METHOD_NAMES && node.isKavaRefExtensionCall())
             if (!isNonReplayable) return
-            val callback = node.enclosingLambdaCall { it.isAppLifecycleCallback() } ?: return
+            val callback = node.enclosingLambdaCall { it.isAppLifecycleCallback() }
+            val inAppLifecycle = callback != null || caller in appLifecycleReachable
+            if (!inAppLifecycle) return
 
             context.report(
                 issue = NON_REPLAYABLE_CALL_IN_APP_LIFECYCLE_ISSUE,
                 scope = node,
                 location = node.callWithoutLambdaLocation(),
-                message = "`$name` in `${callback.name}` is not called again after module hot reload, " + when (name) {
+                message = "`$name` in `${callback?.name ?: REGISTER_APP_LIFECYCLE_METHOD_NAME}` is not called again after module hot reload, " + when (name) {
                     // Registering module activities needs the host Application, which onHook does not have.
                     REGISTER_MODULE_ACTIVITIES_METHOD_NAME -> "call it in `$WITH_APPLICATION_READY_METHOD_NAME` instead"
                     else -> "declare it in `onHook` or `$WITH_APPLICATION_READY_METHOD_NAME` instead"
