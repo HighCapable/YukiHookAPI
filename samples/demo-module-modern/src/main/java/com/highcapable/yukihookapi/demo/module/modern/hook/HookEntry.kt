@@ -41,6 +41,7 @@ import com.highcapable.yukihookapi.extension.kavaref.hookAll
 import com.highcapable.yukihookapi.extension.kavaref.intercept
 import com.highcapable.yukihookapi.extension.kavaref.toClass
 import com.highcapable.yukihookapi.hook.factory.applyModuleTheme
+import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 
 /**
@@ -131,7 +132,7 @@ object HookEntry : YukiHookXposedModule {
             loadApp(DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME) {
                 // Register Activity Proxy
                 // 注册模块 Activity 代理
-                if (AndroidVersion.isAtLeast(AndroidVersion.N)) registerModuleActivitiesWhenReady()
+                if (AndroidVersion.isAtLeast(AndroidVersion.N)) withApplicationReady { it.registerModuleActivities() }
                 // Find Class to hook
                 // 得到需要 Hook 的 Class
                 Activity::class.resolve()
