@@ -168,16 +168,14 @@ fun Resources.injectModuleResources() = AppParasitism.injectModuleResources(this
  * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host.
  * When an unregistered [Activity] starts in the host, this API automatically calls [Context.injectModuleResources] to inject module resources.
  *
- * If your module may use [YukiHookLibXposedEntry.HotReload], it is recommended to use [PackageParam.registerModuleActivitiesWhenReady]
+ * If your module may use [YukiHookLibXposedEntry.HotReload], it is recommended to call this API in [PackageParam.withApplicationReady]
  * to register the module's [Activity], and avoid registering unstable callback events in the host lifecycle functions.
  *
  * Each [Activity] that starts in the host must implement [ModuleActivity].
  * This API is available only in a host environment. Elsewhere, it has no effect and logs a warning.
  *
- * A pending [PackageParam.registerModuleActivitiesWhenReady] request takes precedence over this direct call.
- *
  * - Requires Android 7.0 (API 24) or later.
- * @see PackageParam.registerModuleActivitiesWhenReady
+ * @see PackageParam.withApplicationReady
  * @receiver the current context.
  * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
  */

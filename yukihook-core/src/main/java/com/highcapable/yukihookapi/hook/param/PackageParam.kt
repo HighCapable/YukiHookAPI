@@ -23,7 +23,6 @@
 
 package com.highcapable.yukihookapi.hook.param
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -32,16 +31,12 @@ import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
-import androidx.annotation.RequiresApi
-import com.highcapable.betterandroid.system.extension.utils.AndroidVersion
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.hook.core.YukiHookCreator
 import com.highcapable.yukihookapi.hook.core.api.helper.YukiHookHelper
 import com.highcapable.yukihookapi.hook.core.api.priority.YukiHookPriority
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleResources
-import com.highcapable.yukihookapi.hook.factory.registerModuleActivities
 import com.highcapable.yukihookapi.hook.param.context.PackageContext
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.lifecycle.AppLifecycleBridge
@@ -249,34 +244,24 @@ open class PackageParam internal constructor(internal var context: PackageContex
      */
     fun registerAppLifecycle(throwToHostOnFailure: Boolean = true, block: AppLifecycle.() -> Unit) {
         val current = context ?: return
-        if (current.isFirstApplication) AppLifecycle.register(
-            packageName = packageName,
-            throwToHostOnFailure = throwToHostOnFailure,
-            entryType = current.type,
-            block = block
-        )
+        if (current.isFirstApplication) AppLifecycle.register(packageName, throwToHostOnFailure, current.type, block)
     }
 
     /**
-     * Registers the current Xposed module's [Activity] in the host when its [Application] is available.
+     * Runs [block] when the current host [Application] is available.
      *
-     * After registration, [Context.startActivity] can launch an [Activity] that is not registered in the host.
-     * When an unregistered [Activity] starts in the host, this API automatically calls [Context.injectModuleResources] to inject module resources.
+     * If the [Application] is already available, [block] runs immediately, otherwise it runs after [Application.onCreate].
+     * When declared from `onHook`, package replay runs [block] again with the existing [Application] after module reload,
+     * unlike [AppLifecycle.onCreate].
      *
-     * Only the first request for this host is used. A failed registration may be retried.
-     * When declared from `onHook`, package replay repeats this request after module reload.
-     *
-     * Direct registration on a [Context] remains immediate and is not replayed.
+     * Exceptions in [block] are not thrown to the host.
      * This is loaded only for the package that owns the first [Application] in the current process.
-     *
-     * - Requires Android 7.0 (API 24) or later.
-     * @see Context.registerModuleActivities
-     * @param proxy the proxy [Activity], which must exist in the host's AndroidManifest. Omit it to use the default [Activity].
+     * In the system server, [block] runs after system services start, like [AppLifecycle.onCreate].
+     * @param block the callback with the host [Application].
      */
-    @RequiresApi(AndroidVersion.N)
-    fun registerModuleActivitiesWhenReady(proxy: Any? = null) {
-        if (isAppEntry && context?.isFirstApplication == true)
-            AppParasitism.registerModuleActivitiesWhenReady(packageName, proxy)
+    fun withApplicationReady(block: (application: Application) -> Unit) {
+        val current = context ?: return
+        if (current.isFirstApplication) AppParasitism.withApplicationReady(packageName, current.type, block)
     }
 
     /**

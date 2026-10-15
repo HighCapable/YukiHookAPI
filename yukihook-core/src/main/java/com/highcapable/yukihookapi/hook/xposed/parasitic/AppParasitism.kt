@@ -135,16 +135,11 @@ internal object AppParasitism : ModuleReloadable {
         }
     }
 
-    /**
-     * Pending module [Activity] registration until the host [Application] is available.
-     */
-    private class PendingModuleActivities(val proxy: Any?)
-
     /** Whether the [Activity] proxy has been registered. */
     private var isActivityProxyRegistered = false
 
-    /** Module [Activity] registration waiting for the host [Application]. */
-    private var pendingModuleActivities: PendingModuleActivities? = null
+    /** Callbacks waiting for the host [Application]. */
+    private val pendingApplicationCallbacks = mutableListOf<(Application) -> Unit>()
 
     /** Whether host lifecycle methods have been hooked. */
     private var isAppLifecycleInstalled = false
@@ -322,31 +317,39 @@ internal object AppParasitism : ModuleReloadable {
     }
 
     /**
-     * Records one module [Activity] registration until the host [Application] is available.
+     * Records one callback until the host [Application] is available.
+     *
+     * The callback runs immediately if the [Application] is already available.
+     * In the system server, it runs after system services start, like [AppLifecycleBridge.onCreate].
+     * While restoring after a module reload, the restored host bindings run it with the existing [Application].
      * @param packageName the package owning the [Application].
-     * @param proxy the proxy [Activity] or null.
+     * @param entryType the current hook entry type.
+     * @param callback the callback with the host [Application].
      */
-    fun registerModuleActivitiesWhenReady(packageName: String, proxy: Any?) = events.use {
+    fun withApplicationReady(packageName: String, entryType: HookEntryType, callback: (Application) -> Unit) = events.use {
         if (YukiHook.isStandalone) return@use
 
         synchronized(this) {
-            if (isActivityProxyRegistered || pendingModuleActivities != null) return@use
-            if (!canRegisterModuleActivities(packageName)) return@use
-
             prepareLifecyclePackage(packageName)
-            pendingModuleActivities = PendingModuleActivities(proxy)
+            pendingApplicationCallbacks += callback
+
+            // The system server [Application] already exists here, but its services have not started yet.
+            if (entryType == HookEntryType.SYSTEM_SERVER) {
+                if (pendingHostBindings == null) scheduleSystemServerInitialization()
+                return@use
+            }
 
             val application = currentApplication?.takeIf { it.packageName == lifecyclePackageName }
             if (pendingHostBindings == null && application != null) {
                 hostApplication = application
-                registerPendingModuleActivities(application)
+                runPendingApplicationCallbacks(application)
             } else {
                 installApplicationOnCreateHook()
-                if (!isApplicationOnCreateInstalled) pendingModuleActivities = null
+                if (!isApplicationOnCreateInstalled) pendingApplicationCallbacks -= callback
                 else if (pendingHostBindings == null) {
                     currentApplication?.takeIf { it.packageName == lifecyclePackageName }?.let {
                         hostApplication = it
-                        registerPendingModuleActivities(it)
+                        runPendingApplicationCallbacks(it)
                     }
                 }
             }
@@ -485,7 +488,7 @@ internal object AppParasitism : ModuleReloadable {
      */
     private fun bindHostApplication(application: Application, dispatchCreate: Boolean): Throwable? {
         hostApplication = application
-        registerPendingModuleActivities(application)
+        runPendingApplicationCallbacks(application)
 
         val pendingLifecycles = synchronized(this) {
             lifecycles.filter { initializedLifecycles.add(it) }
@@ -585,20 +588,23 @@ internal object AppParasitism : ModuleReloadable {
     @RequiresApi(AndroidVersion.N)
     @Synchronized
     fun registerModuleActivities(context: Context, proxy: Any?) {
-        if (isActivityProxyRegistered || pendingModuleActivities != null || !canRegisterModuleActivities(context.packageName)) return
+        if (isActivityProxyRegistered || !canRegisterModuleActivities(context.packageName)) return
         installModuleActivities(context, proxy)
     }
 
     /**
-     * Registers the current Xposed module's [Activity] in the host when the host [Application] is available.
+     * Runs the callbacks waiting for the host [Application].
      * @param application the host [Application].
      */
     @Synchronized
-    private fun registerPendingModuleActivities(application: Application) {
-        val pending = pendingModuleActivities ?: return
-        runCatching { installModuleActivities(application, pending.proxy) }
-            .also { pendingModuleActivities = null }
-            .getOrThrow()
+    private fun runPendingApplicationCallbacks(application: Application) {
+        val callbacks = pendingApplicationCallbacks.toList().also { pendingApplicationCallbacks.clear() }
+        callbacks.forEach { callback ->
+            runCatching { callback(application) }.onFailure {
+                events.reportFailure(it)
+                YLog.innerE("An exception occurred while running an Application ready callback", it)
+            }
+        }
     }
 
     /**
@@ -852,7 +858,7 @@ internal object AppParasitism : ModuleReloadable {
         lifecycles = emptyList()
         synchronized(this) { initializedLifecycles.clear() }
         hostApplication = null
-        pendingModuleActivities = null
+        pendingApplicationCallbacks.clear()
         moduleActivities.clear()
         failure?.let { throw it }
     }
@@ -869,14 +875,13 @@ internal object AppParasitism : ModuleReloadable {
         prepareLifecyclePackage(saved.packageName)
 
         val application = currentApplication?.takeIf { it.packageName == lifecyclePackageName }
-        val hasNewRegistration = pendingModuleActivities != null
 
         // An initial-load failure may have missed Application creation; bind the real instance without replaying onCreate.
         if (application != null)
             bindHostApplication(application, dispatchCreate = false)?.let(events::reportFailure)
 
         // Register module activities if the host is running on Android N or higher.
-        if (AndroidVersion.isAtLeast(AndroidVersion.N) && !hasNewRegistration &&
+        if (AndroidVersion.isAtLeast(AndroidVersion.N) &&
             !isActivityProxyRegistered && saved.proxyClassName != null && application != null
         ) registerModuleActivities(application, saved.proxyClassName)
     }.also { pendingHostBindings = null }.getOrThrow()
