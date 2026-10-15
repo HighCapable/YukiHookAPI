@@ -18,7 +18,6 @@
  * limitations under the License.
  *
  * This file is created by fankes on 2022/8/15.
- * Thanks for providing https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/ui/CommonContextWrapper.java
  */
 @file:Suppress("unused")
 
@@ -37,6 +36,8 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.reference.ModuleClassLo
  * Proxies [ContextThemeWrapper].
  *
  * Allows module theme resources to be used in the host environment.
+ *
+ * The initial partial solution was provided by [CommonContextWrapper](https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/ui/CommonContextWrapper.java)
  * @param baseContext the original [Context].
  * @param theme the theme to apply.
  * @param configuration the [Configuration] to apply.

@@ -18,7 +18,6 @@
  * limitations under the License.
  *
  * This file is created by fankes on 2022/8/8.
- * Thanks for providing https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/lifecycle/Parasitics.java
  */
 @file:Suppress("unused")
 
@@ -30,6 +29,8 @@ import com.highcapable.yukihookapi.hook.xposed.parasitic.AppParasitism
 
 /**
  * Resolves classes across the host and module [ClassLoader] environments.
+ *
+ * The initial partial solution was provided by [Parasitics](https://github.com/cinit/QAuxiliary/blob/main/app/src/main/java/io/github/qauxv/lifecycle/Parasitics.java)
  */
 class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseClassLoader) {
 
