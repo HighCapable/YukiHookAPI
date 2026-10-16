@@ -43,6 +43,7 @@ import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifierListOwner
@@ -60,14 +61,23 @@ import org.jetbrains.kotlin.psi.KtWhenEntry
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UBinaryExpression
+import org.jetbrains.uast.UBlockExpression
+import org.jetbrains.uast.UBreakExpression
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UContinueExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UIfExpression
+import org.jetbrains.uast.UPrefixExpression
 import org.jetbrains.uast.UResolvable
+import org.jetbrains.uast.UReturnExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
+import org.jetbrains.uast.USwitchClauseExpressionWithBody
+import org.jetbrains.uast.USwitchExpression
+import org.jetbrains.uast.UThrowExpression
 import org.jetbrains.uast.UTypeReferenceExpression
 import org.jetbrains.uast.UastBinaryOperator
+import org.jetbrains.uast.UastPrefixOperator
 import org.jetbrains.uast.skipParenthesizedExprDown
 
 class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
@@ -79,9 +89,15 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         private const val API_VERSION = "apiVersion"
 
         private const val YUKIHOOK_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.YukiHook"
-        private const val EXECUTOR_CLASS = "$YUKIHOOK_CLASS.Status.Executor"
+        private const val STATUS_CLASS = "$YUKIHOOK_CLASS.Status"
+        private const val STATUS_RUNTIME_GETTER = "getRuntime"
+        private const val RUNTIME_CLASS = "${DeclaredSymbol.CORE_PACKAGE_NAME}.runtime.YukiHookRuntime"
+        private const val EXECUTOR_CLASS = "$STATUS_CLASS.Executor"
         private const val EXECUTOR_API_VERSION_GETTER = "getApiVersion"
         private const val EXECUTOR_API_VERSION = "YukiHook.Status.Executor.apiVersion"
+
+        private const val KOTLIN_PACKAGE = "kotlin"
+        private val PRECONDITION_FUNCTIONS = setOf("require", "check")
 
         private const val LIBXPOSED_RUNTIME = "LIBXPOSED"
         private const val XPOSED_82_RUNTIME = "XPOSED_82"
@@ -100,7 +116,8 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             id = "RequiresYukiHookRuntime",
             briefDescription = "Incompatible YukiHook runtime or Xposed API version",
             explanation = """
-                YukiHook APIs require a compatible runtime. If an API specifies an Xposed API version, \
+                YukiHook APIs require a compatible runtime. Calls checked by `YukiHook.Status.runtime` \
+                for the required runtime are not reported. If an API specifies an Xposed API version, \
                 the target API version of the module entry must be that version or higher.
             """.trimIndent(),
             category = Category.CORRECTNESS,
@@ -194,6 +211,8 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
             val psiFacade = JavaPsiFacade.getInstance(source.project)
             if (psiFacade.findClass(runtimeClass, source.resolveScope) == null) {
+                // Code shared by variants of different runtimes may call these APIs behind a runtime check.
+                if (scope.isGuardedByRuntime(requirement.runtime)) return
                 val runtimeModule = RUNTIME_MODULES.getValue(requirement.runtime)
                 context.report(
                     issue = REQUIRES_YUKIHOOK_RUNTIME_ISSUE,
@@ -206,9 +225,11 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
             if (requirement.runtime != LIBXPOSED_RUNTIME || requirement.apiVersion <= 0) return
             val entry = versionDetector.findLibXposedEntry() ?: return
+
             val isNewApi = entry.minApiVersion < requirement.apiVersion &&
                 (entry.targetApiVersion == null || entry.targetApiVersion >= requirement.apiVersion)
-            if (isNewApi && scope.isGuardedBy(requirement.apiVersion)) return
+            if (isNewApi && scope.isGuardedByApiVersion(requirement.apiVersion)) return
+
             val (issue, attribute, declaredVersion) = when {
                 entry.targetApiVersion != null && entry.targetApiVersion < requirement.apiVersion ->
                     Triple(REQUIRES_YUKIHOOK_RUNTIME_ISSUE, LibXposedEntryDetector.TARGET_API_VERSION, entry.targetApiVersion)
@@ -228,14 +249,107 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             )
         }
 
-        private fun UElement.isGuardedBy(apiVersion: Int) = generateSequence(this) { it.uastParent }.zipWithNext().any { (child, parent) ->
-            parent is UIfExpression && parent.thenExpression == child && parent.condition.requiresApiVersion(apiVersion)
+        /**
+         * Checks whether this element only runs after [condition] holds.
+         *
+         * Supported forms are the then branch of `if`, a `when` branch, and an earlier `if (...)` that exits,
+         * `require` or `check` in the same block. [condition] receives `negated = true` for the early exit form.
+         */
+        private fun UElement.isGuardedBy(
+            condition: (expression: UExpression, negated: Boolean) -> Boolean,
+            subjectCase: (subject: UExpression, case: UExpression) -> Boolean
+        ) = generateSequence(this) { it.uastParent }.zipWithNext().any { (child, parent) ->
+            when (parent) {
+                is UIfExpression -> parent.thenExpression == child && condition(parent.condition, false)
+                is USwitchClauseExpressionWithBody -> parent.body == child && parent.caseValues.isNotEmpty() && run {
+                    val subject = (parent.uastParent?.uastParent as? USwitchExpression)?.expression
+                    parent.caseValues.all {
+                        if (subject != null)
+                            subjectCase(subject, it)
+                        else condition(it, false)
+                    }
+                }
+                is UBlockExpression -> parent.expressions.takeWhile { it != child }.any {
+                    it.exitsWhen { expression -> condition(expression, true) } ||
+                        it.isPrecondition { expression -> condition(expression, false) }
+                }
+                else -> false
+            }
         }
 
-        private fun UExpression.requiresApiVersion(apiVersion: Int): Boolean {
-            val expression = skipParenthesizedExprDown() as? UBinaryExpression ?: return false
-            if (expression.operator == UastBinaryOperator.LOGICAL_AND)
-                return expression.leftOperand.requiresApiVersion(apiVersion) || expression.rightOperand.requiresApiVersion(apiVersion)
+        private fun UExpression.exitsWhen(condition: (UExpression) -> Boolean): Boolean {
+            val expression = skipParenthesizedExprDown() as? UIfExpression ?: return false
+            return expression.elseExpression == null && expression.thenExpression?.isExit() == true && condition(expression.condition)
+        }
+
+        private fun UExpression.isPrecondition(condition: (UExpression) -> Boolean): Boolean {
+            val call = skipParenthesizedExprDown() as? UCallExpression ?: return false
+            if (call.methodName !in PRECONDITION_FUNCTIONS) return false
+            val method = call.resolve() ?: return false
+            if (context.evaluator.getPackage(method)?.qualifiedName != KOTLIN_PACKAGE) return false
+
+            return call.getArgumentForParameter(0)?.let(condition) == true
+        }
+
+        private fun UExpression.isExit(): Boolean = when (val expression = skipParenthesizedExprDown()) {
+            is UReturnExpression, is UThrowExpression, is UBreakExpression, is UContinueExpression -> true
+            is UBlockExpression -> expression.expressions.lastOrNull()?.isExit() == true
+            else -> (expression.sourcePsi as? KtExpression)?.let { source ->
+                source.analyzeOrNull { source.expressionType?.isNothingType }
+            } == true
+        }
+
+        private fun UElement.isGuardedByRuntime(runtime: String) = isGuardedBy(
+            condition = { expression, negated -> expression.requiresRuntime(runtime, negated) },
+            subjectCase = { subject, case -> isRuntimeEquality(subject, case, runtime) }
+        )
+
+        private fun UElement.isGuardedByApiVersion(apiVersion: Int) = isGuardedBy(
+            condition = { expression, negated -> expression.requiresApiVersion(apiVersion, negated) },
+            subjectCase = { _, _ -> false }
+        )
+
+        /** With [negated], checks a condition whose failure means the runtime is [runtime], such as `runtime != X`. */
+        private fun UExpression.requiresRuntime(runtime: String, negated: Boolean): Boolean {
+            val expression = skipParenthesizedExprDown()
+            if (expression is UPrefixExpression && expression.operator == UastPrefixOperator.LOGICAL_NOT)
+                return expression.operand.requiresRuntime(runtime, !negated)
+            if (expression !is UBinaryExpression) return false
+            if (expression.operator == joinOperator(negated))
+                return expression.leftOperand.requiresRuntime(runtime, negated) || expression.rightOperand.requiresRuntime(runtime, negated)
+
+            val operators = if (negated)
+                listOf(UastBinaryOperator.NOT_EQUALS, UastBinaryOperator.IDENTITY_NOT_EQUALS)
+            else listOf(UastBinaryOperator.EQUALS, UastBinaryOperator.IDENTITY_EQUALS)
+
+            return expression.operator in operators && isRuntimeEquality(expression.leftOperand, expression.rightOperand, runtime)
+        }
+
+        private fun isRuntimeEquality(first: UExpression, second: UExpression, runtime: String) = when {
+            first.isStatusRuntime() -> second.runtimeName() == runtime
+            second.isStatusRuntime() -> first.runtimeName() == runtime
+            else -> false
+        }
+
+        private fun UExpression.isStatusRuntime(): Boolean {
+            val getter = (skipParenthesizedExprDown() as? UResolvable)?.resolve() as? PsiMethod ?: return false
+            return getter.name == STATUS_RUNTIME_GETTER && getter.containingClass?.qualifiedName == STATUS_CLASS
+        }
+
+        private fun UExpression.runtimeName(): String? {
+            val constant = (skipParenthesizedExprDown() as? UResolvable)?.resolve() as? PsiField ?: return null
+            return constant.name.takeIf { constant.containingClass?.qualifiedName == RUNTIME_CLASS }
+        }
+
+        /** With [negated], checks a condition whose failure means the API version is at least [apiVersion], such as `apiVersion < 102`. */
+        private fun UExpression.requiresApiVersion(apiVersion: Int, negated: Boolean): Boolean {
+            val expression = skipParenthesizedExprDown()
+            if (expression is UPrefixExpression && expression.operator == UastPrefixOperator.LOGICAL_NOT)
+                return expression.operand.requiresApiVersion(apiVersion, !negated)
+            if (expression !is UBinaryExpression) return false
+            if (expression.operator == joinOperator(negated))
+                return expression.leftOperand.requiresApiVersion(apiVersion, negated) ||
+                    expression.rightOperand.requiresApiVersion(apiVersion, negated)
 
             val left = expression.leftOperand
             val right = expression.rightOperand
@@ -244,6 +358,8 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 right.isExecutorApiVersion() -> left.constantInt() to when (expression.operator) {
                     UastBinaryOperator.LESS_OR_EQUALS -> UastBinaryOperator.GREATER_OR_EQUALS
                     UastBinaryOperator.LESS -> UastBinaryOperator.GREATER
+                    UastBinaryOperator.GREATER_OR_EQUALS -> UastBinaryOperator.LESS_OR_EQUALS
+                    UastBinaryOperator.GREATER -> UastBinaryOperator.LESS
                     else -> return false
                 }
                 else -> return false
@@ -251,11 +367,16 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             version ?: return false
 
             return when (operator) {
-                UastBinaryOperator.GREATER_OR_EQUALS -> version >= apiVersion
-                UastBinaryOperator.GREATER -> version + 1 >= apiVersion
+                UastBinaryOperator.GREATER_OR_EQUALS -> !negated && version >= apiVersion
+                UastBinaryOperator.GREATER -> !negated && version + 1 >= apiVersion
+                UastBinaryOperator.LESS -> negated && version >= apiVersion
+                UastBinaryOperator.LESS_OR_EQUALS -> negated && version + 1 >= apiVersion
                 else -> false
             }
         }
+
+        // A guard holds when any part of `&&` holds, and an early exit holds when any part of `||` fails.
+        private fun joinOperator(negated: Boolean) = if (negated) UastBinaryOperator.LOGICAL_OR else UastBinaryOperator.LOGICAL_AND
 
         private fun UExpression.isExecutorApiVersion(): Boolean {
             val getter = (skipParenthesizedExprDown() as? UResolvable)?.resolve() as? PsiMethod ?: return false
