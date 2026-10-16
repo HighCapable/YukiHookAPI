@@ -102,6 +102,13 @@ libraryProjects {
             pluginsConfiguration.withType<DokkaHtmlPluginParameters>().configureEach {
                 footerMessage.set("YukiHook | Apache-2.0 License | Copyright (C) 2019 HighCapable")
             }
+            // Dokka does not read `@RestrictTo`, so hide the files whose top-level declaration
+            // is marked with it, these APIs are only for YukiHook's own modules.
+            dokkaSourceSets.configureEach {
+                suppressedFiles.from(sourceRoots.asFileTree.filter { file ->
+                    file.useLines { lines -> lines.any { it.startsWith("@RestrictTo(") } }
+                })
+            }
         }
 
         tasks.register("publishKDoc") {
