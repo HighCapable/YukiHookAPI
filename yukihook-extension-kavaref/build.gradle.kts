@@ -17,6 +17,21 @@ android {
     }
 }
 
+dokka {
+    // Link the KavaRef types used in the public API to the KDoc of KavaRef.
+    dokkaSourceSets.configureEach {
+        listOf(
+            gropify.project.third.party.kavaref.kavaref.core.moduleName,
+            gropify.project.third.party.kavaref.kavaref.extension.moduleName
+        ).forEach { module ->
+            externalDocumentationLinks.register(module) {
+                url("${gropify.project.third.party.kavaref.kdoc.url}/$module/")
+                packageListUrl("${gropify.project.third.party.kavaref.kdoc.url}/$module/$module/package-list")
+            }
+        }
+    }
+}
+
 dependencies {
     lintPublish(projects.yukihookExtensionKavarefLint)
 
