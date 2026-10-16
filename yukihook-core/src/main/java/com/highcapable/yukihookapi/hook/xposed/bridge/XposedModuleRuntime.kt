@@ -27,7 +27,6 @@ package com.highcapable.yukihookapi.hook.xposed.bridge
 import android.content.pm.ApplicationInfo
 import android.content.res.Resources
 import android.os.Bundle
-import com.highcapable.kavaref.extension.hasClass
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -233,8 +232,6 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         appInfo: ApplicationInfo?,
         dispatch: Boolean
     ) {
-        if (isMiuiCatcherPatch(packageName)) return
-
         val context = PackageContext(
             type = type,
             packageName = packageName,
@@ -290,15 +287,6 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         ModuleLifecycleManager.register(AppParasitism.RELOAD_ID, AppParasitism)
         ModuleLifecycleManager.register(YukiHookDataChannel.RELOAD_ID, YukiHookDataChannel)
     }
-
-    /**
-     * Automatically ignores log-collection injection instances that may appear on MIUI.
-     * @param packageName the current package name.
-     * @return [Boolean] whether such an instance exists.
-     */
-    private fun isMiuiCatcherPatch(packageName: String?) =
-        (packageName == "com.miui.contentcatcher" || packageName == "com.miui.catcherpatch") &&
-            javaClass.classLoader?.hasClass("android.miui.R") == true
 
     private fun dispatchPackage(context: PackageContext) {
         if (!packageRegistration.record(context)) return

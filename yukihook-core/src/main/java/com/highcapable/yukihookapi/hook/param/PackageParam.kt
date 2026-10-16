@@ -414,6 +414,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
     /**
      * Loads and hooks all apps, the system server is not included.
+     *
+     * All apps include every package loaded into a process, a process may load packages other than its host,
+     * use [isFirstApplication] to check whether the current package is the host of the process.
      * @see loadSystem
      * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
      * @param block the [PackageParam] hook block.
@@ -424,6 +427,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
     /**
      * Loads and hooks all apps, the system server is not included.
+     *
+     * All apps include every package loaded into a process, a process may load packages other than its host,
+     * use [isFirstApplication] to check whether the current package is the host of the process.
      * @see loadSystem
      * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
      * @param hooker the hooker.
@@ -434,6 +440,9 @@ open class PackageParam internal constructor(internal var context: PackageContex
 
     /**
      * Loads and hooks all apps, the system server is not included.
+     *
+     * All apps include every package loaded into a process, a process may load packages other than its host,
+     * use [isFirstApplication] to check whether the current package is the host of the process.
      * @see loadSystem
      * @param excludeSelf whether to exclude the module itself, false by default. When enabled, the hosts do not include the current module.
      * @param hookers the hookers.
