@@ -41,7 +41,7 @@ class ModuleHandoffStateTest {
         val transferred = ModuleHandoffState.encode(previous)
         val restored = ModuleHandoffState.decode(transferred)
 
-        Assert.assertEquals(YukiHookProperties.PROJECT_SCHEMA_VERSION, transferred[0])
+        Assert.assertEquals(YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION, transferred[0])
         Assert.assertEquals(listOf("resources", "packages"), restored.components.keys.toList())
         Assert.assertNull(restored.components["resources"])
         Assert.assertEquals(listOf("host", "secondary"), (restored.components["packages"] as Array<*>).toList())
@@ -49,14 +49,14 @@ class ModuleHandoffStateTest {
 
     @Test
     fun anotherSchemaCannotRestoreThisGeneration() {
-        val previous = arrayOf<Any?>(YukiHookProperties.PROJECT_SCHEMA_VERSION + 1, null, emptyArray<Any>())
+        val previous = arrayOf<Any?>(YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION + 1, null, emptyArray<Any>())
 
         val failure = Assert.assertThrows(IllegalStateException::class.java) {
             ModuleHandoffState.decode(previous)
         }
 
         Assert.assertTrue(failure.message.orEmpty().startsWith(
-            "Unsupported YukiHook reload state schema ${YukiHookProperties.PROJECT_SCHEMA_VERSION + 1},"
+            "Unsupported YukiHook reload state schema ${YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION + 1},"
         ))
     }
 

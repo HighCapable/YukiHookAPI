@@ -53,7 +53,7 @@ abstract class LibXposed102Entry : LibXposedBaseEntry() {
 
         companion object : ModuleStateSpec<HandoffState> {
 
-            private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_SCHEMA_VERSION
+            private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION
 
             /** Wraps the state produced by the core reload manager. */
             fun fromManagedState(managedState: Any, nativeState: Any?) = HandoffState(

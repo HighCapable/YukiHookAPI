@@ -36,7 +36,7 @@ internal data class ModuleHandoffState(
 
     companion object : ModuleStateSpec<ModuleHandoffState> {
 
-        private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_SCHEMA_VERSION
+        private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION
 
         override fun decode(encoded: Any?): ModuleHandoffState {
             val values = encoded as? Array<*> ?: error("Missing YukiHook reload state.")
