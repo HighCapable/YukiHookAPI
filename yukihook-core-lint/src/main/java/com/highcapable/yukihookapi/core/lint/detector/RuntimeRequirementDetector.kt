@@ -156,7 +156,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
 
-        private val versionDetector = LibXposedEntryDetector.VersionDetector(context)
+        private val versionDetector = ModuleEntryDetector.VersionDetector(context)
 
         override fun visitAnnotation(node: UAnnotation) {
             val declaration = node.resolve() ?: return
@@ -232,9 +232,9 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
             val (issue, attribute, declaredVersion) = when {
                 entry.targetApiVersion != null && entry.targetApiVersion < requirement.apiVersion ->
-                    Triple(REQUIRES_YUKIHOOK_RUNTIME_ISSUE, LibXposedEntryDetector.TARGET_API_VERSION, entry.targetApiVersion)
+                    Triple(REQUIRES_YUKIHOOK_RUNTIME_ISSUE, ModuleEntryDetector.TARGET_API_VERSION, entry.targetApiVersion)
                 entry.minApiVersion < requirement.apiVersion ->
-                    Triple(NEW_XPOSED_API_ISSUE, LibXposedEntryDetector.MIN_API_VERSION, entry.minApiVersion)
+                    Triple(NEW_XPOSED_API_ISSUE, ModuleEntryDetector.MIN_API_VERSION, entry.minApiVersion)
                 else -> return
             }
 
@@ -243,7 +243,7 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 scope = scope,
                 location = location,
                 message = "`$apiName` requires Xposed API ${requirement.apiVersion}, but " +
-                    "`@${LibXposedEntryDetector.ENTRY_ANNOTATION_NAME}` specifies `$attribute = $declaredVersion`",
+                    "`@${ModuleEntryDetector.LIBXPOSED_ENTRY_ANNOTATION_NAME}` specifies `$attribute = $declaredVersion`",
                 quickfixData = if (issue == NEW_XPOSED_API_ISSUE) scope.versionCheckFix(requirement.apiVersion)
                 else versionDetector.buildFix(entry, requirement.apiVersion, attribute, outside = true)
             )

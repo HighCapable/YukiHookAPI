@@ -28,8 +28,8 @@ import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.highcapable.yukihookapi.core.lint.detector.InternalApiDetector
 import com.highcapable.yukihookapi.core.lint.detector.KavaRefFallbackDetector
-import com.highcapable.yukihookapi.core.lint.detector.LibXposedEntryDetector
 import com.highcapable.yukihookapi.core.lint.detector.MemberHookerDetector
+import com.highcapable.yukihookapi.core.lint.detector.ModuleEntryDetector
 import com.highcapable.yukihookapi.core.lint.detector.ModuleRuntimeDetector
 import com.highcapable.yukihookapi.core.lint.detector.ModuleUsageDetector
 import com.highcapable.yukihookapi.core.lint.detector.RuntimeRequirementDetector
@@ -41,9 +41,10 @@ class YukiHookIssueRegistry : IssueRegistry() {
         InternalApiDetector.ISSUE,
         RuntimeRequirementDetector.REQUIRES_YUKIHOOK_RUNTIME_ISSUE,
         RuntimeRequirementDetector.NEW_XPOSED_API_ISSUE,
-        LibXposedEntryDetector.INVALID_LIBXPOSED_API_VERSION_ISSUE,
-        LibXposedEntryDetector.INVALID_LIBXPOSED_HOT_RELOAD_ISSUE,
-        LibXposedEntryDetector.SYSTEM_FRAMEWORK_IN_SCOPE_ISSUE,
+        ModuleEntryDetector.INVALID_LIBXPOSED_API_VERSION_ISSUE,
+        ModuleEntryDetector.INVALID_LIBXPOSED_HOT_RELOAD_ISSUE,
+        ModuleEntryDetector.INVALID_MODULE_ENTRY_CLASS_NAME_ISSUE,
+        ModuleEntryDetector.SYSTEM_FRAMEWORK_IN_SCOPE_ISSUE,
         ModuleRuntimeDetector.MODULE_REGISTRATION_OUTSIDE_ON_INIT_ISSUE,
         ModuleRuntimeDetector.INVALID_MODULE_HOOK_LOADING_ISSUE,
         ModuleRuntimeDetector.INVALID_MODULE_RETAINED_VALUE_ISSUE,

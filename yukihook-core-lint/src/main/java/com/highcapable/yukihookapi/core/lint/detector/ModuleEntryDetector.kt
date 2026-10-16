@@ -46,28 +46,33 @@ import com.intellij.psi.PsiEnumConstant
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.UNamedExpression
 import org.jetbrains.uast.UResolvable
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 import java.io.File
 
-class LibXposedEntryDetector : Detector(), Detector.UastScanner {
+class ModuleEntryDetector : Detector(), Detector.UastScanner {
 
     companion object {
 
-        const val ENTRY_ANNOTATION_NAME = "YukiHookLibXposedEntry"
-        const val ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.$ENTRY_ANNOTATION_NAME"
+        const val LIBXPOSED_ENTRY_ANNOTATION_NAME = "YukiHookLibXposedEntry"
+        const val LIBXPOSED_ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.$LIBXPOSED_ENTRY_ANNOTATION_NAME"
+
+        private const val XPOSED82_ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.YukiHookXposed82Entry"
+        private const val LEGACY_ENTRY_ANNOTATION = "${DeclaredSymbol.CORE_PACKAGE_NAME}.annotation.xposed.InjectYukiHookWithXposed"
 
         const val MIN_API_VERSION = "minApiVersion"
         const val TARGET_API_VERSION = "targetApiVersion"
 
-        private const val HOT_RELOAD_ENUM = "$ENTRY_ANNOTATION.HotReload"
+        private const val HOT_RELOAD_ENUM = "$LIBXPOSED_ENTRY_ANNOTATION.HotReload"
         private const val HOT_RELOAD_NONE = "NONE"
 
         private const val HOT_RELOAD = "hotReload"
         private const val JAVA_ENTRIES = "javaEntries"
         private const val SCOPE = "scope"
+        private const val ENTRY_CLASS_NAME = "entryClassName"
 
         private const val FRAMEWORK_PACKAGE_NAME = "android"
         private const val FRAMEWORK_SCOPE_NAME = "system"
@@ -80,13 +85,13 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             briefDescription = "Invalid Xposed API version for module entry",
             explanation = """
                 The minimum Xposed API version must be at least $LOWEST_API_VERSION, and the target API version \
-                must not be lower than the minimum version. Hot reload requires a target API version of $RELOAD_API_VERSION.
+                must not be lower than the minimum version.
             """.trimIndent(),
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
             implementation = Implementation(
-                LibXposedEntryDetector::class.java,
+                ModuleEntryDetector::class.java,
                 Scope.JAVA_FILE_SCOPE
             )
         )
@@ -95,14 +100,32 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             id = "InvalidLibXposedHotReload",
             briefDescription = "Invalid hot reload configuration for module entry",
             explanation = """
-                Hot reload replaces the YukiHook module entry as one generation. Additional libxposed Java entries \
-                cannot participate in that lifecycle, `$JAVA_ENTRIES` must not be declared when hot reload is enabled.
+                Hot reload requires a target API version of at least $RELOAD_API_VERSION. It also replaces the YukiHook \
+                module entry as one generation, additional libxposed Java entries cannot participate in that lifecycle, \
+                so `$JAVA_ENTRIES` must not be declared when hot reload is enabled.
             """.trimIndent(),
             category = Category.CORRECTNESS,
             priority = 10,
             severity = Severity.ERROR,
             implementation = Implementation(
-                LibXposedEntryDetector::class.java,
+                ModuleEntryDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
+        )
+
+        val INVALID_MODULE_ENTRY_CLASS_NAME_ISSUE = Issue.create(
+            id = "InvalidModuleEntryClassName",
+            briefDescription = "Invalid generated entry class name for module entry",
+            explanation = """
+                The `$ENTRY_CLASS_NAME` of a module entry annotation is used as the name of the generated entry class. \
+                It can only contain letters, digits and underscores, must not start with a digit, \
+                and must not be the same as the entry class name, otherwise the compiler rejects the build.
+            """.trimIndent(),
+            category = Category.CORRECTNESS,
+            priority = 10,
+            severity = Severity.ERROR,
+            implementation = Implementation(
+                ModuleEntryDetector::class.java,
                 Scope.JAVA_FILE_SCOPE
             )
         )
@@ -119,7 +142,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             priority = 5,
             severity = Severity.WARNING,
             implementation = Implementation(
-                LibXposedEntryDetector::class.java,
+                ModuleEntryDetector::class.java,
                 Scope.JAVA_FILE_SCOPE
             )
         )
@@ -137,7 +160,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
         fun findLibXposedEntry() = context.project.javaSourceFolders.asSequence()
             .flatMap { it.walkTopDown() }
             .filter { it.isFile && (it.extension == "java" || it.extension == "kt") }
-            .filter { context.client.readFile(it).contains(ENTRY_ANNOTATION_NAME) }
+            .filter { context.client.readFile(it).contains(LIBXPOSED_ENTRY_ANNOTATION_NAME) }
             .mapNotNull { sourceFile -> context.toUFile(sourceFile)?.libXposedEntry(sourceFile) }
             .singleOrNull()
 
@@ -189,7 +212,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             }
 
             return buildReplaceFix(
-                name = "Add $argument${if (outside) " to @$ENTRY_ANNOTATION_NAME" else ""}",
+                name = "Add $argument${if (outside) " to @$LIBXPOSED_ENTRY_ANNOTATION_NAME" else ""}",
                 replacement = insertion,
                 range = Location.create(sourceFile, contents, offset, offset)
             )
@@ -199,7 +222,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
             var entry: Entry? = null
             accept(object : AbstractUastVisitor() {
                 override fun visitAnnotation(node: UAnnotation): Boolean {
-                    if (node.qualifiedName != ENTRY_ANNOTATION) return false
+                    if (node.qualifiedName != LIBXPOSED_ENTRY_ANNOTATION) return false
                     val minApiVersion = (node.findAttributeValue(MIN_API_VERSION)?.evaluate() as? Int)
                         ?: LOWEST_API_VERSION
                     val targetApiVersion = node.findAttributeValue(TARGET_API_VERSION)?.evaluate() as? Int
@@ -216,7 +239,9 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
     override fun createUastHandler(context: JavaContext) = context.createExternalOnlyUastHandler(object : UElementHandler() {
 
         override fun visitAnnotation(node: UAnnotation) {
-            if (node.qualifiedName != ENTRY_ANNOTATION) return
+            if (node.qualifiedName in listOf(LIBXPOSED_ENTRY_ANNOTATION, XPOSED82_ENTRY_ANNOTATION, LEGACY_ENTRY_ANNOTATION))
+                reportEntryClassName(node)
+            if (node.qualifiedName != LIBXPOSED_ENTRY_ANNOTATION) return
 
             node.attributeValues.firstOrNull { it.name == SCOPE }?.let(::reportFrameworkScope)
 
@@ -258,7 +283,7 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
 
             // Hot reload degrades to disabled on older frameworks, so only the target version has to support it.
             if (usesReload && targetVersion < RELOAD_API_VERSION) context.report(
-                issue = INVALID_LIBXPOSED_API_VERSION_ISSUE,
+                issue = INVALID_LIBXPOSED_HOT_RELOAD_ISSUE,
                 scope = node,
                 location = context.getLocation(targetValue),
                 message = "Hot reload requires `$TARGET_API_VERSION` to be at least $RELOAD_API_VERSION",
@@ -278,6 +303,26 @@ class LibXposedEntryDetector : Detector(), Detector.UastScanner {
                     range = location,
                     reformat = false
                 )
+            )
+        }
+
+        private fun reportEntryClassName(node: UAnnotation) {
+            val value = node.findDeclaredAttributeValue(ENTRY_CLASS_NAME) ?: return
+            // The compiler trims the name and uses the default name when it is blank.
+            val name = (value.evaluate() as? String)?.trim()?.takeIf { it.isNotEmpty() } ?: return
+            // Keep the same rules as the compiler, see `YukiHookXposedGenerator`.
+            val message = when {
+                "[^\\p{L}\\p{N}_]".toRegex().containsMatchIn(name) || name.first().isDigit() ->
+                    "`$ENTRY_CLASS_NAME` can only contain letters, digits and underscores, and must not start with a digit"
+                name == (node.uastParent as? UClass)?.name ->
+                    "`$ENTRY_CLASS_NAME` must not be the same as the entry class name"
+                else -> return
+            }
+            context.report(
+                issue = INVALID_MODULE_ENTRY_CLASS_NAME_ISSUE,
+                scope = value,
+                location = context.getLocation(value),
+                message = message
             )
         }
 
