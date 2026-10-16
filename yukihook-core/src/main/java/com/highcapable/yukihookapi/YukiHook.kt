@@ -64,6 +64,9 @@ object YukiHook {
     /** The current version. */
     const val VERSION = YukiHookProperties.PROJECT_YUKIHOOK_BOM_VERSION
 
+    /** The current schema version. */
+    const val SCHEMA_VERSION = YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION
+
     /**
      * Configuration for [YukiHook].
      */

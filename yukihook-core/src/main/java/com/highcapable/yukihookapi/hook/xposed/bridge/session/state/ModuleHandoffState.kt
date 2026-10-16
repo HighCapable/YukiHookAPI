@@ -23,7 +23,6 @@ package com.highcapable.yukihookapi.hook.xposed.bridge.session.state
 
 import android.os.Bundle
 import com.highcapable.yukihookapi.YukiHook
-import com.highcapable.yukihookapi.generated.YukiHookProperties
 import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
 
 /**
@@ -36,7 +35,7 @@ internal data class ModuleHandoffState(
 
     companion object : ModuleStateSpec<ModuleHandoffState> {
 
-        private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION
+        private const val SCHEMA_VERSION = YukiHook.SCHEMA_VERSION
 
         override fun decode(encoded: Any?): ModuleHandoffState {
             val values = encoded as? Array<*> ?: error("Missing YukiHook reload state.")

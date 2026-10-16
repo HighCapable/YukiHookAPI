@@ -30,7 +30,6 @@ import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadPolicy
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedHookApi
 import com.highcapable.yukihookapi.runtime.libxposed.LibXposedModuleSession
 import com.highcapable.yukihookapi.runtime.libxposed.entry.base.LibXposedBaseEntry
-import com.highcapable.yukihookapi.runtime.libxposed.generated.YukiHookProperties
 import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
 import io.github.libxposed.api.XposedModuleInterface
 
@@ -53,7 +52,7 @@ abstract class LibXposed102Entry : LibXposedBaseEntry() {
 
         companion object : ModuleStateSpec<HandoffState> {
 
-            private const val SCHEMA_VERSION = YukiHookProperties.PROJECT_YUKIHOOK_SCHEMA_VERSION
+            private const val SCHEMA_VERSION = YukiHook.SCHEMA_VERSION
 
             /** Wraps the state produced by the core reload manager. */
             fun fromManagedState(managedState: Any, nativeState: Any?) = HandoffState(
