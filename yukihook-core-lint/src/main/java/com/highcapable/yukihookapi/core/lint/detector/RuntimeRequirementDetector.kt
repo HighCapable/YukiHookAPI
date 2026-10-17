@@ -69,6 +69,7 @@ import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UIfExpression
 import org.jetbrains.uast.UPrefixExpression
+import org.jetbrains.uast.UQualifiedReferenceExpression
 import org.jetbrains.uast.UResolvable
 import org.jetbrains.uast.UReturnExpression
 import org.jetbrains.uast.USimpleNameReferenceExpression
@@ -95,6 +96,11 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
         private const val EXECUTOR_CLASS = "$STATUS_CLASS.Executor"
         private const val EXECUTOR_API_VERSION_GETTER = "getApiVersion"
         private const val EXECUTOR_API_VERSION = "YukiHook.Status.Executor.apiVersion"
+        private const val STATUS_RUNTIME = "YukiHook.Status.runtime"
+        private const val RUNTIME_NAME = "YukiHookRuntime"
+
+        private const val SOURCE_DIR_NAME = "src"
+        private const val MAIN_SOURCE_SET = "main"
 
         private const val KOTLIN_PACKAGE = "kotlin"
         private val PRECONDITION_FUNCTIONS = setOf("require", "check")
@@ -213,12 +219,16 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
             if (psiFacade.findClass(runtimeClass, source.resolveScope) == null) {
                 // Code shared by variants of different runtimes may call these APIs behind a runtime check.
                 if (scope.isGuardedByRuntime(requirement.runtime)) return
+                // A chain such as `sharedFiles.list()` is only reported at its first API.
+                if (scope.chainedReceiver()?.requiresRuntimeInChain(requirement.runtime) == true) return
                 val runtimeModule = RUNTIME_MODULES.getValue(requirement.runtime)
                 context.report(
                     issue = REQUIRES_YUKIHOOK_RUNTIME_ISSUE,
                     scope = scope,
                     location = location,
-                    message = "`$apiName` requires the `$runtimeModule` runtime"
+                    message = "`$apiName` requires the `$runtimeModule` runtime",
+                    // Only shared code may run on another runtime, so a check is pointless in a single runtime module.
+                    quickfixData = if (isSharedByFlavors()) scope.runtimeCheckFix(requirement.runtime) else null
                 )
                 return
             }
@@ -247,6 +257,22 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
                 quickfixData = if (issue == NEW_XPOSED_API_ISSUE) scope.versionCheckFix(requirement.apiVersion)
                 else versionDetector.buildFix(entry, requirement.apiVersion, attribute, outside = true)
             )
+        }
+
+        private fun UElement.chainedReceiver() = when (this) {
+            is UCallExpression -> receiver
+            is USimpleNameReferenceExpression -> (uastParent as? UQualifiedReferenceExpression)?.takeIf { it.selector == this }?.receiver
+            else -> null
+        }
+
+        /** Checks whether this expression or any receiver before it requires [runtime]. */
+        private fun UExpression.requiresRuntimeInChain(runtime: String): Boolean {
+            val expression = skipParenthesizedExprDown()
+            val declaration = (expression as? UResolvable)?.resolve() as? PsiModifierListOwner
+            if (declaration?.runtimeRequirement()?.runtime == runtime) return true
+
+            return expression.chainedReceiver()?.requiresRuntimeInChain(runtime) == true ||
+                (expression as? UQualifiedReferenceExpression)?.receiver?.requiresRuntimeInChain(runtime) == true
         }
 
         /**
@@ -385,19 +411,52 @@ class RuntimeRequirementDetector : Detector(), Detector.UastScanner {
 
         private fun UExpression.constantInt() = ConstantEvaluator.evaluate(context, this) as? Int
 
-        private fun UElement.versionCheckFix(apiVersion: Int): LintFix? {
+        private fun UElement.versionCheckFix(apiVersion: Int) = surroundWithIfFix(
+            condition = "$EXECUTOR_API_VERSION >= $apiVersion",
+            otherwise = "$EXECUTOR_API_VERSION < $apiVersion",
+            YUKIHOOK_CLASS
+        )
+
+        private fun UElement.runtimeCheckFix(runtime: String) = surroundWithIfFix(
+            condition = "$STATUS_RUNTIME == $RUNTIME_NAME.$runtime",
+            otherwise = "$STATUS_RUNTIME != $RUNTIME_NAME.$runtime",
+            YUKIHOOK_CLASS,
+            RUNTIME_CLASS
+        )
+
+        /** Surrounds this element with `if ([condition])`, an expression whose value is used gets an else branch for [otherwise]. */
+        private fun UElement.surroundWithIfFix(condition: String, otherwise: String, vararg imports: String): LintFix? {
             val target = (sourcePsi as? KtElement)?.versionCheckTarget() ?: return null
             val isUsed = target.analyzeOrNull { target.isUsedAsExpression } ?: return null
-            val condition = "$EXECUTOR_API_VERSION >= $apiVersion"
             val replacement = "if ($condition) {\n${target.text}\n}" +
-                if (isUsed) " else {\nTODO(\"$EXECUTOR_API_VERSION < $apiVersion\")\n}" else ""
+                if (isUsed) " else {\nTODO(\"$otherwise\")\n}" else ""
 
             return buildReplaceFix(
                 name = "Surround with if ($condition) { ... }",
                 replacement = replacement,
-                YUKIHOOK_CLASS,
+                *imports,
                 range = context.getLocation(target)
             )
+        }
+
+        /**
+         * Checks whether the current file is shared by product flavors, such as the `main` or `debug` source set
+         * of a module with `modern` and `legacy` flavors.
+         *
+         * The lint model only contains the current variant, so the flavors are found from its source set directories,
+         * which are named `main`, the flavors, the build type and the variant, a module without flavors only has `main`
+         * and the build type named the same as the variant.
+         */
+        private fun isSharedByFlavors(): Boolean {
+            val variant = context.project.buildVariant ?: return false
+            val sourceDirs = variant.sourceProviders.flatMap { it.javaDirectories }
+                .filter { it.parentFile?.parentFile?.name == SOURCE_DIR_NAME }
+            val sourceSet = sourceDirs.firstOrNull { context.file.startsWith(it) }?.parentFile?.name ?: return false
+            val buildType = sourceDirs.map { it.parentFile.name }.firstOrNull {
+                it != MAIN_SOURCE_SET && it != variant.name && variant.name.endsWith(it.replaceFirstChar(Char::uppercaseChar))
+            } ?: return false
+
+            return sourceSet == MAIN_SOURCE_SET || sourceSet == buildType
         }
 
         private fun KtElement.versionCheckTarget(): KtExpression? {
