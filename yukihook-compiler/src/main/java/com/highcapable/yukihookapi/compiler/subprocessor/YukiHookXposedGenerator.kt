@@ -426,10 +426,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             addKdoc("%L Class\n", ModuleApplicationImplClass.simpleName)
             addFunction(FunSpec.builder("callHookEntryInit").apply {
                 addKdoc("Initializes the hook entry in the module application.\n")
-                beginControlFlow("try")
                 addStatement("%T.callOnInit(%L)", ModuleCallerClass, createEntryInstance())
-                nextControlFlow("catch (_: %T)", Throwable::class)
-                endControlFlow()
             }.build())
         }.build())
     }.build()
