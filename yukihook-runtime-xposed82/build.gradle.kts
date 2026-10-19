@@ -18,6 +18,17 @@ android {
     testOptions.unitTests.isReturnDefaultValues = true
 }
 
+dokka {
+    // Link the Xposed API 82 types used in the public API to the Javadoc of Xposed API.
+    dokkaSourceSets.configureEach {
+        val module = gropify.project.third.party.rovo89.xposed.api.moduleName
+        externalDocumentationLinks.register(module) {
+            url("${gropify.project.third.party.rovo89.javadoc.url}/")
+            packageListUrl("${gropify.project.third.party.rovo89.javadoc.url}/package-list")
+        }
+    }
+}
+
 dependencies {
     compileOnly(libs.rovo89.xposed.api)
 

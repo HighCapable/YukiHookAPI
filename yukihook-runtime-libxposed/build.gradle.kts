@@ -18,6 +18,17 @@ android {
     testOptions.unitTests.isReturnDefaultValues = true
 }
 
+dokka {
+    // Link the libxposed API types used in the public API to the Javadoc of libxposed.
+    dokkaSourceSets.configureEach {
+        val module = gropify.project.third.party.libxposed.api.moduleName
+        externalDocumentationLinks.register(module) {
+            url("${gropify.project.third.party.libxposed.javadoc.url}/$module/")
+            packageListUrl("${gropify.project.third.party.libxposed.javadoc.url}/$module/element-list")
+        }
+    }
+}
+
 dependencies {
     compileOnly(libs.libxposed.api)
     compileOnly(libs.libxposed.service.api)
