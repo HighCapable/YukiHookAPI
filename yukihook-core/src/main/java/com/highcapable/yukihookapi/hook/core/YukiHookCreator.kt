@@ -39,6 +39,7 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookPoint
 import com.highcapable.yukihookapi.runtime.bridge.hooker.HookerBridge
 import java.lang.reflect.Constructor
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 import java.util.concurrent.atomic.AtomicLong
@@ -420,17 +421,42 @@ class YukiHookCreator private constructor() {
             val dataExtraStorage = dataExtra
 
             return ChainHookerBridge { chain ->
-                val invocation = HookChain.from(dataExtraStorage, this@ChainMemberHooker, chain)
+                val downstream = DownstreamChain(chain)
+                val invocation = HookChain.from(dataExtraStorage, this@ChainMemberHooker, downstream)
 
                 runCatching {
                     YLog.innerD { "Invoking intercept callback #${invocationCount.incrementAndGet()} for $target" }
                     callback(invocation).also { checkReturnType(invocation, it) }
                 }.getOrElse { throwable ->
-                    notifyCallbackFailure(invocation, throwable)
+                    // Failures from the remaining chain or the original member belong to the caller, not to this callback.
+                    if (throwable !== downstream.failure) notifyCallbackFailure(invocation, throwable)
 
                     // The remaining chain may already have executed, never retry it as failure recovery.
                     throw throwable
                 }
+            }
+        }
+
+        /**
+         * Records the failure thrown by the remaining chain of one invocation.
+         * @param chain the runtime chain.
+         */
+        private class DownstreamChain(private val chain: ChainHookerBridge.Chain) : ChainHookerBridge.Chain by chain {
+
+            /** The last failure thrown by the remaining chain, or null. */
+            var failure: Throwable? = null
+                private set
+
+            override fun proceed() = record { chain.proceed() }
+            override fun proceed(args: Array<out Any?>) = record { chain.proceed(args) }
+            override fun proceedWith(instance: Any) = record { chain.proceedWith(instance) }
+            override fun proceedWith(instance: Any, args: Array<out Any?>) = record { chain.proceedWith(instance, args) }
+
+            private inline fun record(block: () -> Any?) = try {
+                block()
+            } catch (throwable: Throwable) {
+                failure = throwable
+                throw throwable
             }
         }
     }
@@ -590,7 +616,12 @@ class YukiHookCreator private constructor() {
                         if (!isInterception) {
                             if (state.throwToHostOnFailure) param.throwable = it
                             null
-                        } else invocation.callOriginal()
+                        } else runCatching { invocation.callOriginal() }.getOrElse { failure ->
+                            // The original `Member` has already run, pass its own failure to the caller instead of
+                            // letting it escape this callback, which would make the framework run the original again.
+                            param.throwable = (failure as? InvocationTargetException)?.targetException ?: failure
+                            return
+                        }
                     }
                     if (isInterception) param.result = result
                 }
