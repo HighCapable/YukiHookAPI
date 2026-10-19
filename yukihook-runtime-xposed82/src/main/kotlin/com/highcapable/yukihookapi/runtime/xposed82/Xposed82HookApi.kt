@@ -37,7 +37,7 @@ import de.robv.android.xposed.callbacks.XCallback
 import java.lang.reflect.Member
 
 /**
- * Native Xposed API calls and hook registrations for the Xposed API 82 runtime.
+ * Native Xposed Framework API calls and hook registrations for the Xposed 82 runtime.
  */
 internal object Xposed82HookApi : HookRegistrationBridge {
 
@@ -68,31 +68,31 @@ internal object Xposed82HookApi : HookRegistrationBridge {
     override val highestPriority get() = XCallback.PRIORITY_HIGHEST
 
     override fun deoptimize(member: Member): Boolean =
-        throw UnsupportedOperationException("Method deoptimization is unavailable in Xposed API 82.")
+        throw UnsupportedOperationException("Method deoptimization is unavailable in Xposed Framework API.")
 
     override fun hook(target: HookPoint, priority: Int, hooker: HookerBridge, id: String?): HookerBridge {
         if (hooker !is ClassicHookerBridge && hooker !is ChainHookerBridge)
-            throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}")
+            throw UnsupportedOperationException("Unsupported hooker type for Xposed Framework API: ${hooker.javaClass.name}")
 
         check(YukiHookBridge.isAvailable) {
-            "Xposed API is not attached to this process."
+            "Xposed Framework API is not attached to this process."
         }
 
         return when (target) {
             is HookPoint.Executable -> hookMember(target.value, priority, hooker)
             is HookPoint.Initializer -> throw UnsupportedOperationException(
-                "Static initializer hooks are unavailable in Xposed API 82."
+                "Static initializer hooks are unavailable in Xposed Framework API."
             )
         }
     }
 
     override fun replace(handle: HookerBridge, replacement: HookerBridge): HookerBridge =
-        throw UnsupportedOperationException("Atomic hook replacement is unavailable in Xposed API 82.")
+        throw UnsupportedOperationException("Atomic hook replacement is unavailable in Xposed Framework API.")
 
     private fun hookMember(member: Member, priority: Int, hooker: HookerBridge) = when (hooker) {
         is ChainHookerBridge -> hookChainMember(member, priority, hooker)
         is ClassicHookerBridge -> hookClassicMember(member, priority, hooker)
-        else -> throw UnsupportedOperationException("Unsupported hooker type for Xposed API 82: ${hooker.javaClass.name}")
+        else -> throw UnsupportedOperationException("Unsupported hooker type for Xposed Framework API: ${hooker.javaClass.name}")
     }
 
     private fun hookChainMember(member: Member, priority: Int, hooker: ChainHookerBridge): HookerBridge = synchronized(chainHooks) {
@@ -101,7 +101,7 @@ internal object Xposed82HookApi : HookRegistrationBridge {
                 Xposed82ExecutableInvoker.invokeOriginal(member, instance, args)
             }
 
-            // API 82 cannot resume native callbacks from proceed. Keep ordinary hooks outside
+            // Xposed Framework API cannot resume native callbacks from proceed. Keep ordinary hooks outside
             // the local chain, native hooks ordered after this entry can still be skipped.
             adapter to hookClassicMember(member, XCallback.PRIORITY_LOWEST, adapter)
         }

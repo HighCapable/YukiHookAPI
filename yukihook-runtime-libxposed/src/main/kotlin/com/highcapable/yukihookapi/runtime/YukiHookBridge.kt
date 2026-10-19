@@ -40,7 +40,7 @@ import com.highcapable.yukihookapi.runtime.libxposed.LibXposedSharedFiles
  */
 internal object YukiHookBridge : FrameworkHookBridge {
 
-    private const val NOT_ATTACHED_ERROR = "libxposed is not attached to this process."
+    private const val NOT_ATTACHED_ERROR = "libxposed API is not attached to this process."
 
     class ApiSpec(
         val apiVersion: Int = -1,

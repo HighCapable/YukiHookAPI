@@ -30,7 +30,7 @@ import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 /**
- * Executable invocation backed by Xposed API 82.
+ * Executable invocation backed by Xposed Framework API.
  */
 internal object Xposed82ExecutableInvoker : ExecutableInvokerBridge {
 
@@ -39,14 +39,14 @@ internal object Xposed82ExecutableInvoker : ExecutableInvokerBridge {
 
     override fun invokeSpecial(member: Member, instance: Any, args: Array<out Any?>): Any? = when (member) {
         is Constructor<*> -> XposedBridge.invokeOriginalMethod(member, instance, args)
-        // Xposed API 82 has no non-virtual method invocation support.
-        is Method -> throw UnsupportedOperationException("Special method invocation is unavailable in Xposed API 82.")
+        // Xposed Framework API has no non-virtual method invocation support.
+        is Method -> throw UnsupportedOperationException("Special method invocation is unavailable in Xposed Framework API.")
         else -> throw IllegalArgumentException("Unsupported member type: ${member.javaClass.name}")
     }
 
     override fun newInstanceOriginal(constructor: Constructor<*>, args: Array<out Any?>): Any =
-        throw UnsupportedOperationException("Original construction is unavailable in Xposed API 82.")
+        throw UnsupportedOperationException("Original construction is unavailable in Xposed Framework API.")
 
     override fun newInstanceSpecial(constructor: Constructor<*>, subclass: Class<*>, args: Array<out Any?>): Any =
-        throw UnsupportedOperationException("Special construction is unavailable in Xposed API 82.")
+        throw UnsupportedOperationException("Special construction is unavailable in Xposed Framework API.")
 }

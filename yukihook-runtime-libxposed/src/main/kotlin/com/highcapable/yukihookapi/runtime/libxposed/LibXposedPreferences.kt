@@ -48,7 +48,7 @@ internal object LibXposedPreferences {
         private var xposedApi: XposedInterface? = null
 
         private val api get() = checkNotNull(xposedApi) {
-            "libxposed host remote preferences are unavailable."
+            "libxposed API host remote preferences are unavailable."
         }
 
         fun attach(api: XposedInterface) {

@@ -25,7 +25,7 @@
 package com.highcapable.yukihookapi.hook.xposed.bridge.event
 
 /**
- * Registers listeners for native Xposed API loading events.
+ * Registers listeners for native Xposed Framework API loading events.
  *
  * All functions are deprecated no-ops. Callback parameters use [Any] and expose no native framework types.
  */

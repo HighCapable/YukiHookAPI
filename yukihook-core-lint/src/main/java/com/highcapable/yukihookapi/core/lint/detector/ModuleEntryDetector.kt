@@ -101,7 +101,7 @@ class ModuleEntryDetector : Detector(), Detector.UastScanner {
             briefDescription = "Invalid hot reload configuration for module entry",
             explanation = """
                 Hot reload requires a target API version of at least $RELOAD_API_VERSION. It also replaces the YukiHook \
-                module entry as one generation, additional libxposed Java entries cannot participate in that lifecycle, \
+                module entry as one generation, additional libxposed API Java entries cannot participate in that lifecycle, \
                 so `$JAVA_ENTRIES` must not be declared when hot reload is enabled.
             """.trimIndent(),
             category = Category.CORRECTNESS,

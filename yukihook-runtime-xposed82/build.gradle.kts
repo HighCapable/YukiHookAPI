@@ -19,7 +19,7 @@ android {
 }
 
 dokka {
-    // Link the Xposed API 82 types used in the public API to the Javadoc of Xposed API.
+    // Link the Xposed Framework API types used in the public API to the Javadoc of Xposed Framework API.
     dokkaSourceSets.configureEach {
         val module = gropify.project.third.party.xposed.framework.api.moduleName
         externalDocumentationLinks.register(module) {

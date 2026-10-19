@@ -31,7 +31,7 @@ import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 /**
- * Xposed API 82 entry base used by KSP.
+ * Xposed Framework API entry base used by KSP.
  */
 abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
 
@@ -69,7 +69,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
     final override fun handleLoadPackage(param: XC_LoadPackage.LoadPackageParam) {
         if (!initialized) return
 
-        // Xposed 82 reports system_server as the android package without `ApplicationInfo`.
+        // Xposed Framework API reports system_server as the android package without `ApplicationInfo`.
         val isSystemServerEntry = param.packageName == FRAMEWORK_PACKAGE_NAME && param.appInfo == null
         if (isSystemServerEntry) isSystemServer = true
 

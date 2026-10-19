@@ -43,7 +43,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookXposedModule.registerModuleLifecycle(block: ModuleLifecycle.() -> Unit) {
     check(YukiHookBridge.runtime == YukiHookRuntime.LIBXPOSED) {
-        "Module lifecycle is unavailable in Xposed API 82."
+        "Module lifecycle is unavailable in Xposed Framework API."
     }
     XposedModuleRuntime.checkInitializingEntry(this, "module lifecycle callbacks")
 

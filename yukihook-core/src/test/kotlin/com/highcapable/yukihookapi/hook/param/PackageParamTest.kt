@@ -50,7 +50,7 @@ class PackageParamTest {
 
     @Test
     fun redirectsSystemFrameworkToSystemServer() {
-        // Libxposed excludes system_server from package matching, Xposed 82 reports it as the android package.
+        // libxposed API excludes system_server from package matching, Xposed Framework API reports it as the android package.
         listOf(
             param(HookEntryType.SYSTEM_SERVER, "android", packageNameForMatching = null),
             param(HookEntryType.SYSTEM_SERVER, "android")

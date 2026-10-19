@@ -19,7 +19,7 @@ android {
 }
 
 dokka {
-    // Link the libxposed API types used in the public API to the Javadoc of libxposed.
+    // Link the libxposed API types used in the public API to the Javadoc of libxposed API.
     dokkaSourceSets.configureEach {
         val module = gropify.project.third.party.libxposed.api.moduleName
         externalDocumentationLinks.register(module) {

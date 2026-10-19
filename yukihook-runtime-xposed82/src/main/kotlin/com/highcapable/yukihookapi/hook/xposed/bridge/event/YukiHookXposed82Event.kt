@@ -35,7 +35,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
  * Registers framework event listeners from [YukiHookXposedModule.onInit].
  *
  * The configuration block runs immediately, event callbacks run when the framework dispatches them.
- * Use native Xposed APIs in these callbacks and keep `YukiHook` hook loading in [YukiHookXposedModule.onHook].
+ * Use native Xposed Framework APIs in these callbacks and keep `YukiHook` hook loading in [YukiHookXposedModule.onHook].
  *
  * Only one registration block is allowed per module process, even across different entry instances.
  * @receiver [YukiHookXposedModule]
@@ -47,7 +47,7 @@ fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookXposed82Event.()
     YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiHookXposed82Event.block() }
 
 /**
- * Registers listeners for framework lifecycle events exposed by Xposed API 82.
+ * Registers listeners for framework lifecycle events exposed by Xposed Framework API.
  * Configure listeners only inside [registerFrameworkEvents]. Each lifecycle listener can be set once.
  */
 @RequiresRuntime(YukiHookRuntime.XPOSED_82)

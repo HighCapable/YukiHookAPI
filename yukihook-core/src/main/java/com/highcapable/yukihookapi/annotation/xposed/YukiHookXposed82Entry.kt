@@ -27,11 +27,11 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
- * Marks the [YukiHook] Xposed API 82 entry class for code generation.
+ * Marks the [YukiHook] Xposed Framework API entry class for code generation.
  *
  * Requires `yukihook-runtime-xposed82`. Missing, conflicting, or mismatched runtimes will cause KSP to reject the build.
  *
- * For modern libxposed, use [YukiHookLibXposedEntry] with `yukihook-runtime-libxposed` instead.
+ * For the modern libxposed API, use [YukiHookLibXposedEntry] with `yukihook-runtime-libxposed` instead.
  *
  * - KSP generates `assets/xposed_init` as a build resource.
  * - The runtime AndroidManifest supplies `xposedmodule=true` and `xposedminversion=82`.

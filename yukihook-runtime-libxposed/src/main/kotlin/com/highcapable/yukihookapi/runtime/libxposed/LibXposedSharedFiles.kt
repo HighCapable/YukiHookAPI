@@ -48,7 +48,7 @@ internal object LibXposedSharedFiles {
         private var xposedApi: XposedInterface? = null
 
         private val api get() = checkNotNull(xposedApi) {
-            "libxposed host remote files are unavailable."
+            "libxposed API host remote files are unavailable."
         }
 
         fun attach(api: XposedInterface) {

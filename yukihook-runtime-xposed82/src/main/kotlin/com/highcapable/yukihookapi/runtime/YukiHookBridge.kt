@@ -56,10 +56,10 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override val frameworkVersion get() = if (attached) "unsupported" else Xposed82ModuleStatus.frameworkVersion
     override val frameworkVersionCode get() = if (attached) 0L else Xposed82ModuleStatus.frameworkVersionCode
 
-    override val moduleScope: ModuleScopeBridge get() = throw UnsupportedOperationException("Module scope is unavailable in Xposed API 82.")
-    override val moduleReload: ModuleReloadBridge get() = throw UnsupportedOperationException("Module reload is unavailable in Xposed API 82.")
+    override val moduleScope: ModuleScopeBridge get() = throw UnsupportedOperationException("Module scope is unavailable in Xposed Framework API.")
+    override val moduleReload: ModuleReloadBridge get() = throw UnsupportedOperationException("Module reload is unavailable in Xposed Framework API.")
 
-    override val executableInvoker get() = if (attached) Xposed82ExecutableInvoker else error("Xposed API is not attached to this process.")
+    override val executableInvoker get() = if (attached) Xposed82ExecutableInvoker else error("Xposed Framework API is not attached to this process.")
     override val hookRegistration get() = Xposed82HookApi
 
     fun attach() {
@@ -70,12 +70,12 @@ internal object YukiHookBridge : FrameworkHookBridge {
     override fun installLegacyModuleStatusHooks(loader: ClassLoader?) = Xposed82ModuleStatus.install(loader)
 
     override fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? =
-        throw UnsupportedOperationException("Framework service is unavailable in Xposed API 82.")
+        throw UnsupportedOperationException("Framework service is unavailable in Xposed Framework API.")
 
     override fun preferences(hostEnvironment: Boolean) = Xposed82Preferences.open(hostEnvironment)
 
     override fun sharedFiles(hostEnvironment: Boolean): SharedFilesBridge =
-        throw UnsupportedOperationException("Shared files are unavailable in Xposed API 82.")
+        throw UnsupportedOperationException("Shared files are unavailable in Xposed Framework API.")
 
     override fun log(priority: Int, tag: String, message: String, throwable: Throwable?) {
         if (attached)

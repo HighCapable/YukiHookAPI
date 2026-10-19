@@ -38,7 +38,7 @@ public final class YukiHookServiceBridge {
     /**
      * Gets the Binder identity behind the specified service.
      *
-     * <p>libxposed 102 does not expose this identity from {@link XposedService}. Keeping this
+     * <p>libxposed service 102 does not expose this identity from {@link XposedService}. Keeping this
      * bridge in the service package avoids reflection and lets R8 rewrite the direct reference.</p>
      *
      * @param service the service wrapper.

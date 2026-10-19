@@ -47,7 +47,7 @@ fun YukiHookXposedModule.registerFrameworkEvents(block: YukiHookLibXposedEvent.(
     YukiHookModuleCaller.callRegisterFrameworkEvents(this) { YukiHookLibXposedEvent.block() }
 
 /**
- * Registers listeners for framework lifecycle events exposed by libxposed.
+ * Registers listeners for framework lifecycle events exposed by libxposed API.
  * Configure listeners only inside [registerFrameworkEvents]. Each lifecycle listener can be set once.
  */
 @RequiresRuntime(YukiHookRuntime.LIBXPOSED)

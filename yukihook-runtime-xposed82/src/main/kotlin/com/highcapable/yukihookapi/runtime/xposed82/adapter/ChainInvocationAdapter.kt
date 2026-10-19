@@ -73,7 +73,7 @@ internal class ChainInvocationAdapter(
         try {
             param.result = Chain(param.instance, buildList { addAll(param.args) }, snapshot, 0).proceed()
         } catch (throwable: Throwable) {
-            // Throwing out of before would make API 82 log the failure and run the original again.
+            // Throwing out of before would make Xposed Framework API log the failure and run the original again.
             param.throwable = throwable
         }
     }

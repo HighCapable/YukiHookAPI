@@ -219,7 +219,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         val generatedEntryName = "${spec.entryPackageName}.${spec.initClassName}"
         val names = entries.map { value ->
             val declaration = (value as? KSType)?.declaration as? KSClassDeclaration
-                ?: problem("Each item in `javaEntries` must reference a libxposed entry class.")
+                ?: problem("Each item in `javaEntries` must reference a libxposed API entry class.")
             val name = declaration.toClassName().reflectionName()
             if (name == generatedEntryName) problem(
                 "Do not include the generated entry class \"$generatedEntryName\" in `javaEntries`."
@@ -232,12 +232,12 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
             if (name == LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME || LibXposedGenerateSpec.BASE_ENTRY_CLASS_NAME in superTypes)
                 problem("Do not include the YukiHook internal entry class \"$name\" in `javaEntries`.")
             if (LibXposedGenerateSpec.XPOSED_MODULE_CLASS_NAME !in superTypes)
-                problem("\"$name\" must extend libxposed `XposedModule`.")
+                problem("\"$name\" must extend libxposed API `XposedModule`.")
 
             name
         }
 
-        if (names.size != names.toSet().size) problem("`javaEntries` contains duplicate libxposed entry classes.")
+        if (names.size != names.toSet().size) problem("`javaEntries` contains duplicate libxposed API entry classes.")
         return names
     }
 
@@ -255,7 +255,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
         if (spec is LibXposedGenerateSpec &&
             (spec.minApiVersion < LibXposedGenerateSpec.RUNTIME_MIN_API_VERSION || spec.targetApiVersion < spec.minApiVersion)
         ) problem(
-            "libxposed requires minApiVersion >= ${LibXposedGenerateSpec.RUNTIME_MIN_API_VERSION} " +
+            "`YukiHookLibXposedEntry` requires minApiVersion >= ${LibXposedGenerateSpec.RUNTIME_MIN_API_VERSION} " +
                 "and targetApiVersion >= minApiVersion. API 100 is unsupported."
         )
 

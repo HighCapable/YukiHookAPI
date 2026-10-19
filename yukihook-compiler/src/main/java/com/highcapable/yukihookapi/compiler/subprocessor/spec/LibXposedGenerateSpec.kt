@@ -30,7 +30,7 @@ import com.highcapable.yukihookapi.compiler.DeclaredSymbol
  * @param scope the explicitly declared scope.
  * @param staticScope whether the scope is fixed.
  * @param hotReload the module reload policy.
- * @param javaEntries additional native libxposed Java entry class names.
+ * @param javaEntries additional native libxposed API Java entry class names.
  * @param nativeEntries the native entry library filenames.
  */
 data class LibXposedGenerateSpec(

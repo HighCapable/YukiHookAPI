@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
  *
  * Requires `yukihook-runtime-libxposed`. Missing, conflicting, or mismatched runtimes will cause KSP to reject the build.
  *
- * For legacy Xposed API 82, use [YukiHookXposed82Entry] with `yukihook-runtime-xposed82` instead.
+ * For the legacy Xposed Framework API, use [YukiHookXposed82Entry] with `yukihook-runtime-xposed82` instead.
  *
  * - KSP generates `java_init.list`, `module.prop`, and `scope.list` under `META-INF/xposed` as build resources.
  *   `native_init.list` is also generated when [nativeEntries] is not empty.
@@ -60,7 +60,7 @@ import kotlin.reflect.KClass
  * @param hotReload the module reload policy, [HotReload.NONE] by default. [HotReload.MANUAL] and [HotReload.AUTO] require
  * [targetApiVersion] at least 102 and an empty [javaEntries] list. An incoming reload is completed when the new module instance
  * declares [HotReload.NONE] with [targetApiVersion] at least 102.
- * @param javaEntries additional native libxposed Java entries extending `XposedModule`.
+ * @param javaEntries additional native libxposed API Java entries extending `XposedModule`.
  * These entries use their own framework callbacks and must keep their class names when R8 obfuscation is enabled.
  * @param nativeEntries native entry library filenames, such as `libexample.so`, one per generated line.
  * Empty disables generation of `native_init.list`. Package these libraries in the module APK, the framework loads them as native entries.

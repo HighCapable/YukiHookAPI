@@ -126,7 +126,7 @@ internal class LibXposedHookApi(
                 )
             }.intercept(hooker) { chain.proceed(it) }
         }
-        else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed: ${hooker.javaClass.name}")
+        else -> throw UnsupportedOperationException("Unsupported hooker type for libxposed API: ${hooker.javaClass.name}")
     }
 
     private fun use(hooker: XposedInterface.Hooker): XposedInterface.Hooker {

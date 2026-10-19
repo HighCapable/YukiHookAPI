@@ -30,7 +30,7 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 
 /**
- * Common libxposed entry base used by KSP. Native lifecycle details stay in this runtime.
+ * Common libxposed API entry base used by KSP. Native lifecycle details stay in this runtime.
  */
 abstract class LibXposedBaseEntry : XposedModule() {
 
