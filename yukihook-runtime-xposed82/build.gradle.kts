@@ -21,16 +21,16 @@ android {
 dokka {
     // Link the Xposed API 82 types used in the public API to the Javadoc of Xposed API.
     dokkaSourceSets.configureEach {
-        val module = gropify.project.third.party.rovo89.xposed.api.moduleName
+        val module = gropify.project.third.party.xposed.framework.api.moduleName
         externalDocumentationLinks.register(module) {
-            url("${gropify.project.third.party.rovo89.javadoc.url}/")
-            packageListUrl("${gropify.project.third.party.rovo89.javadoc.url}/package-list")
+            url("${gropify.project.third.party.xposed.framework.javadoc.url}/")
+            packageListUrl("${gropify.project.third.party.xposed.framework.javadoc.url}/package-list")
         }
     }
 }
 
 dependencies {
-    compileOnly(libs.rovo89.xposed.api)
+    compileOnly(libs.xposed.framework.api)
 
     compileOnly(projects.yukihookRuntimeStub)
     implementation(projects.yukihookCore)

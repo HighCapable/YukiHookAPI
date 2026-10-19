@@ -31,7 +31,7 @@ android {
 }
 
 dependencies {
-    compileOnly(libs.rovo89.xposed.api)
+    compileOnly(libs.xposed.framework.api)
     implementation(projects.yukihookRuntimeXposed82)
     implementation(projects.yukihookCore)
     implementation(projects.yukihookExtensionKavaref)
