@@ -145,6 +145,7 @@ class MemberHookerTest {
         val failure = IllegalStateException("after proceed")
         var observed: HookChain? = null
         var observedFailure: Throwable? = null
+        val callbackFailures = mutableListOf<Throwable>()
         val registration = scope.run {
             method.intercept { "short-circuit" }
             method.intercept {
@@ -152,21 +153,22 @@ class MemberHookerTest {
                 throw failure
             }.onCallbackFailure { invocation, throwable ->
                 observed = invocation
-                Assert.assertSame(failure, throwable)
+                callbackFailures += throwable
             }.onInvocationFailure {
                 observedFailure = it
             }
         }
         Assert.assertEquals("short-circuit", (hookers[0] as ChainHookerBridge).intercept(shortCircuit))
         Assert.assertEquals(0, shortCircuit.calls)
-        Assert.assertSame(failure, Assert.assertThrows(IllegalStateException::class.java) {
-            (hookers[1] as ChainHookerBridge).intercept(failing)
-        })
+        // A failure after proceed keeps the proceeded result instead of running the remaining chain again.
+        Assert.assertEquals("downstream", (hookers[1] as ChainHookerBridge).intercept(failing))
         Assert.assertEquals(1, failing.calls)
         Assert.assertSame(method, checkNotNull(observed).member)
+        Assert.assertEquals(listOf<Throwable>(failure), callbackFailures)
         Assert.assertSame(failure, observedFailure)
 
         registration.ignoreInvocationFailure()
+        registration.throwToHostOnFailure()
         observed = null
         observedFailure = null
         Assert.assertSame(failure, Assert.assertThrows(IllegalStateException::class.java) {
@@ -204,11 +206,44 @@ class MemberHookerTest {
         Assert.assertTrue(callbackFailures.isEmpty())
         Assert.assertTrue(invocationFailures.isEmpty())
 
-        // A different failure thrown by the callback itself is still a callback failure.
-        Assert.assertSame(replacedFailure, Assert.assertThrows(UnsupportedOperationException::class.java) {
-            (hookers[1] as ChainHookerBridge).intercept(RecordingChain(method, downstreamFailure = downstreamFailure))
+        // A different failure thrown by the callback itself is reported, and the invocation keeps the proceeded failure.
+        val replacing = RecordingChain(method, downstreamFailure = downstreamFailure)
+        Assert.assertSame(downstreamFailure, Assert.assertThrows(IllegalStateException::class.java) {
+            (hookers[1] as ChainHookerBridge).intercept(replacing)
         })
+        Assert.assertEquals(1, replacing.calls)
         Assert.assertEquals(listOf<Throwable>(replacedFailure), callbackFailures)
+    }
+
+    @Test
+    fun chainFailureBeforeProceedContinuesTheRemainingChainOnce() {
+        val failure = IllegalStateException("before proceed")
+        val callbackFailures = mutableListOf<Throwable>()
+        scope.run {
+            method.intercept { throw failure }
+                // A failing listener must not stop the recovery.
+                .onCallbackFailure { _, throwable ->
+                    callbackFailures += throwable
+                    throw UnsupportedOperationException("listener")
+                }
+        }
+
+        val chain = RecordingChain(method)
+        Assert.assertEquals("downstream", (hookers.single() as ChainHookerBridge).intercept(chain))
+        Assert.assertEquals(1, chain.calls)
+        Assert.assertEquals(listOf<Throwable>(failure), callbackFailures)
+    }
+
+    @Test
+    fun chainFailureThrownToHostDoesNotRunTheRemainingChain() {
+        val failure = IllegalStateException("thrown to host")
+        scope.run { method.intercept { throw failure }.throwToHostOnFailure() }
+
+        val chain = RecordingChain(method)
+        Assert.assertSame(failure, Assert.assertThrows(IllegalStateException::class.java) {
+            (hookers.single() as ChainHookerBridge).intercept(chain)
+        })
+        Assert.assertEquals(0, chain.calls)
     }
 
     @Test
@@ -248,6 +283,74 @@ class MemberHookerTest {
         Assert.assertEquals(0, proceedCalls)
         Assert.assertTrue(adapterFailures.isEmpty())
         Assert.assertEquals(listOf<Throwable>(callbackFailure), callbackFailures)
+    }
+
+    @Test
+    fun classicThrowToHostOnFailureAppliesOnlyToItsOwnCallback() {
+        val beforeFailure = IllegalStateException("before")
+        val afterFailure = IllegalStateException("after")
+        scope.run {
+            method.hook {
+                before { throw beforeFailure }
+                after { throw afterFailure }.throwToHostOnFailure()
+            }.ignoreCallbackFailure()
+        }
+
+        var originalCalls = 0
+        val invocation = ClassicInvocationAdapter.from(method, "value", arrayOf(1)) { throw it }
+        // The before failure is only reported, so the original still runs before the after failure is thrown.
+        Assert.assertSame(afterFailure, Assert.assertThrows(IllegalStateException::class.java) {
+            invocation.intercept(hookers.single() as ClassicHookerBridge) {
+                originalCalls++
+                "original"
+            }
+        })
+        Assert.assertEquals(1, originalCalls)
+    }
+
+    @Test
+    fun classicInterceptionThrowsToHostWithoutInvokingTheOriginal() {
+        var originalCalls = 0
+        YukiHookBridge.attach(YukiHookBridge.ApiSpec(
+            hookRegistrationBridge = registrations(registerHook),
+            executableInvokerBridge = object : ExecutableInvokerBridge {
+                override fun invokeOriginal(member: Member, instance: Any?, args: Array<out Any?>): Any? {
+                    originalCalls++
+                    return "original"
+                }
+
+                override fun invokeSpecial(member: Member, instance: Any, args: Array<out Any?>) = error("Unexpected special invocation.")
+                override fun newInstanceOriginal(constructor: Constructor<*>, args: Array<out Any?>) = error("Unexpected construction.")
+                override fun newInstanceSpecial(constructor: Constructor<*>, subclass: Class<*>, args: Array<out Any?>) =
+                    error("Unexpected construction.")
+            }
+        ))
+        val callbackFailure = IllegalStateException("callback")
+        val hostFailure = UnsupportedOperationException("host")
+        scope.run {
+            method.hook { intercept { throw callbackFailure }.throwToHostOnFailure() }.ignoreCallbackFailure()
+            method.hook {
+                intercept {
+                    hostFailure.throwToHost()
+                    "ignored"
+                }
+            }
+        }
+
+        var proceedCalls = 0
+        val proceed = { _: Array<Any?> ->
+            proceedCalls++
+            "original"
+        }
+        Assert.assertSame(callbackFailure, Assert.assertThrows(IllegalStateException::class.java) {
+            ClassicInvocationAdapter.from(method, "value", arrayOf(1)) { throw it }.intercept(hookers[0] as ClassicHookerBridge, proceed)
+        })
+        // An exception set through `throwToHost` takes the place of the returned value.
+        Assert.assertSame(hostFailure, Assert.assertThrows(UnsupportedOperationException::class.java) {
+            ClassicInvocationAdapter.from(method, "value", arrayOf(1)) { throw it }.intercept(hookers[1] as ClassicHookerBridge, proceed)
+        })
+        Assert.assertEquals(0, originalCalls)
+        Assert.assertEquals(0, proceedCalls)
     }
 
     @Test
@@ -346,9 +449,8 @@ class MemberHookerTest {
         val invocation = ClassicInvocationAdapter.from(otherMethod, "value", emptyArray()) { throw it }
         Assert.assertEquals(5, invocation.intercept(hookers[0] as ClassicHookerBridge) { "value".length })
         Assert.assertTrue(failures.single() is IllegalStateException)
-        Assert.assertThrows(IllegalStateException::class.java) {
-            (hookers[1] as ChainHookerBridge).intercept(RecordingChain(otherMethod, downstreamResult = 5))
-        }
+        // A rejected chain result is recovered by running the remaining chain.
+        Assert.assertEquals(5, (hookers[1] as ChainHookerBridge).intercept(RecordingChain(otherMethod, downstreamResult = 5)))
     }
 
     @Test

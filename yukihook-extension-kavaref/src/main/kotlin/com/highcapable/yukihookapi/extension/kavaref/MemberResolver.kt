@@ -47,7 +47,7 @@ fun MemberResolver<*, *, *>.hook(priority: YukiHookPriority = YukiHookPriority.D
  * @receiver the current member to hook.
  * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
  * @param hooker the hook block.
- * @return [YukiHookCreator.MemberHooker.Handle]
+ * @return [YukiHookCreator.ClassicMemberHooker.Handle]
  */
 context(param: PackageParam)
 fun MemberResolver<*, *, *>.hook(
@@ -70,7 +70,7 @@ fun Collection<MemberResolver<*, *, *>>.hookAll(priority: YukiHookPriority = Yuk
  * @receiver the current members to hook.
  * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
  * @param hooker the hook block.
- * @return [YukiHookCreator.MemberHooker.Handle]
+ * @return [YukiHookCreator.ClassicMemberHooker.Handle]
  */
 context(param: PackageParam)
 fun Collection<MemberResolver<*, *, *>>.hookAll(
@@ -90,7 +90,7 @@ fun Collection<MemberResolver<*, *, *>>.hookAll(
  * @receiver the current member to hook.
  * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
  * @param invocation the chain hook block.
- * @return [YukiHookCreator.MemberHooker.Handle]
+ * @return [YukiHookCreator.ChainMemberHooker.Handle]
  */
 context(param: PackageParam)
 fun MemberResolver<*, *, *>.intercept(
@@ -110,7 +110,7 @@ fun MemberResolver<*, *, *>.intercept(
  * @receiver the current members to hook.
  * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
  * @param invocation the chain hook block.
- * @return [YukiHookCreator.MemberHooker.Handle]
+ * @return [YukiHookCreator.ChainMemberHooker.Handle]
  */
 context(param: PackageParam)
 fun Collection<MemberResolver<*, *, *>>.interceptAll(

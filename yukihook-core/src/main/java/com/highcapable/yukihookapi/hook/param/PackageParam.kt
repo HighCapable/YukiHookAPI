@@ -710,7 +710,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Class<*>.intercept(
@@ -725,7 +725,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun KClass<*>.intercept(
@@ -742,7 +742,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out Class<*>>.interceptAll(
@@ -758,7 +758,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out KClass<*>>.interceptAll(
@@ -775,7 +775,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("interceptAllByClass")
@@ -792,7 +792,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Intercepting without [HookChain.proceed] skips static initialization and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("interceptAllByKClass")
@@ -813,7 +813,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the current member to hook.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     fun Member.intercept(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
@@ -832,7 +832,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the current members to hook.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     fun Array<Member>.interceptAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
@@ -851,7 +851,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the current members to hook.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param invocation the chain hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @JvmName("interceptAllByMember")
     fun Collection<Member>.interceptAll(
@@ -868,11 +868,11 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * An invocation already in progress continues with the previous callback.
      * @receiver the chain hook registration handle.
      * @param invocation the replacement chain callback.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ChainMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED, apiVersion = 102)
     @JvmName("replaceChain")
-    fun YukiHookCreator.MemberHooker<HookChain>.Handle.replace(
+    fun YukiHookCreator.ChainMemberHooker.Handle.replace(
         invocation: HookChain.() -> Any?
     ) = apply { owner.asType<YukiHookCreator.ChainMemberHooker>().replace(invocation) }
 
@@ -887,11 +887,11 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * An invocation already in progress continues with the previous callback.
      * @receiver the classic hook registration handle.
      * @param hooker the replacement classic callback configuration.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED, apiVersion = 102)
     @JvmName("replaceClassic")
-    fun YukiHookCreator.MemberHooker<HookParam>.Handle.replace(
+    fun YukiHookCreator.ClassicMemberHooker.Handle.replace(
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit
     ) = apply { owner.asType<YukiHookCreator.ClassicMemberHooker>().replace(hooker) }
 
@@ -915,7 +915,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the class whose static initializer will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Class<*>.hook(
@@ -941,7 +941,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Intercepting the initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun KClass<*>.hook(
@@ -971,7 +971,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out Class<*>>.hookAll(
@@ -1000,7 +1000,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     fun Array<out KClass<*>>.hookAll(
@@ -1031,7 +1031,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the classes whose static initializers will be hooked.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("hookAllByClass")
@@ -1062,7 +1062,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * Intercepting an initializer skips its execution and leaves static fields at JVM defaults.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("hookAllByKClass")
@@ -1084,7 +1084,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the current member to hook.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     fun Member.hook(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
@@ -1104,7 +1104,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the current members to hook.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     fun Array<Member>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
@@ -1125,7 +1125,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @receiver the current members to hook.
      * @param priority the hook priority, [YukiHookPriority.DEFAULT] by default.
      * @param hooker the hook block.
-     * @return [YukiHookCreator.MemberHooker.Handle]
+     * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
     fun Collection<Member>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,

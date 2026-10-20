@@ -103,7 +103,9 @@ class HookParam private constructor(
      * Use [hasThrowable] to check whether an exception is currently set,
      * and [throwable] to get the exception set for the invocation.
      *
-     * This API is effective only in [YukiHookCreator.ClassicMemberHooker.before] or [YukiHookCreator.ClassicMemberHooker.after] callbacks.
+     * This API is effective in [YukiHookCreator.ClassicMemberHooker.before], [YukiHookCreator.ClassicMemberHooker.after]
+     * and [YukiHookCreator.ClassicMemberHooker.intercept] callbacks, the return value of an [YukiHookCreator.ClassicMemberHooker.intercept]
+     * callback is ignored after it is called.
      * Setting the exception also sets [result] to null, the framework throws it to the current host after the callback returns.
      * @receiver the exception to throw to the current host.
      */

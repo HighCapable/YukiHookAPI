@@ -84,8 +84,8 @@ internal class LibXposedHookApi(
         val handle = builder
             .setPriority(priority)
             .apply { if (id != null) setId(id) }
-            // Classic hookers apply their own failure policy, chain hookers must preserve
-            // the interceptor's result or exception without automatic recovery.
+            // YukiHook applies the failure policy of classic and chain hookers itself,
+            // the framework must pass the hooker's result or exception through unchanged.
             .setExceptionMode(XposedInterface.ExceptionMode.PASSTHROUGH)
             .intercept(use(nativeHooker))
 
