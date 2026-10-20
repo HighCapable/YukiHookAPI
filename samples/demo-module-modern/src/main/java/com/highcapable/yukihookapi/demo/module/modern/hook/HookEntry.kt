@@ -49,7 +49,10 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
  */
 @YukiHookLibXposedEntry(
     targetApiVersion = 102,
-    scope = [DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME]
+    scope = [DemoProperties.PROJECT_SAMPLES_DEMO_APP_PACKAGE_NAME],
+    // Enable hot reload, which can be set to [YukiHookLibXposedEntry.HotReload.AUTO] or [YukiHookLibXposedEntry.HotReload.MANUAL]
+    // 启用热重载，可设置为 [YukiHookLibXposedEntry.HotReload.AUTO] 或 [YukiHookLibXposedEntry.HotReload.MANUAL]
+    hotReload = YukiHookLibXposedEntry.HotReload.AUTO
 )
 object HookEntry : YukiHookXposedModule {
 
