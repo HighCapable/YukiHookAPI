@@ -3,9 +3,12 @@ name: Deploy to GitHub pages
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ 1.x ]
     paths:
       - 'yukihook-core/src/**'
+      - 'yukihook-runtime-libxposed/src/**'
+      - 'yukihook-runtime-xposed82/src/**'
+      - 'yukihook-extension-kavaref/src/**'
       - 'docs-source/**'
       - '.github/workflows/**'
 
