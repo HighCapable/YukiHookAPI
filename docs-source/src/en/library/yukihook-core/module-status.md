@@ -80,6 +80,39 @@ The observer is called once immediately on registration, and again when the serv
 
 You can pass a `Lifecycle` to the function to register a lifecycle observer automatically, or you can call `unregister` on the returned object to cancel the observer manually.
 
+Since the connection to the service is asynchronous, and the hook framework gives no connection result when it is not activated,
+a `false` in the first callback only means that the service is not connected yet, it does not mean that the module is not activated,
+the observer is called again with `true` when the service connects later.
+
+If you need to make a one-time decision based on it (for example, telling the user that the module is not activated),
+you can wait for a while after receiving `false` and use the result that is decided first.
+
+> The following example
+
+```kotlin
+val mainHandler = Handler(Looper.getMainLooper())
+var isDecided = false
+val onUnavailable = Runnable {
+    isDecided = true
+    // The service is not connected within a while, tell the user that the module is not activated.
+}
+YukiHook.Status.observeFrameworkService(lifecycle) { available ->
+    mainHandler.removeCallbacks(onUnavailable)
+    when {
+        // The result is decided, only refresh the status.
+        isDecided -> refreshStatus()
+        available -> {
+            isDecided = true
+            // The service is connected, you can get the status of the module.
+        }
+        else -> mainHandler.postDelayed(onUnavailable, 500)
+    }
+}
+```
+
+The waiting time is only an estimate, when the hook framework responds slowly, the module may still be considered not activated first,
+so you still need to refresh the status in later callbacks after the result is decided.
+
 ::: danger
 
 This feature requires the [yukihook-runtime-libxposed](../yukihook-runtime-libxposed.md) base module.

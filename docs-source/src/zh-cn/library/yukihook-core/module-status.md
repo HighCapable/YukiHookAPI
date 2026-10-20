@@ -78,6 +78,35 @@ YukiHook.Status.observeFrameworkService { available ->
 
 你可以对方法传入 `Lifecycle` 以自动注册生命周期监听，或者你也可以对返回的对象调用 `unregister` 手动取消监听。
 
+由于服务的连接是异步的，且 Hook 框架没有激活时不会给出任何连接结果，第一次回调的 `false` 只代表服务尚未连接，并不代表模块没有激活，稍后服务连接成功时会再次回调 `true`。
+
+如果你需要据此进行一次性的判断 (例如提示用户模块没有激活)，你可以在收到 `false` 后等待一段时间，以先确定的结果为准。
+
+> 示例如下
+
+```kotlin
+val mainHandler = Handler(Looper.getMainLooper())
+var isDecided = false
+val onUnavailable = Runnable {
+    isDecided = true
+    // 一段时间内没有连接到服务，提示模块没有激活
+}
+YukiHook.Status.observeFrameworkService(lifecycle) { available ->
+    mainHandler.removeCallbacks(onUnavailable)
+    when {
+        // 结果已经确定，只需要刷新状态
+        isDecided -> refreshStatus()
+        available -> {
+            isDecided = true
+            // 服务已连接，可以获取模块的状态
+        }
+        else -> mainHandler.postDelayed(onUnavailable, 500)
+    }
+}
+```
+
+等待的时间只是一个估计值，Hook 框架响应较慢时仍然可能先判定为没有激活，所以确定结果后仍需要在后续的回调中刷新状态。
+
 ::: danger
 
 此功能需要 [yukihook-runtime-libxposed](../yukihook-runtime-libxposed.md) 底座支持。
