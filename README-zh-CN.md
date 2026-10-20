@@ -75,7 +75,7 @@ object HookEntry : YukiHookXposedModule {
 
 ## 开始使用
 
-| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 文档](https://highcapable.github.io/YukiHook/zh-cn) |
+| <img src="img-src/icon.svg" width = "30" height = "30" alt="LOGO"/> | [YukiHook 文档](https://highcapable.github.io/YukiHook/zh-cn) |
 |---------------------------------------------------------------------|-------------------------------------------------------------|
 
 你可以前往文档页面查看更多详细教程和内容。
