@@ -14,7 +14,7 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.5.0 | 2026.10.xx &ensp;<Badge type="latest" text="latest" vertical="middle" />
+### 1.5.0 | 2026.10.20 &ensp;<Badge type="latest" text="latest" vertical="middle" />
 
 - This is a major update, the project has been officially renamed to YukiHook and is now published as multiple modules, please refer to [Migration to YukiHook 1.5.x](../config/migration-1-5-x.md) for details
 - All modules are released with a unified version, and the `groupId` of the dependencies and the package name of the code are still `com.highcapable.yukihookapi`
@@ -60,6 +60,7 @@ Time zone of version release date: **UTC+8**
 - Added a set of [Lint Rules](../config/lint-rules.md) to find wrong API calls at compile time
 - Fixed an issue where the original method ran twice when it threw an exception itself while being called after an exception occurred in the `intercept` callback
 - Fixed an issue where exceptions in `onInit` in the module process were not printed
+- Adjusted the exception handling, it now only protects the host and not the module, exceptions in the module process are thrown directly while internal exceptions in the host process are still printed to the log
 
 #### yukihook-compiler
 

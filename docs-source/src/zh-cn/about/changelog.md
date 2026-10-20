@@ -8,7 +8,7 @@
 
 :::
 
-### 1.5.0 | 2026.10.xx &ensp;<Badge type="latest" text="最新" vertical="middle" />
+### 1.5.0 | 2026.10.20 &ensp;<Badge type="latest" text="最新" vertical="middle" />
 
 - 这是一次重大更新，项目正式更名为 YukiHook，并拆分为多个模块进行发布，详情请参考 [迁移至 YukiHook 1.5.x](../config/migration-1-5-x.md)
 - 全部模块采用统一版本发布，依赖的 `groupId` 与代码的包名依然为 `com.highcapable.yukihookapi`
@@ -54,6 +54,7 @@
 - 新增一套 [Lint 静态检查规范](../config/lint-rules.md)，可以在编译期发现错误的 API 调用
 - 修复 `intercept` 回调发生异常后调用原始方法时，原始方法自身抛出异常会导致其被执行两次的问题
 - 修复模块进程中 `onInit` 发生的异常不会被打印的问题
+- 调整异常处理方案，现在只会保护宿主而不会保护模块，模块进程中发生的异常将直接抛出，宿主进程中的内部异常仍会被打印到日志
 
 #### yukihook-compiler
 
