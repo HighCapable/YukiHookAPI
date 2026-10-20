@@ -24,7 +24,9 @@ package com.highcapable.yukihookapi.runtime.libxposed
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.highcapable.yukihookapi.runtime.bridge.session.ModuleReloadBridge
+import com.highcapable.yukihookapi.runtime.libxposed.generated.YukiHookProperties
 import io.github.libxposed.service.HookedTarget
 import io.github.libxposed.service.HotReloadResult
 import io.github.libxposed.service.XposedService
@@ -71,7 +73,9 @@ internal object LibXposedModuleReload : ModuleReloadBridge {
                 dispatchResult(status, result.message(), callback)
             }
         }.onFailure {
-            dispatchResult(ModuleReloadBridge.Status.FAILED, it.message, callback)
+            // The callback only carries a message, keep the stack trace in the log and the exception type when there is no message.
+            Log.e(YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME, "Failed to submit the reload request", it)
+            dispatchResult(ModuleReloadBridge.Status.FAILED, it.message ?: it.toString(), callback)
         }
     }
 

@@ -154,6 +154,8 @@ object YukiHook {
          * Callbacks run on the main thread, the first one runs immediately when registered from the main thread.
          * Call [FrameworkServiceBridge.unregister] on the returned subscription to cancel it.
          *
+         * An exception thrown by the listener is not caught, later callbacks crash the main thread just like the first one.
+         *
          * Optionally pass a [Lifecycle] to automatically cancel the subscription when it is destroyed.
          * When provided, the subscription remains active while the lifecycle is stopped,
          * an already destroyed lifecycle does not register or invoke the listener.

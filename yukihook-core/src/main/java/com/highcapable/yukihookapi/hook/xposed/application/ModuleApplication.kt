@@ -74,10 +74,10 @@ open class ModuleApplication : Application() {
 
         YukiHookBridge.initializeModuleServices()
         // Calls [YukiHookXposedModule.onInit] on the hook entry class.
-        runCatching {
+        try {
             ModuleApplication_Impl.callHookEntryInit()
-        }.onFailure {
-            YLog.innerE("Failed to initialize the hook entry in the module process", it)
+        } catch (e: NoClassDefFoundError) {
+            YLog.innerE("Failed to initialize the hook entry in the module process, the generated class maybe missing", e)
         }
         YukiHookDataChannel.get().register(this)
     }

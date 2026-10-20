@@ -86,14 +86,21 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
 
     private val baseLoader get() = AppParasitism.baseClassLoader
 
+    /** Only a missing class is a miss, a class that exists but fails to load keeps its own error. */
+    private fun ClassLoader.loadClassOrNull(name: String) = try {
+        loadClass(name)
+    } catch (_: ClassNotFoundException) {
+        null
+    }
+
     @CallSuper
     override fun loadClass(name: String, resolve: Boolean): Class<*> {
         if (!XposedModuleRuntime.isHostEnvironment) return baseLoader.loadClass(name)
 
         val hostLoader = AppParasitism.currentApplication?.classLoader ?: return super.loadClass(name, resolve)
-        if (name in excludeHostClasses) runCatching { hostLoader.loadClass(name) }.getOrNull()?.let { return it }
-        if (name in excludeModuleClasses) runCatching { baseLoader.loadClass(name) }.getOrNull()?.let { return it }
+        if (name in excludeHostClasses) hostLoader.loadClassOrNull(name)?.let { return it }
+        if (name in excludeModuleClasses) baseLoader.loadClassOrNull(name)?.let { return it }
 
-        return runCatching { baseLoader.loadClass(name) }.getOrNull() ?: hostLoader.loadClass(name)
+        return baseLoader.loadClassOrNull(name) ?: hostLoader.loadClass(name)
     }
 }

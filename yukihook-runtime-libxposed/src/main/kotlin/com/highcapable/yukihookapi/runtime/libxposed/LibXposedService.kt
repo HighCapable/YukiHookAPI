@@ -27,12 +27,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.highcapable.yukihookapi.runtime.bridge.FrameworkServiceBridge
-import com.highcapable.yukihookapi.runtime.libxposed.generated.YukiHookProperties
 import io.github.libxposed.service.HotReloadResult
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
@@ -215,13 +213,7 @@ internal object LibXposedService {
         }
 
         fun dispatch() {
-            mainHandler.post {
-                runCatching {
-                    notifyListener(isAvailable)
-                }.onFailure {
-                    Log.e(YukiHookProperties.PROJECT_YUKIHOOK_RUNTIME_NAME, "Service listener failed", it)
-                }
-            }
+            mainHandler.post { notifyListener(isAvailable) }
         }
 
         private fun notifyListener(available: Boolean) {

@@ -151,14 +151,21 @@ class YukiHookDataChannel private constructor() {
     private val handlerReceiverCallback = BroadcastReceiver { _, intent ->
         events.dispatch {
             intent.action?.also { action ->
-                runCatching {
-                    receiverCallbacks.forEach { (key, param) ->
+                // One failing listener must not stop the others from receiving this action.
+                var failure: Throwable? = null
+                receiverCallbacks.forEach { (key, param) ->
+                    runCatching {
                         when {
                             param.first?.hostActivity?.isDestroyed == true -> receiverCallbacks.remove(key, param)
                             isCurrentBroadcast(param.first) -> param.second(action, intent)
                         }
-                    }
-                }.onFailure { YLog.innerE("Failed to handle received action \"$action\"", it) }
+                    }.onFailure { if (failure == null) failure = it else failure.addSuppressed(it) }
+                }
+                failure?.let {
+                    // A module bug must not crash the host, the module process throws it to the caller.
+                    if (!isHostEnvironment) throw it
+                    YLog.innerE("Failed to handle received action \"$action\"", it)
+                }
             }
         }
     }
