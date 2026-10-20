@@ -1,12 +1,12 @@
 # Yuki Hook
 
-[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHook?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHook/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHook?display_name=release&logo=github&color=green&style=flat-square)](https://github.com/HighCapable/YukiHook/releases)
-[![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHookAPI)
+[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHook?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHook/blob/1.x/LICENSE)
+[![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHook)
 [![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/HighCapable_Dev)
+[![Telegram](https://img.shields.io/badge/channel-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHook_Channel)
 [![QQ](https://img.shields.io/badge/discussion%20dev-QQ-blue.svg?logo=tencent-qq&logoColor=red&style=flat-square)](https://qm.qq.com/cgi-bin/qm/qr?k=Pnsc5RY6N2mBKFjOLPiYldbAbprAU3V7&jump_from=webapi&authKey=X5EsOVzLXt1dRunge8ryTxDRrh9/IiW1Pua75eDLh9RE3KXE+bwXIYF5cWri/9lf)
 
-<img src="img-src/icon.png" width = "100" height = "100" alt="LOGO"/>
+<img src="img-src/icon.svg" width = "100" height = "100" alt="LOGO"/>
 
 一个现代化的 Hook API 与 Xposed 模块解决方案。
 
@@ -19,66 +19,84 @@
 
 ## 这是什么
 
-这是一个使用 Kotlin 基于 Xposed API 重新构建的高效 Hook API，同时为 Xposed 模块的开发打造了丰富的功能扩展。
+这个项目诞生之初是为了有一套标准、规范的 Hook API 来取代 Android 上由 Rovo89 定义的但是已经不那么现代的 `XposedHelpers`。现在，它的目标是成为一套
+Hook API，并为 Xposed 模块带来统一的开发体验，无论你正在使用的是什么底层 Hook 方案。
 
-名称取自 [《ももくり》女主 栗原 雪(Yuki)](https://www.bilibili.com/bangumi/play/ss5016)。
+项目图标由 [MaiTungTM](https://github.com/Lagrio) 重绘，名字取自 [《ももくり》](https://momokuri-anime.jp) 动画中的女主 栗原 雪 (Yuki)
+，前身为 [这个项目](https://github.com/fankes/TMore) 使用的 Innocent Xposed API。
 
-前身为 [开发学习项目](https://github.com/fankes/TMore) 中使用的 Innocent Xposed API，现在重新命名并开源。
+**YukiHook** 已完成从 **YukiHookAPI** 改名并完成了现代化的底层重写，未来会作为 Android 通用的 Hook API 和 Xposed 模块方案继续演进和维护。
 
-## 开始使用
+## 为什么是 YukiHook？
 
-[点击这里](https://highcapable.github.io/YukiHook/zh-cn/) 前往文档页面查看更多详细教程和内容。
+以前，我们在开发 Xposed 模块的时候，首先需要在 `assets` 下创建 `xposed_init` 文件，然后将自己的入口类名手动填入文件中，使用 `XposedHelpers` 去实现我们的
+Hook
+逻辑。自 Kotlin 作为 Android 主要开发语言以来，这套 API 用起来确实已经不是很现代了。
 
-有关支持性的相关信息，你可以直接 [点击这里](https://highcapable.github.io/YukiHook/zh-cn/guide/supportive)
-进行查看。
+有没有什么 **好用、轻量、现代** 的解决方案呢？本着这样的想法，YukiHook 诞生了。现在，我们只需要实现同一套 Hook 代码，不同底座的入口文件与模块配置交给
+YukiHook 来完成。
+
+借助 Kotlin 现代的 DSL 写法以及 YukiHook 自身提供的语法糖，可以让你的 Hook 逻辑更加美观清晰。
+
+> 示例如下
+
+```kotlin
+object HookEntry : YukiHookXposedModule {
+
+    override fun onHook() = encase {
+        loadApp("io.github.myapp") {
+            // 使用 Java 原生反射获取
+            val onCreate = Activity::class.java.getDeclaredMethod(
+                "onCreate", Bundle::class.java
+            )
+            // 使用 KavaRef 获取
+            val onCreate = Activity::class.resolve().firstMethod {
+                name = "onCreate"
+                parameters(Bundle::class)
+            }
+
+            onCreate.hook {
+                before {
+                    // Your code here.
+                }
+                after {
+                    // Your code here.
+                }
+            }
+        }
+    }
+}
+```
 
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
-🚀 YukiHook 正使用 KavaRef 作为反射 API 强力驱动，**点击上方链接 star 这个项目**，你也可以优雅地使用它！
+🚀 不喜欢原生的 Java 反射 API？YukiHook 现正使用 KavaRef 作为现代的反射 API，**点击上方链接立即前往开始使用**。
+
+## 开始使用
+
+| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 文档](https://highcapable.github.io/YukiHook/zh-cn) |
+|---------------------------------------------------------------------|-------------------------------------------------------------|
+
+你可以前往文档页面查看更多详细教程和内容。
+
+### 下一步做什么？
+
+1. **引入依赖**: 将 `yukihook-core`、`yukihook-compiler` 和一个底座模块添加到你的项目中。
+2. **创建入口类**: 实现 `YukiHookXposedModule` 接口并加入与底座模块对应的入口注解。
+3. **构建项目**: 模块的入口类与配置文件会在编译时自动生成，你就可以开始实现 Hook 代码了。
+
+在打开的页面中，选择侧边栏的 **快速开始** 章节以继续阅读。
+
+从其他 Hook API 迁移而来吗？请阅读 [迁移至 YukiHook](https://highcapable.github.io/YukiHook/zh-cn/config/migration)。
 
 ## 探索新版本
 
-`2.x` 版本正在重构中，你可以下方切换到 `2.x` 分支查看当前的开发进度。
-
-| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHook/tree/2.x) |
-|---------------------------------------------------------------------|---------------------------------------------------------------------|
+YukiHook `2.x` 版本正在 `2.x` 分支中重构，你可以点击 [这里](https://github.com/HighCapable/YukiHook/tree/2.x) 关注它的开发进度。
 
 ## 谁在使用
 
-以下是正在使用 YukiHook 的项目。
-
-| Repository                                                                         | Developer                                       |
-|------------------------------------------------------------------------------------|-------------------------------------------------|
-| [TSBattery](https://github.com/fankes/TSBattery)                                   | [fankesyooni](https://github.com/fankes)        |
-| [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon)                | [fankesyooni](https://github.com/fankes)        |
-| [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon)                | [fankesyooni](https://github.com/fankes)        |
-| [自由屏幕旋转](https://github.com/Xposed-Modules-Repo/com.fankes.forcerotate)      | [fankesyooni](https://github.com/fankes)        |
-| [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness) | [fankesyooni](https://github.com/fankes)        |
-| [AppErrorsTracking](https://github.com/KitsunePie/AppErrorsTracking)               | [fankesyooni](https://github.com/fankes)        |
-| [Enable WebView Debugging](https://github.com/WankkoRee/EnableWebViewDebugging)    | [WankkoRee](https://github.com/WankkoRee)       |
-| [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)                  | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
-| [MIUI遮罩进化](https://github.com/GSWXXN/RestoreSplashScreen)                      | [GSWXXN](https://github.com/GSWXXN)             |
-| [Color OS Installer Plus](https://github.com/NextAlone/ColorOSInstallerPlus)       | [NextAlone](https://github.com/NextAlone)       |
-| [Auto NFC](https://github.com/GSWXXN/AutoNFC)                                      | [GSWXXN](https://github.com/GSWXXN)             |
-| [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                        | [WankkoRee](https://github.com/WankkoRee)       |
-| [QDReadHook](https://github.com/xihan123/QDReadHook)                               | [xihan123](https://github.com/xihan123)         |
-| [HXReadHook](https://github.com/xihan123/HXReadHook)                               | [xihan123](https://github.com/xihan123)         |
-| [WxRecordRead](https://github.com/pwh-pwh/wxrecordread)                            | [Coderpwh](https://github.com/pwh-pwh)          |
-| [FuckShake](https://github.com/pwh-pwh/fuck_shake)                                 | [Coderpwh](https://github.com/pwh-pwh)          |
-| [MIUI更新进化](https://miup.utssg.xyz)                                             | [ZQDesigned](https://github.com/ZQDesigned)     |
-| [MIUI录屏进化](https://www.coolapk.com/apk/UTSSG.ZQDesigned.miuirecordercracker)   | [ZQDesigned](https://github.com/ZQDesigned)     |
-| [Fuck AD](https://github.com/hujiayucc/Fuck-AD)                                    | [hujiayucc](https://github.com/hujiayucc)       |
-| [最右强力去广告](https://github.com/kazutoiris/zuiyou-adfree)                      | [kazutoiris](https://github.com/kazutoiris)     |
-| [叮嗒出行强力去广告](https://github.com/kazutoiris/dingda-adfree)                  | [kazutoiris](https://github.com/kazutoiris)     |
-| [无限幻境](https://github.com/kazutoiris/infinite-illusion)                        | [kazutoiris](https://github.com/kazutoiris)     |
-| [HookGG](https://github.com/HdShare/HookGG)                                        | [HdShare](https://github.com/HdShare)           |
-| [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)              | [wizpizz](https://github.com/wizpizz)           |
-| [词幕](https://github.com/proify/lyricon)                                          | [Tomakino](https://github.com/proify)           |
-| [Bilibili_Innocent_Lab](https://github.com/jichuo1/Bilibili_Innocent_Lab)          | [jichuo1](https://github.com/jichuo1)           |
-| [LuckyTool](https://github.com/luckyzyx/LuckyTool)                                 | [luckyzyx](https://github.com/luckyzyx)         |
-
-你也在使用 YukiHook 吗？快来 **PR** 将你的存储仓库添加到上方的列表 (私有仓库可以不需要注明网页链接)。
+你可以前往 [这里](https://highcapable.github.io/YukiHook/zh-cn/about/adopters) 来查看目前正在使用 YukiHook 的项目。
 
 ## 更多项目
 
@@ -96,8 +114,10 @@
 
 ## 第三方开源使用声明
 
-- [Kotlin Symbol Processing API](https://github.com/google/ksp)
-- [FreeReflection](https://github.com/tiann/FreeReflection)
+- [KavaRef](https://github.com/HighCapable/KavaRef)
+- [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass)
+- [Xposed Framework API](https://api.xposed.info)
+- [libxposed API](https://github.com/libxposed)
 
 ## 许可证
 

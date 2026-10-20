@@ -4,13 +4,14 @@
 
 Join our developers group.
 
-- [Click to join Telegram group](https://t.me/YukiHookAPI)
+- [Click to join Telegram group](https://t.me/YukiHook)
 - [Click to join Telegram group (Developer)](https://t.me/HighCapable_Dev)
+- [Click to join Telegram channel](https://t.me/YukiHook_Channel)
 
 Find me on **Twitter** [@fankesyooni](https://twitter.com/fankesyooni).
 
 ## Help with Maintenance
 
-Thank you for choosing and using YukiHookAPI.
+Thank you for choosing and using YukiHook.
 
 If you have code-related suggestions and requests, you can submit a Pull Request on GitHub.

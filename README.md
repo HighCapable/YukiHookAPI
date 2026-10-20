@@ -1,12 +1,12 @@
 # Yuki Hook
 
-[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHook?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHook/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/HighCapable/YukiHook?display_name=release&logo=github&color=green&style=flat-square)](https://github.com/HighCapable/YukiHook/releases)
-[![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHookAPI)
+[![GitHub license](https://img.shields.io/github/license/HighCapable/YukiHook?color=blue&style=flat-square)](https://github.com/HighCapable/YukiHook/blob/1.x/LICENSE)
+[![Telegram](https://img.shields.io/badge/discussion-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHook)
 [![Telegram](https://img.shields.io/badge/discussion%20dev-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/HighCapable_Dev)
+[![Telegram](https://img.shields.io/badge/channel-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/YukiHook_Channel)
 [![QQ](https://img.shields.io/badge/discussion%20dev-QQ-blue.svg?logo=tencent-qq&logoColor=red&style=flat-square)](https://qm.qq.com/cgi-bin/qm/qr?k=Pnsc5RY6N2mBKFjOLPiYldbAbprAU3V7&jump_from=webapi&authKey=X5EsOVzLXt1dRunge8ryTxDRrh9/IiW1Pua75eDLh9RE3KXE+bwXIYF5cWri/9lf)
 
-<img src="img-src/icon.png" width = "100" height = "100" alt="LOGO"/>
+<img src="img-src/icon.svg" width = "100" height = "100" alt="LOGO"/>
 
 A modern hook API and Xposed module solution.
 
@@ -19,74 +19,88 @@ This project belongs to the organization above. **Click the link to follow us** 
 
 ## What's this
 
-This is an efficient Hook API rebuilt based on the Xposed API using Kotlin,
-and creates rich function extensions for the development of Xposed Modules.
+This project was originally created to provide a standard and well-defined hook API to replace `XposedHelpers`, which was defined by Rovo89 on Android
+and is no longer very modern.
+Now, it aims to be a hook API and to bring a unified development experience to Xposed modules, no matter which underlying hook solution you are using.
 
-The name is taken
-from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016).
+The project icon is redrawn by [MaiTungTM](https://github.com/Lagrio) and the name is taken from Yuki Kurihara, the heroine of the
+anime [「ももくり」](https://momokuri-anime.jp), and it was formerly the Innocent Xposed API
+used in [this project](https://github.com/fankes/TMore).
 
-Formerly the Innocent Xposed API used
-in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced.
+**YukiHook** has been renamed from **YukiHookAPI** with a modern rewrite of its underlying implementation, and it will continue to evolve and be
+maintained as a general hook API and Xposed module solution for Android.
 
-## Get Started
+## Why YukiHook?
 
-[Click here](https://highcapable.github.io/YukiHook/en/) go to the documentation page for more
-detailed tutorials and content.
+Previously, when developing an Xposed module, we first had to create an `xposed_init` file under `assets`, then fill in our entry class name manually
+and use `XposedHelpers` to implement our hook logic.
+Since Kotlin became the main language for Android development, this API is no longer very modern to use.
 
-For supportive related information, you can check it
-directly [click here](https://highcapable.github.io/YukiHook/en/guide/supportive).
+Is there a **useful, lightweight and modern** solution? With this idea in mind, YukiHook was born. Now, we only need to write one set of hook code,
+and YukiHook takes care of the entry files and module configuration for different base modules.
+
+With Kotlin's modern DSL syntax and the syntactic sugar provided by YukiHook, your hook logic can be cleaner and clearer.
+
+> The following example
+
+```kotlin
+object HookEntry : YukiHookXposedModule {
+
+    override fun onHook() = encase {
+        loadApp("io.github.myapp") {
+            // Use Java native reflection to get.
+            val onCreate = Activity::class.java.getDeclaredMethod(
+                "onCreate", Bundle::class.java
+            )
+            // Use KavaRef to get.
+            val onCreate = Activity::class.resolve().firstMethod {
+                name = "onCreate"
+                parameters(Bundle::class)
+            }
+
+            onCreate.hook {
+                before {
+                    // Your code here.
+                }
+                after {
+                    // Your code here.
+                }
+            }
+        }
+    }
+}
+```
 
 | <img src="https://github.com/HighCapable/KavaRef/blob/main/img-src/icon.svg?raw=true" width = "30" height = "30" alt="LOGO"/> | [KavaRef](https://github.com/HighCapable/KavaRef) |
 |-------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 
-🚀 YukiHook is using KavaRef as a powerful driver for the reflection API.
-**Click on the link above star project**, and you can also use it gracefully!
+🚀 Not a fan of the native Java reflection API? YukiHook now uses KavaRef as a modern reflection API. **Click the link above to get started**.
 
-## Explore New Version
+## Get Started
 
-The `2.x` version is being refactored, you can switch to the `2.x` branch below to view the current
-development progress.
-
-| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook 2.x](https://github.com/HighCapable/YukiHook/tree/2.x) |
+| <img src="img-src/icon.png" width = "30" height = "30" alt="LOGO"/> | [YukiHook Documentation](https://highcapable.github.io/YukiHook/en) |
 |---------------------------------------------------------------------|---------------------------------------------------------------------|
+
+You can go to the documentation page for more detailed tutorials and content.
+
+### What's next?
+
+1. **Add dependencies**: Add `yukihook-core`, `yukihook-compiler` and one base module to your project.
+2. **Create the entry class**: Implement `YukiHookXposedModule` and add the entry annotation that matches your base module.
+3. **Build the project**: The entry class and configuration files of the module are generated at compile time, and you can start hooking.
+
+In the opened page, select the **Quick Start** section in the sidebar to continue reading.
+
+Migrating from other Hook APIs? Please read [Migration to YukiHook](https://highcapable.github.io/YukiHook/en/config/migration).
+
+## Exploring New Version
+
+YukiHook `2.x` is being rebuilt on the `2.x` branch, you can click [here](https://github.com/HighCapable/YukiHook/tree/2.x) to follow its development
+progress.
 
 ## Adopters
 
-The following are projects that using YukiHook.
-
-| Repository                                                                         | Developer                                       |
-|------------------------------------------------------------------------------------|-------------------------------------------------|
-| [TSBattery](https://github.com/fankes/TSBattery)                                   | [fankesyooni](https://github.com/fankes)        |
-| [MIUI 原生通知图标](https://github.com/fankes/MIUINativeNotifyIcon)                | [fankesyooni](https://github.com/fankes)        |
-| [ColorOS 通知图标增强](https://github.com/fankes/ColorOSNotifyIcon)                | [fankesyooni](https://github.com/fankes)        |
-| [自由屏幕旋转](https://github.com/Xposed-Modules-Repo/com.fankes.forcerotate)      | [fankesyooni](https://github.com/fankes)        |
-| [拒绝强制亮度](https://github.com/Xposed-Modules-Repo/com.fankes.refusebrightness) | [fankesyooni](https://github.com/fankes)        |
-| [AppErrorsTracking](https://github.com/KitsunePie/AppErrorsTracking)               | [fankesyooni](https://github.com/fankes)        |
-| [Enable WebView Debugging](https://github.com/WankkoRee/EnableWebViewDebugging)    | [WankkoRee](https://github.com/WankkoRee)       |
-| [Fuck MIUI Gesture](https://github.com/HCGStudio/FuckMIUIGesture)                  | [mahoshojoHCG](https://github.com/mahoshojoHCG) |
-| [MIUI遮罩进化](https://github.com/GSWXXN/RestoreSplashScreen)                      | [GSWXXN](https://github.com/GSWXXN)             |
-| [Color OS Installer Plus](https://github.com/NextAlone/ColorOSInstallerPlus)       | [NextAlone](https://github.com/NextAlone)       |
-| [Auto NFC](https://github.com/GSWXXN/AutoNFC)                                      | [GSWXXN](https://github.com/GSWXXN)             |
-| [不要竖屏](https://github.com/WankkoRee/Portrait2Landscape)                        | [WankkoRee](https://github.com/WankkoRee)       |
-| [QDReadHook](https://github.com/xihan123/QDReadHook)                               | [xihan123](https://github.com/xihan123)         |
-| [HXReadHook](https://github.com/xihan123/HXReadHook)                               | [xihan123](https://github.com/xihan123)         |
-| [WxRecordRead](https://github.com/pwh-pwh/wxrecordread)                            | [Coderpwh](https://github.com/pwh-pwh)          |
-| [FuckShake](https://github.com/pwh-pwh/fuck_shake)                                 | [Coderpwh](https://github.com/pwh-pwh)          |
-| [MIUI更新进化](https://miup.utssg.xyz)                                             | [ZQDesigned](https://github.com/ZQDesigned)     |
-| [MIUI录屏进化](https://www.coolapk.com/apk/UTSSG.ZQDesigned.miuirecordercracker)   | [ZQDesigned](https://github.com/ZQDesigned)     |
-| [Fuck AD](https://github.com/hujiayucc/Fuck-AD)                                    | [hujiayucc](https://github.com/hujiayucc)       |
-| [Zuiyou ADFree](https://github.com/kazutoiris/zuiyou-adfree)                       | [kazutoiris](https://github.com/kazutoiris)     |
-| [Dingda ADFree](https://github.com/kazutoiris/dingda-adfree)                       | [kazutoiris](https://github.com/kazutoiris)     |
-| [Infinite Illusion](https://github.com/kazutoiris/infinite-illusion)               | [kazutoiris](https://github.com/kazutoiris)     |
-| [HookGG](https://github.com/HdShare/HookGG)                                        | [HdShare](https://github.com/HdShare)           |
-| [OnePlusPlusLauncher](https://github.com/wizpizz/OnePlusPlusLauncher)              | [wizpizz](https://github.com/wizpizz)           |
-| [Lyricon](https://github.com/proify/lyricon)                                       | [Tomakino](https://github.com/proify)           |
-| [Bilibili_Innocent_Lab](https://github.com/jichuo1/Bilibili_Innocent_Lab)          | [jichuo1](https://github.com/jichuo1)           |
-| [LuckyTool](https://github.com/luckyzyx/LuckyTool)                                 | [luckyzyx](https://github.com/luckyzyx)         |
-
-Are you also using YukiHook? Come and **PR** to add your repository to the list above (private
-repositories do not need to indicate web
-links).
+You can go to [here](https://highcapable.github.io/YukiHook/en/about/adopters) to see the projects that are currently using YukiHook.
 
 ## More Projects
 
@@ -104,8 +118,10 @@ links).
 
 ## Third-Party Open Source Usage Statement
 
-- [Kotlin Symbol Processing API](https://github.com/google/ksp)
-- [FreeReflection](https://github.com/tiann/FreeReflection)
+- [KavaRef](https://github.com/HighCapable/KavaRef)
+- [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass)
+- [Xposed Framework API](https://api.xposed.info)
+- [libxposed API](https://github.com/libxposed)
 
 ## License
 

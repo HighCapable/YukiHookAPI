@@ -31,6 +31,7 @@ body:not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchFullWidth):not(.VPNolebaseE
 }
 
 @media (min-width: 1280px) {
+
     // VitePress's scoped 688px rule ties Nólëbase's selector specificity and otherwise wins by order.
     body.VPNolebaseEnhancedReadabilitiesLayoutSwitchBothWidthAdjustable .VPDoc.has-aside div.content-container {
         max-width: var(--vp-nolebase-enhanced-readabilities-content-max-width);
@@ -45,7 +46,7 @@ body:not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchFullWidth):not(.VPNolebaseE
 }
 
 // VitePress only defines heading margins through h4, so adjacent h5/h6 anchors collapse after its reset.
-.vp-doc :is(h1, h2, h3, h4, h5, h6) + :is(h5, h6) {
+.vp-doc :is(h1, h2, h3, h4, h5, h6)+ :is(h5, h6) {
     margin-top: 16px;
 }
 
@@ -65,7 +66,7 @@ body:not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchFullWidth):not(.VPNolebaseE
     }
 }
 
-.VPDoc .content-container:has(.vp-nolebase-git-changelog-history-container) > .VPDocFooter {
+.VPDoc .content-container:has(.vp-nolebase-git-changelog-history-container)>.VPDocFooter {
     margin-top: 24px;
 }
 
@@ -75,7 +76,7 @@ body:not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchFullWidth):not(.VPNolebaseE
     flex-wrap: nowrap;
     overflow-x: auto;
 
-    > img {
+    >img {
         flex: 0 0 auto;
     }
 }
@@ -113,7 +114,7 @@ body:not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchFullWidth):not(.VPNolebaseE
 
     // VPHomeContent's 1280px box includes 64px padding on each side. Narrow the outer box by the
     // same margin as the 1152px feature container so the Markdown and feature-card edges align.
-    .VPHome > .vp-doc.container {
+    .VPHome>.vp-doc.container {
         width: calc(100% - var(--home-side-margin) - var(--home-side-margin));
         max-width: calc(1280px - var(--home-side-margin) - var(--home-side-margin));
     }
@@ -139,7 +140,7 @@ body:not(.VPNolebaseEnhancedReadabilitiesLayoutSwitchFullWidth):not(.VPNolebaseE
 }
 
 // VitePress's generic -8px adjacent-code offset cancels the custom block's own 8px spacing.
-.vp-doc .custom-block div[class*='language-'] + div[class*='language-'] {
+.vp-doc .custom-block div[class*='language-']+div[class*='language-'] {
     margin-top: 8px;
 }
 
@@ -296,4 +297,91 @@ html.dark .VPSidebar.is-scrolling {
     --sidebar-scrollbar-track-color: rgb(41, 46, 53);
     --sidebar-scrollbar-thumb-color: rgb(65, 72, 83);
     --sidebar-scrollbar-thumb-hover-color: rgb(56, 62, 72);
+}
+
+.lint-rules-table {
+    table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    th,
+    td {
+        vertical-align: middle;
+    }
+
+    th {
+        white-space: nowrap;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+        width: 38%;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+        width: 13%;
+        text-align: center;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+        width: 10%;
+        text-align: center;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+        width: 11%;
+        text-align: center;
+    }
+
+    th:nth-child(5),
+    td:nth-child(5) {
+        width: 28%;
+    }
+
+    td:nth-child(1) {
+        white-space: nowrap;
+    }
+
+    td:nth-child(5) {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+}
+
+.base-modules-table {
+    th {
+        white-space: nowrap;
+    }
+}
+
+// Long qualified names in inline code are allowed to wrap, so the table fits the content width without scrolling.
+.migration-table {
+    th {
+        white-space: nowrap;
+    }
+
+    td code {
+        overflow-wrap: anywhere;
+    }
+}
+
+// Side-by-side code blocks with equal heights, the shorter block keeps blank space at the bottom.
+.code-columns {
+    display: flex;
+    gap: 16px;
+
+    >div {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    div[class*='language-'] {
+        flex: 1;
+    }
 }

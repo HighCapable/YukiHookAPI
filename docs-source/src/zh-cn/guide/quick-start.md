@@ -1,6 +1,6 @@
 # 快速开始
 
-> 集成 `YukiHookAPI` 到你的项目中。
+> 集成 `YukiHook` 到你的项目中。
 
 ## 项目要求
 
@@ -10,283 +10,93 @@
 
 - IntelliJ IDEA (建议从 [这里](https://www.jetbrains.com/idea) 获取最新版本)
 
-- Kotlin 1.9.0+、Gradle 8+、Java 11、17+、Android Gradle Plugin 8+
+- Kotlin 1.9.0+、Gradle 8+、Java 17+、Android Gradle Plugin 8+
 
-## 自动构建项目
+### 配置存储库
 
-YukiHookAPI 提供了一个自动化构建工具，它可以帮助你快速构建一个拥有 Xposed 模块依赖的 Android 标准项目模板，使用构建好的模板即可直接开始下一步工作。
-
-你可以 [点击这里](../tools/yukihook-projectbuilder) 进行查看。
-
-## 手动配置项目
-
-若你不想使用自动化构建工具，你依然可以按照以下方式手动配置项目依赖。
-
-### 创建项目
-
-使用 `Android Studio` 或 `IntelliJ IDEA` 创建新的 Android 项目，并在 `Language` 一栏选择 Kotlin 以自动添加基础依赖。
-
-### 集成依赖
+YukiHook 的依赖发布在 **Maven Central** 和我们的公共存储库中，你可以使用如下方式配置存储库。
 
 我们推荐使用 Kotlin DSL 作为 Gradle 构建脚本语言。
 
-#### Version Catalog (推荐)
-
-在你的项目 `build.gradle.kts` 中添加存储库。
-
-> Kotlin DSL
+在你的项目 `build.gradle.kts` 中配置存储库。
 
 ```kotlin
 repositories {
     google()
     mavenCentral()
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    maven("https://api.xposed.info/")
+    // (可选) 你可以添加此 URL 以使用我们的公共存储库
+    // 当 Sonatype-OSS 发生故障无法发布依赖时，此存储库作为备选进行添加
+    // 详情请前往：https://github.com/HighCapable/maven-repository
+    // 中国大陆用户请将下方的 "raw.githubusercontent.com" 修改为 "raw.gitmirror.com"
+    maven("https://raw.githubusercontent.com/HighCapable/maven-repository/main/repository/releases")
+    // (可选) 如果你使用 yukihook-runtime-xposed82，你需要添加此 URL 以获取 Xposed Framework API
+    maven("https://api.xposed.info/") {
+        content {
+            includeGroup("de.robv.android.xposed")
+        }
+    }
 }
 ```
 
-在你的项目 `gradle/libs.versions.toml` 中添加依赖。
-
-> 示例如下
-
-```toml
-[versions]
-yukihookapi = "<yuki-version>"
-ksp = "<ksp-version>"
-kavaref-core = "<kavaref-version>"
-kavaref-extension = "<kavaref-version>"
-
-[plugins]
-# 作为 Xposed 模块使用务必添加，其它情况可选
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
-[libraries]
-yukihookapi-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yukihookapi" }
-# 作为 Xposed 模块使用务必添加，其它情况可选
-yukihookapi-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yukihookapi" }
-# YukiHookAPI 1.3.0 版本后使用 KavaRef 作为核心反射 API
-# YukiHookAPI 不再绑定自身的反射 API，你可以开始尝试使用 KavaRef
-kavaref-core = { module = "com.highcapable.kavaref:kavaref-core", version.ref = "kavaref-core" }
-kavaref-extension = { module = "com.highcapable.kavaref:kavaref-extension", version.ref = "kavaref-extension" }
-# 作为 Xposed 模块使用务必添加，其它情况可选
-xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
-```
-
-接下来，在你的项目 `build.gradle.kts` 中部署插件。
-
-> Kotlin DSL
-
-```kotlin
-plugins {
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    alias(libs.plugins.ksp)
-}
-```
-
-然后，在你的项目 `build.gradle.kts` 中部署依赖。
-
-> Kotlin DSL
-
-```kotlin
-dependencies {
-    // 基础依赖
-    implementation(libs.yukihookapi.api)
-    // 推荐使用 KavaRef 作为核心反射 API
-    implementation(libs.kavaref.core)
-    implementation(libs.kavaref.extension)
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    compileOnly(libs.xposed.api)
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    ksp(libs.yukihookapi.ksp.xposed)
-}
-```
-
-#### 传统方式
-
-在你的项目 `build.gradle.kts` 中添加存储库。
-
-> Kotlin DSL
-
-```kotlin
-repositories {
-    google()
-    mavenCentral()
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    maven("https://api.xposed.info/")
-}
-```
-
-在你的项目 `build.gradle.kts` 中添加插件。
-
-> Kotlin DSL
-
-```kotlin
-plugins {
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    id("com.google.devtools.ksp") version "<ksp-version>"
-}
-```
-
-在你的项目 `build.gradle.kts` 中添加依赖。
-
-> Kotlin DSL
-
-```kotlin
-dependencies {
-    // 基础依赖
-    implementation("com.highcapable.yukihookapi:api:<yuki-version>")
-    // 推荐使用 KavaRef 作为核心反射 API
-    implementation("com.highcapable.kavaref:kavaref-core:<kavaref-version>")
-    implementation("com.highcapable.kavaref:kavaref-extension:<kavaref-version>")
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    compileOnly("de.robv.android.xposed:api:82")
-    // 作为 Xposed 模块使用务必添加，其它情况可选
-    ksp("com.highcapable.yukihookapi:ksp-xposed:<yuki-version>")
-}
-```
-
-请将 **&lt;ksp-version&gt;** 修改为 [这里](https://github.com/google/ksp/releases) 的最新版本 **(请注意选择你当前对应的 Kotlin 版本)**。
-
-请将 **&lt;yuki-version&gt;** 修改为 [这里](../about/changelog) 的最新版本。
-
-请将 **&lt;kavaref-version&gt;** 修改为 [这里](https://highcapable.github.io/KavaRef/zh-cn/about/changelog) 的最新版本。
-
-::: danger
-
-**YukiHookAPI** 的 **api** 与 **ksp-xposed** 依赖的版本必须一一对应，否则将会造成版本不匹配错误。
-
-:::
-
-#### 配置 Java 版本
+### 配置 Java 版本
 
 在你的项目 `build.gradle.kts` 中修改 Kotlin 的 Java 版本为 17 及以上。
 
-> Kotlin DSL
-
-```kt
+```kotlin
 android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 ```
 
-::: warning
+## 功能一览
 
-自 API **1.0.80** 版本后 Kotlin 使用的 Java 版本默认为 11，不再支持 1.8 及以下版本。
+整个项目分为多个模块，你可以选择你希望引入的模块作为依赖应用到你的项目中，但一定要包含 **yukihook-core**、**yukihook-compiler** 和一个底座模块。
 
-自 API **1.2.0** 版本后 Kotlin 使用的 Java 版本默认为 17，不再支持 11 及以下版本。
+你可以点击下方对应的模块前往查看详细的功能介绍。
 
-:::
+::: tip 版本说明
 
-### 作为 Xposed 模块使用
+从 `1.5.0` 起，YukiHook 开始拆分为多个模块并采用统一版本进行发布，通常情况下你只需要关注同一个主版本即可，你也可以直接参考下方的 [yukihook-bom](../library/yukihook-bom.md) 使用 BOM 统一管理依赖版本。
 
-在你的 `AndroidManifest.xml` 中添加基础代码。
-
-> 示例如下
-
-```xml
-<!-- 设置为 Xposed 模块 -->
-<meta-data
-    android:name="xposedmodule"
-    android:value="true" />
-
-<!-- 设置你的模块描述 -->
-<meta-data
-    android:name="xposeddescription"
-    android:value="填写你的 Xposed 模块描述" />
-
-<!-- 最低 Xposed 版本号，若你正在使用 EdXposed/LSPosed，建议最低为 93 -->
-<meta-data
-    android:name="xposedminversion"
-    android:value="93" />
-
-<!-- 可选：配置支持 New XSharedPreferences 可无需调整 xposedminversion 为 93 -->
-<meta-data
-    android:name="xposedsharedprefs"
-    android:value="true"/>
-```
-
-在你的项目中创建一个 Hook 入口类，继承于 `IYukiHookXposedInit` 并加入注解 `@InjectYukiHookWithXposed`。
-
-> 示例如下
-
-```kotlin
-@InjectYukiHookWithXposed
-object HookEntry : IYukiHookXposedInit {
-
-    override fun onHook() = YukiHookAPI.encase {
-        // Your code here.
-    }
-}
-```
-
-::: tip 建议
-
-请在 **onInit** 方法中配置 **YukiHookAPI** 并将 **isDebug** 模式设置为如下形式。
-
-> 示例如下
-
-```kotlin
-override fun onInit() = configs {
-    isDebug = BuildConfig.DEBUG
-}
-```
-
-你还可以将你的模块 APP 的 **Application** 继承于 **ModuleApplication** 以实现完整使用体验。
-
-更多功能请参考 [ModuleApplication](kdoc://yukihook-core/yukihook-core/com.highcapable.yukihookapi.hook.xposed.application/-module-application)。
+详情请见 [更新日志](../about/changelog.md)。
 
 :::
 
-然后，你就可以开始编写 Hook 代码了。
+- [yukihook-bom](../library/yukihook-bom.md)
+- [yukihook-core](../library/yukihook-core.md)
+- [yukihook-compiler](../library/yukihook-compiler.md)
+- [yukihook-extension-kavaref](../library/yukihook-extension-kavaref.md)
+- [yukihook-runtime-libxposed](../library/yukihook-runtime-libxposed.md)
+- [yukihook-runtime-xposed82](../library/yukihook-runtime-xposed82.md)
 
-有关作为 Xposed 模块使用的相关配置详细内容，你可以 [点击这里](../config/xposed-using) 继续阅读。
+### 选择底座模块
 
-若你目前正在使用 Rovo89 Xposed API 等 Hook API，你可以参考 [从其它 Hook API 迁移](../guide/move-to-new-api)。
+底座模块决定了你的 Xposed 模块使用的 Xposed API，一个构建变体中**只能存在一个**底座模块。
 
-### 作为 Hook API 使用
+<div class="base-modules-table">
 
-#### 集成方式
+| 底座模块                                                               | Xposed API                                      | 版本  | Min SDK | 适用场景                                   |
+| ---------------------------------------------------------------------- | ----------------------------------------------- | :---: | :-----: | ------------------------------------------ |
+| [yukihook-runtime-libxposed](../library/yukihook-runtime-libxposed.md) | [libxposed API](https://github.com/libxposed)   | 101+  |   26    | 支持 libxposed API 的新版 Xposed 框架      |
+| [yukihook-runtime-xposed82](../library/yukihook-runtime-xposed82.md)   | [Xposed Framework API](https://api.xposed.info) |  82   |   21    | 需要兼容仅支持 Xposed Framework API 的框架 |
 
-创建你的自定义 `Application`。
+</div>
 
-::: danger
+## Demo
 
-无论使用任何 **Hook Framework**，你都需要加入其对接的 Xposed 依赖支持。
+你可以在 [这里](repo://tree/1.x/samples) 找到一些示例，查看对应的演示项目来更好地了解这些功能的运作方式，快速地挑选出你需要的功能。
 
-若目标 **Hook Framework** 没有集成 Rovo89 Xposed API 你需要自行实现并对接 **XposedBridge**。
+- `demo-app`：宿主 Demo
+- `demo-module-modern`：使用 `yukihook-runtime-libxposed` 的模块 Demo
+- `demo-module-legacy`：使用 `yukihook-runtime-xposed82` 的模块 Demo
 
-:::
-
-在 `attachBaseContext` 中添加 `YukiHookAPI.encase` 方法。
-
-> 示例如下
-
-```kotlin
-override fun attachBaseContext(base: Context?) {
-    // 装载 Hook Framework
-    //
-    // Your code here.
-    //
-    // 装载 YukiHookAPI
-    YukiHookAPI.encase(base) {
-        // Your code here.
-    }
-    super.attachBaseContext(base)
-}
-```
-
-然后，你就可以开始编写 Hook 代码了，方式与作为 Xposed 模块使用基本一致。
-
-有关作为 Hook API 使用的相关配置详细内容，你可以 [点击这里](../config/api-using) 继续阅读。
-
-::: warning
-
-使用自定义的 Hook Framework 而并非完整的 Xposed 模块时，**YukiHookPrefsBridge**、**YukiHookDataChannel** 以及 Resources Hook 功能将失效。
-
-:::
+同时安装宿主与模块 Demo，通过激活模块来测试宿主中被 Hook 的功能。

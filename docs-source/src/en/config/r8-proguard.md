@@ -1,27 +1,5 @@
-# R8 & Proguard Obfuscate
+# R8 & ProGuard Obfuscation
 
-> In most scenarios, the Xposed Module can be compressed by native obfuscation.
->
-> Here is the configuration method of obfuscation.
+> In most scenarios, Android application installation packages can reduce size through obfuscation. Here is a configuration method for obfuscation rules.
 
-## R8
-
-> If you are using `R8` then you don't need any special configuration for `YukiHookAPI`.
-
-## Proguard
-
-> ~~If you are still using `Proguard`, you need to do some rule configuration.~~
-
-::: danger
-
-Proguard rules have been deprecated, please don't use them anymore.
-
-Since Android Gradle Plugin 4.2, the obfuscator with the latest version of the Android Jetpack default is **R8**, and you no longer need to consider obfuscation.
-
-:::
-
-To enable `R8` in any version, please add the following rules to the `gradle.properties` file, no configuration is required for Android Gradle Plugin 7.0 and above.
-
-```groovy
-android.enableR8=true
-```
+The generated entry class is kept with the `androidx.annotation.Keep` annotation and the built-in rules of the framework, so you do not need any special configuration for YukiHook under R8.

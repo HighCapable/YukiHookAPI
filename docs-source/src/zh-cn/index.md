@@ -4,7 +4,7 @@ hero:
   name: Yuki Hook
   tagline: 一个现代化的 Hook API 与 Xposed 模块解决方案
   image:
-    src: /images/logo.png
+    src: /images/logo.svg
     alt: Yuki Hook
   actions:
     - text: 立即开始
@@ -16,16 +16,16 @@ hero:
 features:
   - icon: 🧩
     title: Xposed 模块开发
-    details: 自动构建程序可以帮你快速创建一个 Xposed 模块，完全省去配置入口类和 xposed_init 等文件。
+    details: 编译器会集中处理不同底座 Xposed 模块的入口类与配置文件，只需一个入口即可完成所有配置。
   - icon: 🪶
     title: 轻量优雅
-    details: 拥有一套强大、优雅、人性化、完全使用 Kotlin lambda 打造的 API，可以帮你快速实现方法 Hook 以及更多便捷功能。
+    details: 配置简单，开箱即用，使用 Kotlin DSL 打造 Hook 流程链路，你的代码即是你的业务逻辑，所见即所得。
   - icon: 🐞
     title: 高效调试
-    details: 拥有丰富的调试日志功能，细到每个 Hook 方法的名称、所在类以及查找耗时，可进行快速调试和排错。
+    details: 拥有丰富的调试日志和异常处理功能，细到每个 Hook 方法的名称及异常类型，可进行快速调试和排错。
   - icon: 🔄
-    title: 方便移植
-    details: 原生支持多种 Xposed API 用法，并原生对接多种 Xposed API，支持范围内的 Hook Frameworks 都能进行快速对接。
+    title: 全面兼容
+    details: 同一套 Hook 代码可以运行在经典的 Xposed 82 以及 libxposed 101+，核心功能只需切换底座模块即可无损迁移。
   - icon: 🛡️
     title: 支持混淆
     details: 构建的 Xposed 模块原生支持 R8 压缩优化混淆，混淆不会破坏 Hook 入口点，R8 下无需任何其它配置。
@@ -36,18 +36,39 @@ features:
 
 ### 所有 Hook 流程一步到位，拒绝繁琐
 
+<div class="code-columns">
+
+<div>
+
 ```kotlin
-loadApp(name = "com.android.browser") {
-    Activity::class.resolve().firstMethod {
-        name = "onCreate"
-        parameters(Bundle::class)
-    }.hook {
-        before {
-          // Your code here.
-        }
-        after {
-          // Your code here.
-        }
+loadApp("io.github.myapp") {
+    val demoClass = Demo::class.java
+    val setGreeting = demoClass.getDeclaredMethod(
+        "setGreeting", String::class.java
+    )
+
+    setGreeting.intercept {
+        proceed(arrayOf("Hello, Yuki Hook!"))
     }
 }
 ```
+
+</div>
+
+<div>
+
+```kotlin
+loadApp("io.github.myapp") {
+    val demoClass = Demo::class.java
+    val setGreeting = demoClass.getDeclaredMethod(
+        "setGreeting", String::class.java
+    )
+
+    setGreeting.hook().before {
+        firstArg().set("Hello, Yuki Hook!")
+    }
+}
+```
+
+</div>
+</div>

@@ -1,10 +1,10 @@
 # Changelog
 
-> The version update history of `YukiHookAPI` is recorded here.
+> The version update history of `YukiHook` is recorded here.
 
 ::: danger
 
-We will only maintain the latest API version, if you are using an outdate API version, you voluntarily renounce any possibility of maintenance.
+We will only maintain the latest API version, if you are using an outdated API version, you voluntarily renounce any possibility of maintenance.
 
 :::
 
@@ -14,37 +14,107 @@ Time zone of version release date: **UTC+8**
 
 :::
 
-### 1.3.2 | 2026.05.30 &ensp;<Badge type="latest" text="latest" vertical="middle" />
+### 1.5.0 | 2026.10.xx &ensp;<Badge type="latest" text="latest" vertical="middle" />
+
+- This is a major update, the project has been officially renamed to YukiHook and is now published as multiple modules, please refer to [Migration to YukiHook 1.5.x](../config/migration-1-5-x.md) for details
+- All modules are released with a unified version, and the `groupId` of the dependencies and the package name of the code are still `com.highcapable.yukihookapi`
+- Added [yukihook-bom](../library/yukihook-bom.md) for unified version management of all modules
+- Added the base modules [yukihook-runtime-libxposed](../library/yukihook-runtime-libxposed.md) and [yukihook-runtime-xposed82](../library/yukihook-runtime-xposed82.md) for [libxposed API](https://github.com/libxposed) and [Xposed Framework API](https://api.xposed.info), only one of them can be added to a build variant
+- Existing Xposed modules can keep running on their existing hook frameworks with [yukihook-runtime-xposed82](../library/yukihook-runtime-xposed82.md), its `AndroidManifest.xml` already declares `xposedmodule` and `xposedminversion`
+- [yukihook-runtime-libxposed](../library/yukihook-runtime-libxposed.md) supports remote `SharedPreferences`, shared files, the module scope and module hot reload
+- Added the extension module [yukihook-extension-kavaref](../library/yukihook-extension-kavaref.md) for using [KavaRef](https://github.com/HighCapable/KavaRef) related features in YukiHook, you need to add the KavaRef dependencies yourself
+
+#### yukihook-bom
+
+- The first version is submitted to Maven
+
+#### yukihook-core
+
+- <u>**⚠️ Breaking Change:**</u> Renamed the `api` dependency to [yukihook-core](../library/yukihook-core.md), it now needs [yukihook-compiler](../library/yukihook-compiler.md) and one base module to work
+- <u>**⚠️ Breaking Change:**</u> Removed Resources Hook, `resources().hook { ... }` is no longer available
+- <u>**⚠️ Breaking Change:**</u> Removed the own reflection API deprecated in version `1.3.0` and old hook styles such as `injectMember`, please migrate to [KavaRef](https://github.com/HighCapable/KavaRef) now
+- <u>**⚠️ Breaking Change:**</u> `onXposedEvent` and `YukiXposedEvent` are no longer called, please use `registerFrameworkEvents` provided by the base module now
+- <u>**⚠️ Breaking Change:**</u> `loadApp` now throws an exception when `android` or `system` is mixed into its multiple package names, please use `loadSystem` now
+- <u>**⚠️ Breaking Change:**</u> KavaRef related hook functions and `String.toClass`, `VariousClass.toClass` and `lazyClass` have been moved to [yukihook-extension-kavaref](../library/yukihook-extension-kavaref.md)
+- <u>**⚠️ Breaking Change:**</u> `AndroidHiddenApiBypassResolver` has been moved to [yukihook-extension-kavaref](../library/yukihook-extension-kavaref.md) and `AndroidHiddenApiBypassResolver.get()` has been removed, please create its instance directly now
+- <u>**⚠️ Breaking Change:**</u> Removed `ExecutorType`, `YukiHookAPI.Status.Executor.type` can no longer be used, please use `YukiHook.Status.Executor.name` to get the name of the hook framework now
+- <u>**⚠️ Breaking Change:**</u> `throwToHostOnFailure` now only applies to the callback it is set on, it no longer applies to both `before` and `after`
+- Deprecated ~~`YukiHookAPI`~~, please use `YukiHook` now
+- Deprecated ~~`@InjectYukiHookWithXposed`~~ and ~~`IYukiHookXposedInit`~~, please use the entry annotation of your base module and `YukiHookXposedModule` now
+- Deprecated ~~`YukiHookAPI.configs`~~, please use `YukiHook.configure` now, all config properties have also been renamed
+- Deprecated ~~`prefs`~~, ~~`YukiHookPrefsBridge`~~ and ~~`PrefsData`~~, please use `preferences`, `YukiHookPreferences` and `PreferenceData` now
+- Deprecated ~~`onAppLifecycle`~~, ~~`registerModuleAppActivities`~~ and ~~`injectModuleAppResources`~~, please use `registerAppLifecycle`, `registerModuleActivities` and `injectModuleResources` now
+- Deprecated ~~`loadZygote`~~ and ~~`YukiHook.encase(baseContext)`~~, they are now only available in [yukihook-runtime-xposed82](../library/yukihook-runtime-xposed82.md)
+- Deprecated many old functions in `HookParam` and hook callbacks, please use new functions such as `arg`, `firstArg`, `lastArg`, `intercept` and `throwToHost` now
+- Added chain hooks, you can use `intercept` and `HookChain` to continue the chain with `proceed`, when an exception occurs in the callback, the invocation continues as if this hook did not exist by default, and you can also use `throwToHostOnFailure` to throw the exception to the caller
+- `intercept` of classic hooks now returns `HookCallback`, you can use `throwToHostOnFailure` to throw exceptions to the host, and `throwToHost` now also takes effect in `intercept`
+- Added `Handle.replace` to replace registered callbacks without hooking again
+- Added hooking static initializers, deoptimizing, and calling functions such as `invokeSpecial`, `newInstanceOriginal` and `newInstanceSpecial`
+- Added `withApplicationReady` to run code when the `Application` of the host is available, it is called again after the module hot reloads
+- Added the `exported` parameter to `registerReceiver` in `AppLifecycle`, the receivers are unregistered and registered again automatically when the module hot reloads
+- Added `PackageParam.ModuleSpec` features such as `module.resources` and `module.sourceDir` to get information about the current module
+- Added `YukiHookSharedFiles` to share files between the module and hosts
+- Added `YukiHookModuleScope` to query and request the scope of the module in the module
+- Added module hot reload, together with `YukiHookModuleReload`, `registerModuleLifecycle` and `remember`
+- Added `YukiHook.Status.observeFrameworkService` and `YukiHook.Status.runtime`
+- Added a set of [Lint Rules](../config/lint-rules.md) to find wrong API calls at compile time
+- Fixed an issue where the original method ran twice when it threw an exception itself while being called after an exception occurred in the `intercept` callback
+- Fixed an issue where exceptions in `onInit` in the module process were not printed
+
+#### yukihook-compiler
+
+- <u>**⚠️ Breaking Change:**</u> Renamed the `ksp-xposed` dependency to [yukihook-compiler](../library/yukihook-compiler.md)
+- <u>**⚠️ Breaking Change:**</u> Removed the `sourcePath` parameter, entry and configuration files are now generated in the build directory for each build variant, and the build is rejected when these files exist in the source directory
+- Added processing of the `@YukiHookLibXposedEntry` and `@YukiHookXposed82Entry` entry annotations, and checks whether the entry annotation matches the base module
+- Added generating `java_init.list`, `module.prop`, `scope.list` and `native_init.list` in `META-INF/xposed` for libxposed API
+
+#### yukihook-extension-kavaref
+
+- The first version is submitted to Maven
+
+#### yukihook-runtime-libxposed
+
+- The first version is submitted to Maven
+
+#### yukihook-runtime-xposed82
+
+- The first version is submitted to Maven
+
+## Historical Versions
+
+### api & ksp-xposed
+
+#### 1.3.2 | 2026.05.30 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Updated target SDK version to 37
 - Updated dependencies to resolve conflict issues with `BetterAndroid`
 - Adjusted API code style without actually changing function signatures
 
-### 1.3.1 | 2025.09.13 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+#### 1.3.1 | 2025.09.13 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Updated dependencies to resolve conflict issues with `BetterAndroid`
 - Fixed `Activity` proxy issues on Android 9 and below
 - Fixed an issue where return values were still checked when the Hook method return type was `Object`
 
-### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+#### 1.3.0 | 2025.06.25 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
-- This is a major update, please refer to [Migrate to YukiHookAPI 1.3.x](https://highcapable.github.io/YukiHook/en/config/move-to-api-1-3-x)
-- The reflection API of YukiHookAPI is deprecated, please move to the brand new [KavaRef](https://github.com/HighCapable/KavaRef)
+- This is a major update
+- The reflection API of YukiHook is deprecated, please move to the brand new [KavaRef](https://github.com/HighCapable/KavaRef)
 - The limitation of duplicate Hooks has been deprecated, now you can repeat the same method of the Hook
 - Deprecated ~~`ModuleAppActivity`~~, ~~`ModuleAppCompatActivity`~~, please use `ModuleActivity` to create your own proxy `Activity`
 - `YLog` is now allowed to pass `msg` into any object and will be automatically converted to a string for printing
 - `FreeReflection` has been deprecated and has now switched to [AndroidHiddenApiBypass](https://github.com/LSPosed/AndroidHiddenApiBypass)
 
-### 1.2.1 | 2024.06.20 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+#### 1.2.1 | 2024.06.20 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - Catch exceptions in singleton Hooker to prevent it from blocking the entire process
 - Add automatic use of "`" in the automatic handler to fix the situation where Kotlin keywords are package names, thanks to [Fengning Zhu](https://github.com/zhufengning) for [PR](https://github.com/HighCapable/YukiHook/pull/70)
 - Adapt to Kotlin 2.0.0+, fix the problem that it cannot be compiled during automatic processing, thanks to [xihan123](https://github.com/xihan123) for [PR](https://github.com/HighCapable/YukiHook/pull/76)
 
-### 1.2.0 | 2023.10.07 &ensp;<Badge type="warning" text="stale" vertical="middle" />
+#### 1.2.0 | 2023.10.07 &ensp;<Badge type="warning" text="stale" vertical="middle" />
 
 - The license agreement has been changed from `MIT` to `Apache-2.0`, subsequent versions will be distributed under this license agreement, you should change the relevant license agreement after using this version
-- This is a breaking update, please refer to [Migrate to YukiHookAPI 1.2.x](https://highcapable.github.io/YukiHook/en/config/move-to-api-1-2-x) for details
+- This is a breaking update
 - Adapted to Android 14, thanks to [BlueCat300](https://github.com/BlueCat300) for [PR](https://github.com/HighCapable/YukiHook/pull/44)
 - Fixed `findAllInterfaces` related issues, thanks to [buffcow](https://github.com/buffcow) for [PR](https://github.com/HighCapable/YukiHook/pull/38)
 - Fixed the delayed callback problem in the Hook process, thanks to [cesaryuan](https://github.com/cesaryuan) for his [Issue](https://github.com/HighCapable/YukiHook/issues/47)
@@ -75,7 +145,7 @@ Time zone of version release date: **UTC+8**
 - `constructor()` no longer behaves like `constructor { emptyParam() }`
 - Added `lazyClass` and `lazyClassOrNull` methods to lazily load `Class`
 
-### 1.1.11 | 2023.04.25 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.11 | 2023.04.25 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed a critical issue since `1.1.5` version where the `Member` cache did not take effect and persistent storage eventually caused app out of memory (OOM), thanks to [Art-Chen](https://github.com/Art-Chen)
 - Remove the direct cache function of `Member` and deprecated ~~`YukiReflection.Configs.isEnableMemberCache`~~, keep the cache function of `Class`
@@ -84,7 +154,7 @@ Time zone of version release date: **UTC+8**
 - Deprecated ~~`YukiHookAPI.Configs.isEnablePrefsBridgeCache`~~
 - Deprecated ~~`direct`~~, ~~`clearCache`~~ functions in `YukiHookPrefsBridge`
 
-### 1.1.10 | 2023.04.21 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.10 | 2023.04.21 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - The `Activity` proxy function adds the function of specifying a separate proxy `Activity` for each proxied `Activity`
 - Fixed problem that the `contains` and `all` methods in `YukiHookPrefsBridge` did not judge the `native` function
@@ -93,7 +163,7 @@ Time zone of version release date: **UTC+8**
 - Modify part of `HashMap` used for caching to `ArrayMap` to reduce memory consumption
 - Fix some other possible problems
 
-### 1.1.9 | 2023.04.17 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.9 | 2023.04.17 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Change the type of dependent library from **Java Library** (jar) to **Android Library** (aar)
 - Remove the inspection function of internal methods and parameters through Hook or reflection API
@@ -113,10 +183,10 @@ Time zone of version release date: **UTC+8**
 - Modify the proxy class of the `Activity` proxy function to be dynamically generated to prevent conflicts caused by injecting different modules into the host
 - Fixed some other possible problems
 
-### 1.1.8 | 2023.02.01 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.8 | 2023.02.01 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the problem that the underlying Hook method cannot update the modified state synchronously when modifying parameters such as `result` during callback, thanks to the [Issue](https://github.com/HighCapable/YukiHook/issues/23) of [Yongzheng Lai](https://github.com/elvizlai)
-- Move the entry class name file automatically generated by YukiHookAPI from `assets/yukihookapi_init` to `resources/META-INF/yukihookapi_init`
+- Move the entry class name file automatically generated by YukiHook from `assets/yukihookapi_init` to `resources/META-INF/yukihookapi_init`
 - When only printing the exception stack, the `msg` parameter is allowed to be empty and the `msg` parameter can not be set, and the log with the `msg` parameter left blank will not be logged unless the exception stack is not empty
 - Fixed the bug that the log printed by the exception that occurs in the body of the Hook callback method has no specific method information
 - `HookParam` adds `instanceOrNull` variable and method, which can be used on the premise that the Hook instance is not sure whether it is empty to prevent the Hook instance from being empty and throw an exception
@@ -127,7 +197,7 @@ Time zone of version release date: **UTC+8**
 - Fixed the problem that there may be multiple registration lifecycles in `PackageParam.AppLifecycle`
 - Revert: The 1.1.7 version has been withdrawn due to a serious problem, please update to this version directly (the update log is the same as version 1.1.7)
 
-### 1.1.6 | 2023.01.21 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.6 | 2023.01.21 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the serious problem that `ClassLoader` does not match after `PackageParam` keeps a single instance when there may be multiple package names in the same process when Xposed Module is loaded
 - When the package name is not distinguished when there are multiple package names in the same process, stop loading the singleton child Hooker and print a warning message
@@ -135,7 +205,7 @@ Time zone of version release date: **UTC+8**
 - Modify the method parameter name `param` of reflection calls in `MethodFinder`, `ConstructorFinder`, `ReflectionFactory` to `args`
 - Added the function of judging the parameters of the entry class constructor in the automatic processing program of the Xposed Module, the entry class needs to ensure that it does not have any constructor parameters
 
-### 1.1.5 | 2023.01.13 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.5 | 2023.01.13 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Standardize and optimize the overall code style
 - Privatized some APIs called internally
@@ -177,7 +247,7 @@ Time zone of version release date: **UTC+8**
 - Fixed the problem that the debug log data package name processed by `YukiHookLogger` may be incorrect in the (Xposed) Host environment
 - Fixed the problem that the package name may be incorrect on some systems (in some system apps) when the Xposed Module loads the Resource Hook event
 
-### 1.1.4 | 2022.10.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.4 | 2022.10.04 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the issue that `YukiHookDataChannel` may not respond to broadcast events in the system framework, reproduced in A13
 - Fixed the issue that `YukiHookDataChannel` could not communicate with Module App in Host App for multiple versions
@@ -187,14 +257,14 @@ Time zone of version release date: **UTC+8**
 - Added `loadApp`, `loadZygote`, `loadSystem`, `withProcess` multi-parameter methods of the same name in `PackageParam`
 - Fixed some possible bugs
 
-### 1.1.3 | 2022.09.30 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.3 | 2022.09.30 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed a fatal bug where the Hook entry class name could not be customized
 - Added some code notes in `LoggerFactory` and updated special features documentation
 
-### 1.1.2 | 2022.09.30 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.2 | 2022.09.30 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
-- Documentation [Basic Knowledge](../guide/knowledge) page add a friend link to the English version
+- Documentation Basic Knowledge page add a friend link to the English version
 - Fixed `YukiBaseHooker` comments in English code note link errors
 - Fixed `ClassCastException` in `ModuleClassLoader`
 - Fixed and standardize some code notes
@@ -202,18 +272,18 @@ Time zone of version release date: **UTC+8**
 - Added `YukiLoggerData` real-time log data class, you can get the log array in real time through `YukiHookLogger.inMemoryData`
 - Added `ClassLoader.listOfClasses` method, which can directly get all `Class` in the current `Dex`
 
-### 1.1.1 | 2022.09.28 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.1 | 2022.09.28 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
-- Fixed the problem of wrong document friend links in [Basic Knowledge](../guide/knowledge) page
+- Fixed the problem of wrong document friend links in Basic Knowledge page
 - Fixed document `favicon` not showing up
 - Fixed bug in `DexClassFinder` search conditions
 
-### 1.1.0 | 2022.09.28 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.1.0 | 2022.09.28 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
-- This is a major version update, please refer to [KDoc](kdoc://yukihook-core) and [Special Features](../special-features/reflection) for the changes and usage mentioned in the changelog
+- This is a major version update, please refer to [KDoc](kdoc://yukihook-core) for the changes and usage mentioned in the changelog
 - Change the help documentation framework to [VuePress](https://v2.vuepress.vuejs.org)
 - Unify and standardize the terms and nouns in the document, for example, "query" is always changed to "find", `XposedHelper` is misspelled and changed to `XposedHelpers`
-- Documentation [Basic Knowledge](../guide/knowledge) page to add friend links, Simplified Chinese only
+- Documentation Basic Knowledge page to add friend links, Simplified Chinese only
 - Convert `Class` and `Method` of Hook App Demo to Java to provide better demo effect
 - Fixed code comment naming in Hook Module Demo
 - Refactored a lot of low-level Hook logic and the docking method of Xposed API
@@ -277,19 +347,19 @@ Time zone of version release date: **UTC+8**
 - Modify the exception handling logic of `AppLifecycle` and throw it directly to the host when an exception occurs
 - Updated Demo API version to 33
 
-### 1.0.92 | 2022.05.31 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.92 | 2022.05.31 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the naming method of callback in a large number of methods
 - Changed the solution to fix the problem that `YukiHookDataChannel` cannot call back the current `Activity` broadcast on devices lower than **Android 12**
 - The `InjectYukiHookWithXposed` annotation adds the `isUsingResourcesHook` function, now you can selectively disable the dependency interface that automatically generates `IXposedHookInitPackageResources`
 
-### 1.0.91 | 2022.05.29 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.91 | 2022.05.29 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the `ClassLoader` error when the customized system of some devices is booted in the LSPosed environment, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
 - Fixed `YukiHookDataChannel` not being able to call back the current `Activity` broadcast on **ZUI** and systems below **Android 12**
 - Integrate the `YukiHookModuleStatus` function into `YukiHookAPI.Status`, rewrite a lot of methods, now you can judge the status information such as module activation in the module and the host in both directions
 
-### 1.0.90 | 2022.05.27 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.90 | 2022.05.27 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed `YukiHookDataChannel` crashing when the module sets the listener callback
 - Fixed `YukiHookDataChannel` still calling back when not in current `Activity`
@@ -297,7 +367,7 @@ Time zone of version release date: **UTC+8**
 - Removed `YukiHookModulePrefs` warning printed if XShare is unreadable
 - Added the `isXSharePrefsReadable` method in `YukiHookModulePrefs` to determine whether the current XShare is available
 
-### 1.0.89 | 2022.05.26 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.89 | 2022.05.26 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the problem that `YukiHookDataChannel` cannot be repeatedly set to monitor, and added the function of repeating response in different `Activity` modules and automatically following `Activity` to destroy the monitor function
 - Added `YukiHookDataChannel` repeated listening use case description document
@@ -305,7 +375,7 @@ Time zone of version release date: **UTC+8**
 - Modify part of the logic of repeatedly adding HashMap, remove the `putIfAbsent` method, allow to override the addition
 - Fixed several possible bugs
 
-### 1.0.88 | 2022.05.25 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.88 | 2022.05.25 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fully decoupled from Xposed API
 - Added `android` type in `type`
@@ -324,38 +394,38 @@ Time zone of version release date: **UTC+8**
 - `YukiHookDataChannel` adds the `checkingVersionEquals` method, which can be monitored to verify that the host has not updated the version mismatch problem after the module is updated
 - Added Java version example in the example code of `demo-module` for reference only
 
-### 1.0.87 | 2022.05.10 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.87 | 2022.05.10 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Added `refreshModuleAppResources` function to adapt Resources refresh when the language region, font size, resolution changes, etc.
 - Added `isEnableModuleAppResourcesCache` function, you can set whether to automatically cache the resources of the current module
 
-### 1.0.86 | 2022.05.06 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.86 | 2022.05.06 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the problem of continuous error reporting during `initZygote` when Resources Hook is not supported, reproduced in **ZUI**/**LSPosed CI(1.8.3-6550)**
 - Optimize and handle exceptions for Resources Hook, only print errors and warnings if they are used and not supported
 
-### 1.0.85 | 2022.05.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.85 | 2022.05.04 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed a serious problem of not being able to hook the system framework, since `1.0.80`
 - Added in the debug log to distinguish the package name loaded by `initZygote` as `android-zygote`, `packageName` keeps `android` unchanged
 
-### 1.0.83 | 2022.05.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.83 | 2022.05.04 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed `YukiHookModuleStatus` reporting a lot of errors after `loadSystem`
 - Added `android` type in `type`
 - Updated example descriptions in help documentation
 
-### 1.0.82 | 2022.05.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.82 | 2022.05.04 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed a concept confusion error, distinguishing the relationship between `initZygote` and the system framework, there are problems with the previous comments and documentation, I am very sorry
 - `PackageParam` adds `loadSystem` method, no need to write `loadApp(name = "android")` to hook the system framework
 
-### 1.0.81 | 2022.05.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.81 | 2022.05.04 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the problem that the method and constructor that cannot be found in the Hook method body still output the error log after setting the condition using the `by` method
 - Added a global log to display the package name of the current Hook APP during the execution of the Hook, and fixed a problem with the printing style of the error log
 
-### 1.0.80 | 2022.05.01 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.80 | 2022.05.01 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - The `InjectYukiHookWithXposed` annotation adds the `entryClassName` function, which can customize the generated `xposed_init` entry class name
 - ~~`YukiHookXposedInitProxy`~~ renamed to `IYukiHookXposedInit`, the original interface name has been invalidated and will be deleted directly in subsequent versions
@@ -373,7 +443,7 @@ Time zone of version release date: **UTC+8**
 - Added `isSupportResourcesHook` function to determine whether resource hooks are currently supported (Resources Hook)
 - `current` function adds `superClass` method to call superclass
 - New `superClass` query conditions for search methods, construction methods and variables, you can continue to search in the parent class
-- YukiHookAPI lots of methods are decoupled from Xposed API
+- YukiHook lots of methods are decoupled from Xposed API
 - Added native Hook priority function of Xposed API
 - Fixed the problem that `isFirstApplication` may be inaccurate
 - Block the problem that MiuiCatcherPatch repeatedly calls the Hook entry method on the MIUI system
@@ -383,7 +453,7 @@ Time zone of version release date: **UTC+8**
 - Java `type` added `ClassLoader` type
 - Optimize the API help documentation, fix the problem that the page may be continuously cached
 
-### 1.0.78 | 2022.04.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.78 | 2022.04.18 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - `YukiHookModulePrefs` adds `isRunInNewXShareMode` method, which can be used to determine whether the module is currently in `New XSharePreference` mode
 - Fixed `YukiHookModulePrefs` working in `New XSharePreference` mode
@@ -392,7 +462,7 @@ Time zone of version release date: **UTC+8**
 - Update autohandlers and Kotlin dependencies to the latest version
 - Fixed some bugs in documentation and code comments
 
-### 1.0.77 | 2022.04.15 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.77 | 2022.04.15 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - `YukiHookModulePrefs` added `clear` method, thanks to [WankkoRee](https://github.com/WankkoRee) for the suggestion
 - `YukiHookModulePrefs` added `getStringSet`, `putStringSet`, `all` methods
@@ -401,7 +471,7 @@ Time zone of version release date: **UTC+8**
 - Connect all `findClass` functions to the Xposed API, and continue to use native `ClassLoader` in non-hosted environments
 - Fixed some possible bugs
 
-### 1.0.75 | 2022.04.13 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.75 | 2022.04.13 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Corrected the logic recognition part of the automatic handler, thanks to [ApeaSuperz](https://github.com/ApeaSuperz) contribution
 - Fixed an issue where the reference to a doc comment was not changed
@@ -411,23 +481,23 @@ Time zone of version release date: **UTC+8**
 - The `emptyParam` condition is added to the method and constructor query function, and the misunderstanding of the query condition that needs to be paid attention to in the document has been improved
 - Added `android` type in `type`
 
-### 1.0.73 | 2022.04.10 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.73 | 2022.04.10 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed some Chinese translation errors in documents, thanks to [WankkoRee](https://github.com/WankkoRee) for their contributions
 - Fixed the problem that `XC_LoadPackage.LoadPackageParam` throws an exception when the content is empty in some cases, thanks to [Luckyzyx](https://github.com/luckyzyx) for the feedback
 - Fixed some known bugs and improve Hook stability
 
-### 1.0.72 | 2022.04.09 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.72 | 2022.04.09 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Update API documentation to new address
 - Add `appContext` function to `PackageParam`
 - Fixed some known bugs and improve Hook stability
 
-### 1.0.71 | 2022.04.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.71 | 2022.04.04 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed a serious issue that would stop the Hook from throwing an exception when VariousClass could not be matched
 
-### 1.0.70 | 2022.04.04 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.70 | 2022.04.04 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed `instanceClass` reporting an error after being called in a static instance
 - Add `isUseAppClassLoader` function in Hook process, thanks to [WankkoRee](https://github.com/WankkoRee) for feedback
@@ -443,13 +513,13 @@ Time zone of version release date: **UTC+8**
 - Add a new `current` function, which can build a reflection method operation space for any class, and easily call and modify the methods and variables in it
 - Fixed a lot of bugs in the hook process, thanks to [WankkoRee](https://github.com/WankkoRee) for contributing to this project
 
-### 1.0.69 | 2022.03.30 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.69 | 2022.03.30 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Added and improved annotations for some method functions
 - Added more example Hook content in Demo
 - Fixed the issue that only the last one takes effect when `allMethods` is used multiple times in a Hook instance, thanks to [WankkoRee](https://github.com/WankkoRee) for the feedback
 
-### 1.0.68 | 2022.03.29 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.68 | 2022.03.29 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Added new use case and LSPosed scope in Demo
 - Added `Member` lookup cache and lookup cache configuration switches
@@ -458,7 +528,7 @@ Time zone of version release date: **UTC+8**
 - Overall performance and stability improvements
 - Fixed bugs that may exist in the previous version
 
-### 1.0.67 | 2022.03.27 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.67 | 2022.03.27 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Added three `modifiers` functions in `Finder`, which can filter `static`, `native`, `public`, `abstract` and many other description types
 - When searching for methods and constructors, the method parameter type can be blurred to a specified number for searching
@@ -468,13 +538,13 @@ Time zone of version release date: **UTC+8**
 - Completely refactored method, constructor and variable lookup scheme
 - Optimized code comments and fixed possible bugs
 
-### 1.0.66 | 2022.03.25 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.66 | 2022.03.25 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed a serious bug in `MethodFinder`
 - Added `args` call method in `hookParam`
 - Fixed other possible problems and fix some class annotation problems
 
-### 1.0.65 | 2022.03.25 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.65 | 2022.03.25 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Republished version to fix the incorrect new version of the Maven repository due to cache issues
 - Added `MethodFinder` and `FieldFinder` new return value calling methods
@@ -482,7 +552,7 @@ Time zone of version release date: **UTC+8**
 - Fixed possible problems with auto-generated Xposed entry classes
 - Added `android` type and Java type in `type`
 
-### 1.0.6 | 2022.03.20 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.6 | 2022.03.20 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed `YukiHookModulePrefs` being ignored every time after using `direct` once to ignore cache
 - Added new API, abolished the traditional usage of `isActive` to judge module activation
@@ -493,49 +563,49 @@ Time zone of version release date: **UTC+8**
 - The welcome message will no longer be printed when loading the module's own Hook
 - Fixed some bugs that still exist in the previous version
 
-### 1.0.55 | 2022.03.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.55 | 2022.03.18 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed an annotation error
 - Temporarily fix a bug
 - Added a large number of `android` types in `type` and a small number of Java types
 - Fixed compatibility issues between new and old Kotlin APIs
 
-### 1.0.5 | 2022.03.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.5 | 2022.03.18 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the problem that the welcome message was printed multiple times in the case of the old version of the LSPosed framework
-- Added `onInit` method to configure YukiHookAPI
+- Added `onInit` method to configure YukiHook
 - Added `executorName` and `executorVersion` to get the name and version number of the current hook framework
 - Added `by` method to set the timing and condition of Hook
 - `YukiHookModulePrefs` adds a controllable key-value cache, which can dynamically update data when the host is running
 - Fixed some possible bugs
 
-### 1.0.4 | 2022.03.06 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.4 | 2022.03.06 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed LSPosed cannot find `XposedBridge` after enabling "Only module classloader can use Xposed API" option in latest version
-- Added constant version name and version number for YukiHookAPI
+- Added constant version name and version number for YukiHook
 - Added `hasField` method and `isAllowPrintingLogs` configuration parameter
 - Added `isDebug` to enable the API to automatically print the welcome message to test whether the module is valid
 
-### 1.0.3 | 2022.03.02 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.3 | 2022.03.02 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed a potential exception not intercepted BUG
 - Added `ignoredError` function
 - Added `android` type in `type`
 - Added `ClassNotFound` function after listening to `hook`
 
-### 1.0.2 | 2022.02.18 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.2 | 2022.02.18 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - Fixed the problem that the project path cannot be found under Windows
 - Remove part of reflection API, merge into `BaseFinder` for integration
 - Add a method to create Hook directly using string
 
-### 1.0.1 | 2022.02.15 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0.1 | 2022.02.15 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - `RemedyPlan` adds `onFind` function
 - Integrate and modify some reflection API code
 - Added Java type in `type`
 - Fixed the issue that ignored errors still output in the console
 
-### 1.0 | 2022.02.14 &ensp;<Badge type="danger" text="outdate" vertical="middle" />
+#### 1.0 | 2022.02.14 &ensp;<Badge type="danger" text="outdated" vertical="middle" />
 
 - The first version is submitted to Maven

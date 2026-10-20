@@ -4,7 +4,7 @@
 
 ## License
 
-[Apache-2.0](https://github.com/HighCapable/YukiHook/blob/master/LICENSE)
+[Apache-2.0](https://github.com/HighCapable/YukiHook/blob/1.x/LICENSE)
 
 ```text:no-line-numbers
 Apache License Version 2.0

@@ -1,75 +1,48 @@
 # Introduction
 
-> `YukiHookAPI` is an integrated Hook API Framework, which does not provide any Hook functions, and needs the support of Xposed related basic APIs.
+> `YukiHook` is a modern hook API and Xposed module solution. It does not provide any hook functionality itself and requires the support of related base hook APIs.
 
 ## Background
 
-This is an efficient Hook API rebuilt based on the Xposed API using Kotlin, and creates rich function extensions for the development of Xposed Modules.
+This project was originally created to provide a standard and well-defined hook API to replace `XposedHelpers`, which was defined by Rovo89 on Android and is no longer very modern.
+Now, it aims to be a hook API and to bring a unified development experience to Xposed modules, no matter which underlying hook solution you are using.
 
-The name is taken from ["ももくり" heroine Yuki Kurihara](https://www.bilibili.com/bangumi/play/ss5016).
+The project icon is redrawn by [MaiTungTM](https://github.com/Lagrio) and the name is taken from Yuki Kurihara, the heroine of the anime [「ももくり」](https://momokuri-anime.jp),
+and it was formerly the Innocent Xposed API used in [this project](https://github.com/fankes/TMore).
 
-Formerly the Innocent Xposed API used in [Development Learning Project](https://github.com/fankes/TMore), now renamed and open sourced.
+**YukiHook** has been renamed from **YukiHookAPI** with a modern rewrite of its underlying implementation, and it will continue to evolve and be maintained as a general hook API and Xposed module solution for Android.
 
-## Usage
+## Why YukiHook?
 
-YukiHookAPI is built entirely with Kotlin **lambda** syntax.
+Previously, when developing an Xposed module, we first had to create an `xposed_init` file under `assets`, then fill in our entry class name manually and use `XposedHelpers` to implement our hook logic.
+Since Kotlin became the main language for Android development, this API is no longer very modern to use.
 
-Abandoning the original less friendly `XposedHelpers`, you can use it to easily create Xposed Modules and easily implement custom Hook API.
+Is there a **useful, lightweight and modern** solution? With this idea in mind, YukiHook was born. Now, we only need to write one set of hook code,
+and YukiHook takes care of the entry files and module configuration for different base modules.
 
-## Language Requirement
-
-Please use Kotlin, the framework part of the code composition is also compatible with Java but the implementation of the basic Hook scene **may not work at all**.
-
-All demo code in this document will be described using Kotlin, if you don't know how to use Kotlin then you may not be able to use YukiHookAPI.
-
-## Source of Inspiration
-
-Previously, when we built an Xposed Module, we first needed to create an `xposed_init` file under `assets`.
-
-Then, manually fill in your own entry class name into the file and use `XposedHelpers` to implement our Hook logic.
-
-Since Kotlin is the main Android development language, this API is really not very elegant to use.
-
-Is there any **easy to use, light, elegant** solution?
-
-With this idea, YukiHookAPI was born.
-
-Now, we only need to write a small amount of code, and all the time and expense are handed over to automation.
-
-With Kotlin's elegant **lambda** writing and YukiHookAPI, you can make your Hook logic more beautiful and clear.
+With Kotlin's modern DSL syntax and the syntactic sugar provided by YukiHook, your hook logic can be cleaner and clearer.
 
 > The following example
 
 ::: code-group
 
-```kotlin [Yuki Hook API]
-@InjectYukiHookWithXposed
-object HookEntry : IYukiHookXposedInit {
+```kotlin [Use on libxposed]
+@YukiHookLibXposedEntry(targetApiVersion = 101)
+object HookEntry : YukiHookXposedModule {
 
     override fun onHook() = encase {
-        loadZygote {
-            Activity::class.resolve().firstMethod {
-                name = "onCreate"
-                parameters(Bundle::class)
-            }.hook {
+        loadApp("io.github.myapp") {
+            val activityClass = Activity::class.java
+            val onCreate = activityClass.getDeclaredMethod(
+                "onCreate", Bundle::class.java
+            )
+
+            onCreate.hook {
                 before {
-                  // Your code here.
+                    // Your code here.
                 }
                 after {
-                  // Your code here.
-                }
-            }
-        }
-        loadApp(name = "com.android.browser") {
-            Activity::class.resolve().firstMethod {
-                name = "onCreate"
-                parameters(Bundle::class)
-            }.hook {
-                before {
-                  // Your code here.
-                }
-                after {
-                  // Your code here.
+                    // Your code here.
                 }
             }
         }
@@ -77,57 +50,61 @@ object HookEntry : IYukiHookXposedInit {
 }
 ```
 
-```kotlin [Rovo89 Xposed API]
-class HookEntry : IXposedHookZygoteInit, IXposedHookLoadPackage {
+```kotlin [Use on Xposed 82]
+@YukiHookXposed82Entry
+object HookEntry : YukiHookXposedModule {
 
-    private lateinit var moduleResources: XModuleResources
+    override fun onHook() = encase {
+        loadApp("io.github.myapp") {
+            val activityClass = Activity::class.java
+            val onCreate = activityClass.getDeclaredMethod(
+                "onCreate", Bundle::class.java
+            )
 
-    override fun initZygote(sparam: IXposedHookZygoteInit.StartupParam) {
-        moduleResources = XModuleResources.createInstance(sparam.modulePath, null)
-        XposedHelpers.findAndHookMethod(
-                Activity::class.java.name,
-                null, "onCreate",
-                Bundle::class.java,
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam?) {
-                        // Your code here.
-                    }
-
-                    override fun afterHookedMethod(param: MethodHookParam?) {
-                        // Your code here.
-                    }
-                })
-    }
-
-    override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
-        if (lpparam.packageName == "com.android.browser")
-            XposedHelpers.findAndHookMethod(
-                Activity::class.java.name,
-                lpparam.classLoader, "onCreate",
-                Bundle::class.java,
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam?) {
-                        // Your code here.
-                    }
-
-                    override fun afterHookedMethod(param: MethodHookParam?) {
-                        // Your code here.
-                    }
-                })
+            onCreate.hook {
+                before {
+                    // Your code here.
+                }
+                after {
+                    // Your code here.
+                }
+            }
+        }
     }
 }
 ```
 
 :::
 
-Yes, you read that right, just needing these codes can completely replace the traditional Xposed API to achieve the same function.
+## Usage
 
-Now, with the help of the efficient and powerful YukiHookAPI, you can implement a very simple Xposed Module.
+YukiHook is currently built entirely with Kotlin DSL syntax, and in the later 2.x versions, we will further support mixed development with Kotlin and Java.
 
-::: tip
+Meanwhile, we are working on a complete refactor for [version 2.x](../about/future.md#_2-x-milestone), and 1.x will then enter the LTS (Long-Term Support) stage.
 
-Starting with version `1.3.0`, YukiHookAPI has migrated its own reflection API part to [KavaRef](https://github.com/HighCapable/KavaRef) (including the reflection API part demonstrated above).
+For Xposed module developers, you can now use it to easily create Xposed modules on the supported [base modules](../guide/quick-start.md#choose-a-base-module).
 
-Now, you can make the YukiHookAPI more easy to use with the powerful reflection ability of KavaRef.
+We also recommend [KavaRef](https://github.com/HighCapable/KavaRef) as a modern reflection API, and YukiHook provides native [extension support](../library/yukihook-extension-kavaref) for it.
 
-:::
+If you are using another Xposed module solution or hook API, you can refer to [here](../config/migration) to migrate to YukiHook.
+
+## Skill Requirements
+
+Before you start, you should have the following knowledge to make better use of YukiHook.
+
+- Understand Android development and how the system works at a basic level
+- Understand the internal structure of an Android APK and basic decompilation, see [Jadx](https://github.com/skylot/jadx) and [ApkTool](https://github.com/iBotPeaches/Apktool)
+- Be proficient with Java reflection, know basic Smali syntax and the DEX file structure, and be able to locate methods with reverse analysis
+- Understand how Xposed works
+- Know Kotlin and be able to use Kotlin DSL flexibly
+
+## Language Requirement
+
+Please use Kotlin. Parts of the API are also compatible with Java, but basic hook scenarios **may not work at all** in Java.
+
+All the demo code in the documentation is written in Kotlin. If you don't know Kotlin at all, you may not be able to use YukiHook.
+
+## Contribution
+
+The maintenance of this project is inseparable from the support and contributions of all developers. If possible,
+feel free to submit a PR to contribute features you think are needed to this project or go to [GitHub Issues](repo://issues) to make suggestions to us.

@@ -4,7 +4,7 @@ hero:
   name: Yuki Hook
   tagline: A modern hook API and Xposed module solution
   image:
-    src: /images/logo.png
+    src: /images/logo.svg
     alt: Yuki Hook
   actions:
     - text: Get Started
@@ -16,38 +16,59 @@ hero:
 features:
   - icon: 🧩
     title: Xposed Module Develop
-    details: The automatic builder can help you quickly create an Xposed Module, automatic configure the entry class and xposed_init files.
+    details: The compiler handles the entry classes and configuration files of Xposed modules for every base module in one place, a single entry is all you need to finish the configuration.
   - icon: 🪶
     title: Light and Elegant
-    details: A powerful, elegant, beautiful API built with Kotlin lambda can help you quickly implement method Hook and more convenient functions.
+    details: Simple to configure and ready to use, with a Kotlin DSL that builds the hook flow as a chain, your code is your business logic, what you see is what you get.
   - icon: 🐞
     title: Debugging Efficient
-    details: A rich debug log function, detailing the name of each hooked method, time-consuming to find the class can quickly debug and find errors.
+    details: Rich debug logs and exception handling, down to the name and exception type of each hooked method, help you debug and find errors quickly.
   - icon: 🔄
-    title: Easy to Transplant
-    details: Natively supports multiple Xposed API usages and natively connects to multiple Xposed APIs, Hook Frameworks within the supported range can be quickly integrated.
+    title: Fully Compatible
+    details: The same hook code runs on both the classic Xposed 82 and libxposed 101+, and the core features migrate without loss by switching the base module.
   - icon: 🛡️
     title: Obfuscate Support
-    details: The built Xposed Module simply supports R8, obfuscate will not destroy the hook entry point, and no other configuration is required under R8.
+    details: The built Xposed module simply supports R8, obfuscate will not destroy the hook entry point, and no other configuration is required under R8.
   - icon: ⚡
     title: Quick to Start
-    details: Simple and easy to use it now! Do not need complex configuration and full development experience, Integrate dependencies and enjoy yourself.
+    details: Simple and easy to use it now. Do not need complex configuration and full development experience, Integrate dependencies and enjoy yourself.
 ---
 
 ### All Hook process in one step, everything is simplified
 
+<div class="code-columns">
+
+<div>
+
 ```kotlin
-loadApp(name = "com.android.browser") {
-    Activity::class.resolve().firstMethod {
-        name = "onCreate"
-        parameters(Bundle::class)
-    }.hook {
-        before {
-          // Your code here.
-        }
-        after {
-          // Your code here.
-        }
+loadApp("io.github.myapp") {
+    val demoClass = Demo::class.java
+    val setGreeting = demoClass.getDeclaredMethod(
+        "setGreeting", String::class.java
+    )
+
+    setGreeting.intercept {
+        proceed(arrayOf("Hello, Yuki Hook!"))
     }
 }
 ```
+
+</div>
+
+<div>
+
+```kotlin
+loadApp("io.github.myapp") {
+    val demoClass = Demo::class.java
+    val setGreeting = demoClass.getDeclaredMethod(
+        "setGreeting", String::class.java
+    )
+
+    setGreeting.hook().before {
+        firstArg().set("Hello, Yuki Hook!")
+    }
+}
+```
+
+</div>
+</div>

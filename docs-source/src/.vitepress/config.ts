@@ -6,8 +6,6 @@ import { defineConfig, type DefaultTheme, type UserConfigFn } from 'vitepress';
 import { alignI18nAnchors } from './configs/anchors';
 import {
     createHomepageAlternates,
-    createLegacyRouteRedirect,
-    createLegacyRouteRedirectPlugin,
     createRootLocaleRedirect
 } from './configs/i18n';
 import { configs, pageLinkRefs } from './configs/template';
@@ -41,7 +39,6 @@ const createConfig: UserConfigFn<DefaultTheme.Config> = ({ command }) => defineC
             port: configs.dev.port
         },
         plugins: [
-            createLegacyRouteRedirectPlugin(),
             GitChangelog({
                 repoURL: () => configs.github.repo
             }),
@@ -65,8 +62,7 @@ const createConfig: UserConfigFn<DefaultTheme.Config> = ({ command }) => defineC
     },
     head: [
         ['meta', { name: 'color-scheme', content: 'light dark' }],
-        ['link', { rel: 'icon', href: configs.website.icon }],
-        createLegacyRouteRedirect()
+        ['link', { rel: 'icon', href: configs.website.icon }]
     ],
     transformHead: ({ page }) => [
         ...createHomepageAlternates(page),
