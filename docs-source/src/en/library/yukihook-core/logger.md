@@ -29,7 +29,7 @@ override fun onInit() = configure {
         // When enabled, all available logs and exception stacks are recorded in memory.
         recording = false
         // Customize the elements displayed in debug logs.
-        elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+        elements(TAG, PRIORITY, PROCESS_NAME, USER_ID)
     }
 }
 ```
@@ -63,7 +63,7 @@ The printed result is as follows.
 > The following example
 
 ```text:no-line-numbers
-[YukiHook][D][host package name] This is a log
+[YukiHook][D][process name] This is a log
 ```
 
 You can also use `YLog.EnvType` to customize where the log is printed.
@@ -107,7 +107,7 @@ The printed result is as follows.
 > The following example
 
 ```text:no-line-numbers
-[YukiHook][E][host package name] This is an error
+[YukiHook][E][process name] This is an error
 ```
 
 The log also prints the whole exception stack for you.

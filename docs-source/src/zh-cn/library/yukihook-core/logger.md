@@ -28,7 +28,7 @@ override fun onInit() = configure {
         // 开启后将会在内存中记录全部可用的日志和异常堆栈
         recording = false
         // 自定义调试日志对外显示的元素
-        elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+        elements(TAG, PRIORITY, PROCESS_NAME, USER_ID)
     }
 }
 ```
@@ -62,7 +62,7 @@ YLog.debug("This is a log", tag = "YukiHook")
 > 示例如下
 
 ```text:no-line-numbers
-[YukiHook][D][宿主包名] This is a log
+[YukiHook][D][进程名] This is a log
 ```
 
 你还可以使用 `YLog.EnvType` 自定义日志打印的环境。
@@ -106,7 +106,7 @@ YLog.error("This is an error", e = throwable)
 > 示例如下
 
 ```text:no-line-numbers
-[YukiHook][E][宿主包名] This is an error
+[YukiHook][E][进程名] This is an error
 ```
 
 同时，日志会帮你打印整个异常堆栈。
