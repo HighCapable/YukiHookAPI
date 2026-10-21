@@ -36,7 +36,7 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
 
     companion object {
 
-        private var instance: ModuleClassLoader? = null
+        private val instance by lazy { ModuleClassLoader() }
 
         /** Host [Class] names that must bypass the module-first lookup. */
         @Volatile
@@ -53,7 +53,7 @@ class ModuleClassLoader private constructor() : ClassLoader(AppParasitism.baseCl
          * Gets the [ModuleClassLoader] singleton.
          * @return [ModuleClassLoader]
          */
-        internal fun get() = instance ?: ModuleClassLoader().apply { instance = this }
+        internal fun get() = instance
 
         /**
          * Adds classes to the host exclusion list.
