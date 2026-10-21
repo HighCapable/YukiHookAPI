@@ -73,6 +73,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 import com.highcapable.yukihookapi.runtime.bridge.hooker.ClassicHookerBridge
 import com.highcapable.yukihookapi.runtime.state.ModuleStateSpec
 import java.lang.ref.WeakReference
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 /**
@@ -347,8 +348,10 @@ internal object AppParasitism : ModuleReloadable {
                 runPendingApplicationCallbacks(application)
             } else {
                 installApplicationOnCreateHook()
-                if (!isApplicationOnCreateInstalled) pendingApplicationCallbacks -= callback
-                else if (pendingHostBindings == null) {
+                if (!isApplicationOnCreateInstalled) {
+                    pendingApplicationCallbacks -= callback
+                    YLog.innerE("An Application ready callback is dropped because the Application onCreate hook is unavailable")
+                } else if (pendingHostBindings == null) {
                     currentApplication?.takeIf { it.packageName == lifecyclePackageName }?.let {
                         hostApplication = it
                         runPendingApplicationCallbacks(it)
@@ -498,6 +501,7 @@ internal object AppParasitism : ModuleReloadable {
         return pendingLifecycles.dispatchAppLifecycle {
             if (dispatchCreate) onCreate(application)
 
+            val lifecycle = this
             val actionFilters = receiverActions.map { (actions, exported, callback) ->
                 Triple(IntentFilter().apply { actions.forEach { action -> addAction(action) } }, exported, callback)
             }
@@ -506,7 +510,10 @@ internal object AppParasitism : ModuleReloadable {
                 // for non-system broadcasts, so RECEIVER_NOT_EXPORTED must be passed explicitly here.
                 val flags = if (exported) null else ContextCompat.RECEIVER_NOT_EXPORTED
                 application.registerReceiver(filter, flags, exported) { context, intent ->
-                    events.dispatch { callback(context, intent) }
+                    events.dispatch {
+                        // Follow the same failure policy as the other lifecycle callbacks of this registration.
+                        listOf(lifecycle).dispatchAppLifecycle { callback(context, intent) }?.let { throw it }
+                    }
                 }.also { synchronized(lifecycleReceivers) { lifecycleReceivers += application to it } }
             }
         }
@@ -639,7 +646,10 @@ internal object AppParasitism : ModuleReloadable {
             it isSubclassOf Activity::class && it isSubclassOf ModuleActivity::class
         }
 
-        fun Class<*>.declaredProxyClassName(): String? {
+        // The declared proxy is fixed for each `Activity` class, resolve it once instead of on every launch.
+        val declaredProxyClassNames = ConcurrentHashMap<Class<*>, String>()
+
+        fun Class<*>.resolveDeclaredProxyClassName(): String? {
             val declared = runCatching { createInstanceAsType<ModuleActivity>().proxyClassName }.getOrElse {
                 YLog.innerW("Failed to read the proxy Activity declared by \"$name\", the default proxy is used instead", it)
                 return null
@@ -651,6 +661,9 @@ internal object AppParasitism : ModuleReloadable {
             YLog.innerW("The proxy Activity \"$declared\" declared by \"$name\" was not found in the host, the default proxy is used instead")
             return null
         }
+
+        fun Class<*>.declaredProxyClassName() =
+            declaredProxyClassNames.getOrPut(this) { resolveDeclaredProxyClassName().orEmpty() }.ifEmpty { null }
 
         fun Intent.wrap(): Intent {
             val component = this.component ?: return this
