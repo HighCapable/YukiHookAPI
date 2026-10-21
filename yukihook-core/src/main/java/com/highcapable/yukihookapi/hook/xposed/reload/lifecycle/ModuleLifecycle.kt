@@ -24,12 +24,9 @@
 package com.highcapable.yukihookapi.hook.xposed.reload.lifecycle
 
 import android.os.Bundle
-import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.XposedModuleRuntime
 import com.highcapable.yukihookapi.hook.xposed.bridge.session.ModuleLifecycleManager
-import com.highcapable.yukihookapi.runtime.YukiHookBridge
-import com.highcapable.yukihookapi.runtime.YukiHookRuntime
 
 /**
  * Configures module-owned state and resource handoff from [onInit].
@@ -40,11 +37,7 @@ import com.highcapable.yukihookapi.runtime.YukiHookRuntime
  * Register once per module instance. A module without external resources does not need this block.
  * @param block the lifecycle configuration.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 fun YukiHookXposedModule.registerModuleLifecycle(block: ModuleLifecycle.() -> Unit) {
-    check(YukiHookBridge.runtime == YukiHookRuntime.LIBXPOSED) {
-        "Module lifecycle is unavailable in Xposed Framework API."
-    }
     XposedModuleRuntime.checkInitializingEntry(this, "module lifecycle callbacks")
 
     ModuleLifecycleManager.register(ModuleLifecycle().apply(block))
@@ -57,7 +50,6 @@ fun YukiHookXposedModule.registerModuleLifecycle(block: ModuleLifecycle.() -> Un
  *
  * - Note: Do not transfer module-defined objects.
  */
-@RequiresRuntime(YukiHookRuntime.LIBXPOSED)
 class ModuleLifecycle internal constructor() {
 
     internal var canReloadCallback: (Bundle?) -> Boolean = { true }
