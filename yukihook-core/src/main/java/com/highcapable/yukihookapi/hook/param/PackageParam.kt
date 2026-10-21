@@ -622,7 +622,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
     @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
     @JvmName("invokeSpecialTyped")
     fun <T> Method.invokeSpecial(instance: Any, vararg args: Any?) =
-        YukiHookHelper.invokeSpecial(this, instance, args) as T
+        YukiHookHelper.invokeSpecial(this, instance, args) as T?
 
     /**
      * Invokes this method non-virtually on the given [instance] with the given arguments.
@@ -1127,6 +1127,7 @@ open class PackageParam internal constructor(internal var context: PackageContex
      * @param hooker the hook block.
      * @return [YukiHookCreator.ClassicMemberHooker.Handle]
      */
+    @JvmName("hookAllByMember")
     fun Collection<Member>.hookAll(
         priority: YukiHookPriority = YukiHookPriority.DEFAULT,
         hooker: YukiHookCreator.ClassicMemberHooker.() -> Unit

@@ -93,7 +93,7 @@ fun MethodResolver<*>.invokeOriginalQuietly(vararg args: Any?) =
 @JvmName("invokeSpecialTyped")
 context(param: PackageParam)
 fun <T> MethodResolver<*>.invokeSpecial(vararg args: Any?) =
-    invokeSpecial(*args) as T
+    invokeSpecial(*args) as T?
 
 /**
  * Invokes this method non-virtually on its instance with the given arguments, ignoring any exceptions.
