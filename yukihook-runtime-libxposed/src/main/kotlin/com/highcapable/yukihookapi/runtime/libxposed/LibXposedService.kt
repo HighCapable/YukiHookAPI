@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import androidx.annotation.MainThread
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -101,6 +102,7 @@ internal object LibXposedService {
         })
     }
 
+    @MainThread
     fun observe(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge? {
         if (lifecycle?.currentState == Lifecycle.State.DESTROYED) return null
 

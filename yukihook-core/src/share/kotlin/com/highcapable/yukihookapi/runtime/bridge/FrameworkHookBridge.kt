@@ -23,6 +23,7 @@
 
 package com.highcapable.yukihookapi.runtime.bridge
 
+import androidx.annotation.MainThread
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.runtime.YukiHookRuntime
@@ -86,6 +87,7 @@ interface FrameworkHookBridge {
      * @param listener the listener to observe service readiness.
      * @return [FrameworkServiceBridge] or null.
      */
+    @MainThread
     fun observeService(lifecycle: Lifecycle?, listener: FrameworkServiceBridge): FrameworkServiceBridge?
 
     /**

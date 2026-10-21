@@ -26,6 +26,7 @@ package com.highcapable.yukihookapi
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import com.highcapable.yukihookapi.annotation.internal.RequiresRuntime
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
@@ -151,7 +152,7 @@ object YukiHook {
         /**
          * Observes framework service availability. The listener is invoked on registration and on bind/death.
          *
-         * Callbacks run on the main thread, the first one runs immediately when registered from the main thread.
+         * Call it on the main thread. Callbacks run on the main thread, the first one runs immediately on registration.
          * Call [FrameworkServiceBridge.unregister] on the returned subscription to cancel it.
          *
          * An exception thrown by the listener is not caught, later callbacks crash the main thread just like the first one.
@@ -164,6 +165,7 @@ object YukiHook {
          * @return [FrameworkServiceBridge] or null.
          */
         @RequiresRuntime(YukiHookRuntime.LIBXPOSED)
+        @MainThread
         fun observeFrameworkService(lifecycle: Lifecycle? = null, listener: FrameworkServiceBridge) =
             YukiHookBridge.observeService(lifecycle, listener)
 
