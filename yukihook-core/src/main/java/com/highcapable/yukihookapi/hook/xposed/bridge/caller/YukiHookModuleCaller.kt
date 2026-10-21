@@ -69,6 +69,7 @@ object YukiHookModuleCaller {
      * @param createHookEntry creates the user entry after the host environment is initialized.
      * @param appInfo the current Xposed module application info.
      * @param packageName the package name of the current process.
+     * @param processName the name of the current process reported by the runtime.
      * @param sourceDir the current Xposed module source directory.
      * @return [Boolean] whether the initialization was successful.
      */
@@ -76,9 +77,10 @@ object YukiHookModuleCaller {
         createHookEntry: () -> YukiHookXposedModule,
         appInfo: ApplicationInfo? = null,
         packageName: String = appInfo?.packageName ?: error("packageName is required."),
+        processName: String,
         sourceDir: String = appInfo?.sourceDir ?: error("sourceDir is required.")
     ) = runCatching {
-        XposedModuleRuntime.onStartLoadModule(packageName, sourceDir, appInfo)
+        XposedModuleRuntime.onStartLoadModule(packageName, sourceDir, appInfo, processName)
 
         val hookEntry = createHookEntry()
         callOnInit(hookEntry)
@@ -125,6 +127,7 @@ object YukiHookModuleCaller {
      * Initializes and replays a new module instance without synthesizing completed host events.
      * @param createHookEntry the new entry factory.
      * @param appInfo the new Xposed module application info.
+     * @param processName the name of the current process reported by the runtime.
      * @param state neutral state from the old module instance.
      * @param onFailure receives the original failure for reporting after old hooks are cleaned up.
      * @return [Boolean] whether this module instance was restored successfully.
@@ -132,10 +135,11 @@ object YukiHookModuleCaller {
     fun callRestoreModule(
         createHookEntry: () -> YukiHookXposedModule,
         appInfo: ApplicationInfo,
+        processName: String,
         state: Any?,
         onFailure: (Throwable) -> Unit
     ) = runCatching {
-        XposedModuleRuntime.onStartLoadModule(appInfo.packageName, appInfo.sourceDir, appInfo)
+        XposedModuleRuntime.onStartLoadModule(appInfo.packageName, appInfo.sourceDir, appInfo, processName)
 
         val saved = XposedModuleRuntime.onBeginRestoreModule(appInfo, state)
         val entry = createHookEntry()

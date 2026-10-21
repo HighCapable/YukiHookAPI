@@ -36,8 +36,9 @@ internal interface XposedModuleLifecycle {
      * @param packageName the current Xposed module package name.
      * @param sourceDir the current Xposed module source directory.
      * @param appInfo the current Xposed module [ApplicationInfo], or null when unavailable.
+     * @param processName the name of the current process reported by the runtime.
      */
-    fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?)
+    fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?, processName: String)
 
     /**
      * Called when an available host starts loading.

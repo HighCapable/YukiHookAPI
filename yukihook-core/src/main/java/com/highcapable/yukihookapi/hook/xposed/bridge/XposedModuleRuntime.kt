@@ -27,6 +27,7 @@ package com.highcapable.yukihookapi.hook.xposed.bridge
 import android.content.pm.ApplicationInfo
 import android.content.res.Resources
 import android.os.Bundle
+import android.os.Process
 import com.highcapable.yukihookapi.YukiHook
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -66,8 +67,8 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
     /** Whether the Xposed module has been loaded. */
     private var isModuleLoaded = false
 
-    /** Whether the current hook process is running in Zygote. */
-    private var isInitializingZygote = false
+    /** The process ID and name reported by the runtime. */
+    private var reportedProcess: Pair<Int, String>? = null
 
     /** The current Xposed module resources. */
     private var currentModuleResources: ModuleResources? = null
@@ -95,10 +96,12 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         ?.syncConfiguration(AppParasitism.currentApplication?.resources ?: Resources.getSystem())
 
     /**
-     * Gets the identifier of the hook process currently running in the host.
+     * Gets the name of the hook process currently running in the host.
+     *
+     * A process forked from zygote inherits the name reported in zygote, so the name only applies to the process that reported it.
      * @return [String]
      */
-    val hostProcessName get() = if (isInitializingZygote) "android-zygote" else AppParasitism.currentPackageName
+    val hostProcessName get() = reportedProcess?.takeIf { it.first == Process.myPid() }?.second ?: AppParasitism.currentProcessName
 
     /**
      * Gets whether the current environment is a host environment.
@@ -215,7 +218,8 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
      */
     fun recordRestoreFailure(failure: Throwable) = ModuleLifecycleManager.recordRestoreFailure(failure)
 
-    override fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?) {
+    override fun onStartLoadModule(packageName: String, sourceDir: String, appInfo: ApplicationInfo?, processName: String) {
+        reportProcessName(processName)
         attachModuleInfo(packageName, sourceDir, appInfo)
         reloadModuleResources()
         if (hookRegistration != null) registerLifecycleComponents()
@@ -232,6 +236,9 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
         appInfo: ApplicationInfo?,
         dispatch: Boolean
     ) {
+        // Legacy zygote events run in zygote, whose name was reported when the module started loading.
+        if (type != HookEntryType.ZYGOTE) reportProcessName(processName)
+
         val context = PackageContext(
             type = type,
             packageName = packageName,
@@ -272,6 +279,10 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     override fun onRetireFailedRestore() = ModuleLifecycleManager.retire()
 
+    private fun reportProcessName(name: String) {
+        reportedProcess = Process.myPid() to name
+    }
+
     private fun attachModuleInfo(packageName: String, sourceDir: String, appInfo: ApplicationInfo?) {
         isModuleLoaded = true
         modulePackageName = packageName
@@ -290,7 +301,6 @@ internal object XposedModuleRuntime : XposedModuleLifecycle {
 
     private fun dispatchPackage(context: PackageContext) {
         if (!packageRegistration.record(context)) return
-        isInitializingZygote = context.type == HookEntryType.ZYGOTE
 
         runCatching {
             val callback = {

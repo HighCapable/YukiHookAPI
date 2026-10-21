@@ -35,7 +35,7 @@ import java.util.Locale
  * @param time the current UTC time.
  * @param tag the current tag.
  * @param priority the current priority: D, I, W, or E.
- * @param packageName the current host process name, or the current package name outside the host environment.
+ * @param processName the current process name.
  * @param userId the current user ID.
  * @param msg the current log message.
  * @param throwable the current exception stack trace.
@@ -46,7 +46,7 @@ data class YLogData internal constructor(
     var time: String = "",
     var tag: String = YLog.Config.tag,
     var priority: String = "",
-    var packageName: String = "",
+    var processName: String = "",
     var userId: Int = 0,
     var msg: String = "",
     var throwable: Throwable? = null
@@ -58,7 +58,7 @@ data class YLogData internal constructor(
     init {
         timestamp = System.currentTimeMillis()
         time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT).format(Date(timestamp))
-        packageName = if (XposedModuleRuntime.isHostEnvironment) XposedModuleRuntime.hostProcessName else AppParasitism.currentPackageName
+        processName = if (XposedModuleRuntime.isHostEnvironment) XposedModuleRuntime.hostProcessName else AppParasitism.currentProcessName
         userId = AppParasitism.currentUserId
     }
 
@@ -68,12 +68,24 @@ data class YLogData internal constructor(
      */
     internal val head get() = "$time ------ "
 
+    // region Deprecated properties for backward compatibility
+
+    /** The current process name. */
+    @Deprecated(message = "Use processName instead.", replaceWith = ReplaceWith("processName"))
+    var packageName
+        get() = processName
+        set(value) {
+            processName = value
+        }
+
+    // endregion
+
     override fun toString(): String {
         var content = ""
         YLog.Config.elements.takeIf { it.isNotEmpty() }?.forEach {
             if (it == YLog.Config.TAG) content += "[$tag]"
             if (it == YLog.Config.PRIORITY) content += "[$priority]"
-            if (it == YLog.Config.PACKAGE_NAME && !isImplicit && packageName.isNotBlank()) content += "[$packageName]"
+            if (it == YLog.Config.PROCESS_NAME && !isImplicit && processName.isNotBlank()) content += "[$processName]"
             if (it == YLog.Config.USER_ID && !isImplicit && userId != 0) content += "[$userId]"
         }
 

@@ -39,6 +39,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
         const val FRAMEWORK_PACKAGE_NAME = "android"
         const val FRAMEWORK_SCOPE_NAME = "system"
         const val SYSTEM_PROCESS_NAME = "system"
+        const val ZYGOTE_PROCESS_NAME = "android-zygote"
     }
 
     /** Module application ID emitted by KSP. */
@@ -55,7 +56,12 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
     final override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam) {
         YukiHookBridge.attach()
 
-        initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, packageName = modulePackageName, sourceDir = startupParam.modulePath)
+        initialized = YukiHookModuleCaller.callOnHook(
+            createHookEntry = ::createHookEntry,
+            packageName = modulePackageName,
+            processName = ZYGOTE_PROCESS_NAME,
+            sourceDir = startupParam.modulePath
+        )
         if (initialized) YukiHookModuleCaller.callOnZygote(
             packageName = FRAMEWORK_PACKAGE_NAME,
             processName = FRAMEWORK_PACKAGE_NAME,

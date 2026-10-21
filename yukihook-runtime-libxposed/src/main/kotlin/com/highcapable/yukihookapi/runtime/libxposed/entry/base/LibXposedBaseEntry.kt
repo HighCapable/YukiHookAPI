@@ -69,7 +69,7 @@ abstract class LibXposedBaseEntry : XposedModule() {
             parseProcessName(param)
             attachRuntime()
 
-            initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo)
+            initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo, processName = processName)
         }.also {
             if (it.isFailure || !initialized) {
                 initialized = false

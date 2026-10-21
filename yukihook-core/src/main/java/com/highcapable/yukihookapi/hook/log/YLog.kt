@@ -67,7 +67,7 @@ object YLog {
         const val PRIORITY = 1001
 
         /**
-         * Current host process name, the same as the package name in its main process.
+         * Current process name.
          *
          * Example output:
          *
@@ -75,7 +75,7 @@ object YLog {
          * [...][com.demo.test][...] ...
          * ```
          */
-        const val PACKAGE_NAME = 1002
+        const val PROCESS_NAME = 1002
 
         /**
          * Current host user ID, omitted for the owner user.
@@ -131,6 +131,10 @@ object YLog {
 
         // region Deprecated properties for backward compatibility
 
+        /** Current process name. */
+        @Deprecated(message = "Use PROCESS_NAME instead.", replaceWith = ReplaceWith("PROCESS_NAME"))
+        const val PACKAGE_NAME = PROCESS_NAME
+
         /** Whether debug log output is enabled. */
         @Deprecated(message = "Use enabled instead.", replaceWith = ReplaceWith("enabled"))
         var isEnable
@@ -150,7 +154,7 @@ object YLog {
         // endregion
 
         /** The current ordered list of elements. */
-        internal var elements = arrayOf(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+        internal var elements = arrayOf(TAG, PRIORITY, PROCESS_NAME, USER_ID)
 
         /**
          * Customizes the elements displayed in debug logs.
@@ -159,11 +163,11 @@ object YLog {
          * Log elements are displayed in the order specified by [item].
          * Leave [item] empty to hide every element except the log message.
          *
-         * Available elements are [TAG], [PRIORITY], [PACKAGE_NAME], and [USER_ID].
+         * Available elements are [TAG], [PRIORITY], [PROCESS_NAME], and [USER_ID].
          *
          * Default order:
          * ```
-         * [TAG][PRIORITY][PACKAGE_NAME][USER_ID] Message
+         * [TAG][PRIORITY][PROCESS_NAME][USER_ID] Message
          * ```
          * @param item the custom element array.
          */

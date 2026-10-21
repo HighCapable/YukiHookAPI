@@ -158,7 +158,7 @@ abstract class LibXposed102Entry : LibXposedBaseEntry() {
             attachRuntime(restoring = true)
             parseProcessName(param)
             val saved = HandoffState.decode(pendingHandoff)
-            initialized = YukiHookModuleCaller.callRestoreModule(::createHookEntry, moduleApplicationInfo, saved.managedState) {
+            initialized = YukiHookModuleCaller.callRestoreModule(::createHookEntry, moduleApplicationInfo, processName, saved.managedState) {
                 restoreFailure = it
             }
             if (!initialized) throw checkNotNull(restoreFailure) {
