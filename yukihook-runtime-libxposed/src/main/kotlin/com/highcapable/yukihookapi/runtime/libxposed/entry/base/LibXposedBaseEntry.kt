@@ -70,13 +70,17 @@ abstract class LibXposedBaseEntry : XposedModule() {
             attachRuntime()
 
             initialized = YukiHookModuleCaller.callOnHook(::createHookEntry, moduleApplicationInfo)
-            if (initialized) YukiHookLibXposedEvent.moduleLoaded?.invoke(this, param)
         }.also {
             if (it.isFailure || !initialized) {
                 initialized = false
                 onInitializationFailed()
             }
         }.getOrThrow()
+
+        // Like the other framework events, a failing listener does not undo the completed initialization.
+        YukiHookModuleCaller.callDispatchFrameworkEvent {
+            if (initialized) YukiHookLibXposedEvent.moduleLoaded?.invoke(this, param)
+        }
     }
 
     @RequiresApi(29)

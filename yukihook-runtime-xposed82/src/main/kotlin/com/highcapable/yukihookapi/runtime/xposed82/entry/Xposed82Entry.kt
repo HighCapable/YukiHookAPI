@@ -63,7 +63,7 @@ abstract class Xposed82Entry : IXposedHookZygoteInit, IXposedHookLoadPackage {
             packageNameForMatching = FRAMEWORK_PACKAGE_NAME,
             loader = XposedBridge.BOOTCLASSLOADER
         )
-        YukiHookXposed82Event.initZygoteCallback?.invoke(startupParam)
+        if (initialized) YukiHookXposed82Event.initZygoteCallback?.invoke(startupParam)
     }
 
     final override fun handleLoadPackage(param: XC_LoadPackage.LoadPackageParam) {
