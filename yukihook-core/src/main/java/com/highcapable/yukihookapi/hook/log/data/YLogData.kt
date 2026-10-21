@@ -35,7 +35,7 @@ import java.util.Locale
  * @param time the current UTC time.
  * @param tag the current tag.
  * @param priority the current priority: D, I, W, or E.
- * @param packageName the current package name.
+ * @param packageName the current host process name, or the current package name outside the host environment.
  * @param userId the current user ID.
  * @param msg the current log message.
  * @param throwable the current exception stack trace.

@@ -67,9 +67,10 @@ fun YukiHookXposedModule.encase(block: PackageParam.() -> Unit) = YukiHook.encas
 
 /**
  * Loads [YukiHook] from [YukiHookXposedModule].
+ *
+ * An empty [hookers] logs an error and loads nothing.
  * @receiver [YukiHookXposedModule]
  * @param hookers the hookers.
- * @throws IllegalStateException if [hookers] is empty.
  */
 fun YukiHookXposedModule.encase(vararg hookers: YukiBaseHooker) = YukiHook.encase(hookers = hookers)
 

@@ -31,7 +31,9 @@ import com.highcapable.yukihookapi.runtime.bridge.hooker.ChainHookerBridge
  * Invocation context for a chain interceptor.
  *
  * Return a value to complete the invocation, or call [proceed] to continue the remaining chain.
- * Uncaught exceptions propagate to the caller. This context must not be shared across threads or
+ * Exceptions from [proceed] propagate to the caller, other failures follow the hooker's failure policy.
+ *
+ * This context must not be shared across threads or
  * used after the interceptor returns or throws.
  * @param dataExtraStorage the storage shared by this interceptor's invocations.
  * @param hooker the hooker owning this invocation's registrations.

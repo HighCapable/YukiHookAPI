@@ -63,7 +63,7 @@ class HookParam private constructor(
     /**
      * Gets the argument array of the currently hooked method or constructor.
      *
-     * Each array element has the default type [Any]. Use [args] to access [ArgumentEditor.get].
+     * Each array element has the default type [Any]. Use [arg] to access [ArgumentEditor.get].
      * @see arg
      * @see firstArg
      * @see lastArg

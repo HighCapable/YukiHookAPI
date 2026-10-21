@@ -67,7 +67,7 @@ object YLog {
         const val PRIORITY = 1001
 
         /**
-         * Current host package name.
+         * Current host process name, the same as the package name in its main process.
          *
          * Example output:
          *
