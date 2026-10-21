@@ -159,13 +159,15 @@ class YukiHookDataChannel private constructor() {
                             param.first?.hostActivity?.isDestroyed == true -> receiverCallbacks.remove(key, param)
                             isCurrentBroadcast(param.first) -> param.second(action, intent)
                         }
-                    }.onFailure { if (failure == null) failure = it else failure.addSuppressed(it) }
+                    }.onFailure {
+                        // A module bug must not crash the host, the module process throws it to the caller.
+                        if (isHostEnvironment)
+                            YLog.innerE("The module's data channel listener \"$key\" failed to handle received action \"$action\"", it)
+                        else if (failure == null) failure = it
+                        else failure.addSuppressed(it)
+                    }
                 }
-                failure?.let {
-                    // A module bug must not crash the host, the module process throws it to the caller.
-                    if (!isHostEnvironment) throw it
-                    YLog.innerE("Failed to handle received action \"$action\"", it)
-                }
+                failure?.let { throw it }
             }
         }
     }
@@ -190,7 +192,10 @@ class YukiHookDataChannel private constructor() {
         context is Application || isHostEnvironment || ((context ?: receiverContext)
             ?.getSystemService<ActivityManager>()
             ?.getRunningTasks(9999)?.any { context?.javaClass?.name == it?.topActivity?.className } == true)
-    }.getOrNull() ?: YLog.innerW("Failed to get the current Activity status because of a SecurityException").let { false }
+    }.getOrElse {
+        YLog.innerW("Failed to get the current Activity status", it)
+        false
+    }
 
     /**
      * Gets the host broadcast action name.
@@ -601,7 +606,12 @@ class YukiHookDataChannel private constructor() {
             if (!YukiHook.Config.dataChannel) return
             if (wrapper == null) return
 
-            if (wrapper.isSegmented) runCatching {
+            if (!wrapper.isSegmented) {
+                wrapper.instance.value?.let(result)
+                return
+            }
+
+            val merged = runCatching {
                 // A transfer that lost segments never completes, discard it once it expires.
                 val now = SystemClock.elapsedRealtime()
                 segmentsTempData.entries.iterator().apply {
@@ -612,7 +622,7 @@ class YukiHookDataChannel private constructor() {
                 when (val value = wrapper.instance.value) {
                     is List<*> -> {
                         val segments = tempData.listData ?: mutableListOf<List<*>>().also { tempData.listData = it }
-                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                        mergeReceivedSegments(wrapper, value, segments) { data ->
                             ArrayList<Any?>(data.sumOf { it.size }).apply {
                                 for (segment in data) for (element in segment) add(element)
                             }
@@ -620,7 +630,7 @@ class YukiHookDataChannel private constructor() {
                     }
                     is Map<*, *> -> {
                         val segments = tempData.mapData ?: mutableListOf<Map<*, *>>().also { tempData.mapData = it }
-                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                        mergeReceivedSegments(wrapper, value, segments) { data ->
                             LinkedHashMap<Any?, Any?>(data.sumOf { it.size }).apply {
                                 for (segment in data) putAll(segment)
                             }
@@ -628,7 +638,7 @@ class YukiHookDataChannel private constructor() {
                     }
                     is Set<*> -> {
                         val segments = tempData.setData ?: mutableListOf<Set<*>>().also { tempData.setData = it }
-                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                        mergeReceivedSegments(wrapper, value, segments) { data ->
                             LinkedHashSet<Any?>(data.sumOf { it.size }).apply {
                                 for (segment in data) addAll(segment)
                             }
@@ -636,33 +646,43 @@ class YukiHookDataChannel private constructor() {
                     }
                     is String -> {
                         val segments = tempData.stringData ?: mutableListOf<String>().also { tempData.stringData = it }
-                        mergeReceivedSegments(wrapper, value, segments, result) { data ->
+                        mergeReceivedSegments(wrapper, value, segments) { data ->
                             buildString(data.sumOf { it.length }) {
                                 for (segment in data) append(segment)
                             }
                         }
                     }
-                    else -> YLog.innerE("Unsupported type for segmented data key \"${wrapper.instance.key}\"")
+                    else -> {
+                        YLog.innerE("Unsupported type for segmented data key \"${wrapper.instance.key}\"")
+                        null
+                    }
                 }
-            }.onFailure {
+            }.getOrElse {
                 segmentsTempData.remove(wrapper.wrapperId)
-                YLog.innerE("YukiHookDataChannel cannot merge segmented data key \"${wrapper.instance.key}\"", it)
-            } else wrapper.instance.value?.let { e -> result(e) }
+                return YLog.innerE("YukiHookDataChannel cannot merge segmented data key \"${wrapper.instance.key}\"", it)
+            }
+
+            // Run the listener outside the merge, its own failure belongs to the listener.
+            @Suppress("UNCHECKED_CAST")
+            if (merged != null) result(merged as T)
         }
 
-        /** Merges a complete set of segments before delivering and releasing it. */
-        private inline fun <T, V> mergeReceivedSegments(
-            wrapper: ChannelDataWrapper<T>,
+        /**
+         * Merges a complete set of segments and releases it.
+         * @return [Any] the merged data, or null while segments are still missing.
+         */
+        private inline fun <V> mergeReceivedSegments(
+            wrapper: ChannelDataWrapper<*>,
             value: V,
             segments: MutableList<V>,
-            result: (T) -> Unit,
             merge: (List<V>) -> Any
-        ) {
-            if (segments.isEmpty() && wrapper.segmentIndex > 0) return
+        ): Any? {
+            if (segments.isEmpty() && wrapper.segmentIndex > 0) return null
 
             segments.add(wrapper.segmentIndex, value)
-            if (segments.size == wrapper.segmentCount) {
-                result(merge(segments) as T)
+            if (segments.size != wrapper.segmentCount) return null
+
+            return merge(segments).also {
                 segments.clear()
                 segmentsTempData.remove(wrapper.wrapperId)
             }
