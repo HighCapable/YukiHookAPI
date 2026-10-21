@@ -89,13 +89,10 @@ class ModuleResources private constructor(private val baseInstance: Resources) :
         fun inject(host: Resources, path: String, callback: (Throwable?) -> Unit = {}) {
             fun Result<*>.notify() = onSuccess { callback(null) }.onFailure { callback(it) }
 
-            if (AndroidVersion.isAtLeast(AndroidVersion.R)) {
+            if (AndroidVersion.isAtLeast(AndroidVersion.R)) runCatching {
                 require(path.isNotBlank()) { "The APK path is unavailable." }
-
-                runCatching {
-                    Api30_Impl.inject(host, path)
-                }.notify()
-            } else host.assets.addAssetPath(path).onSuccess { hasLegacyInjection = true }.notify()
+                Api30_Impl.inject(host, path)
+            }.notify() else host.assets.addAssetPath(path).onSuccess { hasLegacyInjection = true }.notify()
         }
 
         override fun onPrepareReload() {
