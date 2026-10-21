@@ -365,7 +365,7 @@ class YukiHookXposedGenerator(environment: SymbolProcessorEnvironment) : BaseSym
 
         return when (this) {
             is LibXposedGenerateSpec -> buildMap {
-                put(LibXposedGenerateSpec.JAVA_INIT_FILE_PATH, javaEntries.toMutableList().apply { addFirst(entryName) }.joinToString("\n"))
+                put(LibXposedGenerateSpec.JAVA_INIT_FILE_PATH, (listOf(entryName) + javaEntries).joinToString("\n"))
                 put(LibXposedGenerateSpec.MODULE_PROPERTIES_FILE_PATH, createModuleProperties())
                 put(LibXposedGenerateSpec.SCOPE_FILE_PATH, scope.joinToString("\n"))
 
