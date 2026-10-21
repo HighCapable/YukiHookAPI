@@ -95,13 +95,13 @@ object HookEntry : YukiHookXposedModule {
                 // Only valid for logging and [XposedBridge.log]
                 // The arrangement of log elements will be displayed in the order you set in [item]
                 // You can also leave [item] blank to not show all elements except the log content
-                // Available elements are: [TAG], [PRIORITY], [PACKAGE_NAME], [USER_ID]
+                // Available elements are: [TAG], [PRIORITY], [PROCESS_NAME], [USER_ID]
                 // 自定义调试日志对外显示的元素
                 // 只对日志记录和 [XposedBridge.log] 生效
                 // 日志元素的排列将按照你在 [item] 中设置的顺序进行显示
                 // 你还可以留空 [item] 以不显示除日志内容外的全部元素
-                // 可用的元素有：[TAG]、[PRIORITY]、[PACKAGE_NAME]、[USER_ID]
-                elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+                // 可用的元素有：[TAG]、[PRIORITY]、[PROCESS_NAME]、[USER_ID]
+                elements(TAG, PRIORITY, PROCESS_NAME, USER_ID)
             }
             // Whether to enable debug mode, not enabled by default
             // Note: Please selectively enable this feature, this can cause I/O performance issues caused by continuous output logs
